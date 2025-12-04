@@ -17,6 +17,8 @@ import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../repository/project_repository.dart';
 
+const String kAppVersion = '1.0.2';
+
 // WIDGET CORRIGIDO: Botões de controle da janela usando window_manager
 class WindowButtons extends StatelessWidget {
   const WindowButtons({super.key});
@@ -165,12 +167,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   height: 40, // Altura padrão para a barra
                   child: Row(
                     children: [
-                      // Título da Aplicação
-                      const Padding(
-                        padding: EdgeInsets.only(left: 12),
+                      // Título da Aplicação com versão (como antes)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12),
                         child: Text(
-                          'DAW Project Manager', 
-                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                          'DAW Project Manager v$kAppVersion',
+                          style: const TextStyle(color: Colors.white70, fontSize: 16),
                         ),
                       ),
                       const Spacer(), // Espaçador para empurrar os botões para a direita
@@ -263,30 +265,40 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       const SizedBox(width: 8),
                       Builder(
                         builder: (context) {
-                          return IconButton(
-                            tooltip: 'Clear Library (projects & roots)',
-                            icon: const Icon(Icons.delete_forever),
-                            onPressed: () async {
-                              final confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  backgroundColor: const Color(0xFF2B2D31),
-                                  title: const Text('Clear Library'),
-                                  content: const Text('This will remove all saved projects and source folders. Continue?'),
-                                  actions: [
-                                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                                    ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear')),
-                                  ],
-                                ),
-                              );
-                              if (confirm == true) {
-                                final repo = await ref.read(repositoryProvider.future);
-                                await repo.clearAllData();
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Library cleared.')));
-                                }
-                              }
-                            },
+                          return Row(
+                            children: [
+                              IconButton(
+                                tooltip: 'Clear Library (projects & roots)',
+                                icon: const Icon(Icons.delete_forever),
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      backgroundColor: const Color(0xFF2B2D31),
+                                      title: const Text('Clear Library'),
+                                      content: const Text('This will remove all saved projects and source folders. Continue?'),
+                                      actions: [
+                                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                        ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear')),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirm == true) {
+                                    final repo = await ref.read(repositoryProvider.future);
+                                    await repo.clearAllData();
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Library cleared.')));
+                                    }
+                                  }
+                                },
+                              ),
+                              const SizedBox(width: 4),
+                              // Versão também na barra de ações (à direita do ícone de lixeira)
+                              const Text(
+                                'v$kAppVersion',
+                                style: TextStyle(color: Colors.white54, fontSize: 12),
+                              ),
+                            ],
                           );
                         },
                       ),

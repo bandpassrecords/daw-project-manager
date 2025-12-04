@@ -3,7 +3,7 @@
 [Setup]
 ; --- Informações do Aplicativo ---
 AppName=DAW Project Manager
-AppVersion=1.0.1
+AppVersion=1.0.2
 AppPublisher=DAW Project Manager Co.
 AppPublisherURL=https://www.github.com/ggbecker/daw-project-manager
 AppSupportURL=https://www.github.com/ggbecker/daw-project-manager
