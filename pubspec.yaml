@@ -103,7 +103,7 @@ flutter:
 
 msix_config:
   display_name: DAW Project Manager
-  publisher_display_name: DAW Project Manager
+  publisher_display_name: BandPass Records
   identity_name: com.bandpassrecords.dawprojectmanager
   msix_version: 1.0.3.0
   logo_path: app_icon.ico
