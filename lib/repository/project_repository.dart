@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
 import '../models/music_project.dart';
 import '../models/scan_root.dart';
+import '../services/metadata_extractor.dart';
 
 class ProjectRepository {
   static const projectsBoxName = 'projects';
@@ -65,6 +65,27 @@ class ProjectRepository {
 
     final existing = getByPath(filePath);
     
+    // Extract metadata from project file
+    ProjectMetadata? extractedMetadata;
+    try {
+      extractedMetadata = await MetadataExtractor.extractMetadata(filePath);
+      debugPrint('[ProjectRepository] Extracted metadata: BPM=${extractedMetadata?.bpm}, Key=${extractedMetadata?.key}, DAW=${extractedMetadata?.dawType}');
+    } catch (e) {
+      // If extraction fails, continue without metadata
+      debugPrint('[ProjectRepository] Metadata extraction failed: $e');
+    }
+    
+    // Always update BPM and key from file if available (these can change in the project)
+    // Fall back to existing values only if extraction didn't find anything
+    final bpm = extractedMetadata?.bpm ?? existing?.bpm;
+    final key = extractedMetadata?.key ?? existing?.musicalKey;
+    
+    debugPrint('[ProjectRepository] Final values: BPM=$bpm (existing was ${existing?.bpm}, extracted was ${extractedMetadata?.bpm})');
+    debugPrint('[ProjectRepository] Final values: Key=$key (existing was ${existing?.musicalKey}, extracted was ${extractedMetadata?.key})');
+    
+    // Determine DAW type: use extracted (always update from file)
+    final dawType = extractedMetadata?.dawType;
+    
     // Cria o objeto base, usando os dados existentes se houver, 
     // mas atualizando os campos que vêm do sistema de arquivos (size, lastModified, fileName, etc.)
     final projectToSave = MusicProject(
@@ -80,9 +101,10 @@ class ProjectRepository {
       // PRESERVAÇÃO: Estes campos foram editados pelo usuário e devem ser mantidos
       customDisplayName: existing?.customDisplayName, // <--- PRESERVA
       status: existing?.status ?? 'Draft',             // <--- PRESERVA
-      bpm: existing?.bpm,                             // <--- PRESERVA
-      musicalKey: existing?.musicalKey,               // <--- PRESERVA
+      bpm: bpm,                                        // <--- USA EXISTENTE OU EXTRAÍDO
+      musicalKey: key,                                 // <--- USA EXISTENTE OU EXTRAÍDO
       notes: existing?.notes,                         // <--- NOVO: PRESERVA NOTAS
+      dawType: dawType,                                // <--- SEMPRE ATUALIZA DO ARQUIVO
     );
 
     await projectsBox.put(projectToSave.id, projectToSave);

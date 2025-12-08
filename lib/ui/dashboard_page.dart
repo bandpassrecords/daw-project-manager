@@ -357,6 +357,7 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
       return PlutoRow(cells: {
         'name': PlutoCell(value: p.displayName),
         'status': PlutoCell(value: p.status),
+        'dawType': PlutoCell(value: p.dawType ?? ''),
         'bpm': PlutoCell(value: p.bpm?.toString() ?? ''),
         'key': PlutoCell(value: p.musicalKey ?? ''),
         'lastModified': PlutoCell(value: widget.dateFormat.format(p.lastModifiedAt)),
@@ -401,6 +402,13 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
         type: PlutoColumnType.text(),
         width: 140,
         minWidth: 120,
+      ),
+      PlutoColumn(
+        title: 'DAW',
+        field: 'dawType',
+        type: PlutoColumnType.text(),
+        width: 120,
+        minWidth: 100,
       ),
       PlutoColumn(
         title: 'BPM',
