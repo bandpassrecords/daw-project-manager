@@ -49,6 +49,9 @@ class MusicProject {
   @HiveField(14)
   final String? dawType; // DAW type: Ableton, Cubase, FL Studio, Logic Pro, etc.
 
+  @HiveField(15)
+  final String? dawVersion; // DAW version (major version number)
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -65,6 +68,7 @@ class MusicProject {
     this.musicalKey,
     this.notes, // NOVO CAMPO NO CONSTRUTOR
     this.dawType,
+    this.dawVersion,
   });
 
   String get displayName => (customDisplayName != null && customDisplayName!.trim().isNotEmpty)
@@ -87,6 +91,7 @@ class MusicProject {
     String? musicalKey,
     String? notes, // NOVO CAMPO NO COPYWITH
     String? dawType,
+    String? dawVersion,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -104,6 +109,7 @@ class MusicProject {
       musicalKey: musicalKey ?? this.musicalKey,
       notes: notes ?? this.notes, // NOVO CAMPO
       dawType: dawType ?? this.dawType,
+      dawVersion: dawVersion ?? this.dawVersion,
     );
   }
 }
@@ -135,13 +141,14 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       musicalKey: fields[12] as String?,
       notes: fields.containsKey(13) ? fields[13] as String? : null, // NOVO CAMPO
       dawType: fields.containsKey(14) ? fields[14] as String? : null,
+      dawVersion: fields.containsKey(15) ? fields[15] as String? : null,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(15) // Tinha 14, agora são 15 campos (0-14)
+      ..writeByte(16) // Tinha 15, agora são 16 campos (0-15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -171,6 +178,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(13) // NOVO CAMPO
       ..write(obj.notes)
       ..writeByte(14)
-      ..write(obj.dawType);
+      ..write(obj.dawType)
+      ..writeByte(15)
+      ..write(obj.dawVersion);
   }
 }

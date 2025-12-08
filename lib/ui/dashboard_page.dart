@@ -354,10 +354,17 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
 
   List<PlutoRow> _mapProjectsToRows(List<MusicProject> projects) {
     return projects.map((p) {
+      // Combine DAW type and version into a single string
+      final dawDisplay = p.dawType != null
+          ? (p.dawVersion != null && p.dawVersion!.isNotEmpty
+              ? '${p.dawType} ${p.dawVersion}'
+              : p.dawType!)
+          : '';
+      
       return PlutoRow(cells: {
         'name': PlutoCell(value: p.displayName),
         'status': PlutoCell(value: p.status),
-        'dawType': PlutoCell(value: p.dawType ?? ''),
+        'dawType': PlutoCell(value: dawDisplay),
         'bpm': PlutoCell(value: p.bpm?.toString() ?? ''),
         'key': PlutoCell(value: p.musicalKey ?? ''),
         'lastModified': PlutoCell(value: widget.dateFormat.format(p.lastModifiedAt)),
@@ -407,7 +414,7 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
         title: 'DAW',
         field: 'dawType',
         type: PlutoColumnType.text(),
-        width: 120,
+        width: 140,
         minWidth: 100,
       ),
       PlutoColumn(

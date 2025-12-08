@@ -69,10 +69,8 @@ class ProjectRepository {
     ProjectMetadata? extractedMetadata;
     try {
       extractedMetadata = await MetadataExtractor.extractMetadata(filePath);
-      debugPrint('[ProjectRepository] Extracted metadata: BPM=${extractedMetadata?.bpm}, Key=${extractedMetadata?.key}, DAW=${extractedMetadata?.dawType}');
-    } catch (e) {
+    } catch (_) {
       // If extraction fails, continue without metadata
-      debugPrint('[ProjectRepository] Metadata extraction failed: $e');
     }
     
     // Always update BPM and key from file if available (these can change in the project)
@@ -80,11 +78,9 @@ class ProjectRepository {
     final bpm = extractedMetadata?.bpm ?? existing?.bpm;
     final key = extractedMetadata?.key ?? existing?.musicalKey;
     
-    debugPrint('[ProjectRepository] Final values: BPM=$bpm (existing was ${existing?.bpm}, extracted was ${extractedMetadata?.bpm})');
-    debugPrint('[ProjectRepository] Final values: Key=$key (existing was ${existing?.musicalKey}, extracted was ${extractedMetadata?.key})');
-    
-    // Determine DAW type: use extracted (always update from file)
+    // Determine DAW type and version: use extracted (always update from file)
     final dawType = extractedMetadata?.dawType;
+    final dawVersion = extractedMetadata?.dawVersion;
     
     // Cria o objeto base, usando os dados existentes se houver, 
     // mas atualizando os campos que vêm do sistema de arquivos (size, lastModified, fileName, etc.)
@@ -105,6 +101,7 @@ class ProjectRepository {
       musicalKey: key,                                 // <--- USA EXISTENTE OU EXTRAÍDO
       notes: existing?.notes,                         // <--- NOVO: PRESERVA NOTAS
       dawType: dawType,                                // <--- SEMPRE ATUALIZA DO ARQUIVO
+      dawVersion: dawVersion,                          // <--- SEMPRE ATUALIZA DO ARQUIVO
     );
 
     await projectsBox.put(projectToSave.id, projectToSave);

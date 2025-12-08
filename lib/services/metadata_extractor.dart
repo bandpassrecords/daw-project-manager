@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
@@ -27,56 +26,56 @@ class ProjectMetadata {
   final double? bpm;
   final String? key;
   final String? dawType;
+  final String? dawVersion;
 
   ProjectMetadata({
     this.bpm,
     this.key,
     this.dawType,
+    this.dawVersion,
   });
 }
 
 class MetadataExtractor {
   /// Extracts metadata from a project file
   static Future<ProjectMetadata> extractMetadata(String filePath) async {
-    debugPrint('[MetadataExtractor] Extracting metadata from: $filePath');
     final ext = p.extension(filePath).toLowerCase();
     final projectDir = File(filePath).parent;
     
     // Determine DAW type from extension
     final dawType = _getDawTypeFromExtension(ext);
-    debugPrint('[MetadataExtractor] DAW Type: $dawType (extension: $ext)');
     
     double? bpm;
     String? key;
+    String? dawVersion;
 
     // Try to extract from project file first
     if (ext == '.als') {
-      debugPrint('[MetadataExtractor] Extracting from Ableton Live file...');
       final metadata = await _extractFromAbletonFile(filePath);
       bpm = metadata.bpm ?? bpm;
       key = metadata.key ?? key;
-      debugPrint('[MetadataExtractor] Extracted from .als: BPM=$bpm, Key=$key');
+      dawVersion = metadata.dawVersion ?? dawVersion;
+    } else if (ext == '.cpr') {
+      final metadata = await _extractFromCubaseFile(filePath);
+      dawVersion = metadata.dawVersion ?? dawVersion;
     }
 
     // Also search for bpm and key files in the project directory
-    debugPrint('[MetadataExtractor] Searching for BPM/key text files in: ${projectDir.path}');
     final bpmFromFile = await _searchForBpmFile(projectDir.path);
     if (bpmFromFile != null) {
-      debugPrint('[MetadataExtractor] Found BPM from text file: $bpmFromFile');
       bpm = bpmFromFile;
     }
 
     final keyFromFile = await _searchForKeyFile(projectDir.path);
     if (keyFromFile != null) {
-      debugPrint('[MetadataExtractor] Found Key from text file: $keyFromFile');
       key = keyFromFile;
     }
 
-    debugPrint('[MetadataExtractor] Final metadata: BPM=$bpm, Key=$key, DAW=$dawType');
     return ProjectMetadata(
       bpm: bpm,
       key: key,
       dawType: dawType,
+      dawVersion: dawVersion,
     );
   }
 
@@ -119,17 +118,25 @@ class MetadataExtractor {
       }
       
       // Parse XML
-      debugPrint('[MetadataExtractor] Parsing XML (length: ${xmlString.length} chars)');
       final document = XmlDocument.parse(xmlString);
       final root = document.rootElement;
-      debugPrint('[MetadataExtractor] XML root element: ${root.name}');
 
       double? bpm;
       String? key;
+      String? dawVersion;
+
+      // Extract version from MinorVersion attribute
+      final minorVersion = root.getAttribute('MinorVersion');
+      if (minorVersion != null && minorVersion.isNotEmpty) {
+        // Extract major version (e.g., "12.0_12300" -> "12")
+        final parts = minorVersion.split('.');
+        if (parts.isNotEmpty) {
+          dawVersion = parts[0];
+        }
+      }
 
       // Extract BPM - look for Tempo element with Manual child
       final tempoElements = root.findAllElements('Tempo');
-      debugPrint('[MetadataExtractor] Found ${tempoElements.length} Tempo element(s)');
       if (tempoElements.isNotEmpty) {
         final tempoElement = tempoElements.first;
         // Look for Manual element inside Tempo
@@ -137,19 +144,15 @@ class MetadataExtractor {
         if (manualElements.isNotEmpty) {
           final manualElement = manualElements.first;
           final tempoValue = manualElement.getAttribute('Value');
-          debugPrint('[MetadataExtractor] Tempo Manual Value attribute: $tempoValue');
           if (tempoValue != null) {
             bpm = double.tryParse(tempoValue);
-            debugPrint('[MetadataExtractor] Extracted BPM from Manual: $bpm');
           }
         }
         // Fallback: try direct Value attribute on Tempo element
         if (bpm == null) {
           final tempoValue = tempoElement.getAttribute('Value');
-          debugPrint('[MetadataExtractor] Tempo direct Value attribute: $tempoValue');
           if (tempoValue != null) {
             bpm = double.tryParse(tempoValue);
-            debugPrint('[MetadataExtractor] Extracted BPM from Tempo Value: $bpm');
           }
         }
       }
@@ -171,23 +174,19 @@ class MetadataExtractor {
 
       // Extract key from ScaleInformation elements (iterate over all instances)
       final scaleInfoElements = root.findAllElements('ScaleInformation').toList();
-      debugPrint('[MetadataExtractor] Found ${scaleInfoElements.length} ScaleInformation element(s)');
       
       if (scaleInfoElements.isNotEmpty) {
         final scalePairs = <_ScalePair>[];
-        int filteredCount = 0;
         
         // Extract Root and Name from each ScaleInformation instance
-        for (int i = 0; i < scaleInfoElements.length; i++) {
-          final scaleInfoElement = scaleInfoElements[i];
-          
+        for (final scaleInfoElement in scaleInfoElements) {
           // Extract Root note (0-11)
           final rootElements = scaleInfoElement.findElements('Root');
           int? rootValue;
           if (rootElements.isNotEmpty) {
             final rootElement = rootElements.first;
             // Try Value attribute first, then text content
-            final rootValueStr = rootElement.getAttribute('Value') ?? rootElement.text.trim();
+            final rootValueStr = rootElement.getAttribute('Value') ?? rootElement.innerText.trim();
             if (rootValueStr.isNotEmpty) {
               rootValue = int.tryParse(rootValueStr);
             }
@@ -199,43 +198,24 @@ class MetadataExtractor {
           if (nameElements.isNotEmpty) {
             final nameElement = nameElements.first;
             // Try Value attribute first, then text content
-            final nameValueStr = nameElement.getAttribute('Value') ?? nameElement.text.trim();
+            final nameValueStr = nameElement.getAttribute('Value') ?? nameElement.innerText.trim();
             if (nameValueStr.isNotEmpty) {
               nameValue = int.tryParse(nameValueStr);
             }
           }
           
-          debugPrint('[MetadataExtractor] ScaleInformation[$i]: Root=$rootValue, Name=$nameValue');
-          
           // Only add non-zero pairs (0,0 means C Major default/unset)
           if (rootValue != null && nameValue != null) {
             if (rootValue != 0 || nameValue != 0) {
-              final rootNote = _getRootNote(rootValue);
-              final scaleType = _getScaleType(nameValue);
-              debugPrint('[MetadataExtractor]   -> Adding: ${rootNote ?? "?"} ${scaleType ?? "?"} (Root=$rootValue, Name=$nameValue)');
               scalePairs.add(_ScalePair(rootValue, nameValue));
-            } else {
-              filteredCount++;
-              debugPrint('[MetadataExtractor]   -> Filtered out (0,0 default): C Major');
             }
-          } else {
-            debugPrint('[MetadataExtractor]   -> Skipped (null values)');
           }
         }
-        
-        debugPrint('[MetadataExtractor] Collected ${scalePairs.length} non-zero scale pair(s), filtered $filteredCount (0,0) pair(s)');
         
         // Process the collected scale pairs
         if (scalePairs.isNotEmpty) {
           // Get unique pairs
           final uniquePairs = scalePairs.toSet();
-          debugPrint('[MetadataExtractor] Unique scale pairs: ${uniquePairs.length}');
-          
-          for (final pair in uniquePairs) {
-            final rootNote = _getRootNote(pair.root);
-            final scaleType = _getScaleType(pair.name);
-            debugPrint('[MetadataExtractor]   - ${rootNote ?? "?"} ${scaleType ?? "?"} (Root=${pair.root}, Name=${pair.name})');
-          }
           
           if (uniquePairs.length == 1) {
             // All non-zero instances have the same value
@@ -244,7 +224,6 @@ class MetadataExtractor {
             final scaleType = _getScaleType(pair.name);
             if (rootNote != null && scaleType != null) {
               key = '$rootNote $scaleType';
-              debugPrint('[MetadataExtractor] Result: Single scale -> "$key"');
             }
           } else {
             // Multiple different values - combine them with commas
@@ -258,14 +237,9 @@ class MetadataExtractor {
             }
             if (keyParts.isNotEmpty) {
               key = keyParts.join(', ');
-              debugPrint('[MetadataExtractor] Result: Multiple scales -> "$key"');
             }
           }
-        } else {
-          debugPrint('[MetadataExtractor] Result: No non-zero scale pairs found (all were 0,0 defaults)');
         }
-      } else {
-        debugPrint('[MetadataExtractor] No ScaleInformation elements found');
       }
 
       // Fallback: look for MusicalKey or KeySignature elements
@@ -273,7 +247,7 @@ class MetadataExtractor {
         final keyElements = root.findAllElements('MusicalKey');
         if (keyElements.isNotEmpty) {
           final keyElement = keyElements.first;
-          key = keyElement.getAttribute('Value') ?? keyElement.text;
+          key = keyElement.getAttribute('Value') ?? keyElement.innerText;
         }
       }
 
@@ -282,7 +256,7 @@ class MetadataExtractor {
         final keySigElements = root.findAllElements('KeySignature');
         if (keySigElements.isNotEmpty) {
           final keySigElement = keySigElements.first;
-          key = keySigElement.getAttribute('Value') ?? keySigElement.text;
+          key = keySigElement.getAttribute('Value') ?? keySigElement.innerText;
         }
       }
 
@@ -298,12 +272,94 @@ class MetadataExtractor {
         }
       }
 
-      final result = ProjectMetadata(bpm: bpm, key: key?.trim().isEmpty == true ? null : key?.trim());
-      debugPrint('[MetadataExtractor] Ableton extraction complete: BPM=$bpm, Key=$key');
-      return result;
+      return ProjectMetadata(
+        bpm: bpm,
+        key: key?.trim().isEmpty == true ? null : key?.trim(),
+        dawVersion: dawVersion,
+      );
     } catch (e) {
       // If parsing fails, return empty metadata
-      debugPrint('[MetadataExtractor] Error extracting from Ableton file: $e');
+      return ProjectMetadata();
+    }
+  }
+
+  /// Extracts version from Cubase .cpr file
+  /// Looks for hex pattern: 00 10 56 65 72 73 69 6F 6E (which is "00 10 Version")
+  /// Then extracts the version string that follows (e.g., " 13.0.4" -> "13")
+  static Future<ProjectMetadata> _extractFromCubaseFile(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (!await file.exists()) {
+        return ProjectMetadata();
+      }
+
+      // Read file as bytes
+      final bytes = await file.readAsBytes();
+      
+      // Hex pattern: 00 10 56 65 72 73 69 6F 6E (which is "00 10 Version" in ASCII)
+      final pattern = [0x00, 0x10, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E];
+      
+      // Find the pattern in the file
+      int? patternIndex;
+      for (int i = 0; i <= bytes.length - pattern.length; i++) {
+        bool found = true;
+        for (int j = 0; j < pattern.length; j++) {
+          if (bytes[i + j] != pattern[j]) {
+            found = false;
+            break;
+          }
+        }
+        if (found) {
+          patternIndex = i;
+          break;
+        }
+      }
+      
+      if (patternIndex == null) {
+        return ProjectMetadata();
+      }
+      
+      // Skip the pattern (9 bytes) and look for version string
+      // Version typically starts with a space (0x20) followed by digits and dots
+      int versionStart = patternIndex + pattern.length;
+      
+      // Find the start of the version (skip whitespace if any)
+      while (versionStart < bytes.length && bytes[versionStart] == 0x20) {
+        versionStart++;
+      }
+      
+      // Extract version string until we hit a null byte or non-printable character
+      final versionBytes = <int>[];
+      for (int i = versionStart; i < bytes.length; i++) {
+        final byte = bytes[i];
+        // Stop at null byte or non-printable characters (except space, dot, digits)
+        if (byte == 0x00 || (byte < 0x20 && byte != 0x09 && byte != 0x0A && byte != 0x0D)) {
+          break;
+        }
+        // Include space, dot, digits, and letters
+        if ((byte >= 0x20 && byte <= 0x7E) || byte == 0x09 || byte == 0x0A || byte == 0x0D) {
+          versionBytes.add(byte);
+        } else {
+          break;
+        }
+      }
+      
+      if (versionBytes.isEmpty) {
+        return ProjectMetadata();
+      }
+      
+      // Convert to string and extract major version
+      final versionString = utf8.decode(versionBytes).trim();
+      // Extract major version (e.g., "13.0.4" -> "13")
+      final parts = versionString.split('.');
+      String? dawVersion;
+      if (parts.isNotEmpty) {
+        dawVersion = parts[0].trim();
+      }
+      
+      return ProjectMetadata(dawVersion: dawVersion);
+    } catch (e) {
+      // If parsing fails, return empty metadata
       return ProjectMetadata();
     }
   }
@@ -340,7 +396,7 @@ class MetadataExtractor {
           final fileName = p.basename(entity.path).toLowerCase();
           if (patterns.any((p) => fileName.contains(p))) {
             try {
-              final content = await (entity as File).readAsString();
+              final content = await entity.readAsString();
               final trimmed = content.trim();
               final bpm = double.tryParse(trimmed);
               if (bpm != null && bpm > 0 && bpm < 1000) {
@@ -390,7 +446,7 @@ class MetadataExtractor {
           final fileName = p.basename(entity.path).toLowerCase();
           if (patterns.any((p) => fileName.contains(p))) {
             try {
-              final content = await (entity as File).readAsString();
+              final content = await entity.readAsString();
               final trimmed = content.trim();
               if (trimmed.isNotEmpty) {
                 return trimmed;
