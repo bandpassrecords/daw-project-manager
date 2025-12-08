@@ -108,3 +108,4 @@ msix_config:
   msix_version: 1.0.3.0
   logo_path: app_icon.ico
   capabilities: "internetClient"
+  install_certificate: false
