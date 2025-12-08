@@ -17,7 +17,7 @@ import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../repository/project_repository.dart';
 
-const String kAppVersion = '1.0.2';
+const String kAppVersion = '1.0.3';
 
 // WIDGET CORRIGIDO: Botões de controle da janela usando window_manager
 class WindowButtons extends StatelessWidget {

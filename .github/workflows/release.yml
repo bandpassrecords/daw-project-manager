@@ -71,10 +71,21 @@ jobs:
             os_name: Windows
             command: flutter build windows --release
             asset_path: Output/DAW_Project_Manager_Installer_${{ github.ref_name }}.exe 
-            asset_name: DAW_Project_Manager_Installer_Windows.exe
+            asset_name: DAW_Project_Manager_Installer.exe
             is_zip: false 
             asset_content_type: application/vnd.microsoft.portable-executable 
             is_installer: true
+
+          # --- CONFIGURAÇÃO WINDOWS (MSIX) ---
+          - os: windows-latest
+            os_name: Windows (MSIX)
+            command: flutter build windows --release
+            asset_path: build/windows/x64/runner/Release/daw_project_manager.msix
+            asset_name: DAW_Project_Manager.msix
+            is_zip: false
+            asset_content_type: application/msix
+            is_installer: false
+            is_msix: true
             
     steps:
       - uses: actions/checkout@v4
@@ -103,6 +114,13 @@ jobs:
           # macOS: Compacta o bundle .app
           cd build/macos/Build/Products/Release
           zip -r DAW_Project_Manager-${{ github.ref_name }}.zip daw_project_manager.app
+
+      # 5a. Cria o pacote MSIX (Apenas para Windows MSIX)
+      - name: Create MSIX Package
+        if: matrix.is_msix == true
+        run: |
+          flutter pub add --dev msix
+          flutter pub run msix:create
           
       # 5. Instala e Compila o Instalador (Apenas para Windows)
       - name: Install Inno Setup
