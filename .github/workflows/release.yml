@@ -1,5 +1,3 @@
-# .github/workflows/release.yaml
-
 name: Flutter CI/CD (Windows & macOS)
 
 # PERMISSÃO: Necessária para que a ação 'upload-release-asset' funcione.
@@ -40,10 +38,15 @@ jobs:
       - name: Run Flutter Upgrade
         run: flutter upgrade
 
-      - name: Get dependencies & Build Test
-        run: |
-          flutter pub get
-          flutter build windows --release
+      - name: Get dependencies
+        run: flutter pub get
+
+      # NEW: Generate code with build_runner
+      - name: Generate Hive Adapters
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build Test
+        run: flutter build windows --release
 
 
   # Job UNIFICADO de Release/Upload (usando Matrix para Windows e macOS)
@@ -102,6 +105,10 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      # NEW: Generate code with build_runner
+      - name: Generate Hive Adapters
+        run: dart run build_runner build --delete-conflicting-outputs
 
       # 3. Build
       - name: Build ${{ matrix.os_name }} Executable
