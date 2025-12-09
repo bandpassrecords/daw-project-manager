@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../models/music_project.dart';
 import '../models/scan_root.dart';
+import '../models/release.dart';
 import '../repository/project_repository.dart';
 import '../services/scanner_service.dart';
 
@@ -116,3 +117,9 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
 });
 
 final dateFormatProvider = Provider<DateFormat>((ref) => DateFormat.yMMMd().add_jm());
+
+// Releases Provider
+final releasesProvider = StreamProvider<List<Release>>((ref) async* {
+  final repo = await ref.watch(repositoryProvider.future);
+  yield* repo.watchAllReleases();
+});

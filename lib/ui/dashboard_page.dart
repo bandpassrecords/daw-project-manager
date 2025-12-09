@@ -12,6 +12,7 @@ import 'package:path/path.dart' as path; // 🚨 NOVO IMPORT
 
 import '../services/scanner_service.dart';
 import 'project_detail_page.dart';
+import 'releases_tab_page.dart';
 
 import '../models/music_project.dart';
 import '../providers/providers.dart';
@@ -66,8 +67,9 @@ class DashboardPage extends ConsumerStatefulWidget {
   ConsumerState<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _DashboardPageState extends ConsumerState<DashboardPage> {
+class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTickerProviderStateMixin {
   bool _scanning = false;
+  late TabController _tabController;
   
   // 1. FocusNode para a barra de pesquisa
   final FocusNode _searchFocusNode = FocusNode();
@@ -76,11 +78,19 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   final FocusNode _globalRawKeyListenerFocusNode = FocusNode();
 
   @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
   void dispose() {
+    _tabController.dispose();
     _searchFocusNode.dispose(); 
-    _globalRawKeyListenerFocusNode.dispose(); 
+    _globalRawKeyListenerFocusNode.dispose();
     super.dispose();
   }
+
 
   // MÉTODO FINAL: Inclui Ctrl+F e Ctrl+R
   void _handleRawKeyEvent(RawKeyEvent event) {
@@ -332,7 +342,27 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   ),
                 ),
               ),
-            Expanded(child: _PlutoProjectsTable(projects: projects, dateFormat: dateFormat)),
+            // Tab Bar
+            TabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(icon: Icon(Icons.library_music), text: 'Projects'),
+                Tab(icon: Icon(Icons.album), text: 'Releases'),
+              ],
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white54,
+              indicatorColor: const Color(0xFF5A6B7A),
+            ),
+            // Tab Bar View
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _PlutoProjectsTable(projects: projects, dateFormat: dateFormat),
+                  const ReleasesTabPage(),
+                ],
+              ),
+            ),
           ],
         ),
       ),

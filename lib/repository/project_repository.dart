@@ -6,17 +6,25 @@ import 'package:uuid/uuid.dart';
 
 import '../models/music_project.dart';
 import '../models/scan_root.dart';
+import '../models/release.dart';
+import '../models/release_file.dart';
 import '../services/metadata_extractor.dart';
 
 class ProjectRepository {
   static const projectsBoxName = 'projects';
   static const rootsBoxName = 'roots';
+  static const releasesBoxName = 'releases';
 
   final Box<MusicProject> projectsBox;
   final Box<ScanRoot> rootsBox;
+  final Box<Release> releasesBox;
   final _uuid = const Uuid();
 
-  ProjectRepository({required this.projectsBox, required this.rootsBox});
+  ProjectRepository({
+    required this.projectsBox,
+    required this.rootsBox,
+    required this.releasesBox,
+  });
 
   static Future<ProjectRepository> init() async {
     await Hive.initFlutter();
@@ -26,10 +34,21 @@ class ProjectRepository {
     if (!Hive.isAdapterRegistered(2)) {
       Hive.registerAdapter(ScanRootAdapter());
     }
+    if (!Hive.isAdapterRegistered(3)) {
+      Hive.registerAdapter(ReleaseAdapter());
+    }
+    if (!Hive.isAdapterRegistered(4)) {
+      Hive.registerAdapter(ReleaseFileAdapter());
+    }
 
     final projects = await Hive.openBox<MusicProject>(projectsBoxName);
     final roots = await Hive.openBox<ScanRoot>(rootsBoxName);
-    return ProjectRepository(projectsBox: projects, rootsBox: roots);
+    final releases = await Hive.openBox<Release>(releasesBoxName);
+    return ProjectRepository(
+      projectsBox: projects,
+      rootsBox: roots,
+      releasesBox: releases,
+    );
   }
 
   // Roots
@@ -141,4 +160,36 @@ class ProjectRepository {
     }
     await projectsBox.deleteAll(toDelete);
   }
+
+  // Releases
+  Future<void> addRelease(Release release) async {
+    await releasesBox.put(release.id, release);
+  }
+
+  Future<void> updateRelease(Release release) async {
+    await releasesBox.put(release.id, release);
+  }
+
+  Future<void> deleteRelease(String releaseId) async {
+    await releasesBox.delete(releaseId);
+  }
+
+  List<Release> getAllReleases() => releasesBox.values.toList(growable: false);
+
+  Release? getReleaseById(String id) {
+    try {
+      return releasesBox.get(id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Stream<List<Release>> watchAllReleases() async* {
+    // Emit initial value immediately
+    yield releasesBox.values.toList();
+    // Then watch for changes
+    yield* releasesBox.watch().map((_) => releasesBox.values.toList());
+  }
+
+  Stream<BoxEvent> watchReleases() => releasesBox.watch();
 }
