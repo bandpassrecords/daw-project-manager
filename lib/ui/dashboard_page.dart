@@ -272,129 +272,149 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Ações de Root e Scan
-                  Row(
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: isScanning
-                            ? null
-                            : () async {
-                                  final path = await FilePicker.platform.getDirectoryPath(dialogTitle: 'Select a projects folder');
-                                  if (path != null) {
-                                    setState(() => _scanning = true);
-                                    try {
-                                      final repo = await ref.read(repositoryProvider.future);
-                                      await repo.addRoot(path);
+                  Flexible(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: ElevatedButton.icon(
+                            onPressed: isScanning
+                                ? null
+                                : () async {
+                                      final path = await FilePicker.platform.getDirectoryPath(dialogTitle: 'Select a projects folder');
+                                      if (path != null) {
+                                        setState(() => _scanning = true);
+                                        try {
+                                          final repo = await ref.read(repositoryProvider.future);
+                                          await repo.addRoot(path);
+                                          await _scanAll();
+                                        } finally {
+                                          if (mounted) setState(() => _scanning = false);
+                                        }
+                                      }
+                                    },
+                            icon: isScanning
+                                ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                : const Icon(Icons.create_new_folder_outlined),
+                            label: const Text('Add Projects Folder'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Flexible(
+                          child: ElevatedButton.icon(
+                            onPressed: isScanning
+                                ? null
+                                : () async {
                                       await _scanAll();
-                                    } finally {
-                                      if (mounted) setState(() => _scanning = false);
-                                    }
-                                  }
-                                },
-                        icon: isScanning
-                            ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                            : const Icon(Icons.create_new_folder_outlined),
-                        label: const Text('Add Projects Folder'),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton.icon(
-                        onPressed: isScanning
-                            ? null
-                            : () async {
-                                  await _scanAll();
-                                },
-                        icon: isScanning
-                            ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                            : const Icon(Icons.refresh),
-                        label: Text(isScanning ? 'Scanning…' : 'Rescan'),
-                      ),
-                    ],
+                                    },
+                            icon: isScanning
+                                ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                : const Icon(Icons.refresh),
+                            label: Text(isScanning ? 'Scanning…' : 'Rescan'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   
                   // Área de Pesquisa e Filtro
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 250,
-                        child: TextField(
-                          // Associar o FocusNode ao TextField
-                          focusNode: _searchFocusNode, 
-                          controller: TextEditingController(text: currentParams.searchText)
-                            ..selection = TextSelection.fromPosition(TextPosition(offset: currentParams.searchText.length)),
-                          decoration: const InputDecoration(
-                            hintText: 'Search by name...',
-                            isDense: true,
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.search),
+                  Flexible(
+                    flex: 2,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: SizedBox(
+                            width: 250,
+                            child: TextField(
+                              // Associar o FocusNode ao TextField
+                              focusNode: _searchFocusNode, 
+                              controller: TextEditingController(text: currentParams.searchText)
+                                ..selection = TextSelection.fromPosition(TextPosition(offset: currentParams.searchText.length)),
+                              decoration: const InputDecoration(
+                                hintText: 'Search by name...',
+                                isDense: true,
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.search),
+                              ),
+                              onChanged: (text) {
+                                ref.read(queryParamsNotifierProvider.notifier).setSearchText(text);
+                              },
+                            ),
                           ),
-                          onChanged: (text) {
-                            ref.read(queryParamsNotifierProvider.notifier).setSearchText(text);
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          tooltip: 'Toggle sort',
+                          onPressed: () {
+                            ref.read(queryParamsNotifierProvider.notifier).toggleSortDesc();
+                          },
+                          icon: Icon(currentParams.sortDesc ? Icons.sort_by_alpha : Icons.sort),
+                        ),
+                        const SizedBox(width: 8),
+                        // Exibe o contador de projetos
+                        Flexible(
+                          child: repoAsync.when(
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
+                            data: (repo) => Text(
+                              'Roots: ${repo.getRoots().length}   Projects: ${projects.length}',
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Builder(
+                          builder: (context) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  tooltip: 'Clear Library (projects & roots)',
+                                  icon: const Icon(Icons.delete_forever),
+                                  onPressed: () async {
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        backgroundColor: const Color(0xFF2B2D31),
+                                        title: const Text('Clear Library'),
+                                        content: const Text('This will remove all saved projects and source folders. Continue?'),
+                                        actions: [
+                                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                          ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear')),
+                                        ],
+                                      ),
+                                    );
+                                    if (confirm == true) {
+                                      final repo = await ref.read(repositoryProvider.future);
+                                      await repo.clearAllData();
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Library cleared.')));
+                                      }
+                                    }
+                                  },
+                                ),
+                                const SizedBox(width: 4),
+                                // Versão também na barra de ações (à direita do ícone de lixeira)
+                                const Text(
+                                  'v$kAppVersion',
+                                  style: TextStyle(color: Colors.white54, fontSize: 12),
+                                ),
+                              ],
+                            );
                           },
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        tooltip: 'Toggle sort',
-                        onPressed: () {
-                          ref.read(queryParamsNotifierProvider.notifier).toggleSortDesc();
-                        },
-                        icon: Icon(currentParams.sortDesc ? Icons.sort_by_alpha : Icons.sort),
-                      ),
-                      const SizedBox(width: 8),
-                      // Exibe o contador de projetos
-                      repoAsync.when(
-                        loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
-                        data: (repo) => Text('Roots: ${repo.getRoots().length}   Projects: ${projects.length}'),
-                      ),
-                      const SizedBox(width: 8),
-                      Builder(
-                        builder: (context) {
-                          return Row(
-                            children: [
-                              IconButton(
-                                tooltip: 'Clear Library (projects & roots)',
-                                icon: const Icon(Icons.delete_forever),
-                                onPressed: () async {
-                                  final confirm = await showDialog<bool>(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      backgroundColor: const Color(0xFF2B2D31),
-                                      title: const Text('Clear Library'),
-                                      content: const Text('This will remove all saved projects and source folders. Continue?'),
-                                      actions: [
-                                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                                        ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear')),
-                                      ],
-                                    ),
-                                  );
-                                  if (confirm == true) {
-                                    final repo = await ref.read(repositoryProvider.future);
-                                    await repo.clearAllData();
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Library cleared.')));
-                                    }
-                                  }
-                                },
-                              ),
-                              const SizedBox(width: 4),
-                              // Versão também na barra de ações (à direita do ícone de lixeira)
-                              const Text(
-                                'v$kAppVersion',
-                                style: TextStyle(color: Colors.white54, fontSize: 12),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),

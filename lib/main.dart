@@ -47,10 +47,11 @@ void main() async {
   await windowManager.ensureInitialized();
 
   // 2. Configurações da Janela
-  const initialSize = Size(1920, 1080);
+  const initialSize = Size(1800, 1000); // Fits comfortably on 1080p screens
+  const minimumSize = Size(800, 600); // Allow resizing to a smaller minimum size
   WindowOptions windowOptions = WindowOptions(
     size: initialSize,
-    minimumSize: initialSize,
+    minimumSize: minimumSize,
     center: true,
     title: "DAW Project Manager",
     titleBarStyle: kDebugMode ? TitleBarStyle.normal : TitleBarStyle.hidden,
