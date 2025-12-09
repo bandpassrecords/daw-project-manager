@@ -90,6 +90,43 @@ class ProjectRepository {
   }
 
   Future<void> removeRoot(String id) async {
+    final root = rootsBox.get(id);
+    if (root == null) return;
+    
+    // Get the root path and normalize it for comparison
+    final rootPath = p.normalize(root.path);
+    // Ensure root path ends with separator for proper matching
+    final rootPathNormalized = rootPath.endsWith(p.separator) 
+        ? rootPath 
+        : rootPath + p.separator;
+    
+    // Remove all projects that belong to this root folder
+    // Note: projectsBox is already profile-specific, so we only operate on current profile's projects
+    final projectsToDelete = <String>[];
+    
+    for (final project in projectsBox.values) {
+      try {
+        // Normalize project file path for comparison
+        final projectPath = p.normalize(project.filePath);
+        
+        // Check if project's file path is within the root folder
+        // This is safe because projectsBox is profile-specific (${profileId}_projects)
+        if (projectPath.startsWith(rootPathNormalized) || 
+            projectPath.startsWith(rootPath + p.separator)) {
+          projectsToDelete.add(project.id);
+        }
+      } catch (_) {
+        // If path normalization fails, skip this project
+        // Better to be safe and not delete than to delete incorrectly
+      }
+    }
+    
+    // Delete all projects from this root
+    if (projectsToDelete.isNotEmpty) {
+      await projectsBox.deleteAll(projectsToDelete);
+    }
+    
+    // Remove the root after deleting projects
     await rootsBox.delete(id);
   }
 

@@ -546,6 +546,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                           onDeleted: () async {
                             final repo = await ref.read(repositoryProvider.future);
                             await repo.removeRoot(r.id);
+                            // Invalidate repository to ensure fresh data
+                            ref.invalidate(repositoryProvider);
+                            // Wait for repository to reload before scanning
+                            await ref.read(repositoryProvider.future);
+                            // Trigger a scan to update the UI and remove projects
+                            await _scanAll();
                           },
                           backgroundColor: const Color(0xFF2B2D31),
                           labelStyle: const TextStyle(color: Colors.white70),
