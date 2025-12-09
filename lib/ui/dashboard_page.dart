@@ -13,10 +13,13 @@ import 'package:path/path.dart' as path; // 🚨 NOVO IMPORT
 import '../services/scanner_service.dart';
 import 'project_detail_page.dart';
 import 'releases_tab_page.dart';
+import 'release_detail_page.dart';
 
 import '../models/music_project.dart';
+import '../models/release.dart';
 import '../providers/providers.dart';
 import '../repository/project_repository.dart';
+import 'package:uuid/uuid.dart';
 
 const String kAppVersion = '1.0.3';
 
@@ -139,6 +142,70 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
       }
     } finally {
       if (mounted) setState(() => _scanning = false);
+    }
+  }
+
+  Set<String> _selectedProjectIds = {};
+
+
+  Future<void> _createReleaseFromSelectedProjects(BuildContext context, WidgetRef ref, List<MusicProject> selectedProjects) async {
+    if (selectedProjects.isEmpty) return;
+
+    String? releaseTitle;
+    
+    // If single project, pre-fill title; otherwise show dialog
+    if (selectedProjects.length == 1) {
+      releaseTitle = selectedProjects.first.displayName;
+    } else {
+      final result = await showDialog<String>(
+        context: context,
+        builder: (context) => _ReleaseTitleDialog(),
+      );
+      if (result == null || result.trim().isEmpty) return;
+      releaseTitle = result.trim();
+    }
+
+    final selectedProjectIds = selectedProjects.map((p) => p.id).toList();
+    await _createRelease(context, ref, selectedProjectIds, releaseTitle!);
+    
+    // Clear selection after creating release
+    setState(() {
+      _selectedProjectIds.clear();
+    });
+  }
+
+  Future<void> _createRelease(BuildContext context, WidgetRef ref, List<String> selectedProjectIds, String releaseTitle) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final newRelease = Release(
+        id: const Uuid().v4(),
+        title: releaseTitle,
+        trackIds: selectedProjectIds,
+        releaseDate: DateTime.now(),
+      );
+      await repo.addRelease(newRelease);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Release "$releaseTitle" created successfully.')),
+        );
+        // Switch to releases tab and navigate to the new release
+        _tabController.animateTo(1);
+        await Future.delayed(const Duration(milliseconds: 300));
+        if (mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ReleaseDetailPage(releaseId: newRelease.id),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create release: $e')),
+        );
+      }
     }
   }
 
@@ -358,7 +425,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _PlutoProjectsTable(projects: projects, dateFormat: dateFormat),
+                  _PlutoProjectsTableWithSelection(
+                    projects: projects,
+                    dateFormat: dateFormat,
+                    onCreateRelease: (selectedProjects) {
+                      _createReleaseFromSelectedProjects(context, ref, selectedProjects);
+                    },
+                  ),
                   const ReleasesTabPage(),
                 ],
               ),
@@ -370,10 +443,103 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
   }
 } 
 
+class _PlutoProjectsTableWithSelection extends ConsumerStatefulWidget {
+  final List<MusicProject> projects;
+  final DateFormat dateFormat;
+  final Function(List<MusicProject>) onCreateRelease;
+
+  const _PlutoProjectsTableWithSelection({
+    required this.projects,
+    required this.dateFormat,
+    required this.onCreateRelease,
+  });
+
+  @override
+  ConsumerState<_PlutoProjectsTableWithSelection> createState() => _PlutoProjectsTableWithSelectionState();
+}
+
+class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjectsTableWithSelection> {
+  final Set<String> _selectedProjectIds = {};
+
+  void _clearSelection() {
+    setState(() {
+      _selectedProjectIds.clear();
+    });
+  }
+
+  void _toggleProjectSelection(String projectId) {
+    setState(() {
+      if (_selectedProjectIds.contains(projectId)) {
+        _selectedProjectIds.remove(projectId);
+      } else {
+        _selectedProjectIds.add(projectId);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: _PlutoProjectsTable(
+            projects: widget.projects,
+            dateFormat: widget.dateFormat,
+            selectedIds: _selectedProjectIds,
+            onToggleSelection: _toggleProjectSelection,
+          ),
+        ),
+        // Selection action bar
+        if (_selectedProjectIds.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: const Color(0xFF2B2D31),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${_selectedProjectIds.length} project${_selectedProjectIds.length == 1 ? '' : 's'} selected',
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: _clearSelection,
+                      child: const Text('Clear Selection'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.album),
+                      label: const Text('Create Release'),
+                      onPressed: () {
+                        final selectedProjects = widget.projects
+                            .where((p) => _selectedProjectIds.contains(p.id))
+                            .toList();
+                        widget.onCreateRelease(selectedProjects);
+                        _clearSelection();
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 class _PlutoProjectsTable extends StatefulWidget {
   final List<MusicProject> projects;
   final DateFormat dateFormat;
-  const _PlutoProjectsTable({required this.projects, required this.dateFormat});
+  final Set<String> selectedIds;
+  final Function(String) onToggleSelection;
+  const _PlutoProjectsTable({
+    required this.projects,
+    required this.dateFormat,
+    required this.selectedIds,
+    required this.onToggleSelection,
+  });
 
   @override
   State<_PlutoProjectsTable> createState() => _PlutoProjectsTableState();
@@ -391,16 +557,19 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
               : p.dawType!)
           : '';
       
-      return PlutoRow(cells: {
-        'name': PlutoCell(value: p.displayName),
-        'status': PlutoCell(value: p.status),
-        'dawType': PlutoCell(value: dawDisplay),
-        'bpm': PlutoCell(value: p.bpm?.toString() ?? ''),
-        'key': PlutoCell(value: p.musicalKey ?? ''),
-        'lastModified': PlutoCell(value: widget.dateFormat.format(p.lastModifiedAt)),
-        'launch': PlutoCell(value: ''),
-        'data': PlutoCell(value: p),
-      });
+      return PlutoRow(
+        cells: {
+          'checkbox': PlutoCell(value: ''), // Placeholder for checkbox column
+          'name': PlutoCell(value: p.displayName),
+          'status': PlutoCell(value: p.status),
+          'dawType': PlutoCell(value: dawDisplay),
+          'bpm': PlutoCell(value: p.bpm?.toString() ?? ''),
+          'key': PlutoCell(value: p.musicalKey ?? ''),
+          'lastModified': PlutoCell(value: widget.dateFormat.format(p.lastModifiedAt)),
+          'launch': PlutoCell(value: ''),
+          'data': PlutoCell(value: p),
+        },
+      );
     }).toList();
   }
 
@@ -408,14 +577,13 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
   void didUpdateWidget(_PlutoProjectsTable oldWidget) {
     super.didUpdateWidget(oldWidget);
     
-    if (oldWidget.projects != widget.projects) {
-      
-      if (stateManager != null) { 
-        
+    if (oldWidget.projects != widget.projects || oldWidget.selectedIds != widget.selectedIds) {
+      if (stateManager != null) {
         final newRows = _mapProjectsToRows(widget.projects);
-        
         stateManager!.removeRows(stateManager!.rows, notify: false);
         stateManager!.insertRows(0, newRows);
+        // Force rebuild to update checkbox states
+        stateManager!.notifyListeners();
       }
     }
   }
@@ -423,6 +591,30 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
   @override
   Widget build(BuildContext context) {
     final columns = [
+      PlutoColumn(
+        title: '',
+        field: 'checkbox',
+        type: PlutoColumnType.text(),
+        width: 50,
+        minWidth: 50,
+        frozen: PlutoColumnFrozen.start,
+        enableColumnDrag: false,
+        enableContextMenu: false,
+        enableFilterMenuItem: false,
+        enableSorting: false,
+        renderer: (rendererContext) {
+          final project = rendererContext.row.cells['data']?.value as MusicProject?;
+          if (project == null) return const SizedBox.shrink();
+          
+          final isSelected = widget.selectedIds.contains(project.id);
+          return Checkbox(
+            value: isSelected,
+            onChanged: (value) {
+              widget.onToggleSelection(project.id);
+            },
+          );
+        },
+      ),
       PlutoColumn(
         title: 'Name',
         field: 'name',
@@ -613,8 +805,64 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
         ),
       ),
       onRowChecked: null,
-      onSelected: null, 
+      onSelected: null,
       createFooter: (stateManager) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _ReleaseTitleDialog extends StatefulWidget {
+  @override
+  State<_ReleaseTitleDialog> createState() => _ReleaseTitleDialogState();
+}
+
+class _ReleaseTitleDialogState extends State<_ReleaseTitleDialog> {
+  final _titleController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: const Color(0xFF2B2D31),
+      title: const Text('Enter Release Title'),
+      content: TextField(
+        controller: _titleController,
+        decoration: const InputDecoration(
+          labelText: 'Release Title',
+          hintText: 'Enter release title',
+        ),
+        autofocus: true,
+        onSubmitted: (value) {
+          if (value.trim().isNotEmpty) {
+            Navigator.pop(context, value.trim());
+          }
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _titleController.text.trim().isEmpty
+              ? null
+              : () => Navigator.pop(context, _titleController.text.trim()),
+          child: const Text('Create'),
+        ),
+      ],
     );
   }
 }

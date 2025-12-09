@@ -59,6 +59,28 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
     super.dispose();
   }
 
+  Future<void> _saveReleaseDate(Release release, DateTime? date) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final updatedRelease = release.copyWith(
+        releaseDate: date,
+        clearReleaseDate: date == null,
+      );
+      await repo.updateRelease(updatedRelease);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(date != null ? 'Release date saved.' : 'Release date cleared.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save release date: $e')),
+        );
+      }
+    }
+  }
+
   String _getFileType(String fileName) {
     final ext = path.extension(fileName).toLowerCase();
     if (['.wav', '.mp3', '.flac', '.aac', '.ogg', '.m4a'].contains(ext)) {
@@ -378,7 +400,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
         try {
           final release = releasesList.firstWhere((r) => r.id == widget.releaseId);
 
-          // Sync controllers and state with release data
+          // Sync controllers and state with release data (only on initial load)
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (_titleController.text != release.title) {
               _titleController.text = release.title;
@@ -391,7 +413,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                 _artworkImagePath = release.artworkImagePath;
               });
             }
-            // Only hydrate from storage if we don't have a local edit in progress.
+            // Only set release date from storage if we haven't loaded it yet
             if (_releaseDate == null && release.releaseDate != null) {
               setState(() {
                 _releaseDate = release.releaseDate;
@@ -423,6 +445,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                 description: _descriptionController.text,
                 artworkImagePath: _artworkImagePath,
                 releaseDate: _releaseDate,
+                clearReleaseDate: _releaseDate == null && release.releaseDate != null,
               );
               await repo.updateRelease(updatedRelease);
               if (mounted) {
@@ -505,6 +528,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                               setState(() {
                                 _releaseDate = null;
                               });
+                              // Auto-save the cleared date immediately
+                              _saveReleaseDate(release, null);
                             },
                             tooltip: 'Clear date',
                           ),
@@ -519,8 +544,11 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                             );
                             if (picked != null) {
                               setState(() {
-                                _releaseDate = picked;
+                                // Normalize to date only (remove time component)
+                                _releaseDate = DateTime(picked.year, picked.month, picked.day);
                               });
+                              // Auto-save the release date immediately
+                              _saveReleaseDate(release, DateTime(picked.year, picked.month, picked.day));
                             }
                           },
                           tooltip: 'Pick date',

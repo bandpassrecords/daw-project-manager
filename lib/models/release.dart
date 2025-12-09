@@ -44,13 +44,16 @@ class Release {
     String? description,
     List<String>? trackIds,
     List<ReleaseFile>? files,
+    bool clearReleaseDate = false,
+    bool clearArtworkImagePath = false,
+    bool clearDescription = false,
   }) {
     return Release(
       id: id ?? this.id,
       title: title ?? this.title,
-      releaseDate: releaseDate ?? this.releaseDate,
-      artworkImagePath: artworkImagePath ?? this.artworkImagePath,
-      description: description ?? this.description,
+      releaseDate: clearReleaseDate ? null : (releaseDate ?? this.releaseDate),
+      artworkImagePath: clearArtworkImagePath ? null : (artworkImagePath ?? this.artworkImagePath),
+      description: clearDescription ? null : (description ?? this.description),
       trackIds: trackIds ?? this.trackIds,
       files: files ?? this.files,
     );
