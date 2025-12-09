@@ -69,10 +69,13 @@ void main() async {
   // NOVO: 4. Configuração do Riverpod e Auto-Scan
   final container = ProviderContainer();
   try {
-    // 4a. Pré-carrega o Repositório Hive (o FutureProvider)
+    // 4a. Pré-carrega o ProfileRepository primeiro
+    final profileRepo = await container.read(profileRepositoryProvider.future);
+    
+    // 4b. Pré-carrega o ProjectRepository (que depende do ProfileRepository)
     final repo = await container.read(repositoryProvider.future);
     
-    // 4b. Executa o Scan Inicial em segundo plano (não aguardamos o Future)
+    // 4c. Executa o Scan Inicial em segundo plano (não aguardamos o Future)
     // O await repo... em cima garante que o Hive está pronto antes do scan.
     _runInitialScan(repo, container);
     

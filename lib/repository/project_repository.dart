@@ -10,24 +10,23 @@ import '../models/release.dart';
 import '../models/release_file.dart';
 import '../services/metadata_extractor.dart';
 import '../utils/app_paths.dart';
+import 'profile_repository.dart';
 
 class ProjectRepository {
-  static const projectsBoxName = 'projects';
-  static const rootsBoxName = 'roots';
-  static const releasesBoxName = 'releases';
-
+  final String profileId;
   final Box<MusicProject> projectsBox;
   final Box<ScanRoot> rootsBox;
   final Box<Release> releasesBox;
   final _uuid = const Uuid();
 
   ProjectRepository({
+    required this.profileId,
     required this.projectsBox,
     required this.rootsBox,
     required this.releasesBox,
   });
 
-  static Future<ProjectRepository> init() async {
+  static Future<ProjectRepository> init(ProfileRepository profileRepo) async {
     // Initialize Hive with LocalAppData directory
     final appDataPath = await getLocalAppDataPath();
     Hive.init(appDataPath);
@@ -45,10 +44,39 @@ class ProjectRepository {
       Hive.registerAdapter(ReleaseFileAdapter());
     }
 
-    final projects = await Hive.openBox<MusicProject>(projectsBoxName);
-    final roots = await Hive.openBox<ScanRoot>(rootsBoxName);
-    final releases = await Hive.openBox<Release>(releasesBoxName);
+    // Get current profile
+    final currentProfile = profileRepo.getCurrentProfile();
+    if (currentProfile == null) {
+      throw Exception('No active profile found');
+    }
+    
+    final profileId = currentProfile.id;
+    
+    // Use profile-specific box names
+    final projects = await Hive.openBox<MusicProject>('${profileId}_projects');
+    final roots = await Hive.openBox<ScanRoot>('${profileId}_roots');
+    final releases = await Hive.openBox<Release>('${profileId}_releases');
+    
     return ProjectRepository(
+      profileId: profileId,
+      projectsBox: projects,
+      rootsBox: roots,
+      releasesBox: releases,
+    );
+  }
+  
+  /// Reinitialize with a different profile
+  static Future<ProjectRepository> initWithProfile(ProfileRepository profileRepo, String profileId) async {
+    final appDataPath = await getLocalAppDataPath();
+    Hive.init(appDataPath);
+    
+    // Use profile-specific box names
+    final projects = await Hive.openBox<MusicProject>('${profileId}_projects');
+    final roots = await Hive.openBox<ScanRoot>('${profileId}_roots');
+    final releases = await Hive.openBox<Release>('${profileId}_releases');
+    
+    return ProjectRepository(
+      profileId: profileId,
       projectsBox: projects,
       rootsBox: roots,
       releasesBox: releases,

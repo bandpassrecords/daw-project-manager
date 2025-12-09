@@ -7,11 +7,43 @@ import 'package:intl/intl.dart';
 import '../models/music_project.dart';
 import '../models/scan_root.dart';
 import '../models/release.dart';
+import '../models/profile.dart';
 import '../repository/project_repository.dart';
+import '../repository/profile_repository.dart';
 import '../services/scanner_service.dart';
 
+// Profile Repository Provider
+final profileRepositoryProvider = FutureProvider<ProfileRepository>((ref) async {
+  return ProfileRepository.init();
+});
+
+// Current Profile Provider
+final currentProfileProvider = StreamProvider<Profile?>((ref) async* {
+  final profileRepo = await ref.watch(profileRepositoryProvider.future);
+  final currentId = profileRepo.getCurrentProfileId();
+  if (currentId != null) {
+    yield profileRepo.getProfileById(currentId);
+  } else {
+    yield null;
+  }
+  
+  // Watch for profile changes
+  yield* profileRepo.watchProfiles().asyncMap((_) async {
+    final currentId = profileRepo.getCurrentProfileId();
+    return currentId != null ? profileRepo.getProfileById(currentId) : null;
+  });
+});
+
+// All Profiles Provider
+final allProfilesProvider = StreamProvider<List<Profile>>((ref) async* {
+  final profileRepo = await ref.watch(profileRepositoryProvider.future);
+  yield* profileRepo.watchAllProfiles();
+});
+
+// Project Repository Provider - depends on ProfileRepository
 final repositoryProvider = FutureProvider<ProjectRepository>((ref) async {
-  return ProjectRepository.init();
+  final profileRepo = await ref.watch(profileRepositoryProvider.future);
+  return ProjectRepository.init(profileRepo);
 });
 
 final rootsWatchProvider = StreamProvider<void>((ref) async* {
@@ -143,3 +175,39 @@ class InitialScanNotifier extends Notifier<bool> {
     state = false;
   }
 }
+
+// Profile switching state provider
+final profileSwitchingProvider = NotifierProvider<ProfileSwitchingNotifier, bool>(() {
+  return ProfileSwitchingNotifier();
+});
+
+class ProfileSwitchingNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    return false;
+  }
+  
+  void setSwitching(bool switching) {
+    state = switching;
+  }
+  
+  void complete() {
+    state = false;
+  }
+}
+
+// Profile switching notifier
+class ProfileSwitchNotifier extends Notifier<String?> {
+  @override
+  String? build() {
+    return null;
+  }
+  
+  void setProfileId(String? profileId) {
+    state = profileId;
+  }
+}
+
+final profileSwitchProvider = NotifierProvider<ProfileSwitchNotifier, String?>(() {
+  return ProfileSwitchNotifier();
+});

@@ -14,6 +14,7 @@ import '../services/scanner_service.dart';
 import 'project_detail_page.dart';
 import 'releases_tab_page.dart';
 import 'release_detail_page.dart';
+import 'profile_manager_page.dart';
 
 import '../models/music_project.dart';
 import '../models/release.dart';
@@ -220,7 +221,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     final currentParams = ref.watch(queryParamsNotifierProvider);
     final projects = ref.watch(projectsProvider);
     final initialScanning = ref.watch(initialScanStateProvider);
+    final isProfileSwitching = ref.watch(profileSwitchingProvider);
     final isScanning = _scanning || initialScanning;
+    final isAnyOperation = isScanning || isProfileSwitching;
 
     // RawKeyboardListener no topo.
     return Stack(
@@ -260,6 +263,62 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                         ),
                       ),
                       const Spacer(), // Espaçador para empurrar os botões para a direita
+                      // Profile switcher button - always show to allow profile management
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final currentProfileAsync = ref.watch(currentProfileProvider);
+                          
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: currentProfileAsync.when(
+                              loading: () => TextButton.icon(
+                                icon: const Icon(Icons.person, size: 18, color: Colors.white70),
+                                label: const Text(
+                                  'Profile',
+                                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const ProfileManagerPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              error: (_, __) => TextButton.icon(
+                                icon: const Icon(Icons.person, size: 18, color: Colors.white70),
+                                label: const Text(
+                                  'Profile',
+                                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const ProfileManagerPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              data: (currentProfile) {
+                                return TextButton.icon(
+                                  icon: const Icon(Icons.person, size: 18, color: Colors.white70),
+                                  label: Text(
+                                    currentProfile?.name ?? 'Profile',
+                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ProfileManagerPage(),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
                       // Botões de minimizar, maximizar e fechar
                       const WindowButtons(),
                     ],
@@ -279,9 +338,53 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // Profile button - always visible
+                        Consumer(
+                          builder: (context, ref, child) {
+                            final currentProfileAsync = ref.watch(currentProfileProvider);
+                            return currentProfileAsync.when(
+                              loading: () => TextButton.icon(
+                                icon: const Icon(Icons.person, size: 18),
+                                label: const Text('Profile'),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const ProfileManagerPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              error: (_, __) => TextButton.icon(
+                                icon: const Icon(Icons.person, size: 18),
+                                label: const Text('Profile'),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const ProfileManagerPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              data: (currentProfile) {
+                                return TextButton.icon(
+                                  icon: const Icon(Icons.person, size: 18),
+                                  label: Text(currentProfile?.name ?? 'Profile'),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ProfileManagerPage(),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 8),
                         Flexible(
                           child: ElevatedButton.icon(
-                            onPressed: isScanning
+                            onPressed: isAnyOperation
                                 ? null
                                 : () async {
                                       final path = await FilePicker.platform.getDirectoryPath(dialogTitle: 'Select a projects folder');
@@ -300,7 +403,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                         }
                                       }
                                     },
-                            icon: isScanning
+                            icon: isAnyOperation
                                 ? const SizedBox(
                                       width: 16,
                                       height: 16,
@@ -313,19 +416,19 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                         const SizedBox(width: 12),
                         Flexible(
                           child: ElevatedButton.icon(
-                            onPressed: isScanning
+                            onPressed: isAnyOperation
                                 ? null
                                 : () async {
                                       await _scanAll();
                                     },
-                            icon: isScanning
+                            icon: isAnyOperation
                                 ? const SizedBox(
                                       width: 16,
                                       height: 16,
                                       child: CircularProgressIndicator(strokeWidth: 2),
                                     )
                                 : const Icon(Icons.refresh),
-                            label: Text(isScanning ? 'Scanning…' : 'Rescan'),
+                            label: Text(isAnyOperation ? 'Scanning…' : 'Rescan'),
                           ),
                         ),
                       ],
@@ -483,22 +586,22 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
       ),
         ),
         // Loading overlay
-        if (isScanning)
+        if (isAnyOperation)
           Container(
             color: Colors.black54,
-            child: const Center(
+            child: Center(
               child: Card(
-                color: Color(0xFF2B2D31),
+                color: const Color(0xFF2B2D31),
                 child: Padding(
-                  padding: EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.all(24.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 16),
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
                       Text(
-                        'Scanning projects...',
-                        style: TextStyle(color: Colors.white70),
+                        isProfileSwitching ? 'Switching Profiles...' : 'Scanning projects...',
+                        style: const TextStyle(color: Colors.white70),
                       ),
                     ],
                   ),
