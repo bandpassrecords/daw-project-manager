@@ -942,6 +942,38 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
       ),
       onRowChecked: null,
       onSelected: null,
+      onRowDoubleTap: (PlutoGridOnRowDoubleTapEvent event) async {
+        final project = event.row.cells['data']?.value as MusicProject?;
+        if (project == null) return;
+        
+        // Check if file exists
+        final exists = File(project.filePath).existsSync() || Directory(project.filePath).existsSync();
+        if (!exists) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('File missing.')));
+          }
+          return;
+        }
+        
+        try {
+          // Launch project based on platform
+          if (Platform.isMacOS) {
+            await Process.start('open', [project.filePath]);
+          } else if (Platform.isWindows) {
+            await Process.start('cmd', ['/c', 'start', '', project.filePath]);
+          } else {
+            // Fallback for other operating systems (e.g., Linux)
+            await Process.start(project.filePath, []);
+          }
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Launching ${project.displayName}…')));
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to launch: $e')));
+          }
+        }
+      },
       createFooter: (stateManager) => const SizedBox.shrink(),
     );
   }

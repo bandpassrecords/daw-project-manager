@@ -47,7 +47,7 @@ void main() async {
   await windowManager.ensureInitialized();
 
   // 2. Configurações da Janela
-  const initialSize = Size(1800, 1000); // Fits comfortably on 1080p screens
+  const initialSize = Size(1800, 1040); // Fits comfortably on 1080p screens
   const minimumSize = Size(800, 600); // Allow resizing to a smaller minimum size
   WindowOptions windowOptions = WindowOptions(
     size: initialSize,
