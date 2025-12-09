@@ -570,7 +570,7 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
   }
 }
 
-class _PlutoProjectsTable extends StatefulWidget {
+class _PlutoProjectsTable extends ConsumerStatefulWidget {
   final List<MusicProject> projects;
   final DateFormat dateFormat;
   final Set<String> selectedIds;
@@ -583,11 +583,55 @@ class _PlutoProjectsTable extends StatefulWidget {
   });
 
   @override
-  State<_PlutoProjectsTable> createState() => _PlutoProjectsTableState();
+  ConsumerState<_PlutoProjectsTable> createState() => _PlutoProjectsTableState();
 }
 
-class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
-  PlutoGridStateManager? stateManager; 
+class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
+  PlutoGridStateManager? stateManager;
+  
+  Future<void> _writeBpmToFile(MusicProject project, double? bpm) async {
+    try {
+      final projectDir = File(project.filePath).parent;
+      final bpmFile = File(path.join(projectDir.path, 'bpm.txt'));
+      
+      if (bpm != null) {
+        await bpmFile.writeAsString(bpm.toStringAsFixed(2));
+      } else {
+        // Delete file if BPM is cleared
+        if (await bpmFile.exists()) {
+          await bpmFile.delete();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to write BPM file: $e')),
+        );
+      }
+    }
+  }
+  
+  Future<void> _writeKeyToFile(MusicProject project, String? key) async {
+    try {
+      final projectDir = File(project.filePath).parent;
+      final keyFile = File(path.join(projectDir.path, 'key.txt'));
+      
+      if (key != null && key.isNotEmpty) {
+        await keyFile.writeAsString(key);
+      } else {
+        // Delete file if key is cleared
+        if (await keyFile.exists()) {
+          await keyFile.delete();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to write key file: $e')),
+        );
+      }
+    }
+  } 
 
   List<PlutoRow> _mapProjectsToRows(List<MusicProject> projects) {
     return projects.map((p) {
@@ -686,6 +730,7 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
         type: PlutoColumnType.text(),
         width: 100,
         minWidth: 80,
+        enableEditingMode: true,
       ),
       PlutoColumn(
         title: 'Key',
@@ -693,6 +738,7 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
         type: PlutoColumnType.text(),
         width: 120,
         minWidth: 100,
+        enableEditingMode: true,
       ),
       PlutoColumn(
         title: 'Last Modified',
@@ -821,6 +867,35 @@ class _PlutoProjectsTableState extends State<_PlutoProjectsTable> {
       rows: initialRows, 
       onLoaded: (PlutoGridOnLoadedEvent event) {
         stateManager = event.stateManager;
+      },
+      onChanged: (PlutoGridOnChangedEvent event) async {
+        final project = event.row.cells['data']?.value as MusicProject?;
+        if (project == null) return;
+        
+        final field = event.column.field;
+        final newValue = event.value?.toString().trim() ?? '';
+        
+        if (field == 'bpm') {
+          final bpm = newValue.isEmpty ? null : double.tryParse(newValue);
+          
+          // Write to bpm.txt file
+          await _writeBpmToFile(project, bpm);
+          
+          // Update project in repository
+          final repo = await ref.read(repositoryProvider.future);
+          final updated = project.copyWith(bpm: bpm);
+          await repo.updateProject(updated);
+        } else if (field == 'key') {
+          final key = newValue.isEmpty ? null : newValue;
+          
+          // Write to key.txt file
+          await _writeKeyToFile(project, key);
+          
+          // Update project in repository
+          final repo = await ref.read(repositoryProvider.future);
+          final updated = project.copyWith(musicalKey: key);
+          await repo.updateProject(updated);
+        }
       },
       configuration: PlutoGridConfiguration(
         style: PlutoGridStyleConfig(
