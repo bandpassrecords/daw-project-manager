@@ -41,14 +41,14 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
         (r) => r.id == widget.releaseId,
         orElse: () => throw StateError('Release not found'),
       );
-      if (release != null) {
-        _titleController.text = release.title;
-        _descriptionController.text = release.description ?? '';
+    if (release != null) {
+      _titleController.text = release.title;
+      _descriptionController.text = release.description ?? '';
         setState(() {
-          _artworkImagePath = release.artworkImagePath;
+      _artworkImagePath = release.artworkImagePath;
           _releaseDate = release.releaseDate;
         });
-      }
+    }
     });
   }
 
@@ -145,18 +145,81 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       return;
     }
 
+    // Ask user where to save the ZIP
+    final safeName = release.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
+    final savePath = await FilePicker.platform.saveFile(
+      dialogTitle: 'Save release files ZIP',
+      fileName: '${safeName}_files.zip',
+      type: FileType.any,
+    );
+
+    if (savePath == null) {
+      return; // user cancelled
+    }
+
+    // Show loading dialog
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: Card(
+          color: Color(0xFF2B2D31),
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text(
+                  'Creating ZIP file...',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
     try {
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final zipPath = path.join(appDocDir.path, 'daw_project_manager', '${release.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')}_files.zip');
-      
-      final zipFile = File(zipPath);
+      final zipFile = File(savePath);
+      if (!await zipFile.parent.exists()) {
+        await zipFile.parent.create(recursive: true);
+      }
       if (await zipFile.exists()) {
         await zipFile.delete();
       }
 
       final archive = Archive();
       
-      for (final releaseFile in release.files) {
+      // Separate audio files from other files
+      final audioFiles = release.files.where((f) => f.fileType == 'audio').toList();
+      final otherFiles = release.files.where((f) => f.fileType != 'audio').toList();
+      
+      // Add audio files with track numbers (only if multiple files)
+      for (int i = 0; i < audioFiles.length; i++) {
+        final releaseFile = audioFiles[i];
+        final file = File(releaseFile.filePath);
+        if (await file.exists()) {
+          final fileData = await file.readAsBytes();
+          // Only prepend track number if there are multiple audio files
+          final fileName = audioFiles.length > 1
+              ? '${(i + 1).toString().padLeft(2, '0')} - ${releaseFile.fileName}'
+              : releaseFile.fileName;
+          archive.addFile(
+            ArchiveFile(
+              fileName,
+              fileData.length,
+              fileData,
+            ),
+          );
+        }
+      }
+      
+      // Add other files without track numbers
+      for (final releaseFile in otherFiles) {
         final file = File(releaseFile.filePath);
         if (await file.exists()) {
           final fileData = await file.readAsBytes();
@@ -173,30 +236,35 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       final zipData = ZipEncoder().encode(archive);
       if (zipData != null) {
         await zipFile.writeAsBytes(zipData);
+      }
+
+      // Close loading dialog
+      if (mounted) {
+        Navigator.of(context).pop();
         
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('ZIP file created: ${zipFile.path}'),
-              action: SnackBarAction(
-                label: 'Open Folder',
-                onPressed: () async {
-                  final folderPath = path.dirname(zipFile.path);
-                  if (Platform.isWindows) {
-                    await Process.run('explorer', [folderPath]);
-                  } else if (Platform.isMacOS) {
-                    await Process.run('open', [folderPath]);
-                  } else if (Platform.isLinux) {
-                    await Process.run('xdg-open', [folderPath]);
-                  }
-                },
-              ),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('ZIP file saved to: ${zipFile.path}'),
+            action: SnackBarAction(
+              label: 'Open Folder',
+              onPressed: () async {
+                final folderPath = path.dirname(zipFile.path);
+                if (Platform.isWindows) {
+                  await Process.run('explorer', [folderPath]);
+                } else if (Platform.isMacOS) {
+                  await Process.run('open', [folderPath]);
+                } else if (Platform.isLinux) {
+                  await Process.run('xdg-open', [folderPath]);
+                }
+              },
             ),
-          );
-        }
+          ),
+        );
       }
     } catch (e) {
+      // Close loading dialog if still open
       if (mounted) {
+        Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to create ZIP: $e')),
         );
@@ -273,7 +341,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
         );
         await repo.updateRelease(updatedRelease);
         
-        setState(() {
+      setState(() {
           _artworkImagePath = newImagePath;
         });
         
@@ -323,16 +391,26 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                 _artworkImagePath = release.artworkImagePath;
               });
             }
-            if (_releaseDate != release.releaseDate) {
+            // Only hydrate from storage if we don't have a local edit in progress.
+            if (_releaseDate == null && release.releaseDate != null) {
               setState(() {
                 _releaseDate = release.releaseDate;
               });
             }
           });
 
-          final releaseProjects = allProjects.where((p) => release.trackIds.contains(p.id)).toList();
+          // Maintain the explicit order defined in release.trackIds
+          final releaseProjects = <MusicProject>[];
+          for (final id in release.trackIds) {
+            try {
+              final project = allProjects.firstWhere((p) => p.id == id);
+              releaseProjects.add(project);
+            } catch (_) {
+              // Ignore missing projects (e.g., deleted)
+            }
+          }
 
-          return Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text(release.title),
         actions: [
@@ -463,8 +541,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   // Tracks Section
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Tracks (${releaseProjects.length})', style: Theme.of(context).textTheme.headlineSmall),
+                children: [
+                  Text('Tracks (${releaseProjects.length})', style: Theme.of(context).textTheme.headlineSmall),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.add),
                         label: const Text('Add Tracks'),
@@ -504,20 +582,45 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   const Divider(),
                   Expanded(
                     flex: 1,
-                    child: ListView.builder(
+                    child: ReorderableListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      buildDefaultDragHandles: false,
                       itemCount: releaseProjects.length,
+                      onReorder: (oldIndex, newIndex) {
+                        // Adjust newIndex when moving down
+                        if (newIndex > oldIndex) newIndex -= 1;
+                        final updatedTrackIds = List<String>.from(release.trackIds);
+                        final moved = updatedTrackIds.removeAt(oldIndex);
+                        updatedTrackIds.insert(newIndex, moved);
+
+                        // Optimistic local update
+                        setState(() {
+                          // Nothing else needed; releaseProjects is derived from trackIds
+                        });
+
+                        // Persist
+                        () async {
+                          final repo = await ref.read(repositoryProvider.future);
+                          await repo.updateRelease(release.copyWith(trackIds: updatedTrackIds));
+                        }();
+                      },
                       itemBuilder: (context, index) {
                         final project = releaseProjects[index];
                         final folderPath = FileSystemEntity.isDirectorySync(project.filePath)
                             ? project.filePath
                             : path.dirname(project.filePath);
-                        
+
                         return Card(
+                          key: ValueKey(project.id),
                           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           color: const Color(0xFF2B2D31),
                           child: ListTile(
-                            title: Text(project.displayName),
-                            subtitle: Text(project.dawType ?? ''),
+                            leading: ReorderableDragStartListener(
+                              index: index,
+                              child: const Icon(Icons.drag_indicator, color: Colors.white70),
+                            ),
+                          title: Text(project.displayName),
+                          subtitle: Text(project.dawType ?? ''),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -609,20 +712,20 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                 ),
                                 // Remove button
                                 IconButton(
-                                  icon: const Icon(Icons.remove_circle_outline),
+                            icon: const Icon(Icons.remove_circle_outline),
                                   color: Colors.red.shade300,
                                   tooltip: 'Remove from Release',
-                                  onPressed: () async {
-                                    final repo = await ref.read(repositoryProvider.future);
-                                    final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
-                                    final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
-                                    await repo.updateRelease(updatedRelease);
+                            onPressed: () async {
+                              final repo = await ref.read(repositoryProvider.future);
+                              final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
+                              final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
+                              await repo.updateRelease(updatedRelease);
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text('Removed ${project.displayName} from release.')),
                                       );
                                     }
-                                  },
+                            },
                                 ),
                               ],
                             ),
@@ -666,10 +769,10 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                               style: TextStyle(color: Colors.white54),
                             ),
                           )
-                        : _FilesTable(
+                        : _FilesSection(
                             files: release.files,
                             release: release,
-                          ),
+                    ),
                   ),
                 ],
               ),
@@ -689,15 +792,20 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
   }
 }
 
-class _FilesTable extends ConsumerWidget {
+class _FilesSection extends ConsumerStatefulWidget {
   final List<ReleaseFile> files;
   final Release release;
 
-  const _FilesTable({
+  const _FilesSection({
     required this.files,
     required this.release,
   });
 
+  @override
+  ConsumerState<_FilesSection> createState() => _FilesSectionState();
+}
+
+class _FilesSectionState extends ConsumerState<_FilesSection> {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
@@ -720,94 +828,27 @@ class _FilesTable extends ConsumerWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListView.builder(
-      itemCount: files.length,
-      itemBuilder: (context, index) {
-        final file = files[index];
-        final fileExists = File(file.filePath).existsSync();
-        
-        // Special handling for audio files - show audio player
-        if (file.fileType == 'audio' && fileExists) {
-          return _AudioFileItem(
-            file: file,
-            release: release,
-            onDelete: () => _deleteFile(context, ref, file),
-          );
-        }
-        
-        // Regular file item for non-audio files
-        return ListTile(
-          leading: Icon(
-            _getFileTypeIcon(file.fileType),
-            color: fileExists ? Colors.white70 : Colors.red.shade300,
-          ),
-          title: Text(
-            file.fileName,
-            style: TextStyle(
-              color: fileExists ? Colors.white : Colors.red.shade300,
-            ),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${file.fileType.toUpperCase()} • ${_formatFileSize(file.fileSizeBytes)}',
-                style: const TextStyle(color: Colors.white54),
-              ),
-              if (file.description != null && file.description!.isNotEmpty)
-                Text(
-                  file.description!,
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
-                ),
-              Text(
-                DateFormat.yMMMd().add_jm().format(file.addedAt),
-                style: const TextStyle(color: Colors.white38, fontSize: 11),
-              ),
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (!fileExists)
-                const Tooltip(
-                  message: 'File not found',
-                  child: Icon(Icons.warning, color: Colors.red, size: 20),
-                ),
-              IconButton(
-                icon: const Icon(Icons.delete_outline),
-                color: Colors.red.shade300,
-                onPressed: () => _deleteFile(context, ref, file),
-              ),
-            ],
-          ),
-          onTap: fileExists
-              ? () async {
-                  // Open file
-                  try {
-                    if (Platform.isWindows) {
-                      await Process.run('cmd', ['/c', 'start', '', file.filePath]);
-                    } else if (Platform.isMacOS) {
-                      await Process.run('open', [file.filePath]);
-                    } else if (Platform.isLinux) {
-                      await Process.run('xdg-open', [file.filePath]);
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to open file: $e')),
-                      );
-                    }
-                  }
-                }
-              : null,
-        );
-      },
-    );
+  Future<void> _reorderAudioFiles(int oldIndex, int newIndex) async {
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+
+    final audioFiles = widget.files.where((f) => f.fileType == 'audio').toList();
+    final otherFiles = widget.files.where((f) => f.fileType != 'audio').toList();
+
+    final reorderedAudio = List<ReleaseFile>.from(audioFiles);
+    final item = reorderedAudio.removeAt(oldIndex);
+    reorderedAudio.insert(newIndex, item);
+
+    // Reconstruct files list: audio files first (in new order), then other files
+    final updatedFiles = [...reorderedAudio, ...otherFiles];
+
+    final repo = await ref.read(repositoryProvider.future);
+    final updatedRelease = widget.release.copyWith(files: updatedFiles);
+    await repo.updateRelease(updatedRelease);
   }
 
-  Future<void> _deleteFile(BuildContext context, WidgetRef ref, ReleaseFile file) async {
+  Future<void> _deleteFile(ReleaseFile file) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -839,17 +880,17 @@ class _FilesTable extends ConsumerWidget {
         
         // Remove from release
         final repo = await ref.read(repositoryProvider.future);
-        final updatedFiles = release.files.where((f) => f.id != file.id).toList();
-        final updatedRelease = release.copyWith(files: updatedFiles);
+        final updatedFiles = widget.release.files.where((f) => f.id != file.id).toList();
+        final updatedRelease = widget.release.copyWith(files: updatedFiles);
         await repo.updateRelease(updatedRelease);
         
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('File "${file.fileName}" deleted.')),
           );
         }
       } catch (e) {
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to delete file: $e')),
           );
@@ -857,16 +898,162 @@ class _FilesTable extends ConsumerWidget {
       }
     }
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final audioFiles = widget.files.where((f) => f.fileType == 'audio').toList();
+    final otherFiles = widget.files.where((f) => f.fileType != 'audio').toList();
+
+    return ListView(
+      children: [
+        // Audio Files Section
+        if (audioFiles.isNotEmpty) ...[
+          Text(
+            'Audio Files (${audioFiles.length})',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          ReorderableListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: audioFiles.length,
+            onReorder: _reorderAudioFiles,
+            itemBuilder: (context, index) {
+              final file = audioFiles[index];
+              final fileExists = File(file.filePath).existsSync();
+              // Only show track number if there are multiple audio files
+              final trackNumber = audioFiles.length > 1
+                  ? (index + 1).toString().padLeft(2, '0')
+                  : null;
+
+              if (fileExists) {
+                return _AudioFileItem(
+                  key: ValueKey(file.id),
+                  file: file,
+                  release: widget.release,
+                  trackNumber: trackNumber,
+                  onDelete: () => _deleteFile(file),
+                );
+              } else {
+                return Card(
+                  key: ValueKey(file.id),
+                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  color: const Color(0xFF2B2D31),
+                  child: ListTile(
+                    leading: const Icon(Icons.drag_indicator, color: Colors.white54),
+                    title: Text(
+                      trackNumber != null ? '$trackNumber - ${file.fileName}' : file.fileName,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    subtitle: Text(
+                      'File not found',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      color: Colors.red.shade300,
+                      onPressed: () => _deleteFile(file),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+
+        // Other Files Section
+        if (otherFiles.isNotEmpty) ...[
+          Text(
+            'Other Files (${otherFiles.length})',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          ...otherFiles.map((file) {
+            final fileExists = File(file.filePath).existsSync();
+            return ListTile(
+              leading: Icon(
+                _getFileTypeIcon(file.fileType),
+                color: fileExists ? Colors.white70 : Colors.red.shade300,
+              ),
+              title: Text(
+                file.fileName,
+                style: TextStyle(
+                  color: fileExists ? Colors.white : Colors.red.shade300,
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${file.fileType.toUpperCase()} • ${_formatFileSize(file.fileSizeBytes)}',
+                    style: const TextStyle(color: Colors.white54),
+                  ),
+                  if (file.description != null && file.description!.isNotEmpty)
+                    Text(
+                      file.description!,
+                      style: const TextStyle(color: Colors.white54, fontSize: 12),
+                    ),
+                  Text(
+                    DateFormat.yMMMd().add_jm().format(file.addedAt),
+                    style: const TextStyle(color: Colors.white38, fontSize: 11),
+                  ),
+                ],
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!fileExists)
+                    const Tooltip(
+                      message: 'File not found',
+                      child: Icon(Icons.warning, color: Colors.red, size: 20),
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    color: Colors.red.shade300,
+                    onPressed: () => _deleteFile(file),
+                  ),
+                ],
+              ),
+              onTap: fileExists
+                  ? () async {
+                      // Open file
+                      try {
+                        if (Platform.isWindows) {
+                          await Process.run('cmd', ['/c', 'start', '', file.filePath]);
+                        } else if (Platform.isMacOS) {
+                          await Process.run('open', [file.filePath]);
+                        } else if (Platform.isLinux) {
+                          await Process.run('xdg-open', [file.filePath]);
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to open file: $e')),
+                          );
+                        }
+                      }
+                    }
+                  : null,
+            );
+          }),
+        ],
+      ],
+    );
+  }
 }
 
 class _AudioFileItem extends ConsumerStatefulWidget {
   final ReleaseFile file;
   final Release release;
+  final String? trackNumber; // Optional - only shown when multiple files
   final VoidCallback onDelete;
 
   const _AudioFileItem({
+    super.key,
     required this.file,
     required this.release,
+    this.trackNumber,
     required this.onDelete,
   });
 
@@ -965,35 +1152,39 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
           children: [
             // File info header
             Row(
-              children: [
-                const Icon(Icons.audiotrack, color: Colors.white70),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.file.fileName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                      const Icon(Icons.drag_indicator, color: Colors.white54),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.audiotrack, color: Colors.white70),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.trackNumber != null
+                                  ? '${widget.trackNumber} - ${widget.file.fileName}'
+                                  : widget.file.fileName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              '${_formatFileSize(widget.file.fileSizeBytes)} • ${DateFormat.yMMMd().add_jm().format(widget.file.addedAt)}',
+                              style: const TextStyle(color: Colors.white54, fontSize: 11),
+                            ),
+                          ],
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        '${_formatFileSize(widget.file.fileSizeBytes)} • ${DateFormat.yMMMd().add_jm().format(widget.file.addedAt)}',
-                        style: const TextStyle(color: Colors.white54, fontSize: 11),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        color: Colors.red.shade300,
+                        onPressed: widget.onDelete,
                       ),
                     ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  color: Colors.red.shade300,
-                  onPressed: widget.onDelete,
-                ),
-              ],
             ),
             const SizedBox(height: 12),
             // Audio player controls
