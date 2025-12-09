@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import 'package:archive/archive.dart';
@@ -16,6 +15,7 @@ import '../models/release_file.dart';
 import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../repository/project_repository.dart';
+import '../utils/app_paths.dart';
 import 'project_detail_page.dart';
 
 class ReleaseDetailPage extends ConsumerStatefulWidget {
@@ -104,8 +104,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
     if (result == null || result.files.isEmpty) return;
 
     try {
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final releasesDir = Directory(path.join(appDocDir.path, 'daw_project_manager', 'release_files', release.id));
+      final releasesDirPath = await getReleaseFilesPath(release.id);
+      final releasesDir = Directory(releasesDirPath);
       
       if (!await releasesDir.exists()) {
         await releasesDir.create(recursive: true);
@@ -325,9 +325,9 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       }
 
       try {
-        // Get app documents directory
-        final appDocDir = await getApplicationDocumentsDirectory();
-        final releasesDir = Directory(path.join(appDocDir.path, 'daw_project_manager', 'release_artwork'));
+        // Get release artwork directory
+        final releasesDirPath = await getReleaseArtworkPath();
+        final releasesDir = Directory(releasesDirPath);
         
         // Create directory if it doesn't exist
         if (!await releasesDir.exists()) {

@@ -18,10 +18,13 @@ Future<void> _runInitialScan(ProjectRepository repo, ProviderContainer container
     
     // 2. Cria o scanner e processa as raízes de scan
     final scanner = ScannerService();
+    final scanTime = DateTime.now();
     for (final root in repo.getRoots()) {
       await for (final entity in scanner.scanDirectory(root.path)) {
         await repo.upsertFromFileSystemEntity(entity);
       }
+      // Update lastScanAt timestamp for this root
+      await repo.updateRootLastScanAt(root.id, scanTime);
     }
     
     // 3. Mark initial scan as complete

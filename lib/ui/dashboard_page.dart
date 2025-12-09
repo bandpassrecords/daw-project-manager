@@ -128,11 +128,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
       final scanner = ScannerService();
       int foundCount = 0;
       await repo.clearMissingFiles();
+      final scanTime = DateTime.now();
       for (final root in repo.getRoots()) {
         await for (final entity in scanner.scanDirectory(root.path)) {
           await repo.upsertFromFileSystemEntity(entity);
           foundCount++;
         }
+        // Update lastScanAt timestamp for this root
+        await repo.updateRootLastScanAt(root.id, scanTime);
       }
       if (mounted) {
         final msg = foundCount == 0
@@ -283,13 +286,17 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                 : () async {
                                       final path = await FilePicker.platform.getDirectoryPath(dialogTitle: 'Select a projects folder');
                                       if (path != null) {
-                                        setState(() => _scanning = true);
                                         try {
                                           final repo = await ref.read(repositoryProvider.future);
                                           await repo.addRoot(path);
+                                          // _scanAll() manages its own _scanning state
                                           await _scanAll();
-                                        } finally {
-                                          if (mounted) setState(() => _scanning = false);
+                                        } catch (e) {
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Error adding folder: $e')),
+                                            );
+                                          }
                                         }
                                       }
                                     },

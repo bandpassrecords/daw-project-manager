@@ -9,6 +9,7 @@ import '../models/scan_root.dart';
 import '../models/release.dart';
 import '../models/release_file.dart';
 import '../services/metadata_extractor.dart';
+import '../utils/app_paths.dart';
 
 class ProjectRepository {
   static const projectsBoxName = 'projects';
@@ -27,7 +28,10 @@ class ProjectRepository {
   });
 
   static Future<ProjectRepository> init() async {
-    await Hive.initFlutter();
+    // Initialize Hive with LocalAppData directory
+    final appDataPath = await getLocalAppDataPath();
+    Hive.init(appDataPath);
+    
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(MusicProjectAdapter());
     }
@@ -59,6 +63,13 @@ class ProjectRepository {
 
   Future<void> removeRoot(String id) async {
     await rootsBox.delete(id);
+  }
+
+  Future<void> updateRootLastScanAt(String rootId, DateTime scanTime) async {
+    final root = rootsBox.get(rootId);
+    if (root != null) {
+      await rootsBox.put(rootId, root.copyWith(lastScanAt: scanTime));
+    }
   }
 
   List<ScanRoot> getRoots() => rootsBox.values.toList(growable: false);
