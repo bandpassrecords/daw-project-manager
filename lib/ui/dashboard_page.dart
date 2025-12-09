@@ -216,13 +216,17 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     final roots = ref.watch(scanRootsProvider);
     final currentParams = ref.watch(queryParamsNotifierProvider);
     final projects = ref.watch(projectsProvider);
+    final initialScanning = ref.watch(initialScanStateProvider);
+    final isScanning = _scanning || initialScanning;
 
     // RawKeyboardListener no topo.
-    return RawKeyboardListener( 
-      focusNode: _globalRawKeyListenerFocusNode,
-      autofocus: true, 
-      onKey: _handleRawKeyEvent, 
-      child: Scaffold(
+    return Stack(
+      children: [
+        RawKeyboardListener(
+          focusNode: _globalRawKeyListenerFocusNode,
+          autofocus: true, 
+          onKey: _handleRawKeyEvent, 
+          child: Scaffold(
         appBar: null, 
         body: Column(
           children: [
@@ -271,34 +275,45 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                   Row(
                     children: [
                       ElevatedButton.icon(
-                        onPressed: _scanning
+                        onPressed: isScanning
                             ? null
                             : () async {
                                   final path = await FilePicker.platform.getDirectoryPath(dialogTitle: 'Select a projects folder');
                                   if (path != null) {
-                                    final repo = await ref.read(repositoryProvider.future);
-                                    await repo.addRoot(path);
-                                    await _scanAll();
+                                    setState(() => _scanning = true);
+                                    try {
+                                      final repo = await ref.read(repositoryProvider.future);
+                                      await repo.addRoot(path);
+                                      await _scanAll();
+                                    } finally {
+                                      if (mounted) setState(() => _scanning = false);
+                                    }
                                   }
                                 },
-                        icon: const Icon(Icons.create_new_folder_outlined),
+                        icon: isScanning
+                            ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                            : const Icon(Icons.create_new_folder_outlined),
                         label: const Text('Add Projects Folder'),
                       ),
                       const SizedBox(width: 12),
                       ElevatedButton.icon(
-                        onPressed: _scanning
+                        onPressed: isScanning
                             ? null
                             : () async {
                                   await _scanAll();
                                 },
-                        icon: _scanning
+                        icon: isScanning
                             ? const SizedBox(
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(strokeWidth: 2),
                                 )
                             : const Icon(Icons.refresh),
-                        label: Text(_scanning ? 'Scanning…' : 'Rescan'),
+                        label: Text(isScanning ? 'Scanning…' : 'Rescan'),
                       ),
                     ],
                   ),
@@ -439,6 +454,32 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
           ],
         ),
       ),
+        ),
+        // Loading overlay
+        if (isScanning)
+          Container(
+            color: Colors.black54,
+            child: const Center(
+              child: Card(
+                color: Color(0xFF2B2D31),
+                child: Padding(
+                  padding: EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text(
+                        'Scanning projects...',
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 } 

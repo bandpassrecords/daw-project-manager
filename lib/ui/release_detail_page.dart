@@ -767,7 +767,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Supporting Files (${release.files.length})', style: Theme.of(context).textTheme.headlineSmall),
+                      Text('Release Files (${release.files.length})', style: Theme.of(context).textTheme.headlineSmall),
                       Row(
                         children: [
                           ElevatedButton.icon(
@@ -792,7 +792,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                     child: release.files.isEmpty
                         ? const Center(
                             child: Text(
-                              'No files added yet.\nClick "Add Files" to upload supporting files.',
+                              'No files added yet.\nClick "Add Files" to upload release files.',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.white54),
                             ),

@@ -123,3 +123,23 @@ final releasesProvider = StreamProvider<List<Release>>((ref) async* {
   final repo = await ref.watch(repositoryProvider.future);
   yield* repo.watchAllReleases();
 });
+
+// Initial scan state provider
+final initialScanStateProvider = NotifierProvider<InitialScanNotifier, bool>(() {
+  return InitialScanNotifier();
+});
+
+class InitialScanNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    return true; // Start as true (scanning)
+  }
+  
+  void setScanning(bool scanning) {
+    state = scanning;
+  }
+  
+  void complete() {
+    state = false;
+  }
+}
