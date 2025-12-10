@@ -6,30 +6,81 @@ import 'package:uuid/uuid.dart';
 
 import '../models/music_project.dart';
 import '../models/scan_root.dart';
+import '../models/release.dart';
+import '../models/release_file.dart';
 import '../services/metadata_extractor.dart';
+import '../utils/app_paths.dart';
+import 'profile_repository.dart';
 
 class ProjectRepository {
-  static const projectsBoxName = 'projects';
-  static const rootsBoxName = 'roots';
-
+  final String profileId;
   final Box<MusicProject> projectsBox;
   final Box<ScanRoot> rootsBox;
+  final Box<Release> releasesBox;
   final _uuid = const Uuid();
 
-  ProjectRepository({required this.projectsBox, required this.rootsBox});
+  ProjectRepository({
+    required this.profileId,
+    required this.projectsBox,
+    required this.rootsBox,
+    required this.releasesBox,
+  });
 
-  static Future<ProjectRepository> init() async {
-    await Hive.initFlutter();
+  static Future<ProjectRepository> init(ProfileRepository profileRepo) async {
+    // Initialize Hive with LocalAppData directory
+    final appDataPath = await getLocalAppDataPath();
+    Hive.init(appDataPath);
+    
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(MusicProjectAdapter());
     }
     if (!Hive.isAdapterRegistered(2)) {
       Hive.registerAdapter(ScanRootAdapter());
     }
+    if (!Hive.isAdapterRegistered(3)) {
+      Hive.registerAdapter(ReleaseAdapter());
+    }
+    if (!Hive.isAdapterRegistered(4)) {
+      Hive.registerAdapter(ReleaseFileAdapter());
+    }
 
-    final projects = await Hive.openBox<MusicProject>(projectsBoxName);
-    final roots = await Hive.openBox<ScanRoot>(rootsBoxName);
-    return ProjectRepository(projectsBox: projects, rootsBox: roots);
+    // Get current profile
+    final currentProfile = profileRepo.getCurrentProfile();
+    if (currentProfile == null) {
+      throw Exception('No active profile found');
+    }
+    
+    final profileId = currentProfile.id;
+    
+    // Use profile-specific box names
+    final projects = await Hive.openBox<MusicProject>('${profileId}_projects');
+    final roots = await Hive.openBox<ScanRoot>('${profileId}_roots');
+    final releases = await Hive.openBox<Release>('${profileId}_releases');
+    
+    return ProjectRepository(
+      profileId: profileId,
+      projectsBox: projects,
+      rootsBox: roots,
+      releasesBox: releases,
+    );
+  }
+  
+  /// Reinitialize with a different profile
+  static Future<ProjectRepository> initWithProfile(ProfileRepository profileRepo, String profileId) async {
+    final appDataPath = await getLocalAppDataPath();
+    Hive.init(appDataPath);
+    
+    // Use profile-specific box names
+    final projects = await Hive.openBox<MusicProject>('${profileId}_projects');
+    final roots = await Hive.openBox<ScanRoot>('${profileId}_roots');
+    final releases = await Hive.openBox<Release>('${profileId}_releases');
+    
+    return ProjectRepository(
+      profileId: profileId,
+      projectsBox: projects,
+      rootsBox: roots,
+      releasesBox: releases,
+    );
   }
 
   // Roots
@@ -39,7 +90,61 @@ class ProjectRepository {
   }
 
   Future<void> removeRoot(String id) async {
+    final root = rootsBox.get(id);
+    if (root == null) return;
+    
+    // Get the root path and normalize it for comparison
+    final rootPath = p.normalize(root.path);
+    // Ensure root path ends with separator for proper matching
+    final rootPathNormalized = rootPath.endsWith(p.separator) 
+        ? rootPath 
+        : rootPath + p.separator;
+    
+    // Get all project IDs that are referenced in releases (to preserve them)
+    final releases = getAllReleases();
+    final protectedProjectIds = <String>{};
+    for (final release in releases) {
+      protectedProjectIds.addAll(release.trackIds);
+    }
+    
+    // Remove all projects that belong to this root folder
+    // Note: projectsBox is already profile-specific, so we only operate on current profile's projects
+    final projectsToDelete = <String>[];
+    
+    for (final project in projectsBox.values) {
+      try {
+        // Normalize project file path for comparison
+        final projectPath = p.normalize(project.filePath);
+        
+        // Check if project's file path is within the root folder
+        // This is safe because projectsBox is profile-specific (${profileId}_projects)
+        if (projectPath.startsWith(rootPathNormalized) || 
+            projectPath.startsWith(rootPath + p.separator)) {
+          // Preserve projects that are referenced in releases
+          if (!protectedProjectIds.contains(project.id)) {
+            projectsToDelete.add(project.id);
+          }
+        }
+      } catch (_) {
+        // If path normalization fails, skip this project
+        // Better to be safe and not delete than to delete incorrectly
+      }
+    }
+    
+    // Delete all projects from this root (except those in releases)
+    if (projectsToDelete.isNotEmpty) {
+      await projectsBox.deleteAll(projectsToDelete);
+    }
+    
+    // Remove the root after deleting projects
     await rootsBox.delete(id);
+  }
+
+  Future<void> updateRootLastScanAt(String rootId, DateTime scanTime) async {
+    final root = rootsBox.get(rootId);
+    if (root != null) {
+      await rootsBox.put(rootId, root.copyWith(lastScanAt: scanTime));
+    }
   }
 
   List<ScanRoot> getRoots() => rootsBox.values.toList(growable: false);
@@ -121,14 +226,36 @@ class ProjectRepository {
   Stream<BoxEvent> watchProjects() => projectsBox.watch();
   
   // MÉTODO NOVO/CORRIGIDO: Retorna a lista completa a cada mudança do Hive
-  Stream<List<MusicProject>> watchAllProjects() {
-    return projectsBox.watch().map((_) => projectsBox.values.toList());
+  Stream<List<MusicProject>> watchAllProjects() async* {
+    // Emit initial value immediately
+    yield projectsBox.values.toList();
+    // Then watch for changes
+    yield* projectsBox.watch().map((_) => projectsBox.values.toList());
   }
   
   Stream<BoxEvent> watchRoots() => rootsBox.watch();
 
   Future<void> clearAllData() async {
-    await projectsBox.clear();
+    // Get all project IDs that are referenced in releases (to preserve them)
+    final releases = getAllReleases();
+    final protectedProjectIds = <String>{};
+    for (final release in releases) {
+      protectedProjectIds.addAll(release.trackIds);
+    }
+    
+    // Delete all projects except those referenced in releases
+    if (protectedProjectIds.isNotEmpty) {
+      final allProjectIds = projectsBox.keys.cast<String>().toSet();
+      final projectsToDelete = allProjectIds.difference(protectedProjectIds);
+      if (projectsToDelete.isNotEmpty) {
+        await projectsBox.deleteAll(projectsToDelete);
+      }
+    } else {
+      // No protected projects, safe to clear all
+      await projectsBox.clear();
+    }
+    
+    // Always clear roots
     await rootsBox.clear();
   }
 
@@ -141,4 +268,36 @@ class ProjectRepository {
     }
     await projectsBox.deleteAll(toDelete);
   }
+
+  // Releases
+  Future<void> addRelease(Release release) async {
+    await releasesBox.put(release.id, release);
+  }
+
+  Future<void> updateRelease(Release release) async {
+    await releasesBox.put(release.id, release);
+  }
+
+  Future<void> deleteRelease(String releaseId) async {
+    await releasesBox.delete(releaseId);
+  }
+
+  List<Release> getAllReleases() => releasesBox.values.toList(growable: false);
+
+  Release? getReleaseById(String id) {
+    try {
+      return releasesBox.get(id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Stream<List<Release>> watchAllReleases() async* {
+    // Emit initial value immediately
+    yield releasesBox.values.toList();
+    // Then watch for changes
+    yield* releasesBox.watch().map((_) => releasesBox.values.toList());
+  }
+
+  Stream<BoxEvent> watchReleases() => releasesBox.watch();
 }

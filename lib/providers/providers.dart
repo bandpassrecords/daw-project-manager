@@ -3,14 +3,48 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as p;
 
 import '../models/music_project.dart';
 import '../models/scan_root.dart';
+import '../models/release.dart';
+import '../models/profile.dart';
 import '../repository/project_repository.dart';
+import '../repository/profile_repository.dart';
 import '../services/scanner_service.dart';
 
+// Profile Repository Provider
+final profileRepositoryProvider = FutureProvider<ProfileRepository>((ref) async {
+  return ProfileRepository.init();
+});
+
+// Current Profile Provider
+final currentProfileProvider = StreamProvider<Profile?>((ref) async* {
+  final profileRepo = await ref.watch(profileRepositoryProvider.future);
+  final currentId = profileRepo.getCurrentProfileId();
+  if (currentId != null) {
+    yield profileRepo.getProfileById(currentId);
+  } else {
+    yield null;
+  }
+  
+  // Watch for profile changes
+  yield* profileRepo.watchProfiles().asyncMap((_) async {
+    final currentId = profileRepo.getCurrentProfileId();
+    return currentId != null ? profileRepo.getProfileById(currentId) : null;
+  });
+});
+
+// All Profiles Provider
+final allProfilesProvider = StreamProvider<List<Profile>>((ref) async* {
+  final profileRepo = await ref.watch(profileRepositoryProvider.future);
+  yield* profileRepo.watchAllProfiles();
+});
+
+// Project Repository Provider - depends on ProfileRepository
 final repositoryProvider = FutureProvider<ProjectRepository>((ref) async {
-  return ProjectRepository.init();
+  final profileRepo = await ref.watch(profileRepositoryProvider.future);
+  return ProjectRepository.init(profileRepo);
 });
 
 final rootsWatchProvider = StreamProvider<void>((ref) async* {
@@ -88,10 +122,46 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
   
   // 2. Observa o estado ATUAL (QueryParams) do nosso novo Notifier
   final params = ref.watch(queryParamsNotifierProvider);
+  
+  // 3. Observa releases e scan roots para filter preserved projects
+  final releasesAsync = ref.watch(releasesProvider);
+  final scanRoots = ref.watch(scanRootsProvider);
 
-  // 3. Usa .whenData para acessar a lista quando estiver pronta e aplicar o filtro/ordenação
+  // 4. Usa .whenData para acessar a lista quando estiver pronta e aplicar o filtro/ordenação
   return allProjectsAsync.whenData((allProjects) {
     var projects = allProjects;
+
+    // --- Filter out preserved projects (in releases but not in any active scan root) ---
+    final releases = releasesAsync.value ?? [];
+    final protectedProjectIds = <String>{};
+    for (final release in releases) {
+      protectedProjectIds.addAll(release.trackIds);
+    }
+    
+    // Get all active scan root paths (normalized for comparison)
+    final activeRootPaths = scanRoots.map((root) {
+      final normalized = p.normalize(root.path);
+      // Ensure root path ends with separator for proper prefix matching
+      return normalized.endsWith(p.separator) ? normalized : normalized + p.separator;
+    }).toList();
+    
+    // Filter out preserved projects: those in releases but not in any active root
+    projects = projects.where((project) {
+      // If project is not in any release, always show it
+      if (!protectedProjectIds.contains(project.id)) {
+        return true;
+      }
+      
+      // If project is in a release, check if it's in any active scan root
+      final projectPath = p.normalize(project.filePath);
+      final isInActiveRoot = activeRootPaths.any((rootPath) {
+        // Check if project path starts with the root path
+        return projectPath.startsWith(rootPath);
+      });
+      
+      // Only show if it's in an active root (preserved projects not in active roots are hidden)
+      return isInActiveRoot;
+    }).toList();
 
     // --- Aplicação dos Filtros ---
     if (params.searchText.trim().isNotEmpty) {
@@ -116,3 +186,65 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
 });
 
 final dateFormatProvider = Provider<DateFormat>((ref) => DateFormat.yMMMd().add_jm());
+
+// Releases Provider
+final releasesProvider = StreamProvider<List<Release>>((ref) async* {
+  final repo = await ref.watch(repositoryProvider.future);
+  yield* repo.watchAllReleases();
+});
+
+// Initial scan state provider
+final initialScanStateProvider = NotifierProvider<InitialScanNotifier, bool>(() {
+  return InitialScanNotifier();
+});
+
+class InitialScanNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    return true; // Start as true (scanning)
+  }
+  
+  void setScanning(bool scanning) {
+    state = scanning;
+  }
+  
+  void complete() {
+    state = false;
+  }
+}
+
+// Profile switching state provider
+final profileSwitchingProvider = NotifierProvider<ProfileSwitchingNotifier, bool>(() {
+  return ProfileSwitchingNotifier();
+});
+
+class ProfileSwitchingNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    return false;
+  }
+  
+  void setSwitching(bool switching) {
+    state = switching;
+  }
+  
+  void complete() {
+    state = false;
+  }
+}
+
+// Profile switching notifier
+class ProfileSwitchNotifier extends Notifier<String?> {
+  @override
+  String? build() {
+    return null;
+  }
+  
+  void setProfileId(String? profileId) {
+    state = profileId;
+  }
+}
+
+final profileSwitchProvider = NotifierProvider<ProfileSwitchNotifier, String?>(() {
+  return ProfileSwitchNotifier();
+});

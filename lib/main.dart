@@ -11,22 +11,31 @@ import 'services/scanner_service.dart';
 import 'ui/dashboard_page.dart';
 
 // NOVO: Função para executar o scan
-Future<void> _runInitialScan(ProjectRepository repo) async {
+Future<void> _runInitialScan(ProjectRepository repo, ProviderContainer container) async {
   try {
     // 1. Limpa arquivos que não existem mais
     await repo.clearMissingFiles();
     
     // 2. Cria o scanner e processa as raízes de scan
     final scanner = ScannerService();
+    final scanTime = DateTime.now();
     for (final root in repo.getRoots()) {
       await for (final entity in scanner.scanDirectory(root.path)) {
         await repo.upsertFromFileSystemEntity(entity);
       }
+      // Update lastScanAt timestamp for this root
+      await repo.updateRootLastScanAt(root.id, scanTime);
     }
+    
+    // 3. Mark initial scan as complete
+    container.read(initialScanStateProvider.notifier).complete();
+    
     if (kDebugMode) {
       print("Initial scan completed successfully.");
     }
   } catch (e, st) {
+    // Mark as complete even on error so UI doesn't stay frozen
+    container.read(initialScanStateProvider.notifier).complete();
     if (kDebugMode) {
       print("Error during initial scan: $e");
       print(st);
@@ -41,10 +50,11 @@ void main() async {
   await windowManager.ensureInitialized();
 
   // 2. Configurações da Janela
-  const initialSize = Size(1920, 1080);
+  const initialSize = Size(1800, 1040); // Fits comfortably on 1080p screens
+  const minimumSize = Size(800, 600); // Allow resizing to a smaller minimum size
   WindowOptions windowOptions = WindowOptions(
     size: initialSize,
-    minimumSize: initialSize,
+    minimumSize: minimumSize,
     center: true,
     title: "DAW Project Manager",
     titleBarStyle: kDebugMode ? TitleBarStyle.normal : TitleBarStyle.hidden,
@@ -59,14 +69,19 @@ void main() async {
   // NOVO: 4. Configuração do Riverpod e Auto-Scan
   final container = ProviderContainer();
   try {
-    // 4a. Pré-carrega o Repositório Hive (o FutureProvider)
+    // 4a. Pré-carrega o ProfileRepository primeiro
+    final profileRepo = await container.read(profileRepositoryProvider.future);
+    
+    // 4b. Pré-carrega o ProjectRepository (que depende do ProfileRepository)
     final repo = await container.read(repositoryProvider.future);
     
-    // 4b. Executa o Scan Inicial em segundo plano (não aguardamos o Future)
+    // 4c. Executa o Scan Inicial em segundo plano (não aguardamos o Future)
     // O await repo... em cima garante que o Hive está pronto antes do scan.
-    _runInitialScan(repo);
+    _runInitialScan(repo, container);
     
   } catch (e) {
+    // Mark as complete even on error
+    container.read(initialScanStateProvider.notifier).complete();
     if (kDebugMode) print("Failed to initialize repository or run initial scan: $e");
   }
 

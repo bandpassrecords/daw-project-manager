@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.3+1
+version: 1.1.0+1
 
 environment:
   sdk: ^3.9.2
@@ -46,6 +46,9 @@ dependencies:
   window_manager: ^0.3.0
   url_launcher: ^6.0.0
   xml: ^6.5.0
+  path_provider: ^2.1.1
+  archive: ^3.4.0
+  audioplayers: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +61,8 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   msix: ^3.16.12
+  build_runner: ^2.4.13
+  hive_generator: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -105,7 +110,7 @@ msix_config:
   display_name: DAW Project Manager
   publisher_display_name: BandPass Records
   identity_name: BandPassRecords.DAWProjectManager
-  msix_version: 1.0.3.0
+  msix_version: 1.1.0.0
   logo_path: app_icon.png
   capabilities: "internetClient"
   install_certificate: false
