@@ -469,26 +469,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       return Scaffold(
         appBar: AppBar(
           title: Text(release.title),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.save),
-              tooltip: 'Save',
-              onPressed: () async {
-                final repo = await ref.read(repositoryProvider.future);
-                final updatedRelease = release.copyWith(
-                  title: _titleController.text,
-                  description: _descriptionController.text,
-                  artworkImagePath: _artworkImagePath,
-                  releaseDate: _releaseDate,
-                  clearReleaseDate: _releaseDate == null && release.releaseDate != null,
-                );
-                await repo.updateRelease(updatedRelease);
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Release saved.')));
-                }
-              },
-            ),
-          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -565,7 +545,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                 const SizedBox(width: 8),
                                 IconButton(
                                   icon: const Icon(Icons.save),
-                                  tooltip: 'Save title',
+                                  tooltip: 'Save',
                                   onPressed: () async {
                                     final releases = ref.read(releasesProvider);
                                     final release = releases.asData?.value?.firstWhere(
@@ -576,11 +556,13 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                       final repo = await ref.read(repositoryProvider.future);
                                       final updatedRelease = release.copyWith(
                                         title: _titleController.text,
+                                        description: _descriptionController.text,
+                                        artworkImagePath: _artworkImagePath,
                                       );
                                       await repo.updateRelease(updatedRelease);
                                       if (mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Release title saved.')),
+                                          const SnackBar(content: Text('Release saved.')),
                                         );
                                       }
                                     }
@@ -862,11 +844,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                     final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
                                     final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
                                     await repo.updateRelease(updatedRelease);
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Removed ${project.displayName} from release.')),
-                                      );
-                                    }
                                   },
                                 ),
                               ],
