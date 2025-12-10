@@ -5,9 +5,9 @@
 AppName=DAW Project Manager
 AppVersion=1.1.0
 AppPublisher=DAW Project Manager Co.
-AppPublisherURL=https://www.github.com/ggbecker/daw-project-manager
-AppSupportURL=https://www.github.com/ggbecker/daw-project-manager
-AppUpdatesURL=https://www.github.com/ggbecker/daw-project-manager
+AppPublisherURL=https://www.github.com/bandpassrecords/daw-project-manager
+AppSupportURL=https://www.github.com/bandpassrecords/daw-project-manager
+AppUpdatesURL=https://www.github.com/bandpassrecords/daw-project-manager
 DefaultDirName={autopf}\DAW Project Manager
 DefaultGroupName=DAW Project Manager
 ; Nome do arquivo de saída
