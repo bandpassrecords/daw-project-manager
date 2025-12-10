@@ -19,6 +19,7 @@ class TodoListWidget extends StatefulWidget {
 class _TodoListWidgetState extends State<TodoListWidget> {
   final _textController = TextEditingController();
   final _uuid = const Uuid();
+  bool _doneSectionExpanded = false; // Track if "Done" section is expanded
 
   @override
   void dispose() {
@@ -44,7 +45,18 @@ class _TodoListWidgetState extends State<TodoListWidget> {
   void _toggleTodo(String id) {
     final updatedTodos = widget.todos.map((todo) {
       if (todo.id == id) {
-        return todo.copyWith(completed: !todo.completed);
+        // When marking as completed, update createdAt to current time so it appears at top of done list
+        // When uncompleting, keep the original createdAt
+        if (!todo.completed) {
+          // Marking as done - update createdAt to now so it sorts to top
+          return todo.copyWith(
+            completed: true,
+            createdAt: DateTime.now(),
+          );
+        } else {
+          // Unmarking - just toggle completed status
+          return todo.copyWith(completed: false);
+        }
       }
       return todo;
     }).toList();
@@ -155,65 +167,111 @@ class _TodoListWidgetState extends State<TodoListWidget> {
               ],
             ),
             const SizedBox(height: 16),
-            // Todo list
-            if (widget.todos.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Center(
-                  child: Text(
-                    'No todos yet. Add one above.',
-                    style: TextStyle(color: Colors.white54),
-                  ),
-                ),
-              )
-            else
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 300),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: widget.todos.length,
-                  itemBuilder: (context, index) {
-                    final todo = widget.todos[index];
-                    return ListTile(
-                      dense: true,
-                      leading: Checkbox(
-                        value: todo.completed,
-                        onChanged: (_) => _toggleTodo(todo.id),
+            // Separate active and done todos
+            Builder(
+              builder: (context) {
+                final activeTodos = widget.todos.where((t) => !t.completed).toList();
+                // Sort done todos by createdAt descending (most recently completed first)
+                final doneTodos = widget.todos
+                    .where((t) => t.completed)
+                    .toList()
+                  ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+                
+                if (widget.todos.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      child: Text(
+                        'No todos yet. Add one above.',
+                        style: TextStyle(color: Colors.white54),
                       ),
-                      title: Text(
-                        todo.text,
-                        style: TextStyle(
-                          decoration: todo.completed
-                              ? TextDecoration.lineThrough
-                              : null,
-                          color: todo.completed
-                              ? Colors.white54
-                              : Colors.white70,
+                    ),
+                  );
+                }
+                
+                return ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 400),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      // Active todos section
+                      if (activeTodos.isNotEmpty)
+                        ...activeTodos.map((todo) => _buildTodoItem(todo)),
+                      
+                      // Done todos section (collapsible)
+                      if (doneTodos.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        ExpansionTile(
+                          key: const PageStorageKey<String>('done_section'),
+                          initiallyExpanded: _doneSectionExpanded,
+                          onExpansionChanged: (expanded) {
+                            setState(() {
+                              _doneSectionExpanded = expanded;
+                            });
+                          },
+                          title: Row(
+                            children: [
+                              const Icon(Icons.check_circle_outline, color: Colors.green, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Done (${doneTodos.length})',
+                                style: const TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          children: [
+                            ...doneTodos.map((todo) => _buildTodoItem(todo)),
+                          ],
                         ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit_outlined, size: 18),
-                            color: Colors.white70,
-                            onPressed: () => _editTodo(todo),
-                            tooltip: 'Edit',
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 18),
-                            color: Colors.red.shade300,
-                            onPressed: () => _deleteTodo(todo.id),
-                            tooltip: 'Delete',
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+                      ],
+                    ],
+                  ),
+                );
+              },
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTodoItem(TodoItem todo) {
+    return ListTile(
+      dense: true,
+      leading: Checkbox(
+        value: todo.completed,
+        onChanged: (_) => _toggleTodo(todo.id),
+      ),
+      title: Text(
+        todo.text,
+        style: TextStyle(
+          decoration: todo.completed
+              ? TextDecoration.lineThrough
+              : null,
+          color: todo.completed
+              ? Colors.white54
+              : Colors.white70,
+        ),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, size: 18),
+            color: Colors.white70,
+            onPressed: () => _editTodo(todo),
+            tooltip: 'Edit',
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, size: 18),
+            color: Colors.red.shade300,
+            onPressed: () => _deleteTodo(todo.id),
+            tooltip: 'Delete',
+          ),
+        ],
       ),
     );
   }

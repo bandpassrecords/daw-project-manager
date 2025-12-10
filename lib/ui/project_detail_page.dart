@@ -92,6 +92,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   @override
   Widget build(BuildContext context) {
     final repoAsync = ref.watch(repositoryProvider);
+    final allProjectsAsync = ref.watch(allProjectsStreamProvider);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Project Details'),
@@ -100,7 +102,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => const Center(child: Text('Failed to load')),
         data: (repo) {
-          final project = repo.getAllProjects().firstWhere((p) => p.id == widget.projectId);
+          // Use projects from stream to get latest data, fallback to repo if stream not ready
+          final allProjects = allProjectsAsync.value ?? repo.getAllProjects();
+          final project = allProjects.firstWhere((p) => p.id == widget.projectId);
 
           // Sincroniza controllers com os dados do projeto
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -204,6 +208,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                     onTodosChanged: (updatedTodos) async {
                       final updated = project.copyWith(todos: updatedTodos);
                       await repo.updateProject(updated);
+                      // Invalidate the projects stream to refresh the UI
+                      if (mounted) {
+                        ref.invalidate(allProjectsStreamProvider);
+                      }
                     },
                   ),
 

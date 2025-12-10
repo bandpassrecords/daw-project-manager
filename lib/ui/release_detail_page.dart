@@ -728,13 +728,25 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                               child: const Icon(Icons.drag_indicator, color: Colors.white70),
                             ),
                             title: Text(project.displayName),
-                            subtitle: Row(
+                            subtitle: Wrap(
+                              spacing: 8,
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 if (project.dawType != null && project.dawType!.isNotEmpty) ...[
-                                  Text(project.dawType!),
-                                  const SizedBox(width: 8),
+                                  Text(
+                                    project.dawVersion != null && project.dawVersion!.isNotEmpty
+                                        ? '${project.dawType!} ${project.dawVersion!}'
+                                        : project.dawType!,
+                                  ),
                                   Text('•', style: TextStyle(color: Colors.white54)),
-                                  const SizedBox(width: 8),
+                                ],
+                                if (project.bpm != null) ...[
+                                  Text('${project.bpm!.toStringAsFixed(0)} BPM'),
+                                  Text('•', style: TextStyle(color: Colors.white54)),
+                                ],
+                                if (project.musicalKey != null && project.musicalKey!.isNotEmpty) ...[
+                                  Text(project.musicalKey!),
+                                  Text('•', style: TextStyle(color: Colors.white54)),
                                 ],
                                 Text(
                                   project.status,
@@ -1439,15 +1451,46 @@ class _TrackSelectionDialog extends StatefulWidget {
 
 class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
   final Set<String> _selectedIds = {};
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.toLowerCase();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<MusicProject> get _filteredProjects {
+    if (_searchQuery.isEmpty) {
+      return widget.projects;
+    }
+    return widget.projects.where((project) {
+      final name = project.displayName.toLowerCase();
+      final dawType = (project.dawType ?? '').toLowerCase();
+      return name.contains(_searchQuery) || dawType.contains(_searchQuery);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final filteredProjects = _filteredProjects;
+    
     return AlertDialog(
       backgroundColor: const Color(0xFF2B2D31),
       title: const Text('Select Tracks to Add'),
       content: SizedBox(
         width: 600,
-        height: 400,
+        height: 500,
         child: Column(
           children: [
             Text(
@@ -1455,31 +1498,56 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
               style: const TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.projects.length,
-                itemBuilder: (context, index) {
-                  final project = widget.projects[index];
-                  final isSelected = _selectedIds.contains(project.id);
-                  return CheckboxListTile(
-                    title: Text(project.displayName),
-                    subtitle: Text(
-                      '${project.dawType ?? 'Unknown'} • ${project.bpm?.toStringAsFixed(0) ?? '?'} BPM',
-                      style: const TextStyle(color: Colors.white54),
-                    ),
-                    value: isSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedIds.add(project.id);
-                        } else {
-                          _selectedIds.remove(project.id);
-                        }
-                      });
-                    },
-                  );
-                },
+            // Search field
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Search tracks',
+                hintText: 'Search by name or DAW type',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                        },
+                      )
+                    : null,
               ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: filteredProjects.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No tracks found',
+                        style: TextStyle(color: Colors.white54),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredProjects.length,
+                      itemBuilder: (context, index) {
+                        final project = filteredProjects[index];
+                        final isSelected = _selectedIds.contains(project.id);
+                        return CheckboxListTile(
+                          title: Text(project.displayName),
+                          subtitle: Text(
+                            '${project.dawType ?? 'Unknown'} • ${project.bpm?.toStringAsFixed(0) ?? '?'} BPM',
+                            style: const TextStyle(color: Colors.white54),
+                          ),
+                          value: isSelected,
+                          onChanged: (value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedIds.add(project.id);
+                              } else {
+                                _selectedIds.remove(project.id);
+                              }
+                            });
+                          },
+                        );
+                      },
+                    ),
             ),
           ],
         ),
