@@ -3,20 +3,25 @@ import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import 'package:archive/archive.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../models/release.dart';
+import 'dashboard_page.dart';
 import '../models/release_file.dart';
 import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../repository/project_repository.dart';
 import '../utils/app_paths.dart';
 import 'project_detail_page.dart';
+import 'widgets/todo_list_widget.dart';
+import '../models/todo_item.dart';
 
 class ReleaseDetailPage extends ConsumerStatefulWidget {
   final String releaseId;
@@ -446,145 +451,208 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       }
 
       return Scaffold(
-      appBar: AppBar(
-        title: Text(release.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () async {
-              final repo = await ref.read(repositoryProvider.future);
-              final updatedRelease = release.copyWith(
-                title: _titleController.text,
-                description: _descriptionController.text,
-                artworkImagePath: _artworkImagePath,
-                releaseDate: _releaseDate,
-                clearReleaseDate: _releaseDate == null && release.releaseDate != null,
-              );
-              await repo.updateRelease(updatedRelease);
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Release saved.')));
-              }
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Left side: Artwork and details
-            Expanded(
-              flex: 1,
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Card(
-                      child: Builder(
-                        builder: (context) {
-                          // Use release data directly to ensure we always show the latest image
-                          final imagePath = release.artworkImagePath ?? _artworkImagePath;
-                          if (imagePath != null && File(imagePath).existsSync()) {
-                            return Image.file(
-                              File(imagePath),
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.broken_image, size: 50, color: Colors.white38),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        'Image not found',
-                                        style: TextStyle(color: Colors.white54, fontSize: 12),
+        appBar: AppBar(
+          title: Text(release.title),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.save),
+              tooltip: 'Save',
+              onPressed: () async {
+                final repo = await ref.read(repositoryProvider.future);
+                final updatedRelease = release.copyWith(
+                  title: _titleController.text,
+                  description: _descriptionController.text,
+                  artworkImagePath: _artworkImagePath,
+                  releaseDate: _releaseDate,
+                  clearReleaseDate: _releaseDate == null && release.releaseDate != null,
+                );
+                await repo.updateRelease(updatedRelease);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Release saved.')));
+                }
+              },
+            ),
+            const WindowButtons(),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                    // Left side: Artwork and details
+                    Expanded(
+                      flex: 1,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: _pickImage,
+                              child: Card(
+                                child: Builder(
+                                  builder: (context) {
+                                    // Use release data directly to ensure we always show the latest image
+                                    final imagePath = release.artworkImagePath ?? _artworkImagePath;
+                                    if (imagePath != null && File(imagePath).existsSync()) {
+                                      return LayoutBuilder(
+                                        builder: (context, constraints) {
+                                          // Limit image to 50% of available width
+                                          final maxWidth = constraints.maxWidth * 0.5;
+                                          return Center(
+                                            child: SizedBox(
+                                              width: maxWidth,
+                                              child: AspectRatio(
+                                                aspectRatio: 1.0,
+                                                child: Image.file(
+                                                  File(imagePath),
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error, stackTrace) {
+                                                    return const Center(
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Icon(Icons.broken_image, size: 50, color: Colors.white38),
+                                                          SizedBox(height: 8),
+                                                          Text(
+                                                            'Image not found',
+                                                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    }
+                                    return const Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(50.0),
+                                        child: Icon(Icons.add_a_photo, size: 50),
                                       ),
-                                    ],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _titleController,
+                                    decoration: const InputDecoration(labelText: 'Release Title'),
                                   ),
-                                );
+                                ),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  icon: const Icon(Icons.save),
+                                  tooltip: 'Save title',
+                                  onPressed: () async {
+                                    final releases = ref.read(releasesProvider);
+                                    final release = releases.asData?.value?.firstWhere(
+                                      (r) => r.id == widget.releaseId,
+                                      orElse: () => throw StateError('Release not found'),
+                                    );
+                                    if (release != null) {
+                                      final repo = await ref.read(repositoryProvider.future);
+                                      final updatedRelease = release.copyWith(
+                                        title: _titleController.text,
+                                      );
+                                      await repo.updateRelease(updatedRelease);
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Release title saved.')),
+                                        );
+                                      }
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _descriptionController,
+                              decoration: const InputDecoration(labelText: 'Description'),
+                              maxLines: 5,
+                            ),
+                            const SizedBox(height: 16),
+                            ListTile(
+                              title: const Text('Release Date'),
+                              subtitle: Text(
+                                _releaseDate != null
+                                    ? DateFormat.yMMMd().format(_releaseDate!)
+                                    : 'No date set',
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (_releaseDate != null)
+                                    IconButton(
+                                      icon: const Icon(Icons.clear),
+                                      onPressed: () {
+                                        setState(() {
+                                          _releaseDate = null;
+                                        });
+                                        // Auto-save the cleared date immediately
+                                        _saveReleaseDate(release, null);
+                                      },
+                                      tooltip: 'Clear date',
+                                    ),
+                                  IconButton(
+                                    icon: const Icon(Icons.calendar_today),
+                                    onPressed: () async {
+                                      final picked = await showDatePicker(
+                                        context: context,
+                                        initialDate: _releaseDate ?? DateTime.now(),
+                                        firstDate: DateTime(1900),
+                                        lastDate: DateTime(2100),
+                                      );
+                                      if (picked != null) {
+                                        setState(() {
+                                          // Normalize to date only (remove time component)
+                                          _releaseDate = DateTime(picked.year, picked.month, picked.day);
+                                        });
+                                        // Auto-save the release date immediately
+                                        _saveReleaseDate(release, DateTime(picked.year, picked.month, picked.day));
+                                      }
+                                    },
+                                    tooltip: 'Pick date',
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // TODO List
+                            TodoListWidget(
+                              todos: release.todos,
+                              onTodosChanged: (updatedTodos) async {
+                                final repo = await ref.read(repositoryProvider.future);
+                                final updatedRelease = release.copyWith(todos: updatedTodos);
+                                await repo.updateRelease(updatedRelease);
                               },
-                            );
-                          }
-                          return const Center(child: Icon(Icons.add_a_photo, size: 50));
-                        },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _titleController,
-                    decoration: const InputDecoration(labelText: 'Release Title'),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description'),
-                    maxLines: 5,
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    title: const Text('Release Date'),
-                    subtitle: Text(
-                      _releaseDate != null
-                          ? DateFormat.yMMMd().format(_releaseDate!)
-                          : 'No date set',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (_releaseDate != null)
-                          IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              setState(() {
-                                _releaseDate = null;
-                              });
-                              // Auto-save the cleared date immediately
-                              _saveReleaseDate(release, null);
-                            },
-                            tooltip: 'Clear date',
-                          ),
-                        IconButton(
-                          icon: const Icon(Icons.calendar_today),
-                          onPressed: () async {
-                            final picked = await showDatePicker(
-                              context: context,
-                              initialDate: _releaseDate ?? DateTime.now(),
-                              firstDate: DateTime(1900),
-                              lastDate: DateTime(2100),
-                            );
-                            if (picked != null) {
-                              setState(() {
-                                // Normalize to date only (remove time component)
-                                _releaseDate = DateTime(picked.year, picked.month, picked.day);
-                              });
-                              // Auto-save the release date immediately
-                              _saveReleaseDate(release, DateTime(picked.year, picked.month, picked.day));
-                            }
-                          },
-                          tooltip: 'Pick date',
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 16),
-            // Right side: Tracklist and Files
-            Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Tracks Section
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Tracks (${releaseProjects.length})', style: Theme.of(context).textTheme.headlineSmall),
-                      ElevatedButton.icon(
+                    const SizedBox(width: 16),
+                    // Right side: Tracklist and Files
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Tracks Section
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Tracks (${releaseProjects.length})', style: Theme.of(context).textTheme.headlineSmall),
+                              ElevatedButton.icon(
                         icon: const Icon(Icons.add),
                         label: const Text('Add Tracks'),
                         onPressed: () async {
@@ -620,12 +688,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                           }
                         },
                       ),
-                    ],
-                  ),
-                  const Divider(),
-                  Expanded(
-                    flex: 1,
-                    child: ReorderableListView.builder(
+                            ],
+                          ),
+                          const Divider(),
+                          Expanded(
+                            flex: 1,
+                            child: ReorderableListView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       buildDefaultDragHandles: false,
                       itemCount: releaseProjects.length,
@@ -662,8 +730,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                               index: index,
                               child: const Icon(Icons.drag_indicator, color: Colors.white70),
                             ),
-                          title: Text(project.displayName),
-                          subtitle: Text(project.dawType ?? ''),
+                            title: Text(project.displayName),
+                            subtitle: Text(project.dawType ?? ''),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -755,20 +823,20 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                 ),
                                 // Remove button
                                 IconButton(
-                            icon: const Icon(Icons.remove_circle_outline),
+                                  icon: const Icon(Icons.remove_circle_outline),
                                   color: Colors.red.shade300,
                                   tooltip: 'Remove from Release',
-                            onPressed: () async {
-                              final repo = await ref.read(repositoryProvider.future);
-                              final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
-                              final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
-                              await repo.updateRelease(updatedRelease);
+                                  onPressed: () async {
+                                    final repo = await ref.read(repositoryProvider.future);
+                                    final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
+                                    final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
+                                    await repo.updateRelease(updatedRelease);
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text('Removed ${project.displayName} from release.')),
                                       );
                                     }
-                            },
+                                  },
                                 ),
                               ],
                             ),
@@ -815,15 +883,15 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                         : _FilesSection(
                             files: release.files,
                             release: release,
-                    ),
+                          ),
                   ),
                 ],
               ),
             ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
     } catch (e) {
       return Scaffold(
         appBar: AppBar(title: const Text('Release Not Found')),

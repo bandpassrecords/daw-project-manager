@@ -1,11 +1,16 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:uuid/uuid.dart';
 import '../models/profile.dart';
 import '../providers/providers.dart';
 import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
 import '../services/scanner_service.dart';
+import '../utils/app_paths.dart';
 
 class ProfileManagerPage extends ConsumerStatefulWidget {
   const ProfileManagerPage({super.key});
@@ -112,6 +117,88 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
     // No need to show a message here as the scan state change will trigger UI updates
   }
 
+  Future<String> _getProfilePhotosPath() async {
+    final basePath = await getLocalAppDataPath();
+    return path.join(basePath, 'profile_photos');
+  }
+
+  Future<void> _pickProfilePhoto(Profile profile) async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    if (result != null && result.files.single.path != null) {
+      final sourcePath = result.files.single.path!;
+      final sourceFile = File(sourcePath);
+      
+      if (!await sourceFile.exists()) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Selected file does not exist.')),
+          );
+        }
+        return;
+      }
+
+      try {
+        // Get profile photos directory
+        final photosDirPath = await _getProfilePhotosPath();
+        final photosDir = Directory(photosDirPath);
+        
+        // Create directory if it doesn't exist
+        if (!await photosDir.exists()) {
+          await photosDir.create(recursive: true);
+        }
+
+        // Copy file to profile photos directory with profile ID as name
+        final fileExtension = path.extension(sourcePath);
+        final destPath = path.join(photosDir.path, '${profile.id}$fileExtension');
+        await sourceFile.copy(destPath);
+
+        // Update profile with photo path
+        final profileRepo = await ref.read(profileRepositoryProvider.future);
+        final updatedProfile = profile.copyWith(photoPath: destPath);
+        await profileRepo.updateProfile(updatedProfile);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile photo updated.')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to save profile photo: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _removeProfilePhoto(Profile profile) async {
+    if (profile.photoPath != null) {
+      try {
+        final photoFile = File(profile.photoPath!);
+        if (await photoFile.exists()) {
+          await photoFile.delete();
+        }
+        
+        final profileRepo = await ref.read(profileRepositoryProvider.future);
+        final updatedProfile = profile.copyWith(clearPhotoPath: true);
+        await profileRepo.updateProfile(updatedProfile);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile photo removed.')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to remove profile photo: $e')),
+          );
+        }
+      }
+    }
+  }
+
   Future<void> _editProfile(Profile profile) async {
     final editController = TextEditingController(text: profile.name);
     
@@ -119,19 +206,77 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF2B2D31),
-        title: const Text('Edit Profile Name'),
-        content: TextField(
-          controller: editController,
-          decoration: const InputDecoration(
-            labelText: 'Profile Name',
-            hintText: 'Enter profile name',
-          ),
-          autofocus: true,
-          onSubmitted: (value) {
-            if (value.trim().isNotEmpty) {
-              Navigator.pop(ctx, value.trim());
-            }
-          },
+        title: const Text('Edit Profile'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: editController,
+              decoration: const InputDecoration(
+                labelText: 'Profile Name',
+                hintText: 'Enter profile name',
+              ),
+              autofocus: true,
+              onSubmitted: (value) {
+                if (value.trim().isNotEmpty) {
+                  Navigator.pop(ctx, value.trim());
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+            // Profile photo preview and controls
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (profile.photoPath != null && File(profile.photoPath!).existsSync())
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      File(profile.photoPath!),
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: Icon(Icons.broken_image),
+                        );
+                      },
+                    ),
+                  )
+                else
+                  const SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: Icon(Icons.person, size: 40),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton.icon(
+                  icon: const Icon(Icons.photo),
+                  label: const Text('Change Photo'),
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    await _pickProfilePhoto(profile);
+                  },
+                ),
+                if (profile.photoPath != null)
+                  TextButton.icon(
+                    icon: const Icon(Icons.delete),
+                    label: const Text('Remove'),
+                    onPressed: () async {
+                      Navigator.pop(ctx);
+                      await _removeProfilePhoto(profile);
+                    },
+                  ),
+              ],
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -145,7 +290,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                 Navigator.pop(ctx, newName);
               }
             },
-            child: const Text('Save'),
+            child: const Text('Save Name'),
           ),
         ],
       ),
@@ -302,6 +447,28 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                             color: isCurrent ? const Color(0xFF3C3F43) : const Color(0xFF2B2D31),
                             margin: const EdgeInsets.only(bottom: 8),
                             child: ListTile(
+                              leading: profile.photoPath != null && File(profile.photoPath!).existsSync()
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: Image.file(
+                                        File(profile.photoPath!),
+                                        width: 48,
+                                        height: 48,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return const SizedBox(
+                                            width: 48,
+                                            height: 48,
+                                            child: Icon(Icons.person),
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  : const SizedBox(
+                                      width: 48,
+                                      height: 48,
+                                      child: Icon(Icons.person),
+                                    ),
                               title: Row(
                                 children: [
                                   Text(

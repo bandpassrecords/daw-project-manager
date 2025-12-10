@@ -8,6 +8,7 @@ import '../models/music_project.dart';
 import '../models/scan_root.dart';
 import '../models/release.dart';
 import '../models/release_file.dart';
+import '../models/todo_item.dart';
 import '../services/metadata_extractor.dart';
 import '../utils/app_paths.dart';
 import 'profile_repository.dart';
@@ -42,6 +43,9 @@ class ProjectRepository {
     }
     if (!Hive.isAdapterRegistered(4)) {
       Hive.registerAdapter(ReleaseFileAdapter());
+    }
+    if (!Hive.isAdapterRegistered(6)) {
+      Hive.registerAdapter(TodoItemAdapter());
     }
 
     // Get current profile

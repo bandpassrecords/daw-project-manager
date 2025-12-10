@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'todo_item.dart';
 
 @HiveType(typeId: 1)
 class MusicProject {
@@ -52,6 +53,9 @@ class MusicProject {
   @HiveField(15)
   final String? dawVersion; // DAW version (major version number)
 
+  @HiveField(16)
+  final List<TodoItem> todos; // TODO list for the track
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -69,6 +73,7 @@ class MusicProject {
     this.notes, // NOVO CAMPO NO CONSTRUTOR
     this.dawType,
     this.dawVersion,
+    this.todos = const [],
   });
 
   String get displayName => (customDisplayName != null && customDisplayName!.trim().isNotEmpty)
@@ -92,6 +97,7 @@ class MusicProject {
     String? notes, // NOVO CAMPO NO COPYWITH
     String? dawType,
     String? dawVersion,
+    List<TodoItem>? todos,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -110,6 +116,7 @@ class MusicProject {
       notes: notes ?? this.notes, // NOVO CAMPO
       dawType: dawType ?? this.dawType,
       dawVersion: dawVersion ?? this.dawVersion,
+      todos: todos ?? this.todos,
     );
   }
 }
@@ -142,13 +149,16 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       notes: fields.containsKey(13) ? fields[13] as String? : null, // NOVO CAMPO
       dawType: fields.containsKey(14) ? fields[14] as String? : null,
       dawVersion: fields.containsKey(15) ? fields[15] as String? : null,
+      todos: fields.containsKey(16) && fields[16] != null 
+          ? (fields[16] as List).cast<TodoItem>()
+          : const [],
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(16) // Tinha 15, agora são 16 campos (0-15)
+      ..writeByte(17) // Agora são 17 campos (0-16)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -180,6 +190,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(14)
       ..write(obj.dawType)
       ..writeByte(15)
-      ..write(obj.dawVersion);
+      ..write(obj.dawVersion)
+      ..writeByte(16)
+      ..write(obj.todos);
   }
 }

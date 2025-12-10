@@ -1,12 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart'; // NOVO IMPORT
 import 'package:path/path.dart' as p; // NOVO IMPORT
+import 'package:window_manager/window_manager.dart';
 
 import '../models/music_project.dart';
+import '../models/todo_item.dart';
 import '../providers/providers.dart';
+import 'dashboard_page.dart';
+import 'widgets/todo_list_widget.dart';
 
 class ProjectDetailPage extends ConsumerStatefulWidget {
   final String projectId;
@@ -80,10 +85,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Project Details'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        actions: const [
+          WindowButtons(),
+        ],
       ),
       body: repoAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -150,6 +154,16 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                     ),
                     maxLines: 5,
                     keyboardType: TextInputType.multiline,
+                  ),
+
+                  const SizedBox(height: 24),
+                  // TODO List
+                  TodoListWidget(
+                    todos: project.todos,
+                    onTodosChanged: (updatedTodos) async {
+                      final updated = project.copyWith(todos: updatedTodos);
+                      await repo.updateProject(updated);
+                    },
                   ),
 
                   const SizedBox(height: 24),
