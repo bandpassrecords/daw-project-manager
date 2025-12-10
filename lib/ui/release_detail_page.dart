@@ -10,7 +10,6 @@ import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import 'package:archive/archive.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:window_manager/window_manager.dart';
 
 import '../models/release.dart';
 import 'dashboard_page.dart';
@@ -98,6 +97,23 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       return 'document';
     }
     return 'other';
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Idea':
+        return Colors.blue.shade300;
+      case 'Arranging':
+        return Colors.orange.shade300;
+      case 'Mixing':
+        return Colors.purple.shade300;
+      case 'Mastering':
+        return Colors.pink.shade300;
+      case 'Finished':
+        return Colors.green.shade300;
+      default:
+        return Colors.white70;
+    }
   }
 
   Future<void> _addFiles(BuildContext context, Release release) async {
@@ -472,7 +488,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                 }
               },
             ),
-            const WindowButtons(),
           ],
         ),
         body: Padding(
@@ -731,7 +746,23 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                               child: const Icon(Icons.drag_indicator, color: Colors.white70),
                             ),
                             title: Text(project.displayName),
-                            subtitle: Text(project.dawType ?? ''),
+                            subtitle: Row(
+                              children: [
+                                if (project.dawType != null && project.dawType!.isNotEmpty) ...[
+                                  Text(project.dawType!),
+                                  const SizedBox(width: 8),
+                                  Text('•', style: TextStyle(color: Colors.white54)),
+                                  const SizedBox(width: 8),
+                                ],
+                                Text(
+                                  project.status,
+                                  style: TextStyle(
+                                    color: _getStatusColor(project.status),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [

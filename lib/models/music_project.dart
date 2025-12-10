@@ -67,7 +67,7 @@ class MusicProject {
     required this.updatedAt,
     this.customDisplayName,
     this.thumbnailPath,
-    this.status = 'Draft',
+    this.status = 'Idea',
     this.bpm,
     this.musicalKey,
     this.notes, // NOVO CAMPO NO CONSTRUTOR

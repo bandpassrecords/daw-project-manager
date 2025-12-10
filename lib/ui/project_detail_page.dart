@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart'; // NOVO IMPORT
 import 'package:path/path.dart' as p; // NOVO IMPORT
-import 'package:window_manager/window_manager.dart';
 
 import '../models/music_project.dart';
 import '../models/todo_item.dart';
@@ -27,6 +26,16 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   late TextEditingController _bpmCtrl;
   late TextEditingController _keyCtrl;
   late TextEditingController _notesCtrl; // NOVO CONTROLLER
+  String? _selectedPhase;
+  bool _hasInitializedPhase = false; // Track if we've initialized the phase
+  
+  static const List<String> _projectPhases = [
+    'Idea',
+    'Arranging',
+    'Mixing',
+    'Mastering',
+    'Finished',
+  ];
 
   @override
   void initState() {
@@ -35,6 +44,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     _bpmCtrl = TextEditingController();
     _keyCtrl = TextEditingController();
     _notesCtrl = TextEditingController(); // INICIALIZA
+    _selectedPhase = 'Idea'; // Initialize with default phase
   }
 
   @override
@@ -85,9 +95,6 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Project Details'),
-        actions: const [
-          WindowButtons(),
-        ],
       ),
       body: repoAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -110,6 +117,20 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
             // NOVO: Sincroniza Notas
             if (_notesCtrl.text != (project.notes ?? '')) {
               _notesCtrl.text = project.notes ?? '';
+            }
+            // Sincroniza fase do projeto (only on first load)
+            if (!_hasInitializedPhase) {
+              final projectStatus = project.status;
+              // Use project status if it's valid, otherwise default to 'Idea'
+              final validStatus = _projectPhases.contains(projectStatus) 
+                  ? projectStatus 
+                  : 'Idea';
+              if (mounted) {
+                setState(() {
+                  _selectedPhase = validStatus;
+                  _hasInitializedPhase = true;
+                });
+              }
             }
           });
 
@@ -141,6 +162,26 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                   TextFormField(
                     controller: _keyCtrl,
                     decoration: const InputDecoration(labelText: 'Key (e.g., C#m, F major)'),
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  // Project Phase Dropdown
+                  DropdownButtonFormField<String>(
+                    value: _selectedPhase,
+                    decoration: const InputDecoration(
+                      labelText: 'Project Phase',
+                    ),
+                    items: _projectPhases.map((phase) {
+                      return DropdownMenuItem<String>(
+                        value: phase,
+                        child: Text(phase),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedPhase = value;
+                      });
+                    },
                   ),
                   const SizedBox(height: 12),
                   
@@ -186,6 +227,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             bpm: _bpmCtrl.text.trim().isEmpty ? null : double.tryParse(_bpmCtrl.text.trim()),
                             musicalKey: _keyCtrl.text.trim().isEmpty ? null : _keyCtrl.text.trim(),
                             notes: newNotes, // NOVO: Salva Notas
+                            status: _selectedPhase ?? 'Idea', // Save project phase
                           );
 
                           await repo.updateProject(updated);

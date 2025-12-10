@@ -173,6 +173,17 @@ class _ReleasesTable extends ConsumerStatefulWidget {
 class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
   PlutoGridStateManager? stateManager;
 
+  @override
+  void didUpdateWidget(_ReleasesTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update the grid rows when releases change
+    if (widget.releases != oldWidget.releases && stateManager != null) {
+      final newRows = _mapReleasesToRows(widget.releases);
+      stateManager!.removeAllRows();
+      stateManager!.appendRows(newRows);
+    }
+  }
+
   List<PlutoRow> _mapReleasesToRows(List<Release> releases) {
     return releases.map((release) {
       final releaseProjects = widget.projects
@@ -233,6 +244,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         type: PlutoColumnType.text(),
         enableColumnDrag: true,
         enableContextMenu: false,
+        enableEditingMode: false,
         width: 300,
         minWidth: 200,
         frozen: PlutoColumnFrozen.start,
@@ -241,6 +253,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         title: 'Tracks',
         field: 'tracks',
         type: PlutoColumnType.number(),
+        enableEditingMode: false,
         width: 100,
         minWidth: 80,
       ),
@@ -248,6 +261,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         title: 'Release Date',
         field: 'releaseDate',
         type: PlutoColumnType.text(),
+        enableEditingMode: false,
         width: 180,
         minWidth: 150,
       ),
@@ -255,6 +269,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         title: 'Description',
         field: 'description',
         type: PlutoColumnType.text(),
+        enableEditingMode: false,
         width: 300,
         minWidth: 200,
       ),
@@ -271,12 +286,16 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
+                onPressed: () async {
+                  await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => ReleaseDetailPage(releaseId: release.id),
                     ),
                   );
+                  // Refresh releases data when returning from detail page
+                  if (mounted) {
+                    ref.invalidate(releasesProvider);
+                  }
                 },
                 child: const Text('View'),
               ),

@@ -197,11 +197,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
         _tabController.animateTo(1);
         await Future.delayed(const Duration(milliseconds: 300));
         if (mounted) {
-          Navigator.of(context).push(
+          await Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => ReleaseDetailPage(releaseId: newRelease.id),
             ),
           );
+          // Refresh releases data when returning from detail page
+          if (mounted) {
+            ref.invalidate(releasesProvider);
+          }
         }
       }
     } catch (e) {
@@ -300,8 +304,27 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                 },
                               ),
                               data: (currentProfile) {
+                                Widget profileIcon;
+                                if (currentProfile?.photoPath != null && 
+                                    File(currentProfile!.photoPath!).existsSync()) {
+                                  profileIcon = ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.file(
+                                      File(currentProfile.photoPath!),
+                                      width: 18,
+                                      height: 18,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const Icon(Icons.person, size: 18, color: Colors.white70);
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  profileIcon = const Icon(Icons.person, size: 18, color: Colors.white70);
+                                }
+                                
                                 return TextButton.icon(
-                                  icon: const Icon(Icons.person, size: 18, color: Colors.white70),
+                                  icon: profileIcon,
                                   label: Text(
                                     currentProfile?.name ?? 'Profile',
                                     style: const TextStyle(color: Colors.white70, fontSize: 14),
@@ -366,8 +389,27 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                 },
                               ),
                               data: (currentProfile) {
+                                Widget profileIcon;
+                                if (currentProfile?.photoPath != null && 
+                                    File(currentProfile!.photoPath!).existsSync()) {
+                                  profileIcon = ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.file(
+                                      File(currentProfile.photoPath!),
+                                      width: 18,
+                                      height: 18,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const Icon(Icons.person, size: 18);
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  profileIcon = const Icon(Icons.person, size: 18);
+                                }
+                                
                                 return TextButton.icon(
-                                  icon: const Icon(Icons.person, size: 18),
+                                  icon: profileIcon,
                                   label: Text(currentProfile?.name ?? 'Profile'),
                                   onPressed: () {
                                     Navigator.of(context).push(
