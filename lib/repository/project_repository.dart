@@ -100,6 +100,13 @@ class ProjectRepository {
         ? rootPath 
         : rootPath + p.separator;
     
+    // Get all project IDs that are referenced in releases (to preserve them)
+    final releases = getAllReleases();
+    final protectedProjectIds = <String>{};
+    for (final release in releases) {
+      protectedProjectIds.addAll(release.trackIds);
+    }
+    
     // Remove all projects that belong to this root folder
     // Note: projectsBox is already profile-specific, so we only operate on current profile's projects
     final projectsToDelete = <String>[];
@@ -113,7 +120,10 @@ class ProjectRepository {
         // This is safe because projectsBox is profile-specific (${profileId}_projects)
         if (projectPath.startsWith(rootPathNormalized) || 
             projectPath.startsWith(rootPath + p.separator)) {
-          projectsToDelete.add(project.id);
+          // Preserve projects that are referenced in releases
+          if (!protectedProjectIds.contains(project.id)) {
+            projectsToDelete.add(project.id);
+          }
         }
       } catch (_) {
         // If path normalization fails, skip this project
@@ -121,7 +131,7 @@ class ProjectRepository {
       }
     }
     
-    // Delete all projects from this root
+    // Delete all projects from this root (except those in releases)
     if (projectsToDelete.isNotEmpty) {
       await projectsBox.deleteAll(projectsToDelete);
     }
@@ -223,7 +233,26 @@ class ProjectRepository {
   Stream<BoxEvent> watchRoots() => rootsBox.watch();
 
   Future<void> clearAllData() async {
-    await projectsBox.clear();
+    // Get all project IDs that are referenced in releases (to preserve them)
+    final releases = getAllReleases();
+    final protectedProjectIds = <String>{};
+    for (final release in releases) {
+      protectedProjectIds.addAll(release.trackIds);
+    }
+    
+    // Delete all projects except those referenced in releases
+    if (protectedProjectIds.isNotEmpty) {
+      final allProjectIds = projectsBox.keys.cast<String>().toSet();
+      final projectsToDelete = allProjectIds.difference(protectedProjectIds);
+      if (projectsToDelete.isNotEmpty) {
+        await projectsBox.deleteAll(projectsToDelete);
+      }
+    } else {
+      // No protected projects, safe to clear all
+      await projectsBox.clear();
+    }
+    
+    // Always clear roots
     await rootsBox.clear();
   }
 
