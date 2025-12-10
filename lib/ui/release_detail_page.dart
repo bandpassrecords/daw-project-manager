@@ -220,19 +220,15 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       final audioFiles = release.files.where((f) => f.fileType == 'audio').toList();
       final otherFiles = release.files.where((f) => f.fileType != 'audio').toList();
       
-      // Add audio files with track numbers (only if multiple files)
-      for (int i = 0; i < audioFiles.length; i++) {
-        final releaseFile = audioFiles[i];
+      // Add audio files using their display names
+      for (final releaseFile in audioFiles) {
         final file = File(releaseFile.filePath);
         if (await file.exists()) {
           final fileData = await file.readAsBytes();
-          // Only prepend track number if there are multiple audio files
-          final fileName = audioFiles.length > 1
-              ? '${(i + 1).toString().padLeft(2, '0')} - ${releaseFile.fileName}'
-              : releaseFile.fileName;
+          // Use the display fileName (which may include track numbers if user added them)
           archive.addFile(
             ArchiveFile(
-              fileName,
+              releaseFile.fileName,
               fileData.length,
               fileData,
             ),
@@ -893,6 +889,30 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
     await repo.updateRelease(updatedRelease);
   }
 
+  Future<void> _renameFile(ReleaseFile updatedFile) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final updatedFiles = widget.release.files.map((f) {
+        return f.id == updatedFile.id ? updatedFile : f;
+      }).toList();
+      
+      final updatedRelease = widget.release.copyWith(files: updatedFiles);
+      await repo.updateRelease(updatedRelease);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('File name updated.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating file name: $e')),
+        );
+      }
+    }
+  }
+
   Future<void> _deleteFile(ReleaseFile file) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -966,18 +986,14 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
             itemBuilder: (context, index) {
               final file = audioFiles[index];
               final fileExists = File(file.filePath).existsSync();
-              // Only show track number if there are multiple audio files
-              final trackNumber = audioFiles.length > 1
-                  ? (index + 1).toString().padLeft(2, '0')
-                  : null;
 
               if (fileExists) {
                 return _AudioFileItem(
                   key: ValueKey(file.id),
                   file: file,
                   release: widget.release,
-                  trackNumber: trackNumber,
                   onDelete: () => _deleteFile(file),
+                  onRename: (updatedFile) => _renameFile(updatedFile),
                 );
               } else {
                 return Card(
@@ -987,7 +1003,7 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
                   child: ListTile(
                     leading: const Icon(Icons.drag_indicator, color: Colors.white54),
                     title: Text(
-                      trackNumber != null ? '$trackNumber - ${file.fileName}' : file.fileName,
+                      file.fileName,
                       style: const TextStyle(color: Colors.red),
                     ),
                     subtitle: Text(
@@ -1091,15 +1107,15 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
 class _AudioFileItem extends ConsumerStatefulWidget {
   final ReleaseFile file;
   final Release release;
-  final String? trackNumber; // Optional - only shown when multiple files
   final VoidCallback onDelete;
+  final Function(ReleaseFile) onRename;
 
   const _AudioFileItem({
     super.key,
     required this.file,
     required this.release,
-    this.trackNumber,
     required this.onDelete,
+    required this.onRename,
   });
 
   @override
@@ -1185,6 +1201,53 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
+  Future<void> _showRenameDialog(BuildContext context) async {
+    final controller = TextEditingController(text: widget.file.fileName);
+    
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF2B2D31),
+        title: const Text('Rename File'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            labelText: 'File Name',
+            labelStyle: TextStyle(color: Colors.white70),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white54),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final newName = controller.text.trim();
+              if (newName.isNotEmpty) {
+                Navigator.pop(ctx, newName);
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null && result != widget.file.fileName) {
+      final updatedFile = widget.file.copyWith(fileName: result);
+      widget.onRename(updatedFile);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -1207,9 +1270,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.trackNumber != null
-                                  ? '${widget.trackNumber} - ${widget.file.fileName}'
-                                  : widget.file.fileName,
+                              widget.file.fileName,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -1223,6 +1284,12 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                             ),
                           ],
                         ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined),
+                        color: Colors.white70,
+                        tooltip: 'Rename file',
+                        onPressed: () => _showRenameDialog(context),
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete_outline),
