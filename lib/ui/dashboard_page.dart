@@ -507,6 +507,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                     if (confirm == true) {
                                       final repo = await ref.read(repositoryProvider.future);
                                       await repo.clearAllData();
+                                      // Invalidate repository and related providers to refresh UI
+                                      ref.invalidate(repositoryProvider);
+                                      ref.invalidate(rootsWatchProvider);
+                                      ref.invalidate(scanRootsProvider);
+                                      ref.invalidate(allProjectsStreamProvider);
+                                      // Wait for repository to reload
+                                      await ref.read(repositoryProvider.future);
                                       if (mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Library cleared.')));
                                       }
