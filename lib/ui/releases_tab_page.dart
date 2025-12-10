@@ -75,7 +75,9 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
   @override
   Widget build(BuildContext context) {
     final releasesAsync = ref.watch(releasesProvider);
-    final projects = ref.watch(projectsProvider);
+    final allProjectsAsync = ref.watch(allProjectsStreamProvider);
+    // Use allProjects to include preserved projects, not just filtered projectsProvider
+    final projects = allProjectsAsync.value ?? [];
 
     return releasesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -191,19 +193,6 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         'data': PlutoCell(value: release),
       });
     }).toList();
-  }
-
-  @override
-  void didUpdateWidget(_ReleasesTable oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    
-    if (oldWidget.releases != widget.releases || oldWidget.projects != widget.projects) {
-      if (stateManager != null) {
-        final newRows = _mapReleasesToRows(widget.releases);
-        stateManager!.removeRows(stateManager!.rows, notify: false);
-        stateManager!.insertRows(0, newRows);
-      }
-    }
   }
 
   @override

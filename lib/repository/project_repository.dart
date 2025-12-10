@@ -226,8 +226,11 @@ class ProjectRepository {
   Stream<BoxEvent> watchProjects() => projectsBox.watch();
   
   // MÉTODO NOVO/CORRIGIDO: Retorna a lista completa a cada mudança do Hive
-  Stream<List<MusicProject>> watchAllProjects() {
-    return projectsBox.watch().map((_) => projectsBox.values.toList());
+  Stream<List<MusicProject>> watchAllProjects() async* {
+    // Emit initial value immediately
+    yield projectsBox.values.toList();
+    // Then watch for changes
+    yield* projectsBox.watch().map((_) => projectsBox.values.toList());
   }
   
   Stream<BoxEvent> watchRoots() => rootsBox.watch();

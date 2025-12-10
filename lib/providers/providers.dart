@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as p;
 
 import '../models/music_project.dart';
 import '../models/scan_root.dart';
@@ -121,10 +122,46 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
   
   // 2. Observa o estado ATUAL (QueryParams) do nosso novo Notifier
   final params = ref.watch(queryParamsNotifierProvider);
+  
+  // 3. Observa releases e scan roots para filter preserved projects
+  final releasesAsync = ref.watch(releasesProvider);
+  final scanRoots = ref.watch(scanRootsProvider);
 
-  // 3. Usa .whenData para acessar a lista quando estiver pronta e aplicar o filtro/ordenação
+  // 4. Usa .whenData para acessar a lista quando estiver pronta e aplicar o filtro/ordenação
   return allProjectsAsync.whenData((allProjects) {
     var projects = allProjects;
+
+    // --- Filter out preserved projects (in releases but not in any active scan root) ---
+    final releases = releasesAsync.value ?? [];
+    final protectedProjectIds = <String>{};
+    for (final release in releases) {
+      protectedProjectIds.addAll(release.trackIds);
+    }
+    
+    // Get all active scan root paths (normalized for comparison)
+    final activeRootPaths = scanRoots.map((root) {
+      final normalized = p.normalize(root.path);
+      // Ensure root path ends with separator for proper prefix matching
+      return normalized.endsWith(p.separator) ? normalized : normalized + p.separator;
+    }).toList();
+    
+    // Filter out preserved projects: those in releases but not in any active root
+    projects = projects.where((project) {
+      // If project is not in any release, always show it
+      if (!protectedProjectIds.contains(project.id)) {
+        return true;
+      }
+      
+      // If project is in a release, check if it's in any active scan root
+      final projectPath = p.normalize(project.filePath);
+      final isInActiveRoot = activeRootPaths.any((rootPath) {
+        // Check if project path starts with the root path
+        return projectPath.startsWith(rootPath);
+      });
+      
+      // Only show if it's in an active root (preserved projects not in active roots are hidden)
+      return isInActiveRoot;
+    }).toList();
 
     // --- Aplicação dos Filtros ---
     if (params.searchText.trim().isNotEmpty) {

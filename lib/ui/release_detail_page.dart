@@ -385,54 +385,71 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
   @override
   Widget build(BuildContext context) {
     final releases = ref.watch(releasesProvider);
-    final allProjects = ref.watch(projectsProvider);
+    final allProjectsAsync = ref.watch(allProjectsStreamProvider);
 
-    return releases.when(
-      loading: () => Scaffold(
+    // Handle loading/error states for both providers
+    if (releases.isLoading || allProjectsAsync.isLoading) {
+      return Scaffold(
         appBar: AppBar(title: const Text('Release Details')),
         body: const Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, stack) => Scaffold(
+      );
+    }
+
+    if (releases.hasError) {
+      return Scaffold(
         appBar: AppBar(title: const Text('Error')),
-        body: Center(child: Text('Error loading release: $error')),
-      ),
-      data: (releasesList) {
-        try {
-          final release = releasesList.firstWhere((r) => r.id == widget.releaseId);
+        body: Center(child: Text('Error loading release: ${releases.error}')),
+      );
+    }
 
-          // Sync controllers and state with release data (only on initial load)
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_titleController.text != release.title) {
-              _titleController.text = release.title;
-            }
-            if (_descriptionController.text != (release.description ?? '')) {
-              _descriptionController.text = release.description ?? '';
-            }
-            if (_artworkImagePath != release.artworkImagePath) {
-              setState(() {
-                _artworkImagePath = release.artworkImagePath;
-              });
-            }
-            // Only set release date from storage if we haven't loaded it yet
-            if (_releaseDate == null && release.releaseDate != null) {
-              setState(() {
-                _releaseDate = release.releaseDate;
-              });
-            }
+    if (allProjectsAsync.hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Error')),
+        body: Center(child: Text('Error loading projects: ${allProjectsAsync.error}')),
+      );
+    }
+
+    // Both providers have data
+    final releasesList = releases.value ?? [];
+    final allProjects = allProjectsAsync.value ?? [];
+
+    try {
+      final release = releasesList.firstWhere((r) => r.id == widget.releaseId);
+
+      // Sync controllers and state with release data (only on initial load)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_titleController.text != release.title) {
+          _titleController.text = release.title;
+        }
+        if (_descriptionController.text != (release.description ?? '')) {
+          _descriptionController.text = release.description ?? '';
+        }
+        if (_artworkImagePath != release.artworkImagePath) {
+          setState(() {
+            _artworkImagePath = release.artworkImagePath;
           });
+        }
+        // Only set release date from storage if we haven't loaded it yet
+        if (_releaseDate == null && release.releaseDate != null) {
+          setState(() {
+            _releaseDate = release.releaseDate;
+          });
+        }
+      });
 
-          // Maintain the explicit order defined in release.trackIds
-          final releaseProjects = <MusicProject>[];
-          for (final id in release.trackIds) {
-            try {
-              final project = allProjects.firstWhere((p) => p.id == id);
-              releaseProjects.add(project);
-            } catch (_) {
-              // Ignore missing projects (e.g., deleted)
-            }
-          }
+      // Maintain the explicit order defined in release.trackIds
+      // Use allProjects from repository (includes preserved projects) instead of filtered projectsProvider
+      final releaseProjects = <MusicProject>[];
+      for (final id in release.trackIds) {
+        try {
+          final project = allProjects.firstWhere((p) => p.id == id);
+          releaseProjects.add(project);
+        } catch (_) {
+          // Project not found - this shouldn't happen for preserved projects, but handle gracefully
+        }
+      }
 
-    return Scaffold(
+      return Scaffold(
       appBar: AppBar(
         title: Text(release.title),
         actions: [
@@ -575,7 +592,9 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                         icon: const Icon(Icons.add),
                         label: const Text('Add Tracks'),
                         onPressed: () async {
-                          final allProjects = ref.read(projectsProvider);
+                          // Use allProjects from stream to include preserved projects
+                          final allProjectsAsync = ref.read(allProjectsStreamProvider);
+                          final allProjects = allProjectsAsync.value ?? [];
                           final availableProjects = allProjects.where((p) => !release.trackIds.contains(p.id)).toList();
                           
                           if (availableProjects.isEmpty) {
@@ -809,14 +828,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
         ),
       ),
     );
-        } catch (e) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Release Not Found')),
-            body: const Center(child: Text('This release could not be found.')),
-          );
-        }
-      },
-    );
+    } catch (e) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Release Not Found')),
+        body: const Center(child: Text('This release could not be found.')),
+      );
+    }
   }
 }
 
