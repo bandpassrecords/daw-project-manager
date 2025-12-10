@@ -64,7 +64,7 @@ jobs:
             os_name: macOS
             command: flutter build macos --release
             asset_path: build/macos/Build/Products/Release/DAW_Project_Manager-${{ github.ref_name }}.zip
-            asset_name: DAW_Project_Manager_macOS.zip
+            asset_name: DAW_Project_Manager_macOS_${{ github.ref_name }}.zip
             is_zip: true 
             asset_content_type: application/zip
             is_installer: false
@@ -74,7 +74,7 @@ jobs:
             os_name: Windows
             command: flutter build windows --release
             asset_path: Output/DAW_Project_Manager_Installer_${{ github.ref_name }}.exe 
-            asset_name: DAW_Project_Manager_Installer.exe
+            asset_name: DAW_Project_Manager_Installer_${{ github.ref_name }}.exe
             is_zip: false 
             asset_content_type: application/vnd.microsoft.portable-executable 
             is_installer: true
@@ -84,7 +84,7 @@ jobs:
             os_name: Windows (MSIX)
             command: flutter build windows --release
             asset_path: build/windows/x64/runner/Release/daw_project_manager.msix
-            asset_name: DAW_Project_Manager.msix
+            asset_name: DAW_Project_Manager_${{ github.ref_name }}.msix
             is_zip: false
             asset_content_type: application/msix
             is_installer: false
