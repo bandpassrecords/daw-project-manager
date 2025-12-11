@@ -155,27 +155,94 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
   Future<void> _createReleaseFromSelectedProjects(BuildContext context, WidgetRef ref, List<MusicProject> selectedProjects) async {
     if (selectedProjects.isEmpty) return;
 
-    String? releaseTitle;
+    String releaseTitle;
     
-    // If single project, pre-fill title; otherwise show dialog
+    // If single project, use project name; otherwise create with empty title
     if (selectedProjects.length == 1) {
       releaseTitle = selectedProjects.first.displayName;
     } else {
-      final result = await showDialog<String>(
-        context: context,
-        builder: (context) => _ReleaseTitleDialog(),
-      );
-      if (result == null || result.trim().isEmpty) return;
-      releaseTitle = result.trim();
+      releaseTitle = ''; // Empty title, user will fill it in the release page
     }
 
     final selectedProjectIds = selectedProjects.map((p) => p.id).toList();
-    await _createRelease(context, ref, selectedProjectIds, releaseTitle!);
+    await _createRelease(context, ref, selectedProjectIds, releaseTitle);
     
     // Clear selection after creating release
     setState(() {
       _selectedProjectIds.clear();
     });
+  }
+
+  Future<void> _hideProjects(BuildContext context, WidgetRef ref, List<String> selectedProjectIds) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final allProjectsAsync = ref.read(allProjectsStreamProvider);
+      final allProjects = allProjectsAsync.value ?? [];
+      
+      for (final projectId in selectedProjectIds) {
+        final project = allProjects.firstWhere((p) => p.id == projectId);
+        final updated = project.copyWith(hidden: true);
+        await repo.updateProject(updated);
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${selectedProjectIds.length} project${selectedProjectIds.length == 1 ? '' : 's'} hidden.')),
+        );
+        // Invalidate to refresh the list
+        ref.invalidate(allProjectsStreamProvider);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to hide projects: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _unhideProjects(BuildContext context, WidgetRef ref, List<String> selectedProjectIds) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final allProjectsAsync = ref.read(allProjectsStreamProvider);
+      final allProjects = allProjectsAsync.value ?? [];
+      
+      // Check if we're in "show only hidden" mode
+      final hiddenMode = ref.read(showHiddenProjectsProvider);
+      final isShowingOnlyHidden = hiddenMode == 2;
+      
+      for (final projectId in selectedProjectIds) {
+        final project = allProjects.firstWhere((p) => p.id == projectId);
+        final updated = project.copyWith(hidden: false);
+        await repo.updateProject(updated);
+      }
+      
+      // Invalidate to refresh the list
+      ref.invalidate(allProjectsStreamProvider);
+      
+      // Wait a bit for the data to refresh, then check if there are any hidden projects left
+      await Future.delayed(const Duration(milliseconds: 100));
+      final updatedProjectsAsync = ref.read(allProjectsStreamProvider);
+      final updatedProjects = updatedProjectsAsync.value ?? [];
+      final remainingHiddenCount = updatedProjects.where((p) => p.hidden).length;
+      
+      // If we were showing only hidden and there are no hidden projects left, switch back to visible
+      if (isShowingOnlyHidden && remainingHiddenCount == 0) {
+        ref.read(showHiddenProjectsProvider.notifier).setShowOnlyHidden(false);
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${selectedProjectIds.length} project${selectedProjectIds.length == 1 ? '' : 's'} unhidden.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to unhide projects: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _createRelease(BuildContext context, WidgetRef ref, List<String> selectedProjectIds, String releaseTitle) async {
@@ -224,10 +291,18 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     final roots = ref.watch(scanRootsProvider);
     final currentParams = ref.watch(queryParamsNotifierProvider);
     final projects = ref.watch(projectsProvider);
+    final hiddenMode = ref.watch(showHiddenProjectsProvider);
+    final hiddenNotifier = ref.read(showHiddenProjectsProvider.notifier);
     final initialScanning = ref.watch(initialScanStateProvider);
     final isProfileSwitching = ref.watch(profileSwitchingProvider);
     final isScanning = _scanning || initialScanning;
     final isAnyOperation = isScanning || isProfileSwitching;
+    
+    // Get all projects (including hidden) for counting
+    final allProjectsAsync = ref.watch(allProjectsStreamProvider);
+    final allProjects = allProjectsAsync.value ?? [];
+    final visibleCount = allProjects.where((p) => !p.hidden).length;
+    final hiddenCount = allProjects.where((p) => p.hidden).length;
 
     // RawKeyboardListener no topo.
     return Stack(
@@ -517,13 +592,78 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                           child: repoAsync.when(
                             loading: () => const SizedBox.shrink(),
                             error: (_, __) => const SizedBox.shrink(),
-                            data: (repo) => Text(
-                              'Roots: ${repo.getRoots().length}   Projects: ${projects.length}',
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12),
-                            ),
+                            data: (repo) {
+                              String projectText;
+                              if (hiddenMode == 2) {
+                                // Showing only hidden
+                                projectText = 'Roots: ${repo.getRoots().length}   Projects: $hiddenCount (hidden only)';
+                              } else {
+                                // Showing visible or all
+                                projectText = 'Roots: ${repo.getRoots().length}   Projects: $visibleCount';
+                                if (hiddenCount > 0 && hiddenMode == 0) {
+                                  projectText += ' ($hiddenCount hidden)';
+                                }
+                              }
+                              return Text(
+                                projectText,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: hiddenMode == 2 ? Colors.orange.shade300 : null,
+                                ),
+                              );
+                            },
                           ),
                         ),
+                        const SizedBox(width: 8),
+                        // Show Hidden Projects checkbox
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Checkbox(
+                              value: hiddenMode == 1, // Show all mode
+                              onChanged: (value) {
+                                if (value == true) {
+                                  hiddenNotifier.setShowAll(true);
+                                } else {
+                                  // If unchecking, go back to show only visible (mode 0)
+                                  hiddenNotifier.setShowAll(false);
+                                }
+                              },
+                            ),
+                            const Text(
+                              'Show Hidden',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 8),
+                        // Show Only Hidden button
+                        if (hiddenCount > 0)
+                          TextButton.icon(
+                            icon: Icon(
+                              hiddenMode == 2 ? Icons.visibility : Icons.visibility_off_outlined,
+                              size: 16,
+                            ),
+                            label: Text(
+                              hiddenMode == 2 ? 'Show All' : 'Show Only Hidden',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            style: TextButton.styleFrom(
+                              backgroundColor: hiddenMode == 2 ? Colors.orange.shade700 : null,
+                              foregroundColor: hiddenMode == 2 ? Colors.white : Colors.white70,
+                            ),
+                            onPressed: () {
+                              if (hiddenMode == 2) {
+                                // Currently showing only hidden, switch back to visible (mode 0)
+                                hiddenNotifier.setShowOnlyHidden(false);
+                              } else {
+                                // Switch to show only hidden (mode 2)
+                                // Also uncheck the "Show Hidden" checkbox
+                                hiddenNotifier.setShowOnlyHidden(true);
+                              }
+                            },
+                          ),
                         const SizedBox(width: 8),
                         Builder(
                           builder: (context) {
@@ -631,6 +771,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                     onCreateRelease: (selectedProjects) {
                       _createReleaseFromSelectedProjects(context, ref, selectedProjects);
                     },
+                    onHideProjects: (selectedProjectIds) async {
+                      await _hideProjects(context, ref, selectedProjectIds);
+                    },
+                    onUnhideProjects: (selectedProjectIds) async {
+                      await _unhideProjects(context, ref, selectedProjectIds);
+                    },
+                    showHidden: hiddenMode == 1 || hiddenMode == 2,
                   ),
                   const ReleasesTabPage(),
                 ],
@@ -673,11 +820,17 @@ class _PlutoProjectsTableWithSelection extends ConsumerStatefulWidget {
   final List<MusicProject> projects;
   final DateFormat dateFormat;
   final Function(List<MusicProject>) onCreateRelease;
+  final Function(List<String>) onHideProjects;
+  final Function(List<String>) onUnhideProjects;
+  final bool showHidden;
 
   const _PlutoProjectsTableWithSelection({
     required this.projects,
     required this.dateFormat,
     required this.onCreateRelease,
+    required this.onHideProjects,
+    required this.onUnhideProjects,
+    required this.showHidden,
   });
 
   @override
@@ -703,6 +856,19 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
     });
   }
 
+  void _selectAll() {
+    setState(() {
+      _selectedProjectIds.clear();
+      _selectedProjectIds.addAll(widget.projects.map((p) => p.id));
+    });
+  }
+
+  bool get _areAllSelected {
+    if (widget.projects.isEmpty) return false;
+    return _selectedProjectIds.length == widget.projects.length &&
+        widget.projects.every((p) => _selectedProjectIds.contains(p.id));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -716,23 +882,67 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
           ),
         ),
         // Selection action bar
-        if (_selectedProjectIds.isNotEmpty)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: const Color(0xFF2B2D31),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${_selectedProjectIds.length} project${_selectedProjectIds.length == 1 ? '' : 's'} selected',
-                  style: const TextStyle(color: Colors.white70),
-                ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          color: const Color(0xFF2B2D31),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Checkbox(
+                    value: _areAllSelected,
+                    onChanged: (value) {
+                      if (value == true) {
+                        _selectAll();
+                      } else {
+                        _clearSelection();
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _selectedProjectIds.isEmpty
+                        ? 'Select all projects'
+                        : '${_selectedProjectIds.length} project${_selectedProjectIds.length == 1 ? '' : 's'} selected',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                ],
+              ),
+              if (_selectedProjectIds.isNotEmpty)
                 Row(
                   children: [
                     TextButton(
                       onPressed: _clearSelection,
                       child: const Text('Clear Selection'),
                     ),
+                    const SizedBox(width: 8),
+                    // Show Hide button when not showing hidden projects, or Unhide when showing hidden
+                    if (widget.showHidden)
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.visibility),
+                        label: const Text('Unhide'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green.shade700,
+                        ),
+                        onPressed: () {
+                          widget.onUnhideProjects(_selectedProjectIds.toList());
+                          _clearSelection();
+                        },
+                      )
+                    else
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.visibility_off),
+                        label: const Text('Hide'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange.shade700,
+                        ),
+                        onPressed: () {
+                          widget.onHideProjects(_selectedProjectIds.toList());
+                          _clearSelection();
+                        },
+                      ),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.album),
@@ -746,10 +956,12 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                       },
                     ),
                   ],
-                ),
-              ],
-            ),
+                )
+              else
+                const SizedBox.shrink(),
+            ],
           ),
+        ),
       ],
     );
   }

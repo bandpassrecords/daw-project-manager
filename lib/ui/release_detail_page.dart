@@ -526,7 +526,20 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                     return const Center(
                                       child: Padding(
                                         padding: EdgeInsets.all(50.0),
-                                        child: Icon(Icons.add_a_photo, size: 50),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.add_a_photo, size: 50, color: Colors.white54),
+                                            SizedBox(height: 12),
+                                            Text(
+                                              'Click to browse artwork',
+                                              style: TextStyle(
+                                                color: Colors.white54,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },

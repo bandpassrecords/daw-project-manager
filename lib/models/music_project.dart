@@ -25,7 +25,7 @@ class MusicProject {
   final String? thumbnailPath;
 
   @HiveField(7)
-  final String status; // Default: Draft
+  final String status; // Default: Idea (was 'Draft' in older versions)
 
   @HiveField(8)
   final String fileExtension; // e.g., .als, .cpr, .flp, .logicx
@@ -56,6 +56,9 @@ class MusicProject {
   @HiveField(16)
   final List<TodoItem> todos; // TODO list for the track
 
+  @HiveField(17)
+  final bool hidden; // Whether the project is hidden from the list
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -74,6 +77,7 @@ class MusicProject {
     this.dawType,
     this.dawVersion,
     this.todos = const [],
+    this.hidden = false,
   });
 
   String get displayName => (customDisplayName != null && customDisplayName!.trim().isNotEmpty)
@@ -98,6 +102,7 @@ class MusicProject {
     String? dawType,
     String? dawVersion,
     List<TodoItem>? todos,
+    bool? hidden,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -117,6 +122,7 @@ class MusicProject {
       dawType: dawType ?? this.dawType,
       dawVersion: dawVersion ?? this.dawVersion,
       todos: todos ?? this.todos,
+      hidden: hidden ?? this.hidden,
     );
   }
 }
@@ -140,7 +146,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       lastModifiedAt: fields[4] as DateTime,
       customDisplayName: fields[5] as String?,
       thumbnailPath: fields[6] as String?,
-      status: fields[7] as String,
+      // Migrate old "Draft" status to "Idea" for backward compatibility
+      status: (fields[7] as String) == 'Draft' ? 'Idea' : (fields[7] as String),
       fileExtension: fields[8] as String,
       createdAt: fields[9] as DateTime,
       updatedAt: fields[10] as DateTime,
@@ -152,13 +159,14 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       todos: fields.containsKey(16) && fields[16] != null 
           ? (fields[16] as List).cast<TodoItem>()
           : const [],
+      hidden: fields.containsKey(17) ? (fields[17] as bool) : false,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(17) // Agora são 17 campos (0-16)
+      ..writeByte(18) // Agora são 18 campos (0-17)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -192,6 +200,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(15)
       ..write(obj.dawVersion)
       ..writeByte(16)
-      ..write(obj.todos);
+      ..write(obj.todos)
+      ..writeByte(17)
+      ..write(obj.hidden);
   }
 }

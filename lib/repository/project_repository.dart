@@ -205,7 +205,7 @@ class ProjectRepository {
       
       // PRESERVAÇÃO: Estes campos foram editados pelo usuário e devem ser mantidos
       customDisplayName: existing?.customDisplayName, // <--- PRESERVA
-      status: existing?.status ?? 'Draft',             // <--- PRESERVA
+      status: existing?.status ?? 'Idea',             // <--- PRESERVA (default changed from 'Draft' to 'Idea')
       bpm: bpm,                                        // <--- USA EXISTENTE OU EXTRAÍDO
       musicalKey: key,                                 // <--- USA EXISTENTE OU EXTRAÍDO
       notes: existing?.notes,                         // <--- NOVO: PRESERVA NOTAS
