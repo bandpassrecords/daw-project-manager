@@ -298,11 +298,47 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     final isScanning = _scanning || initialScanning;
     final isAnyOperation = isScanning || isProfileSwitching;
     
-    // Get all projects (including hidden) for counting
+    // Get all projects and filter out preserved projects (same logic as projectsProvider)
     final allProjectsAsync = ref.watch(allProjectsStreamProvider);
     final allProjects = allProjectsAsync.value ?? [];
-    final visibleCount = allProjects.where((p) => !p.hidden).length;
-    final hiddenCount = allProjects.where((p) => p.hidden).length;
+    final releasesAsync = ref.watch(releasesProvider);
+    final scanRoots = ref.watch(scanRootsProvider);
+    
+    // Filter out preserved projects (in releases but not in any active scan root)
+    final releases = releasesAsync.value ?? [];
+    final protectedProjectIds = <String>{};
+    for (final release in releases) {
+      protectedProjectIds.addAll(release.trackIds);
+    }
+    
+    // Get all active scan root paths (normalized for comparison)
+    final activeRootPaths = scanRoots.map((root) {
+      final normalized = path.normalize(root.path);
+      // Ensure root path ends with separator for proper prefix matching
+      return normalized.endsWith(path.separator) ? normalized : normalized + path.separator;
+    }).toList();
+    
+    // Filter out preserved projects before counting
+    final filteredProjects = allProjects.where((project) {
+      // If project is not in any release, always include it
+      if (!protectedProjectIds.contains(project.id)) {
+        return true;
+      }
+      
+      // If project is in a release, check if it's in any active scan root
+      final projectPath = path.normalize(project.filePath);
+      final isInActiveRoot = activeRootPaths.any((rootPath) {
+        // Check if project path starts with the root path
+        return projectPath.startsWith(rootPath);
+      });
+      
+      // Only include if it's in an active root (preserved projects not in active roots are excluded)
+      return isInActiveRoot;
+    }).toList();
+    
+    // Count visible and hidden from filtered projects only
+    final visibleCount = filteredProjects.where((p) => !p.hidden).length;
+    final hiddenCount = filteredProjects.where((p) => p.hidden).length;
 
     // RawKeyboardListener no topo.
     return Stack(
