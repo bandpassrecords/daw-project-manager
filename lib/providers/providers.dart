@@ -104,6 +104,41 @@ final queryParamsNotifierProvider = NotifierProvider<QueryParamsNotifier, QueryP
   return QueryParamsNotifier();
 });
 
+// Show hidden projects state provider
+// 0 = show only visible (default)
+// 1 = show all (visible + hidden)
+// 2 = show only hidden
+class ShowHiddenProjectsNotifier extends Notifier<int> {
+  @override
+  int build() {
+    return 0; // Default to showing only visible projects
+  }
+  
+  void setShowAll(bool show) {
+    if (show) {
+      state = 1; // Show all (visible + hidden)
+    } else {
+      state = 0; // Show only visible
+    }
+  }
+  
+  void setShowOnlyHidden(bool show) {
+    if (show) {
+      state = 2; // Show only hidden
+    } else {
+      state = 0; // Show only visible
+    }
+  }
+  
+  bool get isShowingAll => state == 1;
+  bool get isShowingOnlyHidden => state == 2;
+  bool get isShowingVisible => state == 0;
+}
+
+final showHiddenProjectsProvider = NotifierProvider<ShowHiddenProjectsNotifier, int>(() {
+  return ShowHiddenProjectsNotifier();
+});
+
 // REMOVEMOS: projectsWatchProvider (substituído pela reatividade do stream abaixo)
 
 // NOVO PROVIDER CORRIGIDO: Stream que emite a lista bruta de projetos
@@ -163,6 +198,17 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
       return isInActiveRoot;
     }).toList();
 
+    // --- Filter hidden projects ---
+    final hiddenMode = ref.watch(showHiddenProjectsProvider);
+    if (hiddenMode == 0) {
+      // Show only visible projects
+      projects = projects.where((p) => !p.hidden).toList();
+    } else if (hiddenMode == 2) {
+      // Show only hidden projects
+      projects = projects.where((p) => p.hidden).toList();
+    }
+    // If hiddenMode == 1, show all (both visible and hidden)
+    
     // --- Aplicação dos Filtros ---
     if (params.searchText.trim().isNotEmpty) {
       final needle = params.searchText.toLowerCase();

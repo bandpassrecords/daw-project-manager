@@ -46,29 +46,48 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
       return;
     }
 
-    // Show dialog to create release
-    final releaseTitle = await showDialog<String>(
-      context: context,
-      builder: (context) => _CreateReleaseDialog(),
-    );
+    // Get selected projects to determine release title
+    final allProjectsAsync = ref.read(allProjectsStreamProvider);
+    final allProjects = allProjectsAsync.value ?? [];
+    final selectedProjects = allProjects.where((p) => selectedProjectIds.contains(p.id)).toList();
 
-    if (releaseTitle == null || releaseTitle.trim().isEmpty) {
-      return;
+    String releaseTitle;
+    bool shouldNavigateToRelease = false;
+
+    // If single project, use project name; otherwise create with empty title
+    if (selectedProjects.length == 1) {
+      releaseTitle = selectedProjects.first.displayName;
+    } else {
+      releaseTitle = ''; // Empty title, user will fill it in the release page
+      shouldNavigateToRelease = true;
     }
 
     final repo = await ref.read(repositoryProvider.future);
     final newRelease = Release(
       id: const Uuid().v4(),
-      title: releaseTitle.trim(),
+      title: releaseTitle,
       trackIds: selectedProjectIds,
       releaseDate: DateTime.now(),
     );
     await repo.addRelease(newRelease);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Release "${releaseTitle}" created successfully.')),
-      );
+      if (shouldNavigateToRelease) {
+        // Navigate to release page so user can fill in the title
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ReleaseDetailPage(releaseId: newRelease.id),
+          ),
+        );
+        // Refresh releases data when returning
+        if (mounted) {
+          ref.invalidate(releasesProvider);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Release "${releaseTitle}" created successfully.')),
+        );
+      }
     }
   }
 
@@ -173,6 +192,17 @@ class _ReleasesTable extends ConsumerStatefulWidget {
 class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
   PlutoGridStateManager? stateManager;
 
+  @override
+  void didUpdateWidget(_ReleasesTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update the grid rows when releases change
+    if (widget.releases != oldWidget.releases && stateManager != null) {
+      final newRows = _mapReleasesToRows(widget.releases);
+      stateManager!.removeAllRows();
+      stateManager!.appendRows(newRows);
+    }
+  }
+
   List<PlutoRow> _mapReleasesToRows(List<Release> releases) {
     return releases.map((release) {
       final releaseProjects = widget.projects
@@ -202,6 +232,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         title: 'Artwork',
         field: 'artwork',
         type: PlutoColumnType.text(),
+        enableEditingMode: false,
         width: 100,
         minWidth: 80,
         frozen: PlutoColumnFrozen.start,
@@ -233,6 +264,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         type: PlutoColumnType.text(),
         enableColumnDrag: true,
         enableContextMenu: false,
+        enableEditingMode: false,
         width: 300,
         minWidth: 200,
         frozen: PlutoColumnFrozen.start,
@@ -241,6 +273,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         title: 'Tracks',
         field: 'tracks',
         type: PlutoColumnType.number(),
+        enableEditingMode: false,
         width: 100,
         minWidth: 80,
       ),
@@ -248,6 +281,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         title: 'Release Date',
         field: 'releaseDate',
         type: PlutoColumnType.text(),
+        enableEditingMode: false,
         width: 180,
         minWidth: 150,
       ),
@@ -255,6 +289,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         title: 'Description',
         field: 'description',
         type: PlutoColumnType.text(),
+        enableEditingMode: false,
         width: 300,
         minWidth: 200,
       ),
@@ -271,12 +306,16 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
+                onPressed: () async {
+                  await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => ReleaseDetailPage(releaseId: release.id),
                     ),
                   );
+                  // Refresh releases data when returning from detail page
+                  if (mounted) {
+                    ref.invalidate(releasesProvider);
+                  }
                 },
                 child: const Text('View'),
               ),
@@ -382,15 +421,46 @@ class _TrackSelectionDialog extends StatefulWidget {
 
 class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
   final Set<String> _selectedIds = {};
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.toLowerCase();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<MusicProject> get _filteredProjects {
+    if (_searchQuery.isEmpty) {
+      return widget.projects;
+    }
+    return widget.projects.where((project) {
+      final name = project.displayName.toLowerCase();
+      final dawType = (project.dawType ?? '').toLowerCase();
+      return name.contains(_searchQuery) || dawType.contains(_searchQuery);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final filteredProjects = _filteredProjects;
+    
     return AlertDialog(
       backgroundColor: const Color(0xFF2B2D31),
       title: const Text('Select Tracks'),
       content: SizedBox(
         width: 600,
-        height: 400,
+        height: 500,
         child: Column(
           children: [
             Text(
@@ -398,31 +468,56 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
               style: const TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.projects.length,
-                itemBuilder: (context, index) {
-                  final project = widget.projects[index];
-                  final isSelected = _selectedIds.contains(project.id);
-                  return CheckboxListTile(
-                    title: Text(project.displayName),
-                    subtitle: Text(
-                      '${project.dawType ?? 'Unknown'} • ${project.bpm?.toStringAsFixed(0) ?? '?'} BPM',
-                      style: const TextStyle(color: Colors.white54),
-                    ),
-                    value: isSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedIds.add(project.id);
-                        } else {
-                          _selectedIds.remove(project.id);
-                        }
-                      });
-                    },
-                  );
-                },
+            // Search field
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Search tracks',
+                hintText: 'Search by name or DAW type',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                        },
+                      )
+                    : null,
               ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: filteredProjects.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No tracks found',
+                        style: TextStyle(color: Colors.white54),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredProjects.length,
+                      itemBuilder: (context, index) {
+                        final project = filteredProjects[index];
+                        final isSelected = _selectedIds.contains(project.id);
+                        return CheckboxListTile(
+                          title: Text(project.displayName),
+                          subtitle: Text(
+                            '${project.dawType ?? 'Unknown'} • ${project.bpm?.toStringAsFixed(0) ?? '?'} BPM',
+                            style: const TextStyle(color: Colors.white54),
+                          ),
+                          value: isSelected,
+                          onChanged: (value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedIds.add(project.id);
+                              } else {
+                                _selectedIds.remove(project.id);
+                              }
+                            });
+                          },
+                        );
+                      },
+                    ),
             ),
           ],
         ),

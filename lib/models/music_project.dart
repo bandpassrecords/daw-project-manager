@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'todo_item.dart';
 
 @HiveType(typeId: 1)
 class MusicProject {
@@ -24,7 +25,7 @@ class MusicProject {
   final String? thumbnailPath;
 
   @HiveField(7)
-  final String status; // Default: Draft
+  final String status; // Default: Idea (was 'Draft' in older versions)
 
   @HiveField(8)
   final String fileExtension; // e.g., .als, .cpr, .flp, .logicx
@@ -52,6 +53,12 @@ class MusicProject {
   @HiveField(15)
   final String? dawVersion; // DAW version (major version number)
 
+  @HiveField(16)
+  final List<TodoItem> todos; // TODO list for the track
+
+  @HiveField(17)
+  final bool hidden; // Whether the project is hidden from the list
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -63,12 +70,14 @@ class MusicProject {
     required this.updatedAt,
     this.customDisplayName,
     this.thumbnailPath,
-    this.status = 'Draft',
+    this.status = 'Idea',
     this.bpm,
     this.musicalKey,
     this.notes, // NOVO CAMPO NO CONSTRUTOR
     this.dawType,
     this.dawVersion,
+    this.todos = const [],
+    this.hidden = false,
   });
 
   String get displayName => (customDisplayName != null && customDisplayName!.trim().isNotEmpty)
@@ -92,6 +101,8 @@ class MusicProject {
     String? notes, // NOVO CAMPO NO COPYWITH
     String? dawType,
     String? dawVersion,
+    List<TodoItem>? todos,
+    bool? hidden,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -110,6 +121,8 @@ class MusicProject {
       notes: notes ?? this.notes, // NOVO CAMPO
       dawType: dawType ?? this.dawType,
       dawVersion: dawVersion ?? this.dawVersion,
+      todos: todos ?? this.todos,
+      hidden: hidden ?? this.hidden,
     );
   }
 }
@@ -133,7 +146,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       lastModifiedAt: fields[4] as DateTime,
       customDisplayName: fields[5] as String?,
       thumbnailPath: fields[6] as String?,
-      status: fields[7] as String,
+      // Migrate old "Draft" status to "Idea" for backward compatibility
+      status: (fields[7] as String) == 'Draft' ? 'Idea' : (fields[7] as String),
       fileExtension: fields[8] as String,
       createdAt: fields[9] as DateTime,
       updatedAt: fields[10] as DateTime,
@@ -142,13 +156,17 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       notes: fields.containsKey(13) ? fields[13] as String? : null, // NOVO CAMPO
       dawType: fields.containsKey(14) ? fields[14] as String? : null,
       dawVersion: fields.containsKey(15) ? fields[15] as String? : null,
+      todos: fields.containsKey(16) && fields[16] != null 
+          ? (fields[16] as List).cast<TodoItem>()
+          : const [],
+      hidden: fields.containsKey(17) ? (fields[17] as bool) : false,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(16) // Tinha 15, agora são 16 campos (0-15)
+      ..writeByte(18) // Agora são 18 campos (0-17)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -180,6 +198,10 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(14)
       ..write(obj.dawType)
       ..writeByte(15)
-      ..write(obj.dawVersion);
+      ..write(obj.dawVersion)
+      ..writeByte(16)
+      ..write(obj.todos)
+      ..writeByte(17)
+      ..write(obj.hidden);
   }
 }

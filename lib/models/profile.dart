@@ -14,11 +14,15 @@ class Profile {
   @HiveField(3)
   final DateTime? lastUsedAt;
 
+  @HiveField(4)
+  final String? photoPath; // Path to profile photo/thumbnail
+
   const Profile({
     required this.id,
     required this.name,
     required this.createdAt,
     this.lastUsedAt,
+    this.photoPath,
   });
 
   Profile copyWith({
@@ -26,12 +30,15 @@ class Profile {
     String? name,
     DateTime? createdAt,
     DateTime? lastUsedAt,
+    String? photoPath,
+    bool clearPhotoPath = false,
   }) {
     return Profile(
       id: id ?? this.id,
       name: name ?? this.name,
       createdAt: createdAt ?? this.createdAt,
       lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+      photoPath: clearPhotoPath ? null : (photoPath ?? this.photoPath),
     );
   }
 }
@@ -52,13 +59,14 @@ class ProfileAdapter extends TypeAdapter<Profile> {
       name: fields[1] as String,
       createdAt: fields[2] as DateTime,
       lastUsedAt: fields.containsKey(3) ? fields[3] as DateTime? : null,
+      photoPath: fields.containsKey(4) ? fields[4] as String? : null,
     );
   }
 
   @override
   void write(BinaryWriter writer, Profile obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -66,7 +74,9 @@ class ProfileAdapter extends TypeAdapter<Profile> {
       ..writeByte(2)
       ..write(obj.createdAt)
       ..writeByte(3)
-      ..write(obj.lastUsedAt);
+      ..write(obj.lastUsedAt)
+      ..writeByte(4)
+      ..write(obj.photoPath);
   }
 }
 
