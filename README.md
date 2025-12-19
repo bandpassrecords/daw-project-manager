@@ -321,12 +321,6 @@ Contributions are welcome! Please follow these steps:
 - Table component with [PlutoGrid](https://pub.dev/packages/pluto_grid)
 - Window management with [window_manager](https://pub.dev/packages/window_manager)
 
-## Version History
-
-- **v1.2.0**: Added internationalization support, improved metadata extraction
-- **v1.1.0**: Added release management, profile system
-- **v1.0.0**: Initial release with basic project management
-
 ---
 
 For questions, issues, or feature requests, please open an issue on GitHub.
