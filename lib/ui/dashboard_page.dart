@@ -126,7 +126,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
   }
 
 
-  Future<void> _scanAll() async {
+  Future<void> _scanAll({bool fullMetadata = false}) async {
     if (_scanning) return;
     final repo = await ref.read(repositoryProvider.future);
     setState(() => _scanning = true);
@@ -137,21 +137,26 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
       final scanTime = DateTime.now();
       for (final root in repo.getRoots()) {
         await for (final entity in scanner.scanDirectory(root.path)) {
-          await repo.upsertFromFileSystemEntity(entity);
+          await repo.upsertFromFileSystemEntity(entity, fullMetadata: fullMetadata);
           foundCount++;
         }
         // Update lastScanAt timestamp for this root
         await repo.updateRootLastScanAt(root.id, scanTime);
       }
       if (mounted) {
+        final scanType = fullMetadata ? 'Deep scan' : 'Scan';
         final msg = foundCount == 0
             ? 'No projects found in selected roots.'
-            : 'Scan complete: $foundCount project${foundCount == 1 ? '' : 's'} added/updated.';
+            : '$scanType complete: $foundCount project${foundCount == 1 ? '' : 's'} added/updated.';
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       }
     } finally {
       if (mounted) setState(() => _scanning = false);
     }
+  }
+
+  Future<void> _fullScanAll() async {
+    await _scanAll(fullMetadata: true);
   }
 
   Set<String> _selectedProjectIds = {};
@@ -574,7 +579,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                       child: CircularProgressIndicator(strokeWidth: 2),
                                     )
                                 : const Icon(Icons.create_new_folder_outlined),
-                            label: const Text('Add Projects Folder'),
+                            label: const Text('Add Folder'),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -593,6 +598,35 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                     )
                                 : const Icon(Icons.refresh),
                             label: Text(isAnyOperation ? 'Scanning…' : 'Rescan'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Flexible(
+                          child: Tooltip(
+                            message: 'Deep Scan extracts full metadata from project files:\n'
+                                '• BPM (Beats Per Minute)\n'
+                                '• Musical Key\n'
+                                '• DAW Version\n'
+                                'This is slower but provides complete information.',
+                            waitDuration: const Duration(milliseconds: 500),
+                            child: ElevatedButton.icon(
+                              onPressed: isAnyOperation
+                                  ? null
+                                  : () async {
+                                        await _fullScanAll();
+                                      },
+                              icon: isAnyOperation
+                                  ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                      )
+                                  : const Icon(Icons.search),
+                              label: Text(isAnyOperation ? 'Scanning…' : 'Deep Scan'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF5A6B7A),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -1021,6 +1055,41 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                           _clearSelection();
                         },
                       ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.search),
+                      label: const Text('Extract Metadata'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF5A6B7A),
+                      ),
+                      onPressed: () async {
+                        final repo = await ref.read(repositoryProvider.future);
+                        int successCount = 0;
+                        int failCount = 0;
+                        
+                        for (final projectId in _selectedProjectIds) {
+                          try {
+                            await repo.extractFullMetadataForProject(projectId);
+                            successCount++;
+                          } catch (_) {
+                            failCount++;
+                          }
+                        }
+                        
+                        // Refresh the projects list
+                        ref.invalidate(allProjectsStreamProvider);
+                        
+                        if (mounted) {
+                          final message = failCount > 0
+                              ? 'Extracted metadata for $successCount project${successCount == 1 ? '' : 's'}. $failCount failed.'
+                              : 'Extracted metadata for $successCount project${successCount == 1 ? '' : 's'}.';
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(message)),
+                          );
+                        }
+                        _clearSelection();
+                      },
+                    ),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.album),

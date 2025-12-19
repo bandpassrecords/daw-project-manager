@@ -103,10 +103,11 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
     await repo.clearMissingFiles();
     
     // Scan all root folders for the current profile (same logic as dashboard)
+    // Use lightweight scan (fast, no full metadata extraction)
     final scanTime = DateTime.now();
     for (final root in repo.getRoots()) {
       await for (final entity in scanner.scanDirectory(root.path)) {
-        await repo.upsertFromFileSystemEntity(entity);
+        await repo.upsertFromFileSystemEntity(entity, fullMetadata: false);
         foundCount++;
       }
       // Update lastScanAt timestamp for this root

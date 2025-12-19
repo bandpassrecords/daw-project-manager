@@ -157,15 +157,49 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                     decoration: const InputDecoration(labelText: 'Project Name'),
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _bpmCtrl,
-                    decoration: const InputDecoration(labelText: 'BPM'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _keyCtrl,
-                    decoration: const InputDecoration(labelText: 'Key (e.g., C#m, F major)'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _bpmCtrl,
+                          decoration: const InputDecoration(labelText: 'BPM'),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _keyCtrl,
+                          decoration: const InputDecoration(labelText: 'Key (e.g., C#m, F major)'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          try {
+                            await repo.extractFullMetadataForProject(project.id);
+                            // Refresh the project data
+                            ref.invalidate(allProjectsStreamProvider);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Metadata extracted successfully')),
+                              );
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to extract metadata: $e')),
+                              );
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.search, size: 18),
+                        label: const Text('Extract'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF5A6B7A),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   

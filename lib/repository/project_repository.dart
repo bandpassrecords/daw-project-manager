@@ -163,7 +163,10 @@ class ProjectRepository {
   }
 
   // LÓGICA CORRIGIDA para preservar campos customizados
-  Future<void> upsertFromFileSystemEntity(FileSystemEntity entity) async {
+  /// Upserts a project from a file system entity
+  /// [fullMetadata] if true, extracts full metadata (BPM, key, DAW version) - slower
+  /// if false, only extracts DAW type from extension - faster
+  Future<void> upsertFromFileSystemEntity(FileSystemEntity entity, {bool fullMetadata = false}) async {
     final isLogicBundle = entity is Directory && entity.path.toLowerCase().endsWith('.logicx');
     final filePath = entity.path;
     final stat = await entity.stat();
@@ -177,7 +180,11 @@ class ProjectRepository {
     // Extract metadata from project file
     ProjectMetadata? extractedMetadata;
     try {
-      extractedMetadata = await MetadataExtractor.extractMetadata(filePath);
+      if (fullMetadata) {
+        extractedMetadata = await MetadataExtractor.extractMetadata(filePath);
+      } else {
+        extractedMetadata = await MetadataExtractor.extractLightweightMetadata(filePath);
+      }
     } catch (_) {
       // If extraction fails, continue without metadata
     }
@@ -220,6 +227,29 @@ class ProjectRepository {
 
   Future<void> updateProject(MusicProject project) async {
     await projectsBox.put(project.id, project.copyWith(updatedAt: DateTime.now()));
+  }
+
+  /// Extracts full metadata for a single project and updates it
+  Future<void> extractFullMetadataForProject(String projectId) async {
+    final project = projectsBox.get(projectId);
+    if (project == null) return;
+
+    try {
+      final extractedMetadata = await MetadataExtractor.extractMetadata(project.filePath);
+      
+      // Update project with extracted metadata, preserving existing values if extraction didn't find anything
+      final updated = project.copyWith(
+        bpm: extractedMetadata.bpm ?? project.bpm,
+        musicalKey: extractedMetadata.key ?? project.musicalKey,
+        dawType: extractedMetadata.dawType ?? project.dawType,
+        dawVersion: extractedMetadata.dawVersion ?? project.dawVersion,
+        updatedAt: DateTime.now(),
+      );
+      
+      await projectsBox.put(projectId, updated);
+    } catch (_) {
+      // If extraction fails, silently continue
+    }
   }
 
   // Reactive listeners

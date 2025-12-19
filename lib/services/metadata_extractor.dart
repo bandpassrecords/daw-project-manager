@@ -37,7 +37,20 @@ class ProjectMetadata {
 }
 
 class MetadataExtractor {
-  /// Extracts metadata from a project file
+  /// Extracts lightweight metadata (DAW type only) - fast, no file parsing
+  static Future<ProjectMetadata> extractLightweightMetadata(String filePath) async {
+    final ext = p.extension(filePath).toLowerCase();
+    final dawType = _getDawTypeFromExtension(ext);
+    
+    return ProjectMetadata(
+      bpm: null,
+      key: null,
+      dawType: dawType,
+      dawVersion: null,
+    );
+  }
+
+  /// Extracts full metadata from a project file (BPM, key, DAW version)
   static Future<ProjectMetadata> extractMetadata(String filePath) async {
     final ext = p.extension(filePath).toLowerCase();
     final projectDir = File(filePath).parent;
