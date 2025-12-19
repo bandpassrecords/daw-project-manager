@@ -67,15 +67,23 @@ function showDownloadCard() {
     const os = detectOS();
     const windowsCard = document.getElementById('windows-download');
     const macosCard = document.getElementById('macos-download');
+    const windowsOtherPlatform = document.getElementById('windows-other-platform');
+    const macosOtherPlatform = document.getElementById('macos-other-platform');
     const heroBadges = document.getElementById('hero-badges');
     
     if (os === 'macos' && macosCard) {
         macosCard.style.display = 'block';
+        if (macosOtherPlatform) {
+            macosOtherPlatform.style.display = 'block';
+        }
         if (heroBadges) {
             heroBadges.innerHTML = '<span class="badge">macOS</span><span class="badge">v1.2.0</span>';
         }
     } else if (windowsCard) {
         windowsCard.style.display = 'block';
+        if (windowsOtherPlatform) {
+            windowsOtherPlatform.style.display = 'block';
+        }
         if (heroBadges) {
             heroBadges.innerHTML = '<span class="badge">Windows</span><span class="badge">v1.2.0</span>';
         }

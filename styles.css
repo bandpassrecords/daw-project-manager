@@ -333,6 +333,26 @@ body {
     margin-bottom: 1.5rem;
 }
 
+.other-platform-link {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.btn-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    display: inline-block;
+}
+
+.btn-link:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
 .download-info {
     text-align: center;
     margin-top: 3rem;
