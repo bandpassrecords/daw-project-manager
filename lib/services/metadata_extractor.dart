@@ -63,12 +63,13 @@ class MetadataExtractor {
     String? dawVersion;
 
     // Try to extract from project file first
-    if (ext == '.als') {
+    if (ext == '.als' || ext == '.alp') {
       final metadata = await _extractFromAbletonFile(filePath);
       bpm = metadata.bpm ?? bpm;
       key = metadata.key ?? key;
       dawVersion = metadata.dawVersion ?? dawVersion;
-    } else if (ext == '.cpr') {
+    } else if (ext == '.cpr' || ext == '.npr') {
+      // Nuendo uses similar format to Cubase
       final metadata = await _extractFromCubaseFile(filePath);
       dawVersion = metadata.dawVersion ?? dawVersion;
     }
@@ -96,13 +97,28 @@ class MetadataExtractor {
   static String? _getDawTypeFromExtension(String ext) {
     switch (ext) {
       case '.als':
-        return 'Ableton';
+      case '.alp':
+        return 'Ableton Live';
+      case '.bwproject':
+        return 'Bitwig Studio';
       case '.cpr':
         return 'Cubase';
       case '.flp':
         return 'FL Studio';
       case '.logicx':
         return 'Logic Pro';
+      case '.maschine':
+      case '.maschine2':
+        return 'Maschine';
+      case '.npr':
+        return 'Nuendo';
+      case '.ptx':
+      case '.pts':
+        return 'Pro Tools';
+      case '.rpp':
+        return 'Reaper';
+      case '.song':
+        return 'Studio One';
       default:
         return null;
     }
