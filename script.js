@@ -43,8 +43,50 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
+// Detect operating system and show appropriate download
+function detectOS() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const platform = navigator.platform || navigator.userAgentData?.platform;
+    
+    // Check for macOS
+    if (/Mac|iPhone|iPad|iPod/.test(platform) || /Mac|iPhone|iPad|iPod/.test(userAgent)) {
+        return 'macos';
+    }
+    
+    // Check for Windows
+    if (/Win/.test(platform) || /Win/.test(userAgent) || /Windows/.test(userAgent)) {
+        return 'windows';
+    }
+    
+    // Default to Windows if unknown
+    return 'windows';
+}
+
+// Show appropriate download card based on OS
+function showDownloadCard() {
+    const os = detectOS();
+    const windowsCard = document.getElementById('windows-download');
+    const macosCard = document.getElementById('macos-download');
+    const heroBadges = document.getElementById('hero-badges');
+    
+    if (os === 'macos' && macosCard) {
+        macosCard.style.display = 'block';
+        if (heroBadges) {
+            heroBadges.innerHTML = '<span class="badge">macOS</span><span class="badge">v1.2.0</span>';
+        }
+    } else if (windowsCard) {
+        windowsCard.style.display = 'block';
+        if (heroBadges) {
+            heroBadges.innerHTML = '<span class="badge">Windows</span><span class="badge">v1.2.0</span>';
+        }
+    }
+}
+
 // Observe feature cards and other elements
 document.addEventListener('DOMContentLoaded', () => {
+    // Show appropriate download card
+    showDownloadCard();
+    
     const animatedElements = document.querySelectorAll('.feature-card, .daw-item, .download-card');
     
     animatedElements.forEach(el => {

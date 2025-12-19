@@ -18,8 +18,8 @@ This is the static website for DAW Project Manager, hosted on GitHub Pages.
 
 ### Update GitHub Links
 
-Replace `yourusername` in `index.html` with your actual GitHub username:
-- Search for: `yourusername/daw_project_manager`
+Replace `bandpassrecords` in `index.html` with your actual GitHub username:
+- Search for: `bandpassrecords/daw_project_manager`
 - Replace with: `YOUR_USERNAME/daw_project_manager`
 
 ### Update Download Links
