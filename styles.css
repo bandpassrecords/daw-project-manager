@@ -336,6 +336,15 @@ body {
 .download-icon {
     font-size: 4rem;
     margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.os-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
 }
 
 .download-card h3 {
