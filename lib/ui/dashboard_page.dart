@@ -80,11 +80,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
   
   // FocusNode auxiliar para o RawKeyboardListener
   final FocusNode _globalRawKeyListenerFocusNode = FocusNode();
+  
+  // TextEditingController para a barra de pesquisa
+  late final TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _searchController = TextEditingController();
   }
 
   @override
@@ -92,6 +96,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     _tabController.dispose();
     _searchFocusNode.dispose(); 
     _globalRawKeyListenerFocusNode.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -297,6 +302,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     final isProfileSwitching = ref.watch(profileSwitchingProvider);
     final isScanning = _scanning || initialScanning;
     final isAnyOperation = isScanning || isProfileSwitching;
+    
+    // Sync search controller with provider state
+    if (_searchController.text != currentParams.searchText) {
+      _searchController.text = currentParams.searchText;
+      _searchController.selection = TextSelection.fromPosition(TextPosition(offset: currentParams.searchText.length));
+    }
     
     // Get all projects and filter out preserved projects (same logic as projectsProvider)
     final allProjectsAsync = ref.watch(allProjectsStreamProvider);
@@ -600,13 +611,21 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                             child: TextField(
                               // Associar o FocusNode ao TextField
                               focusNode: _searchFocusNode, 
-                              controller: TextEditingController(text: currentParams.searchText)
-                                ..selection = TextSelection.fromPosition(TextPosition(offset: currentParams.searchText.length)),
-                              decoration: const InputDecoration(
+                              controller: _searchController,
+                              decoration: InputDecoration(
                                 hintText: 'Search by name...',
                                 isDense: true,
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.search),
+                                border: const OutlineInputBorder(),
+                                prefixIcon: const Icon(Icons.search),
+                                suffixIcon: currentParams.searchText.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.close),
+                                        onPressed: () {
+                                          _searchController.clear();
+                                          ref.read(queryParamsNotifierProvider.notifier).setSearchText('');
+                                        },
+                                      )
+                                    : null,
                               ),
                               onChanged: (text) {
                                 ref.read(queryParamsNotifierProvider.notifier).setSearchText(text);
@@ -769,14 +788,37 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                           label: Text(r.path),
                           deleteIcon: const Icon(Icons.close),
                           onDeleted: () async {
-                            final repo = await ref.read(repositoryProvider.future);
-                            await repo.removeRoot(r.id);
-                            // Invalidate repository to ensure fresh data
-                            ref.invalidate(repositoryProvider);
-                            // Wait for repository to reload before scanning
-                            await ref.read(repositoryProvider.future);
-                            // Trigger a scan to update the UI and remove projects
-                            await _scanAll();
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                backgroundColor: const Color(0xFF2B2D31),
+                                title: const Text('Delete Root Path'),
+                                content: Text('Are you sure you want to remove "${r.path}"? This will also remove all projects from this folder that are not in releases.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.pop(ctx, true),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                    ),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              final repo = await ref.read(repositoryProvider.future);
+                              await repo.removeRoot(r.id);
+                              // Invalidate repository to ensure fresh data
+                              ref.invalidate(repositoryProvider);
+                              // Wait for repository to reload before scanning
+                              await ref.read(repositoryProvider.future);
+                              // Trigger a scan to update the UI and remove projects
+                              await _scanAll();
+                            }
                           },
                           backgroundColor: const Color(0xFF2B2D31),
                           labelStyle: const TextStyle(color: Colors.white70),
