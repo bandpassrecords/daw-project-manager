@@ -1480,6 +1480,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                     return;
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade600,
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('Launch'),
               ),
             ],

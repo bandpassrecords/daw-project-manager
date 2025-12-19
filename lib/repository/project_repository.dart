@@ -194,9 +194,10 @@ class ProjectRepository {
     final bpm = extractedMetadata?.bpm ?? existing?.bpm;
     final key = extractedMetadata?.key ?? existing?.musicalKey;
     
-    // Determine DAW type and version: use extracted (always update from file)
+    // Determine DAW type: always update from file (based on extension)
     final dawType = extractedMetadata?.dawType;
-    final dawVersion = extractedMetadata?.dawVersion;
+    // Preserve existing DAW version if extraction didn't find anything (e.g., during lightweight scan)
+    final dawVersion = extractedMetadata?.dawVersion ?? existing?.dawVersion;
     
     // Cria o objeto base, usando os dados existentes se houver, 
     // mas atualizando os campos que vêm do sistema de arquivos (size, lastModified, fileName, etc.)
@@ -217,7 +218,7 @@ class ProjectRepository {
       musicalKey: key,                                 // <--- USA EXISTENTE OU EXTRAÍDO
       notes: existing?.notes,                         // <--- NOVO: PRESERVA NOTAS
       dawType: dawType,                                // <--- SEMPRE ATUALIZA DO ARQUIVO
-      dawVersion: dawVersion,                          // <--- SEMPRE ATUALIZA DO ARQUIVO
+      dawVersion: dawVersion,                          // <--- USA EXISTENTE OU EXTRAÍDO (preserva se já existe)
     );
 
     await projectsBox.put(projectToSave.id, projectToSave);

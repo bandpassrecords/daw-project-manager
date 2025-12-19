@@ -5,12 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
+import 'package:window_manager/window_manager.dart';
 import '../models/profile.dart';
 import '../providers/providers.dart';
 import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
 import '../services/scanner_service.dart';
 import '../utils/app_paths.dart';
+import 'dashboard_page.dart';
 
 class ProfileManagerPage extends ConsumerStatefulWidget {
   const ProfileManagerPage({super.key});
@@ -370,14 +372,49 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
     final currentProfileAsync = ref.watch(currentProfileProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile Manager'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      appBar: null,
+      body: Column(
+        children: [
+          // Window title bar
+          if (!kDebugMode)
+            GestureDetector(
+              onPanStart: (_) => windowManager.startDragging(),
+              onDoubleTap: () async {
+                if (await windowManager.isMaximized()) {
+                  windowManager.restore();
+                } else {
+                  windowManager.maximize();
+                }
+              },
+              child: Container(
+                color: const Color(0xFF2B2D31),
+                height: 40,
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                      tooltip: 'Back',
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 4),
+                      child: Text(
+                        'Profile Manager',
+                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                      ),
+                    ),
+                    const Spacer(),
+                    const WindowButtons(),
+                  ],
+                ),
+              ),
+            ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
             // Create new profile section
             Card(
               color: const Color(0xFF2B2D31),
@@ -530,8 +567,11 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                 },
               ),
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

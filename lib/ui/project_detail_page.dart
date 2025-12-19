@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart'; // NOVO IMPORT
 import 'package:path/path.dart' as p; // NOVO IMPORT
+import 'package:window_manager/window_manager.dart';
 
 import '../models/music_project.dart';
 import '../models/todo_item.dart';
@@ -96,13 +97,48 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     final allProjectsAsync = ref.watch(allProjectsStreamProvider);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Project Details'),
-      ),
-      body: repoAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => const Center(child: Text('Failed to load')),
-        data: (repo) {
+      appBar: null,
+      body: Column(
+        children: [
+          // Window title bar
+          if (!kDebugMode)
+            GestureDetector(
+              onPanStart: (_) => windowManager.startDragging(),
+              onDoubleTap: () async {
+                if (await windowManager.isMaximized()) {
+                  windowManager.restore();
+                } else {
+                  windowManager.maximize();
+                }
+              },
+              child: Container(
+                color: const Color(0xFF2B2D31),
+                height: 40,
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                      tooltip: 'Back',
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 4),
+                      child: Text(
+                        'Project Details',
+                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                      ),
+                    ),
+                    const Spacer(),
+                    const WindowButtons(),
+                  ],
+                ),
+              ),
+            ),
+          Expanded(
+            child: repoAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (_, __) => const Center(child: Text('Failed to load')),
+              data: (repo) {
           // Use projects from stream to get latest data, fallback to repo if stream not ready
           final allProjects = allProjectsAsync.value ?? repo.getAllProjects();
           final project = allProjects.firstWhere((p) => p.id == widget.projectId);
@@ -359,6 +395,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
             ],
           );
         },
+      ),
+            ),
+        ],
       ),
     );
   }

@@ -10,6 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import 'package:archive/archive.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../models/release.dart';
 import 'dashboard_page.dart';
@@ -407,22 +408,128 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
     // Handle loading/error states for both providers
     if (releases.isLoading || allProjectsAsync.isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Release Details')),
-        body: const Center(child: CircularProgressIndicator()),
+        appBar: null,
+        body: Column(
+          children: [
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        tooltip: 'Back',
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 4),
+                        child: Text(
+                          'Release Details',
+                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      const Spacer(),
+                      const WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            const Expanded(child: Center(child: CircularProgressIndicator())),
+          ],
+        ),
       );
     }
 
     if (releases.hasError) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Error')),
-        body: Center(child: Text('Error loading release: ${releases.error}')),
+        appBar: null,
+        body: Column(
+          children: [
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        tooltip: 'Back',
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 4),
+                        child: Text(
+                          'Error',
+                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      const Spacer(),
+                      const WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(child: Center(child: Text('Error loading release: ${releases.error}'))),
+          ],
+        ),
       );
     }
 
     if (allProjectsAsync.hasError) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Error')),
-        body: Center(child: Text('Error loading projects: ${allProjectsAsync.error}')),
+        appBar: null,
+        body: Column(
+          children: [
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 12),
+                        child: Text(
+                          'Error',
+                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      Spacer(),
+                      WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(child: Center(child: Text('Error loading projects: ${allProjectsAsync.error}'))),
+          ],
+        ),
       );
     }
 
@@ -467,10 +574,45 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       }
 
       return Scaffold(
-        appBar: AppBar(
-          title: Text(release.title),
-        ),
-        body: Padding(
+        appBar: null,
+        body: Column(
+          children: [
+            // Window title bar
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        tooltip: 'Back',
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
+                          release.title,
+                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      const Spacer(),
+                      const WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(
+              child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -923,12 +1065,52 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
             ),
             ],
           ),
+              ),
+            ),
+          ],
         ),
       );
     } catch (e) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Release Not Found')),
-        body: const Center(child: Text('This release could not be found.')),
+        appBar: null,
+        body: Column(
+          children: [
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        tooltip: 'Back',
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 4),
+                        child: Text(
+                          'Release Not Found',
+                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      const Spacer(),
+                      const WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            const Expanded(child: Center(child: Text('This release could not be found.'))),
+          ],
+        ),
       );
     }
   }
