@@ -76,16 +76,10 @@ function showDownloadCard() {
         if (macosOtherPlatform) {
             macosOtherPlatform.style.display = 'block';
         }
-        if (heroBadges) {
-            heroBadges.innerHTML = '<span class="badge">macOS</span><span class="badge">v1.2.0</span>';
-        }
     } else if (windowsCard) {
         windowsCard.style.display = 'block';
         if (windowsOtherPlatform) {
             windowsOtherPlatform.style.display = 'block';
-        }
-        if (heroBadges) {
-            heroBadges.innerHTML = '<span class="badge">Windows</span><span class="badge">v1.2.0</span>';
         }
     }
 }
