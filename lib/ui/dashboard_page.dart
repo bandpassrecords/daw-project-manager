@@ -73,6 +73,7 @@ class DashboardPage extends ConsumerStatefulWidget {
 
 class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTickerProviderStateMixin {
   bool _scanning = false;
+  bool _extractingMetadata = false;
   late TabController _tabController;
   
   // 1. FocusNode para a barra de pesquisa
@@ -306,7 +307,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     final initialScanning = ref.watch(initialScanStateProvider);
     final isProfileSwitching = ref.watch(profileSwitchingProvider);
     final isScanning = _scanning || initialScanning;
-    final isAnyOperation = isScanning || isProfileSwitching;
+    final isAnyOperation = isScanning || isProfileSwitching || _extractingMetadata;
     
     // Sync search controller with provider state
     if (_searchController.text != currentParams.searchText) {
@@ -402,33 +403,39 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: currentProfileAsync.when(
-                              loading: () => TextButton.icon(
-                                icon: const Icon(Icons.person, size: 18, color: Colors.white70),
-                                label: const Text(
-                                  'Profile',
-                                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                              loading: () => Tooltip(
+                                message: 'Profile',
+                                child: TextButton.icon(
+                                  icon: const Icon(Icons.person, size: 18, color: Colors.white70),
+                                  label: const Text(
+                                    'Profile',
+                                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ProfileManagerPage(),
+                                      ),
+                                    );
+                                  },
                                 ),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => const ProfileManagerPage(),
-                                    ),
-                                  );
-                                },
                               ),
-                              error: (_, __) => TextButton.icon(
-                                icon: const Icon(Icons.person, size: 18, color: Colors.white70),
-                                label: const Text(
-                                  'Profile',
-                                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                              error: (_, __) => Tooltip(
+                                message: 'Profile',
+                                child: TextButton.icon(
+                                  icon: const Icon(Icons.person, size: 18, color: Colors.white70),
+                                  label: const Text(
+                                    'Profile',
+                                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ProfileManagerPage(),
+                                      ),
+                                    );
+                                  },
                                 ),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => const ProfileManagerPage(),
-                                    ),
-                                  );
-                                },
                               ),
                               data: (currentProfile) {
                                 Widget profileIcon;
@@ -449,20 +456,38 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                 } else {
                                   profileIcon = const Icon(Icons.person, size: 18, color: Colors.white70);
                                 }
-                                
-                                return TextButton.icon(
-                                  icon: profileIcon,
-                                  label: Text(
-                                    currentProfile?.name ?? 'Profile',
-                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+
+                                final profileName = currentProfile?.name ?? 'Profile';
+
+                                return Tooltip(
+                                  message: profileName,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => const ProfileManagerPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        profileIcon,
+                                        const SizedBox(width: 8),
+                                        Flexible(
+                                          child: ConstrainedBox(
+                                            constraints: const BoxConstraints(maxWidth: 150),
+                                            child: Text(
+                                              profileName,
+                                              style: const TextStyle(color: Colors.white70, fontSize: 14),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const ProfileManagerPage(),
-                                      ),
-                                    );
-                                  },
                                 );
                               },
                             ),
@@ -485,6 +510,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                 children: [
                   // Ações de Root e Scan
                   Flexible(
+                    flex: 3,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -493,27 +519,33 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                           builder: (context, ref, child) {
                             final currentProfileAsync = ref.watch(currentProfileProvider);
                             return currentProfileAsync.when(
-                              loading: () => TextButton.icon(
-                                icon: const Icon(Icons.person, size: 18),
-                                label: const Text('Profile'),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => const ProfileManagerPage(),
-                                    ),
-                                  );
-                                },
+                              loading: () => Tooltip(
+                                message: 'Profile',
+                                child: TextButton.icon(
+                                  icon: const Icon(Icons.person, size: 24),
+                                  label: const Text('Profile'),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ProfileManagerPage(),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
-                              error: (_, __) => TextButton.icon(
-                                icon: const Icon(Icons.person, size: 18),
-                                label: const Text('Profile'),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => const ProfileManagerPage(),
-                                    ),
-                                  );
-                                },
+                              error: (_, __) => Tooltip(
+                                message: 'Profile',
+                                child: TextButton.icon(
+                                  icon: const Icon(Icons.person, size: 24),
+                                  label: const Text('Profile'),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ProfileManagerPage(),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                               data: (currentProfile) {
                                 Widget profileIcon;
@@ -523,28 +555,48 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                     borderRadius: BorderRadius.circular(12),
                                     child: Image.file(
                                       File(currentProfile.photoPath!),
-                                      width: 18,
-                                      height: 18,
+                                      width: 24,
+                                      height: 24,
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) {
-                                        return const Icon(Icons.person, size: 18);
+                                        return const Icon(Icons.person, size: 24);
                                       },
                                     ),
                                   );
                                 } else {
-                                  profileIcon = const Icon(Icons.person, size: 18);
+                                  profileIcon = const Icon(Icons.person, size: 24);
                                 }
-                                
-                                return TextButton.icon(
-                                  icon: profileIcon,
-                                  label: Text(currentProfile?.name ?? 'Profile'),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const ProfileManagerPage(),
-                                      ),
-                                    );
-                                  },
+
+                                final profileName = currentProfile?.name ?? 'Profile';
+
+                                return Tooltip(
+                                  message: profileName,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => const ProfileManagerPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        profileIcon,
+                                        const SizedBox(width: 8),
+                                        Flexible(
+                                          child: ConstrainedBox(
+                                            constraints: const BoxConstraints(maxWidth: 150),
+                                            child: Text(
+                                              profileName,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 );
                               },
                             );
@@ -613,7 +665,34 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                               onPressed: isAnyOperation
                                   ? null
                                   : () async {
-                                        await _fullScanAll();
+                                        final confirm = await showDialog<bool>(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            backgroundColor: const Color(0xFF2B2D31),
+                                            title: const Text('Deep Scan'),
+                                            content: const Text(
+                                              'Deep Scan will extract full metadata (BPM, Key, DAW Version) from all project files. '
+                                              'This process is slower than a regular scan but provides complete information.\n\n'
+                                              'Continue with Deep Scan?'
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(ctx, false),
+                                                child: const Text('Cancel'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () => Navigator.pop(ctx, true),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color(0xFF5A6B7A),
+                                                ),
+                                                child: const Text('Deep Scan'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                        if (confirm == true) {
+                                          await _fullScanAll();
+                                        }
                                       },
                               icon: isAnyOperation
                                   ? const SizedBox(
@@ -632,7 +711,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                       ],
                     ),
                   ),
-                  
+
                   // Área de Pesquisa e Filtro
                   Flexible(
                     flex: 2,
@@ -890,6 +969,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                       await _unhideProjects(context, ref, selectedProjectIds);
                     },
                     showHidden: hiddenMode == 1 || hiddenMode == 2,
+                    onExtractingMetadataChanged: (extracting) {
+                      setState(() => _extractingMetadata = extracting);
+                    },
+                    isAnyOperation: isAnyOperation,
                   ),
                   const ReleasesTabPage(),
                 ],
@@ -935,6 +1018,8 @@ class _PlutoProjectsTableWithSelection extends ConsumerStatefulWidget {
   final Function(List<String>) onHideProjects;
   final Function(List<String>) onUnhideProjects;
   final bool showHidden;
+  final Function(bool) onExtractingMetadataChanged;
+  final bool isAnyOperation;
 
   const _PlutoProjectsTableWithSelection({
     required this.projects,
@@ -943,6 +1028,8 @@ class _PlutoProjectsTableWithSelection extends ConsumerStatefulWidget {
     required this.onHideProjects,
     required this.onUnhideProjects,
     required this.showHidden,
+    required this.onExtractingMetadataChanged,
+    required this.isAnyOperation,
   });
 
   @override
@@ -1062,33 +1149,38 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF5A6B7A),
                       ),
-                      onPressed: () async {
-                        final repo = await ref.read(repositoryProvider.future);
-                        int successCount = 0;
-                        int failCount = 0;
-                        
-                        for (final projectId in _selectedProjectIds) {
-                          try {
-                            await repo.extractFullMetadataForProject(projectId);
-                            successCount++;
-                          } catch (_) {
-                            failCount++;
-                          }
-                        }
-                        
-                        // Refresh the projects list
-                        ref.invalidate(allProjectsStreamProvider);
-                        
-                        if (mounted) {
-                          final message = failCount > 0
-                              ? 'Extracted metadata for $successCount project${successCount == 1 ? '' : 's'}. $failCount failed.'
-                              : 'Extracted metadata for $successCount project${successCount == 1 ? '' : 's'}.';
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(message)),
-                          );
-                        }
-                        _clearSelection();
-                      },
+                      onPressed: widget.isAnyOperation
+                          ? null
+                          : () async {
+                                widget.onExtractingMetadataChanged(true);
+                                final repo = await ref.read(repositoryProvider.future);
+                                int successCount = 0;
+                                int failCount = 0;
+                                
+                                for (final projectId in _selectedProjectIds) {
+                                  try {
+                                    await repo.extractFullMetadataForProject(projectId);
+                                    successCount++;
+                                  } catch (_) {
+                                    failCount++;
+                                  }
+                                }
+                                
+                                // Refresh the projects list
+                                ref.invalidate(allProjectsStreamProvider);
+                                
+                                if (mounted) {
+                                  final message = failCount > 0
+                                      ? 'Extracted metadata for $successCount project${successCount == 1 ? '' : 's'}. $failCount failed.'
+                                      : 'Extracted metadata for $successCount project${successCount == 1 ? '' : 's'}.';
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(message)),
+                                  );
+                                }
+                                
+                                widget.onExtractingMetadataChanged(false);
+                                _clearSelection();
+                              },
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(

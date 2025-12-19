@@ -28,6 +28,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   late TextEditingController _notesCtrl; // NOVO CONTROLLER
   String? _selectedPhase;
   bool _hasInitializedPhase = false; // Track if we've initialized the phase
+  bool _extractingMetadata = false; // Track metadata extraction state
   
   static const List<String> _projectPhases = [
     'Idea',
@@ -138,27 +139,29 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
             }
           });
 
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                children: [
-                  Text(project.displayName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Text(project.filePath, style: const TextStyle(color: Colors.white70)),
-                  const SizedBox(height: 16),
-                  Text('Last modified: ${project.lastModifiedAt}'),
-                  const SizedBox(height: 24),
-                  
-                  // Campo para editar o nome de exibição customizado
-                  TextFormField(
-                    controller: _nameCtrl,
-                    decoration: const InputDecoration(labelText: 'Project Name'),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
+          return Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
                     children: [
+                      Text(project.displayName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text(project.filePath, style: const TextStyle(color: Colors.white70)),
+                      const SizedBox(height: 16),
+                      Text('Last modified: ${project.lastModifiedAt}'),
+                      const SizedBox(height: 24),
+                      
+                      // Campo para editar o nome de exibição customizado
+                      TextFormField(
+                    controller: _nameCtrl,
+                        decoration: const InputDecoration(labelText: 'Project Name'),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
                       Expanded(
                         child: TextFormField(
                           controller: _bpmCtrl,
@@ -175,36 +178,49 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton.icon(
-                        onPressed: () async {
-                          try {
-                            await repo.extractFullMetadataForProject(project.id);
-                            // Refresh the project data
-                            ref.invalidate(allProjectsStreamProvider);
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Metadata extracted successfully')),
-                              );
-                            }
-                          } catch (e) {
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Failed to extract metadata: $e')),
-                              );
-                            }
-                          }
-                        },
-                        icon: const Icon(Icons.search, size: 18),
-                        label: const Text('Extract'),
+                        onPressed: _extractingMetadata
+                            ? null
+                            : () async {
+                                  setState(() => _extractingMetadata = true);
+                                  try {
+                                    await repo.extractFullMetadataForProject(project.id);
+                                    // Refresh the project data
+                                    ref.invalidate(allProjectsStreamProvider);
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Metadata extracted successfully')),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Failed to extract metadata: $e')),
+                                      );
+                                    }
+                                  } finally {
+                                    if (mounted) {
+                                      setState(() => _extractingMetadata = false);
+                                    }
+                                  }
+                                },
+                        icon: _extractingMetadata
+                            ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                            : const Icon(Icons.search, size: 18),
+                        label: Text(_extractingMetadata ? 'Extracting…' : 'Extract'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF5A6B7A),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  
-                  // Project Phase Dropdown
-                  DropdownButtonFormField<String>(
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // Project Phase Dropdown
+                    DropdownButtonFormField<String>(
                     value: _selectedPhase,
                     decoration: const InputDecoration(
                       labelText: 'Project Phase',
@@ -219,25 +235,25 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       setState(() {
                         _selectedPhase = value;
                       });
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  
-                  // NOVO: CAMPO DE NOTAS
-                  TextFormField(
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // NOVO: CAMPO DE NOTAS
+                    TextFormField(
                     controller: _notesCtrl,
                     decoration: const InputDecoration(
                       labelText: 'Notes',
                       alignLabelWithHint: true,
                       border: OutlineInputBorder(),
                     ),
-                    maxLines: 5,
-                    keyboardType: TextInputType.multiline,
-                  ),
+                      maxLines: 5,
+                      keyboardType: TextInputType.multiline,
+                    ),
 
-                  const SizedBox(height: 24),
-                  // TODO List
-                  TodoListWidget(
+                    const SizedBox(height: 24),
+                    // TODO List
+                    TodoListWidget(
                     todos: project.todos,
                     onTodosChanged: (updatedTodos) async {
                       final updated = project.copyWith(todos: updatedTodos);
@@ -246,14 +262,14 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       if (mounted) {
                         ref.invalidate(allProjectsStreamProvider);
                       }
-                    },
-                  ),
+                      },
+                    ),
 
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      // BOTÃO: SAVE (LÓGICA ATUALIZADA)
-                      ElevatedButton.icon(
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        // BOTÃO: SAVE (LÓGICA ATUALIZADA)
+                        ElevatedButton.icon(
                         onPressed: () async {
                           // O campo name atualiza customDisplayName. Se o texto for vazio ou igual ao nome do arquivo original, ele deve ser null.
                           final nameText = _nameCtrl.text.trim();
@@ -278,20 +294,20 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                           }
                         },
                         icon: const Icon(Icons.save),
-                        label: const Text('Save'),
-                      ),
-                      const SizedBox(width: 12),
-                      
-                      // NOVO: BOTÃO OPEN FOLDER
-                      ElevatedButton.icon(
+                          label: const Text('Save'),
+                        ),
+                        const SizedBox(width: 12),
+                        
+                        // NOVO: BOTÃO OPEN FOLDER
+                        ElevatedButton.icon(
                         onPressed: () => _openProjectFolder(project.filePath),
                         icon: const Icon(Icons.folder_open),
-                        label: const Text('Open Folder'),
-                      ),
-                      const SizedBox(width: 12),
+                          label: const Text('Open Folder'),
+                        ),
+                        const SizedBox(width: 12),
 
-                      // BOTÃO OPEN IN DAW (Existente)
-                      ElevatedButton.icon(
+                        // BOTÃO OPEN IN DAW (Existente)
+                        ElevatedButton.icon(
                         onPressed: () async {
                           try {
                             if (Platform.isMacOS) {
@@ -311,10 +327,36 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                         label: const Text('Open in DAW'),
                       ),
                     ],
-                  )
-                ],
+                  ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              // Loading overlay
+              if (_extractingMetadata)
+                Container(
+                  color: Colors.black54,
+                  child: Center(
+                    child: Card(
+                      color: const Color(0xFF2B2D31),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Extracting metadata...',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           );
         },
       ),
