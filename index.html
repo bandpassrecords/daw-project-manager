@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DAW Project Manager - Organize and manage your Digital Audio Workstation projects with ease. Track metadata, organize releases, and streamline your music production workflow.">
+    <title>DAW Project Manager - Organize Your Music Production Projects</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="6" fill="#5A6B7A"/>
+                        <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                        <path d="M10 18H22V20H10V18Z" fill="white"/>
+                        <path d="M12 22H20V24H12V22Z" fill="white"/>
+                    </svg>
+                    <span>DAW Project Manager</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#daws">Supported DAWs</a>
+                    <a href="#download">Download</a>
+                    <a href="https://github.com/yourusername/daw_project_manager" target="_blank" rel="noopener noreferrer" class="github-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Organize Your Music Production Projects</h1>
+                <p class="hero-subtitle">A powerful desktop application for managing DAW projects, tracking metadata, organizing releases, and streamlining your creative workflow.</p>
+                <div class="hero-buttons">
+                    <a href="#download" class="btn btn-primary">Download Now</a>
+                    <a href="#features" class="btn btn-secondary">Learn More</a>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge">Windows</span>
+                    <span class="badge">macOS</span>
+                    <span class="badge">Linux</span>
+                    <span class="badge">v1.2.0</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <p class="section-subtitle">Everything you need to manage your music production projects</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <h3>Multi-DAW Support</h3>
+                    <p>Automatically detects and manages projects from 13+ popular DAWs including Ableton Live, FL Studio, Logic Pro, and more.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightweight Scanning</h3>
+                    <p>Fast initial scan that only extracts DAW type. Optional deep metadata extraction (BPM, key, version) on-demand.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Project Organization</h3>
+                    <p>Organize projects by status (Idea, Arranging, Mixing, Mastering, Finished) and add custom metadata to each project.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>Release Management</h3>
+                    <p>Group projects into releases with metadata, attach files (stems, mixes, artwork), and track release status.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">👤</div>
+                    <h3>Multiple Profiles</h3>
+                    <p>Create and switch between multiple user profiles, each with its own set of scan root directories and projects.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>9 Languages</h3>
+                    <p>Fully localized interface supporting English, Portuguese, Spanish, French, Italian, German, Russian, Japanese, and Chinese.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Advanced Search</h3>
+                    <p>Quick search across all projects with sortable, filterable table view powered by PlutoGrid.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Todo Lists</h3>
+                    <p>Track tasks and todos for each project to keep your workflow organized and never miss a step.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Quick Launch</h3>
+                    <p>Launch projects directly in their respective DAWs with a single click, saving you time and clicks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supported DAWs Section -->
+    <section id="daws" class="daws">
+        <div class="container">
+            <h2 class="section-title">Supported DAWs</h2>
+            <p class="section-subtitle">Works with all major Digital Audio Workstations</p>
+            
+            <div class="daws-grid">
+                <div class="daw-item">Ableton Live</div>
+                <div class="daw-item">Bitwig Studio</div>
+                <div class="daw-item">Cubase</div>
+                <div class="daw-item">FL Studio</div>
+                <div class="daw-item">Logic Pro</div>
+                <div class="daw-item">Maschine</div>
+                <div class="daw-item">Nuendo</div>
+                <div class="daw-item">Pro Tools</div>
+                <div class="daw-item">Reaper</div>
+                <div class="daw-item">Studio One</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download">
+        <div class="container">
+            <h2 class="section-title">Download</h2>
+            <p class="section-subtitle">Get started with DAW Project Manager today</p>
+            
+            <div class="download-cards">
+                <div class="download-card">
+                    <div class="download-icon">🪟</div>
+                    <h3>Windows</h3>
+                    <p>Windows 10 or later (64-bit)</p>
+                    <a href="https://github.com/yourusername/daw_project_manager/releases/latest" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                        Download for Windows
+                    </a>
+                </div>
+                
+                <div class="download-card">
+                    <div class="download-icon">🍎</div>
+                    <h3>macOS</h3>
+                    <p>macOS 10.14 or later</p>
+                    <a href="https://github.com/yourusername/daw_project_manager/releases/latest" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                        Download for macOS
+                    </a>
+                </div>
+                
+                <div class="download-card">
+                    <div class="download-icon">🐧</div>
+                    <h3>Linux</h3>
+                    <p>Experimental support</p>
+                    <a href="https://github.com/yourusername/daw_project_manager/releases/latest" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                        Download for Linux
+                    </a>
+                </div>
+            </div>
+            
+            <div class="download-info">
+                <p>Looking for the source code? <a href="https://github.com/yourusername/daw_project_manager" target="_blank" rel="noopener noreferrer">Visit our GitHub repository</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>DAW Project Manager</h4>
+                    <p>Organize and manage your music production projects with ease.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://github.com/yourusername/daw_project_manager">GitHub</a></li>
+                        <li><a href="https://github.com/yourusername/daw_project_manager/issues">Report Issue</a></li>
+                        <li><a href="https://github.com/yourusername/daw_project_manager/releases">Releases</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Built With</h4>
+                    <ul>
+                        <li><a href="https://flutter.dev" target="_blank" rel="noopener noreferrer">Flutter</a></li>
+                        <li><a href="https://riverpod.dev" target="_blank" rel="noopener noreferrer">Riverpod</a></li>
+                        <li><a href="https://pub.dev/packages/hive" target="_blank" rel="noopener noreferrer">Hive</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 DAW Project Manager. Open source software.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
