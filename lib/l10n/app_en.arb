@@ -1,0 +1,657 @@
+{
+  "@@locale": "en",
+  "appTitle": "DAW Project Manager",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "projectDetails": "Project Details",
+  "back": "Back",
+  "save": "Save",
+  "cancel": "Cancel",
+  "launch": "Launch",
+  "view": "View",
+  "openFolder": "Open Folder",
+  "openInDaw": "Open in DAW",
+  "extract": "Extract",
+  "extracting": "Extracting…",
+  "extractingMetadata": "Extracting metadata...",
+  "deepScan": "Deep Scan",
+  "rescan": "Rescan",
+  "scanning": "Scanning…",
+  "projectName": "Project Name",
+  "bpm": "BPM",
+  "key": "Key (e.g., C#m, F major)",
+  "notes": "Notes",
+  "projectPhase": "Project Phase",
+  "failedToLoad": "Failed to load",
+  "fileMissing": "File missing.",
+  "launchingProject": "Launching {projectName}…",
+  "@launchingProject": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "clearLibrary": "Clear Library",
+  "clearLibraryMessage": "This will remove all saved projects and source folders. Continue?",
+  "clear": "Clear",
+  "roots": "Roots",
+  "projects": "Projects",
+  "hidden": "hidden",
+  "profileManager": "Profile Manager",
+  "createNewProfile": "Create New Profile",
+  "profileName": "Profile Name",
+  "create": "Create",
+  "profiles": "Profiles",
+  "active": "Active",
+  "switchProfile": "Switch",
+  "edit": "Edit",
+  "delete": "Delete",
+  "addFolder": "Add Folder",
+  "searchProjects": "Search projects...",
+  "deepScanTooltip": "Deep Scan extracts full metadata from project files:\n• BPM (Beats Per Minute)\n• Musical Key\n• DAW Version\nThis is slower but provides complete information.",
+  "deepScanConfirm": "This will scan all projects and extract full metadata (BPM, Key, DAW Version). This may take a while. Continue?",
+  "metadataExtractedSuccessfully": "Metadata extracted successfully",
+  "failedToExtractMetadata": "Failed to extract metadata: {error}",
+  "@failedToExtractMetadata": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved": "Saved",
+  "failedToLaunchDaw": "Failed to launch DAW",
+  "releaseDetails": "Release Details",
+  "releaseNotFound": "Release Not Found",
+  "error": "Error",
+  "loading": "Loading...",
+  "deleteProfile": "Delete Profile",
+  "deleteProfileMessage": "Are you sure you want to delete \"{profileName}\"? This will delete all projects, roots, and releases for this profile.",
+  "@deleteProfileMessage": {
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "Edit Profile",
+  "changePhoto": "Change Photo",
+  "remove": "Remove",
+  "saveName": "Save Name",
+  "profilePhotoUpdated": "Profile photo updated.",
+  "profilePhotoRemoved": "Profile photo removed.",
+  "profileRenamed": "Profile renamed to \"{newName}\"",
+  "@profileRenamed": {
+    "placeholders": {
+      "newName": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCreated": "Profile \"{name}\" created successfully",
+  "@profileCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleted": "Profile \"{name}\" deleted",
+  "@profileDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterProfileName": "Please enter a profile name",
+  "failedToCreateProfile": "Failed to create profile: {error}",
+  "@failedToCreateProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProfilesFound": "No profiles found. Create one above.",
+  "created": "Created: {date}",
+  "@created": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "toggleSort": "Toggle sort",
+  "clearLibraryTooltip": "Clear Library (projects & roots)",
+  "lastModified": "Last modified: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "name": "Name",
+  "status": "Status",
+  "daw": "DAW",
+  "lastModifiedColumn": "Last Modified",
+  "actions": "Actions",
+  "launch": "Launch",
+  "hide": "Hide",
+  "unhide": "Unhide",
+  "extractMetadata": "Extract Metadata",
+  "createRelease": "Create Release",
+  "clearSelection": "Clear Selection",
+  "selectAllProjects": "Select all projects",
+  "switchingProfiles": "Switching Profiles...",
+  "scanningProjects": "Scanning projects...",
+  "projectsTab": "Projects",
+  "releasesTab": "Releases",
+  "showHidden": "Show Hidden",
+  "showAll": "Show All",
+  "showOnlyHidden": "Show Only Hidden",
+  "deleteRootPath": "Delete Root Path",
+  "deleteRootPathMessage": "Are you sure you want to remove \"{path}\"? This will also remove all projects from this folder that are not in releases.",
+  "@deleteRootPathMessage": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "rootsCount": "Roots: {count}",
+  "@rootsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsCount": "Projects: {count}",
+  "@projectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hiddenOnly": "(hidden only)",
+  "hiddenCount": "({count} hidden)",
+  "@hiddenCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsHidden": "{count} project{plural} hidden.",
+  "@projectsHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsUnhidden": "{count} project{plural} unhidden.",
+  "@projectsUnhidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToHideProjects": "Failed to hide projects: {error}",
+  "@failedToHideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUnhideProjects": "Failed to unhide projects: {error}",
+  "@failedToUnhideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseCreated": "Release \"{title}\" created successfully.",
+  "@releaseCreated": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateRelease": "Failed to create release: {error}",
+  "@failedToCreateRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingFolder": "Error adding folder: {error}",
+  "@errorAddingFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProjectsFoundInRoots": "No projects found in selected roots.",
+  "selectProjectsFolder": "Select a projects folder",
+  "enterReleaseTitle": "Enter Release Title",
+  "releaseTitle": "Release Title",
+  "enterReleaseTitleHint": "Enter release title",
+  "metadataExtractedForProjects": "Extracted metadata for {count} project{plural}. {failures}",
+  "@metadataExtractedForProjects": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "failures": {
+        "type": "String"
+      }
+    }
+  },
+  "extractionFailures": "{count} failed.",
+  "@extractionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToWriteBpmFile": "Failed to write BPM file: {error}",
+  "@failedToWriteBpmFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToWriteKeyFile": "Failed to write key file: {error}",
+  "@failedToWriteKeyFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLaunch": "Failed to launch: {error}",
+  "@failedToLaunch": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryCleared": "Library cleared.",
+  "scanType": "{type} scan",
+  "@scanType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "{type} complete: {count} project{plural} added/updated.",
+  "@scanComplete": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsSelected": "{count} project{plural} selected",
+  "@projectsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "openingFolder": "Opening folder for {projectName}…",
+  "@openingFolder": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenFolder": "Failed to open folder: {error}",
+  "@failedToOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "osNotSupportedForOpeningFolder": "OS not supported for opening folder.",
+  "noProjectsAvailable": "No projects available. Please add projects first.",
+  "createNewRelease": "Create New Release",
+  "deleteRelease": "Delete Release",
+  "deleteReleaseMessage": "Are you sure you want to delete \"{title}\"?",
+  "@deleteReleaseMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDeleted": "Release \"{title}\" deleted.",
+  "@releaseDeleted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "selectTracks": "Select Tracks",
+  "continueButton": "Continue",
+  "noReleasesYet": "No releases yet",
+  "createFirstRelease": "Create your first release by selecting tracks from your projects",
+  "releasesCount": "Releases ({count})",
+  "@releasesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingReleases": "Error loading releases: {error}",
+  "@errorLoadingReleases": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tracksCount": "Tracks ({count})",
+  "@tracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addTracks": "Add Tracks",
+  "allProjectsAlreadyInRelease": "All projects are already in this release.",
+  "addedTracksToRelease": "Added {count} track{plural} to release.",
+  "@addedTracksToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseFilesCount": "Release Files ({count})",
+  "@releaseFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFiles": "Add Files",
+  "addedFilesToRelease": "Added {count} file{plural} to release.",
+  "@addedFilesToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddFiles": "Failed to add files: {error}",
+  "@failedToAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noFilesToDownload": "No files to download.",
+  "zipFileSaved": "ZIP file saved to: {path}",
+  "@zipFileSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateZip": "Failed to create ZIP: {error}",
+  "@failedToCreateZip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedFileDoesNotExist": "Selected file does not exist.",
+  "imageSavedSuccessfully": "Image saved successfully!",
+  "failedToSaveImage": "Failed to save image: {error}",
+  "@failedToSaveImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingRelease": "Error loading release: {error}",
+  "@errorLoadingRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProjects": "Error loading projects: {error}",
+  "@errorLoadingProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseSaved": "Release saved.",
+  "releaseDate": "Release Date",
+  "failedToSaveReleaseDate": "Failed to save release date: {error}",
+  "@failedToSaveReleaseDate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDateSaved": "Release date saved.",
+  "releaseDateCleared": "Release date cleared.",
+  "saveReleaseFilesZip": "Save release files ZIP",
+  "failedToOpenFile": "Failed to open file: {error}",
+  "@failedToOpenFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPlayAudio": "Failed to play audio: {error}",
+  "@failedToPlayAudio": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameFile": "Rename File",
+  "selectTracksToAdd": "Select Tracks to Add",
+  "fileNameUpdated": "File name updated.",
+  "errorUpdatingFileName": "Error updating file name: {error}",
+  "@errorUpdatingFileName": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFile": "Delete File",
+  "deleteFileMessage": "Are you sure you want to delete \"{fileName}\"?",
+  "@deleteFileMessage": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileDeleted": "File \"{fileName}\" deleted.",
+  "@fileDeleted": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteFile": "Failed to delete file: {error}",
+  "@failedToDeleteFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenFolder": "Could not open folder: {error}",
+  "@couldNotOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastModified": "Last modified: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "artwork": "Artwork",
+  "title": "Title",
+  "tracks": "Tracks",
+  "description": "Description",
+  "selectTracksToInclude": "Select tracks to include in the release ({count} selected)",
+  "@selectTracksToInclude": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchTracks": "Search tracks",
+  "searchTracksHint": "Search by name or DAW type",
+  "noTracksFound": "No tracks found",
+  "unknown": "Unknown",
+  "fileNotFound": "File not found",
+  "fileName": "File Name",
+  "editTodo": "Edit Todo",
+  "todoText": "Todo text",
+  "enterTodoText": "Enter todo text",
+  "addNewTodo": "Add new todo",
+  "enterTodoItem": "Enter todo item",
+  "todoList": "TODO List",
+  "addToRelease": "Add to Release",
+  "createNew": "Create New",
+  "addToExisting": "Add to Existing",
+  "createAndAdd": "Create and Add",
+  "selectRelease": "Select a release",
+  "noExistingReleasesFound": "No existing releases found.",
+  "addToSelectedRelease": "Add to Selected Release",
+  "failedToSaveProfilePhoto": "Failed to save profile photo: {error}",
+  "@failedToSaveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveProfilePhoto": "Failed to remove profile photo: {error}",
+  "@failedToRemoveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRenameProfile": "Failed to rename profile: {error}",
+  "@failedToRenameProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteProfile": "Failed to delete profile: {error}",
+  "@failedToDeleteProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProfiles": "Error loading profiles: {error}",
+  "@errorLoadingProfiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectPhaseIdea": "Idea",
+  "projectPhaseArranging": "Arranging",
+  "projectPhaseMixing": "Mixing",
+  "projectPhaseMastering": "Mastering",
+  "projectPhaseFinished": "Finished",
+  "tooltipEditProfileName": "Edit profile name",
+  "tooltipAddTodo": "Add todo",
+  "tooltipClearDate": "Clear date",
+  "tooltipPickDate": "Pick date",
+  "tooltipViewDetails": "View Details",
+  "tooltipLaunchInDaw": "Launch in DAW",
+  "tooltipRemoveFromRelease": "Remove from Release",
+  "profile": "Profile",
+  "noDateSet": "No date set",
+  "imageNotFound": "Image not found",
+  "clickToBrowseArtwork": "Click to browse artwork",
+  "noFilesAddedYet": "No files added yet.\nClick \"Add Files\" to upload release files.",
+  "noTodosYet": "No todos yet. Add one above.",
+  "done": "Done"
+}
+

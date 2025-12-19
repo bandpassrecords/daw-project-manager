@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../../models/todo_item.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class TodoListWidget extends StatefulWidget {
   final List<TodoItem> todos;
@@ -76,12 +77,12 @@ class _TodoListWidgetState extends State<TodoListWidget> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF2B2D31),
-        title: const Text('Edit Todo'),
+        title: Text(AppLocalizations.of(context)!.editTodo),
         content: TextField(
           controller: editController,
-          decoration: const InputDecoration(
-            labelText: 'Todo text',
-            hintText: 'Enter todo text',
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context)!.todoText,
+            hintText: AppLocalizations.of(context)!.enterTodoText,
           ),
           autofocus: true,
           onSubmitted: (value) {
@@ -100,7 +101,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -116,7 +117,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                 Navigator.pop(ctx);
               }
             },
-            child: const Text('Save'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -138,7 +139,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                 const Icon(Icons.checklist, color: Colors.white70),
                 const SizedBox(width: 8),
                 Text(
-                  'TODO List',
+                  AppLocalizations.of(context)!.todoList,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
@@ -150,9 +151,9 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                 Expanded(
                   child: TextField(
                     controller: _textController,
-                    decoration: const InputDecoration(
-                      labelText: 'Add new todo',
-                      hintText: 'Enter todo item',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.addNewTodo,
+                      hintText: AppLocalizations.of(context)!.enterTodoItem,
                       isDense: true,
                     ),
                     onSubmitted: (_) => _addTodo(),
@@ -162,7 +163,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                 IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: _addTodo,
-                  tooltip: 'Add todo',
+                  tooltip: AppLocalizations.of(context)!.tooltipAddTodo,
                 ),
               ],
             ),
@@ -178,12 +179,12 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                   ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
                 
                 if (widget.todos.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16.0),
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: Center(
                       child: Text(
-                        'No todos yet. Add one above.',
-                        style: TextStyle(color: Colors.white54),
+                        AppLocalizations.of(context)!.noTodosYet,
+                        style: const TextStyle(color: Colors.white54),
                       ),
                     ),
                   );
@@ -214,7 +215,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                               const Icon(Icons.check_circle_outline, color: Colors.green, size: 20),
                               const SizedBox(width: 8),
                               Text(
-                                'Done (${doneTodos.length})',
+                                '${AppLocalizations.of(context)!.done} (${doneTodos.length})',
                                 style: const TextStyle(
                                   color: Colors.green,
                                   fontWeight: FontWeight.w500,
@@ -263,13 +264,13 @@ class _TodoListWidgetState extends State<TodoListWidget> {
             icon: const Icon(Icons.edit_outlined, size: 18),
             color: Colors.white70,
             onPressed: () => _editTodo(todo),
-            tooltip: 'Edit',
+            tooltip: AppLocalizations.of(context)!.edit,
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline, size: 18),
             color: Colors.red.shade300,
             onPressed: () => _deleteTodo(todo.id),
-            tooltip: 'Delete',
+            tooltip: AppLocalizations.of(context)!.delete,
           ),
         ],
       ),

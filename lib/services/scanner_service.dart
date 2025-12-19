@@ -4,10 +4,19 @@ import 'package:path/path.dart' as p;
 
 class ScannerService {
   static const supportedExtensions = {
-    '.als', // Ableton
+    '.als', // Ableton Live
+    '.alp', // Ableton Live (alternative)
+    '.bwproject', // Bitwig Studio
     '.cpr', // Cubase
     '.flp', // FL Studio
     '.logicx', // Logic Pro (bundle on macOS)
+    '.maschine', // Maschine
+    '.maschine2', // Maschine 2
+    '.npr', // Nuendo
+    '.ptx', // Pro Tools
+    '.pts', // Pro Tools (session)
+    '.rpp', // Reaper
+    '.song', // Studio One
   };
 
   bool _isInBackupFolder(String path) {
@@ -25,7 +34,7 @@ class ScannerService {
         if (!supportedExtensions.contains(ext)) continue;
 
         // Ignore Ableton backup projects (typically under a Backup folder)
-        if (ext == '.als' && _isInBackupFolder(entity.path)) {
+        if ((ext == '.als' || ext == '.alp') && _isInBackupFolder(entity.path)) {
           continue;
         }
 

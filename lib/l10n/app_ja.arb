@@ -1,0 +1,656 @@
+{
+  "@@locale": "ja",
+  "appTitle": "DAWプロジェクトマネージャー",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "projectDetails": "プロジェクトの詳細",
+  "back": "戻る",
+  "save": "保存",
+  "cancel": "キャンセル",
+  "launch": "開く",
+  "view": "表示",
+  "openFolder": "フォルダを開く",
+  "openInDaw": "DAWで開く",
+  "extract": "抽出",
+  "extracting": "抽出中…",
+  "extractingMetadata": "メタデータを抽出中...",
+  "deepScan": "詳細スキャン",
+  "rescan": "再スキャン",
+  "scanning": "スキャン中…",
+  "projectName": "プロジェクト名",
+  "bpm": "BPM",
+  "key": "キー（例：C#m、F major）",
+  "notes": "メモ",
+  "projectPhase": "プロジェクトフェーズ",
+  "failedToLoad": "読み込みに失敗しました",
+  "fileMissing": "ファイルが見つかりません。",
+  "launchingProject": "{projectName}を開いています…",
+  "@launchingProject": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "clearLibrary": "ライブラリをクリア",
+  "clearLibraryMessage": "これにより、保存されたすべてのプロジェクトとソースフォルダが削除されます。続行しますか？",
+  "clear": "クリア",
+  "roots": "ルート",
+  "projects": "プロジェクト",
+  "hidden": "非表示",
+  "profileManager": "プロファイルマネージャー",
+  "createNewProfile": "新しいプロファイルを作成",
+  "profileName": "プロファイル名",
+  "create": "作成",
+  "profiles": "プロファイル",
+  "active": "アクティブ",
+  "switchProfile": "切り替え",
+  "edit": "編集",
+  "delete": "削除",
+  "addFolder": "フォルダを追加",
+  "searchProjects": "プロジェクトを検索...",
+  "deepScanTooltip": "詳細スキャンは、プロジェクトファイルから完全なメタデータを抽出します：\n• BPM（1分あたりのビート数）\n• 音楽キー\n• DAWバージョン\nこれは遅いですが、完全な情報を提供します。",
+  "deepScanConfirm": "これにより、すべてのプロジェクトをスキャンし、完全なメタデータ（BPM、キー、DAWバージョン）を抽出します。これには時間がかかる場合があります。続行しますか？",
+  "metadataExtractedSuccessfully": "メタデータの抽出に成功しました",
+  "failedToExtractMetadata": "メタデータの抽出に失敗しました: {error}",
+  "@failedToExtractMetadata": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved": "保存しました",
+  "failedToLaunchDaw": "DAWを開けませんでした",
+  "releaseDetails": "リリースの詳細",
+  "releaseNotFound": "リリースが見つかりません",
+  "error": "エラー",
+  "loading": "読み込み中...",
+  "deleteProfile": "プロファイルを削除",
+  "deleteProfileMessage": "「{profileName}」を削除してもよろしいですか？これにより、このプロファイルのすべてのプロジェクト、ルート、リリースが削除されます。",
+  "@deleteProfileMessage": {
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "プロファイルを編集",
+  "changePhoto": "写真を変更",
+  "remove": "削除",
+  "saveName": "名前を保存",
+  "profilePhotoUpdated": "プロファイル写真を更新しました。",
+  "profilePhotoRemoved": "プロファイル写真を削除しました。",
+  "profileRenamed": "プロファイル名を「{newName}」に変更しました",
+  "@profileRenamed": {
+    "placeholders": {
+      "newName": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCreated": "プロファイル「{name}」を作成しました",
+  "@profileCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleted": "プロファイル「{name}」を削除しました",
+  "@profileDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterProfileName": "プロファイル名を入力してください",
+  "failedToCreateProfile": "プロファイルの作成に失敗しました: {error}",
+  "@failedToCreateProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProfilesFound": "プロファイルが見つかりません。上で作成してください。",
+  "created": "作成日: {date}",
+  "@created": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "toggleSort": "並び替えを切り替え",
+  "clearLibraryTooltip": "ライブラリをクリア（プロジェクトとルート）",
+  "lastModified": "最終更新: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "name": "名前",
+  "status": "ステータス",
+  "daw": "DAW",
+  "lastModifiedColumn": "最終更新",
+  "actions": "アクション",
+  "launch": "開く",
+  "hide": "非表示にする",
+  "unhide": "表示する",
+  "extractMetadata": "メタデータを抽出",
+  "createRelease": "リリースを作成",
+  "clearSelection": "選択をクリア",
+  "selectAllProjects": "すべてのプロジェクトを選択",
+  "switchingProfiles": "プロファイルを切り替え中...",
+  "scanningProjects": "プロジェクトをスキャン中...",
+  "projectsTab": "プロジェクト",
+  "releasesTab": "リリース",
+  "showHidden": "非表示を表示",
+  "showAll": "すべて表示",
+  "showOnlyHidden": "非表示のみ表示",
+  "deleteRootPath": "ルートパスを削除",
+  "deleteRootPathMessage": "「{path}」を削除してもよろしいですか？これにより、リリースに含まれていないこのフォルダ内のすべてのプロジェクトも削除されます。",
+  "@deleteRootPathMessage": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "rootsCount": "ルート: {count}",
+  "@rootsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsCount": "プロジェクト: {count}",
+  "@projectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hiddenOnly": "（非表示のみ）",
+  "hiddenCount": "（{count}非表示）",
+  "@hiddenCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsHidden": "{count}プロジェクト{plural}を非表示にしました。",
+  "@projectsHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsUnhidden": "{count}プロジェクト{plural}を表示しました。",
+  "@projectsUnhidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToHideProjects": "プロジェクトの非表示に失敗しました: {error}",
+  "@failedToHideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUnhideProjects": "プロジェクトの表示に失敗しました: {error}",
+  "@failedToUnhideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseCreated": "リリース「{title}」を作成しました。",
+  "@releaseCreated": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateRelease": "リリースの作成に失敗しました: {error}",
+  "@failedToCreateRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingFolder": "フォルダの追加エラー: {error}",
+  "@errorAddingFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProjectsFoundInRoots": "選択したルートにプロジェクトが見つかりませんでした。",
+  "selectProjectsFolder": "プロジェクトフォルダを選択",
+  "enterReleaseTitle": "リリースタイトルを入力",
+  "releaseTitle": "リリースタイトル",
+  "enterReleaseTitleHint": "リリースタイトルを入力",
+  "metadataExtractedForProjects": "{count}プロジェクト{plural}のメタデータを抽出しました。{failures}",
+  "@metadataExtractedForProjects": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "failures": {
+        "type": "String"
+      }
+    }
+  },
+  "extractionFailures": "{count}失敗しました。",
+  "@extractionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToWriteBpmFile": "BPMファイルの書き込みに失敗しました: {error}",
+  "@failedToWriteBpmFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToWriteKeyFile": "キーファイルの書き込みに失敗しました: {error}",
+  "@failedToWriteKeyFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLaunch": "起動に失敗しました: {error}",
+  "@failedToLaunch": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryCleared": "ライブラリをクリアしました。",
+  "scanType": "{type}スキャン",
+  "@scanType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "{type}完了: {count}プロジェクト{plural}を追加/更新しました。",
+  "@scanComplete": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsSelected": "{count}プロジェクト{plural}を選択しました",
+  "@projectsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "openingFolder": "{projectName}のフォルダを開いています…",
+  "@openingFolder": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenFolder": "フォルダを開けませんでした: {error}",
+  "@failedToOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "osNotSupportedForOpeningFolder": "フォルダを開くためのOSがサポートされていません。",
+  "noProjectsAvailable": "プロジェクトがありません。まずプロジェクトを追加してください。",
+  "createNewRelease": "新しいリリースを作成",
+  "deleteRelease": "リリースを削除",
+  "deleteReleaseMessage": "「{title}」を削除してもよろしいですか？",
+  "@deleteReleaseMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDeleted": "リリース「{title}」を削除しました。",
+  "@releaseDeleted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "selectTracks": "トラックを選択",
+  "continueButton": "続ける",
+  "noReleasesYet": "まだリリースがありません",
+  "createFirstRelease": "プロジェクトからトラックを選択して最初のリリースを作成してください",
+  "releasesCount": "リリース（{count}）",
+  "@releasesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingReleases": "リリースの読み込みエラー: {error}",
+  "@errorLoadingReleases": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tracksCount": "トラック（{count}）",
+  "@tracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addTracks": "トラックを追加",
+  "allProjectsAlreadyInRelease": "すべてのプロジェクトがすでにこのリリースに含まれています。",
+  "addedTracksToRelease": "リリースに{count}トラック{plural}を追加しました。",
+  "@addedTracksToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseFilesCount": "リリースファイル（{count}）",
+  "@releaseFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFiles": "ファイルを追加",
+  "addedFilesToRelease": "リリースに{count}ファイル{plural}を追加しました。",
+  "@addedFilesToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddFiles": "ファイルの追加に失敗しました: {error}",
+  "@failedToAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noFilesToDownload": "ダウンロードするファイルがありません。",
+  "zipFileSaved": "ZIPファイルを保存しました: {path}",
+  "@zipFileSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateZip": "ZIPの作成に失敗しました: {error}",
+  "@failedToCreateZip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedFileDoesNotExist": "選択したファイルが存在しません。",
+  "imageSavedSuccessfully": "画像を正常に保存しました！",
+  "failedToSaveImage": "画像の保存に失敗しました: {error}",
+  "@failedToSaveImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingRelease": "リリースの読み込みエラー: {error}",
+  "@errorLoadingRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProjects": "プロジェクトの読み込みエラー: {error}",
+  "@errorLoadingProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseSaved": "リリースを保存しました。",
+  "releaseDate": "リリース日",
+  "failedToSaveReleaseDate": "リリース日の保存に失敗しました: {error}",
+  "@failedToSaveReleaseDate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDateSaved": "リリース日を保存しました。",
+  "releaseDateCleared": "リリース日をクリアしました。",
+  "saveReleaseFilesZip": "リリースファイルZIPを保存",
+  "failedToOpenFile": "ファイルを開けませんでした: {error}",
+  "@failedToOpenFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPlayAudio": "オーディオの再生に失敗しました: {error}",
+  "@failedToPlayAudio": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameFile": "ファイル名を変更",
+  "selectTracksToAdd": "追加するトラックを選択",
+  "fileNameUpdated": "ファイル名を更新しました。",
+  "errorUpdatingFileName": "ファイル名の更新エラー: {error}",
+  "@errorUpdatingFileName": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFile": "ファイルを削除",
+  "deleteFileMessage": "「{fileName}」を削除してもよろしいですか？",
+  "@deleteFileMessage": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileDeleted": "ファイル「{fileName}」を削除しました。",
+  "@fileDeleted": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteFile": "ファイルの削除に失敗しました: {error}",
+  "@failedToDeleteFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenFolder": "フォルダを開けませんでした: {error}",
+  "@couldNotOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastModified": "最終更新: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "artwork": "アートワーク",
+  "title": "タイトル",
+  "tracks": "トラック",
+  "description": "説明",
+  "selectTracksToInclude": "リリースに含めるトラックを選択（{count}選択済み）",
+  "@selectTracksToInclude": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchTracks": "トラックを検索",
+  "searchTracksHint": "名前またはDAWタイプで検索",
+  "noTracksFound": "トラックが見つかりませんでした",
+  "unknown": "不明",
+  "fileNotFound": "ファイルが見つかりません",
+  "fileName": "ファイル名",
+  "editTodo": "タスクを編集",
+  "todoText": "タスクテキスト",
+  "enterTodoText": "タスクテキストを入力",
+  "addNewTodo": "新しいタスクを追加",
+  "enterTodoItem": "タスク項目を入力",
+  "todoList": "タスクリスト",
+  "addToRelease": "リリースに追加",
+  "createNew": "新規作成",
+  "addToExisting": "既存に追加",
+  "createAndAdd": "作成して追加",
+  "selectRelease": "リリースを選択",
+  "noExistingReleasesFound": "既存のリリースが見つかりませんでした。",
+  "addToSelectedRelease": "選択したリリースに追加",
+  "failedToSaveProfilePhoto": "プロファイル写真の保存に失敗しました: {error}",
+  "@failedToSaveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveProfilePhoto": "プロファイル写真の削除に失敗しました: {error}",
+  "@failedToRemoveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRenameProfile": "プロファイルの名前変更に失敗しました: {error}",
+  "@failedToRenameProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteProfile": "プロファイルの削除に失敗しました: {error}",
+  "@failedToDeleteProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProfiles": "プロファイルの読み込みエラー: {error}",
+  "@errorLoadingProfiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectPhaseIdea": "アイデア",
+  "projectPhaseArranging": "アレンジ",
+  "projectPhaseMixing": "ミキシング",
+  "projectPhaseMastering": "マスタリング",
+  "projectPhaseFinished": "完了",
+  "tooltipEditProfileName": "プロファイル名を編集",
+  "tooltipAddTodo": "タスクを追加",
+  "tooltipClearDate": "日付をクリア",
+  "tooltipPickDate": "日付を選択",
+  "tooltipViewDetails": "詳細を表示",
+  "tooltipLaunchInDaw": "DAWで開く",
+  "tooltipRemoveFromRelease": "リリースから削除",
+  "profile": "プロファイル",
+  "noDateSet": "日付が設定されていません",
+  "imageNotFound": "画像が見つかりません",
+  "clickToBrowseArtwork": "アートワークを参照するにはクリック",
+  "noFilesAddedYet": "まだファイルが追加されていません。\n「ファイルを追加」をクリックしてリリースファイルをアップロードしてください。",
+  "noTodosYet": "まだタスクがありません。上に追加してください。",
+  "done": "完了"
+}

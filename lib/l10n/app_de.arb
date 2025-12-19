@@ -1,0 +1,656 @@
+{
+  "@@locale": "de",
+  "appTitle": "DAW Projektmanager",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "projectDetails": "Projektdetails",
+  "back": "Zurück",
+  "save": "Speichern",
+  "cancel": "Abbrechen",
+  "launch": "Öffnen",
+  "view": "Anzeigen",
+  "openFolder": "Ordner öffnen",
+  "openInDaw": "Im DAW öffnen",
+  "extract": "Extrahieren",
+  "extracting": "Extrahieren…",
+  "extractingMetadata": "Metadaten werden extrahiert...",
+  "deepScan": "Tiefenscan",
+  "rescan": "Erneut scannen",
+  "scanning": "Scannen…",
+  "projectName": "Projektname",
+  "bpm": "BPM",
+  "key": "Tonart (z.B. C#m, F-Dur)",
+  "notes": "Notizen",
+  "projectPhase": "Projektphase",
+  "failedToLoad": "Laden fehlgeschlagen",
+  "fileMissing": "Datei fehlt.",
+  "launchingProject": "Öffne {projectName}…",
+  "@launchingProject": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "clearLibrary": "Bibliothek leeren",
+  "clearLibraryMessage": "Dies entfernt alle gespeicherten Projekte und Quellordner. Fortfahren?",
+  "clear": "Leeren",
+  "roots": "Wurzeln",
+  "projects": "Projekte",
+  "hidden": "versteckt",
+  "profileManager": "Profilverwaltung",
+  "createNewProfile": "Neues Profil erstellen",
+  "profileName": "Profilname",
+  "create": "Erstellen",
+  "profiles": "Profile",
+  "active": "Aktiv",
+  "switchProfile": "Wechseln",
+  "edit": "Bearbeiten",
+  "delete": "Löschen",
+  "addFolder": "Ordner hinzufügen",
+  "searchProjects": "Projekte suchen...",
+  "deepScanTooltip": "Der Tiefenscan extrahiert vollständige Metadaten aus Projektdateien:\n• BPM (Schläge Pro Minute)\n• Tonart\n• DAW-Version\nDies ist langsamer, liefert aber vollständige Informationen.",
+  "deepScanConfirm": "Dies scannt alle Projekte und extrahiert vollständige Metadaten (BPM, Tonart, DAW-Version). Dies kann eine Weile dauern. Fortfahren?",
+  "metadataExtractedSuccessfully": "Metadaten erfolgreich extrahiert",
+  "failedToExtractMetadata": "Metadatenextraktion fehlgeschlagen: {error}",
+  "@failedToExtractMetadata": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved": "Gespeichert",
+  "failedToLaunchDaw": "DAW konnte nicht geöffnet werden",
+  "releaseDetails": "Veröffentlichungsdetails",
+  "releaseNotFound": "Veröffentlichung nicht gefunden",
+  "error": "Fehler",
+  "loading": "Laden...",
+  "deleteProfile": "Profil löschen",
+  "deleteProfileMessage": "Möchten Sie \"{profileName}\" wirklich löschen? Dies löscht alle Projekte, Wurzeln und Veröffentlichungen dieses Profils.",
+  "@deleteProfileMessage": {
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "Profil bearbeiten",
+  "changePhoto": "Foto ändern",
+  "remove": "Entfernen",
+  "saveName": "Namen speichern",
+  "profilePhotoUpdated": "Profilfoto aktualisiert.",
+  "profilePhotoRemoved": "Profilfoto entfernt.",
+  "profileRenamed": "Profil umbenannt in \"{newName}\"",
+  "@profileRenamed": {
+    "placeholders": {
+      "newName": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCreated": "Profil \"{name}\" erfolgreich erstellt",
+  "@profileCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleted": "Profil \"{name}\" gelöscht",
+  "@profileDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterProfileName": "Bitte geben Sie einen Profilnamen ein",
+  "failedToCreateProfile": "Profil konnte nicht erstellt werden: {error}",
+  "@failedToCreateProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProfilesFound": "Keine Profile gefunden. Erstellen Sie eines oben.",
+  "created": "Erstellt: {date}",
+  "@created": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "toggleSort": "Sortierung umschalten",
+  "clearLibraryTooltip": "Bibliothek leeren (Projekte und Wurzeln)",
+  "lastModified": "Zuletzt geändert: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "name": "Name",
+  "status": "Status",
+  "daw": "DAW",
+  "lastModifiedColumn": "Zuletzt Geändert",
+  "actions": "Aktionen",
+  "launch": "Öffnen",
+  "hide": "Verstecken",
+  "unhide": "Anzeigen",
+  "extractMetadata": "Metadaten Extrahieren",
+  "createRelease": "Veröffentlichung Erstellen",
+  "clearSelection": "Auswahl Löschen",
+  "selectAllProjects": "Alle Projekte auswählen",
+  "switchingProfiles": "Profile wechseln...",
+  "scanningProjects": "Projekte scannen...",
+  "projectsTab": "Projekte",
+  "releasesTab": "Veröffentlichungen",
+  "showHidden": "Versteckte Anzeigen",
+  "showAll": "Alle Anzeigen",
+  "showOnlyHidden": "Nur Versteckte Anzeigen",
+  "deleteRootPath": "Stammpfad Löschen",
+  "deleteRootPathMessage": "Möchten Sie \"{path}\" wirklich entfernen? Dies entfernt auch alle Projekte aus diesem Ordner, die nicht in Veröffentlichungen sind.",
+  "@deleteRootPathMessage": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "rootsCount": "Wurzeln: {count}",
+  "@rootsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsCount": "Projekte: {count}",
+  "@projectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hiddenOnly": "(nur versteckt)",
+  "hiddenCount": "({count} versteckt)",
+  "@hiddenCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsHidden": "{count} Projekt{plural} versteckt.",
+  "@projectsHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsUnhidden": "{count} Projekt{plural} angezeigt.",
+  "@projectsUnhidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToHideProjects": "Projekte konnten nicht versteckt werden: {error}",
+  "@failedToHideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUnhideProjects": "Projekte konnten nicht angezeigt werden: {error}",
+  "@failedToUnhideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseCreated": "Veröffentlichung \"{title}\" erfolgreich erstellt.",
+  "@releaseCreated": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateRelease": "Veröffentlichung konnte nicht erstellt werden: {error}",
+  "@failedToCreateRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingFolder": "Fehler beim Hinzufügen des Ordners: {error}",
+  "@errorAddingFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProjectsFoundInRoots": "Keine Projekte in den ausgewählten Wurzeln gefunden.",
+  "selectProjectsFolder": "Wählen Sie einen Projektordner",
+  "enterReleaseTitle": "Veröffentlichungstitel Eingeben",
+  "releaseTitle": "Veröffentlichungstitel",
+  "enterReleaseTitleHint": "Veröffentlichungstitel eingeben",
+  "metadataExtractedForProjects": "Metadaten für {count} Projekt{plural} extrahiert. {failures}",
+  "@metadataExtractedForProjects": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "failures": {
+        "type": "String"
+      }
+    }
+  },
+  "extractionFailures": "{count} fehlgeschlagen.",
+  "@extractionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToWriteBpmFile": "BPM-Datei konnte nicht geschrieben werden: {error}",
+  "@failedToWriteBpmFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToWriteKeyFile": "Tonart-Datei konnte nicht geschrieben werden: {error}",
+  "@failedToWriteKeyFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLaunch": "Öffnen fehlgeschlagen: {error}",
+  "@failedToLaunch": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryCleared": "Bibliothek geleert.",
+  "scanType": "{type} Scan",
+  "@scanType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "{type} abgeschlossen: {count} Projekt{plural} hinzugefügt/aktualisiert.",
+  "@scanComplete": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsSelected": "{count} Projekt{plural} ausgewählt",
+  "@projectsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "openingFolder": "Öffne Ordner für {projectName}…",
+  "@openingFolder": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenFolder": "Ordner konnte nicht geöffnet werden: {error}",
+  "@failedToOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "osNotSupportedForOpeningFolder": "Betriebssystem wird zum Öffnen von Ordnern nicht unterstützt.",
+  "noProjectsAvailable": "Keine Projekte verfügbar. Bitte fügen Sie zuerst Projekte hinzu.",
+  "createNewRelease": "Neue Veröffentlichung Erstellen",
+  "deleteRelease": "Veröffentlichung Löschen",
+  "deleteReleaseMessage": "Möchten Sie \"{title}\" wirklich löschen?",
+  "@deleteReleaseMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDeleted": "Veröffentlichung \"{title}\" gelöscht.",
+  "@releaseDeleted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "selectTracks": "Titel Auswählen",
+  "continueButton": "Fortfahren",
+  "noReleasesYet": "Noch keine Veröffentlichungen",
+  "createFirstRelease": "Erstellen Sie Ihre erste Veröffentlichung, indem Sie Titel aus Ihren Projekten auswählen",
+  "releasesCount": "Veröffentlichungen ({count})",
+  "@releasesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingReleases": "Fehler beim Laden der Veröffentlichungen: {error}",
+  "@errorLoadingReleases": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tracksCount": "Titel ({count})",
+  "@tracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addTracks": "Titel Hinzufügen",
+  "allProjectsAlreadyInRelease": "Alle Projekte sind bereits in dieser Veröffentlichung.",
+  "addedTracksToRelease": "{count} Titel{plural} zur Veröffentlichung hinzugefügt.",
+  "@addedTracksToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseFilesCount": "Veröffentlichungsdateien ({count})",
+  "@releaseFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFiles": "Dateien Hinzufügen",
+  "addedFilesToRelease": "{count} Datei{plural} zur Veröffentlichung hinzugefügt.",
+  "@addedFilesToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddFiles": "Dateien konnten nicht hinzugefügt werden: {error}",
+  "@failedToAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noFilesToDownload": "Keine Dateien zum Herunterladen.",
+  "zipFileSaved": "ZIP-Datei gespeichert in: {path}",
+  "@zipFileSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateZip": "ZIP konnte nicht erstellt werden: {error}",
+  "@failedToCreateZip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedFileDoesNotExist": "Ausgewählte Datei existiert nicht.",
+  "imageSavedSuccessfully": "Bild erfolgreich gespeichert!",
+  "failedToSaveImage": "Bild konnte nicht gespeichert werden: {error}",
+  "@failedToSaveImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingRelease": "Fehler beim Laden der Veröffentlichung: {error}",
+  "@errorLoadingRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProjects": "Fehler beim Laden der Projekte: {error}",
+  "@errorLoadingProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseSaved": "Veröffentlichung gespeichert.",
+  "releaseDate": "Veröffentlichungsdatum",
+  "failedToSaveReleaseDate": "Veröffentlichungsdatum konnte nicht gespeichert werden: {error}",
+  "@failedToSaveReleaseDate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDateSaved": "Veröffentlichungsdatum gespeichert.",
+  "releaseDateCleared": "Veröffentlichungsdatum gelöscht.",
+  "saveReleaseFilesZip": "Veröffentlichungsdateien ZIP speichern",
+  "failedToOpenFile": "Datei konnte nicht geöffnet werden: {error}",
+  "@failedToOpenFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPlayAudio": "Audio konnte nicht abgespielt werden: {error}",
+  "@failedToPlayAudio": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameFile": "Datei Umbenennen",
+  "selectTracksToAdd": "Titel zum Hinzufügen Auswählen",
+  "fileNameUpdated": "Dateiname aktualisiert.",
+  "errorUpdatingFileName": "Fehler beim Aktualisieren des Dateinamens: {error}",
+  "@errorUpdatingFileName": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFile": "Datei Löschen",
+  "deleteFileMessage": "Möchten Sie \"{fileName}\" wirklich löschen?",
+  "@deleteFileMessage": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileDeleted": "Datei \"{fileName}\" gelöscht.",
+  "@fileDeleted": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteFile": "Datei konnte nicht gelöscht werden: {error}",
+  "@failedToDeleteFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenFolder": "Ordner konnte nicht geöffnet werden: {error}",
+  "@couldNotOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastModified": "Zuletzt geändert: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "artwork": "Cover",
+  "title": "Titel",
+  "tracks": "Titel",
+  "description": "Beschreibung",
+  "selectTracksToInclude": "Titel zum Einbeziehen in die Veröffentlichung auswählen ({count} ausgewählt)",
+  "@selectTracksToInclude": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchTracks": "Titel suchen",
+  "searchTracksHint": "Suche nach Name oder DAW-Typ",
+  "noTracksFound": "Keine Titel gefunden",
+  "unknown": "Unbekannt",
+  "fileNotFound": "Datei nicht gefunden",
+  "fileName": "Dateiname",
+  "editTodo": "Aufgabe Bearbeiten",
+  "todoText": "Aufgabentext",
+  "enterTodoText": "Aufgabentext eingeben",
+  "addNewTodo": "Neue Aufgabe hinzufügen",
+  "enterTodoItem": "Aufgabenelement eingeben",
+  "todoList": "Aufgabenliste",
+  "addToRelease": "Zur Veröffentlichung Hinzufügen",
+  "createNew": "Neu Erstellen",
+  "addToExisting": "Zu Existierender Hinzufügen",
+  "createAndAdd": "Erstellen und Hinzufügen",
+  "selectRelease": "Wählen Sie eine Veröffentlichung",
+  "noExistingReleasesFound": "Keine bestehenden Veröffentlichungen gefunden.",
+  "addToSelectedRelease": "Zur Ausgewählten Veröffentlichung Hinzufügen",
+  "failedToSaveProfilePhoto": "Profilfoto konnte nicht gespeichert werden: {error}",
+  "@failedToSaveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveProfilePhoto": "Profilfoto konnte nicht entfernt werden: {error}",
+  "@failedToRemoveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRenameProfile": "Profil konnte nicht umbenannt werden: {error}",
+  "@failedToRenameProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteProfile": "Profil konnte nicht gelöscht werden: {error}",
+  "@failedToDeleteProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProfiles": "Fehler beim Laden der Profile: {error}",
+  "@errorLoadingProfiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectPhaseIdea": "Idee",
+  "projectPhaseArranging": "Arrangement",
+  "projectPhaseMixing": "Mischen",
+  "projectPhaseMastering": "Mastering",
+  "projectPhaseFinished": "Fertig",
+  "tooltipEditProfileName": "Profilname bearbeiten",
+  "tooltipAddTodo": "Aufgabe hinzufügen",
+  "tooltipClearDate": "Datum löschen",
+  "tooltipPickDate": "Datum auswählen",
+  "tooltipViewDetails": "Details Anzeigen",
+  "tooltipLaunchInDaw": "Im DAW öffnen",
+  "tooltipRemoveFromRelease": "Aus Veröffentlichung Entfernen",
+  "profile": "Profil",
+  "noDateSet": "Kein Datum festgelegt",
+  "imageNotFound": "Bild nicht gefunden",
+  "clickToBrowseArtwork": "Klicken Sie, um Artwork zu durchsuchen",
+  "noFilesAddedYet": "Noch keine Dateien hinzugefügt.\nKlicken Sie auf \"Dateien Hinzufügen\", um Veröffentlichungsdateien hochzuladen.",
+  "noTodosYet": "Noch keine Aufgaben. Fügen Sie oben eine hinzu.",
+  "done": "Erledigt"
+}

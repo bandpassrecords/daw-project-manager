@@ -1,9 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
+import '../utils/app_paths.dart';
 
 import '../models/music_project.dart';
 import '../models/scan_root.dart';
@@ -293,4 +298,55 @@ class ProfileSwitchNotifier extends Notifier<String?> {
 
 final profileSwitchProvider = NotifierProvider<ProfileSwitchNotifier, String?>(() {
   return ProfileSwitchNotifier();
+});
+
+// Locale Provider - manages app language preference
+class LocaleNotifier extends Notifier<Locale> {
+  @override
+  Locale build() {
+    // Load locale asynchronously after build
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _loadLocale();
+    });
+    return const Locale('en');
+  }
+
+  Future<void> _loadLocale() async {
+    try {
+      final appDataPath = await getLocalAppDataPath();
+      Hive.init(appDataPath);
+      final settingsBox = await Hive.openBox<String>('settings');
+      final savedLocale = settingsBox.get('locale');
+      if (savedLocale != null && savedLocale.isNotEmpty) {
+        final parts = savedLocale.split('_');
+        if (parts.isNotEmpty) {
+          state = Locale(parts[0], parts.length > 1 && parts[1].isNotEmpty ? parts[1] : '');
+        }
+      }
+    } catch (_) {
+      // Use default locale if loading fails
+    }
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    // Update state synchronously to trigger immediate rebuild
+    state = locale;
+    if (kDebugMode) {
+      print('Locale changed to: ${locale.languageCode}');
+    }
+    try {
+      final appDataPath = await getLocalAppDataPath();
+      Hive.init(appDataPath);
+      final settingsBox = await Hive.openBox<String>('settings');
+      await settingsBox.put('locale', '${locale.languageCode}_${locale.countryCode ?? ''}');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to save locale: $e');
+      }
+    }
+  }
+}
+
+final localeProvider = NotifierProvider<LocaleNotifier, Locale>(() {
+  return LocaleNotifier();
 });

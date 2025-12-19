@@ -10,6 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import 'package:archive/archive.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../models/release.dart';
 import 'dashboard_page.dart';
@@ -18,6 +19,7 @@ import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../repository/project_repository.dart';
 import '../utils/app_paths.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'project_detail_page.dart';
 import 'widgets/todo_list_widget.dart';
 import '../models/todo_item.dart';
@@ -73,13 +75,13 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       await repo.updateRelease(updatedRelease);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(date != null ? 'Release date saved.' : 'Release date cleared.')),
+          SnackBar(content: Text(date != null ? AppLocalizations.of(context)!.releaseDateSaved : AppLocalizations.of(context)!.releaseDateCleared)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save release date: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToSaveReleaseDate(e.toString()))),
         );
       }
     }
@@ -97,6 +99,24 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       return 'document';
     }
     return 'other';
+  }
+
+  String _translateStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status) {
+      case 'Idea':
+        return l10n.projectPhaseIdea;
+      case 'Arranging':
+        return l10n.projectPhaseArranging;
+      case 'Mixing':
+        return l10n.projectPhaseMixing;
+      case 'Mastering':
+        return l10n.projectPhaseMastering;
+      case 'Finished':
+        return l10n.projectPhaseFinished;
+      default:
+        return status;
+    }
   }
 
   Color _getStatusColor(String status) {
@@ -167,14 +187,14 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Added ${newFiles.length} file(s) to release.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.addedFilesToRelease(newFiles.length, newFiles.length == 1 ? '' : 's'))),
           );
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add files: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToAddFiles(e.toString()))),
         );
       }
     }
@@ -183,7 +203,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
   Future<void> _downloadAsZip(BuildContext context, Release release) async {
     if (release.files.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No files to download.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.noFilesToDownload)),
       );
       return;
     }
@@ -191,7 +211,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
     // Ask user where to save the ZIP
     final safeName = release.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
     final savePath = await FilePicker.platform.saveFile(
-      dialogTitle: 'Save release files ZIP',
+      dialogTitle: AppLocalizations.of(context)!.saveReleaseFilesZip,
       fileName: '${safeName}_files.zip',
       type: FileType.any,
     );
@@ -283,9 +303,9 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('ZIP file saved to: ${zipFile.path}'),
+            content: Text(AppLocalizations.of(context)!.zipFileSaved(zipFile.path)),
             action: SnackBarAction(
-              label: 'Open Folder',
+              label: AppLocalizations.of(context)!.openFolder,
               onPressed: () async {
                 final folderPath = path.dirname(zipFile.path);
                 if (Platform.isWindows) {
@@ -305,7 +325,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create ZIP: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToCreateZip(e.toString()))),
         );
       }
     }
@@ -321,7 +341,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
     if (release == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Release not found.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.releaseNotFound)),
         );
       }
       return;
@@ -335,7 +355,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       if (!await sourceFile.exists()) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Selected file does not exist.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.selectedFileDoesNotExist)),
           );
         }
         return;
@@ -386,13 +406,13 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Image saved successfully!')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.imageSavedSuccessfully)),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to save image: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.failedToSaveImage(e.toString()))),
           );
         }
       }
@@ -407,22 +427,128 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
     // Handle loading/error states for both providers
     if (releases.isLoading || allProjectsAsync.isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Release Details')),
-        body: const Center(child: CircularProgressIndicator()),
+        appBar: null,
+        body: Column(
+          children: [
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        tooltip: AppLocalizations.of(context)!.back,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
+                          AppLocalizations.of(context)!.releaseDetails,
+                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      const Spacer(),
+                      const WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            const Expanded(child: Center(child: CircularProgressIndicator())),
+          ],
+        ),
       );
     }
 
     if (releases.hasError) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Error')),
-        body: Center(child: Text('Error loading release: ${releases.error}')),
+        appBar: null,
+        body: Column(
+          children: [
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        tooltip: AppLocalizations.of(context)!.back,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
+                          AppLocalizations.of(context)!.error,
+                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      const Spacer(),
+                      const WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(child: Center(child: Text(AppLocalizations.of(context)!.errorLoadingRelease(releases.error.toString())))),
+          ],
+        ),
       );
     }
 
     if (allProjectsAsync.hasError) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Error')),
-        body: Center(child: Text('Error loading projects: ${allProjectsAsync.error}')),
+        appBar: null,
+        body: Column(
+          children: [
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12),
+                        child: Text(
+                          AppLocalizations.of(context)!.error,
+                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      Spacer(),
+                      WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(child: Center(child: Text(AppLocalizations.of(context)!.errorLoadingProjects(allProjectsAsync.error.toString())))),
+          ],
+        ),
       );
     }
 
@@ -467,10 +593,45 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       }
 
       return Scaffold(
-        appBar: AppBar(
-          title: Text(release.title),
-        ),
-        body: Padding(
+        appBar: null,
+        body: Column(
+          children: [
+            // Window title bar
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        tooltip: AppLocalizations.of(context)!.back,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
+                          release.title,
+                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      const Spacer(),
+                      const WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(
+              child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -502,15 +663,15 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                                   File(imagePath),
                                                   fit: BoxFit.cover,
                                                   errorBuilder: (context, error, stackTrace) {
-                                                    return const Center(
+                                                    return Center(
                                                       child: Column(
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
-                                                          Icon(Icons.broken_image, size: 50, color: Colors.white38),
-                                                          SizedBox(height: 8),
+                                                          const Icon(Icons.broken_image, size: 50, color: Colors.white38),
+                                                          const SizedBox(height: 8),
                                                           Text(
-                                                            'Image not found',
-                                                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                                                            AppLocalizations.of(context)!.imageNotFound,
+                                                            style: const TextStyle(color: Colors.white54, fontSize: 12),
                                                           ),
                                                         ],
                                                       ),
@@ -523,17 +684,17 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                         },
                                       );
                                     }
-                                    return const Center(
+                                    return Center(
                                       child: Padding(
-                                        padding: EdgeInsets.all(50.0),
+                                        padding: const EdgeInsets.all(50.0),
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Icon(Icons.add_a_photo, size: 50, color: Colors.white54),
-                                            SizedBox(height: 12),
+                                            const Icon(Icons.add_a_photo, size: 50, color: Colors.white54),
+                                            const SizedBox(height: 12),
                                             Text(
-                                              'Click to browse artwork',
-                                              style: TextStyle(
+                                              AppLocalizations.of(context)!.clickToBrowseArtwork,
+                                              style: const TextStyle(
                                                 color: Colors.white54,
                                                 fontSize: 14,
                                               ),
@@ -552,13 +713,13 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                 Expanded(
                                   child: TextFormField(
                                     controller: _titleController,
-                                    decoration: const InputDecoration(labelText: 'Release Title'),
+                                    decoration: InputDecoration(labelText: AppLocalizations.of(context)!.releaseTitle),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 IconButton(
                                   icon: const Icon(Icons.save),
-                                  tooltip: 'Save',
+                                  tooltip: AppLocalizations.of(context)!.save,
                                   onPressed: () async {
                                     final releases = ref.read(releasesProvider);
                                     final release = releases.asData?.value?.firstWhere(
@@ -575,7 +736,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                       await repo.updateRelease(updatedRelease);
                                       if (mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Release saved.')),
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.releaseSaved)),
                                         );
                                       }
                                     }
@@ -586,16 +747,16 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _descriptionController,
-                              decoration: const InputDecoration(labelText: 'Description'),
+                              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.description),
                               maxLines: 5,
                             ),
                             const SizedBox(height: 16),
                             ListTile(
-                              title: const Text('Release Date'),
+                              title: Text(AppLocalizations.of(context)!.releaseDate),
                               subtitle: Text(
                                 _releaseDate != null
                                     ? DateFormat.yMMMd().format(_releaseDate!)
-                                    : 'No date set',
+                                    : AppLocalizations.of(context)!.noDateSet,
                                 style: const TextStyle(color: Colors.white70),
                               ),
                               trailing: Row(
@@ -611,7 +772,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                         // Auto-save the cleared date immediately
                                         _saveReleaseDate(release, null);
                                       },
-                                      tooltip: 'Clear date',
+                                      tooltip: AppLocalizations.of(context)!.tooltipClearDate,
                                     ),
                                   IconButton(
                                     icon: const Icon(Icons.calendar_today),
@@ -631,7 +792,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                         _saveReleaseDate(release, DateTime(picked.year, picked.month, picked.day));
                                       }
                                     },
-                                    tooltip: 'Pick date',
+                                    tooltip: AppLocalizations.of(context)!.tooltipPickDate,
                                   ),
                                 ],
                               ),
@@ -661,10 +822,10 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Tracks (${releaseProjects.length})', style: Theme.of(context).textTheme.headlineSmall),
+                              Text(AppLocalizations.of(context)!.tracksCount(releaseProjects.length), style: Theme.of(context).textTheme.headlineSmall),
                               ElevatedButton.icon(
                         icon: const Icon(Icons.add),
-                        label: const Text('Add Tracks'),
+                        label: Text(AppLocalizations.of(context)!.addTracks),
                         onPressed: () async {
                           // Use allProjects from stream to include preserved projects
                           final allProjectsAsync = ref.read(allProjectsStreamProvider);
@@ -674,7 +835,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                           if (availableProjects.isEmpty) {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('All projects are already in this release.')),
+                                SnackBar(content: Text(AppLocalizations.of(context)!.allProjectsAlreadyInRelease)),
                               );
                             }
                             return;
@@ -692,7 +853,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                             await repo.updateRelease(updatedRelease);
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Added ${selectedIds.length} track(s) to release.')),
+                                SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length, selectedIds.length == 1 ? '' : 's'))),
                               );
                             }
                           }
@@ -754,7 +915,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                   Text('•', style: TextStyle(color: Colors.white54)),
                                 ],
                                 if (project.bpm != null) ...[
-                                  Text('${project.bpm!.toStringAsFixed(0)} BPM'),
+                                  Text('${project.bpm!.toStringAsFixed(0)} ${AppLocalizations.of(context)!.bpm}'),
                                   Text('•', style: TextStyle(color: Colors.white54)),
                                 ],
                                 if (project.musicalKey != null && project.musicalKey!.isNotEmpty) ...[
@@ -762,7 +923,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                   Text('•', style: TextStyle(color: Colors.white54)),
                                 ],
                                 Text(
-                                  project.status,
+                                  _translateStatus(context, project.status),
                                   style: TextStyle(
                                     color: _getStatusColor(project.status),
                                     fontWeight: FontWeight.w500,
@@ -776,13 +937,13 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                 // Open Folder button
                                 IconButton(
                                   icon: const Icon(Icons.folder_open),
-                                  tooltip: 'Open Folder',
+                                  tooltip: AppLocalizations.of(context)!.openFolder,
                                   onPressed: () async {
                                     final exists = Directory(folderPath).existsSync();
                                     if (!exists) {
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Folder missing.')),
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)),
                                         );
                                       }
                                       return;
@@ -798,13 +959,13 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                       }
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Opening folder for ${project.displayName}…')),
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.openingFolder(project.displayName))),
                                         );
                                       }
                                     } catch (e) {
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Failed to open folder: $e')),
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.failedToOpenFolder(e.toString()))),
                                         );
                                       }
                                     }
@@ -813,7 +974,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                 // View button
                                 IconButton(
                                   icon: const Icon(Icons.visibility),
-                                  tooltip: 'View Details',
+                                  tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
                                   onPressed: () async {
                                     await Navigator.of(context).push(
                                       MaterialPageRoute(
@@ -825,14 +986,14 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                 // Launch button
                                 IconButton(
                                   icon: const Icon(Icons.open_in_new),
-                                  tooltip: 'Launch in DAW',
+                                  tooltip: AppLocalizations.of(context)!.tooltipLaunchInDaw,
                                   onPressed: () async {
                                     final exists = File(project.filePath).existsSync() || 
                                                   Directory(project.filePath).existsSync();
                                     if (!exists) {
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('File missing.')),
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)),
                                         );
                                       }
                                       return;
@@ -847,13 +1008,13 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                       }
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Launching ${project.displayName}…')),
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.launchingProject(project.displayName))),
                                         );
                                       }
                                     } catch (e) {
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Failed to launch: $e')),
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunch(e.toString()))),
                                         );
                                       }
                                     }
@@ -863,7 +1024,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                 IconButton(
                                   icon: const Icon(Icons.remove_circle_outline),
                                   color: Colors.red.shade300,
-                                  tooltip: 'Remove from Release',
+                                  tooltip: AppLocalizations.of(context)!.tooltipRemoveFromRelease,
                                   onPressed: () async {
                                     final repo = await ref.read(repositoryProvider.future);
                                     final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
@@ -883,19 +1044,19 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Release Files (${release.files.length})', style: Theme.of(context).textTheme.headlineSmall),
+                      Text(AppLocalizations.of(context)!.releaseFilesCount(release.files.length), style: Theme.of(context).textTheme.headlineSmall),
                       Row(
                         children: [
                           ElevatedButton.icon(
                             icon: const Icon(Icons.file_upload),
-                            label: const Text('Add Files'),
+                            label: Text(AppLocalizations.of(context)!.addFiles),
                             onPressed: () => _addFiles(context, release),
                           ),
                           const SizedBox(width: 8),
                           if (release.files.isNotEmpty)
                             ElevatedButton.icon(
                               icon: const Icon(Icons.download),
-                              label: const Text('Download ZIP'),
+                              label: Text(AppLocalizations.of(context)!.saveReleaseFilesZip),
                               onPressed: () => _downloadAsZip(context, release),
                             ),
                         ],
@@ -906,11 +1067,11 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   Expanded(
                     flex: 1,
                     child: release.files.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Text(
-                              'No files added yet.\nClick "Add Files" to upload release files.',
+                              AppLocalizations.of(context)!.noFilesAddedYet,
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white54),
+                              style: const TextStyle(color: Colors.white54),
                             ),
                           )
                         : _FilesSection(
@@ -923,12 +1084,52 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
             ),
             ],
           ),
+              ),
+            ),
+          ],
         ),
       );
     } catch (e) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Release Not Found')),
-        body: const Center(child: Text('This release could not be found.')),
+        appBar: null,
+        body: Column(
+          children: [
+            if (!kDebugMode)
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                onDoubleTap: () async {
+                  if (await windowManager.isMaximized()) {
+                    windowManager.restore();
+                  } else {
+                    windowManager.maximize();
+                  }
+                },
+                child: Container(
+                  color: const Color(0xFF2B2D31),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        tooltip: AppLocalizations.of(context)!.back,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
+                          AppLocalizations.of(context)!.releaseNotFound,
+                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                      const Spacer(),
+                      const WindowButtons(),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(child: Center(child: Text(AppLocalizations.of(context)!.releaseNotFound))),
+          ],
+        ),
       );
     }
   }
@@ -1002,13 +1203,13 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File name updated.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.fileNameUpdated)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating file name: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorUpdatingFileName(e.toString()))),
         );
       }
     }
@@ -1019,19 +1220,19 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF2B2D31),
-        title: const Text('Delete File'),
-        content: Text('Are you sure you want to delete "${file.fileName}"?'),
+        title: Text(AppLocalizations.of(context)!.deleteFile),
+        content: Text(AppLocalizations.of(context)!.deleteFileMessage(file.fileName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(context)!.delete),
           ),
         ],
       ),
@@ -1052,13 +1253,13 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('File "${file.fileName}" deleted.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.fileDeleted(file.fileName))),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete file: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.failedToDeleteFile(e.toString()))),
           );
         }
       }
@@ -1108,7 +1309,7 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
                       style: const TextStyle(color: Colors.red),
                     ),
                     subtitle: Text(
-                      'File not found',
+                      AppLocalizations.of(context)!.fileNotFound,
                       style: const TextStyle(color: Colors.red),
                     ),
                     trailing: IconButton(
@@ -1166,9 +1367,9 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (!fileExists)
-                    const Tooltip(
-                      message: 'File not found',
-                      child: Icon(Icons.warning, color: Colors.red, size: 20),
+                    Tooltip(
+                      message: AppLocalizations.of(context)!.fileNotFound,
+                      child: const Icon(Icons.warning, color: Colors.red, size: 20),
                     ),
                   IconButton(
                     icon: const Icon(Icons.delete_outline),
@@ -1191,7 +1392,7 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
                       } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Failed to open file: $e')),
+                            SnackBar(content: Text(AppLocalizations.of(context)!.failedToOpenFile(e.toString()))),
                           );
                         }
                       }
@@ -1275,7 +1476,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to play audio: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToPlayAudio(e.toString()))),
         );
       }
     }
@@ -1309,14 +1510,14 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF2B2D31),
-        title: const Text('Rename File'),
+        title: Text(AppLocalizations.of(context)!.renameFile),
         content: TextField(
           controller: controller,
           autofocus: true,
           style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            labelText: 'File Name',
-            labelStyle: TextStyle(color: Colors.white70),
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context)!.fileName,
+            labelStyle: const TextStyle(color: Colors.white70),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.white54),
             ),
@@ -1328,7 +1529,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1337,7 +1538,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                 Navigator.pop(ctx, newName);
               }
             },
-            child: const Text('Save'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -1389,7 +1590,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                       IconButton(
                         icon: const Icon(Icons.edit_outlined),
                         color: Colors.white70,
-                        tooltip: 'Rename file',
+                        tooltip: AppLocalizations.of(context)!.renameFile,
                         onPressed: () => _showRenameDialog(context),
                       ),
                       IconButton(
@@ -1500,7 +1701,7 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
     
     return AlertDialog(
       backgroundColor: const Color(0xFF2B2D31),
-      title: const Text('Select Tracks to Add'),
+      title: Text(AppLocalizations.of(context)!.selectTracksToAdd),
       content: SizedBox(
         width: 600,
         height: 500,
@@ -1515,8 +1716,8 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                labelText: 'Search tracks',
-                hintText: 'Search by name or DAW type',
+                labelText: AppLocalizations.of(context)!.searchTracks,
+                hintText: AppLocalizations.of(context)!.searchTracksHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
@@ -1531,10 +1732,10 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
             const SizedBox(height: 16),
             Expanded(
               child: filteredProjects.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        'No tracks found',
-                        style: TextStyle(color: Colors.white54),
+                        AppLocalizations.of(context)!.noTracksFound,
+                        style: const TextStyle(color: Colors.white54),
                       ),
                     )
                   : ListView.builder(
@@ -1545,7 +1746,7 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
                         return CheckboxListTile(
                           title: Text(project.displayName),
                           subtitle: Text(
-                            '${project.dawType ?? 'Unknown'} • ${project.bpm?.toStringAsFixed(0) ?? '?'} BPM',
+                            '${project.dawType ?? AppLocalizations.of(context)!.unknown} • ${project.bpm?.toStringAsFixed(0) ?? '?'} ${AppLocalizations.of(context)!.bpm}',
                             style: const TextStyle(color: Colors.white54),
                           ),
                           value: isSelected,
@@ -1568,13 +1769,13 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _selectedIds.isEmpty
               ? null
               : () => Navigator.pop(context, _selectedIds.toList()),
-          child: const Text('Add Tracks'),
+          child: Text(AppLocalizations.of(context)!.addTracks),
         ),
       ],
     );

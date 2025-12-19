@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'generated/l10n/app_localizations.dart';
 import 'package:window_manager/window_manager.dart';
 
 // NOVO: Importar providers e serviços para a lógica de auto-scan
@@ -96,11 +98,11 @@ void main() async {
 }
 
 // ... (O resto da classe MyApp permanece o mesmo)
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final darkScheme = ColorScheme.fromSeed(
       seedColor: const Color(0xFF5A6B7A), 
       brightness: Brightness.dark,
@@ -129,10 +131,34 @@ class MyApp extends StatelessWidget {
       )
     );
 
+    final currentLocale = ref.watch(localeProvider);
+    
     return MaterialApp(
+      key: ValueKey('locale_${currentLocale.languageCode}'), // Force rebuild on locale change
       title: 'DAW Project Manager',
       themeMode: ThemeMode.dark,
       theme: baseTheme,
+      // Localization support
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''), // English
+        Locale('pt', ''), // Portuguese
+        Locale('es', ''), // Spanish
+        Locale('fr', ''), // French
+        Locale('it', ''), // Italian
+        Locale('de', ''), // German
+        Locale('ru', ''), // Russian
+        Locale('ja', ''), // Japanese
+        Locale('zh', ''), // Chinese
+      ],
+      locale: currentLocale,
+      // Remove localeResolutionCallback - let Flutter handle it automatically
+      // The locale from provider will be used directly
       home: const DashboardPage(),
     );
   }

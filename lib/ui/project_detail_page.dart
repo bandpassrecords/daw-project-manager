@@ -5,10 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart'; // NOVO IMPORT
 import 'package:path/path.dart' as p; // NOVO IMPORT
+import 'package:window_manager/window_manager.dart';
 
 import '../models/music_project.dart';
 import '../models/todo_item.dart';
 import '../providers/providers.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'dashboard_page.dart';
 import 'widgets/todo_list_widget.dart';
 
@@ -28,14 +30,48 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   late TextEditingController _notesCtrl; // NOVO CONTROLLER
   String? _selectedPhase;
   bool _hasInitializedPhase = false; // Track if we've initialized the phase
+  bool _extractingMetadata = false; // Track metadata extraction state
   
-  static const List<String> _projectPhases = [
-    'Idea',
-    'Arranging',
-    'Mixing',
-    'Mastering',
-    'Finished',
-  ];
+  List<String> _getProjectPhases(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      l10n.projectPhaseIdea,
+      l10n.projectPhaseArranging,
+      l10n.projectPhaseMixing,
+      l10n.projectPhaseMastering,
+      l10n.projectPhaseFinished,
+    ];
+  }
+
+  String _translateStatusToEnglish(String localizedStatus) {
+    // Map localized status back to English for storage
+    final l10n = AppLocalizations.of(context)!;
+    if (localizedStatus == l10n.projectPhaseIdea) return 'Idea';
+    if (localizedStatus == l10n.projectPhaseArranging) return 'Arranging';
+    if (localizedStatus == l10n.projectPhaseMixing) return 'Mixing';
+    if (localizedStatus == l10n.projectPhaseMastering) return 'Mastering';
+    if (localizedStatus == l10n.projectPhaseFinished) return 'Finished';
+    return localizedStatus; // Fallback
+  }
+
+  String _translateStatusFromEnglish(String englishStatus) {
+    // Map English status to localized for display
+    final l10n = AppLocalizations.of(context)!;
+    switch (englishStatus) {
+      case 'Idea':
+        return l10n.projectPhaseIdea;
+      case 'Arranging':
+        return l10n.projectPhaseArranging;
+      case 'Mixing':
+        return l10n.projectPhaseMixing;
+      case 'Mastering':
+        return l10n.projectPhaseMastering;
+      case 'Finished':
+        return l10n.projectPhaseFinished;
+      default:
+        return englishStatus;
+    }
+  }
 
   @override
   void initState() {
@@ -44,7 +80,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     _bpmCtrl = TextEditingController();
     _keyCtrl = TextEditingController();
     _notesCtrl = TextEditingController(); // INICIALIZA
-    _selectedPhase = 'Idea'; // Initialize with default phase
+    // Initialize with default phase - will be set in build method
   }
 
   @override
@@ -83,7 +119,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
       }
     } catch (e) {
        if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not open folder: $e')));
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.couldNotOpenFolder(e.toString()))));
        }
     }
   }
@@ -95,13 +131,48 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     final allProjectsAsync = ref.watch(allProjectsStreamProvider);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Project Details'),
-      ),
-      body: repoAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => const Center(child: Text('Failed to load')),
-        data: (repo) {
+      appBar: null,
+      body: Column(
+        children: [
+          // Window title bar
+          if (!kDebugMode)
+            GestureDetector(
+              onPanStart: (_) => windowManager.startDragging(),
+              onDoubleTap: () async {
+                if (await windowManager.isMaximized()) {
+                  windowManager.restore();
+                } else {
+                  windowManager.maximize();
+                }
+              },
+              child: Container(
+                color: const Color(0xFF2B2D31),
+                height: 40,
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                      tooltip: AppLocalizations.of(context)!.back,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Text(
+                        AppLocalizations.of(context)!.projectDetails,
+                        style: const TextStyle(color: Colors.white70, fontSize: 16),
+                      ),
+                    ),
+                    const Spacer(),
+                    const WindowButtons(),
+                  ],
+                ),
+              ),
+            ),
+          Expanded(
+            child: repoAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (_, __) => Center(child: Text(AppLocalizations.of(context)!.failedToLoad)),
+              data: (repo) {
           // Use projects from stream to get latest data, fallback to repo if stream not ready
           final allProjects = allProjectsAsync.value ?? repo.getAllProjects();
           final project = allProjects.firstWhere((p) => p.id == widget.projectId);
@@ -125,57 +196,104 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
             // Sincroniza fase do projeto (only on first load)
             if (!_hasInitializedPhase) {
               final projectStatus = project.status;
-              // Use project status if it's valid, otherwise default to 'Idea'
-              final validStatus = _projectPhases.contains(projectStatus) 
-                  ? projectStatus 
-                  : 'Idea';
+              // Translate English status to localized for display
+              final localizedStatus = _translateStatusFromEnglish(projectStatus);
               if (mounted) {
                 setState(() {
-                  _selectedPhase = validStatus;
+                  _selectedPhase = localizedStatus;
                   _hasInitializedPhase = true;
                 });
               }
             }
           });
 
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                children: [
-                  Text(project.displayName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Text(project.filePath, style: const TextStyle(color: Colors.white70)),
-                  const SizedBox(height: 16),
-                  Text('Last modified: ${project.lastModifiedAt}'),
-                  const SizedBox(height: 24),
-                  
-                  // Campo para editar o nome de exibição customizado
-                  TextFormField(
+          return Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    children: [
+                      Text(project.displayName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text(project.filePath, style: const TextStyle(color: Colors.white70)),
+                      const SizedBox(height: 16),
+                      Text(AppLocalizations.of(context)!.lastModified(project.lastModifiedAt.toString())),
+                      const SizedBox(height: 24),
+                      
+                      // Campo para editar o nome de exibição customizado
+                      TextFormField(
                     controller: _nameCtrl,
-                    decoration: const InputDecoration(labelText: 'Project Name'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _bpmCtrl,
-                    decoration: const InputDecoration(labelText: 'BPM'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _keyCtrl,
-                    decoration: const InputDecoration(labelText: 'Key (e.g., C#m, F major)'),
-                  ),
-                  const SizedBox(height: 12),
-                  
-                  // Project Phase Dropdown
-                  DropdownButtonFormField<String>(
-                    value: _selectedPhase,
-                    decoration: const InputDecoration(
-                      labelText: 'Project Phase',
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.projectName),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _bpmCtrl,
+                          decoration: InputDecoration(labelText: AppLocalizations.of(context)!.bpm),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _keyCtrl,
+                          decoration: InputDecoration(labelText: AppLocalizations.of(context)!.key),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        onPressed: _extractingMetadata
+                            ? null
+                            : () async {
+                                  setState(() => _extractingMetadata = true);
+                                  try {
+                                    await repo.extractFullMetadataForProject(project.id);
+                                    // Refresh the project data
+                                    ref.invalidate(allProjectsStreamProvider);
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(AppLocalizations.of(context)!.metadataExtractedSuccessfully)),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(AppLocalizations.of(context)!.failedToExtractMetadata(e.toString()))),
+                                      );
+                                    }
+                                  } finally {
+                                    if (mounted) {
+                                      setState(() => _extractingMetadata = false);
+                                    }
+                                  }
+                                },
+                        icon: _extractingMetadata
+                            ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                            : const Icon(Icons.search, size: 18),
+                        label: Text(_extractingMetadata ? AppLocalizations.of(context)!.extracting : AppLocalizations.of(context)!.extract),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF5A6B7A),
+                        ),
+                        ),
+                      ],
                     ),
-                    items: _projectPhases.map((phase) {
+                    const SizedBox(height: 12),
+                    
+                    // Project Phase Dropdown
+                    DropdownButtonFormField<String>(
+                    value: _selectedPhase ?? _getProjectPhases(context).first,
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.projectPhase,
+                    ),
+                    items: _getProjectPhases(context).map((phase) {
                       return DropdownMenuItem<String>(
                         value: phase,
                         child: Text(phase),
@@ -185,25 +303,25 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       setState(() {
                         _selectedPhase = value;
                       });
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  
-                  // NOVO: CAMPO DE NOTAS
-                  TextFormField(
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // NOVO: CAMPO DE NOTAS
+                    TextFormField(
                     controller: _notesCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Notes',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.notes,
                       alignLabelWithHint: true,
                       border: OutlineInputBorder(),
                     ),
-                    maxLines: 5,
-                    keyboardType: TextInputType.multiline,
-                  ),
+                      maxLines: 5,
+                      keyboardType: TextInputType.multiline,
+                    ),
 
-                  const SizedBox(height: 24),
-                  // TODO List
-                  TodoListWidget(
+                    const SizedBox(height: 24),
+                    // TODO List
+                    TodoListWidget(
                     todos: project.todos,
                     onTodosChanged: (updatedTodos) async {
                       final updated = project.copyWith(todos: updatedTodos);
@@ -212,14 +330,14 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       if (mounted) {
                         ref.invalidate(allProjectsStreamProvider);
                       }
-                    },
-                  ),
+                      },
+                    ),
 
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      // BOTÃO: SAVE (LÓGICA ATUALIZADA)
-                      ElevatedButton.icon(
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        // BOTÃO: SAVE (LÓGICA ATUALIZADA)
+                        ElevatedButton.icon(
                         onPressed: () async {
                           // O campo name atualiza customDisplayName. Se o texto for vazio ou igual ao nome do arquivo original, ele deve ser null.
                           final nameText = _nameCtrl.text.trim();
@@ -235,29 +353,29 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             bpm: _bpmCtrl.text.trim().isEmpty ? null : double.tryParse(_bpmCtrl.text.trim()),
                             musicalKey: _keyCtrl.text.trim().isEmpty ? null : _keyCtrl.text.trim(),
                             notes: newNotes, // NOVO: Salva Notas
-                            status: _selectedPhase ?? 'Idea', // Save project phase
+                            status: _selectedPhase != null ? _translateStatusToEnglish(_selectedPhase!) : 'Idea', // Save project phase
                           );
 
                           await repo.updateProject(updated);
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Saved')));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.saved)));
                           }
                         },
                         icon: const Icon(Icons.save),
-                        label: const Text('Save'),
-                      ),
-                      const SizedBox(width: 12),
-                      
-                      // NOVO: BOTÃO OPEN FOLDER
-                      ElevatedButton.icon(
+                          label: Text(AppLocalizations.of(context)!.save),
+                        ),
+                        const SizedBox(width: 12),
+                        
+                        // NOVO: BOTÃO OPEN FOLDER
+                        ElevatedButton.icon(
                         onPressed: () => _openProjectFolder(project.filePath),
                         icon: const Icon(Icons.folder_open),
-                        label: const Text('Open Folder'),
-                      ),
-                      const SizedBox(width: 12),
+                          label: Text(AppLocalizations.of(context)!.openFolder),
+                        ),
+                        const SizedBox(width: 12),
 
-                      // BOTÃO OPEN IN DAW (Existente)
-                      ElevatedButton.icon(
+                        // BOTÃO OPEN IN DAW (Existente)
+                        ElevatedButton.icon(
                         onPressed: () async {
                           try {
                             if (Platform.isMacOS) {
@@ -269,20 +387,49 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             }
                           } catch (_) {
                              if (mounted) {
-                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to launch DAW')));
+                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunchDaw)));
                              }
                           }
                         },
                         icon: const Icon(Icons.open_in_new),
-                        label: const Text('Open in DAW'),
+                        label: Text(AppLocalizations.of(context)!.openInDaw),
                       ),
                     ],
-                  )
-                ],
+                  ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              // Loading overlay
+              if (_extractingMetadata)
+                Container(
+                  color: Colors.black54,
+                  child: Center(
+                    child: Card(
+                      color: const Color(0xFF2B2D31),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Extracting metadata...',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           );
         },
+      ),
+            ),
+        ],
       ),
     );
   }

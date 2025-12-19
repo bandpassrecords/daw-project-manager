@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../models/release.dart';
 import '../../providers/providers.dart';
 import '../../repository/project_repository.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class AddToReleaseDialog extends ConsumerStatefulWidget {
   final List<String> projectIds;
@@ -33,11 +34,11 @@ class _AddToReleaseDialogState extends ConsumerState<AddToReleaseDialog> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Add to Release'),
-          bottom: const TabBar(
+          title: Text(AppLocalizations.of(context)!.addToRelease),
+          bottom: TabBar(
             tabs: [
-              Tab(text: 'Create New'),
-              Tab(text: 'Add to Existing'),
+              Tab(text: AppLocalizations.of(context)!.createNew),
+              Tab(text: AppLocalizations.of(context)!.addToExisting),
             ],
           ),
         ),
@@ -50,7 +51,7 @@ class _AddToReleaseDialogState extends ConsumerState<AddToReleaseDialog> {
                 children: [
                   TextField(
                     controller: _titleController,
-                    decoration: const InputDecoration(labelText: 'Release Title'),
+                    decoration: InputDecoration(labelText: AppLocalizations.of(context)!.releaseTitle),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
@@ -67,7 +68,7 @@ class _AddToReleaseDialogState extends ConsumerState<AddToReleaseDialog> {
                         Navigator.of(context).pop();
                       }
                     },
-                    child: const Text('Create and Add'),
+                    child: Text(AppLocalizations.of(context)!.createAndAdd),
                   ),
                 ],
               ),
@@ -81,7 +82,7 @@ class _AddToReleaseDialogState extends ConsumerState<AddToReleaseDialog> {
                   if (releases.isNotEmpty)
                     DropdownButton<String>(
                       value: _selectedReleaseId,
-                      hint: const Text('Select a release'),
+                      hint: Text(AppLocalizations.of(context)!.selectRelease),
                       isExpanded: true,
                       items: releases.map((Release release) {
                         return DropdownMenuItem<String>(
@@ -96,7 +97,7 @@ class _AddToReleaseDialogState extends ConsumerState<AddToReleaseDialog> {
                       },
                     )
                   else
-                    const Text('No existing releases found.'),
+                    Text(AppLocalizations.of(context)!.noExistingReleasesFound),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _selectedReleaseId == null
@@ -109,7 +110,7 @@ class _AddToReleaseDialogState extends ConsumerState<AddToReleaseDialog> {
                             await repo.updateRelease(updatedRelease);
                             Navigator.of(context).pop();
                           },
-                    child: const Text('Add to Selected Release'),
+                    child: Text(AppLocalizations.of(context)!.addToSelectedRelease),
                   ),
                 ],
               ),
