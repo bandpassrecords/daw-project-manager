@@ -6,13 +6,16 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:intl/intl.dart';
 import '../models/profile.dart';
 import '../providers/providers.dart';
 import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
 import '../services/scanner_service.dart';
 import '../utils/app_paths.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'dashboard_page.dart';
+import 'widgets/language_switcher.dart';
 
 class ProfileManagerPage extends ConsumerStatefulWidget {
   const ProfileManagerPage({super.key});
@@ -34,7 +37,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a profile name')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterProfileName)),
       );
       return;
     }
@@ -45,13 +48,13 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
       _nameController.clear();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile "$name" created successfully')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.profileCreated(name))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create profile: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToCreateProfile(e.toString()))),
         );
       }
     }
@@ -134,7 +137,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
       if (!await sourceFile.exists()) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Selected file does not exist.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.selectedFileDoesNotExist)),
           );
         }
         return;
@@ -162,13 +165,13 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile photo updated.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.profilePhotoUpdated)),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to save profile photo: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.failedToSaveProfilePhoto(e.toString()))),
           );
         }
       }
@@ -189,13 +192,13 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile photo removed.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.profilePhotoRemoved)),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to remove profile photo: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.failedToRemoveProfilePhoto(e.toString()))),
           );
         }
       }
@@ -209,15 +212,15 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF2B2D31),
-        title: const Text('Edit Profile'),
+        title: Text(AppLocalizations.of(context)!.editProfile),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: editController,
-              decoration: const InputDecoration(
-                labelText: 'Profile Name',
-                hintText: 'Enter profile name',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.profileName,
+                hintText: AppLocalizations.of(context)!.profileName,
               ),
               autofocus: true,
               onSubmitted: (value) {
@@ -262,7 +265,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
               children: [
                 TextButton.icon(
                   icon: const Icon(Icons.photo),
-                  label: const Text('Change Photo'),
+                  label: Text(AppLocalizations.of(context)!.changePhoto),
                   onPressed: () async {
                     Navigator.pop(ctx);
                     await _pickProfilePhoto(profile);
@@ -271,7 +274,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                 if (profile.photoPath != null)
                   TextButton.icon(
                     icon: const Icon(Icons.delete),
-                    label: const Text('Remove'),
+                    label: Text(AppLocalizations.of(context)!.remove),
                     onPressed: () async {
                       Navigator.pop(ctx);
                       await _removeProfilePhoto(profile);
@@ -284,7 +287,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -293,7 +296,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                 Navigator.pop(ctx, newName);
               }
             },
-            child: const Text('Save Name'),
+            child: Text(AppLocalizations.of(context)!.saveName),
           ),
         ],
       ),
@@ -307,13 +310,13 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Profile renamed to "$result"')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.profileRenamed(result))),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to rename profile: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.failedToRenameProfile(e.toString()))),
           );
         }
       }
@@ -325,19 +328,19 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF2B2D31),
-        title: const Text('Delete Profile'),
-        content: Text('Are you sure you want to delete "${profile.name}"? This will delete all projects, roots, and releases for this profile.'),
+        title: Text(AppLocalizations.of(context)!.deleteProfile),
+        content: Text(AppLocalizations.of(context)!.deleteProfileMessage(profile.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(context)!.delete),
           ),
         ],
       ),
@@ -353,13 +356,13 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Profile "${profile.name}" deleted')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.profileDeleted(profile.name))),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete profile: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.failedToDeleteProfile(e.toString()))),
           );
         }
       }
@@ -394,16 +397,18 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
                       onPressed: () => Navigator.pop(context),
-                      tooltip: 'Back',
+                      tooltip: AppLocalizations.of(context)!.back,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
                       child: Text(
-                        'Profile Manager',
-                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                        AppLocalizations.of(context)!.profileManager,
+                        style: const TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                     ),
                     const Spacer(),
+                    const LanguageSwitcher(),
+                    const SizedBox(width: 8),
                     const WindowButtons(),
                   ],
                 ),
@@ -423,8 +428,8 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Create New Profile',
+                    Text(
+                      AppLocalizations.of(context)!.createNewProfile,
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
@@ -433,9 +438,9 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                         Expanded(
                           child: TextField(
                             controller: _nameController,
-                            decoration: const InputDecoration(
-                              labelText: 'Profile Name',
-                              hintText: 'e.g., Artist Name 1',
+                            decoration: InputDecoration(
+                              labelText: AppLocalizations.of(context)!.profileName,
+                              hintText: AppLocalizations.of(context)!.profileName,
                             ),
                             onSubmitted: (_) => _createProfile(),
                           ),
@@ -443,7 +448,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                         const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: _createProfile,
-                          child: const Text('Create'),
+                          child: Text(AppLocalizations.of(context)!.create),
                         ),
                       ],
                     ),
@@ -453,8 +458,8 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
             ),
             const SizedBox(height: 24),
             // Profiles list
-            const Text(
-              'Profiles',
+            Text(
+              AppLocalizations.of(context)!.profiles,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -462,12 +467,12 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
               child: profilesAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) => Center(
-                  child: Text('Error loading profiles: $error'),
+                  child: Text(AppLocalizations.of(context)!.errorLoadingProfiles(error.toString())),
                 ),
                 data: (profiles) {
                   if (profiles.isEmpty) {
-                    return const Center(
-                      child: Text('No profiles found. Create one above.'),
+                    return Center(
+                      child: Text(AppLocalizations.of(context)!.noProfilesFound),
                     );
                   }
 
@@ -523,8 +528,8 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                                         color: const Color(0xFF5A6B7A),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
-                                      child: const Text(
-                                        'Active',
+                                      child: Text(
+                                        AppLocalizations.of(context)!.active,
                                         style: TextStyle(fontSize: 12),
                                       ),
                                     ),
@@ -542,19 +547,19 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                                     icon: const Icon(Icons.edit_outlined),
                                     color: Colors.white70,
                                     onPressed: () => _editProfile(profile),
-                                    tooltip: 'Edit profile name',
+                                    tooltip: AppLocalizations.of(context)!.tooltipEditProfileName,
                                   ),
                                   if (!isCurrent)
                                     TextButton(
                                       onPressed: () => _switchProfile(profile.id),
-                                      child: const Text('Switch'),
+                                      child: Text(AppLocalizations.of(context)!.switchProfile),
                                     ),
                                   if (profiles.length > 1)
                                     IconButton(
                                       icon: const Icon(Icons.delete_outline),
                                       color: Colors.red.shade300,
                                       onPressed: () => _deleteProfile(profile),
-                                      tooltip: 'Delete profile',
+                                      tooltip: AppLocalizations.of(context)!.delete,
                                     ),
                                 ],
                               ),

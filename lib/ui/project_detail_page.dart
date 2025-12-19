@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 import '../models/music_project.dart';
 import '../models/todo_item.dart';
 import '../providers/providers.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'dashboard_page.dart';
 import 'widgets/todo_list_widget.dart';
 
@@ -31,13 +32,46 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   bool _hasInitializedPhase = false; // Track if we've initialized the phase
   bool _extractingMetadata = false; // Track metadata extraction state
   
-  static const List<String> _projectPhases = [
-    'Idea',
-    'Arranging',
-    'Mixing',
-    'Mastering',
-    'Finished',
-  ];
+  List<String> _getProjectPhases(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      l10n.projectPhaseIdea,
+      l10n.projectPhaseArranging,
+      l10n.projectPhaseMixing,
+      l10n.projectPhaseMastering,
+      l10n.projectPhaseFinished,
+    ];
+  }
+
+  String _translateStatusToEnglish(String localizedStatus) {
+    // Map localized status back to English for storage
+    final l10n = AppLocalizations.of(context)!;
+    if (localizedStatus == l10n.projectPhaseIdea) return 'Idea';
+    if (localizedStatus == l10n.projectPhaseArranging) return 'Arranging';
+    if (localizedStatus == l10n.projectPhaseMixing) return 'Mixing';
+    if (localizedStatus == l10n.projectPhaseMastering) return 'Mastering';
+    if (localizedStatus == l10n.projectPhaseFinished) return 'Finished';
+    return localizedStatus; // Fallback
+  }
+
+  String _translateStatusFromEnglish(String englishStatus) {
+    // Map English status to localized for display
+    final l10n = AppLocalizations.of(context)!;
+    switch (englishStatus) {
+      case 'Idea':
+        return l10n.projectPhaseIdea;
+      case 'Arranging':
+        return l10n.projectPhaseArranging;
+      case 'Mixing':
+        return l10n.projectPhaseMixing;
+      case 'Mastering':
+        return l10n.projectPhaseMastering;
+      case 'Finished':
+        return l10n.projectPhaseFinished;
+      default:
+        return englishStatus;
+    }
+  }
 
   @override
   void initState() {
@@ -46,7 +80,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     _bpmCtrl = TextEditingController();
     _keyCtrl = TextEditingController();
     _notesCtrl = TextEditingController(); // INICIALIZA
-    _selectedPhase = 'Idea'; // Initialize with default phase
+    // Initialize with default phase - will be set in build method
   }
 
   @override
@@ -85,7 +119,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
       }
     } catch (e) {
        if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not open folder: $e')));
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.couldNotOpenFolder(e.toString()))));
        }
     }
   }
@@ -119,13 +153,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
                       onPressed: () => Navigator.pop(context),
-                      tooltip: 'Back',
+                      tooltip: AppLocalizations.of(context)!.back,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
                       child: Text(
-                        'Project Details',
-                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                        AppLocalizations.of(context)!.projectDetails,
+                        style: const TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                     ),
                     const Spacer(),
@@ -137,7 +171,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
           Expanded(
             child: repoAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (_, __) => const Center(child: Text('Failed to load')),
+              error: (_, __) => Center(child: Text(AppLocalizations.of(context)!.failedToLoad)),
               data: (repo) {
           // Use projects from stream to get latest data, fallback to repo if stream not ready
           final allProjects = allProjectsAsync.value ?? repo.getAllProjects();
@@ -162,13 +196,11 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
             // Sincroniza fase do projeto (only on first load)
             if (!_hasInitializedPhase) {
               final projectStatus = project.status;
-              // Use project status if it's valid, otherwise default to 'Idea'
-              final validStatus = _projectPhases.contains(projectStatus) 
-                  ? projectStatus 
-                  : 'Idea';
+              // Translate English status to localized for display
+              final localizedStatus = _translateStatusFromEnglish(projectStatus);
               if (mounted) {
                 setState(() {
-                  _selectedPhase = validStatus;
+                  _selectedPhase = localizedStatus;
                   _hasInitializedPhase = true;
                 });
               }
@@ -187,13 +219,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       const SizedBox(height: 8),
                       Text(project.filePath, style: const TextStyle(color: Colors.white70)),
                       const SizedBox(height: 16),
-                      Text('Last modified: ${project.lastModifiedAt}'),
+                      Text(AppLocalizations.of(context)!.lastModified(project.lastModifiedAt.toString())),
                       const SizedBox(height: 24),
                       
                       // Campo para editar o nome de exibição customizado
                       TextFormField(
                     controller: _nameCtrl,
-                        decoration: const InputDecoration(labelText: 'Project Name'),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.projectName),
                       ),
                       const SizedBox(height: 12),
                       Row(
@@ -201,7 +233,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       Expanded(
                         child: TextFormField(
                           controller: _bpmCtrl,
-                          decoration: const InputDecoration(labelText: 'BPM'),
+                          decoration: InputDecoration(labelText: AppLocalizations.of(context)!.bpm),
                           keyboardType: TextInputType.number,
                         ),
                       ),
@@ -209,7 +241,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       Expanded(
                         child: TextFormField(
                           controller: _keyCtrl,
-                          decoration: const InputDecoration(labelText: 'Key (e.g., C#m, F major)'),
+                          decoration: InputDecoration(labelText: AppLocalizations.of(context)!.key),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -224,13 +256,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                     ref.invalidate(allProjectsStreamProvider);
                                     if (mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Metadata extracted successfully')),
+                                        SnackBar(content: Text(AppLocalizations.of(context)!.metadataExtractedSuccessfully)),
                                       );
                                     }
                                   } catch (e) {
                                     if (mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Failed to extract metadata: $e')),
+                                        SnackBar(content: Text(AppLocalizations.of(context)!.failedToExtractMetadata(e.toString()))),
                                       );
                                     }
                                   } finally {
@@ -246,7 +278,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                   child: CircularProgressIndicator(strokeWidth: 2),
                                 )
                             : const Icon(Icons.search, size: 18),
-                        label: Text(_extractingMetadata ? 'Extracting…' : 'Extract'),
+                        label: Text(_extractingMetadata ? AppLocalizations.of(context)!.extracting : AppLocalizations.of(context)!.extract),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF5A6B7A),
                         ),
@@ -257,11 +289,11 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                     
                     // Project Phase Dropdown
                     DropdownButtonFormField<String>(
-                    value: _selectedPhase,
-                    decoration: const InputDecoration(
-                      labelText: 'Project Phase',
+                    value: _selectedPhase ?? _getProjectPhases(context).first,
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.projectPhase,
                     ),
-                    items: _projectPhases.map((phase) {
+                    items: _getProjectPhases(context).map((phase) {
                       return DropdownMenuItem<String>(
                         value: phase,
                         child: Text(phase),
@@ -278,8 +310,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                     // NOVO: CAMPO DE NOTAS
                     TextFormField(
                     controller: _notesCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Notes',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.notes,
                       alignLabelWithHint: true,
                       border: OutlineInputBorder(),
                     ),
@@ -321,16 +353,16 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             bpm: _bpmCtrl.text.trim().isEmpty ? null : double.tryParse(_bpmCtrl.text.trim()),
                             musicalKey: _keyCtrl.text.trim().isEmpty ? null : _keyCtrl.text.trim(),
                             notes: newNotes, // NOVO: Salva Notas
-                            status: _selectedPhase ?? 'Idea', // Save project phase
+                            status: _selectedPhase != null ? _translateStatusToEnglish(_selectedPhase!) : 'Idea', // Save project phase
                           );
 
                           await repo.updateProject(updated);
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Saved')));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.saved)));
                           }
                         },
                         icon: const Icon(Icons.save),
-                          label: const Text('Save'),
+                          label: Text(AppLocalizations.of(context)!.save),
                         ),
                         const SizedBox(width: 12),
                         
@@ -338,7 +370,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                         ElevatedButton.icon(
                         onPressed: () => _openProjectFolder(project.filePath),
                         icon: const Icon(Icons.folder_open),
-                          label: const Text('Open Folder'),
+                          label: Text(AppLocalizations.of(context)!.openFolder),
                         ),
                         const SizedBox(width: 12),
 
@@ -355,12 +387,12 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             }
                           } catch (_) {
                              if (mounted) {
-                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to launch DAW')));
+                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunchDaw)));
                              }
                           }
                         },
                         icon: const Icon(Icons.open_in_new),
-                        label: const Text('Open in DAW'),
+                        label: Text(AppLocalizations.of(context)!.openInDaw),
                       ),
                     ],
                   ),

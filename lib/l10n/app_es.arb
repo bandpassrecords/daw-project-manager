@@ -1,0 +1,656 @@
+{
+  "@@locale": "es",
+  "appTitle": "Gestor de Proyectos DAW",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "projectDetails": "Detalles del Proyecto",
+  "back": "Volver",
+  "save": "Guardar",
+  "cancel": "Cancelar",
+  "launch": "Abrir",
+  "view": "Ver",
+  "openFolder": "Abrir Carpeta",
+  "openInDaw": "Abrir en DAW",
+  "extract": "Extraer",
+  "extracting": "Extrayendo…",
+  "extractingMetadata": "Extrayendo metadatos...",
+  "deepScan": "Escaneo Profundo",
+  "rescan": "Reescanear",
+  "scanning": "Escaneando…",
+  "projectName": "Nombre del Proyecto",
+  "bpm": "BPM",
+  "key": "Tonalidad (ej: C#m, F mayor)",
+  "notes": "Notas",
+  "projectPhase": "Fase del Proyecto",
+  "failedToLoad": "Error al cargar",
+  "fileMissing": "Archivo faltante.",
+  "launchingProject": "Abriendo {projectName}…",
+  "@launchingProject": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "clearLibrary": "Limpiar Biblioteca",
+  "clearLibraryMessage": "Esto eliminará todos los proyectos guardados y carpetas de origen. ¿Continuar?",
+  "clear": "Limpiar",
+  "roots": "Raíces",
+  "projects": "Proyectos",
+  "hidden": "ocultos",
+  "profileManager": "Administrador de Perfiles",
+  "createNewProfile": "Crear Nuevo Perfil",
+  "profileName": "Nombre del Perfil",
+  "create": "Crear",
+  "profiles": "Perfiles",
+  "active": "Activo",
+  "switchProfile": "Cambiar",
+  "edit": "Editar",
+  "delete": "Eliminar",
+  "addFolder": "Agregar Carpeta",
+  "searchProjects": "Buscar proyectos...",
+  "deepScanTooltip": "El Escaneo Profundo extrae metadatos completos de los archivos de proyecto:\n• BPM (Pulsos Por Minuto)\n• Tonalidad Musical\n• Versión del DAW\nEsto es más lento pero proporciona información completa.",
+  "deepScanConfirm": "Esto escaneará todos los proyectos y extraerá metadatos completos (BPM, Tonalidad, Versión del DAW). Esto puede tardar un tiempo. ¿Continuar?",
+  "metadataExtractedSuccessfully": "Metadatos extraídos exitosamente",
+  "failedToExtractMetadata": "Error al extraer metadatos: {error}",
+  "@failedToExtractMetadata": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved": "Guardado",
+  "failedToLaunchDaw": "Error al abrir DAW",
+  "releaseDetails": "Detalles del Lanzamiento",
+  "releaseNotFound": "Lanzamiento No Encontrado",
+  "error": "Error",
+  "loading": "Cargando...",
+  "deleteProfile": "Eliminar Perfil",
+  "deleteProfileMessage": "¿Está seguro de que desea eliminar \"{profileName}\"? Esto eliminará todos los proyectos, raíces y lanzamientos de este perfil.",
+  "@deleteProfileMessage": {
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "Editar Perfil",
+  "changePhoto": "Cambiar Foto",
+  "remove": "Eliminar",
+  "saveName": "Guardar Nombre",
+  "profilePhotoUpdated": "Foto de perfil actualizada.",
+  "profilePhotoRemoved": "Foto de perfil eliminada.",
+  "profileRenamed": "Perfil renombrado a \"{newName}\"",
+  "@profileRenamed": {
+    "placeholders": {
+      "newName": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCreated": "Perfil \"{name}\" creado exitosamente",
+  "@profileCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleted": "Perfil \"{name}\" eliminado",
+  "@profileDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterProfileName": "Por favor, ingrese un nombre de perfil",
+  "failedToCreateProfile": "Error al crear perfil: {error}",
+  "@failedToCreateProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProfilesFound": "No se encontraron perfiles. Cree uno arriba.",
+  "created": "Creado: {date}",
+  "@created": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "toggleSort": "Alternar orden",
+  "clearLibraryTooltip": "Limpiar Biblioteca (proyectos y raíces)",
+  "lastModified": "Última modificación: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "name": "Nombre",
+  "status": "Estado",
+  "daw": "DAW",
+  "lastModifiedColumn": "Última Modificación",
+  "actions": "Acciones",
+  "launch": "Abrir",
+  "hide": "Ocultar",
+  "unhide": "Mostrar",
+  "extractMetadata": "Extraer Metadatos",
+  "createRelease": "Crear Lanzamiento",
+  "clearSelection": "Limpiar Selección",
+  "selectAllProjects": "Seleccionar todos los proyectos",
+  "switchingProfiles": "Cambiando perfiles...",
+  "scanningProjects": "Escaneando proyectos...",
+  "projectsTab": "Proyectos",
+  "releasesTab": "Lanzamientos",
+  "showHidden": "Mostrar Ocultos",
+  "showAll": "Mostrar Todos",
+  "showOnlyHidden": "Mostrar Solo Ocultos",
+  "deleteRootPath": "Eliminar Ruta Raíz",
+  "deleteRootPathMessage": "¿Está seguro de que desea eliminar \"{path}\"? Esto también eliminará todos los proyectos de esta carpeta que no están en lanzamientos.",
+  "@deleteRootPathMessage": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "rootsCount": "Raíces: {count}",
+  "@rootsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsCount": "Proyectos: {count}",
+  "@projectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hiddenOnly": "(solo ocultos)",
+  "hiddenCount": "({count} ocultos)",
+  "@hiddenCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsHidden": "{count} proyecto{plural} oculto{plural}.",
+  "@projectsHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsUnhidden": "{count} proyecto{plural} mostrado{plural}.",
+  "@projectsUnhidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToHideProjects": "Error al ocultar proyectos: {error}",
+  "@failedToHideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUnhideProjects": "Error al mostrar proyectos: {error}",
+  "@failedToUnhideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseCreated": "Lanzamiento \"{title}\" creado exitosamente.",
+  "@releaseCreated": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateRelease": "Error al crear lanzamiento: {error}",
+  "@failedToCreateRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingFolder": "Error al agregar carpeta: {error}",
+  "@errorAddingFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProjectsFoundInRoots": "No se encontraron proyectos en las raíces seleccionadas.",
+  "selectProjectsFolder": "Seleccione una carpeta de proyectos",
+  "enterReleaseTitle": "Ingrese el Título del Lanzamiento",
+  "releaseTitle": "Título del Lanzamiento",
+  "enterReleaseTitleHint": "Ingrese el título del lanzamiento",
+  "metadataExtractedForProjects": "Metadatos extraídos para {count} proyecto{plural}. {failures}",
+  "@metadataExtractedForProjects": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "failures": {
+        "type": "String"
+      }
+    }
+  },
+  "extractionFailures": "{count} falló{plural}.",
+  "@extractionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToWriteBpmFile": "Error al escribir archivo BPM: {error}",
+  "@failedToWriteBpmFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToWriteKeyFile": "Error al escribir archivo de tonalidad: {error}",
+  "@failedToWriteKeyFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLaunch": "Error al abrir: {error}",
+  "@failedToLaunch": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryCleared": "Biblioteca limpiada.",
+  "scanType": "Escaneo {type}",
+  "@scanType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "{type} completado: {count} proyecto{plural} agregado{plural}/actualizado{plural}.",
+  "@scanComplete": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsSelected": "{count} proyecto{plural} seleccionado{plural}",
+  "@projectsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "openingFolder": "Abriendo carpeta para {projectName}…",
+  "@openingFolder": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenFolder": "Error al abrir carpeta: {error}",
+  "@failedToOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "osNotSupportedForOpeningFolder": "Sistema operativo no compatible para abrir carpeta.",
+  "noProjectsAvailable": "No hay proyectos disponibles. Por favor, agregue proyectos primero.",
+  "createNewRelease": "Crear Nuevo Lanzamiento",
+  "deleteRelease": "Eliminar Lanzamiento",
+  "deleteReleaseMessage": "¿Está seguro de que desea eliminar \"{title}\"?",
+  "@deleteReleaseMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDeleted": "Lanzamiento \"{title}\" eliminado.",
+  "@releaseDeleted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "selectTracks": "Seleccionar Pistas",
+  "continueButton": "Continuar",
+  "noReleasesYet": "Aún no hay lanzamientos",
+  "createFirstRelease": "Cree su primer lanzamiento seleccionando pistas de sus proyectos",
+  "releasesCount": "Lanzamientos ({count})",
+  "@releasesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingReleases": "Error al cargar lanzamientos: {error}",
+  "@errorLoadingReleases": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tracksCount": "Pistas ({count})",
+  "@tracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addTracks": "Agregar Pistas",
+  "allProjectsAlreadyInRelease": "Todos los proyectos ya están en este lanzamiento.",
+  "addedTracksToRelease": "Agregada{plural} {count} pista{plural} al lanzamiento.",
+  "@addedTracksToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseFilesCount": "Archivos del Lanzamiento ({count})",
+  "@releaseFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFiles": "Agregar Archivos",
+  "addedFilesToRelease": "Agregado{plural} {count} archivo{plural} al lanzamiento.",
+  "@addedFilesToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddFiles": "Error al agregar archivos: {error}",
+  "@failedToAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noFilesToDownload": "No hay archivos para descargar.",
+  "zipFileSaved": "Archivo ZIP guardado en: {path}",
+  "@zipFileSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateZip": "Error al crear ZIP: {error}",
+  "@failedToCreateZip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedFileDoesNotExist": "El archivo seleccionado no existe.",
+  "imageSavedSuccessfully": "¡Imagen guardada exitosamente!",
+  "failedToSaveImage": "Error al guardar imagen: {error}",
+  "@failedToSaveImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingRelease": "Error al cargar lanzamiento: {error}",
+  "@errorLoadingRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProjects": "Error al cargar proyectos: {error}",
+  "@errorLoadingProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseSaved": "Lanzamiento guardado.",
+  "releaseDate": "Fecha del Lanzamiento",
+  "failedToSaveReleaseDate": "Error al guardar fecha del lanzamiento: {error}",
+  "@failedToSaveReleaseDate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDateSaved": "Fecha del lanzamiento guardada.",
+  "releaseDateCleared": "Fecha del lanzamiento limpiada.",
+  "saveReleaseFilesZip": "Guardar archivos ZIP del lanzamiento",
+  "failedToOpenFile": "Error al abrir archivo: {error}",
+  "@failedToOpenFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPlayAudio": "Error al reproducir audio: {error}",
+  "@failedToPlayAudio": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameFile": "Renombrar Archivo",
+  "selectTracksToAdd": "Seleccionar Pistas para Agregar",
+  "fileNameUpdated": "Nombre del archivo actualizado.",
+  "errorUpdatingFileName": "Error al actualizar nombre del archivo: {error}",
+  "@errorUpdatingFileName": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFile": "Eliminar Archivo",
+  "deleteFileMessage": "¿Está seguro de que desea eliminar \"{fileName}\"?",
+  "@deleteFileMessage": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileDeleted": "Archivo \"{fileName}\" eliminado.",
+  "@fileDeleted": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteFile": "Error al eliminar archivo: {error}",
+  "@failedToDeleteFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenFolder": "No se pudo abrir la carpeta: {error}",
+  "@couldNotOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastModified": "Última modificación: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "artwork": "Arte",
+  "title": "Título",
+  "tracks": "Pistas",
+  "description": "Descripción",
+  "selectTracksToInclude": "Seleccionar pistas para incluir en el lanzamiento ({count} seleccionada{plural})",
+  "@selectTracksToInclude": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchTracks": "Buscar pistas",
+  "searchTracksHint": "Buscar por nombre o tipo de DAW",
+  "noTracksFound": "No se encontraron pistas",
+  "unknown": "Desconocido",
+  "fileNotFound": "Archivo no encontrado",
+  "fileName": "Nombre del Archivo",
+  "editTodo": "Editar Tarea",
+  "todoText": "Texto de la tarea",
+  "enterTodoText": "Ingrese el texto de la tarea",
+  "addNewTodo": "Agregar nueva tarea",
+  "enterTodoItem": "Ingrese el item de la tarea",
+  "todoList": "Lista de Tareas",
+  "addToRelease": "Agregar al Lanzamiento",
+  "createNew": "Crear Nuevo",
+  "addToExisting": "Agregar al Existente",
+  "createAndAdd": "Crear y Agregar",
+  "selectRelease": "Seleccione un lanzamiento",
+  "noExistingReleasesFound": "No se encontraron lanzamientos existentes.",
+  "addToSelectedRelease": "Agregar al Lanzamiento Seleccionado",
+  "failedToSaveProfilePhoto": "Error al guardar foto de perfil: {error}",
+  "@failedToSaveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveProfilePhoto": "Error al eliminar foto de perfil: {error}",
+  "@failedToRemoveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRenameProfile": "Error al renombrar perfil: {error}",
+  "@failedToRenameProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteProfile": "Error al eliminar perfil: {error}",
+  "@failedToDeleteProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProfiles": "Error al cargar perfiles: {error}",
+  "@errorLoadingProfiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectPhaseIdea": "Idea",
+  "projectPhaseArranging": "Arreglo",
+  "projectPhaseMixing": "Mezcla",
+  "projectPhaseMastering": "Masterización",
+  "projectPhaseFinished": "Finalizado",
+  "tooltipEditProfileName": "Editar nombre del perfil",
+  "tooltipAddTodo": "Agregar tarea",
+  "tooltipClearDate": "Limpiar fecha",
+  "tooltipPickDate": "Elegir fecha",
+  "tooltipViewDetails": "Ver Detalles",
+  "tooltipLaunchInDaw": "Abrir en DAW",
+  "tooltipRemoveFromRelease": "Eliminar del Lanzamiento",
+  "profile": "Perfil",
+  "noDateSet": "No se ha establecido fecha",
+  "imageNotFound": "Imagen no encontrada",
+  "clickToBrowseArtwork": "Haga clic para buscar arte",
+  "noFilesAddedYet": "No se han agregado archivos todavía.\nHaga clic en \"Agregar Archivos\" para subir archivos del lanzamiento.",
+  "noTodosYet": "No hay tareas todavía. Agregue una arriba.",
+  "done": "Hecho"
+}

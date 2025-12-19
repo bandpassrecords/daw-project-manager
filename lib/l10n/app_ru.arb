@@ -1,0 +1,656 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Менеджер проектов DAW",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "projectDetails": "Детали проекта",
+  "back": "Назад",
+  "save": "Сохранить",
+  "cancel": "Отмена",
+  "launch": "Открыть",
+  "view": "Просмотр",
+  "openFolder": "Открыть папку",
+  "openInDaw": "Открыть в DAW",
+  "extract": "Извлечь",
+  "extracting": "Извлечение…",
+  "extractingMetadata": "Извлечение метаданных...",
+  "deepScan": "Глубокое сканирование",
+  "rescan": "Повторное сканирование",
+  "scanning": "Сканирование…",
+  "projectName": "Название проекта",
+  "bpm": "BPM",
+  "key": "Тональность (например: C#m, F мажор)",
+  "notes": "Заметки",
+  "projectPhase": "Фаза проекта",
+  "failedToLoad": "Ошибка загрузки",
+  "fileMissing": "Файл отсутствует.",
+  "launchingProject": "Открытие {projectName}…",
+  "@launchingProject": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "clearLibrary": "Очистить библиотеку",
+  "clearLibraryMessage": "Это удалит все сохраненные проекты и исходные папки. Продолжить?",
+  "clear": "Очистить",
+  "roots": "Корни",
+  "projects": "Проекты",
+  "hidden": "скрытые",
+  "profileManager": "Менеджер профилей",
+  "createNewProfile": "Создать новый профиль",
+  "profileName": "Имя профиля",
+  "create": "Создать",
+  "profiles": "Профили",
+  "active": "Активный",
+  "switchProfile": "Переключить",
+  "edit": "Редактировать",
+  "delete": "Удалить",
+  "addFolder": "Добавить папку",
+  "searchProjects": "Поиск проектов...",
+  "deepScanTooltip": "Глубокое сканирование извлекает полные метаданные из файлов проекта:\n• BPM (ударов в минуту)\n• Музыкальная тональность\n• Версия DAW\nЭто медленнее, но предоставляет полную информацию.",
+  "deepScanConfirm": "Это просканирует все проекты и извлечет полные метаданные (BPM, тональность, версия DAW). Это может занять некоторое время. Продолжить?",
+  "metadataExtractedSuccessfully": "Метаданные успешно извлечены",
+  "failedToExtractMetadata": "Ошибка извлечения метаданных: {error}",
+  "@failedToExtractMetadata": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved": "Сохранено",
+  "failedToLaunchDaw": "Не удалось открыть DAW",
+  "releaseDetails": "Детали релиза",
+  "releaseNotFound": "Релиз не найден",
+  "error": "Ошибка",
+  "loading": "Загрузка...",
+  "deleteProfile": "Удалить профиль",
+  "deleteProfileMessage": "Вы уверены, что хотите удалить \"{profileName}\"? Это удалит все проекты, корни и релизы этого профиля.",
+  "@deleteProfileMessage": {
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "Редактировать профиль",
+  "changePhoto": "Изменить фото",
+  "remove": "Удалить",
+  "saveName": "Сохранить имя",
+  "profilePhotoUpdated": "Фото профиля обновлено.",
+  "profilePhotoRemoved": "Фото профиля удалено.",
+  "profileRenamed": "Профиль переименован в \"{newName}\"",
+  "@profileRenamed": {
+    "placeholders": {
+      "newName": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCreated": "Профиль \"{name}\" успешно создан",
+  "@profileCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleted": "Профиль \"{name}\" удален",
+  "@profileDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterProfileName": "Пожалуйста, введите имя профиля",
+  "failedToCreateProfile": "Ошибка создания профиля: {error}",
+  "@failedToCreateProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProfilesFound": "Профили не найдены. Создайте один выше.",
+  "created": "Создано: {date}",
+  "@created": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "toggleSort": "Переключить сортировку",
+  "clearLibraryTooltip": "Очистить библиотеку (проекты и корни)",
+  "lastModified": "Последнее изменение: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "name": "Название",
+  "status": "Статус",
+  "daw": "DAW",
+  "lastModifiedColumn": "Последнее Изменение",
+  "actions": "Действия",
+  "launch": "Открыть",
+  "hide": "Скрыть",
+  "unhide": "Показать",
+  "extractMetadata": "Извлечь Метаданные",
+  "createRelease": "Создать Релиз",
+  "clearSelection": "Очистить Выбор",
+  "selectAllProjects": "Выбрать все проекты",
+  "switchingProfiles": "Переключение профилей...",
+  "scanningProjects": "Сканирование проектов...",
+  "projectsTab": "Проекты",
+  "releasesTab": "Релизы",
+  "showHidden": "Показать Скрытые",
+  "showAll": "Показать Все",
+  "showOnlyHidden": "Показать Только Скрытые",
+  "deleteRootPath": "Удалить Корневой Путь",
+  "deleteRootPathMessage": "Вы уверены, что хотите удалить \"{path}\"? Это также удалит все проекты из этой папки, которые не находятся в релизах.",
+  "@deleteRootPathMessage": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "rootsCount": "Корни: {count}",
+  "@rootsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsCount": "Проекты: {count}",
+  "@projectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hiddenOnly": "(только скрытые)",
+  "hiddenCount": "({count} скрытых)",
+  "@hiddenCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsHidden": "{count} проект{plural} скрыт{plural}.",
+  "@projectsHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsUnhidden": "{count} проект{plural} показан{plural}.",
+  "@projectsUnhidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToHideProjects": "Ошибка скрытия проектов: {error}",
+  "@failedToHideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUnhideProjects": "Ошибка показа проектов: {error}",
+  "@failedToUnhideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseCreated": "Релиз \"{title}\" успешно создан.",
+  "@releaseCreated": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateRelease": "Ошибка создания релиза: {error}",
+  "@failedToCreateRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingFolder": "Ошибка добавления папки: {error}",
+  "@errorAddingFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProjectsFoundInRoots": "Проекты не найдены в выбранных корнях.",
+  "selectProjectsFolder": "Выберите папку проектов",
+  "enterReleaseTitle": "Введите Название Релиза",
+  "releaseTitle": "Название Релиза",
+  "enterReleaseTitleHint": "Введите название релиза",
+  "metadataExtractedForProjects": "Метаданные извлечены для {count} проект{plural}. {failures}",
+  "@metadataExtractedForProjects": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "failures": {
+        "type": "String"
+      }
+    }
+  },
+  "extractionFailures": "{count} не удалось{plural}.",
+  "@extractionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToWriteBpmFile": "Ошибка записи файла BPM: {error}",
+  "@failedToWriteBpmFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToWriteKeyFile": "Ошибка записи файла тональности: {error}",
+  "@failedToWriteKeyFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLaunch": "Ошибка открытия: {error}",
+  "@failedToLaunch": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryCleared": "Библиотека очищена.",
+  "scanType": "Сканирование {type}",
+  "@scanType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "{type} завершено: {count} проект{plural} добавлен{plural}/обновлен{plural}.",
+  "@scanComplete": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsSelected": "{count} проект{plural} выбран{plural}",
+  "@projectsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "openingFolder": "Открытие папки для {projectName}…",
+  "@openingFolder": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenFolder": "Ошибка открытия папки: {error}",
+  "@failedToOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "osNotSupportedForOpeningFolder": "Операционная система не поддерживается для открытия папки.",
+  "noProjectsAvailable": "Проекты недоступны. Пожалуйста, сначала добавьте проекты.",
+  "createNewRelease": "Создать Новый Релиз",
+  "deleteRelease": "Удалить Релиз",
+  "deleteReleaseMessage": "Вы уверены, что хотите удалить \"{title}\"?",
+  "@deleteReleaseMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDeleted": "Релиз \"{title}\" удален.",
+  "@releaseDeleted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "selectTracks": "Выбрать Треки",
+  "continueButton": "Продолжить",
+  "noReleasesYet": "Пока нет релизов",
+  "createFirstRelease": "Создайте свой первый релиз, выбрав треки из ваших проектов",
+  "releasesCount": "Релизы ({count})",
+  "@releasesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingReleases": "Ошибка загрузки релизов: {error}",
+  "@errorLoadingReleases": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tracksCount": "Треки ({count})",
+  "@tracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addTracks": "Добавить Треки",
+  "allProjectsAlreadyInRelease": "Все проекты уже в этом релизе.",
+  "addedTracksToRelease": "Добавлен{plural} {count} трек{plural} в релиз.",
+  "@addedTracksToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseFilesCount": "Файлы Релиза ({count})",
+  "@releaseFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFiles": "Добавить Файлы",
+  "addedFilesToRelease": "Добавлен{plural} {count} файл{plural} в релиз.",
+  "@addedFilesToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddFiles": "Ошибка добавления файлов: {error}",
+  "@failedToAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noFilesToDownload": "Нет файлов для загрузки.",
+  "zipFileSaved": "ZIP файл сохранен в: {path}",
+  "@zipFileSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateZip": "Ошибка создания ZIP: {error}",
+  "@failedToCreateZip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedFileDoesNotExist": "Выбранный файл не существует.",
+  "imageSavedSuccessfully": "Изображение успешно сохранено!",
+  "failedToSaveImage": "Ошибка сохранения изображения: {error}",
+  "@failedToSaveImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingRelease": "Ошибка загрузки релиза: {error}",
+  "@errorLoadingRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProjects": "Ошибка загрузки проектов: {error}",
+  "@errorLoadingProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseSaved": "Релиз сохранен.",
+  "releaseDate": "Дата Релиза",
+  "failedToSaveReleaseDate": "Ошибка сохранения даты релиза: {error}",
+  "@failedToSaveReleaseDate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDateSaved": "Дата релиза сохранена.",
+  "releaseDateCleared": "Дата релиза очищена.",
+  "saveReleaseFilesZip": "Сохранить ZIP файлы релиза",
+  "failedToOpenFile": "Ошибка открытия файла: {error}",
+  "@failedToOpenFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPlayAudio": "Ошибка воспроизведения аудио: {error}",
+  "@failedToPlayAudio": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameFile": "Переименовать Файл",
+  "selectTracksToAdd": "Выбрать Треки для Добавления",
+  "fileNameUpdated": "Имя файла обновлено.",
+  "errorUpdatingFileName": "Ошибка обновления имени файла: {error}",
+  "@errorUpdatingFileName": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFile": "Удалить Файл",
+  "deleteFileMessage": "Вы уверены, что хотите удалить \"{fileName}\"?",
+  "@deleteFileMessage": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileDeleted": "Файл \"{fileName}\" удален.",
+  "@fileDeleted": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteFile": "Ошибка удаления файла: {error}",
+  "@failedToDeleteFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenFolder": "Не удалось открыть папку: {error}",
+  "@couldNotOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastModified": "Последнее изменение: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "artwork": "Обложка",
+  "title": "Название",
+  "tracks": "Треки",
+  "description": "Описание",
+  "selectTracksToInclude": "Выбрать треки для включения в релиз ({count} выбрано)",
+  "@selectTracksToInclude": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchTracks": "Поиск треков",
+  "searchTracksHint": "Поиск по названию или типу DAW",
+  "noTracksFound": "Треки не найдены",
+  "unknown": "Неизвестно",
+  "fileNotFound": "Файл не найден",
+  "fileName": "Имя Файла",
+  "editTodo": "Редактировать Задачу",
+  "todoText": "Текст задачи",
+  "enterTodoText": "Введите текст задачи",
+  "addNewTodo": "Добавить новую задачу",
+  "enterTodoItem": "Введите элемент задачи",
+  "todoList": "Список Задач",
+  "addToRelease": "Добавить в Релиз",
+  "createNew": "Создать Новый",
+  "addToExisting": "Добавить в Существующий",
+  "createAndAdd": "Создать и Добавить",
+  "selectRelease": "Выберите релиз",
+  "noExistingReleasesFound": "Существующие релизы не найдены.",
+  "addToSelectedRelease": "Добавить в Выбранный Релиз",
+  "failedToSaveProfilePhoto": "Ошибка сохранения фото профиля: {error}",
+  "@failedToSaveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveProfilePhoto": "Ошибка удаления фото профиля: {error}",
+  "@failedToRemoveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRenameProfile": "Ошибка переименования профиля: {error}",
+  "@failedToRenameProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteProfile": "Ошибка удаления профиля: {error}",
+  "@failedToDeleteProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProfiles": "Ошибка загрузки профилей: {error}",
+  "@errorLoadingProfiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectPhaseIdea": "Идея",
+  "projectPhaseArranging": "Аранжировка",
+  "projectPhaseMixing": "Сведение",
+  "projectPhaseMastering": "Мастеринг",
+  "projectPhaseFinished": "Завершено",
+  "tooltipEditProfileName": "Редактировать имя профиля",
+  "tooltipAddTodo": "Добавить задачу",
+  "tooltipClearDate": "Очистить дату",
+  "tooltipPickDate": "Выбрать дату",
+  "tooltipViewDetails": "Просмотр Деталей",
+  "tooltipLaunchInDaw": "Открыть в DAW",
+  "tooltipRemoveFromRelease": "Удалить из Релиза",
+  "profile": "Профиль",
+  "noDateSet": "Дата не установлена",
+  "imageNotFound": "Изображение не найдено",
+  "clickToBrowseArtwork": "Нажмите, чтобы найти обложку",
+  "noFilesAddedYet": "Файлы еще не добавлены.\nНажмите \"Добавить Файлы\", чтобы загрузить файлы релиза.",
+  "noTodosYet": "Задач пока нет. Добавьте одну выше.",
+  "done": "Готово"
+}

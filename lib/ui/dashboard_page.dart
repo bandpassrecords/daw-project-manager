@@ -15,6 +15,8 @@ import 'project_detail_page.dart';
 import 'releases_tab_page.dart';
 import 'release_detail_page.dart';
 import 'profile_manager_page.dart';
+import 'widgets/language_switcher.dart';
+import '../generated/l10n/app_localizations.dart';
 
 import '../models/music_project.dart';
 import '../models/release.dart';
@@ -104,25 +106,46 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
 
   // MÉTODO FINAL: Inclui Ctrl+F e Ctrl+R
   void _handleRawKeyEvent(RawKeyEvent event) {
-    // Escutar apenas o evento de tecla para baixo (RawKeyDownEvent)
-    if (event is! RawKeyDownEvent) return;
+    try {
+      // Escutar apenas o evento de tecla para baixo (RawKeyDownEvent)
+      if (event is! RawKeyDownEvent) return;
 
-    // Verificar se Ctrl (ou Cmd/Meta no macOS) está pressionado
-    final bool isControlOrMetaPressed = event.isControlPressed || event.isMetaPressed;
-    
-    // 1. Lógica para Ctrl + F
-    final bool isKeyF = event.logicalKey == LogicalKeyboardKey.keyF;
-    if (isKeyF && isControlOrMetaPressed) {
-      _searchFocusNode.requestFocus();
-      return; // Consome o evento
-    }
+      // Ignore modifier-only events (Alt, Ctrl, Shift alone) to avoid Flutter framework assertion errors
+      final logicalKey = event.logicalKey;
+      if (logicalKey == LogicalKeyboardKey.altLeft ||
+          logicalKey == LogicalKeyboardKey.altRight ||
+          logicalKey == LogicalKeyboardKey.controlLeft ||
+          logicalKey == LogicalKeyboardKey.controlRight ||
+          logicalKey == LogicalKeyboardKey.shiftLeft ||
+          logicalKey == LogicalKeyboardKey.shiftRight ||
+          logicalKey == LogicalKeyboardKey.metaLeft ||
+          logicalKey == LogicalKeyboardKey.metaRight) {
+        return;
+      }
 
-    // 2. Lógica para Ctrl + R
-    final bool isKeyR = event.logicalKey == LogicalKeyboardKey.keyR;
-    if (isKeyR && isControlOrMetaPressed) {
-      // Chama a função de Rescan
-      _scanAll(); 
-      return; // Consome o evento
+      // Verificar se Ctrl (ou Cmd/Meta no macOS) está pressionado
+      final bool isControlOrMetaPressed = event.isControlPressed || event.isMetaPressed;
+      
+      // 1. Lógica para Ctrl + F
+      final bool isKeyF = event.logicalKey == LogicalKeyboardKey.keyF;
+      if (isKeyF && isControlOrMetaPressed) {
+        _searchFocusNode.requestFocus();
+        return; // Consome o evento
+      }
+
+      // 2. Lógica para Ctrl + R
+      final bool isKeyR = event.logicalKey == LogicalKeyboardKey.keyR;
+      if (isKeyR && isControlOrMetaPressed) {
+        // Chama a função de Rescan
+        _scanAll(); 
+        return; // Consome o evento
+      }
+    } catch (e) {
+      // Silently ignore keyboard handling errors to prevent crashes
+      // This can happen due to Flutter framework issues with modifier keys on Windows
+      if (kDebugMode) {
+        print('Keyboard event handling error (ignored): $e');
+      }
     }
   }
 
@@ -145,10 +168,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
         await repo.updateRootLastScanAt(root.id, scanTime);
       }
       if (mounted) {
-        final scanType = fullMetadata ? 'Deep scan' : 'Scan';
+        final scanType = fullMetadata ? AppLocalizations.of(context)!.deepScan : AppLocalizations.of(context)!.rescan;
         final msg = foundCount == 0
-            ? 'No projects found in selected roots.'
-            : '$scanType complete: $foundCount project${foundCount == 1 ? '' : 's'} added/updated.';
+            ? AppLocalizations.of(context)!.noProjectsFoundInRoots
+            : AppLocalizations.of(context)!.scanComplete(scanType, foundCount, foundCount == 1 ? '' : 's');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       }
     } finally {
@@ -198,7 +221,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${selectedProjectIds.length} project${selectedProjectIds.length == 1 ? '' : 's'} hidden.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.projectsHidden(selectedProjectIds.length, selectedProjectIds.length == 1 ? '' : 's'))),
         );
         // Invalidate to refresh the list
         ref.invalidate(allProjectsStreamProvider);
@@ -206,7 +229,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to hide projects: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToHideProjects(e.toString()))),
         );
       }
     }
@@ -244,13 +267,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${selectedProjectIds.length} project${selectedProjectIds.length == 1 ? '' : 's'} unhidden.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.projectsUnhidden(selectedProjectIds.length, selectedProjectIds.length == 1 ? '' : 's'))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to unhide projects: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToUnhideProjects(e.toString()))),
         );
       }
     }
@@ -269,7 +292,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Release "$releaseTitle" created successfully.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.releaseCreated(releaseTitle))),
         );
         // Switch to releases tab and navigate to the new release
         _tabController.animateTo(1);
@@ -289,7 +312,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create release: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToCreateRelease(e.toString()))),
         );
       }
     }
@@ -404,12 +427,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                             padding: const EdgeInsets.only(right: 8),
                             child: currentProfileAsync.when(
                               loading: () => Tooltip(
-                                message: 'Profile',
+                                message: AppLocalizations.of(context)!.profileManager,
                                 child: TextButton.icon(
                                   icon: const Icon(Icons.person, size: 18, color: Colors.white70),
-                                  label: const Text(
-                                    'Profile',
-                                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                                  label: Text(
+                                    AppLocalizations.of(context)!.profile,
+                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
                                   ),
                                   onPressed: () {
                                     Navigator.of(context).push(
@@ -421,12 +444,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                 ),
                               ),
                               error: (_, __) => Tooltip(
-                                message: 'Profile',
+                                message: AppLocalizations.of(context)!.profileManager,
                                 child: TextButton.icon(
                                   icon: const Icon(Icons.person, size: 18, color: Colors.white70),
-                                  label: const Text(
-                                    'Profile',
-                                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                                  label: Text(
+                                    AppLocalizations.of(context)!.profile,
+                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
                                   ),
                                   onPressed: () {
                                     Navigator.of(context).push(
@@ -457,7 +480,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                   profileIcon = const Icon(Icons.person, size: 18, color: Colors.white70);
                                 }
 
-                                final profileName = currentProfile?.name ?? 'Profile';
+                                final profileName = currentProfile?.name ?? AppLocalizations.of(context)!.profileManager;
 
                                 return Tooltip(
                                   message: profileName,
@@ -494,6 +517,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                           );
                         },
                       ),
+                      const SizedBox(width: 8),
+                      const LanguageSwitcher(),
                       // Botões de minimizar, maximizar e fechar
                       const WindowButtons(),
                     ],
@@ -514,16 +539,19 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // Language Switcher - always visible (for debug mode access)
+                        const LanguageSwitcher(),
+                        const SizedBox(width: 8),
                         // Profile button - always visible
                         Consumer(
                           builder: (context, ref, child) {
                             final currentProfileAsync = ref.watch(currentProfileProvider);
                             return currentProfileAsync.when(
                               loading: () => Tooltip(
-                                message: 'Profile',
+                                message: AppLocalizations.of(context)!.profileManager,
                                 child: TextButton.icon(
                                   icon: const Icon(Icons.person, size: 24),
-                                  label: const Text('Profile'),
+                                  label: Text(AppLocalizations.of(context)!.profileManager),
                                   onPressed: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
@@ -534,10 +562,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                 ),
                               ),
                               error: (_, __) => Tooltip(
-                                message: 'Profile',
+                                message: AppLocalizations.of(context)!.profileManager,
                                 child: TextButton.icon(
                                   icon: const Icon(Icons.person, size: 24),
-                                  label: const Text('Profile'),
+                                  label: Text(AppLocalizations.of(context)!.profileManager),
                                   onPressed: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
@@ -567,7 +595,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                   profileIcon = const Icon(Icons.person, size: 24);
                                 }
 
-                                final profileName = currentProfile?.name ?? 'Profile';
+                                final profileName = currentProfile?.name ?? AppLocalizations.of(context)!.profileManager;
 
                                 return Tooltip(
                                   message: profileName,
@@ -608,7 +636,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                             onPressed: isAnyOperation
                                 ? null
                                 : () async {
-                                      final path = await FilePicker.platform.getDirectoryPath(dialogTitle: 'Select a projects folder');
+                                      final path = await FilePicker.platform.getDirectoryPath(dialogTitle: AppLocalizations.of(context)!.selectProjectsFolder);
                                       if (path != null) {
                                         try {
                                           final repo = await ref.read(repositoryProvider.future);
@@ -618,7 +646,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                         } catch (e) {
                                           if (mounted) {
                                             ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text('Error adding folder: $e')),
+                                              SnackBar(content: Text(AppLocalizations.of(context)!.errorAddingFolder(e.toString()))),
                                             );
                                           }
                                         }
@@ -631,7 +659,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                       child: CircularProgressIndicator(strokeWidth: 2),
                                     )
                                 : const Icon(Icons.create_new_folder_outlined),
-                            label: const Text('Add Folder'),
+                            label: Text(AppLocalizations.of(context)!.addFolder),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -649,17 +677,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                       child: CircularProgressIndicator(strokeWidth: 2),
                                     )
                                 : const Icon(Icons.refresh),
-                            label: Text(isAnyOperation ? 'Scanning…' : 'Rescan'),
+                            label: Text(isAnyOperation ? AppLocalizations.of(context)!.scanning : AppLocalizations.of(context)!.rescan),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Flexible(
                           child: Tooltip(
-                            message: 'Deep Scan extracts full metadata from project files:\n'
-                                '• BPM (Beats Per Minute)\n'
-                                '• Musical Key\n'
-                                '• DAW Version\n'
-                                'This is slower but provides complete information.',
+                            message: AppLocalizations.of(context)!.deepScanTooltip,
                             waitDuration: const Duration(milliseconds: 500),
                             child: ElevatedButton.icon(
                               onPressed: isAnyOperation
@@ -669,23 +693,19 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                           context: context,
                                           builder: (ctx) => AlertDialog(
                                             backgroundColor: const Color(0xFF2B2D31),
-                                            title: const Text('Deep Scan'),
-                                            content: const Text(
-                                              'Deep Scan will extract full metadata (BPM, Key, DAW Version) from all project files. '
-                                              'This process is slower than a regular scan but provides complete information.\n\n'
-                                              'Continue with Deep Scan?'
-                                            ),
+                                            title: Text(AppLocalizations.of(context)!.deepScan),
+                                            content: Text(AppLocalizations.of(context)!.deepScanConfirm),
                                             actions: [
                                               TextButton(
                                                 onPressed: () => Navigator.pop(ctx, false),
-                                                child: const Text('Cancel'),
+                                                child: Text(AppLocalizations.of(context)!.cancel),
                                               ),
                                               ElevatedButton(
                                                 onPressed: () => Navigator.pop(ctx, true),
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: const Color(0xFF5A6B7A),
                                                 ),
-                                                child: const Text('Deep Scan'),
+                                                child: Text(AppLocalizations.of(context)!.deepScan),
                                               ),
                                             ],
                                           ),
@@ -701,7 +721,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                         child: CircularProgressIndicator(strokeWidth: 2),
                                       )
                                   : const Icon(Icons.search),
-                              label: Text(isAnyOperation ? 'Scanning…' : 'Deep Scan'),
+                              label: Text(isAnyOperation ? AppLocalizations.of(context)!.scanning : AppLocalizations.of(context)!.deepScan),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF5A6B7A),
                               ),
@@ -726,7 +746,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                               focusNode: _searchFocusNode, 
                               controller: _searchController,
                               decoration: InputDecoration(
-                                hintText: 'Search by name...',
+                                hintText: AppLocalizations.of(context)!.searchProjects,
                                 isDense: true,
                                 border: const OutlineInputBorder(),
                                 prefixIcon: const Icon(Icons.search),
@@ -748,7 +768,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                         ),
                         const SizedBox(width: 8),
                         IconButton(
-                          tooltip: 'Toggle sort',
+                          tooltip: AppLocalizations.of(context)!.toggleSort,
                           onPressed: () {
                             ref.read(queryParamsNotifierProvider.notifier).toggleSortDesc();
                           },
@@ -762,14 +782,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                             error: (_, __) => const SizedBox.shrink(),
                             data: (repo) {
                               String projectText;
+                              final l10n = AppLocalizations.of(context)!;
                               if (hiddenMode == 2) {
                                 // Showing only hidden
-                                projectText = 'Roots: ${repo.getRoots().length}   Projects: $hiddenCount (hidden only)';
+                                projectText = '${l10n.rootsCount(repo.getRoots().length)}   ${l10n.projectsCount(hiddenCount)} ${l10n.hiddenOnly}';
                               } else {
                                 // Showing visible or all
-                                projectText = 'Roots: ${repo.getRoots().length}   Projects: $visibleCount';
+                                projectText = '${l10n.rootsCount(repo.getRoots().length)}   ${l10n.projectsCount(visibleCount)}';
                                 if (hiddenCount > 0 && hiddenMode == 0) {
-                                  projectText += ' ($hiddenCount hidden)';
+                                  projectText += ' ${l10n.hiddenCount(hiddenCount)}';
                                 }
                               }
                               return Text(
@@ -799,9 +820,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                 }
                               },
                             ),
-                            const Text(
-                              'Show Hidden',
-                              style: TextStyle(fontSize: 12),
+                            Text(
+                              AppLocalizations.of(context)!.showHidden,
+                              style: const TextStyle(fontSize: 12),
                             ),
                           ],
                         ),
@@ -814,7 +835,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                               size: 16,
                             ),
                             label: Text(
-                              hiddenMode == 2 ? 'Show All' : 'Show Only Hidden',
+                              hiddenMode == 2 ? AppLocalizations.of(context)!.showAll : AppLocalizations.of(context)!.showOnlyHidden,
                               style: const TextStyle(fontSize: 12),
                             ),
                             style: TextButton.styleFrom(
@@ -839,18 +860,18 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  tooltip: 'Clear Library (projects & roots)',
+                                  tooltip: AppLocalizations.of(context)!.clearLibraryTooltip,
                                   icon: const Icon(Icons.delete_forever),
                                   onPressed: () async {
                                     final confirm = await showDialog<bool>(
                                       context: context,
                                       builder: (ctx) => AlertDialog(
                                         backgroundColor: const Color(0xFF2B2D31),
-                                        title: const Text('Clear Library'),
-                                        content: const Text('This will remove all saved projects and source folders. Continue?'),
+                                        title: Text(AppLocalizations.of(context)!.clearLibrary),
+                                        content: Text(AppLocalizations.of(context)!.clearLibraryMessage),
                                         actions: [
-                                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                                          ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear')),
+                                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context)!.cancel)),
+                                          ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: Text(AppLocalizations.of(context)!.clear)),
                                         ],
                                       ),
                                     );
@@ -865,7 +886,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                       // Wait for repository to reload
                                       await ref.read(repositoryProvider.future);
                                       if (mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Library cleared.')));
+                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.libraryCleared)));
                                       }
                                     }
                                   },
@@ -905,19 +926,19 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                               context: context,
                               builder: (ctx) => AlertDialog(
                                 backgroundColor: const Color(0xFF2B2D31),
-                                title: const Text('Delete Root Path'),
-                                content: Text('Are you sure you want to remove "${r.path}"? This will also remove all projects from this folder that are not in releases.'),
+                                title: Text(AppLocalizations.of(context)!.deleteRootPath),
+                                content: Text(AppLocalizations.of(context)!.deleteRootPathMessage(r.path)),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(ctx, false),
-                                    child: const Text('Cancel'),
+                                    child: Text(AppLocalizations.of(context)!.cancel),
                                   ),
                                   ElevatedButton(
                                     onPressed: () => Navigator.pop(ctx, true),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,
                                     ),
-                                    child: const Text('Delete'),
+                                    child: Text(AppLocalizations.of(context)!.delete),
                                   ),
                                 ],
                               ),
@@ -943,9 +964,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
             // Tab Bar
             TabBar(
               controller: _tabController,
-              tabs: const [
-                Tab(icon: Icon(Icons.library_music), text: 'Projects'),
-                Tab(icon: Icon(Icons.album), text: 'Releases'),
+              tabs: [
+                Tab(icon: Icon(Icons.library_music), text: AppLocalizations.of(context)!.projectsTab),
+                Tab(icon: Icon(Icons.album), text: AppLocalizations.of(context)!.releasesTab),
               ],
               labelColor: Colors.white,
               unselectedLabelColor: Colors.white54,
@@ -997,7 +1018,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                       const CircularProgressIndicator(),
                       const SizedBox(height: 16),
                       Text(
-                        isProfileSwitching ? 'Switching Profiles...' : 'Scanning projects...',
+                        isProfileSwitching ? AppLocalizations.of(context)!.switchingProfiles : AppLocalizations.of(context)!.scanningProjects,
                         style: const TextStyle(color: Colors.white70),
                       ),
                     ],
@@ -1103,8 +1124,8 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                   const SizedBox(width: 8),
                   Text(
                     _selectedProjectIds.isEmpty
-                        ? 'Select all projects'
-                        : '${_selectedProjectIds.length} project${_selectedProjectIds.length == 1 ? '' : 's'} selected',
+                        ? AppLocalizations.of(context)!.selectAllProjects
+                        : AppLocalizations.of(context)!.projectsSelected(_selectedProjectIds.length, _selectedProjectIds.length == 1 ? '' : 's'),
                     style: const TextStyle(color: Colors.white70),
                   ),
                 ],
@@ -1114,14 +1135,14 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                   children: [
                     TextButton(
                       onPressed: _clearSelection,
-                      child: const Text('Clear Selection'),
+                      child: Text(AppLocalizations.of(context)!.clearSelection),
                     ),
                     const SizedBox(width: 8),
                     // Show Hide button when not showing hidden projects, or Unhide when showing hidden
                     if (widget.showHidden)
                       ElevatedButton.icon(
                         icon: const Icon(Icons.visibility),
-                        label: const Text('Unhide'),
+                        label: Text(AppLocalizations.of(context)!.unhide),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green.shade700,
                         ),
@@ -1133,7 +1154,7 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                     else
                       ElevatedButton.icon(
                         icon: const Icon(Icons.visibility_off),
-                        label: const Text('Hide'),
+                        label: Text(AppLocalizations.of(context)!.hide),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange.shade700,
                         ),
@@ -1145,7 +1166,7 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.search),
-                      label: const Text('Extract Metadata'),
+                      label: Text(AppLocalizations.of(context)!.extractMetadata),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF5A6B7A),
                       ),
@@ -1170,9 +1191,9 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                                 ref.invalidate(allProjectsStreamProvider);
                                 
                                 if (mounted) {
-                                  final message = failCount > 0
-                                      ? 'Extracted metadata for $successCount project${successCount == 1 ? '' : 's'}. $failCount failed.'
-                                      : 'Extracted metadata for $successCount project${successCount == 1 ? '' : 's'}.';
+                                  final plural = successCount == 1 ? '' : 's';
+                                  final failures = failCount > 0 ? AppLocalizations.of(context)!.extractionFailures(failCount, failCount == 1 ? '' : 's') : '';
+                                  final message = AppLocalizations.of(context)!.metadataExtractedForProjects(successCount, plural, failures);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text(message)),
                                   );
@@ -1185,7 +1206,7 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.album),
-                      label: const Text('Create Release'),
+                      label: Text(AppLocalizations.of(context)!.createRelease),
                       onPressed: () {
                         final selectedProjects = widget.projects
                             .where((p) => _selectedProjectIds.contains(p.id))
@@ -1241,7 +1262,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to write BPM file: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToWriteBpmFile(e.toString()))),
         );
       }
     }
@@ -1263,11 +1284,29 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to write key file: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToWriteKeyFile(e.toString()))),
         );
       }
     }
   } 
+
+  String _translateStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status) {
+      case 'Idea':
+        return l10n.projectPhaseIdea;
+      case 'Arranging':
+        return l10n.projectPhaseArranging;
+      case 'Mixing':
+        return l10n.projectPhaseMixing;
+      case 'Mastering':
+        return l10n.projectPhaseMastering;
+      case 'Finished':
+        return l10n.projectPhaseFinished;
+      default:
+        return status;
+    }
+  }
 
   List<PlutoRow> _mapProjectsToRows(List<MusicProject> projects) {
     return projects.map((p) {
@@ -1311,6 +1350,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final columns = [
       PlutoColumn(
         title: '',
@@ -1337,7 +1377,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         },
       ),
       PlutoColumn(
-        title: 'Name',
+        title: AppLocalizations.of(context)!.name,
         field: 'name',
         type: PlutoColumnType.text(),
         enableColumnDrag: true,
@@ -1347,21 +1387,26 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         frozen: PlutoColumnFrozen.start,
       ),
       PlutoColumn(
-        title: 'Status',
+        title: l10n.status,
         field: 'status',
         type: PlutoColumnType.text(),
         width: 140,
         minWidth: 120,
+        renderer: (rendererContext) {
+          final status = rendererContext.cell.value as String? ?? '';
+          final translatedStatus = _translateStatus(context, status);
+          return Text(translatedStatus);
+        },
       ),
       PlutoColumn(
-        title: 'DAW',
+        title: AppLocalizations.of(context)!.daw,
         field: 'dawType',
         type: PlutoColumnType.text(),
         width: 140,
         minWidth: 100,
       ),
       PlutoColumn(
-        title: 'BPM',
+        title: AppLocalizations.of(context)!.bpm,
         field: 'bpm',
         type: PlutoColumnType.text(),
         width: 100,
@@ -1369,7 +1414,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         enableEditingMode: true,
       ),
       PlutoColumn(
-        title: 'Key',
+        title: AppLocalizations.of(context)!.key.split(' ').first, // Get just "Key" from "Key (e.g., C#m, F major)"
         field: 'key',
         type: PlutoColumnType.text(),
         width: 120,
@@ -1377,14 +1422,14 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         enableEditingMode: true,
       ),
       PlutoColumn(
-        title: 'Last Modified',
+        title: AppLocalizations.of(context)!.lastModifiedColumn,
         field: 'lastModified',
         type: PlutoColumnType.text(),
         width: 200,
         minWidth: 160,
       ),
       PlutoColumn(
-        title: 'Actions',
+        title: AppLocalizations.of(context)!.actions,
         field: 'launch',
         type: PlutoColumnType.text(),
         width: 360, // 🚨 LARGURA AUMENTADA para caber 3 botões
@@ -1407,7 +1452,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                   final exists = Directory(folderPath).existsSync();
                   if (!exists) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Folder missing.')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
                     }
                     return;
                   }
@@ -1424,20 +1469,20 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                       await Process.start('xdg-open', [folderPath]);
                     } else {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('OS not supported for opening folder.')));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.osNotSupportedForOpeningFolder)));
                       }
                       return;
                     }
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Opening folder for ${project.displayName}…')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.openingFolder(project.displayName))));
                     }
                   } catch (e) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to open folder: $e')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToOpenFolder(e.toString()))));
                     }
                   }
                 },
-                child: const Text('Open Folder'),
+                child: Text(AppLocalizations.of(context)!.openFolder),
               ),
               const SizedBox(width: 8),
               // BOTÃO: VIEW (Detalhes)
@@ -1447,7 +1492,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                     MaterialPageRoute(builder: (_) => ProjectDetailPage(projectId: project.id)),
                   );
                 },
-                child: const Text('View'),
+                child: Text(AppLocalizations.of(context)!.view),
               ),
               const SizedBox(width: 8), 
               // BOTÃO: LAUNCH (Abrir DAW)
@@ -1456,7 +1501,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                   final exists = File(project.filePath).existsSync() || Directory(project.filePath).existsSync();
                   if (!exists) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('File missing.')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
                     }
                     return;
                   }
@@ -1471,11 +1516,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                       await Process.start(project.filePath, []);
                     }
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Launching ${project.displayName}…')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.launchingProject(project.displayName))));
                     }
                   } catch (e) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to launch: $e')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunch(e.toString()))));
                     }
                     return;
                   }
@@ -1484,7 +1529,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                   backgroundColor: Colors.green.shade600,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Launch'),
+                child: Text(AppLocalizations.of(context)!.launch),
               ),
             ],
           );
@@ -1570,7 +1615,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         final exists = File(project.filePath).existsSync() || Directory(project.filePath).existsSync();
         if (!exists) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('File missing.')));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
           }
           return;
         }
@@ -1586,11 +1631,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
             await Process.start(project.filePath, []);
           }
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Launching ${project.displayName}…')));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.launchingProject(project.displayName))));
           }
         } catch (e) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to launch: $e')));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunch(e.toString()))));
           }
         }
       },
@@ -1625,12 +1670,12 @@ class _ReleaseTitleDialogState extends State<_ReleaseTitleDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: const Color(0xFF2B2D31),
-      title: const Text('Enter Release Title'),
+      title: Text(AppLocalizations.of(context)!.enterReleaseTitle),
       content: TextField(
         controller: _titleController,
-        decoration: const InputDecoration(
-          labelText: 'Release Title',
-          hintText: 'Enter release title',
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context)!.releaseTitle,
+          hintText: AppLocalizations.of(context)!.enterReleaseTitleHint,
         ),
         autofocus: true,
         onSubmitted: (value) {
@@ -1642,13 +1687,13 @@ class _ReleaseTitleDialogState extends State<_ReleaseTitleDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _titleController.text.trim().isEmpty
               ? null
               : () => Navigator.pop(context, _titleController.text.trim()),
-          child: const Text('Create'),
+          child: Text(AppLocalizations.of(context)!.create),
         ),
       ],
     );

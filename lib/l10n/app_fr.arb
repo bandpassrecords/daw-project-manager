@@ -1,0 +1,656 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Gestionnaire de Projets DAW",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "projectDetails": "Détails du Projet",
+  "back": "Retour",
+  "save": "Enregistrer",
+  "cancel": "Annuler",
+  "launch": "Ouvrir",
+  "view": "Voir",
+  "openFolder": "Ouvrir le Dossier",
+  "openInDaw": "Ouvrir dans le DAW",
+  "extract": "Extraire",
+  "extracting": "Extraction…",
+  "extractingMetadata": "Extraction des métadonnées...",
+  "deepScan": "Scan Approfondi",
+  "rescan": "Rescanner",
+  "scanning": "Scan en cours…",
+  "projectName": "Nom du Projet",
+  "bpm": "BPM",
+  "key": "Tonalité (ex: C#m, F majeur)",
+  "notes": "Notes",
+  "projectPhase": "Phase du Projet",
+  "failedToLoad": "Échec du chargement",
+  "fileMissing": "Fichier manquant.",
+  "launchingProject": "Ouverture de {projectName}…",
+  "@launchingProject": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "clearLibrary": "Vider la Bibliothèque",
+  "clearLibraryMessage": "Cela supprimera tous les projets enregistrés et dossiers sources. Continuer?",
+  "clear": "Vider",
+  "roots": "Racines",
+  "projects": "Projets",
+  "hidden": "masqués",
+  "profileManager": "Gestionnaire de Profils",
+  "createNewProfile": "Créer un Nouveau Profil",
+  "profileName": "Nom du Profil",
+  "create": "Créer",
+  "profiles": "Profils",
+  "active": "Actif",
+  "switchProfile": "Changer",
+  "edit": "Modifier",
+  "delete": "Supprimer",
+  "addFolder": "Ajouter un Dossier",
+  "searchProjects": "Rechercher des projets...",
+  "deepScanTooltip": "Le Scan Approfondi extrait les métadonnées complètes des fichiers de projet:\n• BPM (Battements Par Minute)\n• Tonalité Musicale\n• Version du DAW\nC'est plus lent mais fournit des informations complètes.",
+  "deepScanConfirm": "Cela scannera tous les projets et extraira les métadonnées complètes (BPM, Tonalité, Version du DAW). Cela peut prendre un certain temps. Continuer?",
+  "metadataExtractedSuccessfully": "Métadonnées extraites avec succès",
+  "failedToExtractMetadata": "Échec de l'extraction des métadonnées: {error}",
+  "@failedToExtractMetadata": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved": "Enregistré",
+  "failedToLaunchDaw": "Échec de l'ouverture du DAW",
+  "releaseDetails": "Détails de la Sortie",
+  "releaseNotFound": "Sortie Non Trouvée",
+  "error": "Erreur",
+  "loading": "Chargement...",
+  "deleteProfile": "Supprimer le Profil",
+  "deleteProfileMessage": "Êtes-vous sûr de vouloir supprimer \"{profileName}\"? Cela supprimera tous les projets, racines et sorties de ce profil.",
+  "@deleteProfileMessage": {
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "Modifier le Profil",
+  "changePhoto": "Changer la Photo",
+  "remove": "Supprimer",
+  "saveName": "Enregistrer le Nom",
+  "profilePhotoUpdated": "Photo de profil mise à jour.",
+  "profilePhotoRemoved": "Photo de profil supprimée.",
+  "profileRenamed": "Profil renommé en \"{newName}\"",
+  "@profileRenamed": {
+    "placeholders": {
+      "newName": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCreated": "Profil \"{name}\" créé avec succès",
+  "@profileCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleted": "Profil \"{name}\" supprimé",
+  "@profileDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterProfileName": "Veuillez entrer un nom de profil",
+  "failedToCreateProfile": "Échec de la création du profil: {error}",
+  "@failedToCreateProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProfilesFound": "Aucun profil trouvé. Créez-en un ci-dessus.",
+  "created": "Créé: {date}",
+  "@created": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "toggleSort": "Basculer le tri",
+  "clearLibraryTooltip": "Vider la Bibliothèque (projets et racines)",
+  "lastModified": "Dernière modification: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "name": "Nom",
+  "status": "Statut",
+  "daw": "DAW",
+  "lastModifiedColumn": "Dernière Modification",
+  "actions": "Actions",
+  "launch": "Ouvrir",
+  "hide": "Masquer",
+  "unhide": "Afficher",
+  "extractMetadata": "Extraire les Métadonnées",
+  "createRelease": "Créer une Sortie",
+  "clearSelection": "Effacer la Sélection",
+  "selectAllProjects": "Sélectionner tous les projets",
+  "switchingProfiles": "Changement de profils...",
+  "scanningProjects": "Scan des projets...",
+  "projectsTab": "Projets",
+  "releasesTab": "Sorties",
+  "showHidden": "Afficher les Masqués",
+  "showAll": "Afficher Tout",
+  "showOnlyHidden": "Afficher Seulement les Masqués",
+  "deleteRootPath": "Supprimer le Chemin Racine",
+  "deleteRootPathMessage": "Êtes-vous sûr de vouloir supprimer \"{path}\"? Cela supprimera également tous les projets de ce dossier qui ne sont pas dans les sorties.",
+  "@deleteRootPathMessage": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "rootsCount": "Racines: {count}",
+  "@rootsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsCount": "Projets: {count}",
+  "@projectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hiddenOnly": "(masqués uniquement)",
+  "hiddenCount": "({count} masqués)",
+  "@hiddenCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsHidden": "{count} projet{plural} masqué{plural}.",
+  "@projectsHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsUnhidden": "{count} projet{plural} affiché{plural}.",
+  "@projectsUnhidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToHideProjects": "Échec du masquage des projets: {error}",
+  "@failedToHideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUnhideProjects": "Échec de l'affichage des projets: {error}",
+  "@failedToUnhideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseCreated": "Sortie \"{title}\" créée avec succès.",
+  "@releaseCreated": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateRelease": "Échec de la création de la sortie: {error}",
+  "@failedToCreateRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingFolder": "Erreur lors de l'ajout du dossier: {error}",
+  "@errorAddingFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProjectsFoundInRoots": "Aucun projet trouvé dans les racines sélectionnées.",
+  "selectProjectsFolder": "Sélectionnez un dossier de projets",
+  "enterReleaseTitle": "Entrez le Titre de la Sortie",
+  "releaseTitle": "Titre de la Sortie",
+  "enterReleaseTitleHint": "Entrez le titre de la sortie",
+  "metadataExtractedForProjects": "Métadonnées extraites pour {count} projet{plural}. {failures}",
+  "@metadataExtractedForProjects": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "failures": {
+        "type": "String"
+      }
+    }
+  },
+  "extractionFailures": "{count} échoué{plural}.",
+  "@extractionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToWriteBpmFile": "Échec de l'écriture du fichier BPM: {error}",
+  "@failedToWriteBpmFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToWriteKeyFile": "Échec de l'écriture du fichier de tonalité: {error}",
+  "@failedToWriteKeyFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLaunch": "Échec de l'ouverture: {error}",
+  "@failedToLaunch": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryCleared": "Bibliothèque vidée.",
+  "scanType": "Scan {type}",
+  "@scanType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "{type} terminé: {count} projet{plural} ajouté{plural}/mis à jour{plural}.",
+  "@scanComplete": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsSelected": "{count} projet{plural} sélectionné{plural}",
+  "@projectsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "openingFolder": "Ouverture du dossier pour {projectName}…",
+  "@openingFolder": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenFolder": "Échec de l'ouverture du dossier: {error}",
+  "@failedToOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "osNotSupportedForOpeningFolder": "Système d'exploitation non pris en charge pour ouvrir le dossier.",
+  "noProjectsAvailable": "Aucun projet disponible. Veuillez d'abord ajouter des projets.",
+  "createNewRelease": "Créer une Nouvelle Sortie",
+  "deleteRelease": "Supprimer la Sortie",
+  "deleteReleaseMessage": "Êtes-vous sûr de vouloir supprimer \"{title}\"?",
+  "@deleteReleaseMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDeleted": "Sortie \"{title}\" supprimée.",
+  "@releaseDeleted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "selectTracks": "Sélectionner les Pistes",
+  "continueButton": "Continuer",
+  "noReleasesYet": "Aucune sortie pour le moment",
+  "createFirstRelease": "Créez votre première sortie en sélectionnant des pistes de vos projets",
+  "releasesCount": "Sorties ({count})",
+  "@releasesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingReleases": "Erreur lors du chargement des sorties: {error}",
+  "@errorLoadingReleases": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tracksCount": "Pistes ({count})",
+  "@tracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addTracks": "Ajouter des Pistes",
+  "allProjectsAlreadyInRelease": "Tous les projets sont déjà dans cette sortie.",
+  "addedTracksToRelease": "Ajouté{plural} {count} piste{plural} à la sortie.",
+  "@addedTracksToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseFilesCount": "Fichiers de la Sortie ({count})",
+  "@releaseFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFiles": "Ajouter des Fichiers",
+  "addedFilesToRelease": "Ajouté{plural} {count} fichier{plural} à la sortie.",
+  "@addedFilesToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddFiles": "Échec de l'ajout des fichiers: {error}",
+  "@failedToAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noFilesToDownload": "Aucun fichier à télécharger.",
+  "zipFileSaved": "Fichier ZIP enregistré dans: {path}",
+  "@zipFileSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateZip": "Échec de la création du ZIP: {error}",
+  "@failedToCreateZip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedFileDoesNotExist": "Le fichier sélectionné n'existe pas.",
+  "imageSavedSuccessfully": "Image enregistrée avec succès!",
+  "failedToSaveImage": "Échec de l'enregistrement de l'image: {error}",
+  "@failedToSaveImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingRelease": "Erreur lors du chargement de la sortie: {error}",
+  "@errorLoadingRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProjects": "Erreur lors du chargement des projets: {error}",
+  "@errorLoadingProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseSaved": "Sortie enregistrée.",
+  "releaseDate": "Date de Sortie",
+  "failedToSaveReleaseDate": "Échec de l'enregistrement de la date de sortie: {error}",
+  "@failedToSaveReleaseDate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDateSaved": "Date de sortie enregistrée.",
+  "releaseDateCleared": "Date de sortie effacée.",
+  "saveReleaseFilesZip": "Enregistrer les fichiers ZIP de la sortie",
+  "failedToOpenFile": "Échec de l'ouverture du fichier: {error}",
+  "@failedToOpenFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPlayAudio": "Échec de la lecture audio: {error}",
+  "@failedToPlayAudio": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameFile": "Renommer le Fichier",
+  "selectTracksToAdd": "Sélectionner les Pistes à Ajouter",
+  "fileNameUpdated": "Nom du fichier mis à jour.",
+  "errorUpdatingFileName": "Erreur lors de la mise à jour du nom du fichier: {error}",
+  "@errorUpdatingFileName": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFile": "Supprimer le Fichier",
+  "deleteFileMessage": "Êtes-vous sûr de vouloir supprimer \"{fileName}\"?",
+  "@deleteFileMessage": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileDeleted": "Fichier \"{fileName}\" supprimé.",
+  "@fileDeleted": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteFile": "Échec de la suppression du fichier: {error}",
+  "@failedToDeleteFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenFolder": "Impossible d'ouvrir le dossier: {error}",
+  "@couldNotOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastModified": "Dernière modification: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "artwork": "Artwork",
+  "title": "Titre",
+  "tracks": "Pistes",
+  "description": "Description",
+  "selectTracksToInclude": "Sélectionner les pistes à inclure dans la sortie ({count} sélectionnée{plural})",
+  "@selectTracksToInclude": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchTracks": "Rechercher des pistes",
+  "searchTracksHint": "Rechercher par nom ou type de DAW",
+  "noTracksFound": "Aucune piste trouvée",
+  "unknown": "Inconnu",
+  "fileNotFound": "Fichier non trouvé",
+  "fileName": "Nom du Fichier",
+  "editTodo": "Modifier la Tâche",
+  "todoText": "Texte de la tâche",
+  "enterTodoText": "Entrez le texte de la tâche",
+  "addNewTodo": "Ajouter une nouvelle tâche",
+  "enterTodoItem": "Entrez l'élément de la tâche",
+  "todoList": "Liste de Tâches",
+  "addToRelease": "Ajouter à la Sortie",
+  "createNew": "Créer Nouveau",
+  "addToExisting": "Ajouter à l'Existant",
+  "createAndAdd": "Créer et Ajouter",
+  "selectRelease": "Sélectionnez une sortie",
+  "noExistingReleasesFound": "Aucune sortie existante trouvée.",
+  "addToSelectedRelease": "Ajouter à la Sortie Sélectionnée",
+  "failedToSaveProfilePhoto": "Échec de l'enregistrement de la photo de profil: {error}",
+  "@failedToSaveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveProfilePhoto": "Échec de la suppression de la photo de profil: {error}",
+  "@failedToRemoveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRenameProfile": "Échec du renommage du profil: {error}",
+  "@failedToRenameProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteProfile": "Échec de la suppression du profil: {error}",
+  "@failedToDeleteProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProfiles": "Erreur lors du chargement des profils: {error}",
+  "@errorLoadingProfiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectPhaseIdea": "Idée",
+  "projectPhaseArranging": "Arrangement",
+  "projectPhaseMixing": "Mixage",
+  "projectPhaseMastering": "Masterisation",
+  "projectPhaseFinished": "Terminé",
+  "tooltipEditProfileName": "Modifier le nom du profil",
+  "tooltipAddTodo": "Ajouter une tâche",
+  "tooltipClearDate": "Effacer la date",
+  "tooltipPickDate": "Choisir la date",
+  "tooltipViewDetails": "Voir les Détails",
+  "tooltipLaunchInDaw": "Ouvrir dans le DAW",
+  "tooltipRemoveFromRelease": "Retirer de la Sortie",
+  "profile": "Profil",
+  "noDateSet": "Aucune date définie",
+  "imageNotFound": "Image introuvable",
+  "clickToBrowseArtwork": "Cliquez pour parcourir l'artwork",
+  "noFilesAddedYet": "Aucun fichier ajouté pour le moment.\nCliquez sur \"Ajouter des Fichiers\" pour télécharger les fichiers de la sortie.",
+  "noTodosYet": "Aucune tâche pour le moment. Ajoutez-en une ci-dessus.",
+  "done": "Terminé"
+}

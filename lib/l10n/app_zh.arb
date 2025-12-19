@@ -1,0 +1,656 @@
+{
+  "@@locale": "zh",
+  "appTitle": "DAW项目管理器",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "projectDetails": "项目详情",
+  "back": "返回",
+  "save": "保存",
+  "cancel": "取消",
+  "launch": "打开",
+  "view": "查看",
+  "openFolder": "打开文件夹",
+  "openInDaw": "在DAW中打开",
+  "extract": "提取",
+  "extracting": "提取中…",
+  "extractingMetadata": "正在提取元数据...",
+  "deepScan": "深度扫描",
+  "rescan": "重新扫描",
+  "scanning": "扫描中…",
+  "projectName": "项目名称",
+  "bpm": "BPM",
+  "key": "调性（例如：C#m，F大调）",
+  "notes": "备注",
+  "projectPhase": "项目阶段",
+  "failedToLoad": "加载失败",
+  "fileMissing": "文件缺失。",
+  "launchingProject": "正在打开{projectName}…",
+  "@launchingProject": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "clearLibrary": "清空库",
+  "clearLibraryMessage": "这将删除所有保存的项目和源文件夹。继续吗？",
+  "clear": "清空",
+  "roots": "根目录",
+  "projects": "项目",
+  "hidden": "隐藏",
+  "profileManager": "配置文件管理器",
+  "createNewProfile": "创建新配置文件",
+  "profileName": "配置文件名称",
+  "create": "创建",
+  "profiles": "配置文件",
+  "active": "活动",
+  "switchProfile": "切换",
+  "edit": "编辑",
+  "delete": "删除",
+  "addFolder": "添加文件夹",
+  "searchProjects": "搜索项目...",
+  "deepScanTooltip": "深度扫描从项目文件中提取完整的元数据：\n• BPM（每分钟节拍数）\n• 音乐调性\n• DAW版本\n这较慢，但提供完整信息。",
+  "deepScanConfirm": "这将扫描所有项目并提取完整的元数据（BPM、调性、DAW版本）。这可能需要一些时间。继续吗？",
+  "metadataExtractedSuccessfully": "元数据提取成功",
+  "failedToExtractMetadata": "元数据提取失败: {error}",
+  "@failedToExtractMetadata": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved": "已保存",
+  "failedToLaunchDaw": "无法打开DAW",
+  "releaseDetails": "发布详情",
+  "releaseNotFound": "未找到发布",
+  "error": "错误",
+  "loading": "加载中...",
+  "deleteProfile": "删除配置文件",
+  "deleteProfileMessage": "您确定要删除「{profileName}」吗？这将删除此配置文件的所有项目、根目录和发布。",
+  "@deleteProfileMessage": {
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "编辑配置文件",
+  "changePhoto": "更改照片",
+  "remove": "删除",
+  "saveName": "保存名称",
+  "profilePhotoUpdated": "配置文件照片已更新。",
+  "profilePhotoRemoved": "配置文件照片已删除。",
+  "profileRenamed": "配置文件已重命名为「{newName}」",
+  "@profileRenamed": {
+    "placeholders": {
+      "newName": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCreated": "配置文件「{name}」创建成功",
+  "@profileCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleted": "配置文件「{name}」已删除",
+  "@profileDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterProfileName": "请输入配置文件名称",
+  "failedToCreateProfile": "创建配置文件失败: {error}",
+  "@failedToCreateProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProfilesFound": "未找到配置文件。请在上面创建一个。",
+  "created": "创建时间: {date}",
+  "@created": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "toggleSort": "切换排序",
+  "clearLibraryTooltip": "清空库（项目和根目录）",
+  "lastModified": "最后修改: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "name": "名称",
+  "status": "状态",
+  "daw": "DAW",
+  "lastModifiedColumn": "最后修改",
+  "actions": "操作",
+  "launch": "打开",
+  "hide": "隐藏",
+  "unhide": "显示",
+  "extractMetadata": "提取元数据",
+  "createRelease": "创建发布",
+  "clearSelection": "清除选择",
+  "selectAllProjects": "选择所有项目",
+  "switchingProfiles": "切换配置文件中...",
+  "scanningProjects": "扫描项目中...",
+  "projectsTab": "项目",
+  "releasesTab": "发布",
+  "showHidden": "显示隐藏",
+  "showAll": "显示全部",
+  "showOnlyHidden": "仅显示隐藏",
+  "deleteRootPath": "删除根路径",
+  "deleteRootPathMessage": "您确定要删除「{path}」吗？这也会删除此文件夹中不在发布中的所有项目。",
+  "@deleteRootPathMessage": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "rootsCount": "根目录: {count}",
+  "@rootsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsCount": "项目: {count}",
+  "@projectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hiddenOnly": "（仅隐藏）",
+  "hiddenCount": "（{count}个隐藏）",
+  "@hiddenCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectsHidden": "{count}个项目{plural}已隐藏。",
+  "@projectsHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsUnhidden": "{count}个项目{plural}已显示。",
+  "@projectsUnhidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToHideProjects": "隐藏项目失败: {error}",
+  "@failedToHideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUnhideProjects": "显示项目失败: {error}",
+  "@failedToUnhideProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseCreated": "发布「{title}」创建成功。",
+  "@releaseCreated": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateRelease": "创建发布失败: {error}",
+  "@failedToCreateRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingFolder": "添加文件夹错误: {error}",
+  "@errorAddingFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noProjectsFoundInRoots": "在选定的根目录中未找到项目。",
+  "selectProjectsFolder": "选择项目文件夹",
+  "enterReleaseTitle": "输入发布标题",
+  "releaseTitle": "发布标题",
+  "enterReleaseTitleHint": "输入发布标题",
+  "metadataExtractedForProjects": "已为{count}个项目{plural}提取元数据。{failures}",
+  "@metadataExtractedForProjects": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "failures": {
+        "type": "String"
+      }
+    }
+  },
+  "extractionFailures": "{count}个失败。",
+  "@extractionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToWriteBpmFile": "写入BPM文件失败: {error}",
+  "@failedToWriteBpmFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToWriteKeyFile": "写入调性文件失败: {error}",
+  "@failedToWriteKeyFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLaunch": "启动失败: {error}",
+  "@failedToLaunch": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryCleared": "库已清空。",
+  "scanType": "{type}扫描",
+  "@scanType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "{type}完成: {count}个项目{plural}已添加/更新。",
+  "@scanComplete": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsSelected": "{count}个项目{plural}已选择",
+  "@projectsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "openingFolder": "正在为{projectName}打开文件夹…",
+  "@openingFolder": {
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenFolder": "打开文件夹失败: {error}",
+  "@failedToOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "osNotSupportedForOpeningFolder": "不支持打开文件夹的操作系统。",
+  "noProjectsAvailable": "没有可用的项目。请先添加项目。",
+  "createNewRelease": "创建新发布",
+  "deleteRelease": "删除发布",
+  "deleteReleaseMessage": "您确定要删除「{title}」吗？",
+  "@deleteReleaseMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDeleted": "发布「{title}」已删除。",
+  "@releaseDeleted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "selectTracks": "选择曲目",
+  "continueButton": "继续",
+  "noReleasesYet": "还没有发布",
+  "createFirstRelease": "通过从项目中选择曲目来创建您的第一个发布",
+  "releasesCount": "发布（{count}）",
+  "@releasesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingReleases": "加载发布错误: {error}",
+  "@errorLoadingReleases": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tracksCount": "曲目（{count}）",
+  "@tracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addTracks": "添加曲目",
+  "allProjectsAlreadyInRelease": "所有项目已在此发布中。",
+  "addedTracksToRelease": "已向发布添加{count}首曲目{plural}。",
+  "@addedTracksToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseFilesCount": "发布文件（{count}）",
+  "@releaseFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFiles": "添加文件",
+  "addedFilesToRelease": "已向发布添加{count}个文件{plural}。",
+  "@addedFilesToRelease": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddFiles": "添加文件失败: {error}",
+  "@failedToAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noFilesToDownload": "没有要下载的文件。",
+  "zipFileSaved": "ZIP文件已保存到: {path}",
+  "@zipFileSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateZip": "创建ZIP失败: {error}",
+  "@failedToCreateZip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedFileDoesNotExist": "所选文件不存在。",
+  "imageSavedSuccessfully": "图像保存成功！",
+  "failedToSaveImage": "保存图像失败: {error}",
+  "@failedToSaveImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingRelease": "加载发布错误: {error}",
+  "@errorLoadingRelease": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProjects": "加载项目错误: {error}",
+  "@errorLoadingProjects": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseSaved": "发布已保存。",
+  "releaseDate": "发布日期",
+  "failedToSaveReleaseDate": "保存发布日期失败: {error}",
+  "@failedToSaveReleaseDate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDateSaved": "发布日期已保存。",
+  "releaseDateCleared": "发布日期已清除。",
+  "saveReleaseFilesZip": "保存发布文件ZIP",
+  "failedToOpenFile": "打开文件失败: {error}",
+  "@failedToOpenFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPlayAudio": "播放音频失败: {error}",
+  "@failedToPlayAudio": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameFile": "重命名文件",
+  "selectTracksToAdd": "选择要添加的曲目",
+  "fileNameUpdated": "文件名已更新。",
+  "errorUpdatingFileName": "更新文件名错误: {error}",
+  "@errorUpdatingFileName": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFile": "删除文件",
+  "deleteFileMessage": "您确定要删除「{fileName}」吗？",
+  "@deleteFileMessage": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileDeleted": "文件「{fileName}」已删除。",
+  "@fileDeleted": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteFile": "删除文件失败: {error}",
+  "@failedToDeleteFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenFolder": "无法打开文件夹: {error}",
+  "@couldNotOpenFolder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastModified": "最后修改: {date}",
+  "@lastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "artwork": "封面",
+  "title": "标题",
+  "tracks": "曲目",
+  "description": "描述",
+  "selectTracksToInclude": "选择要包含在发布中的曲目（已选择{count}）",
+  "@selectTracksToInclude": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchTracks": "搜索曲目",
+  "searchTracksHint": "按名称或DAW类型搜索",
+  "noTracksFound": "未找到曲目",
+  "unknown": "未知",
+  "fileNotFound": "文件未找到",
+  "fileName": "文件名",
+  "editTodo": "编辑待办事项",
+  "todoText": "待办事项文本",
+  "enterTodoText": "输入待办事项文本",
+  "addNewTodo": "添加新待办事项",
+  "enterTodoItem": "输入待办事项项",
+  "todoList": "待办事项列表",
+  "addToRelease": "添加到发布",
+  "createNew": "创建新",
+  "addToExisting": "添加到现有",
+  "createAndAdd": "创建并添加",
+  "selectRelease": "选择发布",
+  "noExistingReleasesFound": "未找到现有发布。",
+  "addToSelectedRelease": "添加到选定的发布",
+  "failedToSaveProfilePhoto": "保存配置文件照片失败: {error}",
+  "@failedToSaveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveProfilePhoto": "删除配置文件照片失败: {error}",
+  "@failedToRemoveProfilePhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRenameProfile": "重命名配置文件失败: {error}",
+  "@failedToRenameProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteProfile": "删除配置文件失败: {error}",
+  "@failedToDeleteProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingProfiles": "加载配置文件错误: {error}",
+  "@errorLoadingProfiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectPhaseIdea": "想法",
+  "projectPhaseArranging": "编曲",
+  "projectPhaseMixing": "混音",
+  "projectPhaseMastering": "母带处理",
+  "projectPhaseFinished": "完成",
+  "tooltipEditProfileName": "编辑配置文件名称",
+  "tooltipAddTodo": "添加待办事项",
+  "tooltipClearDate": "清除日期",
+  "tooltipPickDate": "选择日期",
+  "tooltipViewDetails": "查看详情",
+  "tooltipLaunchInDaw": "在DAW中打开",
+  "tooltipRemoveFromRelease": "从发布中移除",
+  "profile": "配置文件",
+  "noDateSet": "未设置日期",
+  "imageNotFound": "未找到图像",
+  "clickToBrowseArtwork": "点击浏览封面",
+  "noFilesAddedYet": "尚未添加文件。\n点击\"添加文件\"上传发布文件。",
+  "noTodosYet": "还没有待办事项。请在上面添加一个。",
+  "done": "完成"
+}

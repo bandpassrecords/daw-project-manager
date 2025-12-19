@@ -11,6 +11,7 @@ import '../models/release.dart';
 import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../repository/project_repository.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'release_detail_page.dart';
 import 'dialogs/add_to_release_dialog.dart';
 
@@ -30,7 +31,7 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
     if (projects.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No projects available. Please add projects first.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.noProjectsAvailable)),
         );
       }
       return;
@@ -85,7 +86,7 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Release "${releaseTitle}" created successfully.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.releaseCreated(releaseTitle))),
         );
       }
     }
@@ -106,7 +107,7 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
           children: [
             const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 16),
-            Text('Error loading releases: $error'),
+            Text(AppLocalizations.of(context)!.errorLoadingReleases(error.toString())),
           ],
         ),
       ),
@@ -118,20 +119,20 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
               children: [
                 const Icon(Icons.album_outlined, size: 64, color: Colors.white54),
                 const SizedBox(height: 16),
-                const Text(
-                  'No releases yet',
-                  style: TextStyle(fontSize: 18, color: Colors.white70),
+                Text(
+                  AppLocalizations.of(context)!.noReleasesYet,
+                  style: const TextStyle(fontSize: 18, color: Colors.white70),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Create your first release by selecting tracks from your projects',
-                  style: TextStyle(color: Colors.white54),
+                Text(
+                  AppLocalizations.of(context)!.createFirstRelease,
+                  style: const TextStyle(color: Colors.white54),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   onPressed: _createNewRelease,
                   icon: const Icon(Icons.add),
-                  label: const Text('Create New Release'),
+                  label: Text(AppLocalizations.of(context)!.createNewRelease),
                 ),
               ],
             ),
@@ -147,13 +148,13 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Releases (${releases.length})',
+                    AppLocalizations.of(context)!.releasesCount(releases.length),
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   ElevatedButton.icon(
                     onPressed: _createNewRelease,
                     icon: const Icon(Icons.add),
-                    label: const Text('Create New Release'),
+                    label: Text(AppLocalizations.of(context)!.createNewRelease),
                   ),
                 ],
               ),
@@ -229,7 +230,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
   Widget build(BuildContext context) {
     final columns = [
       PlutoColumn(
-        title: 'Artwork',
+        title: AppLocalizations.of(context)!.artwork,
         field: 'artwork',
         type: PlutoColumnType.text(),
         enableEditingMode: false,
@@ -259,7 +260,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         },
       ),
       PlutoColumn(
-        title: 'Title',
+        title: AppLocalizations.of(context)!.title,
         field: 'title',
         type: PlutoColumnType.text(),
         enableColumnDrag: true,
@@ -270,7 +271,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         frozen: PlutoColumnFrozen.start,
       ),
       PlutoColumn(
-        title: 'Tracks',
+        title: AppLocalizations.of(context)!.tracks,
         field: 'tracks',
         type: PlutoColumnType.number(),
         enableEditingMode: false,
@@ -278,7 +279,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         minWidth: 80,
       ),
       PlutoColumn(
-        title: 'Release Date',
+        title: AppLocalizations.of(context)!.releaseDate,
         field: 'releaseDate',
         type: PlutoColumnType.text(),
         enableEditingMode: false,
@@ -286,7 +287,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         minWidth: 150,
       ),
       PlutoColumn(
-        title: 'Description',
+        title: AppLocalizations.of(context)!.description,
         field: 'description',
         type: PlutoColumnType.text(),
         enableEditingMode: false,
@@ -294,7 +295,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         minWidth: 200,
       ),
       PlutoColumn(
-        title: 'Actions',
+        title: AppLocalizations.of(context)!.actions,
         field: 'actions',
         type: PlutoColumnType.text(),
         width: 200,
@@ -317,7 +318,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                     ref.invalidate(releasesProvider);
                   }
                 },
-                child: const Text('View'),
+                child: Text(AppLocalizations.of(context)!.view),
               ),
               const SizedBox(width: 8),
               ElevatedButton(
@@ -326,19 +327,19 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       backgroundColor: const Color(0xFF2B2D31),
-                      title: const Text('Delete Release'),
-                      content: Text('Are you sure you want to delete "${release.title}"?'),
+                      title: Text(AppLocalizations.of(context)!.deleteRelease),
+                      content: Text(AppLocalizations.of(context)!.deleteReleaseMessage(release.title)),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
-                          child: const Text('Cancel'),
+                          child: Text(AppLocalizations.of(context)!.cancel),
                         ),
                         ElevatedButton(
                           onPressed: () => Navigator.pop(ctx, true),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                           ),
-                          child: const Text('Delete'),
+                          child: Text(AppLocalizations.of(context)!.delete),
                         ),
                       ],
                     ),
@@ -348,7 +349,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                     await repo.deleteRelease(release.id);
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Release "${release.title}" deleted.')),
+                        SnackBar(content: Text(AppLocalizations.of(context)!.releaseDeleted(release.title))),
                       );
                     }
                   }
@@ -356,7 +357,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red.shade700,
                 ),
-                child: const Text('Delete'),
+                child: Text(AppLocalizations.of(context)!.delete),
               ),
             ],
           );
@@ -457,14 +458,14 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
     
     return AlertDialog(
       backgroundColor: const Color(0xFF2B2D31),
-      title: const Text('Select Tracks'),
+      title: Text(AppLocalizations.of(context)!.selectTracks),
       content: SizedBox(
         width: 600,
         height: 500,
         child: Column(
           children: [
             Text(
-              'Select tracks to include in the release (${_selectedIds.length} selected)',
+              AppLocalizations.of(context)!.selectTracksToInclude(_selectedIds.length, _selectedIds.length == 1 ? '' : 's'),
               style: const TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 16),
@@ -472,8 +473,8 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                labelText: 'Search tracks',
-                hintText: 'Search by name or DAW type',
+                labelText: AppLocalizations.of(context)!.searchTracks,
+                hintText: AppLocalizations.of(context)!.searchTracksHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
@@ -488,10 +489,10 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
             const SizedBox(height: 16),
             Expanded(
               child: filteredProjects.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        'No tracks found',
-                        style: TextStyle(color: Colors.white54),
+                        AppLocalizations.of(context)!.noTracksFound,
+                        style: const TextStyle(color: Colors.white54),
                       ),
                     )
                   : ListView.builder(
@@ -502,7 +503,7 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
                         return CheckboxListTile(
                           title: Text(project.displayName),
                           subtitle: Text(
-                            '${project.dawType ?? 'Unknown'} • ${project.bpm?.toStringAsFixed(0) ?? '?'} BPM',
+                            '${project.dawType ?? AppLocalizations.of(context)!.unknown} • ${project.bpm?.toStringAsFixed(0) ?? '?'} ${AppLocalizations.of(context)!.bpm}',
                             style: const TextStyle(color: Colors.white54),
                           ),
                           value: isSelected,
@@ -525,13 +526,13 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _selectedIds.isEmpty
               ? null
               : () => Navigator.pop(context, _selectedIds.toList()),
-          child: const Text('Continue'),
+          child: Text(AppLocalizations.of(context)!.continueButton),
         ),
       ],
     );
@@ -564,12 +565,12 @@ class _CreateReleaseDialogState extends State<_CreateReleaseDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: const Color(0xFF2B2D31),
-      title: const Text('Create Release'),
+      title: Text(AppLocalizations.of(context)!.createRelease),
       content: TextField(
         controller: _titleController,
-        decoration: const InputDecoration(
-          labelText: 'Release Title',
-          hintText: 'Enter release title',
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context)!.releaseTitle,
+          hintText: AppLocalizations.of(context)!.enterReleaseTitleHint,
         ),
         autofocus: true,
         onSubmitted: (value) {
@@ -581,13 +582,13 @@ class _CreateReleaseDialogState extends State<_CreateReleaseDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _titleController.text.trim().isEmpty
               ? null
               : () => Navigator.pop(context, _titleController.text.trim()),
-          child: const Text('Create'),
+          child: Text(AppLocalizations.of(context)!.create),
         ),
       ],
     );
