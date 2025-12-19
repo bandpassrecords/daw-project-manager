@@ -281,12 +281,28 @@ body {
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .daw-item:hover {
     border-color: var(--primary-color);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px var(--shadow);
+}
+
+.daw-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    filter: brightness(0.9);
+    transition: filter 0.3s ease;
+}
+
+.daw-item:hover .daw-logo {
+    filter: brightness(1);
 }
 
 /* Download Section */
