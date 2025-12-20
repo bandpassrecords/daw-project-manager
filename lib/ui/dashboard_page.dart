@@ -418,107 +418,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                         ),
                       ),
                       const Spacer(), // Espaçador para empurrar os botões para a direita
-                      // Profile switcher button - always show to allow profile management
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final currentProfileAsync = ref.watch(currentProfileProvider);
-                          
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: currentProfileAsync.when(
-                              loading: () => Tooltip(
-                                message: AppLocalizations.of(context)!.profileManager,
-                                child: TextButton.icon(
-                                  icon: const Icon(Icons.person, size: 18, color: Colors.white70),
-                                  label: Text(
-                                    AppLocalizations.of(context)!.profile,
-                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const ProfileManagerPage(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              error: (_, __) => Tooltip(
-                                message: AppLocalizations.of(context)!.profileManager,
-                                child: TextButton.icon(
-                                  icon: const Icon(Icons.person, size: 18, color: Colors.white70),
-                                  label: Text(
-                                    AppLocalizations.of(context)!.profile,
-                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const ProfileManagerPage(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              data: (currentProfile) {
-                                Widget profileIcon;
-                                if (currentProfile?.photoPath != null && 
-                                    File(currentProfile!.photoPath!).existsSync()) {
-                                  profileIcon = ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.file(
-                                      File(currentProfile.photoPath!),
-                                      width: 18,
-                                      height: 18,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return const Icon(Icons.person, size: 18, color: Colors.white70);
-                                      },
-                                    ),
-                                  );
-                                } else {
-                                  profileIcon = const Icon(Icons.person, size: 18, color: Colors.white70);
-                                }
-
-                                final profileName = currentProfile?.name ?? AppLocalizations.of(context)!.profileManager;
-
-                                return Tooltip(
-                                  message: profileName,
-                                  child: TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => const ProfileManagerPage(),
-                                        ),
-                                      );
-                                    },
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        profileIcon,
-                                        const SizedBox(width: 8),
-                                        Flexible(
-                                          child: ConstrainedBox(
-                                            constraints: const BoxConstraints(maxWidth: 150),
-                                            child: Text(
-                                              profileName,
-                                              style: const TextStyle(color: Colors.white70, fontSize: 14),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 8),
                       const LanguageSwitcher(),
+                      const SizedBox(width: 8),
                       // Botões de minimizar, maximizar e fechar
                       const WindowButtons(),
                     ],
@@ -539,9 +440,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Language Switcher - always visible (for debug mode access)
-                        const LanguageSwitcher(),
-                        const SizedBox(width: 8),
                         // Profile button - always visible
                         Consumer(
                           builder: (context, ref, child) {
