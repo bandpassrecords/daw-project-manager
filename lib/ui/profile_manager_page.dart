@@ -16,6 +16,7 @@ import '../utils/app_paths.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'dashboard_page.dart';
 import 'widgets/language_switcher.dart';
+import '../services/backup_service.dart';
 
 class ProfileManagerPage extends ConsumerStatefulWidget {
   const ProfileManagerPage({super.key});
@@ -369,6 +370,219 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
     }
   }
 
+  Future<void> _exportBackup() async {
+    try {
+      final profileRepo = await ref.read(profileRepositoryProvider.future);
+      final currentProfileId = profileRepo.getCurrentProfileId();
+      if (currentProfileId == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.noProfileSelected)),
+          );
+        }
+        return;
+      }
+
+      final projectRepo = await ref.read(repositoryProvider.future);
+      
+      final file = await BackupService.exportBackup(
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        profileId: currentProfileId,
+      );
+
+      if (file != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.backupExportedSuccessfully)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToExportBackup(e.toString()))),
+        );
+      }
+    }
+  }
+
+  Future<void> _showImportDialog() async {
+    ImportMode? selectedMode = ImportMode.merge; // Default to merge mode
+    final profileNameController = TextEditingController();
+    
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          backgroundColor: const Color(0xFF2B2D31),
+          title: Text(AppLocalizations.of(context)!.importBackup),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppLocalizations.of(context)!.importBackupMessage),
+                const SizedBox(height: 16),
+                RadioListTile<ImportMode>(
+                  title: Text(AppLocalizations.of(context)!.mergeWithCurrentProfile),
+                  value: ImportMode.merge,
+                  groupValue: selectedMode,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedMode = value;
+                    });
+                  },
+                ),
+                RadioListTile<ImportMode>(
+                  title: Text(AppLocalizations.of(context)!.replaceCurrentProfile),
+                  value: ImportMode.replace,
+                  groupValue: selectedMode,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedMode = value;
+                    });
+                  },
+                ),
+                RadioListTile<ImportMode>(
+                  title: Text(AppLocalizations.of(context)!.createNewProfileForImport),
+                  value: ImportMode.createNewProfile,
+                  groupValue: selectedMode,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedMode = value;
+                    });
+                  },
+                ),
+                if (selectedMode == ImportMode.createNewProfile) ...[
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: profileNameController,
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.profileName,
+                      hintText: AppLocalizations.of(context)!.profileName,
+                    ),
+                    autofocus: true,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, null),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (selectedMode == ImportMode.createNewProfile) {
+                  final name = profileNameController.text.trim();
+                  if (name.isEmpty) {
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      SnackBar(content: Text(AppLocalizations.of(ctx)!.pleaseEnterProfileName)),
+                    );
+                    return;
+                  }
+                  Navigator.pop(ctx, {
+                    'mode': selectedMode,
+                    'profileName': name,
+                  });
+                } else {
+                  Navigator.pop(ctx, {
+                    'mode': selectedMode,
+                  });
+                }
+              },
+              style: selectedMode == ImportMode.replace
+                  ? ElevatedButton.styleFrom(backgroundColor: Colors.red)
+                  : null,
+              child: Text(_getImportButtonText(selectedMode!)),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result != null) {
+      final mode = result['mode'] as ImportMode;
+      final profileName = result['profileName'] as String?;
+      await _importBackup(importMode: mode, newProfileName: profileName);
+    }
+  }
+
+  String _getImportButtonText(ImportMode mode) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (mode) {
+      case ImportMode.merge:
+        return l10n.mergeWithCurrentProfile;
+      case ImportMode.replace:
+        return l10n.replaceCurrentProfile;
+      case ImportMode.createNewProfile:
+        return l10n.create;
+    }
+  }
+
+  Future<void> _importBackup({
+    required ImportMode importMode,
+    String? newProfileName,
+  }) async {
+    try {
+      final profileRepo = await ref.read(profileRepositoryProvider.future);
+      final currentProfileId = profileRepo.getCurrentProfileId();
+      
+      // For createNewProfile mode, we don't need currentProfileId or projectRepo yet
+      ProjectRepository? projectRepo;
+      if (importMode != ImportMode.createNewProfile) {
+        if (currentProfileId == null) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(AppLocalizations.of(context)!.noProfileSelected)),
+            );
+          }
+          return;
+        }
+        projectRepo = await ref.read(repositoryProvider.future);
+      }
+      
+      final importResult = await BackupService.importBackup(
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        currentProfileId: currentProfileId,
+        importMode: importMode,
+        newProfileName: newProfileName,
+      );
+
+      if (importResult.cancelled) {
+        return;
+      }
+
+      if (mounted) {
+        String message;
+        if (importMode == ImportMode.createNewProfile && importResult.newProfileId != null) {
+          message = AppLocalizations.of(context)!.backupImportedToNewProfile(
+            newProfileName ?? '',
+            importResult.projectsCount,
+            importResult.rootsCount,
+            importResult.releasesCount,
+          );
+        } else {
+          message = AppLocalizations.of(context)!.backupImportedSuccessfully(
+            importResult.projectsCount,
+            importResult.rootsCount,
+            importResult.releasesCount,
+          );
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToImportBackup(e.toString()))),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profilesAsync = ref.watch(allProfilesProvider);
@@ -449,6 +663,39 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                         ElevatedButton(
                           onPressed: _createProfile,
                           child: Text(AppLocalizations.of(context)!.create),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Backup/Restore section
+            Card(
+              color: const Color(0xFF2B2D31),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.backupAndRestore,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.upload_file),
+                          label: Text(AppLocalizations.of(context)!.exportBackup),
+                          onPressed: () => _exportBackup(),
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.download),
+                          label: Text(AppLocalizations.of(context)!.importBackup),
+                          onPressed: () => _showImportDialog(),
                         ),
                       ],
                     ),

@@ -1363,6 +1363,93 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get done;
+
+  /// No description provided for @backupAndRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & Restore'**
+  String get backupAndRestore;
+
+  /// No description provided for @exportBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Backup'**
+  String get exportBackup;
+
+  /// No description provided for @importBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Backup'**
+  String get importBackup;
+
+  /// No description provided for @backupExportedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup exported successfully'**
+  String get backupExportedSuccessfully;
+
+  /// Error message when backup export fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export backup: {error}'**
+  String failedToExportBackup(String error);
+
+  /// Success message after importing backup
+  ///
+  /// In en, this message translates to:
+  /// **'Backup imported successfully: {projectsCount} projects, {rootsCount} roots, {releasesCount} releases'**
+  String backupImportedSuccessfully(
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  );
+
+  /// Error message when backup import fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import backup: {error}'**
+  String failedToImportBackup(String error);
+
+  /// No description provided for @importBackupMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how to import the backup:'**
+  String get importBackupMessage;
+
+  /// No description provided for @mergeWithCurrentProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge with current active profile'**
+  String get mergeWithCurrentProfile;
+
+  /// No description provided for @replaceCurrentProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace entirely the current profile (WARNING: This will delete all current profile data)'**
+  String get replaceCurrentProfile;
+
+  /// No description provided for @createNewProfileForImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new profile for this data'**
+  String get createNewProfileForImport;
+
+  /// Success message after importing backup to a new profile
+  ///
+  /// In en, this message translates to:
+  /// **'Backup imported to new profile \"{profileName}\": {projectsCount} projects, {rootsCount} roots, {releasesCount} releases'**
+  String backupImportedToNewProfile(
+    String profileName,
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  );
+
+  /// No description provided for @noProfileSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No profile selected'**
+  String get noProfileSelected;
 }
 
 class _AppLocalizationsDelegate

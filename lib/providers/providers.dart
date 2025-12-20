@@ -46,9 +46,14 @@ final allProfilesProvider = StreamProvider<List<Profile>>((ref) async* {
   yield* profileRepo.watchAllProfiles();
 });
 
-// Project Repository Provider - depends on ProfileRepository
+// Project Repository Provider - depends on ProfileRepository and current profile
 final repositoryProvider = FutureProvider<ProjectRepository>((ref) async {
   final profileRepo = await ref.watch(profileRepositoryProvider.future);
+  // Watch current profile to invalidate when profile changes
+  final currentProfile = await ref.watch(currentProfileProvider.future);
+  if (currentProfile == null) {
+    throw Exception('No active profile found');
+  }
   return ProjectRepository.init(profileRepo);
 });
 

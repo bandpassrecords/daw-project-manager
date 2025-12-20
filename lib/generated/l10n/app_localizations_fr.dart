@@ -764,4 +764,61 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get done => 'Terminé';
+
+  @override
+  String get backupAndRestore => 'Backup & Restore';
+
+  @override
+  String get exportBackup => 'Export Backup';
+
+  @override
+  String get importBackup => 'Import Backup';
+
+  @override
+  String get backupExportedSuccessfully => 'Backup exported successfully';
+
+  @override
+  String failedToExportBackup(String error) {
+    return 'Failed to export backup: $error';
+  }
+
+  @override
+  String backupImportedSuccessfully(
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  ) {
+    return 'Backup imported successfully: $projectsCount projects, $rootsCount roots, $releasesCount releases';
+  }
+
+  @override
+  String failedToImportBackup(String error) {
+    return 'Failed to import backup: $error';
+  }
+
+  @override
+  String get importBackupMessage => 'Choose how to import the backup:';
+
+  @override
+  String get mergeWithCurrentProfile => 'Merge with current active profile';
+
+  @override
+  String get replaceCurrentProfile =>
+      'Replace entirely the current profile (WARNING: This will delete all current profile data)';
+
+  @override
+  String get createNewProfileForImport => 'Create a new profile for this data';
+
+  @override
+  String backupImportedToNewProfile(
+    String profileName,
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  ) {
+    return 'Backup imported to new profile \"$profileName\": $projectsCount projects, $rootsCount roots, $releasesCount releases';
+  }
+
+  @override
+  String get noProfileSelected => 'No profile selected';
 }

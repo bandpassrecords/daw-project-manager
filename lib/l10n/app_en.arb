@@ -652,6 +652,66 @@
   "clickToBrowseArtwork": "Click to browse artwork",
   "noFilesAddedYet": "No files added yet.\nClick \"Add Files\" to upload release files.",
   "noTodosYet": "No todos yet. Add one above.",
-  "done": "Done"
+  "done": "Done",
+  "backupAndRestore": "Backup & Restore",
+  "exportBackup": "Export Backup",
+  "importBackup": "Import Backup",
+  "backupExportedSuccessfully": "Backup exported successfully",
+  "failedToExportBackup": "Failed to export backup: {error}",
+  "@failedToExportBackup": {
+    "description": "Error message when backup export fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Backup imported successfully: {projectsCount} projects, {rootsCount} roots, {releasesCount} releases",
+  "@backupImportedSuccessfully": {
+    "description": "Success message after importing backup",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Failed to import backup: {error}",
+  "@failedToImportBackup": {
+    "description": "Error message when backup import fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Choose how to import the backup:",
+  "mergeWithCurrentProfile": "Merge with current active profile",
+  "replaceCurrentProfile": "Replace entirely the current profile (WARNING: This will delete all current profile data)",
+  "createNewProfileForImport": "Create a new profile for this data",
+  "backupImportedToNewProfile": "Backup imported to new profile \"{profileName}\": {projectsCount} projects, {rootsCount} roots, {releasesCount} releases",
+  "@backupImportedToNewProfile": {
+    "description": "Success message after importing backup to a new profile",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "No profile selected"
 }
 
