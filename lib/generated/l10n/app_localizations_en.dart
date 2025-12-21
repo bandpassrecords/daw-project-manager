@@ -90,7 +90,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clear => 'Clear';
 
   @override
-  String get roots => 'Roots';
+  String get roots => 'Project Folders';
 
   @override
   String get projects => 'Projects';
@@ -170,7 +170,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return 'Are you sure you want to delete \"$profileName\"? This will delete all projects, roots, and releases for this profile.';
+    return 'Are you sure you want to delete \"$profileName\"? This will delete all projects, project folders, and releases for this profile.';
   }
 
   @override
@@ -231,7 +231,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toggleSort => 'Toggle sort';
 
   @override
-  String get clearLibraryTooltip => 'Clear Library (projects & roots)';
+  String get clearLibraryTooltip =>
+      'Clear Library (projects & project folders)';
 
   @override
   String lastModified(String date) {
@@ -311,7 +312,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return 'Roots: $count';
+    return 'Project Folders: $count';
   }
 
   @override
@@ -368,7 +369,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get noProjectsFoundInRoots => 'No projects found in selected roots.';
+  String get noProjectsFoundInRoots =>
+      'No projects found in selected project folders.';
 
   @override
   String get selectProjectsFolder => 'Select a projects folder';
@@ -829,7 +831,7 @@ class AppLocalizationsEn extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Backup imported successfully: $projectsCount projects, $rootsCount roots, $releasesCount releases';
+    return 'Backup imported successfully: $projectsCount projects, $rootsCount project folders, $releasesCount releases';
   }
 
   @override
@@ -857,7 +859,7 @@ class AppLocalizationsEn extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Backup imported to new profile \"$profileName\": $projectsCount projects, $rootsCount roots, $releasesCount releases';
+    return 'Backup imported to new profile \"$profileName\": $projectsCount projects, $rootsCount project folders, $releasesCount releases';
   }
 
   @override

@@ -36,7 +36,7 @@
   "clearLibrary": "Clear Library",
   "clearLibraryMessage": "This will remove all saved projects and source folders. Continue?",
   "clear": "Clear",
-  "roots": "Roots",
+  "roots": "Project Folders",
   "projects": "Projects",
   "hidden": "hidden",
   "profileManager": "Profile Manager",
@@ -68,7 +68,7 @@
   "error": "Error",
   "loading": "Loading...",
   "deleteProfile": "Delete Profile",
-  "deleteProfileMessage": "Are you sure you want to delete \"{profileName}\"? This will delete all projects, roots, and releases for this profile.",
+  "deleteProfileMessage": "Are you sure you want to delete \"{profileName}\"? This will delete all projects, project folders, and releases for this profile.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -134,7 +134,7 @@
     }
   },
   "toggleSort": "Toggle sort",
-  "clearLibraryTooltip": "Clear Library (projects & roots)",
+  "clearLibraryTooltip": "Clear Library (projects & project folders)",
   "lastModified": "Last modified: {date}",
   "@lastModified": {
     "placeholders": {
@@ -174,7 +174,7 @@
       }
     }
   },
-  "rootsCount": "Roots: {count}",
+  "rootsCount": "Project Folders: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -270,7 +270,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "No projects found in selected roots.",
+  "noProjectsFoundInRoots": "No projects found in selected project folders.",
   "selectProjectsFolder": "Select a projects folder",
   "enterReleaseTitle": "Enter Release Title",
   "releaseTitle": "Release Title",
@@ -734,7 +734,7 @@
       }
     }
   },
-  "backupImportedSuccessfully": "Backup imported successfully: {projectsCount} projects, {rootsCount} roots, {releasesCount} releases",
+  "backupImportedSuccessfully": "Backup imported successfully: {projectsCount} projects, {rootsCount} project folders, {releasesCount} releases",
   "@backupImportedSuccessfully": {
     "description": "Success message after importing backup",
     "placeholders": {
@@ -762,7 +762,7 @@
   "mergeWithCurrentProfile": "Merge with current active profile",
   "replaceCurrentProfile": "Replace entirely the current profile (WARNING: This will delete all current profile data)",
   "createNewProfileForImport": "Create a new profile for this data",
-  "backupImportedToNewProfile": "Backup imported to new profile \"{profileName}\": {projectsCount} projects, {rootsCount} roots, {releasesCount} releases",
+  "backupImportedToNewProfile": "Backup imported to new profile \"{profileName}\": {projectsCount} projects, {rootsCount} project folders, {releasesCount} releases",
   "@backupImportedToNewProfile": {
     "description": "Success message after importing backup to a new profile",
     "placeholders": {

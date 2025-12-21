@@ -36,7 +36,7 @@
   "clearLibrary": "ライブラリをクリア",
   "clearLibraryMessage": "これにより、保存されたすべてのプロジェクトとソースフォルダが削除されます。続行しますか？",
   "clear": "クリア",
-  "roots": "ルート",
+  "roots": "プロジェクトフォルダ",
   "projects": "プロジェクト",
   "hidden": "非表示",
   "profileManager": "プロファイルマネージャー",
@@ -68,7 +68,7 @@
   "error": "エラー",
   "loading": "読み込み中...",
   "deleteProfile": "プロファイルを削除",
-  "deleteProfileMessage": "「{profileName}」を削除してもよろしいですか？これにより、このプロファイルのすべてのプロジェクト、ルート、リリースが削除されます。",
+  "deleteProfileMessage": "「{profileName}」を削除してもよろしいですか？これにより、このプロファイルのすべてのプロジェクト、プロジェクトフォルダ、リリースが削除されます。",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -134,7 +134,7 @@
     }
   },
   "toggleSort": "並び替えを切り替え",
-  "clearLibraryTooltip": "ライブラリをクリア（プロジェクトとルート）",
+  "clearLibraryTooltip": "ライブラリをクリア（プロジェクトとプロジェクトフォルダ）",
   "lastModified": "最終更新: {date}",
   "@lastModified": {
     "placeholders": {
@@ -174,7 +174,7 @@
       }
     }
   },
-  "rootsCount": "ルート: {count}",
+  "rootsCount": "プロジェクトフォルダ: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -270,7 +270,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "選択したルートにプロジェクトが見つかりませんでした。",
+  "noProjectsFoundInRoots": "選択したプロジェクトフォルダにプロジェクトが見つかりませんでした。",
   "selectProjectsFolder": "プロジェクトフォルダを選択",
   "enterReleaseTitle": "リリースタイトルを入力",
   "releaseTitle": "リリースタイトル",
@@ -734,7 +734,7 @@
       }
     }
   },
-  "backupImportedSuccessfully": "バックアップのインポートに成功しました: {projectsCount} プロジェクト、{rootsCount} ルート、{releasesCount} リリース",
+  "backupImportedSuccessfully": "バックアップのインポートに成功しました: {projectsCount} プロジェクト、{rootsCount} プロジェクトフォルダ、{releasesCount} リリース",
   "@backupImportedSuccessfully": {
     "description": "バックアップインポート後の成功メッセージ",
     "placeholders": {
@@ -762,7 +762,7 @@
   "mergeWithCurrentProfile": "現在のアクティブなプロフィールとマージ",
   "replaceCurrentProfile": "現在のプロフィールを完全に置き換える（警告: これにより現在のプロフィールのすべてのデータが削除されます）",
   "createNewProfileForImport": "このデータ用に新しいプロフィールを作成",
-  "backupImportedToNewProfile": "新しいプロフィール \"{profileName}\" にバックアップをインポートしました: {projectsCount} プロジェクト、{rootsCount} ルート、{releasesCount} リリース",
+  "backupImportedToNewProfile": "新しいプロフィール \"{profileName}\" にバックアップをインポートしました: {projectsCount} プロジェクト、{rootsCount} プロジェクトフォルダ、{releasesCount} リリース",
   "@backupImportedToNewProfile": {
     "description": "新しいプロフィールにバックアップをインポートした後の成功メッセージ",
     "placeholders": {

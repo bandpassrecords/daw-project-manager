@@ -90,7 +90,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get clear => 'Vider';
 
   @override
-  String get roots => 'Racines';
+  String get roots => 'Dossiers de Projets';
 
   @override
   String get projects => 'Projets';
@@ -171,7 +171,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return 'Êtes-vous sûr de vouloir supprimer \"$profileName\"? Cela supprimera tous les projets, racines et sorties de ce profil.';
+    return 'Êtes-vous sûr de vouloir supprimer \"$profileName\"? Cela supprimera tous les projets, dossiers de projets et sorties de ce profil.';
   }
 
   @override
@@ -233,7 +233,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get clearLibraryTooltip =>
-      'Vider la Bibliothèque (projets et racines)';
+      'Vider la Bibliothèque (projets et dossiers de projets)';
 
   @override
   String lastModified(String date) {
@@ -313,7 +313,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return 'Racines: $count';
+    return 'Dossiers de Projets: $count';
   }
 
   @override
@@ -371,7 +371,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noProjectsFoundInRoots =>
-      'Aucun projet trouvé dans les racines sélectionnées.';
+      'Aucun projet trouvé dans les dossiers de projets sélectionnés.';
 
   @override
   String get selectProjectsFolder => 'Sélectionnez un dossier de projets';
@@ -834,7 +834,7 @@ class AppLocalizationsFr extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Sauvegarde importée avec succès : $projectsCount projets, $rootsCount racines, $releasesCount sorties';
+    return 'Sauvegarde importée avec succès : $projectsCount projets, $rootsCount dossiers de projets, $releasesCount sorties';
   }
 
   @override
@@ -864,7 +864,7 @@ class AppLocalizationsFr extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Sauvegarde importée dans le nouveau profil \"$profileName\" : $projectsCount projets, $rootsCount racines, $releasesCount sorties';
+    return 'Sauvegarde importée dans le nouveau profil \"$profileName\" : $projectsCount projets, $rootsCount dossiers de projets, $releasesCount sorties';
   }
 
   @override

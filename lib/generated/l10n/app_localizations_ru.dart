@@ -90,7 +90,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get clear => 'Очистить';
 
   @override
-  String get roots => 'Корни';
+  String get roots => 'Папки Проектов';
 
   @override
   String get projects => 'Проекты';
@@ -170,7 +170,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return 'Вы уверены, что хотите удалить \"$profileName\"? Это удалит все проекты, корни и релизы этого профиля.';
+    return 'Вы уверены, что хотите удалить \"$profileName\"? Это удалит все проекты, папки проектов и релизы этого профиля.';
   }
 
   @override
@@ -231,7 +231,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get toggleSort => 'Переключить сортировку';
 
   @override
-  String get clearLibraryTooltip => 'Очистить библиотеку (проекты и корни)';
+  String get clearLibraryTooltip =>
+      'Очистить библиотеку (проекты и папки проектов)';
 
   @override
   String lastModified(String date) {
@@ -311,7 +312,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return 'Корни: $count';
+    return 'Папки Проектов: $count';
   }
 
   @override
@@ -368,7 +369,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get noProjectsFoundInRoots => 'Проекты не найдены в выбранных корнях.';
+  String get noProjectsFoundInRoots =>
+      'Проекты не найдены в выбранных папках проектов.';
 
   @override
   String get selectProjectsFolder => 'Выберите папку проектов';
@@ -829,7 +831,7 @@ class AppLocalizationsRu extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Резервная копия успешно импортирована: $projectsCount проектов, $rootsCount корней, $releasesCount релизов';
+    return 'Резервная копия успешно импортирована: $projectsCount проектов, $rootsCount папок проектов, $releasesCount релизов';
   }
 
   @override
@@ -859,7 +861,7 @@ class AppLocalizationsRu extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Резервная копия импортирована в новый профиль \"$profileName\": $projectsCount проектов, $rootsCount корней, $releasesCount релизов';
+    return 'Резервная копия импортирована в новый профиль \"$profileName\": $projectsCount проектов, $rootsCount папок проектов, $releasesCount релизов';
   }
 
   @override

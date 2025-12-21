@@ -271,7 +271,7 @@ abstract class AppLocalizations {
   /// No description provided for @roots.
   ///
   /// In en, this message translates to:
-  /// **'Roots'**
+  /// **'Project Folders'**
   String get roots;
 
   /// No description provided for @projects.
@@ -421,7 +421,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteProfileMessage.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete \"{profileName}\"? This will delete all projects, roots, and releases for this profile.'**
+  /// **'Are you sure you want to delete \"{profileName}\"? This will delete all projects, project folders, and releases for this profile.'**
   String deleteProfileMessage(String profileName);
 
   /// No description provided for @editProfile.
@@ -517,7 +517,7 @@ abstract class AppLocalizations {
   /// No description provided for @clearLibraryTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Clear Library (projects & roots)'**
+  /// **'Clear Library (projects & project folders)'**
   String get clearLibraryTooltip;
 
   /// No description provided for @lastModified.
@@ -667,7 +667,7 @@ abstract class AppLocalizations {
   /// No description provided for @rootsCount.
   ///
   /// In en, this message translates to:
-  /// **'Roots: {count}'**
+  /// **'Project Folders: {count}'**
   String rootsCount(int count);
 
   /// No description provided for @projectsCount.
@@ -739,7 +739,7 @@ abstract class AppLocalizations {
   /// No description provided for @noProjectsFoundInRoots.
   ///
   /// In en, this message translates to:
-  /// **'No projects found in selected roots.'**
+  /// **'No projects found in selected project folders.'**
   String get noProjectsFoundInRoots;
 
   /// No description provided for @selectProjectsFolder.
@@ -1463,7 +1463,7 @@ abstract class AppLocalizations {
   /// Success message after importing backup
   ///
   /// In en, this message translates to:
-  /// **'Backup imported successfully: {projectsCount} projects, {rootsCount} roots, {releasesCount} releases'**
+  /// **'Backup imported successfully: {projectsCount} projects, {rootsCount} project folders, {releasesCount} releases'**
   String backupImportedSuccessfully(
     int projectsCount,
     int rootsCount,
@@ -1503,7 +1503,7 @@ abstract class AppLocalizations {
   /// Success message after importing backup to a new profile
   ///
   /// In en, this message translates to:
-  /// **'Backup imported to new profile \"{profileName}\": {projectsCount} projects, {rootsCount} roots, {releasesCount} releases'**
+  /// **'Backup imported to new profile \"{profileName}\": {projectsCount} projects, {rootsCount} project folders, {releasesCount} releases'**
   String backupImportedToNewProfile(
     String profileName,
     int projectsCount,

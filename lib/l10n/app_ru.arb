@@ -36,7 +36,7 @@
   "clearLibrary": "Очистить библиотеку",
   "clearLibraryMessage": "Это удалит все сохраненные проекты и исходные папки. Продолжить?",
   "clear": "Очистить",
-  "roots": "Корни",
+  "roots": "Папки Проектов",
   "projects": "Проекты",
   "hidden": "скрытые",
   "profileManager": "Менеджер профилей",
@@ -68,7 +68,7 @@
   "error": "Ошибка",
   "loading": "Загрузка...",
   "deleteProfile": "Удалить профиль",
-  "deleteProfileMessage": "Вы уверены, что хотите удалить \"{profileName}\"? Это удалит все проекты, корни и релизы этого профиля.",
+  "deleteProfileMessage": "Вы уверены, что хотите удалить \"{profileName}\"? Это удалит все проекты, папки проектов и релизы этого профиля.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -134,7 +134,7 @@
     }
   },
   "toggleSort": "Переключить сортировку",
-  "clearLibraryTooltip": "Очистить библиотеку (проекты и корни)",
+  "clearLibraryTooltip": "Очистить библиотеку (проекты и папки проектов)",
   "lastModified": "Последнее изменение: {date}",
   "@lastModified": {
     "placeholders": {
@@ -174,7 +174,7 @@
       }
     }
   },
-  "rootsCount": "Корни: {count}",
+  "rootsCount": "Папки Проектов: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -270,7 +270,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "Проекты не найдены в выбранных корнях.",
+  "noProjectsFoundInRoots": "Проекты не найдены в выбранных папках проектов.",
   "selectProjectsFolder": "Выберите папку проектов",
   "enterReleaseTitle": "Введите Название Релиза",
   "releaseTitle": "Название Релиза",
@@ -734,7 +734,7 @@
       }
     }
   },
-  "backupImportedSuccessfully": "Резервная копия успешно импортирована: {projectsCount} проектов, {rootsCount} корней, {releasesCount} релизов",
+  "backupImportedSuccessfully": "Резервная копия успешно импортирована: {projectsCount} проектов, {rootsCount} папок проектов, {releasesCount} релизов",
   "@backupImportedSuccessfully": {
     "description": "Сообщение об успехе после импорта резервной копии",
     "placeholders": {
@@ -762,7 +762,7 @@
   "mergeWithCurrentProfile": "Объединить с текущим активным профилем",
   "replaceCurrentProfile": "Полностью заменить текущий профиль (ВНИМАНИЕ: Это удалит все данные текущего профиля)",
   "createNewProfileForImport": "Создать новый профиль для этих данных",
-  "backupImportedToNewProfile": "Резервная копия импортирована в новый профиль \"{profileName}\": {projectsCount} проектов, {rootsCount} корней, {releasesCount} релизов",
+  "backupImportedToNewProfile": "Резервная копия импортирована в новый профиль \"{profileName}\": {projectsCount} проектов, {rootsCount} папок проектов, {releasesCount} релизов",
   "@backupImportedToNewProfile": {
     "description": "Сообщение об успехе после импорта резервной копии в новый профиль",
     "placeholders": {

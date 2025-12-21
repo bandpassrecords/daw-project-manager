@@ -90,7 +90,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clear => 'Limpiar';
 
   @override
-  String get roots => 'Raíces';
+  String get roots => 'Carpetas de Proyectos';
 
   @override
   String get projects => 'Proyectos';
@@ -171,7 +171,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return '¿Está seguro de que desea eliminar \"$profileName\"? Esto eliminará todos los proyectos, raíces y lanzamientos de este perfil.';
+    return '¿Está seguro de que desea eliminar \"$profileName\"? Esto eliminará todos los proyectos, carpetas de proyectos y lanzamientos de este perfil.';
   }
 
   @override
@@ -232,7 +232,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get toggleSort => 'Alternar orden';
 
   @override
-  String get clearLibraryTooltip => 'Limpiar Biblioteca (proyectos y raíces)';
+  String get clearLibraryTooltip =>
+      'Limpiar Biblioteca (proyectos y carpetas de proyectos)';
 
   @override
   String lastModified(String date) {
@@ -312,7 +313,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return 'Raíces: $count';
+    return 'Carpetas de Proyectos: $count';
   }
 
   @override
@@ -370,7 +371,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noProjectsFoundInRoots =>
-      'No se encontraron proyectos en las raíces seleccionadas.';
+      'No se encontraron proyectos en las carpetas de proyectos seleccionadas.';
 
   @override
   String get selectProjectsFolder => 'Seleccione una carpeta de proyectos';
@@ -832,7 +833,7 @@ class AppLocalizationsEs extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Respaldo importado exitosamente: $projectsCount proyectos, $rootsCount raíces, $releasesCount lanzamientos';
+    return 'Respaldo importado exitosamente: $projectsCount proyectos, $rootsCount carpetas de proyectos, $releasesCount lanzamientos';
   }
 
   @override
@@ -861,7 +862,7 @@ class AppLocalizationsEs extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Respaldo importado al nuevo perfil \"$profileName\": $projectsCount proyectos, $rootsCount raíces, $releasesCount lanzamientos';
+    return 'Respaldo importado al nuevo perfil \"$profileName\": $projectsCount proyectos, $rootsCount carpetas de proyectos, $releasesCount lanzamientos';
   }
 
   @override

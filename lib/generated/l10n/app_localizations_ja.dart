@@ -90,7 +90,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get clear => 'クリア';
 
   @override
-  String get roots => 'ルート';
+  String get roots => 'プロジェクトフォルダ';
 
   @override
   String get projects => 'プロジェクト';
@@ -170,7 +170,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return '「$profileName」を削除してもよろしいですか？これにより、このプロファイルのすべてのプロジェクト、ルート、リリースが削除されます。';
+    return '「$profileName」を削除してもよろしいですか？これにより、このプロファイルのすべてのプロジェクト、プロジェクトフォルダ、リリースが削除されます。';
   }
 
   @override
@@ -231,7 +231,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get toggleSort => '並び替えを切り替え';
 
   @override
-  String get clearLibraryTooltip => 'ライブラリをクリア（プロジェクトとルート）';
+  String get clearLibraryTooltip => 'ライブラリをクリア（プロジェクトとプロジェクトフォルダ）';
 
   @override
   String lastModified(String date) {
@@ -311,7 +311,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return 'ルート: $count';
+    return 'プロジェクトフォルダ: $count';
   }
 
   @override
@@ -368,7 +368,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get noProjectsFoundInRoots => '選択したルートにプロジェクトが見つかりませんでした。';
+  String get noProjectsFoundInRoots => '選択したプロジェクトフォルダにプロジェクトが見つかりませんでした。';
 
   @override
   String get selectProjectsFolder => 'プロジェクトフォルダを選択';
@@ -825,7 +825,7 @@ class AppLocalizationsJa extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'バックアップのインポートに成功しました: $projectsCount プロジェクト、$rootsCount ルート、$releasesCount リリース';
+    return 'バックアップのインポートに成功しました: $projectsCount プロジェクト、$rootsCount プロジェクトフォルダ、$releasesCount リリース';
   }
 
   @override
@@ -853,7 +853,7 @@ class AppLocalizationsJa extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return '新しいプロフィール \"$profileName\" にバックアップをインポートしました: $projectsCount プロジェクト、$rootsCount ルート、$releasesCount リリース';
+    return '新しいプロフィール \"$profileName\" にバックアップをインポートしました: $projectsCount プロジェクト、$rootsCount プロジェクトフォルダ、$releasesCount リリース';
   }
 
   @override

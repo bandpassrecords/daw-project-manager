@@ -89,7 +89,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clear => '清空';
 
   @override
-  String get roots => '根目录';
+  String get roots => '项目文件夹';
 
   @override
   String get projects => '项目';
@@ -169,7 +169,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return '您确定要删除「$profileName」吗？这将删除此配置文件的所有项目、根目录和发布。';
+    return '您确定要删除「$profileName」吗？这将删除此配置文件的所有项目、项目文件夹和发布。';
   }
 
   @override
@@ -230,7 +230,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toggleSort => '切换排序';
 
   @override
-  String get clearLibraryTooltip => '清空库（项目和根目录）';
+  String get clearLibraryTooltip => '清空库（项目和项目文件夹）';
 
   @override
   String lastModified(String date) {
@@ -310,7 +310,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return '根目录: $count';
+    return '项目文件夹: $count';
   }
 
   @override
@@ -367,7 +367,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get noProjectsFoundInRoots => '在选定的根目录中未找到项目。';
+  String get noProjectsFoundInRoots => '在选定的项目文件夹中未找到项目。';
 
   @override
   String get selectProjectsFolder => '选择项目文件夹';
@@ -823,7 +823,7 @@ class AppLocalizationsZh extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return '备份导入成功: $projectsCount 个项目，$rootsCount 个根目录，$releasesCount 个发布';
+    return '备份导入成功: $projectsCount 个项目，$rootsCount 个项目文件夹，$releasesCount 个发布';
   }
 
   @override
@@ -850,7 +850,7 @@ class AppLocalizationsZh extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return '备份已导入到新配置文件 \"$profileName\": $projectsCount 个项目，$rootsCount 个根目录，$releasesCount 个发布';
+    return '备份已导入到新配置文件 \"$profileName\": $projectsCount 个项目，$rootsCount 个项目文件夹，$releasesCount 个发布';
   }
 
   @override

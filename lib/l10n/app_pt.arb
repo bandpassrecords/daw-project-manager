@@ -36,7 +36,7 @@
   "clearLibrary": "Limpar Biblioteca",
   "clearLibraryMessage": "Isso removerá todos os projetos salvos e pastas de origem. Continuar?",
   "clear": "Limpar",
-  "roots": "Raízes",
+  "roots": "Pastas de Projetos",
   "projects": "Projetos",
   "hidden": "ocultos",
   "profileManager": "Gerenciador de Perfis",
@@ -68,7 +68,7 @@
   "error": "Erro",
   "loading": "Carregando...",
   "deleteProfile": "Excluir Perfil",
-  "deleteProfileMessage": "Tem certeza de que deseja excluir \"{profileName}\"? Isso excluirá todos os projetos, raízes e lançamentos deste perfil.",
+  "deleteProfileMessage": "Tem certeza de que deseja excluir \"{profileName}\"? Isso excluirá todos os projetos, pastas de projetos e lançamentos deste perfil.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -134,7 +134,7 @@
     }
   },
   "toggleSort": "Alternar ordenação",
-  "clearLibraryTooltip": "Limpar Biblioteca (projetos e raízes)",
+  "clearLibraryTooltip": "Limpar Biblioteca (projetos e pastas de projetos)",
   "lastModified": "Última modificação: {date}",
   "@lastModified": {
     "placeholders": {
@@ -174,7 +174,7 @@
       }
     }
   },
-  "rootsCount": "Raízes: {count}",
+  "rootsCount": "Pastas de Projetos: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -270,7 +270,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "Nenhum projeto encontrado nas raízes selecionadas.",
+  "noProjectsFoundInRoots": "Nenhum projeto encontrado nas pastas de projetos selecionadas.",
   "selectProjectsFolder": "Selecione uma pasta de projetos",
   "enterReleaseTitle": "Digite o Título do Lançamento",
   "releaseTitle": "Título do Lançamento",
@@ -734,7 +734,7 @@
       }
     }
   },
-  "backupImportedSuccessfully": "Backup importado com sucesso: {projectsCount} projetos, {rootsCount} raízes, {releasesCount} lançamentos",
+  "backupImportedSuccessfully": "Backup importado com sucesso: {projectsCount} projetos, {rootsCount} pastas de projetos, {releasesCount} lançamentos",
   "@backupImportedSuccessfully": {
     "description": "Mensagem de sucesso após importar backup",
     "placeholders": {
@@ -762,7 +762,7 @@
   "mergeWithCurrentProfile": "Mesclar com o perfil ativo atual",
   "replaceCurrentProfile": "Substituir completamente o perfil atual (AVISO: Isso excluirá todos os dados do perfil atual)",
   "createNewProfileForImport": "Criar um novo perfil para estes dados",
-  "backupImportedToNewProfile": "Backup importado para o novo perfil \"{profileName}\": {projectsCount} projetos, {rootsCount} raízes, {releasesCount} lançamentos",
+  "backupImportedToNewProfile": "Backup importado para o novo perfil \"{profileName}\": {projectsCount} projetos, {rootsCount} pastas de projetos, {releasesCount} lançamentos",
   "@backupImportedToNewProfile": {
     "description": "Mensagem de sucesso após importar backup para um novo perfil",
     "placeholders": {

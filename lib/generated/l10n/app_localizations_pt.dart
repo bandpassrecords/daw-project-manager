@@ -90,7 +90,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get clear => 'Limpar';
 
   @override
-  String get roots => 'Raízes';
+  String get roots => 'Pastas de Projetos';
 
   @override
   String get projects => 'Projetos';
@@ -170,7 +170,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return 'Tem certeza de que deseja excluir \"$profileName\"? Isso excluirá todos os projetos, raízes e lançamentos deste perfil.';
+    return 'Tem certeza de que deseja excluir \"$profileName\"? Isso excluirá todos os projetos, pastas de projetos e lançamentos deste perfil.';
   }
 
   @override
@@ -231,7 +231,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get toggleSort => 'Alternar ordenação';
 
   @override
-  String get clearLibraryTooltip => 'Limpar Biblioteca (projetos e raízes)';
+  String get clearLibraryTooltip =>
+      'Limpar Biblioteca (projetos e pastas de projetos)';
 
   @override
   String lastModified(String date) {
@@ -311,7 +312,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return 'Raízes: $count';
+    return 'Pastas de Projetos: $count';
   }
 
   @override
@@ -369,7 +370,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noProjectsFoundInRoots =>
-      'Nenhum projeto encontrado nas raízes selecionadas.';
+      'Nenhum projeto encontrado nas pastas de projetos selecionadas.';
 
   @override
   String get selectProjectsFolder => 'Selecione uma pasta de projetos';
@@ -831,7 +832,7 @@ class AppLocalizationsPt extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Backup importado com sucesso: $projectsCount projetos, $rootsCount raízes, $releasesCount lançamentos';
+    return 'Backup importado com sucesso: $projectsCount projetos, $rootsCount pastas de projetos, $releasesCount lançamentos';
   }
 
   @override
@@ -860,7 +861,7 @@ class AppLocalizationsPt extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Backup importado para o novo perfil \"$profileName\": $projectsCount projetos, $rootsCount raízes, $releasesCount lançamentos';
+    return 'Backup importado para o novo perfil \"$profileName\": $projectsCount projetos, $rootsCount pastas de projetos, $releasesCount lançamentos';
   }
 
   @override

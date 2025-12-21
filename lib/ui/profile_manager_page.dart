@@ -788,10 +788,6 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                                   ],
                                 ],
                               ),
-                              subtitle: Text(
-                                '${AppLocalizations.of(context)!.created}: ${profile.createdAt.toString().split('.')[0]}',
-                                style: const TextStyle(color: Colors.white54, fontSize: 12),
-                              ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [

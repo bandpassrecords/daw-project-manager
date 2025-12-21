@@ -36,7 +36,7 @@
   "clearLibrary": "Vider la Bibliothèque",
   "clearLibraryMessage": "Cela supprimera tous les projets enregistrés et dossiers sources. Continuer?",
   "clear": "Vider",
-  "roots": "Racines",
+  "roots": "Dossiers de Projets",
   "projects": "Projets",
   "hidden": "masqués",
   "profileManager": "Gestionnaire de Profils",
@@ -68,7 +68,7 @@
   "error": "Erreur",
   "loading": "Chargement...",
   "deleteProfile": "Supprimer le Profil",
-  "deleteProfileMessage": "Êtes-vous sûr de vouloir supprimer \"{profileName}\"? Cela supprimera tous les projets, racines et sorties de ce profil.",
+  "deleteProfileMessage": "Êtes-vous sûr de vouloir supprimer \"{profileName}\"? Cela supprimera tous les projets, dossiers de projets et sorties de ce profil.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -134,7 +134,7 @@
     }
   },
   "toggleSort": "Basculer le tri",
-  "clearLibraryTooltip": "Vider la Bibliothèque (projets et racines)",
+  "clearLibraryTooltip": "Vider la Bibliothèque (projets et dossiers de projets)",
   "lastModified": "Dernière modification: {date}",
   "@lastModified": {
     "placeholders": {
@@ -174,7 +174,7 @@
       }
     }
   },
-  "rootsCount": "Racines: {count}",
+  "rootsCount": "Dossiers de Projets: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -270,7 +270,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "Aucun projet trouvé dans les racines sélectionnées.",
+  "noProjectsFoundInRoots": "Aucun projet trouvé dans les dossiers de projets sélectionnés.",
   "selectProjectsFolder": "Sélectionnez un dossier de projets",
   "enterReleaseTitle": "Entrez le Titre de la Sortie",
   "releaseTitle": "Titre de la Sortie",
@@ -734,7 +734,7 @@
       }
     }
   },
-  "backupImportedSuccessfully": "Sauvegarde importée avec succès : {projectsCount} projets, {rootsCount} racines, {releasesCount} sorties",
+  "backupImportedSuccessfully": "Sauvegarde importée avec succès : {projectsCount} projets, {rootsCount} dossiers de projets, {releasesCount} sorties",
   "@backupImportedSuccessfully": {
     "description": "Message de succès après l'importation de la sauvegarde",
     "placeholders": {
@@ -762,7 +762,7 @@
   "mergeWithCurrentProfile": "Fusionner avec le profil actif actuel",
   "replaceCurrentProfile": "Remplacer entièrement le profil actuel (ATTENTION : Cela supprimera toutes les données du profil actuel)",
   "createNewProfileForImport": "Créer un nouveau profil pour ces données",
-  "backupImportedToNewProfile": "Sauvegarde importée dans le nouveau profil \"{profileName}\" : {projectsCount} projets, {rootsCount} racines, {releasesCount} sorties",
+  "backupImportedToNewProfile": "Sauvegarde importée dans le nouveau profil \"{profileName}\" : {projectsCount} projets, {rootsCount} dossiers de projets, {releasesCount} sorties",
   "@backupImportedToNewProfile": {
     "description": "Message de succès après l'importation de la sauvegarde dans un nouveau profil",
     "placeholders": {

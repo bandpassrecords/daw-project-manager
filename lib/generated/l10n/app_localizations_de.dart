@@ -90,7 +90,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get clear => 'Leeren';
 
   @override
-  String get roots => 'Wurzeln';
+  String get roots => 'Projektordner';
 
   @override
   String get projects => 'Projekte';
@@ -171,7 +171,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return 'Möchten Sie \"$profileName\" wirklich löschen? Dies löscht alle Projekte, Wurzeln und Veröffentlichungen dieses Profils.';
+    return 'Möchten Sie \"$profileName\" wirklich löschen? Dies löscht alle Projekte, Projektordner und Veröffentlichungen dieses Profils.';
   }
 
   @override
@@ -233,7 +233,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get toggleSort => 'Sortierung umschalten';
 
   @override
-  String get clearLibraryTooltip => 'Bibliothek leeren (Projekte und Wurzeln)';
+  String get clearLibraryTooltip =>
+      'Bibliothek leeren (Projekte und Projektordner)';
 
   @override
   String lastModified(String date) {
@@ -313,7 +314,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return 'Wurzeln: $count';
+    return 'Projektordner: $count';
   }
 
   @override
@@ -371,7 +372,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noProjectsFoundInRoots =>
-      'Keine Projekte in den ausgewählten Wurzeln gefunden.';
+      'Keine Projekte in den ausgewählten Projektordnern gefunden.';
 
   @override
   String get selectProjectsFolder => 'Wählen Sie einen Projektordner';
@@ -834,7 +835,7 @@ class AppLocalizationsDe extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Sicherung erfolgreich importiert: $projectsCount Projekte, $rootsCount Wurzeln, $releasesCount Veröffentlichungen';
+    return 'Sicherung erfolgreich importiert: $projectsCount Projekte, $rootsCount Projektordner, $releasesCount Veröffentlichungen';
   }
 
   @override
@@ -865,7 +866,7 @@ class AppLocalizationsDe extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Sicherung in neues Profil \"$profileName\" importiert: $projectsCount Projekte, $rootsCount Wurzeln, $releasesCount Veröffentlichungen';
+    return 'Sicherung in neues Profil \"$profileName\" importiert: $projectsCount Projekte, $rootsCount Projektordner, $releasesCount Veröffentlichungen';
   }
 
   @override

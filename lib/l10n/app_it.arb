@@ -36,7 +36,7 @@
   "clearLibrary": "Svuota Libreria",
   "clearLibraryMessage": "Questo rimuoverà tutti i progetti salvati e le cartelle sorgente. Continuare?",
   "clear": "Svuota",
-  "roots": "Radici",
+  "roots": "Cartelle Progetti",
   "projects": "Progetti",
   "hidden": "nascosti",
   "profileManager": "Gestore Profili",
@@ -68,7 +68,7 @@
   "error": "Errore",
   "loading": "Caricamento...",
   "deleteProfile": "Elimina Profilo",
-  "deleteProfileMessage": "Sei sicuro di voler eliminare \"{profileName}\"? Questo eliminerà tutti i progetti, radici e pubblicazioni di questo profilo.",
+  "deleteProfileMessage": "Sei sicuro di voler eliminare \"{profileName}\"? Questo eliminerà tutti i progetti, cartelle progetti e pubblicazioni di questo profilo.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -134,7 +134,7 @@
     }
   },
   "toggleSort": "Inverti ordinamento",
-  "clearLibraryTooltip": "Svuota Libreria (progetti e radici)",
+  "clearLibraryTooltip": "Svuota Libreria (progetti e cartelle progetti)",
   "lastModified": "Ultima modifica: {date}",
   "@lastModified": {
     "placeholders": {
@@ -174,7 +174,7 @@
       }
     }
   },
-  "rootsCount": "Radici: {count}",
+  "rootsCount": "Cartelle Progetti: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -270,7 +270,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "Nessun progetto trovato nelle radici selezionate.",
+  "noProjectsFoundInRoots": "Nessun progetto trovato nelle cartelle progetti selezionate.",
   "selectProjectsFolder": "Seleziona una cartella di progetti",
   "enterReleaseTitle": "Inserisci il Titolo della Pubblicazione",
   "releaseTitle": "Titolo della Pubblicazione",
@@ -734,7 +734,7 @@
       }
     }
   },
-  "backupImportedSuccessfully": "Backup importato con successo: {projectsCount} progetti, {rootsCount} radici, {releasesCount} pubblicazioni",
+  "backupImportedSuccessfully": "Backup importato con successo: {projectsCount} progetti, {rootsCount} cartelle progetti, {releasesCount} pubblicazioni",
   "@backupImportedSuccessfully": {
     "description": "Messaggio di successo dopo l'importazione del backup",
     "placeholders": {
@@ -762,7 +762,7 @@
   "mergeWithCurrentProfile": "Unisci con il profilo attivo corrente",
   "replaceCurrentProfile": "Sostituisci completamente il profilo corrente (ATTENZIONE: Questo eliminerà tutti i dati del profilo corrente)",
   "createNewProfileForImport": "Crea un nuovo profilo per questi dati",
-  "backupImportedToNewProfile": "Backup importato nel nuovo profilo \"{profileName}\": {projectsCount} progetti, {rootsCount} radici, {releasesCount} pubblicazioni",
+  "backupImportedToNewProfile": "Backup importato nel nuovo profilo \"{profileName}\": {projectsCount} progetti, {rootsCount} cartelle progetti, {releasesCount} pubblicazioni",
   "@backupImportedToNewProfile": {
     "description": "Messaggio di successo dopo l'importazione del backup in un nuovo profilo",
     "placeholders": {
