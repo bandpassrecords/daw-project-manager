@@ -16,6 +16,7 @@ import 'releases_tab_page.dart';
 import 'release_detail_page.dart';
 import 'profile_manager_page.dart';
 import 'widgets/language_switcher.dart';
+import 'widgets/theme_switcher.dart';
 import '../generated/l10n/app_localizations.dart';
 
 import '../models/music_project.dart';
@@ -45,17 +46,17 @@ class WindowButtons extends StatelessWidget {
       children: [
         // Minimize
         IconButton(
-          icon: const Icon(Icons.minimize, size: 18, color: Colors.white70),
+          icon: Icon(Icons.minimize, size: 18, color: Theme.of(context).textTheme.bodyMedium?.color),
           onPressed: () => windowManager.minimize(),
         ),
         // Maximize/Restore
         IconButton(
-          icon: const Icon(Icons.crop_square_sharp, size: 18, color: Colors.white70),
+          icon: Icon(Icons.crop_square_sharp, size: 18, color: Theme.of(context).textTheme.bodyMedium?.color),
           onPressed: _toggleMaximize, 
         ),
         // Close
         IconButton(
-          icon: const Icon(Icons.close, size: 18, color: Colors.white70),
+          icon: Icon(Icons.close, size: 18, color: Theme.of(context).textTheme.bodyMedium?.color),
           onPressed: () => windowManager.close(), 
           splashColor: Colors.transparent, 
           highlightColor: const Color(0xFFC42B1C), 
@@ -401,7 +402,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                   }
                 }, 
                 child: Container(
-                  color: const Color(0xFF2B2D31), // Cor de fundo da AppBar
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Theme.of(context).dividerColor,
+                        width: 1,
+                      ),
+                    ),
+                  ),
                   height: 40, // Altura padrão para a barra
                   child: Row(
                     children: [
@@ -410,10 +419,16 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                         padding: const EdgeInsets.only(left: 12),
                         child: Text(
                           'DAW Project Manager v$kAppVersion',
-                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.titleMedium?.color,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       const Spacer(), // Espaçador para empurrar os botões para a direita
+                      const ThemeSwitcher(),
+                      const SizedBox(width: 4),
                       const LanguageSwitcher(),
                       const SizedBox(width: 8),
                       // Botões de minimizar, maximizar e fechar
@@ -600,7 +615,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                               ElevatedButton(
                                                 onPressed: () => Navigator.pop(ctx, true),
                                                 style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(0xFF5A6B7A),
+                                                  backgroundColor: Theme.of(context).colorScheme.primary,
                                                 ),
                                                 child: Text(AppLocalizations.of(context)!.deepScan),
                                               ),
@@ -620,7 +635,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                   : const Icon(Icons.search),
                               label: Text(isAnyOperation ? AppLocalizations.of(context)!.scanning : AppLocalizations.of(context)!.deepScan),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF5A6B7A),
+                                backgroundColor: Theme.of(context).colorScheme.primary,
                               ),
                             ),
                           ),
@@ -728,8 +743,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                               style: const TextStyle(fontSize: 12),
                             ),
                             style: TextButton.styleFrom(
-                              backgroundColor: hiddenMode == 2 ? Colors.orange.shade700 : null,
-                              foregroundColor: hiddenMode == 2 ? Colors.white : Colors.white70,
+                          backgroundColor: hiddenMode == 2 ? Colors.orange.shade700 : null,
+                          foregroundColor: hiddenMode == 2 ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                             onPressed: () {
                               if (hiddenMode == 2) {
@@ -751,9 +766,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                             style: const TextStyle(fontSize: 12, color: Colors.white70),
                           ),
                           underline: const SizedBox.shrink(),
-                          dropdownColor: const Color(0xFF2B2D31),
-                          style: const TextStyle(fontSize: 12, color: Colors.white70),
-                          icon: const Icon(Icons.filter_list, size: 16, color: Colors.white70),
+                          style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyMedium?.color),
+                          icon: Icon(Icons.filter_list, size: 16, color: Theme.of(context).textTheme.bodyMedium?.color),
                           items: [
                             DropdownMenuItem<String>(
                               value: null,
@@ -826,7 +840,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                 // Versão também na barra de ações (à direita do ícone de lixeira)
                                 const Text(
                                   'v$kAppVersion',
-                                  style: TextStyle(color: Colors.white54, fontSize: 12),
+                                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                                 ),
                               ],
                             );
@@ -856,7 +870,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (ctx) => AlertDialog(
-                                backgroundColor: const Color(0xFF2B2D31),
                                 title: Text(AppLocalizations.of(context)!.deleteRootPath),
                                 content: Text(AppLocalizations.of(context)!.deleteRootPathMessage(r.path)),
                                 actions: [
@@ -1016,7 +1029,6 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          backgroundColor: const Color(0xFF2B2D31),
           title: Text(AppLocalizations.of(context)!.changeStatus),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1258,7 +1270,7 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                       icon: const Icon(Icons.search),
                       label: Text(AppLocalizations.of(context)!.extractMetadata),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF5A6B7A),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                       ),
                       onPressed: widget.isAnyOperation
                           ? null
@@ -1298,7 +1310,7 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                       icon: const Icon(Icons.edit),
                       label: Text(AppLocalizations.of(context)!.changeStatus),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF5A6B7A),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                       ),
                       onPressed: () => _showChangeStatusDialog(context),
                     ),
