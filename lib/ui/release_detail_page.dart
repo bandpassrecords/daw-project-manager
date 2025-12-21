@@ -236,7 +236,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                 CircularProgressIndicator(),
                 SizedBox(height: 16),
                 Text(
-                  'Creating ZIP file...',
+                  AppLocalizations.of(context)!.creatingZipFile,
                   style: TextStyle(color: Colors.white70),
                 ),
               ],

@@ -125,15 +125,6 @@
     }
   },
   "noProfilesFound": "Keine Profile gefunden. Erstellen Sie eines oben.",
-  "created": "Erstellt: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "Sortierung umschalten",
   "clearLibraryTooltip": "Bibliothek leeren (Projekte und Projektordner)",
   "lastModified": "Zuletzt geändert: {date}",
   "@lastModified": {
@@ -469,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "ZIP-Datei wird erstellt...",
   "failedToCreateZip": "ZIP konnte nicht erstellt werden: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -781,7 +773,6 @@
     }
   },
   "noProfileSelected": "Kein Profil ausgewählt",
-  "created": "Erstellt",
   "exportBackupDialogTitle": "Sicherung Exportieren",
   "importBackupDialogTitle": "Sicherung Importieren",
   "invalidBackupFileFormat": "Ungültiges Sicherungsdateiformat: Version fehlt",

@@ -125,15 +125,6 @@
     }
   },
   "noProfilesFound": "プロファイルが見つかりません。上で作成してください。",
-  "created": "作成日: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "並び替えを切り替え",
   "clearLibraryTooltip": "ライブラリをクリア（プロジェクトとプロジェクトフォルダ）",
   "lastModified": "最終更新: {date}",
   "@lastModified": {
@@ -469,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "ZIPファイルを作成中...",
   "failedToCreateZip": "ZIPの作成に失敗しました: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -781,7 +773,6 @@
     }
   },
   "noProfileSelected": "プロフィールが選択されていません",
-  "created": "作成日",
   "exportBackupDialogTitle": "バックアップをエクスポート",
   "importBackupDialogTitle": "バックアップをインポート",
   "invalidBackupFileFormat": "無効なバックアップファイル形式: バージョンがありません",

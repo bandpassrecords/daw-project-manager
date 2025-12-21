@@ -125,15 +125,6 @@
     }
   },
   "noProfilesFound": "未找到配置文件。请在上面创建一个。",
-  "created": "创建时间: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "切换排序",
   "clearLibraryTooltip": "清空库（项目和项目文件夹）",
   "lastModified": "最后修改: {date}",
   "@lastModified": {
@@ -469,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "正在创建ZIP文件...",
   "failedToCreateZip": "创建ZIP失败: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -781,7 +773,6 @@
     }
   },
   "noProfileSelected": "未选择配置文件",
-  "created": "创建于",
   "exportBackupDialogTitle": "导出备份",
   "importBackupDialogTitle": "导入备份",
   "invalidBackupFileFormat": "无效的备份文件格式: 缺少版本",

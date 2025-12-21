@@ -125,15 +125,6 @@
     }
   },
   "noProfilesFound": "Профили не найдены. Создайте один выше.",
-  "created": "Создано: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "Переключить сортировку",
   "clearLibraryTooltip": "Очистить библиотеку (проекты и папки проектов)",
   "lastModified": "Последнее изменение: {date}",
   "@lastModified": {
@@ -469,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "Создание ZIP-файла...",
   "failedToCreateZip": "Ошибка создания ZIP: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -781,7 +773,6 @@
     }
   },
   "noProfileSelected": "Профиль не выбран",
-  "created": "Создано",
   "exportBackupDialogTitle": "Экспорт резервной копии",
   "importBackupDialogTitle": "Импорт резервной копии",
   "invalidBackupFileFormat": "Неверный формат файла резервной копии: отсутствует версия",
