@@ -1206,6 +1206,23 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
     }
   }
 
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Idea':
+        return Colors.blue.shade300;
+      case 'Arranging':
+        return Colors.orange.shade300;
+      case 'Mixing':
+        return Colors.purple.shade300;
+      case 'Mastering':
+        return Colors.pink.shade300;
+      case 'Finished':
+        return Colors.green.shade300;
+      default:
+        return Colors.white70;
+    }
+  }
+
   List<PlutoRow> _mapProjectsToRows(List<MusicProject> projects) {
     return projects.map((p) {
       // Combine DAW type and version into a single string
@@ -1318,7 +1335,13 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         renderer: (rendererContext) {
           final status = rendererContext.cell.value as String? ?? '';
           final translatedStatus = _translateStatus(context, status);
-          return Text(translatedStatus);
+          return Text(
+            translatedStatus,
+            style: TextStyle(
+              color: _getStatusColor(status),
+              fontWeight: FontWeight.w500,
+            ),
+          );
         },
       ),
       PlutoColumn(
