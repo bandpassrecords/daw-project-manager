@@ -15,6 +15,7 @@ import '../services/scanner_service.dart';
 import '../utils/app_paths.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'dashboard_page.dart';
+import 'profile_view_page.dart';
 import 'widgets/language_switcher.dart';
 import '../services/backup_service.dart';
 
@@ -791,6 +792,18 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.visibility),
+                                    color: Colors.white70,
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => ProfileViewPage(profileId: profile.id),
+                                        ),
+                                      );
+                                    },
+                                    tooltip: 'View Profile',
+                                  ),
                                   IconButton(
                                     icon: const Icon(Icons.edit_outlined),
                                     color: Colors.white70,
