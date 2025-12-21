@@ -652,5 +652,71 @@
   "clickToBrowseArtwork": "Clicca per cercare artwork",
   "noFilesAddedYet": "Nessun file aggiunto ancora.\nClicca su \"Aggiungi File\" per caricare i file della pubblicazione.",
   "noTodosYet": "Nessuna attività ancora. Aggiungine una sopra.",
-  "done": "Fatto"
+  "done": "Fatto",
+  "backupAndRestore": "Backup e Ripristino",
+  "exportBackup": "Esporta Backup",
+  "importBackup": "Importa Backup",
+  "backupExportedSuccessfully": "Backup esportato con successo",
+  "failedToExportBackup": "Errore nell'esportazione del backup: {error}",
+  "@failedToExportBackup": {
+    "description": "Messaggio di errore quando l'esportazione del backup fallisce",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Backup importato con successo: {projectsCount} progetti, {rootsCount} radici, {releasesCount} pubblicazioni",
+  "@backupImportedSuccessfully": {
+    "description": "Messaggio di successo dopo l'importazione del backup",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Errore nell'importazione del backup: {error}",
+  "@failedToImportBackup": {
+    "description": "Messaggio di errore quando l'importazione del backup fallisce",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Scegli come importare il backup:",
+  "mergeWithCurrentProfile": "Unisci con il profilo attivo corrente",
+  "replaceCurrentProfile": "Sostituisci completamente il profilo corrente (ATTENZIONE: Questo eliminerà tutti i dati del profilo corrente)",
+  "createNewProfileForImport": "Crea un nuovo profilo per questi dati",
+  "backupImportedToNewProfile": "Backup importato nel nuovo profilo \"{profileName}\": {projectsCount} progetti, {rootsCount} radici, {releasesCount} pubblicazioni",
+  "@backupImportedToNewProfile": {
+    "description": "Messaggio di successo dopo l'importazione del backup in un nuovo profilo",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "Nessun profilo selezionato",
+  "created": "Creato",
+  "exportBackupDialogTitle": "Esporta Backup",
+  "importBackupDialogTitle": "Importa Backup",
+  "invalidBackupFileFormat": "Formato file di backup non valido: versione mancante",
+  "profileNameRequiredForNewProfile": "Il nome del profilo è obbligatorio quando si crea un nuovo profilo",
+  "currentProfileRequired": "Il profilo corrente è obbligatorio per la modalità unisci o sostituisci"
 }

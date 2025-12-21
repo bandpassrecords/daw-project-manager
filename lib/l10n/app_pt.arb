@@ -652,5 +652,71 @@
   "clickToBrowseArtwork": "Clique para procurar arte",
   "noFilesAddedYet": "Nenhum arquivo adicionado ainda.\nClique em \"Adicionar Arquivos\" para fazer upload dos arquivos do lançamento.",
   "noTodosYet": "Nenhuma tarefa ainda. Adicione uma acima.",
-  "done": "Concluído"
+  "done": "Concluído",
+  "backupAndRestore": "Backup e Restauração",
+  "exportBackup": "Exportar Backup",
+  "importBackup": "Importar Backup",
+  "backupExportedSuccessfully": "Backup exportado com sucesso",
+  "failedToExportBackup": "Falha ao exportar backup: {error}",
+  "@failedToExportBackup": {
+    "description": "Mensagem de erro quando a exportação do backup falha",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Backup importado com sucesso: {projectsCount} projetos, {rootsCount} raízes, {releasesCount} lançamentos",
+  "@backupImportedSuccessfully": {
+    "description": "Mensagem de sucesso após importar backup",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Falha ao importar backup: {error}",
+  "@failedToImportBackup": {
+    "description": "Mensagem de erro quando a importação do backup falha",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Escolha como importar o backup:",
+  "mergeWithCurrentProfile": "Mesclar com o perfil ativo atual",
+  "replaceCurrentProfile": "Substituir completamente o perfil atual (AVISO: Isso excluirá todos os dados do perfil atual)",
+  "createNewProfileForImport": "Criar um novo perfil para estes dados",
+  "backupImportedToNewProfile": "Backup importado para o novo perfil \"{profileName}\": {projectsCount} projetos, {rootsCount} raízes, {releasesCount} lançamentos",
+  "@backupImportedToNewProfile": {
+    "description": "Mensagem de sucesso após importar backup para um novo perfil",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "Nenhum perfil selecionado",
+  "created": "Criado",
+  "exportBackupDialogTitle": "Exportar Backup",
+  "importBackupDialogTitle": "Importar Backup",
+  "invalidBackupFileFormat": "Formato de arquivo de backup inválido: versão ausente",
+  "profileNameRequiredForNewProfile": "O nome do perfil é obrigatório ao criar um novo perfil",
+  "currentProfileRequired": "O perfil atual é obrigatório para o modo mesclar ou substituir"
 }

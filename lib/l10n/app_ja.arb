@@ -652,5 +652,71 @@
   "clickToBrowseArtwork": "アートワークを参照するにはクリック",
   "noFilesAddedYet": "まだファイルが追加されていません。\n「ファイルを追加」をクリックしてリリースファイルをアップロードしてください。",
   "noTodosYet": "まだタスクがありません。上に追加してください。",
-  "done": "完了"
+  "done": "完了",
+  "backupAndRestore": "バックアップと復元",
+  "exportBackup": "バックアップをエクスポート",
+  "importBackup": "バックアップをインポート",
+  "backupExportedSuccessfully": "バックアップのエクスポートに成功しました",
+  "failedToExportBackup": "バックアップのエクスポートに失敗しました: {error}",
+  "@failedToExportBackup": {
+    "description": "バックアップエクスポートが失敗したときのエラーメッセージ",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "バックアップのインポートに成功しました: {projectsCount} プロジェクト、{rootsCount} ルート、{releasesCount} リリース",
+  "@backupImportedSuccessfully": {
+    "description": "バックアップインポート後の成功メッセージ",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "バックアップのインポートに失敗しました: {error}",
+  "@failedToImportBackup": {
+    "description": "バックアップインポートが失敗したときのエラーメッセージ",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "バックアップのインポート方法を選択してください:",
+  "mergeWithCurrentProfile": "現在のアクティブなプロフィールとマージ",
+  "replaceCurrentProfile": "現在のプロフィールを完全に置き換える（警告: これにより現在のプロフィールのすべてのデータが削除されます）",
+  "createNewProfileForImport": "このデータ用に新しいプロフィールを作成",
+  "backupImportedToNewProfile": "新しいプロフィール \"{profileName}\" にバックアップをインポートしました: {projectsCount} プロジェクト、{rootsCount} ルート、{releasesCount} リリース",
+  "@backupImportedToNewProfile": {
+    "description": "新しいプロフィールにバックアップをインポートした後の成功メッセージ",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "プロフィールが選択されていません",
+  "created": "作成日",
+  "exportBackupDialogTitle": "バックアップをエクスポート",
+  "importBackupDialogTitle": "バックアップをインポート",
+  "invalidBackupFileFormat": "無効なバックアップファイル形式: バージョンがありません",
+  "profileNameRequiredForNewProfile": "新しいプロフィールを作成する際は、プロフィール名が必要です",
+  "currentProfileRequired": "マージまたは置き換えモードには現在のプロフィールが必要です"
 }

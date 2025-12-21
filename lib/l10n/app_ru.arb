@@ -652,5 +652,71 @@
   "clickToBrowseArtwork": "Нажмите, чтобы найти обложку",
   "noFilesAddedYet": "Файлы еще не добавлены.\nНажмите \"Добавить Файлы\", чтобы загрузить файлы релиза.",
   "noTodosYet": "Задач пока нет. Добавьте одну выше.",
-  "done": "Готово"
+  "done": "Готово",
+  "backupAndRestore": "Резервное копирование и восстановление",
+  "exportBackup": "Экспорт резервной копии",
+  "importBackup": "Импорт резервной копии",
+  "backupExportedSuccessfully": "Резервная копия успешно экспортирована",
+  "failedToExportBackup": "Ошибка при экспорте резервной копии: {error}",
+  "@failedToExportBackup": {
+    "description": "Сообщение об ошибке при сбое экспорта резервной копии",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Резервная копия успешно импортирована: {projectsCount} проектов, {rootsCount} корней, {releasesCount} релизов",
+  "@backupImportedSuccessfully": {
+    "description": "Сообщение об успехе после импорта резервной копии",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Ошибка при импорте резервной копии: {error}",
+  "@failedToImportBackup": {
+    "description": "Сообщение об ошибке при сбое импорта резервной копии",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Выберите способ импорта резервной копии:",
+  "mergeWithCurrentProfile": "Объединить с текущим активным профилем",
+  "replaceCurrentProfile": "Полностью заменить текущий профиль (ВНИМАНИЕ: Это удалит все данные текущего профиля)",
+  "createNewProfileForImport": "Создать новый профиль для этих данных",
+  "backupImportedToNewProfile": "Резервная копия импортирована в новый профиль \"{profileName}\": {projectsCount} проектов, {rootsCount} корней, {releasesCount} релизов",
+  "@backupImportedToNewProfile": {
+    "description": "Сообщение об успехе после импорта резервной копии в новый профиль",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "Профиль не выбран",
+  "created": "Создано",
+  "exportBackupDialogTitle": "Экспорт резервной копии",
+  "importBackupDialogTitle": "Импорт резервной копии",
+  "invalidBackupFileFormat": "Неверный формат файла резервной копии: отсутствует версия",
+  "profileNameRequiredForNewProfile": "Имя профиля обязательно при создании нового профиля",
+  "currentProfileRequired": "Текущий профиль обязателен для режима объединения или замены"
 }

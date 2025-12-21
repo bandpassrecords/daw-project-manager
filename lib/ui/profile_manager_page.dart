@@ -389,6 +389,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
         projectRepo: projectRepo,
         profileRepo: profileRepo,
         profileId: currentProfileId,
+        exportDialogTitle: AppLocalizations.of(context)!.exportBackupDialogTitle,
       );
 
       if (file != null && mounted) {
@@ -548,6 +549,10 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
         currentProfileId: currentProfileId,
         importMode: importMode,
         newProfileName: newProfileName,
+        importDialogTitle: AppLocalizations.of(context)!.importBackupDialogTitle,
+        invalidBackupFormatMessage: AppLocalizations.of(context)!.invalidBackupFileFormat,
+        profileNameRequiredMessage: AppLocalizations.of(context)!.profileNameRequiredForNewProfile,
+        currentProfileRequiredMessage: AppLocalizations.of(context)!.currentProfileRequired,
       );
 
       if (importResult.cancelled) {
@@ -784,7 +789,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                                 ],
                               ),
                               subtitle: Text(
-                                'Created: ${profile.createdAt.toString().split('.')[0]}',
+                                '${AppLocalizations.of(context)!.created}: ${profile.createdAt.toString().split('.')[0]}',
                                 style: const TextStyle(color: Colors.white54, fontSize: 12),
                               ),
                               trailing: Row(

@@ -1223,6 +1223,45 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
     }
   }
 
+  String? _getDawLogoPath(String? dawType) {
+    if (dawType == null) return null;
+    
+    // Map DAW types to logo file names (case-insensitive matching)
+    final dawLower = dawType.toLowerCase();
+    final logoMap = {
+      'ableton': 'ableton-live.png',
+      'ableton live': 'ableton-live.png',
+      'fl studio': 'fl-studio.png',
+      'flstudio': 'fl-studio.png',
+      'logic pro': 'logic-pro.png',
+      'logic': 'logic-pro.png',
+      'cubase': 'cubase.png',
+      'studio one': 'studio-one.png',
+      'studioone': 'studio-one.png',
+      'reaper': 'reaper.png',
+      'pro tools': 'pro-tools.png',
+      'protools': 'pro-tools.png',
+      'bitwig': 'bitwig-studio.png',
+      'bitwig studio': 'bitwig-studio.png',
+      'nuendo': 'nuendo.png',
+      'maschine': 'maschine.png',
+    };
+    
+    // Try exact match first
+    if (logoMap.containsKey(dawLower)) {
+      return 'resources/daw/logos/${logoMap[dawLower]}';
+    }
+    
+    // Try partial match
+    for (final entry in logoMap.entries) {
+      if (dawLower.contains(entry.key) || entry.key.contains(dawLower)) {
+        return 'resources/daw/logos/${entry.value}';
+      }
+    }
+    
+    return null;
+  }
+
   List<PlutoRow> _mapProjectsToRows(List<MusicProject> projects) {
     return projects.map((p) {
       // Combine DAW type and version into a single string
@@ -1350,6 +1389,32 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         type: PlutoColumnType.text(),
         width: 140,
         minWidth: 100,
+        renderer: (rendererContext) {
+          final dawType = rendererContext.cell.value as String? ?? '';
+          final logoPath = _getDawLogoPath(dawType);
+          
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (logoPath != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: Image.asset(
+                    logoPath,
+                    width: 16,
+                    height: 16,
+                    errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                  ),
+                ),
+              Flexible(
+                child: Text(
+                  dawType,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.bpm,
@@ -1427,8 +1492,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         title: AppLocalizations.of(context)!.actions,
         field: 'launch',
         type: PlutoColumnType.text(),
-        width: 360, // 🚨 LARGURA AUMENTADA para caber 3 botões
-        minWidth: 260,
+        width: 180, // Reduced width for icon buttons
+        minWidth: 150,
         renderer: (ctx) {
           final project = ctx.row.cells['data']!.value as MusicProject;
           
@@ -1441,8 +1506,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 🚨 NOVO BOTÃO: OPEN FOLDER
-              ElevatedButton(
+              // Open Folder button
+              IconButton(
+                icon: const Icon(Icons.folder_open),
+                tooltip: AppLocalizations.of(context)!.openFolder,
                 onPressed: () async {
                   final exists = Directory(folderPath).existsSync();
                   if (!exists) {
@@ -1477,21 +1544,21 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                     }
                   }
                 },
-                child: Text(AppLocalizations.of(context)!.openFolder),
               ),
-              const SizedBox(width: 8),
-              // BOTÃO: VIEW (Detalhes)
-              ElevatedButton(
+              // View button
+              IconButton(
+                icon: const Icon(Icons.visibility),
+                tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
                 onPressed: () async {
                   await Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => ProjectDetailPage(projectId: project.id)),
                   );
                 },
-                child: Text(AppLocalizations.of(context)!.view),
               ),
-              const SizedBox(width: 8), 
-              // BOTÃO: LAUNCH (Abrir DAW)
-              ElevatedButton(
+              // Launch button
+              IconButton(
+                icon: const Icon(Icons.open_in_new),
+                tooltip: AppLocalizations.of(context)!.tooltipLaunchInDaw,
                 onPressed: () async {
                   final exists = File(project.filePath).existsSync() || Directory(project.filePath).existsSync();
                   if (!exists) {
@@ -1520,11 +1587,6 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                     return;
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade600,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(AppLocalizations.of(context)!.launch),
               ),
             ],
           );

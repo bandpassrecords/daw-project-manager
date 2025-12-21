@@ -652,5 +652,71 @@
   "clickToBrowseArtwork": "Klicken Sie, um Artwork zu durchsuchen",
   "noFilesAddedYet": "Noch keine Dateien hinzugefügt.\nKlicken Sie auf \"Dateien Hinzufügen\", um Veröffentlichungsdateien hochzuladen.",
   "noTodosYet": "Noch keine Aufgaben. Fügen Sie oben eine hinzu.",
-  "done": "Erledigt"
+  "done": "Erledigt",
+  "backupAndRestore": "Sicherung und Wiederherstellung",
+  "exportBackup": "Sicherung Exportieren",
+  "importBackup": "Sicherung Importieren",
+  "backupExportedSuccessfully": "Sicherung erfolgreich exportiert",
+  "failedToExportBackup": "Fehler beim Exportieren der Sicherung: {error}",
+  "@failedToExportBackup": {
+    "description": "Fehlermeldung, wenn der Sicherungsexport fehlschlägt",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Sicherung erfolgreich importiert: {projectsCount} Projekte, {rootsCount} Wurzeln, {releasesCount} Veröffentlichungen",
+  "@backupImportedSuccessfully": {
+    "description": "Erfolgsmeldung nach dem Importieren der Sicherung",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Fehler beim Importieren der Sicherung: {error}",
+  "@failedToImportBackup": {
+    "description": "Fehlermeldung, wenn der Sicherungsimport fehlschlägt",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Wählen Sie, wie die Sicherung importiert werden soll:",
+  "mergeWithCurrentProfile": "Mit dem aktuellen aktiven Profil zusammenführen",
+  "replaceCurrentProfile": "Das aktuelle Profil vollständig ersetzen (WARNUNG: Dies löscht alle Daten des aktuellen Profils)",
+  "createNewProfileForImport": "Ein neues Profil für diese Daten erstellen",
+  "backupImportedToNewProfile": "Sicherung in neues Profil \"{profileName}\" importiert: {projectsCount} Projekte, {rootsCount} Wurzeln, {releasesCount} Veröffentlichungen",
+  "@backupImportedToNewProfile": {
+    "description": "Erfolgsmeldung nach dem Importieren der Sicherung in ein neues Profil",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "Kein Profil ausgewählt",
+  "created": "Erstellt",
+  "exportBackupDialogTitle": "Sicherung Exportieren",
+  "importBackupDialogTitle": "Sicherung Importieren",
+  "invalidBackupFileFormat": "Ungültiges Sicherungsdateiformat: Version fehlt",
+  "profileNameRequiredForNewProfile": "Der Profilname ist beim Erstellen eines neuen Profils erforderlich",
+  "currentProfileRequired": "Das aktuelle Profil ist für den Modus Zusammenführen oder Ersetzen erforderlich"
 }

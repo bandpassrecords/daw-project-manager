@@ -17,6 +17,7 @@ class BackupService {
     required ProjectRepository projectRepo,
     required ProfileRepository profileRepo,
     required String profileId,
+    String? exportDialogTitle,
   }) async {
     try {
       // Get all data
@@ -41,7 +42,7 @@ class BackupService {
 
       // Save to file
       final result = await FilePicker.platform.saveFile(
-        dialogTitle: 'Export Backup',
+        dialogTitle: exportDialogTitle ?? 'Export Backup',
         fileName: 'daw_project_manager_backup_${DateTime.now().toIso8601String().split('T')[0]}.json',
         type: FileType.custom,
         allowedExtensions: ['json'],
@@ -66,13 +67,17 @@ class BackupService {
     required String? currentProfileId, // Can be null if creating new profile
     required ImportMode importMode, // Merge, Replace, or CreateNewProfile
     String? newProfileName, // Required if importMode is CreateNewProfile
+    String? importDialogTitle,
+    String? invalidBackupFormatMessage,
+    String? profileNameRequiredMessage,
+    String? currentProfileRequiredMessage,
   }) async {
     try {
       // Pick backup file
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
-        dialogTitle: 'Import Backup',
+        dialogTitle: importDialogTitle ?? 'Import Backup',
       );
 
       if (result == null || result.files.single.path == null) {
@@ -85,7 +90,7 @@ class BackupService {
 
       // Validate backup format
       if (backupData['version'] == null) {
-        throw Exception('Invalid backup file format: missing version');
+        throw Exception(invalidBackupFormatMessage ?? 'Invalid backup file format: missing version');
       }
 
       final importedProjects = <MusicProject>[];
@@ -142,7 +147,7 @@ class BackupService {
       if (importMode == ImportMode.createNewProfile) {
         // Create new profile
         if (newProfileName == null || newProfileName.trim().isEmpty) {
-          throw Exception('Profile name is required when creating a new profile');
+          throw Exception(profileNameRequiredMessage ?? 'Profile name is required when creating a new profile');
         }
         await profileRepo.createProfile(newProfileName.trim());
         final newProfile = profileRepo.getAllProfiles().firstWhere(
@@ -157,7 +162,7 @@ class BackupService {
       } else {
         // Merge or Replace mode - use existing profile
         if (currentProfileId == null || projectRepo == null) {
-          throw Exception('Current profile is required for merge or replace mode');
+          throw Exception(currentProfileRequiredMessage ?? 'Current profile is required for merge or replace mode');
         }
         targetProfileId = currentProfileId;
         targetRepo = projectRepo;

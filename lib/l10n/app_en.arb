@@ -712,6 +712,12 @@
       }
     }
   },
-  "noProfileSelected": "No profile selected"
+  "noProfileSelected": "No profile selected",
+  "created": "Created",
+  "exportBackupDialogTitle": "Export Backup",
+  "importBackupDialogTitle": "Import Backup",
+  "invalidBackupFileFormat": "Invalid backup file format: missing version",
+  "profileNameRequiredForNewProfile": "Profile name is required when creating a new profile",
+  "currentProfileRequired": "Current profile is required for merge or replace mode"
 }
 

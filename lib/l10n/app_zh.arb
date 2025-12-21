@@ -652,5 +652,71 @@
   "clickToBrowseArtwork": "点击浏览封面",
   "noFilesAddedYet": "尚未添加文件。\n点击\"添加文件\"上传发布文件。",
   "noTodosYet": "还没有待办事项。请在上面添加一个。",
-  "done": "完成"
+  "done": "完成",
+  "backupAndRestore": "备份和恢复",
+  "exportBackup": "导出备份",
+  "importBackup": "导入备份",
+  "backupExportedSuccessfully": "备份导出成功",
+  "failedToExportBackup": "导出备份失败: {error}",
+  "@failedToExportBackup": {
+    "description": "备份导出失败时的错误消息",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "备份导入成功: {projectsCount} 个项目，{rootsCount} 个根目录，{releasesCount} 个发布",
+  "@backupImportedSuccessfully": {
+    "description": "导入备份后的成功消息",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "导入备份失败: {error}",
+  "@failedToImportBackup": {
+    "description": "备份导入失败时的错误消息",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "选择如何导入备份:",
+  "mergeWithCurrentProfile": "与当前活动配置文件合并",
+  "replaceCurrentProfile": "完全替换当前配置文件（警告：这将删除当前配置文件的所有数据）",
+  "createNewProfileForImport": "为此数据创建新配置文件",
+  "backupImportedToNewProfile": "备份已导入到新配置文件 \"{profileName}\": {projectsCount} 个项目，{rootsCount} 个根目录，{releasesCount} 个发布",
+  "@backupImportedToNewProfile": {
+    "description": "将备份导入到新配置文件后的成功消息",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "未选择配置文件",
+  "created": "创建于",
+  "exportBackupDialogTitle": "导出备份",
+  "importBackupDialogTitle": "导入备份",
+  "invalidBackupFileFormat": "无效的备份文件格式: 缺少版本",
+  "profileNameRequiredForNewProfile": "创建新配置文件时需要配置文件名称",
+  "currentProfileRequired": "合并或替换模式需要当前配置文件"
 }

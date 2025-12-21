@@ -652,5 +652,71 @@
   "clickToBrowseArtwork": "Cliquez pour parcourir l'artwork",
   "noFilesAddedYet": "Aucun fichier ajouté pour le moment.\nCliquez sur \"Ajouter des Fichiers\" pour télécharger les fichiers de la sortie.",
   "noTodosYet": "Aucune tâche pour le moment. Ajoutez-en une ci-dessus.",
-  "done": "Terminé"
+  "done": "Terminé",
+  "backupAndRestore": "Sauvegarde et Restauration",
+  "exportBackup": "Exporter la Sauvegarde",
+  "importBackup": "Importer la Sauvegarde",
+  "backupExportedSuccessfully": "Sauvegarde exportée avec succès",
+  "failedToExportBackup": "Échec de l'exportation de la sauvegarde : {error}",
+  "@failedToExportBackup": {
+    "description": "Message d'erreur lorsque l'exportation de la sauvegarde échoue",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Sauvegarde importée avec succès : {projectsCount} projets, {rootsCount} racines, {releasesCount} sorties",
+  "@backupImportedSuccessfully": {
+    "description": "Message de succès après l'importation de la sauvegarde",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Échec de l'importation de la sauvegarde : {error}",
+  "@failedToImportBackup": {
+    "description": "Message d'erreur lorsque l'importation de la sauvegarde échoue",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Choisissez comment importer la sauvegarde :",
+  "mergeWithCurrentProfile": "Fusionner avec le profil actif actuel",
+  "replaceCurrentProfile": "Remplacer entièrement le profil actuel (ATTENTION : Cela supprimera toutes les données du profil actuel)",
+  "createNewProfileForImport": "Créer un nouveau profil pour ces données",
+  "backupImportedToNewProfile": "Sauvegarde importée dans le nouveau profil \"{profileName}\" : {projectsCount} projets, {rootsCount} racines, {releasesCount} sorties",
+  "@backupImportedToNewProfile": {
+    "description": "Message de succès après l'importation de la sauvegarde dans un nouveau profil",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "Aucun profil sélectionné",
+  "created": "Créé",
+  "exportBackupDialogTitle": "Exporter la Sauvegarde",
+  "importBackupDialogTitle": "Importer la Sauvegarde",
+  "invalidBackupFileFormat": "Format de fichier de sauvegarde invalide : version manquante",
+  "profileNameRequiredForNewProfile": "Le nom du profil est requis lors de la création d'un nouveau profil",
+  "currentProfileRequired": "Le profil actuel est requis pour le mode fusionner ou remplacer"
 }
