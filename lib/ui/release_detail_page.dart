@@ -232,7 +232,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: [
+              children: <Widget>[
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
                 Text(
