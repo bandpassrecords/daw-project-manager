@@ -1240,7 +1240,32 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         final newRows = _mapProjectsToRows(widget.projects);
         stateManager!.removeRows(stateManager!.rows, notify: false);
         stateManager!.insertRows(0, newRows);
-        // Force rebuild to update checkbox states
+        // Force rebuild to update checkbox states and color coding
+        stateManager!.notifyListeners();
+      }
+    }
+    
+    // Also check if any project's lastModifiedAt changed (for color updates during scanning)
+    if (oldWidget.projects.length == widget.projects.length) {
+      bool hasModifiedDates = false;
+      for (int i = 0; i < widget.projects.length; i++) {
+        if (i < oldWidget.projects.length) {
+          if (widget.projects[i].lastModifiedAt != oldWidget.projects[i].lastModifiedAt) {
+            hasModifiedDates = true;
+            break;
+          }
+        }
+      }
+      
+      if (hasModifiedDates && stateManager != null) {
+        // Update the lastModified cell values to trigger renderer refresh
+        for (int i = 0; i < stateManager!.rows.length && i < widget.projects.length; i++) {
+          final project = widget.projects[i];
+          final row = stateManager!.rows[i];
+          if (row.cells['lastModified'] != null) {
+            row.cells['lastModified']!.value = widget.dateFormat.format(project.lastModifiedAt);
+          }
+        }
         stateManager!.notifyListeners();
       }
     }
@@ -1325,6 +1350,55 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         type: PlutoColumnType.text(),
         width: 200,
         minWidth: 160,
+        renderer: (rendererContext) {
+          final project = rendererContext.row.cells['data']?.value as MusicProject?;
+          if (project == null) {
+            return Text(rendererContext.cell.value.toString());
+          }
+          
+          final status = project.status;
+          
+          // If status is "Finished", show green
+          if (status == 'Finished') {
+            return Text(
+              rendererContext.cell.value.toString(),
+              style: const TextStyle(color: Colors.green),
+            );
+          }
+          
+          final now = DateTime.now();
+          final lastModified = project.lastModifiedAt;
+          
+          // Calculate color based on age of lastModifiedAt
+          final daysSinceModified = now.difference(lastModified).inDays;
+          Color textColor;
+          
+          if (daysSinceModified < 21) {
+            // Recent (0-21 days): default white
+            textColor = Colors.white70;
+          } else if (daysSinceModified < 60) {
+            // Medium (21-60 days): yellow/orange gradient
+            final ratio = (daysSinceModified - 21) / 39.0; // 0 to 1 from 21 to 60 days
+            textColor = Color.lerp(
+              Colors.yellow.shade300,
+              Colors.orange.shade400,
+              ratio,
+            )!;
+          } else {
+            // Old (60+ days): orange to red gradient
+            final ratio = ((daysSinceModified - 60) / 60.0).clamp(0.0, 1.0); // 0 to 1 from 60 to 120 days
+            textColor = Color.lerp(
+              Colors.orange.shade400,
+              Colors.red.shade400,
+              ratio,
+            )!;
+          }
+          
+          return Text(
+            rendererContext.cell.value.toString(),
+            style: TextStyle(color: textColor),
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.actions,
