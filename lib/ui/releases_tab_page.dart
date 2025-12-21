@@ -347,7 +347,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      backgroundColor: const Color(0xFF2B2D31),
+                      backgroundColor: Theme.of(context).cardColor,
                       title: Text(AppLocalizations.of(context)!.deleteRelease),
                       content: Text(AppLocalizations.of(context)!.deleteReleaseMessage(release.title)),
                       actions: [
@@ -607,7 +607,7 @@ class _CreateReleaseDialogState extends State<_CreateReleaseDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF2B2D31),
+      backgroundColor: Theme.of(context).cardColor,
       title: Text(AppLocalizations.of(context)!.createRelease),
       content: TextField(
         controller: _titleController,

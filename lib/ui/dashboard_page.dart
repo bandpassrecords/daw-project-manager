@@ -604,7 +604,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                         final confirm = await showDialog<bool>(
                                           context: context,
                                           builder: (ctx) => AlertDialog(
-                                            backgroundColor: const Color(0xFF2B2D31),
+                                            backgroundColor: Theme.of(context).cardColor,
                                             title: Text(AppLocalizations.of(context)!.deepScan),
                                             content: Text(AppLocalizations.of(context)!.deepScanConfirm),
                                             actions: [
@@ -763,7 +763,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                           value: phaseFilter,
                           hint: Text(
                             AppLocalizations.of(context)!.filterByPhase,
-                            style: const TextStyle(fontSize: 12, color: Colors.white70),
+                            style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color),
                           ),
                           underline: const SizedBox.shrink(),
                           style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyMedium?.color),
@@ -811,7 +811,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                     final confirm = await showDialog<bool>(
                                       context: context,
                                       builder: (ctx) => AlertDialog(
-                                        backgroundColor: const Color(0xFF2B2D31),
+                                        backgroundColor: Theme.of(context).cardColor,
                                         title: Text(AppLocalizations.of(context)!.clearLibrary),
                                         content: Text(AppLocalizations.of(context)!.clearLibraryMessage),
                                         actions: [
@@ -898,8 +898,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                               await _scanAll();
                             }
                           },
-                          backgroundColor: const Color(0xFF2B2D31),
-                          labelStyle: const TextStyle(color: Colors.white70),
+                          backgroundColor: Theme.of(context).cardColor,
+                          labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                         ),
                     ],
                   ),
@@ -912,9 +912,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                 Tab(icon: Icon(Icons.library_music), text: AppLocalizations.of(context)!.projectsTab),
                 Tab(icon: Icon(Icons.album), text: AppLocalizations.of(context)!.releasesTab),
               ],
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white54,
-              indicatorColor: const Color(0xFF5A6B7A),
+              labelColor: Theme.of(context).textTheme.titleMedium?.color,
+              unselectedLabelColor: Theme.of(context).textTheme.bodySmall?.color,
+              indicatorColor: Theme.of(context).colorScheme.primary,
             ),
             // Tab Bar View
             Expanded(
@@ -953,7 +953,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
             color: Colors.black54,
             child: Center(
               child: Card(
-                color: const Color(0xFF2B2D31),
+                color: Theme.of(context).cardColor,
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
@@ -963,7 +963,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                       const SizedBox(height: 16),
                       Text(
                         isProfileSwitching ? AppLocalizations.of(context)!.switchingProfiles : AppLocalizations.of(context)!.scanningProjects,
-                        style: const TextStyle(color: Colors.white70),
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                       ),
                     ],
                   ),
@@ -1206,7 +1206,7 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
         // Selection action bar
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          color: const Color(0xFF2B2D31),
+          color: Theme.of(context).cardColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -1228,7 +1228,7 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                     _selectedProjectIds.isEmpty
                         ? AppLocalizations.of(context)!.selectAllProjects
                         : AppLocalizations.of(context)!.projectsSelected(_selectedProjectIds.length, _selectedProjectIds.length == 1 ? '' : 's'),
-                    style: const TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                   ),
                 ],
               ),
@@ -1436,7 +1436,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
       case 'Finished':
         return Colors.green.shade300;
       default:
-        return Colors.white70;
+        return Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey;
     }
   }
 
@@ -1680,7 +1680,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
           
           if (daysSinceModified < 21) {
             // Recent (0-21 days): default white
-            textColor = Colors.white70;
+            textColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey;
           } else if (daysSinceModified < 60) {
             // Medium (21-60 days): yellow/orange gradient
             final ratio = (daysSinceModified - 21) / 39.0; // 0 to 1 from 21 to 60 days
@@ -1761,7 +1761,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
                   '|',
-                  style: TextStyle(color: Colors.white38, fontSize: 18),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5), fontSize: 18),
                 ),
               ),
               // View button
@@ -1818,7 +1818,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
                   '|',
-                  style: TextStyle(color: Colors.white38, fontSize: 18),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5), fontSize: 18),
                 ),
               ),
               // Hidden button
@@ -1837,7 +1837,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                     final confirm = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        backgroundColor: const Color(0xFF2B2D31),
+                        backgroundColor: Theme.of(context).cardColor,
                         title: Text(AppLocalizations.of(context)!.hide),
                         content: Text(AppLocalizations.of(context)!.hideProjectMessage(project.displayName)),
                         actions: [
@@ -1982,7 +1982,7 @@ class _ReleaseTitleDialogState extends State<_ReleaseTitleDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF2B2D31),
+      backgroundColor: Theme.of(context).cardColor,
       title: Text(AppLocalizations.of(context)!.enterReleaseTitle),
       content: TextField(
         controller: _titleController,

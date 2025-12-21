@@ -21,13 +21,19 @@ class Profile {
   final String? bio; // Profile biography/description
 
   @HiveField(6)
-  final String? artworkPath; // Path to profile artwork/image
+  final String? artworkPath; // Path to profile artwork/image (deprecated, use artworkPaths)
 
   @HiveField(7)
-  final String? pressKitPath; // Path to press kit file
+  final String? pressKitPath; // Path to press kit file (deprecated, use pressKitPaths)
 
   @HiveField(8)
   final Map<String, String>? additionalAssets; // Map of asset name to file path
+
+  @HiveField(9)
+  final List<String>? artworkPaths; // List of artwork file paths (supports multiple versions)
+
+  @HiveField(10)
+  final List<String>? pressKitPaths; // List of press kit file paths (supports multiple files)
 
   const Profile({
     required this.id,
@@ -39,6 +45,8 @@ class Profile {
     this.artworkPath,
     this.pressKitPath,
     this.additionalAssets,
+    this.artworkPaths,
+    this.pressKitPaths,
   });
 
   Profile copyWith({
@@ -56,6 +64,10 @@ class Profile {
     bool clearPressKitPath = false,
     Map<String, String>? additionalAssets,
     bool clearAdditionalAssets = false,
+    List<String>? artworkPaths,
+    bool clearArtworkPaths = false,
+    List<String>? pressKitPaths,
+    bool clearPressKitPaths = false,
   }) {
     return Profile(
       id: id ?? this.id,
@@ -67,7 +79,33 @@ class Profile {
       artworkPath: clearArtworkPath ? null : (artworkPath ?? this.artworkPath),
       pressKitPath: clearPressKitPath ? null : (pressKitPath ?? this.pressKitPath),
       additionalAssets: clearAdditionalAssets ? null : (additionalAssets ?? this.additionalAssets),
+      artworkPaths: clearArtworkPaths ? null : (artworkPaths ?? this.artworkPaths),
+      pressKitPaths: clearPressKitPaths ? null : (pressKitPaths ?? this.pressKitPaths),
     );
+  }
+
+  // Helper method to get all artwork paths (including legacy single artworkPath)
+  List<String> getAllArtworkPaths() {
+    final allPaths = <String>[];
+    if (artworkPath != null) {
+      allPaths.add(artworkPath!);
+    }
+    if (artworkPaths != null) {
+      allPaths.addAll(artworkPaths!);
+    }
+    return allPaths;
+  }
+
+  // Helper method to get all press kit paths (including legacy single pressKitPath)
+  List<String> getAllPressKitPaths() {
+    final allPaths = <String>[];
+    if (pressKitPath != null) {
+      allPaths.add(pressKitPath!);
+    }
+    if (pressKitPaths != null) {
+      allPaths.addAll(pressKitPaths!);
+    }
+    return allPaths;
   }
 }
 
@@ -91,14 +129,22 @@ class ProfileAdapter extends TypeAdapter<Profile> {
       bio: fields.containsKey(5) ? fields[5] as String? : null,
       artworkPath: fields.containsKey(6) ? fields[6] as String? : null,
       pressKitPath: fields.containsKey(7) ? fields[7] as String? : null,
-      additionalAssets: fields.containsKey(8) ? Map<String, String>.from(fields[8] as Map) : null,
+      additionalAssets: fields.containsKey(8) && fields[8] != null
+          ? Map<String, String>.from(fields[8] as Map)
+          : null,
+      artworkPaths: fields.containsKey(9) && fields[9] != null
+          ? List<String>.from(fields[9] as List)
+          : null,
+      pressKitPaths: fields.containsKey(10) && fields[10] != null
+          ? List<String>.from(fields[10] as List)
+          : null,
     );
   }
 
   @override
   void write(BinaryWriter writer, Profile obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -116,6 +162,10 @@ class ProfileAdapter extends TypeAdapter<Profile> {
       ..writeByte(7)
       ..write(obj.pressKitPath)
       ..writeByte(8)
-      ..write(obj.additionalAssets);
+      ..write(obj.additionalAssets)
+      ..writeByte(9)
+      ..write(obj.artworkPaths)
+      ..writeByte(10)
+      ..write(obj.pressKitPaths);
   }
 }

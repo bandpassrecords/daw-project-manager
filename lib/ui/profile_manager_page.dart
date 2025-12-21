@@ -27,27 +27,57 @@ class ProfileManagerPage extends ConsumerStatefulWidget {
 }
 
 class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
-  final _nameController = TextEditingController();
-
   @override
   void dispose() {
-    _nameController.dispose();
     super.dispose();
   }
 
-  Future<void> _createProfile() async {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterProfileName)),
-      );
-      return;
-    }
+  Future<void> _showCreateProfileDialog() async {
+    final nameController = TextEditingController();
+    
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.createNewProfile),
+        content: TextField(
+          controller: nameController,
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context)!.profileName,
+            hintText: AppLocalizations.of(context)!.profileName,
+          ),
+          autofocus: true,
+          onSubmitted: (value) {
+            if (value.trim().isNotEmpty) {
+              Navigator.pop(ctx, value.trim());
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (nameController.text.trim().isNotEmpty) {
+                Navigator.pop(ctx, nameController.text.trim());
+              }
+            },
+            child: Text(AppLocalizations.of(context)!.create),
+          ),
+        ],
+      ),
+    );
 
+    if (result != null && result.isNotEmpty) {
+      await _createProfile(result);
+    }
+  }
+
+  Future<void> _createProfile(String name) async {
     try {
       final profileRepo = await ref.read(profileRepositoryProvider.future);
       await profileRepo.createProfile(name);
-      _nameController.clear();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.profileCreated(name))),
@@ -213,7 +243,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF2B2D31),
+        backgroundColor: Theme.of(context).cardColor,
         title: Text(AppLocalizations.of(context)!.editProfile),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -329,7 +359,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF2B2D31),
+        backgroundColor: Theme.of(context).cardColor,
         title: Text(AppLocalizations.of(context)!.deleteProfile),
         content: Text(AppLocalizations.of(context)!.deleteProfileMessage(profile.name)),
         actions: [
@@ -415,7 +445,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          backgroundColor: const Color(0xFF2B2D31),
+          backgroundColor: Theme.of(context).cardColor,
           title: Text(AppLocalizations.of(context)!.importBackup),
           content: SingleChildScrollView(
             child: Column(
@@ -610,12 +640,12 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                 }
               },
               child: Container(
-                color: const Color(0xFF2B2D31),
+                color: Theme.of(context).cardColor,
                 height: 40,
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                      icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
                       onPressed: () => Navigator.pop(context),
                       tooltip: AppLocalizations.of(context)!.back,
                     ),
@@ -623,7 +653,7 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                       padding: const EdgeInsets.only(left: 4),
                       child: Text(
                         AppLocalizations.of(context)!.profileManager,
-                        style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        style: TextStyle(color: Theme.of(context).textTheme.titleMedium?.color, fontSize: 16),
                       ),
                     ),
                     const Spacer(),
@@ -640,46 +670,9 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-            // Create new profile section
-            Card(
-              color: const Color(0xFF2B2D31),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.createNewProfile,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _nameController,
-                            decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!.profileName,
-                              hintText: AppLocalizations.of(context)!.profileName,
-                            ),
-                            onSubmitted: (_) => _createProfile(),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        ElevatedButton(
-                          onPressed: _createProfile,
-                          child: Text(AppLocalizations.of(context)!.create),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
             // Backup/Restore section
             Card(
-              color: const Color(0xFF2B2D31),
+              color: Theme.of(context).cardColor,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -711,9 +704,19 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
             ),
             const SizedBox(height: 24),
             // Profiles list
-            Text(
-              AppLocalizations.of(context)!.profiles,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.profiles,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  tooltip: AppLocalizations.of(context)!.createNewProfile,
+                  onPressed: _showCreateProfileDialog,
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -739,90 +742,101 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                           final profile = profiles[index];
                           final isCurrent = currentProfile?.id == profile.id;
 
-                          return Card(
-                            color: isCurrent ? const Color(0xFF3C3F43) : const Color(0xFF2B2D31),
-                            margin: const EdgeInsets.only(bottom: 8),
-                            child: ListTile(
-                              leading: profile.photoPath != null && File(profile.photoPath!).existsSync()
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(4),
-                                      child: Image.file(
-                                        File(profile.photoPath!),
+                          return GestureDetector(
+                            onDoubleTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => ProfileViewPage(profileId: profile.id),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              color: isCurrent 
+                                  ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                                  : Theme.of(context).cardColor,
+                              margin: const EdgeInsets.only(bottom: 8),
+                              child: ListTile(
+                                leading: profile.photoPath != null && File(profile.photoPath!).existsSync()
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Image.file(
+                                          File(profile.photoPath!),
+                                          width: 48,
+                                          height: 48,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return const SizedBox(
+                                              width: 48,
+                                              height: 48,
+                                              child: Icon(Icons.person),
+                                            );
+                                          },
+                                        ),
+                                      )
+                                    : const SizedBox(
                                         width: 48,
                                         height: 48,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return const SizedBox(
-                                            width: 48,
-                                            height: 48,
-                                            child: Icon(Icons.person),
-                                          );
-                                        },
+                                        child: Icon(Icons.person),
                                       ),
-                                    )
-                                  : const SizedBox(
-                                      width: 48,
-                                      height: 48,
-                                      child: Icon(Icons.person),
-                                    ),
-                              title: Row(
-                                children: [
-                                  Text(
-                                    profile.name,
-                                    style: TextStyle(
-                                      fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                                    ),
-                                  ),
-                                  if (isCurrent) ...[
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF5A6B7A),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text(
-                                        AppLocalizations.of(context)!.active,
-                                        style: TextStyle(fontSize: 12),
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      profile.name,
+                                      style: TextStyle(
+                                        fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
                                       ),
                                     ),
-                                  ],
-                                ],
-                              ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.visibility),
-                                    color: Colors.white70,
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => ProfileViewPage(profileId: profile.id),
+                                    if (isCurrent) ...[
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.primary,
+                                          borderRadius: BorderRadius.circular(4),
                                         ),
-                                      );
-                                    },
-                                    tooltip: 'View Profile',
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.edit_outlined),
-                                    color: Colors.white70,
-                                    onPressed: () => _editProfile(profile),
-                                    tooltip: AppLocalizations.of(context)!.tooltipEditProfileName,
-                                  ),
-                                  if (!isCurrent)
-                                    TextButton(
-                                      onPressed: () => _switchProfile(profile.id),
-                                      child: Text(AppLocalizations.of(context)!.switchProfile),
-                                    ),
-                                  if (profiles.length > 1)
+                                        child: Text(
+                                          AppLocalizations.of(context)!.active,
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
                                     IconButton(
-                                      icon: const Icon(Icons.delete_outline),
-                                      color: Colors.red.shade300,
-                                      onPressed: () => _deleteProfile(profile),
-                                      tooltip: AppLocalizations.of(context)!.delete,
+                                      icon: const Icon(Icons.visibility),
+                                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (_) => ProfileViewPage(profileId: profile.id),
+                                          ),
+                                        );
+                                      },
+                                      tooltip: 'View Profile',
                                     ),
-                                ],
+                                    IconButton(
+                                      icon: const Icon(Icons.edit_outlined),
+                                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                                      onPressed: () => _editProfile(profile),
+                                      tooltip: AppLocalizations.of(context)!.tooltipEditProfileName,
+                                    ),
+                                    if (!isCurrent)
+                                      TextButton(
+                                        onPressed: () => _switchProfile(profile.id),
+                                        child: Text(AppLocalizations.of(context)!.switchProfile),
+                                      ),
+                                    if (profiles.length > 1)
+                                      IconButton(
+                                        icon: const Icon(Icons.delete_outline),
+                                        color: Colors.red.shade300,
+                                        onPressed: () => _deleteProfile(profile),
+                                        tooltip: AppLocalizations.of(context)!.delete,
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
