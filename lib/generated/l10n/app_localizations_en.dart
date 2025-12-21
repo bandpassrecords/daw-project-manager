@@ -33,7 +33,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openFolder => 'Open Folder';
 
   @override
-  String get openInDaw => 'Open in DAW';
+  String get openInDaw => 'Launch in DAW';
 
   @override
   String get extract => 'Extract';
@@ -183,6 +183,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remove => 'Remove';
 
   @override
+  String removeTrackFromReleaseMessage(String trackName) {
+    return 'Are you sure you want to remove \"$trackName\" from this release?';
+  }
+
+  @override
   String get saveName => 'Save Name';
 
   @override
@@ -219,7 +224,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String created(String date) {
-    return 'Created: $date';
+    return 'Created';
   }
 
   @override
@@ -238,6 +243,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get status => 'Status';
+
+  @override
+  String get phase => 'Phase';
+
+  @override
+  String get filterByPhase => 'Filter by Phase';
+
+  @override
+  String get allPhases => 'All Phases';
 
   @override
   String get daw => 'DAW';
@@ -331,6 +345,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String failedToUnhideProjects(String error) {
     return 'Failed to unhide projects: $error';
+  }
+
+  @override
+  String hideProjectMessage(String projectName) {
+    return 'Are you sure you want to hide \"$projectName\"?';
   }
 
   @override
@@ -718,6 +737,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projectPhaseFinished => 'Finished';
 
   @override
+  String get changeStatus => 'Change Phase';
+
+  @override
+  String get selectNewStatus => 'Select new phase:';
+
+  @override
+  String statusChangedForProjects(int count, String plural, String status) {
+    return 'Phase changed to \"$status\" for $count project$plural';
+  }
+
+  @override
+  String statusChangedForProjectsWithErrors(
+    int successCount,
+    String successPlural,
+    int failCount,
+    String failPlural,
+    String status,
+  ) {
+    return 'Phase changed to \"$status\" for $successCount project$successPlural, $failCount failed$failPlural';
+  }
+
+  @override
+  String failedToChangeStatus(String error) {
+    return 'Failed to change phase: $error';
+  }
+
+  @override
   String get tooltipEditProfileName => 'Edit profile name';
 
   @override
@@ -816,4 +862,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noProfileSelected => 'No profile selected';
+
+  @override
+  String get exportBackupDialogTitle => 'Export Backup';
+
+  @override
+  String get importBackupDialogTitle => 'Import Backup';
+
+  @override
+  String get invalidBackupFileFormat =>
+      'Invalid backup file format: missing version';
+
+  @override
+  String get profileNameRequiredForNewProfile =>
+      'Profile name is required when creating a new profile';
+
+  @override
+  String get currentProfileRequired =>
+      'Current profile is required for merge or replace mode';
 }

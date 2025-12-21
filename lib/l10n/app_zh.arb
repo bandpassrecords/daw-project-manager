@@ -11,7 +11,7 @@
   "launch": "打开",
   "view": "查看",
   "openFolder": "打开文件夹",
-  "openInDaw": "在DAW中打开",
+  "openInDaw": "在DAW中启动",
   "extract": "提取",
   "extracting": "提取中…",
   "extractingMetadata": "正在提取元数据...",
@@ -79,6 +79,15 @@
   "editProfile": "编辑配置文件",
   "changePhoto": "更改照片",
   "remove": "删除",
+  "removeTrackFromReleaseMessage": "您确定要从此发布中删除「{trackName}」吗？",
+  "@removeTrackFromReleaseMessage": {
+    "description": "从发布中删除曲目时的确认消息",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "保存名称",
   "profilePhotoUpdated": "配置文件照片已更新。",
   "profilePhotoRemoved": "配置文件照片已删除。",
@@ -136,6 +145,9 @@
   },
   "name": "名称",
   "status": "状态",
+  "phase": "阶段",
+  "filterByPhase": "按阶段筛选",
+  "allPhases": "所有阶段",
   "daw": "DAW",
   "lastModifiedColumn": "最后修改",
   "actions": "操作",
@@ -221,6 +233,15 @@
   "@failedToUnhideProjects": {
     "placeholders": {
       "error": {
+        "type": "String"
+      }
+    }
+  },
+  "hideProjectMessage": "您确定要隐藏「{projectName}」吗？",
+  "@hideProjectMessage": {
+    "description": "隐藏项目时的确认消息",
+    "placeholders": {
+      "projectName": {
         "type": "String"
       }
     }
@@ -639,6 +660,53 @@
   "projectPhaseMixing": "混音",
   "projectPhaseMastering": "母带处理",
   "projectPhaseFinished": "完成",
+  "changeStatus": "更改阶段",
+  "selectNewStatus": "选择新阶段:",
+  "statusChangedForProjects": "{count} 个项目{plural}的阶段已更改为「{status}」",
+  "@statusChangedForProjects": {
+    "description": "多个项目状态更改成功时的消息",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "{successCount} 个项目{successPlural}的阶段已更改为「{status}」，{failCount} 个失败{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "状态更改部分失败时的消息",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "更改阶段失败: {error}",
+  "@failedToChangeStatus": {
+    "description": "状态更改失败时的错误消息",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "编辑配置文件名称",
   "tooltipAddTodo": "添加待办事项",
   "tooltipClearDate": "清除日期",

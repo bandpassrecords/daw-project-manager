@@ -183,9 +183,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     await _scanAll(fullMetadata: true);
   }
 
-  Set<String> _selectedProjectIds = {};
-
-
   Future<void> _createReleaseFromSelectedProjects(BuildContext context, WidgetRef ref, List<MusicProject> selectedProjects) async {
     if (selectedProjects.isEmpty) return;
 
@@ -202,9 +199,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     await _createRelease(context, ref, selectedProjectIds, releaseTitle);
     
     // Clear selection after creating release
-    setState(() {
-      _selectedProjectIds.clear();
-    });
+    ref.read(selectedProjectsProvider.notifier).clear();
   }
 
   Future<void> _hideProjects(BuildContext context, WidgetRef ref, List<String> selectedProjectIds) async {
@@ -327,6 +322,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
     final projects = ref.watch(projectsProvider);
     final hiddenMode = ref.watch(showHiddenProjectsProvider);
     final hiddenNotifier = ref.read(showHiddenProjectsProvider.notifier);
+    final phaseFilter = ref.watch(phaseFilterProvider);
     final initialScanning = ref.watch(initialScanStateProvider);
     final isProfileSwitching = ref.watch(profileSwitchingProvider);
     final isScanning = _scanning || initialScanning;
@@ -665,14 +661,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                           ),
                         ),
                         const SizedBox(width: 8),
-                        IconButton(
-                          tooltip: AppLocalizations.of(context)!.toggleSort,
-                          onPressed: () {
-                            ref.read(queryParamsNotifierProvider.notifier).toggleSortDesc();
-                          },
-                          icon: Icon(currentParams.sortDesc ? Icons.sort_by_alpha : Icons.sort),
-                        ),
-                        const SizedBox(width: 8),
                         // Exibe o contador de projetos
                         Flexible(
                           child: repoAsync.when(
@@ -751,6 +739,48 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                               }
                             },
                           ),
+                        const SizedBox(width: 8),
+                        // Phase Filter dropdown
+                        DropdownButton<String>(
+                          value: phaseFilter,
+                          hint: Text(
+                            AppLocalizations.of(context)!.filterByPhase,
+                            style: const TextStyle(fontSize: 12, color: Colors.white70),
+                          ),
+                          underline: const SizedBox.shrink(),
+                          dropdownColor: const Color(0xFF2B2D31),
+                          style: const TextStyle(fontSize: 12, color: Colors.white70),
+                          icon: const Icon(Icons.filter_list, size: 16, color: Colors.white70),
+                          items: [
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text(AppLocalizations.of(context)!.allPhases),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'Idea',
+                              child: Text(AppLocalizations.of(context)!.projectPhaseIdea),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'Arranging',
+                              child: Text(AppLocalizations.of(context)!.projectPhaseArranging),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'Mixing',
+                              child: Text(AppLocalizations.of(context)!.projectPhaseMixing),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'Mastering',
+                              child: Text(AppLocalizations.of(context)!.projectPhaseMastering),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: 'Finished',
+                              child: Text(AppLocalizations.of(context)!.projectPhaseFinished),
+                            ),
+                          ],
+                          onChanged: (String? value) {
+                            ref.read(phaseFilterProvider.notifier).setPhase(value);
+                          },
+                        ),
                         const SizedBox(width: 8),
                         Builder(
                           builder: (context) {
@@ -956,35 +986,192 @@ class _PlutoProjectsTableWithSelection extends ConsumerStatefulWidget {
 }
 
 class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjectsTableWithSelection> {
-  final Set<String> _selectedProjectIds = {};
+  Set<String> get _selectedProjectIds => ref.watch(selectedProjectsProvider);
 
   void _clearSelection() {
-    setState(() {
-      _selectedProjectIds.clear();
-    });
+    ref.read(selectedProjectsProvider.notifier).clear();
   }
 
   void _toggleProjectSelection(String projectId) {
-    setState(() {
-      if (_selectedProjectIds.contains(projectId)) {
-        _selectedProjectIds.remove(projectId);
-      } else {
-        _selectedProjectIds.add(projectId);
-      }
-    });
+    ref.read(selectedProjectsProvider.notifier).toggle(projectId);
   }
 
   void _selectAll() {
-    setState(() {
-      _selectedProjectIds.clear();
-      _selectedProjectIds.addAll(widget.projects.map((p) => p.id));
-    });
+    ref.read(selectedProjectsProvider.notifier).selectAll(widget.projects.map((p) => p.id).toList());
   }
 
   bool get _areAllSelected {
     if (widget.projects.isEmpty) return false;
     return _selectedProjectIds.length == widget.projects.length &&
         widget.projects.every((p) => _selectedProjectIds.contains(p.id));
+  }
+
+  Future<void> _showChangeStatusDialog(BuildContext context) async {
+    String? selectedStatus;
+    
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          backgroundColor: const Color(0xFF2B2D31),
+          title: Text(AppLocalizations.of(context)!.changeStatus),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(AppLocalizations.of(context)!.selectNewStatus),
+              const SizedBox(height: 16),
+              RadioListTile<String>(
+                title: Text(AppLocalizations.of(context)!.projectPhaseIdea),
+                value: 'Idea',
+                groupValue: selectedStatus,
+                onChanged: (value) {
+                  setState(() {
+                    selectedStatus = value;
+                  });
+                },
+              ),
+              RadioListTile<String>(
+                title: Text(AppLocalizations.of(context)!.projectPhaseArranging),
+                value: 'Arranging',
+                groupValue: selectedStatus,
+                onChanged: (value) {
+                  setState(() {
+                    selectedStatus = value;
+                  });
+                },
+              ),
+              RadioListTile<String>(
+                title: Text(AppLocalizations.of(context)!.projectPhaseMixing),
+                value: 'Mixing',
+                groupValue: selectedStatus,
+                onChanged: (value) {
+                  setState(() {
+                    selectedStatus = value;
+                  });
+                },
+              ),
+              RadioListTile<String>(
+                title: Text(AppLocalizations.of(context)!.projectPhaseMastering),
+                value: 'Mastering',
+                groupValue: selectedStatus,
+                onChanged: (value) {
+                  setState(() {
+                    selectedStatus = value;
+                  });
+                },
+              ),
+              RadioListTile<String>(
+                title: Text(AppLocalizations.of(context)!.projectPhaseFinished),
+                value: 'Finished',
+                groupValue: selectedStatus,
+                onChanged: (value) {
+                  setState(() {
+                    selectedStatus = value;
+                  });
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+            ElevatedButton(
+              onPressed: selectedStatus == null
+                  ? null
+                  : () => Navigator.pop(ctx, selectedStatus),
+              child: Text(AppLocalizations.of(context)!.changeStatus),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result != null && mounted) {
+      await _changeProjectsStatus(context, result);
+    }
+  }
+
+  Future<void> _changeProjectsStatus(BuildContext context, String newStatus) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final allProjectsAsync = ref.read(allProjectsStreamProvider);
+      final allProjects = allProjectsAsync.value ?? [];
+      
+      int successCount = 0;
+      int failCount = 0;
+      
+      for (final projectId in _selectedProjectIds) {
+        try {
+          final project = allProjects.firstWhere((p) => p.id == projectId);
+          final updated = project.copyWith(status: newStatus);
+          await repo.updateProject(updated);
+          successCount++;
+        } catch (e) {
+          failCount++;
+          if (kDebugMode) {
+            print('Failed to update project $projectId: $e');
+          }
+        }
+      }
+      
+      // Refresh the projects list
+      ref.invalidate(allProjectsStreamProvider);
+      
+      if (mounted) {
+        final statusText = _translateStatus(context, newStatus);
+        if (failCount == 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.statusChangedForProjects(
+                successCount,
+                successCount == 1 ? '' : 's',
+                statusText,
+              )),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.statusChangedForProjectsWithErrors(
+                successCount,
+                successCount == 1 ? '' : 's',
+                failCount,
+                failCount == 1 ? '' : 's',
+                statusText,
+              )),
+            ),
+          );
+        }
+      }
+      
+      _clearSelection();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToChangeStatus(e.toString()))),
+        );
+      }
+    }
+  }
+
+  String _translateStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status) {
+      case 'Idea':
+        return l10n.projectPhaseIdea;
+      case 'Arranging':
+        return l10n.projectPhaseArranging;
+      case 'Mixing':
+        return l10n.projectPhaseMixing;
+      case 'Mastering':
+        return l10n.projectPhaseMastering;
+      case 'Finished':
+        return l10n.projectPhaseFinished;
+      default:
+        return status;
+    }
   }
 
   @override
@@ -997,6 +1184,8 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
             dateFormat: widget.dateFormat,
             selectedIds: _selectedProjectIds,
             onToggleSelection: _toggleProjectSelection,
+            onHideProjects: widget.onHideProjects,
+            onUnhideProjects: widget.onUnhideProjects,
           ),
         ),
         // Selection action bar
@@ -1103,6 +1292,15 @@ class _PlutoProjectsTableWithSelectionState extends ConsumerState<_PlutoProjects
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
+                      icon: const Icon(Icons.edit),
+                      label: Text(AppLocalizations.of(context)!.changeStatus),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF5A6B7A),
+                      ),
+                      onPressed: () => _showChangeStatusDialog(context),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
                       icon: const Icon(Icons.album),
                       label: Text(AppLocalizations.of(context)!.createRelease),
                       onPressed: () {
@@ -1130,11 +1328,15 @@ class _PlutoProjectsTable extends ConsumerStatefulWidget {
   final DateFormat dateFormat;
   final Set<String> selectedIds;
   final Function(String) onToggleSelection;
+  final Function(List<String>) onHideProjects;
+  final Function(List<String>) onUnhideProjects;
   const _PlutoProjectsTable({
     required this.projects,
     required this.dateFormat,
     required this.selectedIds,
     required this.onToggleSelection,
+    required this.onHideProjects,
+    required this.onUnhideProjects,
   });
 
   @override
@@ -1366,7 +1568,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         frozen: PlutoColumnFrozen.start,
       ),
       PlutoColumn(
-        title: l10n.status,
+        title: l10n.phase,
         field: 'status',
         type: PlutoColumnType.text(),
         width: 140,
@@ -1492,8 +1694,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         title: AppLocalizations.of(context)!.actions,
         field: 'launch',
         type: PlutoColumnType.text(),
-        width: 180, // Reduced width for icon buttons
-        minWidth: 150,
+        width: 250, // Increased width to accommodate hidden button
+        minWidth: 220,
         renderer: (ctx) {
           final project = ctx.row.cells['data']!.value as MusicProject;
           
@@ -1506,6 +1708,57 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Launch button
+              IconButton(
+                icon: const Icon(Icons.open_in_new),
+                tooltip: AppLocalizations.of(context)!.tooltipLaunchInDaw,
+                onPressed: () async {
+                  final exists = File(project.filePath).existsSync() || Directory(project.filePath).existsSync();
+                  if (!exists) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
+                    }
+                    return;
+                  }
+                  try {
+                    // Lançamento específico para Windows e macOS
+                    if (Platform.isMacOS) {
+                      await Process.start('open', [project.filePath]);
+                    } else if (Platform.isWindows) {
+                      await Process.start('cmd', ['/c', 'start', '', project.filePath]);
+                    } else {
+                      // Fallback para outros sistemas operacionais (e.g. Linux)
+                      await Process.start(project.filePath, []);
+                    }
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.launchingProject(project.displayName))));
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunch(e.toString()))));
+                    }
+                    return;
+                  }
+                },
+              ),
+              // Separator
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  '|',
+                  style: TextStyle(color: Colors.white38, fontSize: 18),
+                ),
+              ),
+              // View button
+              IconButton(
+                icon: const Icon(Icons.assignment),
+                tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => ProjectDetailPage(projectId: project.id)),
+                  );
+                },
+              ),
               // Open Folder button
               IconButton(
                 icon: const Icon(Icons.folder_open),
@@ -1545,46 +1798,51 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                   }
                 },
               ),
-              // View button
-              IconButton(
-                icon: const Icon(Icons.visibility),
-                tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => ProjectDetailPage(projectId: project.id)),
-                  );
-                },
+              // Separator
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  '|',
+                  style: TextStyle(color: Colors.white38, fontSize: 18),
+                ),
               ),
-              // Launch button
+              // Hidden button
               IconButton(
-                icon: const Icon(Icons.open_in_new),
-                tooltip: AppLocalizations.of(context)!.tooltipLaunchInDaw,
+                icon: Icon(project.hidden ? Icons.visibility : Icons.visibility_off),
+                color: project.hidden ? Colors.green.shade300 : Colors.red.shade300,
+                tooltip: project.hidden 
+                    ? AppLocalizations.of(context)!.unhide 
+                    : AppLocalizations.of(context)!.hide,
                 onPressed: () async {
-                  final exists = File(project.filePath).existsSync() || Directory(project.filePath).existsSync();
-                  if (!exists) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
+                  if (project.hidden) {
+                    // Unhide - no confirmation needed
+                    widget.onUnhideProjects([project.id]);
+                  } else {
+                    // Hide - show confirmation dialog
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: const Color(0xFF2B2D31),
+                        title: Text(AppLocalizations.of(context)!.hide),
+                        content: Text(AppLocalizations.of(context)!.hideProjectMessage(project.displayName)),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(AppLocalizations.of(context)!.cancel),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade300,
+                            ),
+                            child: Text(AppLocalizations.of(context)!.hide),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) {
+                      widget.onHideProjects([project.id]);
                     }
-                    return;
-                  }
-                  try {
-                    // Lançamento específico para Windows e macOS
-                    if (Platform.isMacOS) {
-                      await Process.start('open', [project.filePath]);
-                    } else if (Platform.isWindows) {
-                      await Process.start('cmd', ['/c', 'start', '', project.filePath]);
-                    } else {
-                      // Fallback para outros sistemas operacionais (e.g. Linux)
-                      await Process.start(project.filePath, []);
-                    }
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.launchingProject(project.displayName))));
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunch(e.toString()))));
-                    }
-                    return;
                   }
                 },
               ),
@@ -1668,33 +1926,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         final project = event.row.cells['data']?.value as MusicProject?;
         if (project == null) return;
         
-        // Check if file exists
-        final exists = File(project.filePath).existsSync() || Directory(project.filePath).existsSync();
-        if (!exists) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
-          }
-          return;
-        }
-        
-        try {
-          // Launch project based on platform
-          if (Platform.isMacOS) {
-            await Process.start('open', [project.filePath]);
-          } else if (Platform.isWindows) {
-            await Process.start('cmd', ['/c', 'start', '', project.filePath]);
-          } else {
-            // Fallback for other operating systems (e.g., Linux)
-            await Process.start(project.filePath, []);
-          }
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.launchingProject(project.displayName))));
-          }
-        } catch (e) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunch(e.toString()))));
-          }
-        }
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => ProjectDetailPage(projectId: project.id)),
+        );
       },
       createFooter: (stateManager) => const SizedBox.shrink(),
     );

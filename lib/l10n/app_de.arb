@@ -11,7 +11,7 @@
   "launch": "Öffnen",
   "view": "Anzeigen",
   "openFolder": "Ordner öffnen",
-  "openInDaw": "Im DAW öffnen",
+  "openInDaw": "Im DAW starten",
   "extract": "Extrahieren",
   "extracting": "Extrahieren…",
   "extractingMetadata": "Metadaten werden extrahiert...",
@@ -79,6 +79,15 @@
   "editProfile": "Profil bearbeiten",
   "changePhoto": "Foto ändern",
   "remove": "Entfernen",
+  "removeTrackFromReleaseMessage": "Sind Sie sicher, dass Sie \"{trackName}\" aus dieser Veröffentlichung entfernen möchten?",
+  "@removeTrackFromReleaseMessage": {
+    "description": "Bestätigungsmeldung beim Entfernen eines Tracks aus einer Veröffentlichung",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "Namen speichern",
   "profilePhotoUpdated": "Profilfoto aktualisiert.",
   "profilePhotoRemoved": "Profilfoto entfernt.",
@@ -136,6 +145,9 @@
   },
   "name": "Name",
   "status": "Status",
+  "phase": "Phase",
+  "filterByPhase": "Nach Phase filtern",
+  "allPhases": "Alle Phasen",
   "daw": "DAW",
   "lastModifiedColumn": "Zuletzt Geändert",
   "actions": "Aktionen",
@@ -221,6 +233,15 @@
   "@failedToUnhideProjects": {
     "placeholders": {
       "error": {
+        "type": "String"
+      }
+    }
+  },
+  "hideProjectMessage": "Sind Sie sicher, dass Sie \"{projectName}\" ausblenden möchten?",
+  "@hideProjectMessage": {
+    "description": "Bestätigungsmeldung beim Ausblenden eines Projekts",
+    "placeholders": {
+      "projectName": {
         "type": "String"
       }
     }
@@ -639,6 +660,53 @@
   "projectPhaseMixing": "Mischen",
   "projectPhaseMastering": "Mastering",
   "projectPhaseFinished": "Fertig",
+  "changeStatus": "Phase Ändern",
+  "selectNewStatus": "Neue Phase auswählen:",
+  "statusChangedForProjects": "Phase für {count} Projekt{plural} auf \"{status}\" geändert",
+  "@statusChangedForProjects": {
+    "description": "Erfolgsmeldung, wenn der Status für mehrere Projekte geändert wird",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "Phase für {successCount} Projekt{successPlural} auf \"{status}\" geändert, {failCount} fehlgeschlagen{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "Meldung, wenn die Statusänderung teilweise fehlschlägt",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "Fehler beim Ändern der Phase: {error}",
+  "@failedToChangeStatus": {
+    "description": "Fehlermeldung, wenn die Statusänderung fehlschlägt",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "Profilname bearbeiten",
   "tooltipAddTodo": "Aufgabe hinzufügen",
   "tooltipClearDate": "Datum löschen",

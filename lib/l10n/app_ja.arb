@@ -11,7 +11,7 @@
   "launch": "開く",
   "view": "表示",
   "openFolder": "フォルダを開く",
-  "openInDaw": "DAWで開く",
+  "openInDaw": "DAWで起動",
   "extract": "抽出",
   "extracting": "抽出中…",
   "extractingMetadata": "メタデータを抽出中...",
@@ -79,6 +79,15 @@
   "editProfile": "プロファイルを編集",
   "changePhoto": "写真を変更",
   "remove": "削除",
+  "removeTrackFromReleaseMessage": "このリリースから「{trackName}」を削除してもよろしいですか？",
+  "@removeTrackFromReleaseMessage": {
+    "description": "リリースからトラックを削除する際の確認メッセージ",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "名前を保存",
   "profilePhotoUpdated": "プロファイル写真を更新しました。",
   "profilePhotoRemoved": "プロファイル写真を削除しました。",
@@ -136,6 +145,9 @@
   },
   "name": "名前",
   "status": "ステータス",
+  "phase": "フェーズ",
+  "filterByPhase": "フェーズでフィルター",
+  "allPhases": "すべてのフェーズ",
   "daw": "DAW",
   "lastModifiedColumn": "最終更新",
   "actions": "アクション",
@@ -221,6 +233,15 @@
   "@failedToUnhideProjects": {
     "placeholders": {
       "error": {
+        "type": "String"
+      }
+    }
+  },
+  "hideProjectMessage": "「{projectName}」を非表示にしてもよろしいですか？",
+  "@hideProjectMessage": {
+    "description": "プロジェクトを非表示にする際の確認メッセージ",
+    "placeholders": {
+      "projectName": {
         "type": "String"
       }
     }
@@ -639,6 +660,53 @@
   "projectPhaseMixing": "ミキシング",
   "projectPhaseMastering": "マスタリング",
   "projectPhaseFinished": "完了",
+  "changeStatus": "フェーズを変更",
+  "selectNewStatus": "新しいフェーズを選択:",
+  "statusChangedForProjects": "{count} プロジェクト{plural}のフェーズを「{status}」に変更しました",
+  "@statusChangedForProjects": {
+    "description": "複数のプロジェクトのステータスが変更されたときの成功メッセージ",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "{successCount} プロジェクト{successPlural}のフェーズを「{status}」に変更しましたが、{failCount} が失敗{failPlural}しました",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "ステータス変更が部分的に失敗したときのメッセージ",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "フェーズの変更に失敗しました: {error}",
+  "@failedToChangeStatus": {
+    "description": "ステータス変更が失敗したときのエラーメッセージ",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "プロファイル名を編集",
   "tooltipAddTodo": "タスクを追加",
   "tooltipClearDate": "日付をクリア",

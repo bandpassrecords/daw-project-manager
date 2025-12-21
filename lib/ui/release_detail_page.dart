@@ -896,12 +896,20 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                           key: ValueKey(project.id),
                           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           color: const Color(0xFF2B2D31),
-                          child: ListTile(
-                            leading: ReorderableDragStartListener(
-                              index: index,
-                              child: const Icon(Icons.drag_indicator, color: Colors.white70),
-                            ),
-                            title: Text(project.displayName),
+                          child: GestureDetector(
+                            onDoubleTap: () async {
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => ProjectDetailPage(projectId: project.id),
+                                ),
+                              );
+                            },
+                            child: ListTile(
+                              leading: ReorderableDragStartListener(
+                                index: index,
+                                child: const Icon(Icons.drag_indicator, color: Colors.white70),
+                              ),
+                              title: Text(project.displayName),
                             subtitle: Wrap(
                               spacing: 8,
                               crossAxisAlignment: WrapCrossAlignment.center,
@@ -934,55 +942,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Open Folder button
-                                IconButton(
-                                  icon: const Icon(Icons.folder_open),
-                                  tooltip: AppLocalizations.of(context)!.openFolder,
-                                  onPressed: () async {
-                                    final exists = Directory(folderPath).existsSync();
-                                    if (!exists) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)),
-                                        );
-                                      }
-                                      return;
-                                    }
-                                    
-                                    try {
-                                      if (Platform.isMacOS) {
-                                        await Process.start('open', [folderPath]);
-                                      } else if (Platform.isWindows) {
-                                        await Process.start('explorer', [folderPath]);
-                                      } else if (Platform.isLinux) {
-                                        await Process.start('xdg-open', [folderPath]);
-                                      }
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(AppLocalizations.of(context)!.openingFolder(project.displayName))),
-                                        );
-                                      }
-                                    } catch (e) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(AppLocalizations.of(context)!.failedToOpenFolder(e.toString()))),
-                                        );
-                                      }
-                                    }
-                                  },
-                                ),
-                                // View button
-                                IconButton(
-                                  icon: const Icon(Icons.visibility),
-                                  tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
-                                  onPressed: () async {
-                                    await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => ProjectDetailPage(projectId: project.id),
-                                      ),
-                                    );
-                                  },
-                                ),
                                 // Launch button
                                 IconButton(
                                   icon: const Icon(Icons.open_in_new),
@@ -1020,19 +979,108 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                     }
                                   },
                                 ),
+                                // Separator
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(
+                                    '|',
+                                    style: TextStyle(color: Colors.white38, fontSize: 18),
+                                  ),
+                                ),
+                                // View button
+                                IconButton(
+                                  icon: const Icon(Icons.assignment),
+                                  tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
+                                  onPressed: () async {
+                                    await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => ProjectDetailPage(projectId: project.id),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                // Open Folder button
+                                IconButton(
+                                  icon: const Icon(Icons.folder_open),
+                                  tooltip: AppLocalizations.of(context)!.openFolder,
+                                  onPressed: () async {
+                                    final exists = Directory(folderPath).existsSync();
+                                    if (!exists) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)),
+                                        );
+                                      }
+                                      return;
+                                    }
+                                    
+                                    try {
+                                      if (Platform.isMacOS) {
+                                        await Process.start('open', [folderPath]);
+                                      } else if (Platform.isWindows) {
+                                        await Process.start('explorer', [folderPath]);
+                                      } else if (Platform.isLinux) {
+                                        await Process.start('xdg-open', [folderPath]);
+                                      }
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.openingFolder(project.displayName))),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.failedToOpenFolder(e.toString()))),
+                                        );
+                                      }
+                                    }
+                                  },
+                                ),
+                                // Separator
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(
+                                    '|',
+                                    style: TextStyle(color: Colors.white38, fontSize: 18),
+                                  ),
+                                ),
                                 // Remove button
                                 IconButton(
                                   icon: const Icon(Icons.remove_circle_outline),
                                   color: Colors.red.shade300,
                                   tooltip: AppLocalizations.of(context)!.tooltipRemoveFromRelease,
                                   onPressed: () async {
-                                    final repo = await ref.read(repositoryProvider.future);
-                                    final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
-                                    final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
-                                    await repo.updateRelease(updatedRelease);
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        backgroundColor: const Color(0xFF2B2D31),
+                                        title: Text(AppLocalizations.of(context)!.tooltipRemoveFromRelease),
+                                        content: Text(AppLocalizations.of(context)!.removeTrackFromReleaseMessage(project.displayName)),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(ctx, false),
+                                            child: Text(AppLocalizations.of(context)!.cancel),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () => Navigator.pop(ctx, true),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red.shade300,
+                                            ),
+                                            child: Text(AppLocalizations.of(context)!.remove),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    if (confirm == true && mounted) {
+                                      final repo = await ref.read(repositoryProvider.future);
+                                      final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
+                                      final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
+                                      await repo.updateRelease(updatedRelease);
+                                    }
                                   },
                                 ),
                               ],
+                            ),
                             ),
                           ),
                         );

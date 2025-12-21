@@ -33,7 +33,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get openFolder => 'フォルダを開く';
 
   @override
-  String get openInDaw => 'DAWで開く';
+  String get openInDaw => 'DAWで起動';
 
   @override
   String get extract => '抽出';
@@ -183,6 +183,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get remove => '削除';
 
   @override
+  String removeTrackFromReleaseMessage(String trackName) {
+    return 'このリリースから「$trackName」を削除してもよろしいですか？';
+  }
+
+  @override
   String get saveName => '名前を保存';
 
   @override
@@ -219,7 +224,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String created(String date) {
-    return '作成日: $date';
+    return '作成日';
   }
 
   @override
@@ -238,6 +243,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get status => 'ステータス';
+
+  @override
+  String get phase => 'フェーズ';
+
+  @override
+  String get filterByPhase => 'フェーズでフィルター';
+
+  @override
+  String get allPhases => 'すべてのフェーズ';
 
   @override
   String get daw => 'DAW';
@@ -331,6 +345,11 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String failedToUnhideProjects(String error) {
     return 'プロジェクトの表示に失敗しました: $error';
+  }
+
+  @override
+  String hideProjectMessage(String projectName) {
+    return '「$projectName」を非表示にしてもよろしいですか？';
   }
 
   @override
@@ -714,6 +733,33 @@ class AppLocalizationsJa extends AppLocalizations {
   String get projectPhaseFinished => '完了';
 
   @override
+  String get changeStatus => 'フェーズを変更';
+
+  @override
+  String get selectNewStatus => '新しいフェーズを選択:';
+
+  @override
+  String statusChangedForProjects(int count, String plural, String status) {
+    return '$count プロジェクト$pluralのフェーズを「$status」に変更しました';
+  }
+
+  @override
+  String statusChangedForProjectsWithErrors(
+    int successCount,
+    String successPlural,
+    int failCount,
+    String failPlural,
+    String status,
+  ) {
+    return '$successCount プロジェクト$successPluralのフェーズを「$status」に変更しましたが、$failCount が失敗$failPluralしました';
+  }
+
+  @override
+  String failedToChangeStatus(String error) {
+    return 'フェーズの変更に失敗しました: $error';
+  }
+
+  @override
   String get tooltipEditProfileName => 'プロファイル名を編集';
 
   @override
@@ -757,20 +803,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get done => '完了';
 
   @override
-  String get backupAndRestore => 'Backup & Restore';
+  String get backupAndRestore => 'バックアップと復元';
 
   @override
-  String get exportBackup => 'Export Backup';
+  String get exportBackup => 'バックアップをエクスポート';
 
   @override
-  String get importBackup => 'Import Backup';
+  String get importBackup => 'バックアップをインポート';
 
   @override
-  String get backupExportedSuccessfully => 'Backup exported successfully';
+  String get backupExportedSuccessfully => 'バックアップのエクスポートに成功しました';
 
   @override
   String failedToExportBackup(String error) {
-    return 'Failed to export backup: $error';
+    return 'バックアップのエクスポートに失敗しました: $error';
   }
 
   @override
@@ -779,26 +825,26 @@ class AppLocalizationsJa extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Backup imported successfully: $projectsCount projects, $rootsCount roots, $releasesCount releases';
+    return 'バックアップのインポートに成功しました: $projectsCount プロジェクト、$rootsCount ルート、$releasesCount リリース';
   }
 
   @override
   String failedToImportBackup(String error) {
-    return 'Failed to import backup: $error';
+    return 'バックアップのインポートに失敗しました: $error';
   }
 
   @override
-  String get importBackupMessage => 'Choose how to import the backup:';
+  String get importBackupMessage => 'バックアップのインポート方法を選択してください:';
 
   @override
-  String get mergeWithCurrentProfile => 'Merge with current active profile';
+  String get mergeWithCurrentProfile => '現在のアクティブなプロフィールとマージ';
 
   @override
   String get replaceCurrentProfile =>
-      'Replace entirely the current profile (WARNING: This will delete all current profile data)';
+      '現在のプロフィールを完全に置き換える（警告: これにより現在のプロフィールのすべてのデータが削除されます）';
 
   @override
-  String get createNewProfileForImport => 'Create a new profile for this data';
+  String get createNewProfileForImport => 'このデータ用に新しいプロフィールを作成';
 
   @override
   String backupImportedToNewProfile(
@@ -807,9 +853,25 @@ class AppLocalizationsJa extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Backup imported to new profile \"$profileName\": $projectsCount projects, $rootsCount roots, $releasesCount releases';
+    return '新しいプロフィール \"$profileName\" にバックアップをインポートしました: $projectsCount プロジェクト、$rootsCount ルート、$releasesCount リリース';
   }
 
   @override
-  String get noProfileSelected => 'No profile selected';
+  String get noProfileSelected => 'プロフィールが選択されていません';
+
+  @override
+  String get exportBackupDialogTitle => 'バックアップをエクスポート';
+
+  @override
+  String get importBackupDialogTitle => 'バックアップをインポート';
+
+  @override
+  String get invalidBackupFileFormat => '無効なバックアップファイル形式: バージョンがありません';
+
+  @override
+  String get profileNameRequiredForNewProfile =>
+      '新しいプロフィールを作成する際は、プロフィール名が必要です';
+
+  @override
+  String get currentProfileRequired => 'マージまたは置き換えモードには現在のプロフィールが必要です';
 }

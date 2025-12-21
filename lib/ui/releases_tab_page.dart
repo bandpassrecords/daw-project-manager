@@ -306,7 +306,9 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
+              IconButton(
+                icon: const Icon(Icons.assignment),
+                tooltip: AppLocalizations.of(context)!.view,
                 onPressed: () async {
                   await Navigator.of(context).push(
                     MaterialPageRoute(
@@ -318,10 +320,12 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                     ref.invalidate(releasesProvider);
                   }
                 },
-                child: Text(AppLocalizations.of(context)!.view),
               ),
               const SizedBox(width: 8),
-              ElevatedButton(
+              IconButton(
+                icon: const Icon(Icons.delete),
+                color: Colors.red.shade300,
+                tooltip: AppLocalizations.of(context)!.delete,
                 onPressed: () async {
                   final confirm = await showDialog<bool>(
                     context: context,
@@ -354,10 +358,6 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                     }
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade700,
-                ),
-                child: Text(AppLocalizations.of(context)!.delete),
               ),
             ],
           );
@@ -406,6 +406,20 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
       ),
       onRowChecked: null,
       onSelected: null,
+      onRowDoubleTap: (PlutoGridOnRowDoubleTapEvent event) async {
+        final release = event.row.cells['data']?.value as Release?;
+        if (release == null) return;
+        
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ReleaseDetailPage(releaseId: release.id),
+          ),
+        );
+        // Refresh releases data when returning from detail page
+        if (mounted) {
+          ref.invalidate(releasesProvider);
+        }
+      },
       createFooter: (stateManager) => const SizedBox.shrink(),
     );
   }

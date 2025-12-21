@@ -33,7 +33,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get openFolder => 'Apri Cartella';
 
   @override
-  String get openInDaw => 'Apri nel DAW';
+  String get openInDaw => 'Avvia nel DAW';
 
   @override
   String get extract => 'Estrai';
@@ -183,6 +183,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get remove => 'Rimuovi';
 
   @override
+  String removeTrackFromReleaseMessage(String trackName) {
+    return 'Sei sicuro di voler rimuovere \"$trackName\" da questa pubblicazione?';
+  }
+
+  @override
   String get saveName => 'Salva Nome';
 
   @override
@@ -219,7 +224,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String created(String date) {
-    return 'Creato: $date';
+    return 'Creato';
   }
 
   @override
@@ -238,6 +243,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get status => 'Stato';
+
+  @override
+  String get phase => 'Fase';
+
+  @override
+  String get filterByPhase => 'Filtra per Fase';
+
+  @override
+  String get allPhases => 'Tutte le Fasi';
 
   @override
   String get daw => 'DAW';
@@ -331,6 +345,11 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String failedToUnhideProjects(String error) {
     return 'Errore nel mostrare progetti: $error';
+  }
+
+  @override
+  String hideProjectMessage(String projectName) {
+    return 'Sei sicuro di voler nascondere \"$projectName\"?';
   }
 
   @override
@@ -720,6 +739,33 @@ class AppLocalizationsIt extends AppLocalizations {
   String get projectPhaseFinished => 'Completato';
 
   @override
+  String get changeStatus => 'Cambia Fase';
+
+  @override
+  String get selectNewStatus => 'Seleziona la nuova fase:';
+
+  @override
+  String statusChangedForProjects(int count, String plural, String status) {
+    return 'Fase cambiata in \"$status\" per $count progetto$plural';
+  }
+
+  @override
+  String statusChangedForProjectsWithErrors(
+    int successCount,
+    String successPlural,
+    int failCount,
+    String failPlural,
+    String status,
+  ) {
+    return 'Fase cambiata in \"$status\" per $successCount progetto$successPlural, $failCount fallito$failPlural';
+  }
+
+  @override
+  String failedToChangeStatus(String error) {
+    return 'Errore nel cambiare fase: $error';
+  }
+
+  @override
   String get tooltipEditProfileName => 'Modifica nome profilo';
 
   @override
@@ -763,20 +809,20 @@ class AppLocalizationsIt extends AppLocalizations {
   String get done => 'Fatto';
 
   @override
-  String get backupAndRestore => 'Backup & Restore';
+  String get backupAndRestore => 'Backup e Ripristino';
 
   @override
-  String get exportBackup => 'Export Backup';
+  String get exportBackup => 'Esporta Backup';
 
   @override
-  String get importBackup => 'Import Backup';
+  String get importBackup => 'Importa Backup';
 
   @override
-  String get backupExportedSuccessfully => 'Backup exported successfully';
+  String get backupExportedSuccessfully => 'Backup esportato con successo';
 
   @override
   String failedToExportBackup(String error) {
-    return 'Failed to export backup: $error';
+    return 'Errore nell\'esportazione del backup: $error';
   }
 
   @override
@@ -785,26 +831,27 @@ class AppLocalizationsIt extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Backup imported successfully: $projectsCount projects, $rootsCount roots, $releasesCount releases';
+    return 'Backup importato con successo: $projectsCount progetti, $rootsCount radici, $releasesCount pubblicazioni';
   }
 
   @override
   String failedToImportBackup(String error) {
-    return 'Failed to import backup: $error';
+    return 'Errore nell\'importazione del backup: $error';
   }
 
   @override
-  String get importBackupMessage => 'Choose how to import the backup:';
+  String get importBackupMessage => 'Scegli come importare il backup:';
 
   @override
-  String get mergeWithCurrentProfile => 'Merge with current active profile';
+  String get mergeWithCurrentProfile => 'Unisci con il profilo attivo corrente';
 
   @override
   String get replaceCurrentProfile =>
-      'Replace entirely the current profile (WARNING: This will delete all current profile data)';
+      'Sostituisci completamente il profilo corrente (ATTENZIONE: Questo eliminerà tutti i dati del profilo corrente)';
 
   @override
-  String get createNewProfileForImport => 'Create a new profile for this data';
+  String get createNewProfileForImport =>
+      'Crea un nuovo profilo per questi dati';
 
   @override
   String backupImportedToNewProfile(
@@ -813,9 +860,27 @@ class AppLocalizationsIt extends AppLocalizations {
     int rootsCount,
     int releasesCount,
   ) {
-    return 'Backup imported to new profile \"$profileName\": $projectsCount projects, $rootsCount roots, $releasesCount releases';
+    return 'Backup importato nel nuovo profilo \"$profileName\": $projectsCount progetti, $rootsCount radici, $releasesCount pubblicazioni';
   }
 
   @override
-  String get noProfileSelected => 'No profile selected';
+  String get noProfileSelected => 'Nessun profilo selezionato';
+
+  @override
+  String get exportBackupDialogTitle => 'Esporta Backup';
+
+  @override
+  String get importBackupDialogTitle => 'Importa Backup';
+
+  @override
+  String get invalidBackupFileFormat =>
+      'Formato file di backup non valido: versione mancante';
+
+  @override
+  String get profileNameRequiredForNewProfile =>
+      'Il nome del profilo è obbligatorio quando si crea un nuovo profilo';
+
+  @override
+  String get currentProfileRequired =>
+      'Il profilo corrente è obbligatorio per la modalità unisci o sostituisci';
 }

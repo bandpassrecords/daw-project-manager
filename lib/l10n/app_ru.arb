@@ -11,7 +11,7 @@
   "launch": "Открыть",
   "view": "Просмотр",
   "openFolder": "Открыть папку",
-  "openInDaw": "Открыть в DAW",
+  "openInDaw": "Запустить в DAW",
   "extract": "Извлечь",
   "extracting": "Извлечение…",
   "extractingMetadata": "Извлечение метаданных...",
@@ -79,6 +79,15 @@
   "editProfile": "Редактировать профиль",
   "changePhoto": "Изменить фото",
   "remove": "Удалить",
+  "removeTrackFromReleaseMessage": "Вы уверены, что хотите удалить \"{trackName}\" из этого релиза?",
+  "@removeTrackFromReleaseMessage": {
+    "description": "Сообщение подтверждения при удалении трека из релиза",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "Сохранить имя",
   "profilePhotoUpdated": "Фото профиля обновлено.",
   "profilePhotoRemoved": "Фото профиля удалено.",
@@ -136,6 +145,9 @@
   },
   "name": "Название",
   "status": "Статус",
+  "phase": "Фаза",
+  "filterByPhase": "Фильтровать по Фазе",
+  "allPhases": "Все Фазы",
   "daw": "DAW",
   "lastModifiedColumn": "Последнее Изменение",
   "actions": "Действия",
@@ -221,6 +233,15 @@
   "@failedToUnhideProjects": {
     "placeholders": {
       "error": {
+        "type": "String"
+      }
+    }
+  },
+  "hideProjectMessage": "Вы уверены, что хотите скрыть \"{projectName}\"?",
+  "@hideProjectMessage": {
+    "description": "Сообщение подтверждения при скрытии проекта",
+    "placeholders": {
+      "projectName": {
         "type": "String"
       }
     }
@@ -639,6 +660,53 @@
   "projectPhaseMixing": "Сведение",
   "projectPhaseMastering": "Мастеринг",
   "projectPhaseFinished": "Завершено",
+  "changeStatus": "Изменить Фазу",
+  "selectNewStatus": "Выберите новую фазу:",
+  "statusChangedForProjects": "Фаза изменена на \"{status}\" для {count} проект{plural}",
+  "@statusChangedForProjects": {
+    "description": "Сообщение об успехе при изменении статуса для нескольких проектов",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "Фаза изменена на \"{status}\" для {successCount} проект{successPlural}, {failCount} не удалось{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "Сообщение, когда изменение статуса частично не удалось",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "Ошибка при изменении фазы: {error}",
+  "@failedToChangeStatus": {
+    "description": "Сообщение об ошибке при неудачном изменении статуса",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "Редактировать имя профиля",
   "tooltipAddTodo": "Добавить задачу",
   "tooltipClearDate": "Очистить дату",
