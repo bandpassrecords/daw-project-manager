@@ -535,6 +535,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                         try {
                                           final repo = await ref.read(repositoryProvider.future);
                                           await repo.addRoot(path);
+                                          // Invalidate roots providers to refresh UI immediately
+                                          ref.invalidate(rootsWatchProvider);
+                                          ref.invalidate(scanRootsProvider);
                                           // _scanAll() manages its own _scanning state
                                           await _scanAll();
                                         } catch (e) {
