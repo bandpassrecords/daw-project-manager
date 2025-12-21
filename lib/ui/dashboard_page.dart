@@ -838,7 +838,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                                 ),
                                 const SizedBox(width: 4),
                                 // Versão também na barra de ações (à direita do ícone de lixeira)
-                                const Text(
+                                Text(
                                   'v$kAppVersion',
                                   style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                                 ),
@@ -1914,21 +1914,28 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
       },
       configuration: PlutoGridConfiguration(
         style: PlutoGridStyleConfig(
-          gridBackgroundColor: const Color(0xFF1E1F22),
-          gridBorderColor: const Color(0xFF3C3F43),
+          gridBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          gridBorderColor: Theme.of(context).dividerColor,
           gridBorderRadius: BorderRadius.zero,
-          rowColor: const Color(0xFF2B2D31),
-          cellColorInEditState: const Color(0xFF2F3136),
-          cellColorInReadOnlyState: const Color(0xFF2B2D31),
-          columnTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-          cellTextStyle: const TextStyle(color: Colors.white),
+          rowColor: Theme.of(context).cardColor,
+          cellColorInEditState: Theme.of(context).cardColor,
+          cellColorInReadOnlyState: Theme.of(context).cardColor,
+          columnTextStyle: TextStyle(
+            color: Theme.of(context).textTheme.titleMedium?.color,
+            fontWeight: FontWeight.w600,
+          ),
+          cellTextStyle: TextStyle(
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+          ),
           columnHeight: 44,
           rowHeight: 48,
-          activatedBorderColor: const Color(0xFF5A6B7A),
-          activatedColor: const Color(0xFF263238),
-          iconColor: Colors.white70,
-          menuBackgroundColor: const Color(0xFF2B2D31),
-          evenRowColor: const Color(0xFF27292D),
+          activatedBorderColor: Theme.of(context).colorScheme.primary,
+          activatedColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          iconColor: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
+          menuBackgroundColor: Theme.of(context).cardColor,
+          evenRowColor: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).cardColor.withOpacity(0.5)
+              : Theme.of(context).cardColor.withOpacity(0.7),
         ),
         columnSize: const PlutoGridColumnSizeConfig(
           autoSizeMode: PlutoAutoSizeMode.scale,

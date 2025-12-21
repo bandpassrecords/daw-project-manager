@@ -104,15 +104,13 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
+    final themeData = ref.watch(themeDataProvider);
     final currentLocale = ref.watch(localeProvider);
     
     return MaterialApp(
       key: ValueKey('locale_${currentLocale.languageCode}'), // Force rebuild on locale change
       title: 'DAW Project Manager',
-      themeMode: themeMode,
-      theme: AppThemes.lightTheme,
-      darkTheme: AppThemes.darkTheme,
+      theme: themeData,
       // Localization support
       localizationsDelegates: const [
         AppLocalizations.delegate,

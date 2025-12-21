@@ -223,14 +223,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noProfilesFound => 'プロファイルが見つかりません。上で作成してください。';
 
   @override
-  String created(String date) {
-    return '作成日';
-  }
-
-  @override
-  String get toggleSort => '並び替えを切り替え';
-
-  @override
   String get clearLibraryTooltip => 'ライブラリをクリア（プロジェクトとプロジェクトフォルダ）';
 
   @override
@@ -524,6 +516,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String zipFileSaved(String path) {
     return 'ZIPファイルを保存しました: $path';
   }
+
+  @override
+  String get creatingZipFile => 'ZIPファイルを作成中...';
 
   @override
   String failedToCreateZip(String error) {

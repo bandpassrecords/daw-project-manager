@@ -223,14 +223,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noProfilesFound => 'Профили не найдены. Создайте один выше.';
 
   @override
-  String created(String date) {
-    return 'Создано';
-  }
-
-  @override
-  String get toggleSort => 'Переключить сортировку';
-
-  @override
   String get clearLibraryTooltip =>
       'Очистить библиотеку (проекты и папки проектов)';
 
@@ -529,6 +521,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String zipFileSaved(String path) {
     return 'ZIP файл сохранен в: $path';
   }
+
+  @override
+  String get creatingZipFile => 'Создание ZIP-файла...';
 
   @override
   String failedToCreateZip(String error) {

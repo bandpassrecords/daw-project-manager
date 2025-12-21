@@ -502,18 +502,6 @@ abstract class AppLocalizations {
   /// **'No profiles found. Create one above.'**
   String get noProfilesFound;
 
-  /// No description provided for @created.
-  ///
-  /// In en, this message translates to:
-  /// **'Created'**
-  String created(String date);
-
-  /// No description provided for @toggleSort.
-  ///
-  /// In en, this message translates to:
-  /// **'Toggle sort'**
-  String get toggleSort;
-
   /// No description provided for @clearLibraryTooltip.
   ///
   /// In en, this message translates to:
@@ -967,6 +955,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ZIP file saved to: {path}'**
   String zipFileSaved(String path);
+
+  /// No description provided for @creatingZipFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating ZIP file...'**
+  String get creatingZipFile;
 
   /// No description provided for @failedToCreateZip.
   ///

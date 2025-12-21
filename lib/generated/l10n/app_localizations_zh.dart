@@ -222,14 +222,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noProfilesFound => '未找到配置文件。请在上面创建一个。';
 
   @override
-  String created(String date) {
-    return '创建于';
-  }
-
-  @override
-  String get toggleSort => '切换排序';
-
-  @override
   String get clearLibraryTooltip => '清空库（项目和项目文件夹）';
 
   @override
@@ -523,6 +515,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String zipFileSaved(String path) {
     return 'ZIP文件已保存到: $path';
   }
+
+  @override
+  String get creatingZipFile => '正在创建ZIP文件...';
 
   @override
   String failedToCreateZip(String error) {

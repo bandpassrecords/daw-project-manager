@@ -225,19 +225,19 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
+      builder: (context) => Center(
         child: Card(
-          color: Color(0xFF2B2D31),
+          color: Theme.of(context).cardColor,
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
                 Text(
                   AppLocalizations.of(context)!.creatingZipFile,
-                  style: TextStyle(color: Colors.white70),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                 ),
               ],
             ),

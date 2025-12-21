@@ -225,14 +225,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Keine Profile gefunden. Erstellen Sie eines oben.';
 
   @override
-  String created(String date) {
-    return 'Erstellt';
-  }
-
-  @override
-  String get toggleSort => 'Sortierung umschalten';
-
-  @override
   String get clearLibraryTooltip =>
       'Bibliothek leeren (Projekte und Projektordner)';
 
@@ -532,6 +524,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String zipFileSaved(String path) {
     return 'ZIP-Datei gespeichert in: $path';
   }
+
+  @override
+  String get creatingZipFile => 'ZIP-Datei wird erstellt...';
 
   @override
   String failedToCreateZip(String error) {
