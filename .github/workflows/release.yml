@@ -133,6 +133,24 @@ jobs:
       - name: Generate Hive Adapters
         run: dart run build_runner build --delete-conflicting-outputs
 
+      # 2.5. Sanitize ref name for file paths (replace slashes and invalid chars)
+      - name: Sanitize ref name
+        id: sanitize_ref
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "sanitized_ref=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            # For PRs, use PR number, for branches sanitize the name
+            if [ "${{ github.event_name }}" == "pull_request" ]; then
+              echo "sanitized_ref=pr${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+            else
+              # Replace slashes and other invalid chars with underscores
+              SANITIZED=$(echo "${{ github.ref_name }}" | sed 's/[\/\\:*?"<>|]/_/g')
+              echo "sanitized_ref=$SANITIZED" >> $GITHUB_OUTPUT
+            fi
+          fi
+        shell: bash
+
       # 3. Build
       - name: Build ${{ matrix.os_name }} Executable
         run: ${{ matrix.command }}
@@ -218,7 +236,7 @@ jobs:
           hdiutil create -volname "DAW Project Manager" \
             -srcfolder "$DMG_DIR" \
             -ov -format UDZO \
-            "build/macos/Build/Products/Release/DAW_Project_Manager-${{ github.ref_name }}.dmg"
+            "build/macos/Build/Products/Release/DAW_Project_Manager-${{ steps.sanitize_ref.outputs.sanitized_ref }}.dmg"
           
           # Clean up temporary directory
           rm -rf "$DMG_DIR"
@@ -229,17 +247,16 @@ jobs:
         env:
           APPLE_DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
         run: |
+          DMG_PATH="build/macos/Build/Products/Release/DAW_Project_Manager-${{ steps.sanitize_ref.outputs.sanitized_ref }}.dmg"
           # Sign the DMG
-          codesign --force --sign "$APPLE_DEVELOPER_ID" \
-            "build/macos/Build/Products/Release/DAW_Project_Manager-${{ github.ref_name }}.dmg"
+          codesign --force --sign "$APPLE_DEVELOPER_ID" "$DMG_PATH"
 
           # Verify the DMG signature
-          codesign --verify --verbose "build/macos/Build/Products/Release/DAW_Project_Manager-${{ github.ref_name }}.dmg"
-          codesign --force --sign "$APPLE_DEVELOPER_ID" \
-            "build/macos/Build/Products/Release/DAW_Project_Manager-${{ github.ref_name }}.dmg"
+          codesign --verify --verbose "$DMG_PATH"
+          codesign --force --sign "$APPLE_DEVELOPER_ID" "$DMG_PATH"
           
           # Verify the DMG signature
-          codesign --verify --verbose "build/macos/Build/Products/Release/DAW_Project_Manager-${{ github.ref_name }}.dmg"
+          codesign --verify --verbose "$DMG_PATH"
           
       # 4. Zip (Apenas para macOS ZIP) - AFTER SIGNING
       - name: Zip macOS App Bundle
@@ -247,7 +264,7 @@ jobs:
         run: |
           # macOS: Compacta o bundle .app (already signed)
           cd build/macos/Build/Products/Release
-          zip -r DAW_Project_Manager-${{ github.ref_name }}.zip daw_project_manager.app
+          zip -r DAW_Project_Manager-${{ steps.sanitize_ref.outputs.sanitized_ref }}.zip daw_project_manager.app
 
       # 4e. Clean up keychain
       - name: Clean up keychain
@@ -270,6 +287,29 @@ jobs:
       - name: Compile Windows Installer (ISCC)
         if: matrix.is_installer == true
         run: iscc installer.iss
+
+      # 5.5. Set correct asset paths based on sanitized ref name
+      - name: Set asset paths
+        id: set_asset_paths
+        run: |
+          SANITIZED_REF="${{ steps.sanitize_ref.outputs.sanitized_ref }}"
+          if [ "${{ matrix.is_zip }}" == "true" ]; then
+            echo "asset_path=build/macos/Build/Products/Release/DAW_Project_Manager-${SANITIZED_REF}.zip" >> $GITHUB_OUTPUT
+            echo "asset_name=DAW_Project_Manager_macOS_${SANITIZED_REF}.zip" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.is_dmg }}" == "true" ]; then
+            echo "asset_path=build/macos/Build/Products/Release/DAW_Project_Manager-${SANITIZED_REF}.dmg" >> $GITHUB_OUTPUT
+            echo "asset_name=DAW_Project_Manager_macOS_${SANITIZED_REF}.dmg" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.is_installer }}" == "true" ]; then
+            echo "asset_path=Output/DAW_Project_Manager_Installer_${SANITIZED_REF}.exe" >> $GITHUB_OUTPUT
+            echo "asset_name=DAW_Project_Manager_Installer_${SANITIZED_REF}.exe" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.is_msix }}" == "true" ]; then
+            echo "asset_path=build/windows/x64/runner/Release/daw_project_manager.msix" >> $GITHUB_OUTPUT
+            echo "asset_name=DAW_Project_Manager_${SANITIZED_REF}.msix" >> $GITHUB_OUTPUT
+          else
+            echo "asset_path=${{ matrix.asset_path }}" >> $GITHUB_OUTPUT
+            echo "asset_name=${{ matrix.asset_name }}" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
           
       # 6. Encontra a URL de Upload do Release existente (apenas para tags)
       - name: Find Existing Release URL
@@ -301,8 +341,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: ${{ matrix.asset_path }}
-          asset_name: ${{ matrix.asset_name }}
+          asset_path: ${{ steps.set_asset_paths.outputs.asset_path }}
+          asset_name: ${{ steps.set_asset_paths.outputs.asset_name }}
           asset_content_type: ${{ matrix.asset_content_type }}
 
       # 7b. Upload do Artefato para GitHub Actions Artifacts (apenas para pull requests)
@@ -310,6 +350,6 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os_name }}_${{ matrix.asset_name }}
-          path: ${{ matrix.asset_path }}
+          name: ${{ matrix.os_name }}_${{ steps.set_asset_paths.outputs.asset_name }}
+          path: ${{ steps.set_asset_paths.outputs.asset_path }}
           retention-days: 7
