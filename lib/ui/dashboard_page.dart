@@ -1479,6 +1479,184 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
     return null;
   }
 
+  Future<void> _launchProject(MusicProject project) async {
+    final exists = File(project.filePath).existsSync() || Directory(project.filePath).existsSync();
+    if (!exists) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
+      }
+      return;
+    }
+    try {
+      // Lançamento específico para Windows e macOS
+      if (Platform.isMacOS) {
+        await Process.start('open', [project.filePath]);
+      } else if (Platform.isWindows) {
+        await Process.start('cmd', ['/c', 'start', '', project.filePath]);
+      } else {
+        // Fallback para outros sistemas operacionais (e.g. Linux)
+        await Process.start(project.filePath, []);
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.launchingProject(project.displayName))));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunch(e.toString()))));
+      }
+    }
+  }
+
+  Future<void> _viewProjectDetails(MusicProject project) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => ProjectDetailPage(projectId: project.id)),
+    );
+  }
+
+  Future<void> _openProjectFolder(MusicProject project) async {
+    final String projectPath = project.filePath;
+    final String folderPath = FileSystemEntity.isDirectorySync(projectPath)
+        ? projectPath // Se for um diretório, usa o próprio caminho
+        : path.dirname(projectPath); // Se for um arquivo, usa o diretório pai
+    
+    final exists = Directory(folderPath).existsSync();
+    if (!exists) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
+      }
+      return;
+    }
+    
+    try {
+      // Lógica para abrir o diretório no explorador de arquivos nativo
+      if (Platform.isMacOS) {
+        await Process.start('open', [folderPath]);
+      } else if (Platform.isWindows) {
+        // Usar 'explorer' para Windows
+        await Process.start('explorer', [folderPath]);
+      } else if (Platform.isLinux) {
+        // Usar 'xdg-open' para a maioria dos ambientes Linux
+        await Process.start('xdg-open', [folderPath]);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.osNotSupportedForOpeningFolder)));
+        }
+        return;
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.openingFolder(project.displayName))));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToOpenFolder(e.toString()))));
+      }
+    }
+  }
+
+  Future<void> _showContextMenu(BuildContext context, MusicProject project, Offset position) async {
+    final l10n = AppLocalizations.of(context)!;
+    
+    final result = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        position.dx,
+        position.dy,
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'launch',
+          child: Row(
+            children: [
+              const Icon(Icons.open_in_new, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.tooltipLaunchInDaw),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'view',
+          child: Row(
+            children: [
+              const Icon(Icons.assignment, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.tooltipViewDetails),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'openFolder',
+          child: Row(
+            children: [
+              const Icon(Icons.folder_open, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.openFolder),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: project.hidden ? 'unhide' : 'hide',
+          child: Row(
+            children: [
+              Icon(
+                project.hidden ? Icons.visibility : Icons.visibility_off,
+                size: 20,
+                color: project.hidden ? Colors.green.shade300 : Colors.red.shade300,
+              ),
+              const SizedBox(width: 8),
+              Text(project.hidden ? l10n.unhide : l10n.hide),
+            ],
+          ),
+        ),
+      ],
+      color: Theme.of(context).cardColor,
+    );
+
+    if (result != null && mounted) {
+      switch (result) {
+        case 'launch':
+          await _launchProject(project);
+          break;
+        case 'view':
+          await _viewProjectDetails(project);
+          break;
+        case 'openFolder':
+          await _openProjectFolder(project);
+          break;
+        case 'hide':
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              backgroundColor: Theme.of(context).cardColor,
+              title: Text(l10n.hide),
+              content: Text(l10n.hideProjectMessage(project.displayName)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: Text(l10n.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade300,
+                  ),
+                  child: Text(l10n.hide),
+                ),
+              ],
+            ),
+          );
+          if (confirm == true) {
+            widget.onHideProjects([project.id]);
+          }
+          break;
+        case 'unhide':
+          widget.onUnhideProjects([project.id]);
+          break;
+      }
+    }
+  }
+
   List<PlutoRow> _mapProjectsToRows(List<MusicProject> projects) {
     return projects.map((p) {
       // Combine DAW type and version into a single string
@@ -1581,6 +1759,19 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         width: 600,
         minWidth: 200,
         frozen: PlutoColumnFrozen.start,
+        renderer: (rendererContext) {
+          final project = rendererContext.row.cells['data']?.value as MusicProject?;
+          if (project == null) {
+            return Text(rendererContext.cell.value.toString());
+          }
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showContextMenu(context, project, details.globalPosition);
+            },
+            child: Text(rendererContext.cell.value.toString()),
+          );
+        },
       ),
       PlutoColumn(
         title: l10n.phase,
@@ -1589,14 +1780,24 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         width: 140,
         minWidth: 120,
         renderer: (rendererContext) {
+          final project = rendererContext.row.cells['data']?.value as MusicProject?;
           final status = rendererContext.cell.value as String? ?? '';
           final translatedStatus = _translateStatus(context, status);
-          return Text(
+          final textWidget = Text(
             translatedStatus,
             style: TextStyle(
               color: _getStatusColor(status),
               fontWeight: FontWeight.w500,
             ),
+          );
+          
+          if (project == null) return textWidget;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showContextMenu(context, project, details.globalPosition);
+            },
+            child: textWidget,
           );
         },
       ),
@@ -1664,44 +1865,48 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
           final status = project.status;
           
           // If status is "Finished", show green
-          if (status == 'Finished') {
-            return Text(
-              rendererContext.cell.value.toString(),
-              style: const TextStyle(color: Colors.green),
-            );
-          }
-          
-          final now = DateTime.now();
-          final lastModified = project.lastModifiedAt;
-          
-          // Calculate color based on age of lastModifiedAt
-          final daysSinceModified = now.difference(lastModified).inDays;
           Color textColor;
-          
-          if (daysSinceModified < 21) {
-            // Recent (0-21 days): default white
-            textColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey;
-          } else if (daysSinceModified < 60) {
-            // Medium (21-60 days): yellow/orange gradient
-            final ratio = (daysSinceModified - 21) / 39.0; // 0 to 1 from 21 to 60 days
-            textColor = Color.lerp(
-              Colors.yellow.shade300,
-              Colors.orange.shade400,
-              ratio,
-            )!;
+          if (status == 'Finished') {
+            textColor = Colors.green;
           } else {
-            // Old (60+ days): orange to red gradient
-            final ratio = ((daysSinceModified - 60) / 60.0).clamp(0.0, 1.0); // 0 to 1 from 60 to 120 days
-            textColor = Color.lerp(
-              Colors.orange.shade400,
-              Colors.red.shade400,
-              ratio,
-            )!;
+            final now = DateTime.now();
+            final lastModified = project.lastModifiedAt;
+            
+            // Calculate color based on age of lastModifiedAt
+            final daysSinceModified = now.difference(lastModified).inDays;
+            
+            if (daysSinceModified < 21) {
+              // Recent (0-21 days): default white
+              textColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey;
+            } else if (daysSinceModified < 60) {
+              // Medium (21-60 days): yellow/orange gradient
+              final ratio = (daysSinceModified - 21) / 39.0; // 0 to 1 from 21 to 60 days
+              textColor = Color.lerp(
+                Colors.yellow.shade300,
+                Colors.orange.shade400,
+                ratio,
+              )!;
+            } else {
+              // Old (60+ days): orange to red gradient
+              final ratio = ((daysSinceModified - 60) / 60.0).clamp(0.0, 1.0); // 0 to 1 from 60 to 120 days
+              textColor = Color.lerp(
+                Colors.orange.shade400,
+                Colors.red.shade400,
+                ratio,
+              )!;
+            }
           }
           
-          return Text(
+          final textWidget = Text(
             rendererContext.cell.value.toString(),
             style: TextStyle(color: textColor),
+          );
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showContextMenu(context, project, details.globalPosition);
+            },
+            child: textWidget,
           );
         },
       ),
@@ -1727,34 +1932,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
               IconButton(
                 icon: const Icon(Icons.open_in_new),
                 tooltip: AppLocalizations.of(context)!.tooltipLaunchInDaw,
-                onPressed: () async {
-                  final exists = File(project.filePath).existsSync() || Directory(project.filePath).existsSync();
-                  if (!exists) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
-                    }
-                    return;
-                  }
-                  try {
-                    // Lançamento específico para Windows e macOS
-                    if (Platform.isMacOS) {
-                      await Process.start('open', [project.filePath]);
-                    } else if (Platform.isWindows) {
-                      await Process.start('cmd', ['/c', 'start', '', project.filePath]);
-                    } else {
-                      // Fallback para outros sistemas operacionais (e.g. Linux)
-                      await Process.start(project.filePath, []);
-                    }
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.launchingProject(project.displayName))));
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLaunch(e.toString()))));
-                    }
-                    return;
-                  }
-                },
+                onPressed: () => _launchProject(project),
               ),
               // Separator
               Padding(
@@ -1768,50 +1946,13 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
               IconButton(
                 icon: const Icon(Icons.assignment),
                 tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => ProjectDetailPage(projectId: project.id)),
-                  );
-                },
+                onPressed: () => _viewProjectDetails(project),
               ),
               // Open Folder button
               IconButton(
                 icon: const Icon(Icons.folder_open),
                 tooltip: AppLocalizations.of(context)!.openFolder,
-                onPressed: () async {
-                  final exists = Directory(folderPath).existsSync();
-                  if (!exists) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)));
-                    }
-                    return;
-                  }
-                  
-                  try {
-                    // Lógica para abrir o diretório no explorador de arquivos nativo
-                    if (Platform.isMacOS) {
-                      await Process.start('open', [folderPath]);
-                    } else if (Platform.isWindows) {
-                      // Usar 'explorer' para Windows
-                      await Process.start('explorer', [folderPath]);
-                    } else if (Platform.isLinux) {
-                      // Usar 'xdg-open' para a maioria dos ambientes Linux
-                      await Process.start('xdg-open', [folderPath]);
-                    } else {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.osNotSupportedForOpeningFolder)));
-                      }
-                      return;
-                    }
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.openingFolder(project.displayName))));
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToOpenFolder(e.toString()))));
-                    }
-                  }
-                },
+                onPressed: () => _openProjectFolder(project),
               ),
               // Separator
               Padding(
