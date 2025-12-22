@@ -57,7 +57,7 @@ jobs:
   # Job UNIFICADO de Release/Upload (usando Matrix para Windows e macOS)
   release_build_upload:
     name: Build & Upload (${{ matrix.os_name }})
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request'
     runs-on: ${{ matrix.os }}
     
     # Configura a Matriz
@@ -271,8 +271,9 @@ jobs:
         if: matrix.is_installer == true
         run: iscc installer.iss
           
-      # 6. Encontra a URL de Upload do Release existente
+      # 6. Encontra a URL de Upload do Release existente (apenas para tags)
       - name: Find Existing Release URL
+        if: startsWith(github.ref, 'refs/tags/v')
         id: find_release
         uses: actions/github-script@v6
         env:
@@ -291,10 +292,10 @@ jobs:
               core.setFailed(`Release with tag ${process.env.RELEASE_TAG} not found. Please create a Release manually on GitHub matching this tag before pushing the tag.`);
             }
 
-      # 7. Upload do Artefato
+      # 7a. Upload do Artefato para Release (apenas para tags)
       - name: Upload ${{ matrix.os_name }} Release Asset
-        # CONDIÇÃO DE SEGURANÇA: Só executa se a URL foi resolvida
-        if: steps.find_release.outputs.upload_url != ''
+        # CONDIÇÃO DE SEGURANÇA: Só executa se a URL foi resolvida e é um tag
+        if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -303,3 +304,12 @@ jobs:
           asset_path: ${{ matrix.asset_path }}
           asset_name: ${{ matrix.asset_name }}
           asset_content_type: ${{ matrix.asset_content_type }}
+
+      # 7b. Upload do Artefato para GitHub Actions Artifacts (apenas para pull requests)
+      - name: Upload ${{ matrix.os_name }} Artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os_name }}_${{ matrix.asset_name }}
+          path: ${{ matrix.asset_path }}
+          retention-days: 7
