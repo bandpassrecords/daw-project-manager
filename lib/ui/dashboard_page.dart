@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart'; 
 import 'package:window_manager/window_manager.dart'; 
 import 'package:path/path.dart' as path; // 🚨 NOVO IMPORT
+import 'package:url_launcher/url_launcher.dart';
 
 import '../services/scanner_service.dart';
 import 'project_detail_page.dart';
@@ -427,8 +428,27 @@ class _DashboardPageState extends ConsumerState<DashboardPage> with SingleTicker
                         ),
                       ),
                       const Spacer(), // Espaçador para empurrar os botões para a direita
-                      const ThemeSwitcher(),
                       const SizedBox(width: 4),
+                      // Donate button
+                      Tooltip(
+                        message: 'Support the project',
+                        child: TextButton.icon(
+                          icon: const Icon(Icons.card_giftcard, size: 18, color: Colors.white70),
+                          label: const Text(
+                            'Support',
+                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                          ),
+                          onPressed: () async {
+                            final uri = Uri.parse('https://www.paypal.com/donate/?hosted_button_id=QHVVZ3LAF39BL');
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                            } 
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const ThemeSwitcher(),
+                      const SizedBox(width: 8),
                       const LanguageSwitcher(),
                       const SizedBox(width: 8),
                       // Botões de minimizar, maximizar e fechar
