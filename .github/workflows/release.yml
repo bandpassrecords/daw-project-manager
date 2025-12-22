@@ -288,6 +288,22 @@ jobs:
         if: matrix.is_installer == true
         run: iscc installer.iss
 
+      # 5.4. Rename Windows Installer to use sanitized ref name
+      - name: Rename Windows Installer
+        if: matrix.is_installer == true
+        run: |
+          # Find the installer file that was created (it will have the version from installer.iss)
+          # The installer creates files like: DAW_Project_Manager_Installer_v1.4.0.exe
+          $installerFile = Get-ChildItem -Path "Output" -Filter "DAW_Project_Manager_Installer_*.exe" | Select-Object -First 1
+          if ($installerFile) {
+            $newName = "DAW_Project_Manager_Installer_${{ steps.sanitize_ref.outputs.sanitized_ref }}.exe"
+            Rename-Item -Path $installerFile.FullName -NewName $newName
+            Write-Host "Renamed installer from $($installerFile.Name) to $newName"
+          } else {
+            Write-Host "Warning: No installer file found in Output directory"
+          }
+        shell: pwsh
+
       # 5.5. Set correct asset paths based on sanitized ref name
       - name: Set asset paths
         id: set_asset_paths
