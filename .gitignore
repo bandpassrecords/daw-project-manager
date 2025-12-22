@@ -49,3 +49,13 @@ app.*.map.json
 
 # Build outputs and installers
 /Output/
+
+# Test certificates and keys (DO NOT COMMIT)
+*.p12
+*.key
+*.crt
+*.csr
+keychain_password.txt
+test_certificate.*
+test_private_key.*
+test-signing.keychain*
