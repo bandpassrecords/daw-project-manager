@@ -11,7 +11,7 @@
   "launch": "Apri",
   "view": "Visualizza",
   "openFolder": "Apri Cartella",
-  "openInDaw": "Apri nel DAW",
+  "openInDaw": "Avvia nel DAW",
   "extract": "Estrai",
   "extracting": "Estrazione…",
   "extractingMetadata": "Estrazione metadati...",
@@ -36,7 +36,7 @@
   "clearLibrary": "Svuota Libreria",
   "clearLibraryMessage": "Questo rimuoverà tutti i progetti salvati e le cartelle sorgente. Continuare?",
   "clear": "Svuota",
-  "roots": "Radici",
+  "roots": "Cartelle Progetti",
   "projects": "Progetti",
   "hidden": "nascosti",
   "profileManager": "Gestore Profili",
@@ -68,7 +68,7 @@
   "error": "Errore",
   "loading": "Caricamento...",
   "deleteProfile": "Elimina Profilo",
-  "deleteProfileMessage": "Sei sicuro di voler eliminare \"{profileName}\"? Questo eliminerà tutti i progetti, radici e pubblicazioni di questo profilo.",
+  "deleteProfileMessage": "Sei sicuro di voler eliminare \"{profileName}\"? Questo eliminerà tutti i progetti, cartelle progetti e pubblicazioni di questo profilo.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -79,6 +79,15 @@
   "editProfile": "Modifica Profilo",
   "changePhoto": "Cambia Foto",
   "remove": "Rimuovi",
+  "removeTrackFromReleaseMessage": "Sei sicuro di voler rimuovere \"{trackName}\" da questa pubblicazione?",
+  "@removeTrackFromReleaseMessage": {
+    "description": "Messaggio di conferma quando si rimuove una traccia da una pubblicazione",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "Salva Nome",
   "profilePhotoUpdated": "Foto del profilo aggiornata.",
   "profilePhotoRemoved": "Foto del profilo rimossa.",
@@ -116,16 +125,7 @@
     }
   },
   "noProfilesFound": "Nessun profilo trovato. Creane uno sopra.",
-  "created": "Creato: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "Inverti ordinamento",
-  "clearLibraryTooltip": "Svuota Libreria (progetti e radici)",
+  "clearLibraryTooltip": "Svuota Libreria (progetti e cartelle progetti)",
   "lastModified": "Ultima modifica: {date}",
   "@lastModified": {
     "placeholders": {
@@ -136,6 +136,9 @@
   },
   "name": "Nome",
   "status": "Stato",
+  "phase": "Fase",
+  "filterByPhase": "Filtra per Fase",
+  "allPhases": "Tutte le Fasi",
   "daw": "DAW",
   "lastModifiedColumn": "Ultima Modifica",
   "actions": "Azioni",
@@ -162,7 +165,7 @@
       }
     }
   },
-  "rootsCount": "Radici: {count}",
+  "rootsCount": "Cartelle Progetti: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -225,6 +228,15 @@
       }
     }
   },
+  "hideProjectMessage": "Sei sicuro di voler nascondere \"{projectName}\"?",
+  "@hideProjectMessage": {
+    "description": "Messaggio di conferma quando si nasconde un progetto",
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
   "releaseCreated": "Pubblicazione \"{title}\" creata con successo.",
   "@releaseCreated": {
     "placeholders": {
@@ -249,7 +261,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "Nessun progetto trovato nelle radici selezionate.",
+  "noProjectsFoundInRoots": "Nessun progetto trovato nelle cartelle progetti selezionate.",
   "selectProjectsFolder": "Seleziona una cartella di progetti",
   "enterReleaseTitle": "Inserisci il Titolo della Pubblicazione",
   "releaseTitle": "Titolo della Pubblicazione",
@@ -448,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "Creazione del file ZIP...",
   "failedToCreateZip": "Errore nella creazione del ZIP: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -639,6 +652,53 @@
   "projectPhaseMixing": "Mixaggio",
   "projectPhaseMastering": "Masterizzazione",
   "projectPhaseFinished": "Completato",
+  "changeStatus": "Cambia Fase",
+  "selectNewStatus": "Seleziona la nuova fase:",
+  "statusChangedForProjects": "Fase cambiata in \"{status}\" per {count} progetto{plural}",
+  "@statusChangedForProjects": {
+    "description": "Messaggio di successo quando lo stato viene cambiato per più progetti",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "Fase cambiata in \"{status}\" per {successCount} progetto{successPlural}, {failCount} fallito{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "Messaggio quando il cambio di stato fallisce parzialmente",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "Errore nel cambiare fase: {error}",
+  "@failedToChangeStatus": {
+    "description": "Messaggio di errore quando il cambio di stato fallisce",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "Modifica nome profilo",
   "tooltipAddTodo": "Aggiungi attività",
   "tooltipClearDate": "Cancella data",
@@ -652,5 +712,70 @@
   "clickToBrowseArtwork": "Clicca per cercare artwork",
   "noFilesAddedYet": "Nessun file aggiunto ancora.\nClicca su \"Aggiungi File\" per caricare i file della pubblicazione.",
   "noTodosYet": "Nessuna attività ancora. Aggiungine una sopra.",
-  "done": "Fatto"
+  "done": "Fatto",
+  "backupAndRestore": "Backup e Ripristino",
+  "exportBackup": "Esporta Backup",
+  "importBackup": "Importa Backup",
+  "backupExportedSuccessfully": "Backup esportato con successo",
+  "failedToExportBackup": "Errore nell'esportazione del backup: {error}",
+  "@failedToExportBackup": {
+    "description": "Messaggio di errore quando l'esportazione del backup fallisce",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Backup importato con successo: {projectsCount} progetti, {rootsCount} cartelle progetti, {releasesCount} pubblicazioni",
+  "@backupImportedSuccessfully": {
+    "description": "Messaggio di successo dopo l'importazione del backup",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Errore nell'importazione del backup: {error}",
+  "@failedToImportBackup": {
+    "description": "Messaggio di errore quando l'importazione del backup fallisce",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Scegli come importare il backup:",
+  "mergeWithCurrentProfile": "Unisci con il profilo attivo corrente",
+  "replaceCurrentProfile": "Sostituisci completamente il profilo corrente (ATTENZIONE: Questo eliminerà tutti i dati del profilo corrente)",
+  "createNewProfileForImport": "Crea un nuovo profilo per questi dati",
+  "backupImportedToNewProfile": "Backup importato nel nuovo profilo \"{profileName}\": {projectsCount} progetti, {rootsCount} cartelle progetti, {releasesCount} pubblicazioni",
+  "@backupImportedToNewProfile": {
+    "description": "Messaggio di successo dopo l'importazione del backup in un nuovo profilo",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "Nessun profilo selezionato",
+  "exportBackupDialogTitle": "Esporta Backup",
+  "importBackupDialogTitle": "Importa Backup",
+  "invalidBackupFileFormat": "Formato file di backup non valido: versione mancante",
+  "profileNameRequiredForNewProfile": "Il nome del profilo è obbligatorio quando si crea un nuovo profilo",
+  "currentProfileRequired": "Il profilo corrente è obbligatorio per la modalità unisci o sostituisci"
 }

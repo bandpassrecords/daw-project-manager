@@ -24,16 +24,16 @@ class LanguageSwitcher extends ConsumerWidget {
 
     return DropdownButton<Locale>(
       value: currentLocale,
-      icon: const Icon(Icons.language, color: Colors.white70, size: 20),
+      icon: Icon(Icons.language, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
       underline: const SizedBox.shrink(),
-      dropdownColor: const Color(0xFF2B2D31),
-      style: const TextStyle(color: Colors.white70, fontSize: 14),
+      dropdownColor: Theme.of(context).cardColor,
+      style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 14),
       items: languageNames.entries.map((entry) {
         return DropdownMenuItem<Locale>(
           value: Locale(entry.key),
           child: Text(
             entry.value,
-            style: const TextStyle(color: Colors.white70),
+            style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
           ),
         );
       }).toList(),

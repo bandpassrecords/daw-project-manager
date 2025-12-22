@@ -11,7 +11,7 @@
   "launch": "Abrir",
   "view": "Ver",
   "openFolder": "Abrir Pasta",
-  "openInDaw": "Abrir no DAW",
+  "openInDaw": "Lançar no DAW",
   "extract": "Extrair",
   "extracting": "Extraindo…",
   "extractingMetadata": "Extraindo metadados...",
@@ -36,7 +36,7 @@
   "clearLibrary": "Limpar Biblioteca",
   "clearLibraryMessage": "Isso removerá todos os projetos salvos e pastas de origem. Continuar?",
   "clear": "Limpar",
-  "roots": "Raízes",
+  "roots": "Pastas de Projetos",
   "projects": "Projetos",
   "hidden": "ocultos",
   "profileManager": "Gerenciador de Perfis",
@@ -68,7 +68,7 @@
   "error": "Erro",
   "loading": "Carregando...",
   "deleteProfile": "Excluir Perfil",
-  "deleteProfileMessage": "Tem certeza de que deseja excluir \"{profileName}\"? Isso excluirá todos os projetos, raízes e lançamentos deste perfil.",
+  "deleteProfileMessage": "Tem certeza de que deseja excluir \"{profileName}\"? Isso excluirá todos os projetos, pastas de projetos e lançamentos deste perfil.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -79,6 +79,15 @@
   "editProfile": "Editar Perfil",
   "changePhoto": "Alterar Foto",
   "remove": "Remover",
+  "removeTrackFromReleaseMessage": "Tem certeza de que deseja remover \"{trackName}\" deste lançamento?",
+  "@removeTrackFromReleaseMessage": {
+    "description": "Mensagem de confirmação ao remover uma faixa de um lançamento",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "Salvar Nome",
   "profilePhotoUpdated": "Foto do perfil atualizada.",
   "profilePhotoRemoved": "Foto do perfil removida.",
@@ -116,16 +125,7 @@
     }
   },
   "noProfilesFound": "Nenhum perfil encontrado. Crie um acima.",
-  "created": "Criado: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "Alternar ordenação",
-  "clearLibraryTooltip": "Limpar Biblioteca (projetos e raízes)",
+  "clearLibraryTooltip": "Limpar Biblioteca (projetos e pastas de projetos)",
   "lastModified": "Última modificação: {date}",
   "@lastModified": {
     "placeholders": {
@@ -136,6 +136,9 @@
   },
   "name": "Nome",
   "status": "Status",
+  "phase": "Fase",
+  "filterByPhase": "Filtrar por Fase",
+  "allPhases": "Todas as Fases",
   "daw": "DAW",
   "lastModifiedColumn": "Última Modificação",
   "actions": "Ações",
@@ -162,7 +165,7 @@
       }
     }
   },
-  "rootsCount": "Raízes: {count}",
+  "rootsCount": "Pastas de Projetos: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -225,6 +228,15 @@
       }
     }
   },
+  "hideProjectMessage": "Tem certeza de que deseja ocultar \"{projectName}\"?",
+  "@hideProjectMessage": {
+    "description": "Mensagem de confirmação ao ocultar um projeto",
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
   "releaseCreated": "Lançamento \"{title}\" criado com sucesso.",
   "@releaseCreated": {
     "placeholders": {
@@ -249,7 +261,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "Nenhum projeto encontrado nas raízes selecionadas.",
+  "noProjectsFoundInRoots": "Nenhum projeto encontrado nas pastas de projetos selecionadas.",
   "selectProjectsFolder": "Selecione uma pasta de projetos",
   "enterReleaseTitle": "Digite o Título do Lançamento",
   "releaseTitle": "Título do Lançamento",
@@ -448,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "Criando arquivo ZIP...",
   "failedToCreateZip": "Falha ao criar ZIP: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -639,6 +652,53 @@
   "projectPhaseMixing": "Mixagem",
   "projectPhaseMastering": "Masterização",
   "projectPhaseFinished": "Finalizado",
+  "changeStatus": "Alterar Fase",
+  "selectNewStatus": "Selecione a nova fase:",
+  "statusChangedForProjects": "Fase alterada para \"{status}\" em {count} projeto{plural}",
+  "@statusChangedForProjects": {
+    "description": "Mensagem de sucesso quando o status é alterado para múltiplos projetos",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "Fase alterada para \"{status}\" em {successCount} projeto{successPlural}, {failCount} falhou{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "Mensagem quando a alteração de status falha parcialmente",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "Falha ao alterar fase: {error}",
+  "@failedToChangeStatus": {
+    "description": "Mensagem de erro quando a alteração de status falha",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "Editar nome do perfil",
   "tooltipAddTodo": "Adicionar tarefa",
   "tooltipClearDate": "Limpar data",
@@ -652,5 +712,70 @@
   "clickToBrowseArtwork": "Clique para procurar arte",
   "noFilesAddedYet": "Nenhum arquivo adicionado ainda.\nClique em \"Adicionar Arquivos\" para fazer upload dos arquivos do lançamento.",
   "noTodosYet": "Nenhuma tarefa ainda. Adicione uma acima.",
-  "done": "Concluído"
+  "done": "Concluído",
+  "backupAndRestore": "Backup e Restauração",
+  "exportBackup": "Exportar Backup",
+  "importBackup": "Importar Backup",
+  "backupExportedSuccessfully": "Backup exportado com sucesso",
+  "failedToExportBackup": "Falha ao exportar backup: {error}",
+  "@failedToExportBackup": {
+    "description": "Mensagem de erro quando a exportação do backup falha",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Backup importado com sucesso: {projectsCount} projetos, {rootsCount} pastas de projetos, {releasesCount} lançamentos",
+  "@backupImportedSuccessfully": {
+    "description": "Mensagem de sucesso após importar backup",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Falha ao importar backup: {error}",
+  "@failedToImportBackup": {
+    "description": "Mensagem de erro quando a importação do backup falha",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Escolha como importar o backup:",
+  "mergeWithCurrentProfile": "Mesclar com o perfil ativo atual",
+  "replaceCurrentProfile": "Substituir completamente o perfil atual (AVISO: Isso excluirá todos os dados do perfil atual)",
+  "createNewProfileForImport": "Criar um novo perfil para estes dados",
+  "backupImportedToNewProfile": "Backup importado para o novo perfil \"{profileName}\": {projectsCount} projetos, {rootsCount} pastas de projetos, {releasesCount} lançamentos",
+  "@backupImportedToNewProfile": {
+    "description": "Mensagem de sucesso após importar backup para um novo perfil",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "Nenhum perfil selecionado",
+  "exportBackupDialogTitle": "Exportar Backup",
+  "importBackupDialogTitle": "Importar Backup",
+  "invalidBackupFileFormat": "Formato de arquivo de backup inválido: versão ausente",
+  "profileNameRequiredForNewProfile": "O nome do perfil é obrigatório ao criar um novo perfil",
+  "currentProfileRequired": "O perfil atual é obrigatório para o modo mesclar ou substituir"
 }

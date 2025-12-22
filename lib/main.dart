@@ -11,6 +11,7 @@ import 'repository/project_repository.dart';
 import 'services/scanner_service.dart';
 
 import 'ui/dashboard_page.dart';
+import 'providers/theme_provider.dart';
 
 // NOVO: Função para executar o scan
 Future<void> _runInitialScan(ProjectRepository repo, ProviderContainer container) async {
@@ -103,41 +104,13 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final darkScheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF5A6B7A), 
-      brightness: Brightness.dark,
-    );
-
-    final baseTheme = ThemeData(
-      useMaterial3: true,
-      colorScheme: darkScheme,
-      scaffoldBackgroundColor: const Color(0xFF1E1F22),
-      canvasColor: const Color(0xFF1E1F22),
-      cardColor: const Color(0xFF2B2D31),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF2B2D31),
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      dividerColor: const Color(0xFF3C3F43),
-      textTheme: const TextTheme(
-        bodyMedium: TextStyle(color: Colors.white),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: Colors.white70),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF5A6B7A), foregroundColor: Colors.white),
-      )
-    );
-
+    final themeData = ref.watch(themeDataProvider);
     final currentLocale = ref.watch(localeProvider);
     
     return MaterialApp(
       key: ValueKey('locale_${currentLocale.languageCode}'), // Force rebuild on locale change
       title: 'DAW Project Manager',
-      themeMode: ThemeMode.dark,
-      theme: baseTheme,
+      theme: themeData,
       // Localization support
       localizationsDelegates: const [
         AppLocalizations.delegate,

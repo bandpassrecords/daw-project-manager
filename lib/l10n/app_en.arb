@@ -11,7 +11,7 @@
   "launch": "Launch",
   "view": "View",
   "openFolder": "Open Folder",
-  "openInDaw": "Open in DAW",
+  "openInDaw": "Launch in DAW",
   "extract": "Extract",
   "extracting": "Extracting…",
   "extractingMetadata": "Extracting metadata...",
@@ -36,7 +36,7 @@
   "clearLibrary": "Clear Library",
   "clearLibraryMessage": "This will remove all saved projects and source folders. Continue?",
   "clear": "Clear",
-  "roots": "Roots",
+  "roots": "Project Folders",
   "projects": "Projects",
   "hidden": "hidden",
   "profileManager": "Profile Manager",
@@ -68,7 +68,7 @@
   "error": "Error",
   "loading": "Loading...",
   "deleteProfile": "Delete Profile",
-  "deleteProfileMessage": "Are you sure you want to delete \"{profileName}\"? This will delete all projects, roots, and releases for this profile.",
+  "deleteProfileMessage": "Are you sure you want to delete \"{profileName}\"? This will delete all projects, project folders, and releases for this profile.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -79,6 +79,15 @@
   "editProfile": "Edit Profile",
   "changePhoto": "Change Photo",
   "remove": "Remove",
+  "removeTrackFromReleaseMessage": "Are you sure you want to remove \"{trackName}\" from this release?",
+  "@removeTrackFromReleaseMessage": {
+    "description": "Confirmation message when removing a track from a release",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "Save Name",
   "profilePhotoUpdated": "Profile photo updated.",
   "profilePhotoRemoved": "Profile photo removed.",
@@ -116,16 +125,7 @@
     }
   },
   "noProfilesFound": "No profiles found. Create one above.",
-  "created": "Created: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "Toggle sort",
-  "clearLibraryTooltip": "Clear Library (projects & roots)",
+  "clearLibraryTooltip": "Clear Library (projects & project folders)",
   "lastModified": "Last modified: {date}",
   "@lastModified": {
     "placeholders": {
@@ -136,6 +136,9 @@
   },
   "name": "Name",
   "status": "Status",
+  "phase": "Phase",
+  "filterByPhase": "Filter by Phase",
+  "allPhases": "All Phases",
   "daw": "DAW",
   "lastModifiedColumn": "Last Modified",
   "actions": "Actions",
@@ -162,7 +165,7 @@
       }
     }
   },
-  "rootsCount": "Roots: {count}",
+  "rootsCount": "Project Folders: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -225,6 +228,15 @@
       }
     }
   },
+  "hideProjectMessage": "Are you sure you want to hide \"{projectName}\"?",
+  "@hideProjectMessage": {
+    "description": "Confirmation message when hiding a project",
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
   "releaseCreated": "Release \"{title}\" created successfully.",
   "@releaseCreated": {
     "placeholders": {
@@ -249,7 +261,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "No projects found in selected roots.",
+  "noProjectsFoundInRoots": "No projects found in selected project folders.",
   "selectProjectsFolder": "Select a projects folder",
   "enterReleaseTitle": "Enter Release Title",
   "releaseTitle": "Release Title",
@@ -448,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "Creating ZIP file...",
   "failedToCreateZip": "Failed to create ZIP: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -639,6 +652,53 @@
   "projectPhaseMixing": "Mixing",
   "projectPhaseMastering": "Mastering",
   "projectPhaseFinished": "Finished",
+  "changeStatus": "Change Phase",
+  "selectNewStatus": "Select new phase:",
+  "statusChangedForProjects": "Phase changed to \"{status}\" for {count} project{plural}",
+  "@statusChangedForProjects": {
+    "description": "Success message when status is changed for multiple projects",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "Phase changed to \"{status}\" for {successCount} project{successPlural}, {failCount} failed{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "Message when status change partially fails",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "Failed to change phase: {error}",
+  "@failedToChangeStatus": {
+    "description": "Error message when status change fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "Edit profile name",
   "tooltipAddTodo": "Add todo",
   "tooltipClearDate": "Clear date",
@@ -652,6 +712,71 @@
   "clickToBrowseArtwork": "Click to browse artwork",
   "noFilesAddedYet": "No files added yet.\nClick \"Add Files\" to upload release files.",
   "noTodosYet": "No todos yet. Add one above.",
-  "done": "Done"
+  "done": "Done",
+  "backupAndRestore": "Backup & Restore",
+  "exportBackup": "Export Backup",
+  "importBackup": "Import Backup",
+  "backupExportedSuccessfully": "Backup exported successfully",
+  "failedToExportBackup": "Failed to export backup: {error}",
+  "@failedToExportBackup": {
+    "description": "Error message when backup export fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Backup imported successfully: {projectsCount} projects, {rootsCount} project folders, {releasesCount} releases",
+  "@backupImportedSuccessfully": {
+    "description": "Success message after importing backup",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Failed to import backup: {error}",
+  "@failedToImportBackup": {
+    "description": "Error message when backup import fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Choose how to import the backup:",
+  "mergeWithCurrentProfile": "Merge with current active profile",
+  "replaceCurrentProfile": "Replace entirely the current profile (WARNING: This will delete all current profile data)",
+  "createNewProfileForImport": "Create a new profile for this data",
+  "backupImportedToNewProfile": "Backup imported to new profile \"{profileName}\": {projectsCount} projects, {rootsCount} project folders, {releasesCount} releases",
+  "@backupImportedToNewProfile": {
+    "description": "Success message after importing backup to a new profile",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "No profile selected",
+  "exportBackupDialogTitle": "Export Backup",
+  "importBackupDialogTitle": "Import Backup",
+  "invalidBackupFileFormat": "Invalid backup file format: missing version",
+  "profileNameRequiredForNewProfile": "Profile name is required when creating a new profile",
+  "currentProfileRequired": "Current profile is required for merge or replace mode"
 }
 

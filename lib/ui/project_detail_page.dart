@@ -146,12 +146,12 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                 }
               },
               child: Container(
-                color: const Color(0xFF2B2D31),
+                color: Theme.of(context).cardColor,
                 height: 40,
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                      icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
                       onPressed: () => Navigator.pop(context),
                       tooltip: AppLocalizations.of(context)!.back,
                     ),
@@ -159,7 +159,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       padding: const EdgeInsets.only(left: 4),
                       child: Text(
                         AppLocalizations.of(context)!.projectDetails,
-                        style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        style: TextStyle(color: Theme.of(context).textTheme.titleMedium?.color, fontSize: 16),
                       ),
                     ),
                     const Spacer(),
@@ -217,7 +217,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                     children: [
                       Text(project.displayName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      Text(project.filePath, style: const TextStyle(color: Colors.white70)),
+                      Text(project.filePath, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color)),
                       const SizedBox(height: 16),
                       Text(AppLocalizations.of(context)!.lastModified(project.lastModifiedAt.toString())),
                       const SizedBox(height: 24),
@@ -280,7 +280,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             : const Icon(Icons.search, size: 18),
                         label: Text(_extractingMetadata ? AppLocalizations.of(context)!.extracting : AppLocalizations.of(context)!.extract),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF5A6B7A),
+                          backgroundColor: Theme.of(context).colorScheme.primary,
                         ),
                         ),
                       ],
@@ -406,7 +406,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                   color: Colors.black54,
                   child: Center(
                     child: Card(
-                      color: const Color(0xFF2B2D31),
+                      color: Theme.of(context).cardColor,
                       child: Padding(
                         padding: const EdgeInsets.all(24.0),
                         child: Column(
@@ -414,9 +414,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                           children: [
                             const CircularProgressIndicator(),
                             const SizedBox(height: 16),
-                            const Text(
+                            Text(
                               'Extracting metadata...',
-                              style: TextStyle(color: Colors.white70),
+                              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                             ),
                           ],
                         ),

@@ -11,7 +11,7 @@
   "launch": "Abrir",
   "view": "Ver",
   "openFolder": "Abrir Carpeta",
-  "openInDaw": "Abrir en DAW",
+  "openInDaw": "Lanzar en DAW",
   "extract": "Extraer",
   "extracting": "Extrayendo…",
   "extractingMetadata": "Extrayendo metadatos...",
@@ -36,7 +36,7 @@
   "clearLibrary": "Limpiar Biblioteca",
   "clearLibraryMessage": "Esto eliminará todos los proyectos guardados y carpetas de origen. ¿Continuar?",
   "clear": "Limpiar",
-  "roots": "Raíces",
+  "roots": "Carpetas de Proyectos",
   "projects": "Proyectos",
   "hidden": "ocultos",
   "profileManager": "Administrador de Perfiles",
@@ -68,7 +68,7 @@
   "error": "Error",
   "loading": "Cargando...",
   "deleteProfile": "Eliminar Perfil",
-  "deleteProfileMessage": "¿Está seguro de que desea eliminar \"{profileName}\"? Esto eliminará todos los proyectos, raíces y lanzamientos de este perfil.",
+  "deleteProfileMessage": "¿Está seguro de que desea eliminar \"{profileName}\"? Esto eliminará todos los proyectos, carpetas de proyectos y lanzamientos de este perfil.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -79,6 +79,15 @@
   "editProfile": "Editar Perfil",
   "changePhoto": "Cambiar Foto",
   "remove": "Eliminar",
+  "removeTrackFromReleaseMessage": "¿Está seguro de que desea eliminar \"{trackName}\" de este lanzamiento?",
+  "@removeTrackFromReleaseMessage": {
+    "description": "Mensaje de confirmación al eliminar una pista de un lanzamiento",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "Guardar Nombre",
   "profilePhotoUpdated": "Foto de perfil actualizada.",
   "profilePhotoRemoved": "Foto de perfil eliminada.",
@@ -116,16 +125,7 @@
     }
   },
   "noProfilesFound": "No se encontraron perfiles. Cree uno arriba.",
-  "created": "Creado: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "Alternar orden",
-  "clearLibraryTooltip": "Limpiar Biblioteca (proyectos y raíces)",
+  "clearLibraryTooltip": "Limpiar Biblioteca (proyectos y carpetas de proyectos)",
   "lastModified": "Última modificación: {date}",
   "@lastModified": {
     "placeholders": {
@@ -136,6 +136,9 @@
   },
   "name": "Nombre",
   "status": "Estado",
+  "phase": "Fase",
+  "filterByPhase": "Filtrar por Fase",
+  "allPhases": "Todas las Fases",
   "daw": "DAW",
   "lastModifiedColumn": "Última Modificación",
   "actions": "Acciones",
@@ -162,7 +165,7 @@
       }
     }
   },
-  "rootsCount": "Raíces: {count}",
+  "rootsCount": "Carpetas de Proyectos: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -225,6 +228,15 @@
       }
     }
   },
+  "hideProjectMessage": "¿Está seguro de que desea ocultar \"{projectName}\"?",
+  "@hideProjectMessage": {
+    "description": "Mensaje de confirmación al ocultar un proyecto",
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
   "releaseCreated": "Lanzamiento \"{title}\" creado exitosamente.",
   "@releaseCreated": {
     "placeholders": {
@@ -249,7 +261,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "No se encontraron proyectos en las raíces seleccionadas.",
+  "noProjectsFoundInRoots": "No se encontraron proyectos en las carpetas de proyectos seleccionadas.",
   "selectProjectsFolder": "Seleccione una carpeta de proyectos",
   "enterReleaseTitle": "Ingrese el Título del Lanzamiento",
   "releaseTitle": "Título del Lanzamiento",
@@ -448,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "Creando archivo ZIP...",
   "failedToCreateZip": "Error al crear ZIP: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -639,6 +652,53 @@
   "projectPhaseMixing": "Mezcla",
   "projectPhaseMastering": "Masterización",
   "projectPhaseFinished": "Finalizado",
+  "changeStatus": "Cambiar Fase",
+  "selectNewStatus": "Seleccione la nueva fase:",
+  "statusChangedForProjects": "Fase cambiada a \"{status}\" para {count} proyecto{plural}",
+  "@statusChangedForProjects": {
+    "description": "Mensaje de éxito cuando se cambia el estado para múltiples proyectos",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "Fase cambiada a \"{status}\" para {successCount} proyecto{successPlural}, {failCount} falló{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "Mensaje cuando el cambio de estado falla parcialmente",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "Error al cambiar fase: {error}",
+  "@failedToChangeStatus": {
+    "description": "Mensaje de error cuando falla el cambio de estado",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "Editar nombre del perfil",
   "tooltipAddTodo": "Agregar tarea",
   "tooltipClearDate": "Limpiar fecha",
@@ -652,5 +712,70 @@
   "clickToBrowseArtwork": "Haga clic para buscar arte",
   "noFilesAddedYet": "No se han agregado archivos todavía.\nHaga clic en \"Agregar Archivos\" para subir archivos del lanzamiento.",
   "noTodosYet": "No hay tareas todavía. Agregue una arriba.",
-  "done": "Hecho"
+  "done": "Hecho",
+  "backupAndRestore": "Respaldo y Restauración",
+  "exportBackup": "Exportar Respaldo",
+  "importBackup": "Importar Respaldo",
+  "backupExportedSuccessfully": "Respaldo exportado exitosamente",
+  "failedToExportBackup": "Error al exportar respaldo: {error}",
+  "@failedToExportBackup": {
+    "description": "Mensaje de error cuando falla la exportación del respaldo",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Respaldo importado exitosamente: {projectsCount} proyectos, {rootsCount} carpetas de proyectos, {releasesCount} lanzamientos",
+  "@backupImportedSuccessfully": {
+    "description": "Mensaje de éxito después de importar respaldo",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Error al importar respaldo: {error}",
+  "@failedToImportBackup": {
+    "description": "Mensaje de error cuando falla la importación del respaldo",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Elija cómo importar el respaldo:",
+  "mergeWithCurrentProfile": "Combinar con el perfil activo actual",
+  "replaceCurrentProfile": "Reemplazar completamente el perfil actual (ADVERTENCIA: Esto eliminará todos los datos del perfil actual)",
+  "createNewProfileForImport": "Crear un nuevo perfil para estos datos",
+  "backupImportedToNewProfile": "Respaldo importado al nuevo perfil \"{profileName}\": {projectsCount} proyectos, {rootsCount} carpetas de proyectos, {releasesCount} lanzamientos",
+  "@backupImportedToNewProfile": {
+    "description": "Mensaje de éxito después de importar respaldo a un nuevo perfil",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "No hay perfil seleccionado",
+  "exportBackupDialogTitle": "Exportar Respaldo",
+  "importBackupDialogTitle": "Importar Respaldo",
+  "invalidBackupFileFormat": "Formato de archivo de respaldo inválido: falta la versión",
+  "profileNameRequiredForNewProfile": "El nombre del perfil es obligatorio al crear un nuevo perfil",
+  "currentProfileRequired": "El perfil actual es obligatorio para el modo combinar o reemplazar"
 }

@@ -117,16 +117,25 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.album_outlined, size: 64, color: Colors.white54),
+                Icon(
+                  Icons.album_outlined,
+                  size: 64,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   AppLocalizations.of(context)!.noReleasesYet,
-                  style: const TextStyle(fontSize: 18, color: Colors.white70),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   AppLocalizations.of(context)!.createFirstRelease,
-                  style: const TextStyle(color: Colors.white54),
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
@@ -248,14 +257,22 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                 width: 60,
                 height: 60,
                 errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.broken_image, size: 40, color: Colors.white38);
+                  return Icon(
+                    Icons.broken_image,
+                    size: 40,
+                    color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
+                  );
                 },
               ),
             );
           }
-          return const Padding(
-            padding: EdgeInsets.all(4.0),
-            child: Icon(Icons.album, size: 40, color: Colors.white38),
+          return Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Icon(
+              Icons.album,
+              size: 40,
+              color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
+            ),
           );
         },
       ),
@@ -306,7 +323,9 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
+              IconButton(
+                icon: const Icon(Icons.assignment),
+                tooltip: AppLocalizations.of(context)!.view,
                 onPressed: () async {
                   await Navigator.of(context).push(
                     MaterialPageRoute(
@@ -318,15 +337,17 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                     ref.invalidate(releasesProvider);
                   }
                 },
-                child: Text(AppLocalizations.of(context)!.view),
               ),
               const SizedBox(width: 8),
-              ElevatedButton(
+              IconButton(
+                icon: const Icon(Icons.delete),
+                color: Colors.red.shade300,
+                tooltip: AppLocalizations.of(context)!.delete,
                 onPressed: () async {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      backgroundColor: const Color(0xFF2B2D31),
+                      backgroundColor: Theme.of(context).cardColor,
                       title: Text(AppLocalizations.of(context)!.deleteRelease),
                       content: Text(AppLocalizations.of(context)!.deleteReleaseMessage(release.title)),
                       actions: [
@@ -354,10 +375,6 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                     }
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade700,
-                ),
-                child: Text(AppLocalizations.of(context)!.delete),
               ),
             ],
           );
@@ -383,21 +400,28 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
       },
       configuration: PlutoGridConfiguration(
         style: PlutoGridStyleConfig(
-          gridBackgroundColor: const Color(0xFF1E1F22),
-          gridBorderColor: const Color(0xFF3C3F43),
+          gridBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          gridBorderColor: Theme.of(context).dividerColor,
           gridBorderRadius: BorderRadius.zero,
-          rowColor: const Color(0xFF2B2D31),
-          cellColorInEditState: const Color(0xFF2F3136),
-          cellColorInReadOnlyState: const Color(0xFF2B2D31),
-          columnTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-          cellTextStyle: const TextStyle(color: Colors.white),
+          rowColor: Theme.of(context).cardColor,
+          cellColorInEditState: Theme.of(context).cardColor,
+          cellColorInReadOnlyState: Theme.of(context).cardColor,
+          columnTextStyle: TextStyle(
+            color: Theme.of(context).textTheme.titleMedium?.color,
+            fontWeight: FontWeight.w600,
+          ),
+          cellTextStyle: TextStyle(
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+          ),
           columnHeight: 44,
           rowHeight: 70, // Taller rows to accommodate thumbnails
-          activatedBorderColor: const Color(0xFF5A6B7A),
-          activatedColor: const Color(0xFF263238),
-          iconColor: Colors.white70,
-          menuBackgroundColor: const Color(0xFF2B2D31),
-          evenRowColor: const Color(0xFF27292D),
+          activatedBorderColor: Theme.of(context).colorScheme.primary,
+          activatedColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          iconColor: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
+          menuBackgroundColor: Theme.of(context).cardColor,
+          evenRowColor: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).cardColor.withOpacity(0.5)
+              : Theme.of(context).cardColor.withOpacity(0.7),
         ),
         columnSize: const PlutoGridColumnSizeConfig(
           autoSizeMode: PlutoAutoSizeMode.scale,
@@ -406,6 +430,20 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
       ),
       onRowChecked: null,
       onSelected: null,
+      onRowDoubleTap: (PlutoGridOnRowDoubleTapEvent event) async {
+        final release = event.row.cells['data']?.value as Release?;
+        if (release == null) return;
+        
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ReleaseDetailPage(releaseId: release.id),
+          ),
+        );
+        // Refresh releases data when returning from detail page
+        if (mounted) {
+          ref.invalidate(releasesProvider);
+        }
+      },
       createFooter: (stateManager) => const SizedBox.shrink(),
     );
   }
@@ -457,7 +495,6 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
     final filteredProjects = _filteredProjects;
     
     return AlertDialog(
-      backgroundColor: const Color(0xFF2B2D31),
       title: Text(AppLocalizations.of(context)!.selectTracks),
       content: SizedBox(
         width: 600,
@@ -466,7 +503,9 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
           children: [
             Text(
               AppLocalizations.of(context)!.selectTracksToInclude(_selectedIds.length, _selectedIds.length == 1 ? '' : 's'),
-              style: const TextStyle(color: Colors.white70),
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+              ),
             ),
             const SizedBox(height: 16),
             // Search field
@@ -492,7 +531,9 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
                   ? Center(
                       child: Text(
                         AppLocalizations.of(context)!.noTracksFound,
-                        style: const TextStyle(color: Colors.white54),
+                        style: TextStyle(
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                  ),
                       ),
                     )
                   : ListView.builder(
@@ -504,7 +545,9 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
                           title: Text(project.displayName),
                           subtitle: Text(
                             '${project.dawType ?? AppLocalizations.of(context)!.unknown} • ${project.bpm?.toStringAsFixed(0) ?? '?'} ${AppLocalizations.of(context)!.bpm}',
-                            style: const TextStyle(color: Colors.white54),
+                            style: TextStyle(
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                  ),
                           ),
                           value: isSelected,
                           onChanged: (value) {
@@ -564,7 +607,7 @@ class _CreateReleaseDialogState extends State<_CreateReleaseDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF2B2D31),
+      backgroundColor: Theme.of(context).cardColor,
       title: Text(AppLocalizations.of(context)!.createRelease),
       content: TextField(
         controller: _titleController,

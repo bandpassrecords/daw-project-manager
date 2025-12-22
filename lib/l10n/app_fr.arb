@@ -11,7 +11,7 @@
   "launch": "Ouvrir",
   "view": "Voir",
   "openFolder": "Ouvrir le Dossier",
-  "openInDaw": "Ouvrir dans le DAW",
+  "openInDaw": "Lancer dans le DAW",
   "extract": "Extraire",
   "extracting": "Extraction…",
   "extractingMetadata": "Extraction des métadonnées...",
@@ -36,7 +36,7 @@
   "clearLibrary": "Vider la Bibliothèque",
   "clearLibraryMessage": "Cela supprimera tous les projets enregistrés et dossiers sources. Continuer?",
   "clear": "Vider",
-  "roots": "Racines",
+  "roots": "Dossiers de Projets",
   "projects": "Projets",
   "hidden": "masqués",
   "profileManager": "Gestionnaire de Profils",
@@ -68,7 +68,7 @@
   "error": "Erreur",
   "loading": "Chargement...",
   "deleteProfile": "Supprimer le Profil",
-  "deleteProfileMessage": "Êtes-vous sûr de vouloir supprimer \"{profileName}\"? Cela supprimera tous les projets, racines et sorties de ce profil.",
+  "deleteProfileMessage": "Êtes-vous sûr de vouloir supprimer \"{profileName}\"? Cela supprimera tous les projets, dossiers de projets et sorties de ce profil.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -79,6 +79,15 @@
   "editProfile": "Modifier le Profil",
   "changePhoto": "Changer la Photo",
   "remove": "Supprimer",
+  "removeTrackFromReleaseMessage": "Êtes-vous sûr de vouloir supprimer \"{trackName}\" de cette sortie ?",
+  "@removeTrackFromReleaseMessage": {
+    "description": "Message de confirmation lors de la suppression d'une piste d'une sortie",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "Enregistrer le Nom",
   "profilePhotoUpdated": "Photo de profil mise à jour.",
   "profilePhotoRemoved": "Photo de profil supprimée.",
@@ -116,16 +125,7 @@
     }
   },
   "noProfilesFound": "Aucun profil trouvé. Créez-en un ci-dessus.",
-  "created": "Créé: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "Basculer le tri",
-  "clearLibraryTooltip": "Vider la Bibliothèque (projets et racines)",
+  "clearLibraryTooltip": "Vider la Bibliothèque (projets et dossiers de projets)",
   "lastModified": "Dernière modification: {date}",
   "@lastModified": {
     "placeholders": {
@@ -136,6 +136,9 @@
   },
   "name": "Nom",
   "status": "Statut",
+  "phase": "Phase",
+  "filterByPhase": "Filtrer par Phase",
+  "allPhases": "Toutes les Phases",
   "daw": "DAW",
   "lastModifiedColumn": "Dernière Modification",
   "actions": "Actions",
@@ -162,7 +165,7 @@
       }
     }
   },
-  "rootsCount": "Racines: {count}",
+  "rootsCount": "Dossiers de Projets: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -225,6 +228,15 @@
       }
     }
   },
+  "hideProjectMessage": "Êtes-vous sûr de vouloir masquer \"{projectName}\" ?",
+  "@hideProjectMessage": {
+    "description": "Message de confirmation lors du masquage d'un projet",
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
   "releaseCreated": "Sortie \"{title}\" créée avec succès.",
   "@releaseCreated": {
     "placeholders": {
@@ -249,7 +261,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "Aucun projet trouvé dans les racines sélectionnées.",
+  "noProjectsFoundInRoots": "Aucun projet trouvé dans les dossiers de projets sélectionnés.",
   "selectProjectsFolder": "Sélectionnez un dossier de projets",
   "enterReleaseTitle": "Entrez le Titre de la Sortie",
   "releaseTitle": "Titre de la Sortie",
@@ -448,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "Création du fichier ZIP...",
   "failedToCreateZip": "Échec de la création du ZIP: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -639,6 +652,53 @@
   "projectPhaseMixing": "Mixage",
   "projectPhaseMastering": "Masterisation",
   "projectPhaseFinished": "Terminé",
+  "changeStatus": "Changer la Phase",
+  "selectNewStatus": "Sélectionnez la nouvelle phase:",
+  "statusChangedForProjects": "Phase changée en \"{status}\" pour {count} projet{plural}",
+  "@statusChangedForProjects": {
+    "description": "Message de succès lorsque le statut est changé pour plusieurs projets",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "Phase changée en \"{status}\" pour {successCount} projet{successPlural}, {failCount} a échoué{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "Message lorsque le changement de statut échoue partiellement",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "Échec du changement de phase: {error}",
+  "@failedToChangeStatus": {
+    "description": "Message d'erreur lorsque le changement de statut échoue",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "Modifier le nom du profil",
   "tooltipAddTodo": "Ajouter une tâche",
   "tooltipClearDate": "Effacer la date",
@@ -652,5 +712,70 @@
   "clickToBrowseArtwork": "Cliquez pour parcourir l'artwork",
   "noFilesAddedYet": "Aucun fichier ajouté pour le moment.\nCliquez sur \"Ajouter des Fichiers\" pour télécharger les fichiers de la sortie.",
   "noTodosYet": "Aucune tâche pour le moment. Ajoutez-en une ci-dessus.",
-  "done": "Terminé"
+  "done": "Terminé",
+  "backupAndRestore": "Sauvegarde et Restauration",
+  "exportBackup": "Exporter la Sauvegarde",
+  "importBackup": "Importer la Sauvegarde",
+  "backupExportedSuccessfully": "Sauvegarde exportée avec succès",
+  "failedToExportBackup": "Échec de l'exportation de la sauvegarde : {error}",
+  "@failedToExportBackup": {
+    "description": "Message d'erreur lorsque l'exportation de la sauvegarde échoue",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Sauvegarde importée avec succès : {projectsCount} projets, {rootsCount} dossiers de projets, {releasesCount} sorties",
+  "@backupImportedSuccessfully": {
+    "description": "Message de succès après l'importation de la sauvegarde",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Échec de l'importation de la sauvegarde : {error}",
+  "@failedToImportBackup": {
+    "description": "Message d'erreur lorsque l'importation de la sauvegarde échoue",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Choisissez comment importer la sauvegarde :",
+  "mergeWithCurrentProfile": "Fusionner avec le profil actif actuel",
+  "replaceCurrentProfile": "Remplacer entièrement le profil actuel (ATTENTION : Cela supprimera toutes les données du profil actuel)",
+  "createNewProfileForImport": "Créer un nouveau profil pour ces données",
+  "backupImportedToNewProfile": "Sauvegarde importée dans le nouveau profil \"{profileName}\" : {projectsCount} projets, {rootsCount} dossiers de projets, {releasesCount} sorties",
+  "@backupImportedToNewProfile": {
+    "description": "Message de succès après l'importation de la sauvegarde dans un nouveau profil",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "Aucun profil sélectionné",
+  "exportBackupDialogTitle": "Exporter la Sauvegarde",
+  "importBackupDialogTitle": "Importer la Sauvegarde",
+  "invalidBackupFileFormat": "Format de fichier de sauvegarde invalide : version manquante",
+  "profileNameRequiredForNewProfile": "Le nom du profil est requis lors de la création d'un nouveau profil",
+  "currentProfileRequired": "Le profil actuel est requis pour le mode fusionner ou remplacer"
 }

@@ -76,7 +76,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF2B2D31),
+        backgroundColor: Theme.of(context).cardColor,
         title: Text(AppLocalizations.of(context)!.editTodo),
         content: TextField(
           controller: editController,
@@ -127,7 +127,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFF2B2D31),
+      color: Theme.of(context).cardColor,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -136,7 +136,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
           children: [
             Row(
               children: [
-                const Icon(Icons.checklist, color: Colors.white70),
+                Icon(Icons.checklist, color: Theme.of(context).textTheme.bodyMedium?.color),
                 const SizedBox(width: 8),
                 Text(
                   AppLocalizations.of(context)!.todoList,
@@ -184,7 +184,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
                     child: Center(
                       child: Text(
                         AppLocalizations.of(context)!.noTodosYet,
-                        style: const TextStyle(color: Colors.white54),
+                        style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                       ),
                     ),
                   );
@@ -253,8 +253,8 @@ class _TodoListWidgetState extends State<TodoListWidget> {
               ? TextDecoration.lineThrough
               : null,
           color: todo.completed
-              ? Colors.white54
-              : Colors.white70,
+              ? Theme.of(context).textTheme.bodySmall?.color
+              : Theme.of(context).textTheme.bodyMedium?.color,
         ),
       ),
       trailing: Row(
@@ -262,7 +262,7 @@ class _TodoListWidgetState extends State<TodoListWidget> {
         children: [
           IconButton(
             icon: const Icon(Icons.edit_outlined, size: 18),
-            color: Colors.white70,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
             onPressed: () => _editTodo(todo),
             tooltip: AppLocalizations.of(context)!.edit,
           ),

@@ -33,7 +33,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get openFolder => 'Открыть папку';
 
   @override
-  String get openInDaw => 'Открыть в DAW';
+  String get openInDaw => 'Запустить в DAW';
 
   @override
   String get extract => 'Извлечь';
@@ -90,7 +90,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get clear => 'Очистить';
 
   @override
-  String get roots => 'Корни';
+  String get roots => 'Папки Проектов';
 
   @override
   String get projects => 'Проекты';
@@ -170,7 +170,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return 'Вы уверены, что хотите удалить \"$profileName\"? Это удалит все проекты, корни и релизы этого профиля.';
+    return 'Вы уверены, что хотите удалить \"$profileName\"? Это удалит все проекты, папки проектов и релизы этого профиля.';
   }
 
   @override
@@ -181,6 +181,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get remove => 'Удалить';
+
+  @override
+  String removeTrackFromReleaseMessage(String trackName) {
+    return 'Вы уверены, что хотите удалить \"$trackName\" из этого релиза?';
+  }
 
   @override
   String get saveName => 'Сохранить имя';
@@ -218,15 +223,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noProfilesFound => 'Профили не найдены. Создайте один выше.';
 
   @override
-  String created(String date) {
-    return 'Создано: $date';
-  }
-
-  @override
-  String get toggleSort => 'Переключить сортировку';
-
-  @override
-  String get clearLibraryTooltip => 'Очистить библиотеку (проекты и корни)';
+  String get clearLibraryTooltip =>
+      'Очистить библиотеку (проекты и папки проектов)';
 
   @override
   String lastModified(String date) {
@@ -238,6 +236,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get status => 'Статус';
+
+  @override
+  String get phase => 'Фаза';
+
+  @override
+  String get filterByPhase => 'Фильтровать по Фазе';
+
+  @override
+  String get allPhases => 'Все Фазы';
 
   @override
   String get daw => 'DAW';
@@ -297,7 +304,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return 'Корни: $count';
+    return 'Папки Проектов: $count';
   }
 
   @override
@@ -334,6 +341,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String hideProjectMessage(String projectName) {
+    return 'Вы уверены, что хотите скрыть \"$projectName\"?';
+  }
+
+  @override
   String releaseCreated(String title) {
     return 'Релиз \"$title\" успешно создан.';
   }
@@ -349,7 +361,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get noProjectsFoundInRoots => 'Проекты не найдены в выбранных корнях.';
+  String get noProjectsFoundInRoots =>
+      'Проекты не найдены в выбранных папках проектов.';
 
   @override
   String get selectProjectsFolder => 'Выберите папку проектов';
@@ -508,6 +521,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String zipFileSaved(String path) {
     return 'ZIP файл сохранен в: $path';
   }
+
+  @override
+  String get creatingZipFile => 'Создание ZIP-файла...';
 
   @override
   String failedToCreateZip(String error) {
@@ -717,6 +733,33 @@ class AppLocalizationsRu extends AppLocalizations {
   String get projectPhaseFinished => 'Завершено';
 
   @override
+  String get changeStatus => 'Изменить Фазу';
+
+  @override
+  String get selectNewStatus => 'Выберите новую фазу:';
+
+  @override
+  String statusChangedForProjects(int count, String plural, String status) {
+    return 'Фаза изменена на \"$status\" для $count проект$plural';
+  }
+
+  @override
+  String statusChangedForProjectsWithErrors(
+    int successCount,
+    String successPlural,
+    int failCount,
+    String failPlural,
+    String status,
+  ) {
+    return 'Фаза изменена на \"$status\" для $successCount проект$successPlural, $failCount не удалось$failPlural';
+  }
+
+  @override
+  String failedToChangeStatus(String error) {
+    return 'Ошибка при изменении фазы: $error';
+  }
+
+  @override
   String get tooltipEditProfileName => 'Редактировать имя профиля';
 
   @override
@@ -758,4 +801,82 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get done => 'Готово';
+
+  @override
+  String get backupAndRestore => 'Резервное копирование и восстановление';
+
+  @override
+  String get exportBackup => 'Экспорт резервной копии';
+
+  @override
+  String get importBackup => 'Импорт резервной копии';
+
+  @override
+  String get backupExportedSuccessfully =>
+      'Резервная копия успешно экспортирована';
+
+  @override
+  String failedToExportBackup(String error) {
+    return 'Ошибка при экспорте резервной копии: $error';
+  }
+
+  @override
+  String backupImportedSuccessfully(
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  ) {
+    return 'Резервная копия успешно импортирована: $projectsCount проектов, $rootsCount папок проектов, $releasesCount релизов';
+  }
+
+  @override
+  String failedToImportBackup(String error) {
+    return 'Ошибка при импорте резервной копии: $error';
+  }
+
+  @override
+  String get importBackupMessage => 'Выберите способ импорта резервной копии:';
+
+  @override
+  String get mergeWithCurrentProfile =>
+      'Объединить с текущим активным профилем';
+
+  @override
+  String get replaceCurrentProfile =>
+      'Полностью заменить текущий профиль (ВНИМАНИЕ: Это удалит все данные текущего профиля)';
+
+  @override
+  String get createNewProfileForImport =>
+      'Создать новый профиль для этих данных';
+
+  @override
+  String backupImportedToNewProfile(
+    String profileName,
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  ) {
+    return 'Резервная копия импортирована в новый профиль \"$profileName\": $projectsCount проектов, $rootsCount папок проектов, $releasesCount релизов';
+  }
+
+  @override
+  String get noProfileSelected => 'Профиль не выбран';
+
+  @override
+  String get exportBackupDialogTitle => 'Экспорт резервной копии';
+
+  @override
+  String get importBackupDialogTitle => 'Импорт резервной копии';
+
+  @override
+  String get invalidBackupFileFormat =>
+      'Неверный формат файла резервной копии: отсутствует версия';
+
+  @override
+  String get profileNameRequiredForNewProfile =>
+      'Имя профиля обязательно при создании нового профиля';
+
+  @override
+  String get currentProfileRequired =>
+      'Текущий профиль обязателен для режима объединения или замены';
 }

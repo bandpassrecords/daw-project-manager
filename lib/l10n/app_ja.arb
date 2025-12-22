@@ -11,7 +11,7 @@
   "launch": "開く",
   "view": "表示",
   "openFolder": "フォルダを開く",
-  "openInDaw": "DAWで開く",
+  "openInDaw": "DAWで起動",
   "extract": "抽出",
   "extracting": "抽出中…",
   "extractingMetadata": "メタデータを抽出中...",
@@ -36,7 +36,7 @@
   "clearLibrary": "ライブラリをクリア",
   "clearLibraryMessage": "これにより、保存されたすべてのプロジェクトとソースフォルダが削除されます。続行しますか？",
   "clear": "クリア",
-  "roots": "ルート",
+  "roots": "プロジェクトフォルダ",
   "projects": "プロジェクト",
   "hidden": "非表示",
   "profileManager": "プロファイルマネージャー",
@@ -68,7 +68,7 @@
   "error": "エラー",
   "loading": "読み込み中...",
   "deleteProfile": "プロファイルを削除",
-  "deleteProfileMessage": "「{profileName}」を削除してもよろしいですか？これにより、このプロファイルのすべてのプロジェクト、ルート、リリースが削除されます。",
+  "deleteProfileMessage": "「{profileName}」を削除してもよろしいですか？これにより、このプロファイルのすべてのプロジェクト、プロジェクトフォルダ、リリースが削除されます。",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -79,6 +79,15 @@
   "editProfile": "プロファイルを編集",
   "changePhoto": "写真を変更",
   "remove": "削除",
+  "removeTrackFromReleaseMessage": "このリリースから「{trackName}」を削除してもよろしいですか？",
+  "@removeTrackFromReleaseMessage": {
+    "description": "リリースからトラックを削除する際の確認メッセージ",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "名前を保存",
   "profilePhotoUpdated": "プロファイル写真を更新しました。",
   "profilePhotoRemoved": "プロファイル写真を削除しました。",
@@ -116,16 +125,7 @@
     }
   },
   "noProfilesFound": "プロファイルが見つかりません。上で作成してください。",
-  "created": "作成日: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "並び替えを切り替え",
-  "clearLibraryTooltip": "ライブラリをクリア（プロジェクトとルート）",
+  "clearLibraryTooltip": "ライブラリをクリア（プロジェクトとプロジェクトフォルダ）",
   "lastModified": "最終更新: {date}",
   "@lastModified": {
     "placeholders": {
@@ -136,6 +136,9 @@
   },
   "name": "名前",
   "status": "ステータス",
+  "phase": "フェーズ",
+  "filterByPhase": "フェーズでフィルター",
+  "allPhases": "すべてのフェーズ",
   "daw": "DAW",
   "lastModifiedColumn": "最終更新",
   "actions": "アクション",
@@ -162,7 +165,7 @@
       }
     }
   },
-  "rootsCount": "ルート: {count}",
+  "rootsCount": "プロジェクトフォルダ: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -225,6 +228,15 @@
       }
     }
   },
+  "hideProjectMessage": "「{projectName}」を非表示にしてもよろしいですか？",
+  "@hideProjectMessage": {
+    "description": "プロジェクトを非表示にする際の確認メッセージ",
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
   "releaseCreated": "リリース「{title}」を作成しました。",
   "@releaseCreated": {
     "placeholders": {
@@ -249,7 +261,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "選択したルートにプロジェクトが見つかりませんでした。",
+  "noProjectsFoundInRoots": "選択したプロジェクトフォルダにプロジェクトが見つかりませんでした。",
   "selectProjectsFolder": "プロジェクトフォルダを選択",
   "enterReleaseTitle": "リリースタイトルを入力",
   "releaseTitle": "リリースタイトル",
@@ -448,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "ZIPファイルを作成中...",
   "failedToCreateZip": "ZIPの作成に失敗しました: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -639,6 +652,53 @@
   "projectPhaseMixing": "ミキシング",
   "projectPhaseMastering": "マスタリング",
   "projectPhaseFinished": "完了",
+  "changeStatus": "フェーズを変更",
+  "selectNewStatus": "新しいフェーズを選択:",
+  "statusChangedForProjects": "{count} プロジェクト{plural}のフェーズを「{status}」に変更しました",
+  "@statusChangedForProjects": {
+    "description": "複数のプロジェクトのステータスが変更されたときの成功メッセージ",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "{successCount} プロジェクト{successPlural}のフェーズを「{status}」に変更しましたが、{failCount} が失敗{failPlural}しました",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "ステータス変更が部分的に失敗したときのメッセージ",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "フェーズの変更に失敗しました: {error}",
+  "@failedToChangeStatus": {
+    "description": "ステータス変更が失敗したときのエラーメッセージ",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "プロファイル名を編集",
   "tooltipAddTodo": "タスクを追加",
   "tooltipClearDate": "日付をクリア",
@@ -652,5 +712,70 @@
   "clickToBrowseArtwork": "アートワークを参照するにはクリック",
   "noFilesAddedYet": "まだファイルが追加されていません。\n「ファイルを追加」をクリックしてリリースファイルをアップロードしてください。",
   "noTodosYet": "まだタスクがありません。上に追加してください。",
-  "done": "完了"
+  "done": "完了",
+  "backupAndRestore": "バックアップと復元",
+  "exportBackup": "バックアップをエクスポート",
+  "importBackup": "バックアップをインポート",
+  "backupExportedSuccessfully": "バックアップのエクスポートに成功しました",
+  "failedToExportBackup": "バックアップのエクスポートに失敗しました: {error}",
+  "@failedToExportBackup": {
+    "description": "バックアップエクスポートが失敗したときのエラーメッセージ",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "バックアップのインポートに成功しました: {projectsCount} プロジェクト、{rootsCount} プロジェクトフォルダ、{releasesCount} リリース",
+  "@backupImportedSuccessfully": {
+    "description": "バックアップインポート後の成功メッセージ",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "バックアップのインポートに失敗しました: {error}",
+  "@failedToImportBackup": {
+    "description": "バックアップインポートが失敗したときのエラーメッセージ",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "バックアップのインポート方法を選択してください:",
+  "mergeWithCurrentProfile": "現在のアクティブなプロフィールとマージ",
+  "replaceCurrentProfile": "現在のプロフィールを完全に置き換える（警告: これにより現在のプロフィールのすべてのデータが削除されます）",
+  "createNewProfileForImport": "このデータ用に新しいプロフィールを作成",
+  "backupImportedToNewProfile": "新しいプロフィール \"{profileName}\" にバックアップをインポートしました: {projectsCount} プロジェクト、{rootsCount} プロジェクトフォルダ、{releasesCount} リリース",
+  "@backupImportedToNewProfile": {
+    "description": "新しいプロフィールにバックアップをインポートした後の成功メッセージ",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "プロフィールが選択されていません",
+  "exportBackupDialogTitle": "バックアップをエクスポート",
+  "importBackupDialogTitle": "バックアップをインポート",
+  "invalidBackupFileFormat": "無効なバックアップファイル形式: バージョンがありません",
+  "profileNameRequiredForNewProfile": "新しいプロフィールを作成する際は、プロフィール名が必要です",
+  "currentProfileRequired": "マージまたは置き換えモードには現在のプロフィールが必要です"
 }

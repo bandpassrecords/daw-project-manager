@@ -33,7 +33,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get openFolder => '打开文件夹';
 
   @override
-  String get openInDaw => '在DAW中打开';
+  String get openInDaw => '在DAW中启动';
 
   @override
   String get extract => '提取';
@@ -89,7 +89,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clear => '清空';
 
   @override
-  String get roots => '根目录';
+  String get roots => '项目文件夹';
 
   @override
   String get projects => '项目';
@@ -169,7 +169,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return '您确定要删除「$profileName」吗？这将删除此配置文件的所有项目、根目录和发布。';
+    return '您确定要删除「$profileName」吗？这将删除此配置文件的所有项目、项目文件夹和发布。';
   }
 
   @override
@@ -180,6 +180,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get remove => '删除';
+
+  @override
+  String removeTrackFromReleaseMessage(String trackName) {
+    return '您确定要从此发布中删除「$trackName」吗？';
+  }
 
   @override
   String get saveName => '保存名称';
@@ -217,15 +222,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noProfilesFound => '未找到配置文件。请在上面创建一个。';
 
   @override
-  String created(String date) {
-    return '创建时间: $date';
-  }
-
-  @override
-  String get toggleSort => '切换排序';
-
-  @override
-  String get clearLibraryTooltip => '清空库（项目和根目录）';
+  String get clearLibraryTooltip => '清空库（项目和项目文件夹）';
 
   @override
   String lastModified(String date) {
@@ -237,6 +234,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get status => '状态';
+
+  @override
+  String get phase => '阶段';
+
+  @override
+  String get filterByPhase => '按阶段筛选';
+
+  @override
+  String get allPhases => '所有阶段';
 
   @override
   String get daw => 'DAW';
@@ -296,7 +302,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return '根目录: $count';
+    return '项目文件夹: $count';
   }
 
   @override
@@ -333,6 +339,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String hideProjectMessage(String projectName) {
+    return '您确定要隐藏「$projectName」吗？';
+  }
+
+  @override
   String releaseCreated(String title) {
     return '发布「$title」创建成功。';
   }
@@ -348,7 +359,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get noProjectsFoundInRoots => '在选定的根目录中未找到项目。';
+  String get noProjectsFoundInRoots => '在选定的项目文件夹中未找到项目。';
 
   @override
   String get selectProjectsFolder => '选择项目文件夹';
@@ -504,6 +515,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String zipFileSaved(String path) {
     return 'ZIP文件已保存到: $path';
   }
+
+  @override
+  String get creatingZipFile => '正在创建ZIP文件...';
 
   @override
   String failedToCreateZip(String error) {
@@ -713,6 +727,33 @@ class AppLocalizationsZh extends AppLocalizations {
   String get projectPhaseFinished => '完成';
 
   @override
+  String get changeStatus => '更改阶段';
+
+  @override
+  String get selectNewStatus => '选择新阶段:';
+
+  @override
+  String statusChangedForProjects(int count, String plural, String status) {
+    return '$count 个项目$plural的阶段已更改为「$status」';
+  }
+
+  @override
+  String statusChangedForProjectsWithErrors(
+    int successCount,
+    String successPlural,
+    int failCount,
+    String failPlural,
+    String status,
+  ) {
+    return '$successCount 个项目$successPlural的阶段已更改为「$status」，$failCount 个失败$failPlural';
+  }
+
+  @override
+  String failedToChangeStatus(String error) {
+    return '更改阶段失败: $error';
+  }
+
+  @override
   String get tooltipEditProfileName => '编辑配置文件名称';
 
   @override
@@ -753,4 +794,75 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get done => '完成';
+
+  @override
+  String get backupAndRestore => '备份和恢复';
+
+  @override
+  String get exportBackup => '导出备份';
+
+  @override
+  String get importBackup => '导入备份';
+
+  @override
+  String get backupExportedSuccessfully => '备份导出成功';
+
+  @override
+  String failedToExportBackup(String error) {
+    return '导出备份失败: $error';
+  }
+
+  @override
+  String backupImportedSuccessfully(
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  ) {
+    return '备份导入成功: $projectsCount 个项目，$rootsCount 个项目文件夹，$releasesCount 个发布';
+  }
+
+  @override
+  String failedToImportBackup(String error) {
+    return '导入备份失败: $error';
+  }
+
+  @override
+  String get importBackupMessage => '选择如何导入备份:';
+
+  @override
+  String get mergeWithCurrentProfile => '与当前活动配置文件合并';
+
+  @override
+  String get replaceCurrentProfile => '完全替换当前配置文件（警告：这将删除当前配置文件的所有数据）';
+
+  @override
+  String get createNewProfileForImport => '为此数据创建新配置文件';
+
+  @override
+  String backupImportedToNewProfile(
+    String profileName,
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  ) {
+    return '备份已导入到新配置文件 \"$profileName\": $projectsCount 个项目，$rootsCount 个项目文件夹，$releasesCount 个发布';
+  }
+
+  @override
+  String get noProfileSelected => '未选择配置文件';
+
+  @override
+  String get exportBackupDialogTitle => '导出备份';
+
+  @override
+  String get importBackupDialogTitle => '导入备份';
+
+  @override
+  String get invalidBackupFileFormat => '无效的备份文件格式: 缺少版本';
+
+  @override
+  String get profileNameRequiredForNewProfile => '创建新配置文件时需要配置文件名称';
+
+  @override
+  String get currentProfileRequired => '合并或替换模式需要当前配置文件';
 }

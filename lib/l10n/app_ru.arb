@@ -11,7 +11,7 @@
   "launch": "Открыть",
   "view": "Просмотр",
   "openFolder": "Открыть папку",
-  "openInDaw": "Открыть в DAW",
+  "openInDaw": "Запустить в DAW",
   "extract": "Извлечь",
   "extracting": "Извлечение…",
   "extractingMetadata": "Извлечение метаданных...",
@@ -36,7 +36,7 @@
   "clearLibrary": "Очистить библиотеку",
   "clearLibraryMessage": "Это удалит все сохраненные проекты и исходные папки. Продолжить?",
   "clear": "Очистить",
-  "roots": "Корни",
+  "roots": "Папки Проектов",
   "projects": "Проекты",
   "hidden": "скрытые",
   "profileManager": "Менеджер профилей",
@@ -68,7 +68,7 @@
   "error": "Ошибка",
   "loading": "Загрузка...",
   "deleteProfile": "Удалить профиль",
-  "deleteProfileMessage": "Вы уверены, что хотите удалить \"{profileName}\"? Это удалит все проекты, корни и релизы этого профиля.",
+  "deleteProfileMessage": "Вы уверены, что хотите удалить \"{profileName}\"? Это удалит все проекты, папки проектов и релизы этого профиля.",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -79,6 +79,15 @@
   "editProfile": "Редактировать профиль",
   "changePhoto": "Изменить фото",
   "remove": "Удалить",
+  "removeTrackFromReleaseMessage": "Вы уверены, что хотите удалить \"{trackName}\" из этого релиза?",
+  "@removeTrackFromReleaseMessage": {
+    "description": "Сообщение подтверждения при удалении трека из релиза",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "Сохранить имя",
   "profilePhotoUpdated": "Фото профиля обновлено.",
   "profilePhotoRemoved": "Фото профиля удалено.",
@@ -116,16 +125,7 @@
     }
   },
   "noProfilesFound": "Профили не найдены. Создайте один выше.",
-  "created": "Создано: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "Переключить сортировку",
-  "clearLibraryTooltip": "Очистить библиотеку (проекты и корни)",
+  "clearLibraryTooltip": "Очистить библиотеку (проекты и папки проектов)",
   "lastModified": "Последнее изменение: {date}",
   "@lastModified": {
     "placeholders": {
@@ -136,6 +136,9 @@
   },
   "name": "Название",
   "status": "Статус",
+  "phase": "Фаза",
+  "filterByPhase": "Фильтровать по Фазе",
+  "allPhases": "Все Фазы",
   "daw": "DAW",
   "lastModifiedColumn": "Последнее Изменение",
   "actions": "Действия",
@@ -162,7 +165,7 @@
       }
     }
   },
-  "rootsCount": "Корни: {count}",
+  "rootsCount": "Папки Проектов: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -225,6 +228,15 @@
       }
     }
   },
+  "hideProjectMessage": "Вы уверены, что хотите скрыть \"{projectName}\"?",
+  "@hideProjectMessage": {
+    "description": "Сообщение подтверждения при скрытии проекта",
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
   "releaseCreated": "Релиз \"{title}\" успешно создан.",
   "@releaseCreated": {
     "placeholders": {
@@ -249,7 +261,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "Проекты не найдены в выбранных корнях.",
+  "noProjectsFoundInRoots": "Проекты не найдены в выбранных папках проектов.",
   "selectProjectsFolder": "Выберите папку проектов",
   "enterReleaseTitle": "Введите Название Релиза",
   "releaseTitle": "Название Релиза",
@@ -448,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "Создание ZIP-файла...",
   "failedToCreateZip": "Ошибка создания ZIP: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -639,6 +652,53 @@
   "projectPhaseMixing": "Сведение",
   "projectPhaseMastering": "Мастеринг",
   "projectPhaseFinished": "Завершено",
+  "changeStatus": "Изменить Фазу",
+  "selectNewStatus": "Выберите новую фазу:",
+  "statusChangedForProjects": "Фаза изменена на \"{status}\" для {count} проект{plural}",
+  "@statusChangedForProjects": {
+    "description": "Сообщение об успехе при изменении статуса для нескольких проектов",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "Фаза изменена на \"{status}\" для {successCount} проект{successPlural}, {failCount} не удалось{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "Сообщение, когда изменение статуса частично не удалось",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "Ошибка при изменении фазы: {error}",
+  "@failedToChangeStatus": {
+    "description": "Сообщение об ошибке при неудачном изменении статуса",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "Редактировать имя профиля",
   "tooltipAddTodo": "Добавить задачу",
   "tooltipClearDate": "Очистить дату",
@@ -652,5 +712,70 @@
   "clickToBrowseArtwork": "Нажмите, чтобы найти обложку",
   "noFilesAddedYet": "Файлы еще не добавлены.\nНажмите \"Добавить Файлы\", чтобы загрузить файлы релиза.",
   "noTodosYet": "Задач пока нет. Добавьте одну выше.",
-  "done": "Готово"
+  "done": "Готово",
+  "backupAndRestore": "Резервное копирование и восстановление",
+  "exportBackup": "Экспорт резервной копии",
+  "importBackup": "Импорт резервной копии",
+  "backupExportedSuccessfully": "Резервная копия успешно экспортирована",
+  "failedToExportBackup": "Ошибка при экспорте резервной копии: {error}",
+  "@failedToExportBackup": {
+    "description": "Сообщение об ошибке при сбое экспорта резервной копии",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "Резервная копия успешно импортирована: {projectsCount} проектов, {rootsCount} папок проектов, {releasesCount} релизов",
+  "@backupImportedSuccessfully": {
+    "description": "Сообщение об успехе после импорта резервной копии",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "Ошибка при импорте резервной копии: {error}",
+  "@failedToImportBackup": {
+    "description": "Сообщение об ошибке при сбое импорта резервной копии",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "Выберите способ импорта резервной копии:",
+  "mergeWithCurrentProfile": "Объединить с текущим активным профилем",
+  "replaceCurrentProfile": "Полностью заменить текущий профиль (ВНИМАНИЕ: Это удалит все данные текущего профиля)",
+  "createNewProfileForImport": "Создать новый профиль для этих данных",
+  "backupImportedToNewProfile": "Резервная копия импортирована в новый профиль \"{profileName}\": {projectsCount} проектов, {rootsCount} папок проектов, {releasesCount} релизов",
+  "@backupImportedToNewProfile": {
+    "description": "Сообщение об успехе после импорта резервной копии в новый профиль",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "Профиль не выбран",
+  "exportBackupDialogTitle": "Экспорт резервной копии",
+  "importBackupDialogTitle": "Импорт резервной копии",
+  "invalidBackupFileFormat": "Неверный формат файла резервной копии: отсутствует версия",
+  "profileNameRequiredForNewProfile": "Имя профиля обязательно при создании нового профиля",
+  "currentProfileRequired": "Текущий профиль обязателен для режима объединения или замены"
 }

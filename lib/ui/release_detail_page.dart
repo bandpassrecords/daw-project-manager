@@ -132,7 +132,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
       case 'Finished':
         return Colors.green.shade300;
       default:
-        return Colors.white70;
+        return Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey;
     }
   }
 
@@ -225,19 +225,19 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
+      builder: (context) => Center(
         child: Card(
-          color: Color(0xFF2B2D31),
+          color: Theme.of(context).cardColor,
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
+              children: <Widget>[
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
                 Text(
-                  'Creating ZIP file...',
-                  style: TextStyle(color: Colors.white70),
+                  AppLocalizations.of(context)!.creatingZipFile,
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                 ),
               ],
             ),
@@ -441,12 +441,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   }
                 },
                 child: Container(
-                  color: const Color(0xFF2B2D31),
+                  color: Theme.of(context).cardColor,
                   height: 40,
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
                         onPressed: () => Navigator.pop(context),
                         tooltip: AppLocalizations.of(context)!.back,
                       ),
@@ -454,7 +454,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                         padding: const EdgeInsets.only(left: 4),
                         child: Text(
                           AppLocalizations.of(context)!.releaseDetails,
-                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                          style: TextStyle(color: Theme.of(context).textTheme.titleMedium?.color, fontSize: 16),
                         ),
                       ),
                       const Spacer(),
@@ -485,12 +485,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   }
                 },
                 child: Container(
-                  color: const Color(0xFF2B2D31),
+                  color: Theme.of(context).cardColor,
                   height: 40,
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
                         onPressed: () => Navigator.pop(context),
                         tooltip: AppLocalizations.of(context)!.back,
                       ),
@@ -498,7 +498,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                         padding: const EdgeInsets.only(left: 4),
                         child: Text(
                           AppLocalizations.of(context)!.error,
-                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                          style: TextStyle(color: Theme.of(context).textTheme.titleMedium?.color, fontSize: 16),
                         ),
                       ),
                       const Spacer(),
@@ -529,7 +529,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   }
                 },
                 child: Container(
-                  color: const Color(0xFF2B2D31),
+                  color: Theme.of(context).cardColor,
                   height: 40,
                   child: Row(
                     children: [
@@ -537,7 +537,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                         padding: const EdgeInsets.only(left: 12),
                         child: Text(
                           AppLocalizations.of(context)!.error,
-                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                          style: TextStyle(color: Theme.of(context).textTheme.titleMedium?.color, fontSize: 16),
                         ),
                       ),
                       Spacer(),
@@ -608,12 +608,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   }
                 },
                 child: Container(
-                  color: const Color(0xFF2B2D31),
+                  color: Theme.of(context).cardColor,
                   height: 40,
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
                         onPressed: () => Navigator.pop(context),
                         tooltip: AppLocalizations.of(context)!.back,
                       ),
@@ -621,7 +621,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                         padding: const EdgeInsets.only(left: 4),
                         child: Text(
                           release.title,
-                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                          style: TextStyle(color: Theme.of(context).textTheme.titleMedium?.color, fontSize: 16),
                         ),
                       ),
                       const Spacer(),
@@ -667,11 +667,11 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                                       child: Column(
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
-                                                          const Icon(Icons.broken_image, size: 50, color: Colors.white38),
+                                                          Icon(Icons.broken_image, size: 50, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
                                                           const SizedBox(height: 8),
                                                           Text(
                                                             AppLocalizations.of(context)!.imageNotFound,
-                                                            style: const TextStyle(color: Colors.white54, fontSize: 12),
+                                                            style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                                                           ),
                                                         ],
                                                       ),
@@ -690,12 +690,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            const Icon(Icons.add_a_photo, size: 50, color: Colors.white54),
+                                            Icon(Icons.add_a_photo, size: 50, color: Theme.of(context).textTheme.bodySmall?.color),
                                             const SizedBox(height: 12),
                                             Text(
                                               AppLocalizations.of(context)!.clickToBrowseArtwork,
-                                              style: const TextStyle(
-                                                color: Colors.white54,
+                                              style: TextStyle(
+                                                color: Theme.of(context).textTheme.bodySmall?.color,
                                                 fontSize: 14,
                                               ),
                                             ),
@@ -757,7 +757,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                 _releaseDate != null
                                     ? DateFormat.yMMMd().format(_releaseDate!)
                                     : AppLocalizations.of(context)!.noDateSet,
-                                style: const TextStyle(color: Colors.white70),
+                                style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                               ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -895,13 +895,21 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                         return Card(
                           key: ValueKey(project.id),
                           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          color: const Color(0xFF2B2D31),
-                          child: ListTile(
-                            leading: ReorderableDragStartListener(
-                              index: index,
-                              child: const Icon(Icons.drag_indicator, color: Colors.white70),
-                            ),
-                            title: Text(project.displayName),
+                          color: Theme.of(context).cardColor,
+                          child: GestureDetector(
+                            onDoubleTap: () async {
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => ProjectDetailPage(projectId: project.id),
+                                ),
+                              );
+                            },
+                            child: ListTile(
+                              leading: ReorderableDragStartListener(
+                                index: index,
+                                child: Icon(Icons.drag_indicator, color: Theme.of(context).textTheme.bodyMedium?.color),
+                              ),
+                              title: Text(project.displayName),
                             subtitle: Wrap(
                               spacing: 8,
                               crossAxisAlignment: WrapCrossAlignment.center,
@@ -912,15 +920,15 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                         ? '${project.dawType!} ${project.dawVersion!}'
                                         : project.dawType!,
                                   ),
-                                  Text('•', style: TextStyle(color: Colors.white54)),
+                                  Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
                                 ],
                                 if (project.bpm != null) ...[
                                   Text('${project.bpm!.toStringAsFixed(0)} ${AppLocalizations.of(context)!.bpm}'),
-                                  Text('•', style: TextStyle(color: Colors.white54)),
+                                  Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
                                 ],
                                 if (project.musicalKey != null && project.musicalKey!.isNotEmpty) ...[
                                   Text(project.musicalKey!),
-                                  Text('•', style: TextStyle(color: Colors.white54)),
+                                  Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
                                 ],
                                 Text(
                                   _translateStatus(context, project.status),
@@ -934,55 +942,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Open Folder button
-                                IconButton(
-                                  icon: const Icon(Icons.folder_open),
-                                  tooltip: AppLocalizations.of(context)!.openFolder,
-                                  onPressed: () async {
-                                    final exists = Directory(folderPath).existsSync();
-                                    if (!exists) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)),
-                                        );
-                                      }
-                                      return;
-                                    }
-                                    
-                                    try {
-                                      if (Platform.isMacOS) {
-                                        await Process.start('open', [folderPath]);
-                                      } else if (Platform.isWindows) {
-                                        await Process.start('explorer', [folderPath]);
-                                      } else if (Platform.isLinux) {
-                                        await Process.start('xdg-open', [folderPath]);
-                                      }
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(AppLocalizations.of(context)!.openingFolder(project.displayName))),
-                                        );
-                                      }
-                                    } catch (e) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(AppLocalizations.of(context)!.failedToOpenFolder(e.toString()))),
-                                        );
-                                      }
-                                    }
-                                  },
-                                ),
-                                // View button
-                                IconButton(
-                                  icon: const Icon(Icons.visibility),
-                                  tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
-                                  onPressed: () async {
-                                    await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => ProjectDetailPage(projectId: project.id),
-                                      ),
-                                    );
-                                  },
-                                ),
                                 // Launch button
                                 IconButton(
                                   icon: const Icon(Icons.open_in_new),
@@ -1020,19 +979,108 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                                     }
                                   },
                                 ),
+                                // Separator
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(
+                                    '|',
+                                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5), fontSize: 18),
+                                  ),
+                                ),
+                                // View button
+                                IconButton(
+                                  icon: const Icon(Icons.assignment),
+                                  tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
+                                  onPressed: () async {
+                                    await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => ProjectDetailPage(projectId: project.id),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                // Open Folder button
+                                IconButton(
+                                  icon: const Icon(Icons.folder_open),
+                                  tooltip: AppLocalizations.of(context)!.openFolder,
+                                  onPressed: () async {
+                                    final exists = Directory(folderPath).existsSync();
+                                    if (!exists) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)),
+                                        );
+                                      }
+                                      return;
+                                    }
+                                    
+                                    try {
+                                      if (Platform.isMacOS) {
+                                        await Process.start('open', [folderPath]);
+                                      } else if (Platform.isWindows) {
+                                        await Process.start('explorer', [folderPath]);
+                                      } else if (Platform.isLinux) {
+                                        await Process.start('xdg-open', [folderPath]);
+                                      }
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.openingFolder(project.displayName))),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(AppLocalizations.of(context)!.failedToOpenFolder(e.toString()))),
+                                        );
+                                      }
+                                    }
+                                  },
+                                ),
+                                // Separator
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(
+                                    '|',
+                                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5), fontSize: 18),
+                                  ),
+                                ),
                                 // Remove button
                                 IconButton(
                                   icon: const Icon(Icons.remove_circle_outline),
                                   color: Colors.red.shade300,
                                   tooltip: AppLocalizations.of(context)!.tooltipRemoveFromRelease,
                                   onPressed: () async {
-                                    final repo = await ref.read(repositoryProvider.future);
-                                    final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
-                                    final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
-                                    await repo.updateRelease(updatedRelease);
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        backgroundColor: Theme.of(context).cardColor,
+                                        title: Text(AppLocalizations.of(context)!.tooltipRemoveFromRelease),
+                                        content: Text(AppLocalizations.of(context)!.removeTrackFromReleaseMessage(project.displayName)),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(ctx, false),
+                                            child: Text(AppLocalizations.of(context)!.cancel),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () => Navigator.pop(ctx, true),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red.shade300,
+                                            ),
+                                            child: Text(AppLocalizations.of(context)!.remove),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    if (confirm == true && mounted) {
+                                      final repo = await ref.read(repositoryProvider.future);
+                                      final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
+                                      final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
+                                      await repo.updateRelease(updatedRelease);
+                                    }
                                   },
                                 ),
                               ],
+                            ),
                             ),
                           ),
                         );
@@ -1071,7 +1119,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                             child: Text(
                               AppLocalizations.of(context)!.noFilesAddedYet,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.white54),
+                              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                             ),
                           )
                         : _FilesSection(
@@ -1105,12 +1153,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                   }
                 },
                 child: Container(
-                  color: const Color(0xFF2B2D31),
+                  color: Theme.of(context).cardColor,
                   height: 40,
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+                        icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
                         onPressed: () => Navigator.pop(context),
                         tooltip: AppLocalizations.of(context)!.back,
                       ),
@@ -1118,7 +1166,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage> {
                         padding: const EdgeInsets.only(left: 4),
                         child: Text(
                           AppLocalizations.of(context)!.releaseNotFound,
-                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                          style: TextStyle(color: Theme.of(context).textTheme.titleMedium?.color, fontSize: 16),
                         ),
                       ),
                       const Spacer(),
@@ -1219,7 +1267,7 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF2B2D31),
+        backgroundColor: Theme.of(context).cardColor,
         title: Text(AppLocalizations.of(context)!.deleteFile),
         content: Text(AppLocalizations.of(context)!.deleteFileMessage(file.fileName)),
         actions: [
@@ -1301,9 +1349,9 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
                 return Card(
                   key: ValueKey(file.id),
                   margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  color: const Color(0xFF2B2D31),
+                  color: Theme.of(context).cardColor,
                   child: ListTile(
-                    leading: const Icon(Icons.drag_indicator, color: Colors.white54),
+                    leading: Icon(Icons.drag_indicator, color: Theme.of(context).textTheme.bodySmall?.color),
                     title: Text(
                       file.fileName,
                       style: const TextStyle(color: Colors.red),
@@ -1337,12 +1385,12 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
             return ListTile(
               leading: Icon(
                 _getFileTypeIcon(file.fileType),
-                color: fileExists ? Colors.white70 : Colors.red.shade300,
+                color: fileExists ? Theme.of(context).textTheme.bodyMedium?.color : Colors.red.shade300,
               ),
               title: Text(
                 file.fileName,
                 style: TextStyle(
-                  color: fileExists ? Colors.white : Colors.red.shade300,
+                  color: fileExists ? Theme.of(context).textTheme.bodyLarge?.color : Colors.red.shade300,
                 ),
               ),
               subtitle: Column(
@@ -1350,16 +1398,16 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
                 children: [
                   Text(
                     '${file.fileType.toUpperCase()} • ${_formatFileSize(file.fileSizeBytes)}',
-                    style: const TextStyle(color: Colors.white54),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                   ),
                   if (file.description != null && file.description!.isNotEmpty)
                     Text(
                       file.description!,
-                      style: const TextStyle(color: Colors.white54, fontSize: 12),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                     ),
                   Text(
                     DateFormat.yMMMd().add_jm().format(file.addedAt),
-                    style: const TextStyle(color: Colors.white38, fontSize: 11),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5), fontSize: 11),
                   ),
                 ],
               ),
@@ -1509,7 +1557,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF2B2D31),
+        backgroundColor: Theme.of(context).cardColor,
         title: Text(AppLocalizations.of(context)!.renameFile),
         content: TextField(
           controller: controller,
@@ -1517,12 +1565,12 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: AppLocalizations.of(context)!.fileName,
-            labelStyle: const TextStyle(color: Colors.white70),
+            labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white54),
+              borderSide: BorderSide(color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
+              borderSide: BorderSide(color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.grey),
             ),
           ),
         ),
@@ -1554,7 +1602,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      color: const Color(0xFF2B2D31),
+      color: Theme.of(context).cardColor,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -1563,9 +1611,9 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
             // File info header
             Row(
                     children: [
-                      const Icon(Icons.drag_indicator, color: Colors.white54),
+                      Icon(Icons.drag_indicator, color: Theme.of(context).textTheme.bodySmall?.color),
                       const SizedBox(width: 8),
-                      const Icon(Icons.audiotrack, color: Colors.white70),
+                      Icon(Icons.audiotrack, color: Theme.of(context).textTheme.bodyMedium?.color),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
@@ -1582,14 +1630,14 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                             ),
                             Text(
                               '${_formatFileSize(widget.file.fileSizeBytes)} • ${DateFormat.yMMMd().add_jm().format(widget.file.addedAt)}',
-                              style: const TextStyle(color: Colors.white54, fontSize: 11),
+                              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 11),
                             ),
                           ],
                         ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.edit_outlined),
-                        color: Colors.white70,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         tooltip: AppLocalizations.of(context)!.renameFile,
                         onPressed: () => _showRenameDialog(context),
                       ),
@@ -1634,11 +1682,11 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                         children: [
                           Text(
                             _formatDuration(_position),
-                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                           ),
                           Text(
                             _formatDuration(_duration),
-                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                           ),
                         ],
                       ),
@@ -1700,7 +1748,7 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
     final filteredProjects = _filteredProjects;
     
     return AlertDialog(
-      backgroundColor: const Color(0xFF2B2D31),
+      backgroundColor: Theme.of(context).cardColor,
       title: Text(AppLocalizations.of(context)!.selectTracksToAdd),
       content: SizedBox(
         width: 600,
@@ -1709,7 +1757,7 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
           children: [
             Text(
               'Select tracks to add to this release (${_selectedIds.length} selected)',
-              style: const TextStyle(color: Colors.white70),
+              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
             ),
             const SizedBox(height: 16),
             // Search field
@@ -1735,7 +1783,7 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
                   ? Center(
                       child: Text(
                         AppLocalizations.of(context)!.noTracksFound,
-                        style: const TextStyle(color: Colors.white54),
+                        style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                       ),
                     )
                   : ListView.builder(
@@ -1747,7 +1795,7 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
                           title: Text(project.displayName),
                           subtitle: Text(
                             '${project.dawType ?? AppLocalizations.of(context)!.unknown} • ${project.bpm?.toStringAsFixed(0) ?? '?'} ${AppLocalizations.of(context)!.bpm}',
-                            style: const TextStyle(color: Colors.white54),
+                            style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                           ),
                           value: isSelected,
                           onChanged: (value) {

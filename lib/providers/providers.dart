@@ -46,9 +46,14 @@ final allProfilesProvider = StreamProvider<List<Profile>>((ref) async* {
   yield* profileRepo.watchAllProfiles();
 });
 
-// Project Repository Provider - depends on ProfileRepository
+// Project Repository Provider - depends on ProfileRepository and current profile
 final repositoryProvider = FutureProvider<ProjectRepository>((ref) async {
   final profileRepo = await ref.watch(profileRepositoryProvider.future);
+  // Watch current profile to invalidate when profile changes
+  final currentProfile = await ref.watch(currentProfileProvider.future);
+  if (currentProfile == null) {
+    throw Exception('No active profile found');
+  }
   return ProjectRepository.init(profileRepo);
 });
 
@@ -214,6 +219,12 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
     }
     // If hiddenMode == 1, show all (both visible and hidden)
     
+    // --- Filter by phase ---
+    final phaseFilter = ref.watch(phaseFilterProvider);
+    if (phaseFilter != null) {
+      projects = projects.where((p) => p.status == phaseFilter).toList();
+    }
+    
     // --- Aplicação dos Filtros ---
     if (params.searchText.trim().isNotEmpty) {
       final needle = params.searchText.toLowerCase();
@@ -350,3 +361,59 @@ class LocaleNotifier extends Notifier<Locale> {
 final localeProvider = NotifierProvider<LocaleNotifier, Locale>(() {
   return LocaleNotifier();
 });
+
+// Selected Projects Provider - persists selection across language changes
+final selectedProjectsProvider = NotifierProvider<SelectedProjectsNotifier, Set<String>>(() {
+  return SelectedProjectsNotifier();
+});
+
+class SelectedProjectsNotifier extends Notifier<Set<String>> {
+  @override
+  Set<String> build() {
+    return <String>{};
+  }
+  
+  void toggle(String projectId) {
+    final current = Set<String>.from(state);
+    if (current.contains(projectId)) {
+      current.remove(projectId);
+    } else {
+      current.add(projectId);
+    }
+    state = current;
+  }
+  
+  void selectAll(List<String> projectIds) {
+    state = Set<String>.from(projectIds);
+  }
+  
+  void clear() {
+    state = <String>{};
+  }
+  
+  void addAll(List<String> projectIds) {
+    final current = Set<String>.from(state);
+    current.addAll(projectIds);
+    state = current;
+  }
+}
+
+// Phase Filter Provider - filters projects by phase/status
+final phaseFilterProvider = NotifierProvider<PhaseFilterNotifier, String?>(() {
+  return PhaseFilterNotifier();
+});
+
+class PhaseFilterNotifier extends Notifier<String?> {
+  @override
+  String? build() {
+    return null; // null means show all phases
+  }
+  
+  void setPhase(String? phase) {
+    state = phase; // null to show all, or a specific phase like 'Idea', 'Arranging', etc.
+  }
+  
+  void clear() {
+    state = null;
+  }
+}

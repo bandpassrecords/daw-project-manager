@@ -11,7 +11,7 @@
   "launch": "打开",
   "view": "查看",
   "openFolder": "打开文件夹",
-  "openInDaw": "在DAW中打开",
+  "openInDaw": "在DAW中启动",
   "extract": "提取",
   "extracting": "提取中…",
   "extractingMetadata": "正在提取元数据...",
@@ -36,7 +36,7 @@
   "clearLibrary": "清空库",
   "clearLibraryMessage": "这将删除所有保存的项目和源文件夹。继续吗？",
   "clear": "清空",
-  "roots": "根目录",
+  "roots": "项目文件夹",
   "projects": "项目",
   "hidden": "隐藏",
   "profileManager": "配置文件管理器",
@@ -68,7 +68,7 @@
   "error": "错误",
   "loading": "加载中...",
   "deleteProfile": "删除配置文件",
-  "deleteProfileMessage": "您确定要删除「{profileName}」吗？这将删除此配置文件的所有项目、根目录和发布。",
+  "deleteProfileMessage": "您确定要删除「{profileName}」吗？这将删除此配置文件的所有项目、项目文件夹和发布。",
   "@deleteProfileMessage": {
     "placeholders": {
       "profileName": {
@@ -79,6 +79,15 @@
   "editProfile": "编辑配置文件",
   "changePhoto": "更改照片",
   "remove": "删除",
+  "removeTrackFromReleaseMessage": "您确定要从此发布中删除「{trackName}」吗？",
+  "@removeTrackFromReleaseMessage": {
+    "description": "从发布中删除曲目时的确认消息",
+    "placeholders": {
+      "trackName": {
+        "type": "String"
+      }
+    }
+  },
   "saveName": "保存名称",
   "profilePhotoUpdated": "配置文件照片已更新。",
   "profilePhotoRemoved": "配置文件照片已删除。",
@@ -116,16 +125,7 @@
     }
   },
   "noProfilesFound": "未找到配置文件。请在上面创建一个。",
-  "created": "创建时间: {date}",
-  "@created": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "toggleSort": "切换排序",
-  "clearLibraryTooltip": "清空库（项目和根目录）",
+  "clearLibraryTooltip": "清空库（项目和项目文件夹）",
   "lastModified": "最后修改: {date}",
   "@lastModified": {
     "placeholders": {
@@ -136,6 +136,9 @@
   },
   "name": "名称",
   "status": "状态",
+  "phase": "阶段",
+  "filterByPhase": "按阶段筛选",
+  "allPhases": "所有阶段",
   "daw": "DAW",
   "lastModifiedColumn": "最后修改",
   "actions": "操作",
@@ -162,7 +165,7 @@
       }
     }
   },
-  "rootsCount": "根目录: {count}",
+  "rootsCount": "项目文件夹: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
@@ -225,6 +228,15 @@
       }
     }
   },
+  "hideProjectMessage": "您确定要隐藏「{projectName}」吗？",
+  "@hideProjectMessage": {
+    "description": "隐藏项目时的确认消息",
+    "placeholders": {
+      "projectName": {
+        "type": "String"
+      }
+    }
+  },
   "releaseCreated": "发布「{title}」创建成功。",
   "@releaseCreated": {
     "placeholders": {
@@ -249,7 +261,7 @@
       }
     }
   },
-  "noProjectsFoundInRoots": "在选定的根目录中未找到项目。",
+  "noProjectsFoundInRoots": "在选定的项目文件夹中未找到项目。",
   "selectProjectsFolder": "选择项目文件夹",
   "enterReleaseTitle": "输入发布标题",
   "releaseTitle": "发布标题",
@@ -448,6 +460,7 @@
       }
     }
   },
+  "creatingZipFile": "正在创建ZIP文件...",
   "failedToCreateZip": "创建ZIP失败: {error}",
   "@failedToCreateZip": {
     "placeholders": {
@@ -639,6 +652,53 @@
   "projectPhaseMixing": "混音",
   "projectPhaseMastering": "母带处理",
   "projectPhaseFinished": "完成",
+  "changeStatus": "更改阶段",
+  "selectNewStatus": "选择新阶段:",
+  "statusChangedForProjects": "{count} 个项目{plural}的阶段已更改为「{status}」",
+  "@statusChangedForProjects": {
+    "description": "多个项目状态更改成功时的消息",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusChangedForProjectsWithErrors": "{successCount} 个项目{successPlural}的阶段已更改为「{status}」，{failCount} 个失败{failPlural}",
+  "@statusChangedForProjectsWithErrors": {
+    "description": "状态更改部分失败时的消息",
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "successPlural": {
+        "type": "String"
+      },
+      "failCount": {
+        "type": "int"
+      },
+      "failPlural": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToChangeStatus": "更改阶段失败: {error}",
+  "@failedToChangeStatus": {
+    "description": "状态更改失败时的错误消息",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipEditProfileName": "编辑配置文件名称",
   "tooltipAddTodo": "添加待办事项",
   "tooltipClearDate": "清除日期",
@@ -652,5 +712,70 @@
   "clickToBrowseArtwork": "点击浏览封面",
   "noFilesAddedYet": "尚未添加文件。\n点击\"添加文件\"上传发布文件。",
   "noTodosYet": "还没有待办事项。请在上面添加一个。",
-  "done": "完成"
+  "done": "完成",
+  "backupAndRestore": "备份和恢复",
+  "exportBackup": "导出备份",
+  "importBackup": "导入备份",
+  "backupExportedSuccessfully": "备份导出成功",
+  "failedToExportBackup": "导出备份失败: {error}",
+  "@failedToExportBackup": {
+    "description": "备份导出失败时的错误消息",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupImportedSuccessfully": "备份导入成功: {projectsCount} 个项目，{rootsCount} 个项目文件夹，{releasesCount} 个发布",
+  "@backupImportedSuccessfully": {
+    "description": "导入备份后的成功消息",
+    "placeholders": {
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToImportBackup": "导入备份失败: {error}",
+  "@failedToImportBackup": {
+    "description": "备份导入失败时的错误消息",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importBackupMessage": "选择如何导入备份:",
+  "mergeWithCurrentProfile": "与当前活动配置文件合并",
+  "replaceCurrentProfile": "完全替换当前配置文件（警告：这将删除当前配置文件的所有数据）",
+  "createNewProfileForImport": "为此数据创建新配置文件",
+  "backupImportedToNewProfile": "备份已导入到新配置文件 \"{profileName}\": {projectsCount} 个项目，{rootsCount} 个项目文件夹，{releasesCount} 个发布",
+  "@backupImportedToNewProfile": {
+    "description": "将备份导入到新配置文件后的成功消息",
+    "placeholders": {
+      "profileName": {
+        "type": "String"
+      },
+      "projectsCount": {
+        "type": "int"
+      },
+      "rootsCount": {
+        "type": "int"
+      },
+      "releasesCount": {
+        "type": "int"
+      }
+    }
+  },
+  "noProfileSelected": "未选择配置文件",
+  "exportBackupDialogTitle": "导出备份",
+  "importBackupDialogTitle": "导入备份",
+  "invalidBackupFileFormat": "无效的备份文件格式: 缺少版本",
+  "profileNameRequiredForNewProfile": "创建新配置文件时需要配置文件名称",
+  "currentProfileRequired": "合并或替换模式需要当前配置文件"
 }

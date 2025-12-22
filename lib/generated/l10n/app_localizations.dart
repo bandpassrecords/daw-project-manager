@@ -163,7 +163,7 @@ abstract class AppLocalizations {
   /// No description provided for @openInDaw.
   ///
   /// In en, this message translates to:
-  /// **'Open in DAW'**
+  /// **'Launch in DAW'**
   String get openInDaw;
 
   /// No description provided for @extract.
@@ -271,7 +271,7 @@ abstract class AppLocalizations {
   /// No description provided for @roots.
   ///
   /// In en, this message translates to:
-  /// **'Roots'**
+  /// **'Project Folders'**
   String get roots;
 
   /// No description provided for @projects.
@@ -421,7 +421,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteProfileMessage.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete \"{profileName}\"? This will delete all projects, roots, and releases for this profile.'**
+  /// **'Are you sure you want to delete \"{profileName}\"? This will delete all projects, project folders, and releases for this profile.'**
   String deleteProfileMessage(String profileName);
 
   /// No description provided for @editProfile.
@@ -441,6 +441,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove'**
   String get remove;
+
+  /// Confirmation message when removing a track from a release
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove \"{trackName}\" from this release?'**
+  String removeTrackFromReleaseMessage(String trackName);
 
   /// No description provided for @saveName.
   ///
@@ -496,22 +502,10 @@ abstract class AppLocalizations {
   /// **'No profiles found. Create one above.'**
   String get noProfilesFound;
 
-  /// No description provided for @created.
-  ///
-  /// In en, this message translates to:
-  /// **'Created: {date}'**
-  String created(String date);
-
-  /// No description provided for @toggleSort.
-  ///
-  /// In en, this message translates to:
-  /// **'Toggle sort'**
-  String get toggleSort;
-
   /// No description provided for @clearLibraryTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Clear Library (projects & roots)'**
+  /// **'Clear Library (projects & project folders)'**
   String get clearLibraryTooltip;
 
   /// No description provided for @lastModified.
@@ -531,6 +525,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status'**
   String get status;
+
+  /// No description provided for @phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Phase'**
+  String get phase;
+
+  /// No description provided for @filterByPhase.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Phase'**
+  String get filterByPhase;
+
+  /// No description provided for @allPhases.
+  ///
+  /// In en, this message translates to:
+  /// **'All Phases'**
+  String get allPhases;
 
   /// No description provided for @daw.
   ///
@@ -643,7 +655,7 @@ abstract class AppLocalizations {
   /// No description provided for @rootsCount.
   ///
   /// In en, this message translates to:
-  /// **'Roots: {count}'**
+  /// **'Project Folders: {count}'**
   String rootsCount(int count);
 
   /// No description provided for @projectsCount.
@@ -688,6 +700,12 @@ abstract class AppLocalizations {
   /// **'Failed to unhide projects: {error}'**
   String failedToUnhideProjects(String error);
 
+  /// Confirmation message when hiding a project
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to hide \"{projectName}\"?'**
+  String hideProjectMessage(String projectName);
+
   /// No description provided for @releaseCreated.
   ///
   /// In en, this message translates to:
@@ -709,7 +727,7 @@ abstract class AppLocalizations {
   /// No description provided for @noProjectsFoundInRoots.
   ///
   /// In en, this message translates to:
-  /// **'No projects found in selected roots.'**
+  /// **'No projects found in selected project folders.'**
   String get noProjectsFoundInRoots;
 
   /// No description provided for @selectProjectsFolder.
@@ -937,6 +955,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ZIP file saved to: {path}'**
   String zipFileSaved(String path);
+
+  /// No description provided for @creatingZipFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating ZIP file...'**
+  String get creatingZipFile;
 
   /// No description provided for @failedToCreateZip.
   ///
@@ -1280,6 +1304,42 @@ abstract class AppLocalizations {
   /// **'Finished'**
   String get projectPhaseFinished;
 
+  /// No description provided for @changeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Phase'**
+  String get changeStatus;
+
+  /// No description provided for @selectNewStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Select new phase:'**
+  String get selectNewStatus;
+
+  /// Success message when status is changed for multiple projects
+  ///
+  /// In en, this message translates to:
+  /// **'Phase changed to \"{status}\" for {count} project{plural}'**
+  String statusChangedForProjects(int count, String plural, String status);
+
+  /// Message when status change partially fails
+  ///
+  /// In en, this message translates to:
+  /// **'Phase changed to \"{status}\" for {successCount} project{successPlural}, {failCount} failed{failPlural}'**
+  String statusChangedForProjectsWithErrors(
+    int successCount,
+    String successPlural,
+    int failCount,
+    String failPlural,
+    String status,
+  );
+
+  /// Error message when status change fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to change phase: {error}'**
+  String failedToChangeStatus(String error);
+
   /// No description provided for @tooltipEditProfileName.
   ///
   /// In en, this message translates to:
@@ -1363,6 +1423,123 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get done;
+
+  /// No description provided for @backupAndRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & Restore'**
+  String get backupAndRestore;
+
+  /// No description provided for @exportBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Backup'**
+  String get exportBackup;
+
+  /// No description provided for @importBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Backup'**
+  String get importBackup;
+
+  /// No description provided for @backupExportedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup exported successfully'**
+  String get backupExportedSuccessfully;
+
+  /// Error message when backup export fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export backup: {error}'**
+  String failedToExportBackup(String error);
+
+  /// Success message after importing backup
+  ///
+  /// In en, this message translates to:
+  /// **'Backup imported successfully: {projectsCount} projects, {rootsCount} project folders, {releasesCount} releases'**
+  String backupImportedSuccessfully(
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  );
+
+  /// Error message when backup import fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import backup: {error}'**
+  String failedToImportBackup(String error);
+
+  /// No description provided for @importBackupMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how to import the backup:'**
+  String get importBackupMessage;
+
+  /// No description provided for @mergeWithCurrentProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge with current active profile'**
+  String get mergeWithCurrentProfile;
+
+  /// No description provided for @replaceCurrentProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace entirely the current profile (WARNING: This will delete all current profile data)'**
+  String get replaceCurrentProfile;
+
+  /// No description provided for @createNewProfileForImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new profile for this data'**
+  String get createNewProfileForImport;
+
+  /// Success message after importing backup to a new profile
+  ///
+  /// In en, this message translates to:
+  /// **'Backup imported to new profile \"{profileName}\": {projectsCount} projects, {rootsCount} project folders, {releasesCount} releases'**
+  String backupImportedToNewProfile(
+    String profileName,
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  );
+
+  /// No description provided for @noProfileSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No profile selected'**
+  String get noProfileSelected;
+
+  /// No description provided for @exportBackupDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Backup'**
+  String get exportBackupDialogTitle;
+
+  /// No description provided for @importBackupDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Backup'**
+  String get importBackupDialogTitle;
+
+  /// No description provided for @invalidBackupFileFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid backup file format: missing version'**
+  String get invalidBackupFileFormat;
+
+  /// No description provided for @profileNameRequiredForNewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile name is required when creating a new profile'**
+  String get profileNameRequiredForNewProfile;
+
+  /// No description provided for @currentProfileRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Current profile is required for merge or replace mode'**
+  String get currentProfileRequired;
 }
 
 class _AppLocalizationsDelegate

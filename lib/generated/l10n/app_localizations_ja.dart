@@ -33,7 +33,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get openFolder => 'フォルダを開く';
 
   @override
-  String get openInDaw => 'DAWで開く';
+  String get openInDaw => 'DAWで起動';
 
   @override
   String get extract => '抽出';
@@ -90,7 +90,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get clear => 'クリア';
 
   @override
-  String get roots => 'ルート';
+  String get roots => 'プロジェクトフォルダ';
 
   @override
   String get projects => 'プロジェクト';
@@ -170,7 +170,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String deleteProfileMessage(String profileName) {
-    return '「$profileName」を削除してもよろしいですか？これにより、このプロファイルのすべてのプロジェクト、ルート、リリースが削除されます。';
+    return '「$profileName」を削除してもよろしいですか？これにより、このプロファイルのすべてのプロジェクト、プロジェクトフォルダ、リリースが削除されます。';
   }
 
   @override
@@ -181,6 +181,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get remove => '削除';
+
+  @override
+  String removeTrackFromReleaseMessage(String trackName) {
+    return 'このリリースから「$trackName」を削除してもよろしいですか？';
+  }
 
   @override
   String get saveName => '名前を保存';
@@ -218,15 +223,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noProfilesFound => 'プロファイルが見つかりません。上で作成してください。';
 
   @override
-  String created(String date) {
-    return '作成日: $date';
-  }
-
-  @override
-  String get toggleSort => '並び替えを切り替え';
-
-  @override
-  String get clearLibraryTooltip => 'ライブラリをクリア（プロジェクトとルート）';
+  String get clearLibraryTooltip => 'ライブラリをクリア（プロジェクトとプロジェクトフォルダ）';
 
   @override
   String lastModified(String date) {
@@ -238,6 +235,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get status => 'ステータス';
+
+  @override
+  String get phase => 'フェーズ';
+
+  @override
+  String get filterByPhase => 'フェーズでフィルター';
+
+  @override
+  String get allPhases => 'すべてのフェーズ';
 
   @override
   String get daw => 'DAW';
@@ -297,7 +303,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String rootsCount(int count) {
-    return 'ルート: $count';
+    return 'プロジェクトフォルダ: $count';
   }
 
   @override
@@ -334,6 +340,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String hideProjectMessage(String projectName) {
+    return '「$projectName」を非表示にしてもよろしいですか？';
+  }
+
+  @override
   String releaseCreated(String title) {
     return 'リリース「$title」を作成しました。';
   }
@@ -349,7 +360,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get noProjectsFoundInRoots => '選択したルートにプロジェクトが見つかりませんでした。';
+  String get noProjectsFoundInRoots => '選択したプロジェクトフォルダにプロジェクトが見つかりませんでした。';
 
   @override
   String get selectProjectsFolder => 'プロジェクトフォルダを選択';
@@ -505,6 +516,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String zipFileSaved(String path) {
     return 'ZIPファイルを保存しました: $path';
   }
+
+  @override
+  String get creatingZipFile => 'ZIPファイルを作成中...';
 
   @override
   String failedToCreateZip(String error) {
@@ -714,6 +728,33 @@ class AppLocalizationsJa extends AppLocalizations {
   String get projectPhaseFinished => '完了';
 
   @override
+  String get changeStatus => 'フェーズを変更';
+
+  @override
+  String get selectNewStatus => '新しいフェーズを選択:';
+
+  @override
+  String statusChangedForProjects(int count, String plural, String status) {
+    return '$count プロジェクト$pluralのフェーズを「$status」に変更しました';
+  }
+
+  @override
+  String statusChangedForProjectsWithErrors(
+    int successCount,
+    String successPlural,
+    int failCount,
+    String failPlural,
+    String status,
+  ) {
+    return '$successCount プロジェクト$successPluralのフェーズを「$status」に変更しましたが、$failCount が失敗$failPluralしました';
+  }
+
+  @override
+  String failedToChangeStatus(String error) {
+    return 'フェーズの変更に失敗しました: $error';
+  }
+
+  @override
   String get tooltipEditProfileName => 'プロファイル名を編集';
 
   @override
@@ -755,4 +796,77 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get done => '完了';
+
+  @override
+  String get backupAndRestore => 'バックアップと復元';
+
+  @override
+  String get exportBackup => 'バックアップをエクスポート';
+
+  @override
+  String get importBackup => 'バックアップをインポート';
+
+  @override
+  String get backupExportedSuccessfully => 'バックアップのエクスポートに成功しました';
+
+  @override
+  String failedToExportBackup(String error) {
+    return 'バックアップのエクスポートに失敗しました: $error';
+  }
+
+  @override
+  String backupImportedSuccessfully(
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  ) {
+    return 'バックアップのインポートに成功しました: $projectsCount プロジェクト、$rootsCount プロジェクトフォルダ、$releasesCount リリース';
+  }
+
+  @override
+  String failedToImportBackup(String error) {
+    return 'バックアップのインポートに失敗しました: $error';
+  }
+
+  @override
+  String get importBackupMessage => 'バックアップのインポート方法を選択してください:';
+
+  @override
+  String get mergeWithCurrentProfile => '現在のアクティブなプロフィールとマージ';
+
+  @override
+  String get replaceCurrentProfile =>
+      '現在のプロフィールを完全に置き換える（警告: これにより現在のプロフィールのすべてのデータが削除されます）';
+
+  @override
+  String get createNewProfileForImport => 'このデータ用に新しいプロフィールを作成';
+
+  @override
+  String backupImportedToNewProfile(
+    String profileName,
+    int projectsCount,
+    int rootsCount,
+    int releasesCount,
+  ) {
+    return '新しいプロフィール \"$profileName\" にバックアップをインポートしました: $projectsCount プロジェクト、$rootsCount プロジェクトフォルダ、$releasesCount リリース';
+  }
+
+  @override
+  String get noProfileSelected => 'プロフィールが選択されていません';
+
+  @override
+  String get exportBackupDialogTitle => 'バックアップをエクスポート';
+
+  @override
+  String get importBackupDialogTitle => 'バックアップをインポート';
+
+  @override
+  String get invalidBackupFileFormat => '無効なバックアップファイル形式: バージョンがありません';
+
+  @override
+  String get profileNameRequiredForNewProfile =>
+      '新しいプロフィールを作成する際は、プロフィール名が必要です';
+
+  @override
+  String get currentProfileRequired => 'マージまたは置き換えモードには現在のプロフィールが必要です';
 }
