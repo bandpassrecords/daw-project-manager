@@ -293,7 +293,7 @@ jobs:
         if: matrix.is_installer == true
         run: |
           # Find the installer file that was created (it will have the version from installer.iss)
-          # The installer creates files like: DAW_Project_Manager_Installer_v1.4.0.exe
+          # The installer creates files like: DAW_Project_Manager_Installer_v1.5.0.exe
           $installerFile = Get-ChildItem -Path "Output" -Filter "DAW_Project_Manager_Installer_*.exe" | Select-Object -First 1
           if ($installerFile) {
             $newName = "DAW_Project_Manager_Installer_${{ steps.sanitize_ref.outputs.sanitized_ref }}.exe"
