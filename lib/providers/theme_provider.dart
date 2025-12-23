@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Theme type enum
 enum AppThemeType {
-  futuristicDark, // Current modern dark theme
+  neonDark, // Current modern dark theme
   classicDark,    // Original dark theme
 }
 
@@ -11,7 +11,7 @@ enum AppThemeType {
 class ThemeTypeNotifier extends Notifier<AppThemeType> {
   @override
   AppThemeType build() {
-    return AppThemeType.futuristicDark; // Default to futuristic dark
+    return AppThemeType.neonDark; // Default to neon dark
   }
 
   void setThemeType(AppThemeType type) {
@@ -19,9 +19,9 @@ class ThemeTypeNotifier extends Notifier<AppThemeType> {
   }
 
   void cycle() {
-    state = state == AppThemeType.futuristicDark
+    state = state == AppThemeType.neonDark
         ? AppThemeType.classicDark
-        : AppThemeType.futuristicDark;
+        : AppThemeType.neonDark;
   }
 }
 
@@ -33,17 +33,17 @@ final themeTypeProvider = NotifierProvider<ThemeTypeNotifier, AppThemeType>(() {
 final themeDataProvider = Provider<ThemeData>((ref) {
   final themeType = ref.watch(themeTypeProvider);
   switch (themeType) {
-    case AppThemeType.futuristicDark:
-      return AppThemes.futuristicDarkTheme;
+    case AppThemeType.neonDark:
+      return AppThemes.neonDarkTheme;
     case AppThemeType.classicDark:
       return AppThemes.classicDarkTheme;
   }
 });
 
-// Modern Futuristic Color Schemes
+// Modern Neon Color Schemes
 class AppThemes {
-  // Dark Theme - Futuristic Dark (Current Modern Theme)
-  static ThemeData get futuristicDarkTheme {
+  // Dark Theme - Neon Dark (Current Modern Theme)
+  static ThemeData get neonDarkTheme {
     const primaryColor = Color(0xFF00D4FF); // Cyan accent
     const secondaryColor = Color(0xFF7B2CBF); // Purple accent
     const surfaceColor = Color(0xFF0F0F1E);

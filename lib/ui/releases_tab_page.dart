@@ -235,6 +235,99 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
     }).toList();
   }
 
+  Future<void> _viewRelease(Release release) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ReleaseDetailPage(releaseId: release.id),
+      ),
+    );
+    // Refresh releases data when returning from detail page
+    if (mounted) {
+      ref.invalidate(releasesProvider);
+    }
+  }
+
+  Future<void> _deleteRelease(Release release) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text(AppLocalizations.of(context)!.deleteRelease),
+        content: Text(AppLocalizations.of(context)!.deleteReleaseMessage(release.title)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: Text(AppLocalizations.of(context)!.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true && mounted) {
+      final repo = await ref.read(repositoryProvider.future);
+      await repo.deleteRelease(release.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.releaseDeleted(release.title))),
+        );
+      }
+    }
+  }
+
+  Future<void> _showReleaseContextMenu(BuildContext context, Release release, Offset position) async {
+    final l10n = AppLocalizations.of(context)!;
+    
+    final result = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        position.dx,
+        position.dy,
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'view',
+          child: Row(
+            children: [
+              const Icon(Icons.assignment, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.view),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(Icons.delete, size: 20, color: Colors.red.shade300),
+              const SizedBox(width: 8),
+              Text(l10n.delete, style: TextStyle(color: Colors.red.shade300)),
+            ],
+          ),
+        ),
+      ],
+      color: Theme.of(context).cardColor,
+    );
+
+    if (result != null && mounted) {
+      switch (result) {
+        case 'view':
+          await _viewRelease(release);
+          break;
+        case 'delete':
+          await _deleteRelease(release);
+          break;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final columns = [
@@ -247,9 +340,12 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         minWidth: 80,
         frozen: PlutoColumnFrozen.start,
         renderer: (ctx) {
+          final release = ctx.row.cells['data']?.value as Release?;
           final imagePath = ctx.cell.value as String?;
+          
+          Widget content;
           if (imagePath != null && File(imagePath).existsSync()) {
-            return Padding(
+            content = Padding(
               padding: const EdgeInsets.all(4.0),
               child: Image.file(
                 File(imagePath),
@@ -265,14 +361,24 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                 },
               ),
             );
+          } else {
+            content = Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Icon(
+                Icons.album,
+                size: 40,
+                color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
+              ),
+            );
           }
-          return Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Icon(
-              Icons.album,
-              size: 40,
-              color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
-            ),
+          
+          if (release == null) return content;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: content,
           );
         },
       ),
@@ -286,6 +392,19 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         width: 300,
         minWidth: 200,
         frozen: PlutoColumnFrozen.start,
+        renderer: (rendererContext) {
+          final release = rendererContext.row.cells['data']?.value as Release?;
+          if (release == null) {
+            return Text(rendererContext.cell.value.toString());
+          }
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: Text(rendererContext.cell.value.toString()),
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.tracks,
@@ -294,6 +413,19 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         enableEditingMode: false,
         width: 100,
         minWidth: 80,
+        renderer: (rendererContext) {
+          final release = rendererContext.row.cells['data']?.value as Release?;
+          final textWidget = Text(rendererContext.cell.value.toString());
+          
+          if (release == null) return textWidget;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: textWidget,
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.releaseDate,
@@ -302,6 +434,19 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         enableEditingMode: false,
         width: 180,
         minWidth: 150,
+        renderer: (rendererContext) {
+          final release = rendererContext.row.cells['data']?.value as Release?;
+          if (release == null) {
+            return Text(rendererContext.cell.value.toString());
+          }
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: Text(rendererContext.cell.value.toString()),
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.description,
@@ -310,6 +455,19 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         enableEditingMode: false,
         width: 300,
         minWidth: 200,
+        renderer: (rendererContext) {
+          final release = rendererContext.row.cells['data']?.value as Release?;
+          final textWidget = Text(rendererContext.cell.value.toString());
+          
+          if (release == null) return textWidget;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: textWidget,
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.actions,
@@ -320,63 +478,27 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         renderer: (ctx) {
           final release = ctx.row.cells['data']!.value as Release;
           
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.assignment),
-                tooltip: AppLocalizations.of(context)!.view,
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => ReleaseDetailPage(releaseId: release.id),
-                    ),
-                  );
-                  // Refresh releases data when returning from detail page
-                  if (mounted) {
-                    ref.invalidate(releasesProvider);
-                  }
-                },
-              ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                color: Colors.red.shade300,
-                tooltip: AppLocalizations.of(context)!.delete,
-                onPressed: () async {
-                  final confirm = await showDialog<bool>(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      backgroundColor: Theme.of(context).cardColor,
-                      title: Text(AppLocalizations.of(context)!.deleteRelease),
-                      content: Text(AppLocalizations.of(context)!.deleteReleaseMessage(release.title)),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx, false),
-                          child: Text(AppLocalizations.of(context)!.cancel),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(ctx, true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                          ),
-                          child: Text(AppLocalizations.of(context)!.delete),
-                        ),
-                      ],
-                    ),
-                  );
-                  if (confirm == true && mounted) {
-                    final repo = await ref.read(repositoryProvider.future);
-                    await repo.deleteRelease(release.id);
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(AppLocalizations.of(context)!.releaseDeleted(release.title))),
-                      );
-                    }
-                  }
-                },
-              ),
-            ],
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.assignment),
+                  tooltip: AppLocalizations.of(context)!.view,
+                  onPressed: () => _viewRelease(release),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  color: Colors.red.shade300,
+                  tooltip: AppLocalizations.of(context)!.delete,
+                  onPressed: () => _deleteRelease(release),
+                ),
+              ],
+            ),
           );
         },
       ),

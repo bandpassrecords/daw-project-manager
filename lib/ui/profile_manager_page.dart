@@ -401,6 +401,86 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
     }
   }
 
+  Future<void> _showProfileContextMenu(BuildContext context, Profile profile, Offset position, bool isCurrent, int totalProfiles) async {
+    final l10n = AppLocalizations.of(context)!;
+    
+    final result = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        position.dx,
+        position.dy,
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'view',
+          child: Row(
+            children: [
+              const Icon(Icons.visibility, size: 20),
+              const SizedBox(width: 8),
+              Text('View Profile'),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'edit',
+          child: Row(
+            children: [
+              const Icon(Icons.edit_outlined, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.tooltipEditProfileName),
+            ],
+          ),
+        ),
+        if (!isCurrent)
+          PopupMenuItem<String>(
+            value: 'switch',
+            child: Row(
+              children: [
+                const Icon(Icons.swap_horiz, size: 20),
+                const SizedBox(width: 8),
+                Text(l10n.switchProfile),
+              ],
+            ),
+          ),
+        if (totalProfiles > 1)
+          PopupMenuItem<String>(
+            value: 'delete',
+            child: Row(
+              children: [
+                Icon(Icons.delete_outline, size: 20, color: Colors.red.shade300),
+                const SizedBox(width: 8),
+                Text(l10n.delete, style: TextStyle(color: Colors.red.shade300)),
+              ],
+            ),
+          ),
+      ],
+      color: Theme.of(context).cardColor,
+    );
+
+    if (result != null && mounted) {
+      switch (result) {
+        case 'view':
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ProfileViewPage(profileId: profile.id),
+            ),
+          );
+          break;
+        case 'edit':
+          await _editProfile(profile);
+          break;
+        case 'switch':
+          await _switchProfile(profile.id);
+          break;
+        case 'delete':
+          await _deleteProfile(profile);
+          break;
+      }
+    }
+  }
+
   Future<void> _exportBackup() async {
     try {
       final profileRepo = await ref.read(profileRepositoryProvider.future);
@@ -749,6 +829,9 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
                                   builder: (_) => ProfileViewPage(profileId: profile.id),
                                 ),
                               );
+                            },
+                            onSecondaryTapDown: (TapDownDetails details) {
+                              _showProfileContextMenu(context, profile, details.globalPosition, isCurrent, profiles.length);
                             },
                             child: Card(
                               color: isCurrent 
