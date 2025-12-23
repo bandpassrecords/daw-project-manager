@@ -22,26 +22,36 @@ class LanguageSwitcher extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentLocale = ref.watch(localeProvider);
 
-    return DropdownButton<Locale>(
-      value: currentLocale,
-      icon: Icon(Icons.language, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
-      underline: const SizedBox.shrink(),
-      dropdownColor: Theme.of(context).cardColor,
-      style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 14),
-      items: languageNames.entries.map((entry) {
-        return DropdownMenuItem<Locale>(
-          value: Locale(entry.key),
-          child: Text(
-            entry.value,
-            style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
-          ),
-        );
-      }).toList(),
-      onChanged: (Locale? newLocale) {
-        if (newLocale != null) {
-          ref.read(localeProvider.notifier).setLocale(newLocale);
-        }
-      },
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.language,
+          color: Theme.of(context).textTheme.bodyMedium?.color,
+          size: 20,
+        ),
+        const SizedBox(width: 4),
+        DropdownButton<Locale>(
+          value: currentLocale,
+          underline: const SizedBox.shrink(),
+          dropdownColor: Theme.of(context).cardColor,
+          style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 14),
+          items: languageNames.entries.map((entry) {
+            return DropdownMenuItem<Locale>(
+              value: Locale(entry.key),
+              child: Text(
+                entry.value,
+                style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+              ),
+            );
+          }).toList(),
+          onChanged: (Locale? newLocale) {
+            if (newLocale != null) {
+              ref.read(localeProvider.notifier).setLocale(newLocale);
+            }
+          },
+        ),
+      ],
     );
   }
 }

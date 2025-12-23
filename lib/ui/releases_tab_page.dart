@@ -340,9 +340,12 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         minWidth: 80,
         frozen: PlutoColumnFrozen.start,
         renderer: (ctx) {
+          final release = ctx.row.cells['data']?.value as Release?;
           final imagePath = ctx.cell.value as String?;
+          
+          Widget content;
           if (imagePath != null && File(imagePath).existsSync()) {
-            return Padding(
+            content = Padding(
               padding: const EdgeInsets.all(4.0),
               child: Image.file(
                 File(imagePath),
@@ -358,14 +361,24 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
                 },
               ),
             );
+          } else {
+            content = Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Icon(
+                Icons.album,
+                size: 40,
+                color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
+              ),
+            );
           }
-          return Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Icon(
-              Icons.album,
-              size: 40,
-              color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
-            ),
+          
+          if (release == null) return content;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: content,
           );
         },
       ),
@@ -400,6 +413,19 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         enableEditingMode: false,
         width: 100,
         minWidth: 80,
+        renderer: (rendererContext) {
+          final release = rendererContext.row.cells['data']?.value as Release?;
+          final textWidget = Text(rendererContext.cell.value.toString());
+          
+          if (release == null) return textWidget;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: textWidget,
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.releaseDate,
@@ -429,6 +455,19 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         enableEditingMode: false,
         width: 300,
         minWidth: 200,
+        renderer: (rendererContext) {
+          final release = rendererContext.row.cells['data']?.value as Release?;
+          final textWidget = Text(rendererContext.cell.value.toString());
+          
+          if (release == null) return textWidget;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: textWidget,
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.actions,
@@ -439,22 +478,27 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         renderer: (ctx) {
           final release = ctx.row.cells['data']!.value as Release;
           
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.assignment),
-                tooltip: AppLocalizations.of(context)!.view,
-                onPressed: () => _viewRelease(release),
-              ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                color: Colors.red.shade300,
-                tooltip: AppLocalizations.of(context)!.delete,
-                onPressed: () => _deleteRelease(release),
-              ),
-            ],
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showReleaseContextMenu(context, release, details.globalPosition);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.assignment),
+                  tooltip: AppLocalizations.of(context)!.view,
+                  onPressed: () => _viewRelease(release),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  color: Colors.red.shade300,
+                  tooltip: AppLocalizations.of(context)!.delete,
+                  onPressed: () => _deleteRelease(release),
+                ),
+              ],
+            ),
           );
         },
       ),

@@ -1828,10 +1828,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         width: 140,
         minWidth: 100,
         renderer: (rendererContext) {
+          final project = rendererContext.row.cells['data']?.value as MusicProject?;
           final dawType = rendererContext.cell.value as String? ?? '';
           final logoPath = _getDawLogoPath(dawType);
           
-          return Row(
+          final content = Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (logoPath != null)
@@ -1852,6 +1853,15 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
               ),
             ],
           );
+          
+          if (project == null) return content;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showContextMenu(context, project, details.globalPosition);
+            },
+            child: content,
+          );
         },
       ),
       PlutoColumn(
@@ -1861,6 +1871,19 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         width: 100,
         minWidth: 80,
         enableEditingMode: true,
+        renderer: (rendererContext) {
+          final project = rendererContext.row.cells['data']?.value as MusicProject?;
+          final textWidget = Text(rendererContext.cell.value.toString());
+          
+          if (project == null) return textWidget;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showContextMenu(context, project, details.globalPosition);
+            },
+            child: textWidget,
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.key.split(' ').first, // Get just "Key" from "Key (e.g., C#m, F major)"
@@ -1869,6 +1892,19 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
         width: 120,
         minWidth: 100,
         enableEditingMode: true,
+        renderer: (rendererContext) {
+          final project = rendererContext.row.cells['data']?.value as MusicProject?;
+          final textWidget = Text(rendererContext.cell.value.toString());
+          
+          if (project == null) return textWidget;
+          
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showContextMenu(context, project, details.globalPosition);
+            },
+            child: textWidget,
+          );
+        },
       ),
       PlutoColumn(
         title: AppLocalizations.of(context)!.lastModifiedColumn,
@@ -1945,7 +1981,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
               ? projectPath // Se for um diretório, usa o próprio caminho
               : path.dirname(projectPath); // Se for um arquivo, usa o diretório pai
           
-          return Row(
+          return GestureDetector(
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showContextMenu(context, project, details.globalPosition);
+            },
+            child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Launch button
@@ -2023,6 +2063,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
                 },
               ),
             ],
+          ),
           );
         },
       ),
@@ -2039,11 +2080,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable> {
     final initialRows = _mapProjectsToRows(widget.projects);
 
     return PlutoGrid(
-      columns: columns,
-      rows: initialRows, 
-      onLoaded: (PlutoGridOnLoadedEvent event) {
-        stateManager = event.stateManager;
-      },
+          columns: columns,
+          rows: initialRows,
+          onLoaded: (PlutoGridOnLoadedEvent event) {
+            stateManager = event.stateManager;
+          },
       onChanged: (PlutoGridOnChangedEvent event) async {
         final project = event.row.cells['data']?.value as MusicProject?;
         if (project == null) return;

@@ -25,23 +25,6 @@ class ThemeSwitcher extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextButton(
-            onPressed: () {
-              ref.read(themeTypeProvider.notifier).cycle();
-            },
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              themeName,
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyMedium?.color,
-                fontSize: 14,
-              ),
-            ),
-          ),
           IconButton(
             icon: AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
@@ -58,6 +41,23 @@ class ThemeSwitcher extends ConsumerWidget {
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             tooltip: isNeon ? 'Switch to Classic Theme' : 'Switch to Neon Theme',
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(themeTypeProvider.notifier).cycle();
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              themeName,
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+                fontSize: 14,
+              ),
+            ),
           ),
         ],
       ),
