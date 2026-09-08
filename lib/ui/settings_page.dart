@@ -2762,21 +2762,32 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  /// Opens the editor on [draft] and, if saved, stores and selects it.
-  Future<void> _createFrom(CustomTheme draft) async {
+  /// Opens the editor on [draft] and, if saved, stores it.
+  ///
+  /// [select] is the difference between the two creation paths: "New theme"
+  /// is something the user just designed and wants to see, while duplicating
+  /// is usually how you start a variant — switching the whole app to a copy
+  /// nobody asked to wear yet is jarring, so Duplicate only adds it.
+  Future<void> _createFrom(CustomTheme draft, {required bool select}) async {
     final saved =
         await showThemeEditorDialog(context, draft: draft, isNew: true);
     if (saved == null) return;
     await ref.read(customThemesProvider.notifier).upsert(saved);
-    await ref.read(selectedThemeIdProvider.notifier).select(saved.id);
+    if (select) {
+      await ref.read(selectedThemeIdProvider.notifier).select(saved.id);
+    }
   }
 
-  Future<void> _createTheme(AppLocalizations l10n) =>
-      _createFrom(_newThemeFrom(ref.read(activeThemeProvider), ''));
+  Future<void> _createTheme(AppLocalizations l10n) => _createFrom(
+        _newThemeFrom(ref.read(activeThemeProvider), ''),
+        select: true,
+      );
 
   Future<void> _duplicateTheme(CustomTheme source, AppLocalizations l10n) =>
       _createFrom(
-        _newThemeFrom(source, l10n.themeCopyName(themeDisplayName(source, l10n))),
+        _newThemeFrom(
+            source, l10n.themeCopyName(themeDisplayName(source, l10n))),
+        select: false,
       );
 
   Future<void> _editTheme(CustomTheme theme) async {

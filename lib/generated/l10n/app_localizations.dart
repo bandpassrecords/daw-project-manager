@@ -8417,12 +8417,6 @@ abstract class AppLocalizations {
   /// **'Apply'**
   String get apply;
 
-  /// No description provided for @pickColor.
-  ///
-  /// In en, this message translates to:
-  /// **'Pick a color'**
-  String get pickColor;
-
   /// No description provided for @themeCopyName.
   ///
   /// In en, this message translates to:

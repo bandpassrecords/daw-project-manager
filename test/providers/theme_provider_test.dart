@@ -203,6 +203,42 @@ void main() {
       expect(stored.single.id, 'a');
     });
 
+    test('adding a theme never changes which one is active', () async {
+      // What lets Settings duplicate a theme without yanking the whole app
+      // over to the copy — you can duplicate a theme you are not wearing.
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await container
+          .read(selectedThemeIdProvider.notifier)
+          .selectBuiltIn(AppThemeType.neonDark);
+
+      await container
+          .read(customThemesProvider.notifier)
+          .upsert(userTheme('a copy'));
+
+      expect(container.read(selectedThemeIdProvider), 'neonDark');
+      expect(container.read(activeThemeProvider), AppThemes.neonDarkSpec);
+      expect(container.read(customThemesProvider).single.id, 'a copy');
+    });
+
+    test('editing the active theme keeps it active', () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(customThemesProvider.notifier);
+
+      await notifier.upsert(userTheme('a'));
+      await container.read(selectedThemeIdProvider.notifier).select('a');
+
+      await notifier.upsert(
+        userTheme('a').copyWith(primary: const Color(0xFF00FF00)),
+      );
+
+      expect(container.read(selectedThemeIdProvider), 'a');
+      expect(container.read(activeThemeProvider).primary,
+          const Color(0xFF00FF00));
+    });
+
     test('deleting the active theme moves the selection off it', () async {
       final container = ProviderContainer();
       addTearDown(container.dispose);

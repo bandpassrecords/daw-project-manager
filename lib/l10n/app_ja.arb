@@ -3095,7 +3095,6 @@
   "themeHexLabel": "Hex",
   "themeHexInvalid": "#RRGGBB の形式で入力",
   "apply": "適用",
-  "pickColor": "色を選択",
   "themeCopyName": "{name} のコピー",
   "@themeCopyName": {
     "placeholders": {

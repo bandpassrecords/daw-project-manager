@@ -3095,7 +3095,6 @@
   "themeHexLabel": "Hex",
   "themeHexInvalid": "Utilisez #RRGGBB",
   "apply": "Appliquer",
-  "pickColor": "Choisir une couleur",
   "themeCopyName": "{name} copie",
   "@themeCopyName": {
     "placeholders": {

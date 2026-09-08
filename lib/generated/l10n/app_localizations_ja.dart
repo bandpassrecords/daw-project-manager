@@ -4855,9 +4855,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get apply => '適用';
 
   @override
-  String get pickColor => '色を選択';
-
-  @override
   String themeCopyName(String name) {
     return '$name のコピー';
   }

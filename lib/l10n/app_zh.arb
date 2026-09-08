@@ -3095,7 +3095,6 @@
   "themeHexLabel": "Hex",
   "themeHexInvalid": "请使用 #RRGGBB",
   "apply": "应用",
-  "pickColor": "选择颜色",
   "themeCopyName": "{name} 副本",
   "@themeCopyName": {
     "placeholders": {

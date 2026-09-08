@@ -4990,9 +4990,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get apply => 'Применить';
 
   @override
-  String get pickColor => 'Выбрать цвет';
-
-  @override
   String themeCopyName(String name) {
     return '$name — копия';
   }

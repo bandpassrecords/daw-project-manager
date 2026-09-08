@@ -5003,9 +5003,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get apply => 'Übernehmen';
 
   @override
-  String get pickColor => 'Farbe wählen';
-
-  @override
   String themeCopyName(String name) {
     return '$name Kopie';
   }

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../utils/phase_colors.dart';
+import '../widgets/color_wheel.dart';
 
 /// Parses `#RRGGBB`, `RRGGBB`, `#RGB` or `RGB` into a color.
 ///
@@ -17,7 +18,9 @@ Color? parseHexColor(String input) {
   return Color(int.parse('FF$hex', radix: 16));
 }
 
-/// Swatch-plus-hex color picker.
+/// Color picker offering three ways in: the preset swatches, a full HSV
+/// wheel, and a hex field. All three stay in sync — dragging the wheel
+/// rewrites the hex, and typing a hex moves the wheel thumb.
 ///
 /// Returns the chosen color, or null if dismissed. [palette] defaults to the
 /// phase color palette; the theme editor passes its own sets, because the
@@ -56,9 +59,12 @@ class AppColorPickerDialog extends StatefulWidget {
 }
 
 class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
+  late HSVColor _hsv = HSVColor.fromColor(widget.currentColor);
   late final TextEditingController _hexController =
       TextEditingController(text: colorToHex(widget.currentColor));
   String? _error;
+
+  Color get _color => _hsv.toColor();
 
   @override
   void dispose() {
@@ -66,11 +72,37 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
     super.dispose();
   }
 
-  void _applyHex() {
-    final l10n = AppLocalizations.of(context)!;
+  /// Moves the wheel, and rewrites the hex field to match.
+  ///
+  /// Keeps [HSVColor] rather than round-tripping through [Color]: hue and
+  /// saturation are undefined for black and greys, so a round trip would
+  /// snap the thumb back to the centre mid-drag.
+  void _setFromWheel(HSVColor next) {
+    final hex = colorToHex(next.toColor());
+    setState(() {
+      _hsv = next;
+      _error = null;
+      _hexController.value = TextEditingValue(
+        text: hex,
+        selection: TextSelection.collapsed(offset: hex.length),
+      );
+    });
+  }
+
+  /// Reacts to typing in the hex field. Deliberately does *not* rewrite the
+  /// field — doing so would fight the cursor on every keystroke.
+  void _setFromHexField(String text) {
+    final parsed = parseHexColor(text);
+    setState(() {
+      _error = null;
+      if (parsed != null) _hsv = HSVColor.fromColor(parsed);
+    });
+  }
+
+  void _confirmHex() {
     final parsed = parseHexColor(_hexController.text);
     if (parsed == null) {
-      setState(() => _error = l10n.themeHexInvalid);
+      setState(() => _error = AppLocalizations.of(context)!.themeHexInvalid);
       return;
     }
     Navigator.pop(context, parsed);
@@ -79,89 +111,112 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     return AlertDialog(
       title: Text(widget.title),
       content: SizedBox(
-        width: 280,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: widget.palette.map((color) {
-                final isSelected =
-                    color.toARGB32() == widget.currentColor.toARGB32();
-                return GestureDetector(
-                  onTap: () => Navigator.pop(context, color),
-                  child: Container(
+        width: 320,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Preset swatches. Tapping one picks it outright — this is the
+              // fast path, and the one the phase picker has always had.
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: widget.palette.map((color) {
+                  final isSelected =
+                      color.toARGB32() == _color.toARGB32();
+                  return GestureDetector(
+                    onTap: () => Navigator.pop(context, color),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.onSurface
+                              : Colors.transparent,
+                          width: 2.5,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: color.withValues(alpha: 0.5),
+                                  blurRadius: 6,
+                                )
+                              ]
+                            : null,
+                      ),
+                      child: isSelected
+                          ? Icon(
+                              Icons.check,
+                              size: 18,
+                              color: ThemeData.estimateBrightnessForColor(
+                                          color) ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                            )
+                          : null,
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 16),
+              // A 16-swatch palette is far too coarse for a whole theme, so
+              // any color is reachable by wheel or by hex.
+              Center(
+                child: ColorWheel(
+                  color: _hsv,
+                  onChanged: _setFromWheel,
+                ),
+              ),
+              ColorValueSlider(color: _hsv, onChanged: _setFromWheel),
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Live preview of whatever the wheel and hex currently
+                  // agree on.
+                  Container(
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isSelected
-                            ? Theme.of(context).colorScheme.onSurface
-                            : Colors.transparent,
-                        width: 2.5,
+                      color: _color,
+                      borderRadius: BorderRadius.circular(8),
+                      border:
+                          Border.all(color: Theme.of(context).dividerColor),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: _hexController,
+                      autocorrect: false,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(7),
+                      ],
+                      decoration: InputDecoration(
+                        labelText: l10n.themeHexLabel,
+                        hintText: '#1E1F22',
+                        errorText: _error,
+                        isDense: true,
                       ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: color.withValues(alpha: 0.5),
-                                blurRadius: 6,
-                              )
-                            ]
-                          : null,
+                      onChanged: _setFromHexField,
+                      onSubmitted: (_) => _confirmHex(),
                     ),
-                    child: isSelected
-                        ? Icon(
-                            Icons.check,
-                            size: 18,
-                            color: ThemeData.estimateBrightnessForColor(
-                                        color) ==
-                                    Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                          )
-                        : null,
                   ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-            // A 16-swatch palette is fine for phases but far too narrow for a
-            // whole theme, so any color is reachable by hex.
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _hexController,
-                    autocorrect: false,
-                    inputFormatters: [LengthLimitingTextInputFormatter(7)],
-                    decoration: InputDecoration(
-                      labelText: l10n.themeHexLabel,
-                      hintText: '#1E1F22',
-                      errorText: _error,
-                      isDense: true,
-                    ),
-                    onChanged: (_) {
-                      if (_error != null) setState(() => _error = null);
-                    },
-                    onSubmitted: (_) => _applyHex(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: _applyHex,
-                  child: Text(l10n.apply),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -169,6 +224,7 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(l10n.cancel),
         ),
+        FilledButton(onPressed: _confirmHex, child: Text(l10n.apply)),
       ],
     );
   }
