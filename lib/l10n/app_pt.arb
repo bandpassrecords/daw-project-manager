@@ -3012,7 +3012,7 @@
   "stackMetadataSourceBody": "Mais de um deles já tem detalhes próprios. O que você escolher se torna o projeto principal: o nome, BPM, tom, notas, tarefas e prazo dele serão usados pela pilha. Nada é mesclado e nada é perdido — os outros mantêm seus detalhes, e desempilhar os devolve.",
   "stackMetadataSourceOldestHint": "Mais antiga — sugerida",
   "stackMetadataNoneLabel": "Ainda sem detalhes",
-  "stackMetadataTodosLabel": "{count} tarefas",
+  "stackMetadataTodosLabel": "{count, plural, =1{1 tarefa} other{{count} tarefas}}",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
   "stackMetadataNotesLabel": "notas",
   "stackNotStackedYet": "Ainda não empilhado",
@@ -3025,5 +3025,11 @@
   "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
   "stackAddVersionMultiTitle": "Adicionar versões",
   "stackSelectAll": "Selecionar tudo",
-  "stackClearSelection": "Limpar"
+  "stackClearSelection": "Limpar",
+  "stackMetadataPartsLabel": "{count, plural, =1{1 parte} other{{count} partes}}",
+  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "stackMetadataDeadlineLabel": "prazo",
+  "stackMetadataRenamedLabel": "nome personalizado",
+  "stackMetadataWorkHours": "{hours}h registradas",
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
 }

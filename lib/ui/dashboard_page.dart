@@ -1174,22 +1174,35 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
   }
 
-  /// One-line summary of what a version would contribute as the song's
-  /// metadata — BPM, key, notes, tasks, logged time.
+  /// One-line summary of what a project would contribute as the main
+  /// project's metadata.
+  ///
+  /// Covers exactly the fields [MusicProject.hasUserMetadata] counts. A
+  /// project appears in the chooser *because* that getter said it has
+  /// details, so any field it counts but this omits produces a row offered to
+  /// the user over "No details yet" — which reads as a bug in the dialog.
   static String _stackMetadataSummary(
     BuildContext context,
     MusicProject project,
   ) {
     final l10n = AppLocalizations.of(context)!;
     final parts = <String>[
-      if (project.bpm != null) '${project.bpm!.round()} BPM',
+      if (project.customDisplayName?.trim().isNotEmpty ?? false)
+        l10n.stackMetadataRenamedLabel,
+      if (project.bpm != null) '${project.bpm!.round()} ${l10n.bpm}',
       if (project.musicalKey?.trim().isNotEmpty ?? false)
         project.musicalKey!.trim(),
-      if (project.notes?.trim().isNotEmpty ?? false) l10n.stackMetadataNotesLabel,
+      if (project.notes?.trim().isNotEmpty ?? false)
+        l10n.stackMetadataNotesLabel,
+      if (project.deadline != null) l10n.stackMetadataDeadlineLabel,
       if (project.todos.isNotEmpty)
         l10n.stackMetadataTodosLabel(project.todos.length),
+      if (project.parts.isNotEmpty)
+        l10n.stackMetadataPartsLabel(project.parts.length),
       if (project.totalWorkSeconds > 0)
-        '${(project.totalWorkSeconds / 3600).toStringAsFixed(1)}h',
+        l10n.stackMetadataWorkHours(
+          (project.totalWorkSeconds / 3600).toStringAsFixed(1),
+        ),
     ];
     return parts.isEmpty ? l10n.stackMetadataNoneLabel : parts.join('  ·  ');
   }

@@ -4644,7 +4644,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String stackMetadataTodosLabel(int count) {
-    return '$count 件のタスク';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のタスク',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -4682,4 +4687,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stackClearSelection => 'クリア';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のパート',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => '期限';
+
+  @override
+  String get stackMetadataRenamedLabel => 'カスタム名';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '$hours 時間記録';
+  }
 }

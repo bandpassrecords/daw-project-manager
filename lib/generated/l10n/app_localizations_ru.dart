@@ -4771,7 +4771,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String stackMetadataTodosLabel(int count) {
-    return 'Задач: $count';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count задач',
+      few: '$count задачи',
+      one: '1 задача',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -4810,4 +4817,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stackClearSelection => 'Очистить';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count партий',
+      few: '$count партии',
+      one: '1 партия',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => 'срок';
+
+  @override
+  String get stackMetadataRenamedLabel => 'своё название';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return 'записано $hours ч';
+  }
 }

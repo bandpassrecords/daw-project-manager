@@ -2988,7 +2988,7 @@
   "stackMetadataSourceBody": "複数のプロジェクトにすでに独自の詳細があります。選んだものがメインプロジェクトになり、その名前・BPM・キー・ノート・タスク・期限がスタックで使われます。統合も消失もありません。他のプロジェクトは自分の詳細を保持し、スタックを解除すれば元に戻ります。",
   "stackMetadataSourceOldestHint": "最も古い — 推奨",
   "stackMetadataNoneLabel": "詳細なし",
-  "stackMetadataTodosLabel": "{count} 件のタスク",
+  "stackMetadataTodosLabel": "{count, plural, other{{count} 件のタスク}}",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
   "stackMetadataNotesLabel": "ノート",
   "stackNotStackedYet": "まだスタックされていません",
@@ -3001,5 +3001,11 @@
   "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
   "stackAddVersionMultiTitle": "バージョンを追加",
   "stackSelectAll": "すべて選択",
-  "stackClearSelection": "クリア"
+  "stackClearSelection": "クリア",
+  "stackMetadataPartsLabel": "{count, plural, other{{count} 件のパート}}",
+  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "stackMetadataDeadlineLabel": "期限",
+  "stackMetadataRenamedLabel": "カスタム名",
+  "stackMetadataWorkHours": "{hours} 時間記録",
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
 }

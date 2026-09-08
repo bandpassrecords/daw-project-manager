@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../generated/l10n/app_localizations.dart';
+import '../utils/version_stacks.dart';
 import '../models/music_project.dart';
 import '../models/project_event.dart';
 import '../providers/providers.dart';
@@ -26,7 +27,9 @@ class ProjectStatisticsPage extends ConsumerWidget {
     final projectsAsync = ref.watch(allProjectsStreamProvider);
     final events = ref.watch(eventsForProjectProvider(projectId));
 
-    final project = projectsAsync.asData?.value
+    // Collapsed so opening the history of a stacked project shows the work
+    // time of every version, not the stack row's stored zero.
+    final project = collapseVersionStacks(projectsAsync.asData?.value ?? [])
         .where((p) => p.id == projectId)
         .firstOrNull;
 

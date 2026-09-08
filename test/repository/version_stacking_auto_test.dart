@@ -138,6 +138,42 @@ void main() {
     });
   });
 
+  group('addToStack', () {
+    test('refuses a project that already belongs to another stack', () async {
+      await addProject(id: 'v1', filePath: path([rootPath, 'A', 'v1.als']));
+      await addProject(id: 'v2', filePath: path([rootPath, 'A', 'v2.als']));
+      await addProject(id: 'w1', filePath: path([rootPath, 'B', 'w1.als']));
+      await addProject(id: 'w2', filePath: path([rootPath, 'B', 'w2.als']));
+      final first = await repo.stackProjects(memberIds: ['v1', 'v2']);
+      final second = await repo.stackProjects(memberIds: ['w1', 'w2']);
+
+      await repo.addToStack(stackId: second.id, projectId: 'v1');
+
+      // Re-parenting silently would flip v1's stackId while leaving it listed
+      // on the first stack, so its work time would be counted by both.
+      expect(repo.projectsBox.get('v1')!.stackId, first.id);
+      expect(
+        repo.projectsBox.get(second.id)!.memberProjectIds,
+        isNot(contains('v1')),
+      );
+      expect(
+        repo.projectsBox.get(first.id)!.memberProjectIds,
+        contains('v1'),
+      );
+    });
+
+    test('still accepts a standalone project', () async {
+      await addProject(id: 'v1', filePath: path([rootPath, 'A', 'v1.als']));
+      await addProject(id: 'v2', filePath: path([rootPath, 'A', 'v2.als']));
+      await addProject(id: 'v3', filePath: path([rootPath, 'A', 'v3.als']));
+      final stack = await repo.stackProjects(memberIds: ['v1', 'v2']);
+
+      await repo.addToStack(stackId: stack.id, projectId: 'v3');
+
+      expect(repo.projectsBox.get('v3')!.stackId, stack.id);
+    });
+  });
+
   group('stack naming', () {
     test('the stack takes the promoted project name, not the folder name',
         () async {
@@ -304,6 +340,30 @@ void main() {
 
       expect(await repo.autoStackFolders(), 0);
       expect(repo.projectsBox.get('o1')!.isStackMember, isFalse);
+    });
+
+    test('files sitting directly in the scan root are left alone', () async {
+      await addRoot(mode: ScanMode.versionStack);
+      // Unfiled projects share the root as their "folder". Stacking them
+      // would fuse every loose project in the library into one row.
+      await addProject(id: 'a', filePath: path([rootPath, 'SongA.als']));
+      await addProject(id: 'b', filePath: path([rootPath, 'SongB.als']));
+      await addProject(id: 'c', filePath: path([rootPath, 'SongC.als']));
+
+      expect(await repo.autoStackFolders(), 0);
+      expect(repo.projectsBox.values.where((p) => p.isVirtual), isEmpty);
+      expect(repo.projectsBox.get('a')!.isStackMember, isFalse);
+    });
+
+    test('root-level files stay loose while subfolders still stack', () async {
+      await addRoot(mode: ScanMode.versionStack);
+      await addProject(id: 'loose', filePath: path([rootPath, 'Loose.als']));
+      await addProject(id: 'a1', filePath: path([rootPath, 'SongA', 'A1.als']));
+      await addProject(id: 'a2', filePath: path([rootPath, 'SongA', 'A2.als']));
+
+      expect(await repo.autoStackFolders(), 1);
+      expect(repo.projectsBox.get('loose')!.isStackMember, isFalse);
+      expect(repo.projectsBox.get('a1')!.isStackMember, isTrue);
     });
 
     test('hidden projects are not pulled into a stack', () async {

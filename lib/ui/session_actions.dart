@@ -90,6 +90,35 @@ MusicProject? resolveStackLaunchTarget({
   return null;
 }
 
+/// Resolves [stack] to the version an action should act on: the nominated
+/// default, or whichever version the user picks. Null when they cancel or the
+/// stack has no members left.
+///
+/// Shared by launching and by starting a work session, so both land on the
+/// same version and the user is asked at most one consistent question.
+Future<MusicProject?> _resolveStackSessionTarget(
+  BuildContext context,
+  WidgetRef ref,
+  MusicProject stack,
+) async {
+  final l10n = AppLocalizations.of(context)!;
+  final repo = await ref.read(repositoryProvider.future);
+  final members = repo.stackMembers(stack);
+  final resolved = resolveStackLaunchTarget(
+    defaultLaunchMemberId: stack.defaultLaunchMemberId,
+    members: members,
+  );
+  if (resolved != null) return resolved;
+  if (members.isEmpty || !context.mounted) return null;
+  return showStackVersionPickerDialog(
+    context,
+    title: l10n.stackChooseVersionToOpen,
+    candidates: members,
+    emptyLabel: l10n.stackAddVersionEmpty,
+    subtitleBuilder: (m) => m.fileName,
+  );
+}
+
 /// Launches [project] in its DAW.
 ///
 /// Preference order: a user-registered executable override for the DAW type
@@ -114,23 +143,8 @@ Future<void> launchProjectInDaw(
   // launch has to be redirected to one of its versions before anything below
   // touches filePath.
   if (project.isVirtual) {
-    final repo = await ref.read(repositoryProvider.future);
-    final members = repo.stackMembers(project);
-    var target = resolveStackLaunchTarget(
-      defaultLaunchMemberId: project.defaultLaunchMemberId,
-      members: members,
-    );
-    if (target == null) {
-      if (members.isEmpty || !context.mounted) return;
-      target = await showStackVersionPickerDialog(
-        context,
-        title: l10n.stackChooseVersionToOpen,
-        candidates: members,
-        emptyLabel: l10n.stackAddVersionEmpty,
-        subtitleBuilder: (m) => m.fileName,
-      );
-      if (target == null || !context.mounted) return;
-    }
+    final target = await _resolveStackSessionTarget(context, ref, project);
+    if (target == null || !context.mounted) return;
     return launchProjectInDaw(context, ref, target);
   }
 
@@ -316,6 +330,18 @@ Future<void> confirmEndSession(BuildContext context, WidgetRef ref) async {
 Future<void> confirmStartSession(
     BuildContext context, WidgetRef ref, MusicProject project) async {
   final l10n = AppLocalizations.of(context)!;
+
+  // A stack has no file, and its work total is summed from its versions on
+  // read — it never stores sessions of its own. Timing against the stack row
+  // would write a session that no total counts and that `unstack` throws away
+  // with the row, so the session is redirected to a real version the same way
+  // a launch is (see [resolveStackLaunchTarget]).
+  if (project.isVirtual) {
+    final target = await _resolveStackSessionTarget(context, ref, project);
+    if (target == null || !context.mounted) return;
+    return confirmStartSession(context, ref, target);
+  }
+
   final current = ref.read(activeProjectProvider);
 
   if (current != null) {

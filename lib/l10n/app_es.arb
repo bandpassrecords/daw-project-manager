@@ -2988,7 +2988,7 @@
   "stackMetadataSourceBody": "Más de uno ya tiene detalles propios. El que elijas se convierte en el proyecto principal: su nombre, BPM, tonalidad, notas, tareas y fecha límite serán los que use la pila. Nada se fusiona ni se pierde: los demás conservan sus detalles y desapilar los devuelve.",
   "stackMetadataSourceOldestHint": "La más antigua — sugerida",
   "stackMetadataNoneLabel": "Aún sin detalles",
-  "stackMetadataTodosLabel": "{count} tareas",
+  "stackMetadataTodosLabel": "{count, plural, =1{1 tarea} other{{count} tareas}}",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
   "stackMetadataNotesLabel": "notas",
   "stackNotStackedYet": "Aún sin apilar",
@@ -3001,5 +3001,11 @@
   "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
   "stackAddVersionMultiTitle": "Añadir versiones",
   "stackSelectAll": "Seleccionar todo",
-  "stackClearSelection": "Borrar"
+  "stackClearSelection": "Borrar",
+  "stackMetadataPartsLabel": "{count, plural, =1{1 parte} other{{count} partes}}",
+  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "stackMetadataDeadlineLabel": "fecha límite",
+  "stackMetadataRenamedLabel": "nombre personalizado",
+  "stackMetadataWorkHours": "{hours} h registradas",
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
 }

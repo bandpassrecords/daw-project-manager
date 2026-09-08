@@ -1158,6 +1158,11 @@ class ProjectRepository {
     final project = projectsBox.get(projectId);
     if (stack == null || !stack.isVirtual || project == null) return;
     if (project.isVirtual || stack.memberProjectIds.contains(projectId)) return;
+    // A project can only belong to one stack. Re-parenting silently would
+    // flip its stackId while leaving it listed on the old stack, so its work
+    // time would be counted by both and cleanUpDanglingStackLinks — which
+    // only repairs links pointing at nothing — would never notice.
+    if (project.isStackMember) return;
 
     await projectsBox.put(
       stackId,
@@ -1206,10 +1211,17 @@ class ProjectRepository {
       (project) => !project.hidden && underStackRoot(project.filePath),
     );
 
+    final rootFolders = stackRoots.toSet();
     var created = 0;
     for (final entry in groupByImmediateFolder(candidates).entries) {
       final folder = entry.key;
       final loose = entry.value;
+      // Files sitting directly in the scan root are not versions of each
+      // other — they are simply the user's unfiled projects, and their shared
+      // "folder" is the root itself. Smart Folder leaves them ungrouped for
+      // the same reason; stacking them would fuse every loose project in the
+      // library into one row.
+      if (rootFolders.contains(folder)) continue;
       if (stackByFolder[folder] case final stack?) {
         for (final project in loose) {
           await addToStack(stackId: stack.id, projectId: project.id);

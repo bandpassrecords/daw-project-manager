@@ -8078,7 +8078,7 @@ abstract class AppLocalizations {
   /// No description provided for @stackMetadataTodosLabel.
   ///
   /// In en, this message translates to:
-  /// **'{count} tasks'**
+  /// **'{count, plural, =1{1 task} other{{count} tasks}}'**
   String stackMetadataTodosLabel(int count);
 
   /// Chip shown when a version has notes written on it
@@ -8146,6 +8146,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear'**
   String get stackClearSelection;
+
+  /// No description provided for @stackMetadataPartsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 part} other{{count} parts}}'**
+  String stackMetadataPartsLabel(int count);
+
+  /// Chip shown when a project has a deadline set
+  ///
+  /// In en, this message translates to:
+  /// **'deadline'**
+  String get stackMetadataDeadlineLabel;
+
+  /// Chip shown when a project has a custom name
+  ///
+  /// In en, this message translates to:
+  /// **'custom name'**
+  String get stackMetadataRenamedLabel;
+
+  /// No description provided for @stackMetadataWorkHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h logged'**
+  String stackMetadataWorkHours(String hours);
 }
 
 class _AppLocalizationsDelegate

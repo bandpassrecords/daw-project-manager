@@ -4592,7 +4592,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String stackMetadataTodosLabel(int count) {
-    return '$count 个任务';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个任务',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -4629,4 +4634,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stackClearSelection => '清除';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个声部',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => '截止日期';
+
+  @override
+  String get stackMetadataRenamedLabel => '自定义名称';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '已记录 $hours 小时';
+  }
 }

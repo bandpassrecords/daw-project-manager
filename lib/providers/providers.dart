@@ -18,6 +18,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../utils/app_paths.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/version_stacks.dart';
 import '../utils/phase_colors.dart';
 
 import '../generated/l10n/app_localizations.dart';
@@ -392,9 +393,11 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
 
         // --- Collapse version stacks (#94) ---
         // A stacked file is represented in the list by its stack, which owns
-        // the shared metadata. Showing both would list the same song twice and
-        // double-count it in every total derived from this list.
-        projects = projects.where((p) => !p.isStackMember).toList();
+        // the shared metadata. Showing both would list the same project twice
+        // and double-count it in every total derived from this list. The
+        // helper also rolls each stack's work time up from its members, which
+        // is where it is actually stored.
+        projects = collapseVersionStacks(projects);
 
         // --- Filter out stale preserved projects ---
         // A "preserved" project is one attached to a release. We hide it only when its
@@ -911,7 +914,11 @@ class DawFilterNotifier extends Notifier<String?> {
 // the DAW filter dropdown only ever offers DAWs the user actually has.
 final availableDawsProvider = Provider<List<String>>((ref) {
   final allProjectsAsync = ref.watch(allProjectsStreamProvider);
-  final projects = allProjectsAsync.value ?? const <MusicProject>[];
+  // Collapsed: every version of a stacked project carries the same dawType,
+  // and the filter only needs the DAWs the user actually has.
+  final projects = collapseVersionStacks(
+    allProjectsAsync.value ?? const <MusicProject>[],
+  );
   final daws = projects
       .map((p) => p.dawType)
       .whereType<String>()
@@ -2186,7 +2193,7 @@ final projectsWithRecentActivityProvider = Provider<List<MusicProject>>((ref) {
   final hideFinished = ref.watch(statsHideFinishedProvider);
   final finishedPhases = ref.watch(finishedPhaseProvider);
 
-  final allProjects = projectsAsync.asData?.value ?? [];
+  final allProjects = collapseVersionStacks(projectsAsync.asData?.value ?? []);
   final projects = hideFinished
       ? allProjects.where((p) => !finishedPhases.contains(p.status)).toList()
       : allProjects;
@@ -2254,7 +2261,7 @@ final globalStatsProvider = Provider<GlobalStats>((ref) {
   final hideFinished = ref.watch(statsHideFinishedProvider);
   final finishedPhases = ref.watch(finishedPhaseProvider);
 
-  final allProjects = projectsAsync.asData?.value;
+  final allProjects = collapseVersionStacksOrNull(projectsAsync.asData?.value);
   final events = eventsAsync.asData?.value;
   if (allProjects == null || events == null) return GlobalStats.empty;
 

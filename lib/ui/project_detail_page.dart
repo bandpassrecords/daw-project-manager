@@ -255,7 +255,6 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   /// showing no longer exists once [ProjectRepository.unstack] returns.
   Future<void> _unstackSong(ProjectRepository repo, MusicProject stack) async {
     final l10n = AppLocalizations.of(context)!;
-    final navigator = Navigator.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -282,9 +281,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
     await repo.unstack(stack.id);
     if (!mounted) return;
-    // Leave first, then refresh. Invalidating while this page is still
-    // mounted rebuilds it against a stack that no longer exists.
-    navigator.pop();
+    // No explicit pop here: the stack row is gone, so the next rebuild lands
+    // on _buildProjectGone, which pops exactly once. Popping here as well
+    // raced that and closed the parent route too.
     ref.invalidate(allProjectsStreamProvider);
   }
 
@@ -667,15 +666,26 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   MusicProject? _findProject(List<MusicProject> projects) =>
       findProjectById(projects, widget.projectId);
 
+  /// Guards against popping more than once. Hive emits per write, so
+  /// dissolving a stack (one delete plus a write per member) rebuilds this
+  /// page several times over, and the page also stays mounted through its own
+  /// exit transition. Without the latch each of those rebuilds schedules
+  /// another pop, which walks back past this page and closes whatever pushed
+  /// it — Release detail, Queue, the mobile player.
+  bool _popScheduled = false;
+
   /// Placeholder for the frame(s) between the project being deleted and this
-  /// page being popped. Pops itself in case nothing else does — a page left
-  /// showing a project that no longer exists has nothing to offer.
+  /// page being popped. Pops itself, once — a page left showing a project that
+  /// no longer exists has nothing to offer.
   Widget _buildProjectGone() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final navigator = Navigator.of(context);
-      if (navigator.canPop()) navigator.pop();
-    });
+    if (!_popScheduled) {
+      _popScheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final navigator = Navigator.of(context);
+        if (navigator.canPop()) navigator.pop();
+      });
+    }
     return const Center(child: CircularProgressIndicator());
   }
 

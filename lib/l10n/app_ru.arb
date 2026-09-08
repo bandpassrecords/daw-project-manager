@@ -2988,7 +2988,7 @@
   "stackMetadataSourceBody": "У нескольких из них уже есть собственные данные. Выбранный станет основным проектом: его имя, BPM, тональность, заметки, задачи и срок будут использоваться стеком. Ничего не объединяется и не теряется — остальные сохраняют свои данные, и разъединение их вернёт.",
   "stackMetadataSourceOldestHint": "Самая старая — рекомендуется",
   "stackMetadataNoneLabel": "Пока нет данных",
-  "stackMetadataTodosLabel": "Задач: {count}",
+  "stackMetadataTodosLabel": "{count, plural, =1{1 задача} few{{count} задачи} other{{count} задач}}",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
   "stackMetadataNotesLabel": "заметки",
   "stackNotStackedYet": "Пока не объединено",
@@ -3001,5 +3001,11 @@
   "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
   "stackAddVersionMultiTitle": "Добавить версии",
   "stackSelectAll": "Выбрать все",
-  "stackClearSelection": "Очистить"
+  "stackClearSelection": "Очистить",
+  "stackMetadataPartsLabel": "{count, plural, =1{1 партия} few{{count} партии} other{{count} партий}}",
+  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "stackMetadataDeadlineLabel": "срок",
+  "stackMetadataRenamedLabel": "своё название",
+  "stackMetadataWorkHours": "записано {hours} ч",
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
 }

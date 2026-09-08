@@ -2988,7 +2988,7 @@
   "stackMetadataSourceBody": "其中有多个已经有自己的详细信息。你选择的那个将成为主项目：它的名称、BPM、调性、笔记、任务和截止日期将被堆叠使用。不会合并也不会丢失——其他项目保留各自的详细信息，取消堆叠后即可恢复。",
   "stackMetadataSourceOldestHint": "最早的 — 建议",
   "stackMetadataNoneLabel": "暂无详细信息",
-  "stackMetadataTodosLabel": "{count} 个任务",
+  "stackMetadataTodosLabel": "{count, plural, other{{count} 个任务}}",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
   "stackMetadataNotesLabel": "笔记",
   "stackNotStackedYet": "尚未堆叠",
@@ -3001,5 +3001,11 @@
   "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
   "stackAddVersionMultiTitle": "添加版本",
   "stackSelectAll": "全选",
-  "stackClearSelection": "清除"
+  "stackClearSelection": "清除",
+  "stackMetadataPartsLabel": "{count, plural, other{{count} 个声部}}",
+  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "stackMetadataDeadlineLabel": "截止日期",
+  "stackMetadataRenamedLabel": "自定义名称",
+  "stackMetadataWorkHours": "已记录 {hours} 小时",
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
 }

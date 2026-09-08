@@ -2988,7 +2988,7 @@
   "stackMetadataSourceBody": "Mehr als eines davon hat bereits eigene Details. Das von dir gewählte wird zum Hauptprojekt: sein Name, BPM, Tonart, Notizen, Aufgaben und Frist werden für den Stapel verwendet. Nichts wird zusammengeführt und nichts geht verloren — die anderen behalten ihre Details, und Entstapeln gibt sie zurück.",
   "stackMetadataSourceOldestHint": "Älteste — empfohlen",
   "stackMetadataNoneLabel": "Noch keine Details",
-  "stackMetadataTodosLabel": "{count} Aufgaben",
+  "stackMetadataTodosLabel": "{count, plural, =1{1 Aufgabe} other{{count} Aufgaben}}",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
   "stackMetadataNotesLabel": "Notizen",
   "stackNotStackedYet": "Noch nicht gestapelt",
@@ -3001,5 +3001,11 @@
   "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
   "stackAddVersionMultiTitle": "Versionen hinzufügen",
   "stackSelectAll": "Alle auswählen",
-  "stackClearSelection": "Zurücksetzen"
+  "stackClearSelection": "Zurücksetzen",
+  "stackMetadataPartsLabel": "{count, plural, =1{1 Part} other{{count} Parts}}",
+  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "stackMetadataDeadlineLabel": "Frist",
+  "stackMetadataRenamedLabel": "eigener Name",
+  "stackMetadataWorkHours": "{hours} h erfasst",
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
 }

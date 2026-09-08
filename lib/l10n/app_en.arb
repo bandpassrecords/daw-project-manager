@@ -4296,7 +4296,7 @@
   "@stackMetadataSourceOldestHint": {"description": "Marks the version pre-selected as the default metadata source"},
   "stackMetadataNoneLabel": "No details yet",
   "@stackMetadataNoneLabel": {"description": "Shown for a version that has no user-entered metadata"},
-  "stackMetadataTodosLabel": "{count} tasks",
+  "stackMetadataTodosLabel": "{count, plural, =1{1 task} other{{count} tasks}}",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
   "stackMetadataNotesLabel": "notes",
   "@stackMetadataNotesLabel": {"description": "Chip shown when a version has notes written on it"},
@@ -4319,5 +4319,13 @@
   "stackSelectAll": "Select all",
   "@stackSelectAll": {"description": "Selects every project currently listed in the add-versions picker"},
   "stackClearSelection": "Clear",
-  "@stackClearSelection": {"description": "Clears the current selection in the add-versions picker"}
+  "@stackClearSelection": {"description": "Clears the current selection in the add-versions picker"},
+  "stackMetadataPartsLabel": "{count, plural, =1{1 part} other{{count} parts}}",
+  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "stackMetadataDeadlineLabel": "deadline",
+  "@stackMetadataDeadlineLabel": {"description": "Chip shown when a project has a deadline set"},
+  "stackMetadataRenamedLabel": "custom name",
+  "@stackMetadataRenamedLabel": {"description": "Chip shown when a project has a custom name"},
+  "stackMetadataWorkHours": "{hours}h logged",
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
 }

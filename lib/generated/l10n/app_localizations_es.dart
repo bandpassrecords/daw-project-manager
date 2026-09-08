@@ -4798,7 +4798,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String stackMetadataTodosLabel(int count) {
-    return '$count tareas';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tareas',
+      one: '1 tarea',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -4838,4 +4844,26 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stackClearSelection => 'Borrar';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partes',
+      one: '1 parte',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => 'fecha límite';
+
+  @override
+  String get stackMetadataRenamedLabel => 'nombre personalizado';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '$hours h registradas';
+  }
 }

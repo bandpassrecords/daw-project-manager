@@ -2988,7 +2988,7 @@
   "stackMetadataSourceBody": "Plusieurs d'entre eux ont déjà leurs propres détails. Celui que vous choisissez devient le projet principal : son nom, BPM, tonalité, notes, tâches et échéance seront ceux de la pile. Rien n'est fusionné ni perdu : les autres conservent leurs détails, et le désempilement les restitue.",
   "stackMetadataSourceOldestHint": "La plus ancienne — suggérée",
   "stackMetadataNoneLabel": "Aucun détail",
-  "stackMetadataTodosLabel": "{count} tâches",
+  "stackMetadataTodosLabel": "{count, plural, =1{1 tâche} other{{count} tâches}}",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
   "stackMetadataNotesLabel": "notes",
   "stackNotStackedYet": "Pas encore empilé",
@@ -3001,5 +3001,11 @@
   "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
   "stackAddVersionMultiTitle": "Ajouter des versions",
   "stackSelectAll": "Tout sélectionner",
-  "stackClearSelection": "Effacer"
+  "stackClearSelection": "Effacer",
+  "stackMetadataPartsLabel": "{count, plural, =1{1 partie} other{{count} parties}}",
+  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "stackMetadataDeadlineLabel": "échéance",
+  "stackMetadataRenamedLabel": "nom personnalisé",
+  "stackMetadataWorkHours": "{hours} h enregistrées",
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
 }
