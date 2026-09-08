@@ -2990,5 +2990,10 @@
   "stackMetadataNoneLabel": "Noch keine Details",
   "stackMetadataTodosLabel": "{count} Aufgaben",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
-  "stackMetadataNotesLabel": "Notizen"
+  "stackMetadataNotesLabel": "Notizen",
+  "stackNotStackedYet": "Noch nicht gestapelt",
+  "stackStartFromHere": "Füge eine weitere Projektdatei hinzu, und beide werden zu Versionen eines Songs, die Metadaten, Aufgaben und Arbeitszeit teilen.",
+  "stackSearchProjects": "Projekte suchen",
+  "stackSearchNoMatches": "Keine Projekte entsprechen deiner Suche.",
+  "stackStartedMessage": "Als ein Song gestapelt."
 }

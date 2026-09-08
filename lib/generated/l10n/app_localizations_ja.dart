@@ -4648,4 +4648,20 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stackMetadataNotesLabel => 'ノート';
+
+  @override
+  String get stackNotStackedYet => 'まだスタックされていません';
+
+  @override
+  String get stackStartFromHere =>
+      '別のプロジェクトファイルを追加すると、2つが1曲のバージョンになり、メタデータ・タスク・作業時間を共有します。';
+
+  @override
+  String get stackSearchProjects => 'プロジェクトを検索';
+
+  @override
+  String get stackSearchNoMatches => '検索に一致するプロジェクトがありません。';
+
+  @override
+  String get stackStartedMessage => '1曲にまとめました。';
 }

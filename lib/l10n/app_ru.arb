@@ -2990,5 +2990,10 @@
   "stackMetadataNoneLabel": "Пока нет данных",
   "stackMetadataTodosLabel": "Задач: {count}",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
-  "stackMetadataNotesLabel": "заметки"
+  "stackMetadataNotesLabel": "заметки",
+  "stackNotStackedYet": "Пока не объединено",
+  "stackStartFromHere": "Добавьте ещё один файл проекта, и оба станут версиями одной песни с общими метаданными, задачами и рабочим временем.",
+  "stackSearchProjects": "Поиск проектов",
+  "stackSearchNoMatches": "Нет проектов, соответствующих запросу.",
+  "stackStartedMessage": "Объединено в одну песню."
 }

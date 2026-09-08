@@ -2990,5 +2990,10 @@
   "stackMetadataNoneLabel": "Ancora nessun dettaglio",
   "stackMetadataTodosLabel": "{count} attività",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
-  "stackMetadataNotesLabel": "note"
+  "stackMetadataNotesLabel": "note",
+  "stackNotStackedYet": "Non ancora impilato",
+  "stackStartFromHere": "Aggiungi un altro file di progetto e i due diventeranno versioni di un brano, condividendo metadati, attività e tempo di lavoro.",
+  "stackSearchProjects": "Cerca progetti",
+  "stackSearchNoMatches": "Nessun progetto corrisponde alla tua ricerca.",
+  "stackStartedMessage": "Impilato come un brano."
 }

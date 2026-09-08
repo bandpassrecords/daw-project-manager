@@ -4780,4 +4780,20 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get stackMetadataNotesLabel => 'notas';
+
+  @override
+  String get stackNotStackedYet => 'Ainda não empilhado';
+
+  @override
+  String get stackStartFromHere =>
+      'Adicione outro arquivo de projeto e os dois viram versões de uma música, compartilhando metadados, tarefas e tempo de trabalho.';
+
+  @override
+  String get stackSearchProjects => 'Buscar projetos';
+
+  @override
+  String get stackSearchNoMatches => 'Nenhum projeto corresponde à sua busca.';
+
+  @override
+  String get stackStartedMessage => 'Empilhado como uma música.';
 }

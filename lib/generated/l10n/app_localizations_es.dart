@@ -4803,4 +4803,21 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stackMetadataNotesLabel => 'notas';
+
+  @override
+  String get stackNotStackedYet => 'Aún sin apilar';
+
+  @override
+  String get stackStartFromHere =>
+      'Añade otro archivo de proyecto y ambos se convertirán en versiones de una canción, compartiendo metadatos, tareas y tiempo de trabajo.';
+
+  @override
+  String get stackSearchProjects => 'Buscar proyectos';
+
+  @override
+  String get stackSearchNoMatches =>
+      'Ningún proyecto coincide con tu búsqueda.';
+
+  @override
+  String get stackStartedMessage => 'Apilado como una canción.';
 }

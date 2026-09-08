@@ -4787,4 +4787,21 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get stackMetadataNotesLabel => 'note';
+
+  @override
+  String get stackNotStackedYet => 'Non ancora impilato';
+
+  @override
+  String get stackStartFromHere =>
+      'Aggiungi un altro file di progetto e i due diventeranno versioni di un brano, condividendo metadati, attività e tempo di lavoro.';
+
+  @override
+  String get stackSearchProjects => 'Cerca progetti';
+
+  @override
+  String get stackSearchNoMatches =>
+      'Nessun progetto corrisponde alla tua ricerca.';
+
+  @override
+  String get stackStartedMessage => 'Impilato come un brano.';
 }

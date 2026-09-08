@@ -2990,5 +2990,10 @@
   "stackMetadataNoneLabel": "暂无详细信息",
   "stackMetadataTodosLabel": "{count} 个任务",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
-  "stackMetadataNotesLabel": "笔记"
+  "stackMetadataNotesLabel": "笔记",
+  "stackNotStackedYet": "尚未堆叠",
+  "stackStartFromHere": "添加另一个项目文件，两者将成为同一首歌的版本，共享元数据、任务和工作时间。",
+  "stackSearchProjects": "搜索项目",
+  "stackSearchNoMatches": "没有与搜索匹配的项目。",
+  "stackStartedMessage": "已堆叠为一首歌。"
 }

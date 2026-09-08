@@ -4815,4 +4815,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stackMetadataNotesLabel => 'notes';
+
+  @override
+  String get stackNotStackedYet => 'Pas encore empilé';
+
+  @override
+  String get stackStartFromHere =>
+      'Ajoutez un autre fichier de projet et les deux deviendront des versions d\'un même morceau, partageant métadonnées, tâches et temps de travail.';
+
+  @override
+  String get stackSearchProjects => 'Rechercher des projets';
+
+  @override
+  String get stackSearchNoMatches =>
+      'Aucun projet ne correspond à votre recherche.';
+
+  @override
+  String get stackStartedMessage => 'Empilé en un seul morceau.';
 }

@@ -2990,5 +2990,10 @@
   "stackMetadataNoneLabel": "詳細なし",
   "stackMetadataTodosLabel": "{count} 件のタスク",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
-  "stackMetadataNotesLabel": "ノート"
+  "stackMetadataNotesLabel": "ノート",
+  "stackNotStackedYet": "まだスタックされていません",
+  "stackStartFromHere": "別のプロジェクトファイルを追加すると、2つが1曲のバージョンになり、メタデータ・タスク・作業時間を共有します。",
+  "stackSearchProjects": "プロジェクトを検索",
+  "stackSearchNoMatches": "検索に一致するプロジェクトがありません。",
+  "stackStartedMessage": "1曲にまとめました。"
 }

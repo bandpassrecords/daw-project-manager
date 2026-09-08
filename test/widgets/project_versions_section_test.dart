@@ -25,6 +25,8 @@ void main() {
     void Function(MusicProject)? onSetDefault,
     void Function(MusicProject)? onOpen,
     VoidCallback? onUnstack,
+    String? emptyTitle = 'Not stacked yet',
+    String? emptyDescription = 'Add another project file.',
   }) => MaterialApp(
     home: Scaffold(
       body: SingleChildScrollView(
@@ -39,6 +41,8 @@ void main() {
           setDefaultTooltip: 'Open this version by default',
           removeTooltip: 'Remove from stack',
           subtitleBuilder: (m) => m.fileName,
+          emptyTitle: emptyTitle,
+          emptyDescription: emptyDescription,
           onAdd: onAdd,
           onRemove: onRemove,
           onSetDefault: onSetDefault,
@@ -164,5 +168,33 @@ void main() {
     expect(find.text('Add Version'), findsNothing);
     expect(find.text('Unstack'), findsNothing);
     expect(find.byIcon(Icons.close), findsNothing);
+  });
+
+  group('empty state', () {
+    // An unstacked project still gets the section, so a stack can be started
+    // from the project you are already looking at rather than only from a
+    // multi-selection in the grid.
+    testWidgets('explains how to start a stack', (tester) async {
+      await tester.pumpWidget(wrap(const [], onAdd: () {}));
+
+      expect(find.text('Not stacked yet'), findsOneWidget);
+      expect(find.text('Add another project file.'), findsOneWidget);
+      expect(find.text('Add Version'), findsOneWidget);
+    });
+
+    testWidgets('shows no version count', (tester) async {
+      await tester.pumpWidget(wrap(const [], onAdd: () {}));
+
+      // "0 versions" next to the heading reads as a broken stack rather than
+      // as a project that simply has none.
+      expect(find.text('0 versions'), findsNothing);
+    });
+
+    testWidgets('offers no member actions', (tester) async {
+      await tester.pumpWidget(wrap(const [], onAdd: () {}));
+
+      expect(find.byIcon(Icons.close), findsNothing);
+      expect(find.byIcon(Icons.star_border), findsNothing);
+    });
   });
 }

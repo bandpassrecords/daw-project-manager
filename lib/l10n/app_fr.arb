@@ -2990,5 +2990,10 @@
   "stackMetadataNoneLabel": "Aucun détail",
   "stackMetadataTodosLabel": "{count} tâches",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
-  "stackMetadataNotesLabel": "notes"
+  "stackMetadataNotesLabel": "notes",
+  "stackNotStackedYet": "Pas encore empilé",
+  "stackStartFromHere": "Ajoutez un autre fichier de projet et les deux deviendront des versions d'un même morceau, partageant métadonnées, tâches et temps de travail.",
+  "stackSearchProjects": "Rechercher des projets",
+  "stackSearchNoMatches": "Aucun projet ne correspond à votre recherche.",
+  "stackStartedMessage": "Empilé en un seul morceau."
 }

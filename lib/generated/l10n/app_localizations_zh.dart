@@ -4597,4 +4597,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stackMetadataNotesLabel => '笔记';
+
+  @override
+  String get stackNotStackedYet => '尚未堆叠';
+
+  @override
+  String get stackStartFromHere => '添加另一个项目文件，两者将成为同一首歌的版本，共享元数据、任务和工作时间。';
+
+  @override
+  String get stackSearchProjects => '搜索项目';
+
+  @override
+  String get stackSearchNoMatches => '没有与搜索匹配的项目。';
+
+  @override
+  String get stackStartedMessage => '已堆叠为一首歌。';
 }

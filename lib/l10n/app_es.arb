@@ -2990,5 +2990,10 @@
   "stackMetadataNoneLabel": "Aún sin detalles",
   "stackMetadataTodosLabel": "{count} tareas",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
-  "stackMetadataNotesLabel": "notas"
+  "stackMetadataNotesLabel": "notas",
+  "stackNotStackedYet": "Aún sin apilar",
+  "stackStartFromHere": "Añade otro archivo de proyecto y ambos se convertirán en versiones de una canción, compartiendo metadatos, tareas y tiempo de trabajo.",
+  "stackSearchProjects": "Buscar proyectos",
+  "stackSearchNoMatches": "Ningún proyecto coincide con tu búsqueda.",
+  "stackStartedMessage": "Apilado como una canción."
 }

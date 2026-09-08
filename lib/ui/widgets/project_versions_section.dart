@@ -25,6 +25,8 @@ class ProjectVersionsSection extends StatelessWidget {
     required this.setDefaultTooltip,
     required this.removeTooltip,
     required this.subtitleBuilder,
+    this.emptyTitle,
+    this.emptyDescription,
     this.onAdd,
     this.onRemove,
     this.onSetDefault,
@@ -51,6 +53,13 @@ class ProjectVersionsSection extends StatelessWidget {
   final String defaultBadgeLabel;
   final String setDefaultTooltip;
   final String removeTooltip;
+
+  /// Shown instead of the version list when [members] is empty — the state an
+  /// ordinary, unstacked project is in. The section is still offered there so
+  /// a stack can be started from the project you are already looking at,
+  /// rather than only from a multi-selection in the dashboard.
+  final String? emptyTitle;
+  final String? emptyDescription;
 
   /// Secondary line under each version — modified date, size, work time. Built
   /// by the caller because formatting those needs the locale and the app's
@@ -87,21 +96,26 @@ class ProjectVersionsSection extends StatelessWidget {
                   color: colors.primary,
                 ),
               ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: colors.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  countLabel,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w600,
+              if (members.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    countLabel,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
+              ],
               const Spacer(),
               if (onAdd != null)
                 TextButton.icon(
@@ -112,27 +126,56 @@ class ProjectVersionsSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Card(
-            margin: EdgeInsets.zero,
-            child: Column(
-              children: [
-                for (var i = 0; i < members.length; i++) ...[
-                  if (i > 0) const Divider(height: 1),
-                  _VersionRow(
-                    member: members[i],
-                    isDefault: members[i].id == defaultLaunchMemberId,
-                    subtitle: subtitleBuilder(members[i]),
-                    defaultBadgeLabel: defaultBadgeLabel,
-                    setDefaultTooltip: setDefaultTooltip,
-                    removeTooltip: removeTooltip,
-                    onRemove: onRemove,
-                    onSetDefault: onSetDefault,
-                    onOpen: onOpen,
-                  ),
+          if (members.isEmpty)
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (emptyTitle != null)
+                      Text(
+                        emptyTitle!,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    if (emptyDescription != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        emptyDescription!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            )
+          else
+            Card(
+              margin: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  for (var i = 0; i < members.length; i++) ...[
+                    if (i > 0) const Divider(height: 1),
+                    _VersionRow(
+                      member: members[i],
+                      isDefault: members[i].id == defaultLaunchMemberId,
+                      subtitle: subtitleBuilder(members[i]),
+                      defaultBadgeLabel: defaultBadgeLabel,
+                      setDefaultTooltip: setDefaultTooltip,
+                      removeTooltip: removeTooltip,
+                      onRemove: onRemove,
+                      onSetDefault: onSetDefault,
+                      onOpen: onOpen,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
           if (onUnstack != null) ...[
             const SizedBox(height: 8),
             Align(
@@ -140,7 +183,9 @@ class ProjectVersionsSection extends StatelessWidget {
               child: TextButton.icon(
                 icon: const Icon(Icons.layers_clear, size: 18),
                 label: Text(unstackLabel),
-                style: TextButton.styleFrom(foregroundColor: Colors.red.shade300),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.red.shade300,
+                ),
                 onPressed: onUnstack,
               ),
             ),

@@ -54,6 +54,21 @@ import 'widgets/todo_list_widget.dart';
 import 'widgets/waveform_widget.dart';
 import 'project_statistics_page.dart';
 
+/// The project with [projectId], or null when it is not in [projects].
+///
+/// Null is a normal outcome, not an error: the row this page shows can be
+/// deleted underneath it — unstacking removes the stack, and "Delete Missing"
+/// or a Drive restore can remove any project. The stream rebuilds the page
+/// before the pop that follows has run, so a `firstWhere` without an `orElse`
+/// here throws "Bad state: No element" mid-frame.
+@visibleForTesting
+MusicProject? findProjectById(List<MusicProject> projects, String projectId) {
+  for (final project in projects) {
+    if (project.id == projectId) return project;
+  }
+  return null;
+}
+
 class ProjectDetailPage extends ConsumerStatefulWidget {
   final String projectId;
   const ProjectDetailPage({super.key, required this.projectId});
@@ -133,16 +148,29 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   // invalidate the projects stream, because membership changes rewrite rows
   // other than the one this page is showing.
 
+  /// Adds a version to [project].
+  ///
+  /// Handles both directions this can be reached from: [project] is already a
+  /// stack, in which case the chosen file joins it — or [project] is an
+  /// ordinary project, in which case picking a second file *starts* a stack
+  /// from the two. The second case is why the Versions section is offered on
+  /// unstacked projects at all: a song is often recognised as having versions
+  /// while looking at one of them, not while multi-selecting in the grid.
   Future<void> _addVersionToStack(
     ProjectRepository repo,
-    MusicProject stack,
+    MusicProject project,
   ) async {
     final l10n = AppLocalizations.of(context)!;
-    // Anything real and not already spoken for. A project can only belong to
-    // one stack, so offering a stacked one would just throw in the repository.
+    final messenger = ScaffoldMessenger.of(context);
+    // Anything real and not already spoken for, minus this project itself.
+    // A project can only belong to one stack, so offering a stacked one would
+    // just throw in the repository.
     final candidates =
         repo.projectsBox.values
-            .where((p) => !p.isVirtual && !p.isStackMember)
+            .where(
+              (p) =>
+                  !p.isVirtual && !p.isStackMember && p.id != project.id,
+            )
             .toList()
           ..sort(
             (a, b) => a.displayName.toLowerCase().compareTo(
@@ -156,11 +184,37 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
       candidates: candidates,
       emptyLabel: l10n.stackAddVersionEmpty,
       subtitleBuilder: (p) => p.filePath,
+      // The list here can be the whole library, unlike a stack's own handful
+      // of versions.
+      searchable: true,
     );
     if (chosen == null) return;
 
-    await repo.addToStack(stackId: stack.id, projectId: chosen.id);
-    if (mounted) ref.invalidate(allProjectsStreamProvider);
+    if (project.isVirtual) {
+      await repo.addToStack(stackId: project.id, projectId: chosen.id);
+      if (mounted) ref.invalidate(allProjectsStreamProvider);
+      return;
+    }
+
+    // Starting a stack from this project. Its own metadata is promoted
+    // without asking: it is the one the user is looking at, so anything else
+    // would be a surprise.
+    final stack = await repo.stackProjects(
+      memberIds: [project.id, chosen.id],
+      metadataSourceId: project.id,
+    );
+    if (!mounted) return;
+    ref.invalidate(allProjectsStreamProvider);
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.stackStartedMessage)),
+    );
+    // This page was showing a project that is now a version inside the new
+    // song, so follow it there rather than leaving a member page open.
+    await Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => ProjectDetailPage(projectId: stack.id),
+      ),
+    );
   }
 
   Future<void> _removeVersionFromStack(
@@ -227,8 +281,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
     await repo.unstack(stack.id);
     if (!mounted) return;
-    ref.invalidate(allProjectsStreamProvider);
+    // Leave first, then refresh. Invalidating while this page is still
+    // mounted rebuilds it against a stack that no longer exists.
     navigator.pop();
+    ref.invalidate(allProjectsStreamProvider);
   }
 
   /// Compact work total for a version row, e.g. `2h 15m` / `45m`.
@@ -584,43 +640,42 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
               data: (repo) {
                 // Use projects from stream to get latest data, fallback to repo if stream not ready
                 // The stream should automatically update when Hive emits changes
-                return allProjectsAsync.when(
-                  data: (allProjects) {
-                    final project = allProjects.firstWhere(
-                      (p) => p.id == widget.projectId,
-                      orElse: () {
-                        // Fallback to repo if not found in stream
-                        final allProjectsFromRepo = repo.getAllProjects();
-                        return allProjectsFromRepo.firstWhere(
-                          (p) => p.id == widget.projectId,
-                        );
-                      },
-                    );
-                    return _buildProjectContent(repo, project, allProjectsAsync);
-                  },
-                  loading: () {
-                    // Fallback to repo if stream is loading
-                    final allProjects = repo.getAllProjects();
-                    final project = allProjects.firstWhere(
-                      (p) => p.id == widget.projectId,
-                    );
-                    return _buildProjectContent(repo, project, allProjectsAsync);
-                  },
-                  error: (_, _) {
-                    // Fallback to repo if stream has error
-                    final allProjects = repo.getAllProjects();
-                    final project = allProjects.firstWhere(
-                      (p) => p.id == widget.projectId,
-                    );
-                    return _buildProjectContent(repo, project, allProjectsAsync);
-                  },
+                // The row this page is showing can disappear underneath it —
+                // unstacking deletes the stack, and "Delete Missing" or a
+                // Drive restore can remove any project. The stream rebuilds
+                // this widget before the pop that follows has run, so every
+                // lookup has to tolerate the project being gone rather than
+                // throwing "Bad state: No element" mid-frame.
+                final project = allProjectsAsync.when(
+                  data: (allProjects) =>
+                      _findProject(allProjects) ??
+                      _findProject(repo.getAllProjects()),
+                  loading: () => _findProject(repo.getAllProjects()),
+                  error: (_, _) => _findProject(repo.getAllProjects()),
                 );
+                if (project == null) return _buildProjectGone();
+                return _buildProjectContent(repo, project, allProjectsAsync);
               },
             ),
           ),
         ],
       ),
     );
+  }
+
+  MusicProject? _findProject(List<MusicProject> projects) =>
+      findProjectById(projects, widget.projectId);
+
+  /// Placeholder for the frame(s) between the project being deleted and this
+  /// page being popped. Pops itself in case nothing else does — a page left
+  /// showing a project that no longer exists has nothing to offer.
+  Widget _buildProjectGone() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final navigator = Navigator.of(context);
+      if (navigator.canPop()) navigator.pop();
+    });
+    return const Center(child: CircularProgressIndicator());
   }
 
   Widget _buildProjectContent(
@@ -1406,20 +1461,23 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             const SizedBox(height: 24),
                           ],
                         ),
-                        // Only a stack has versions. On a real project this
-                        // section is absent rather than empty — an empty
-                        // "Versions" rail entry on every ordinary project
-                        // would be a permanent dead end.
-                        if (updatedProject.isVirtual)
+                        // Offered on ordinary projects too, not just stacks:
+                        // a song is usually recognised as having versions
+                        // while looking at one of them, so the section shows
+                        // an empty state with "Add Version" that starts a
+                        // stack from here. Suppressed only on a version that
+                        // already belongs to a stack — its song owns the list,
+                        // and the banner at the top of this page links there.
+                        if (!updatedProject.isStackMember)
                           _DetailSection(
                             icon: Icons.layers_outlined,
                             label: l10n.stackVersionsTitle,
                             children: [
                               Builder(
                                 builder: (context) {
-                                  final members = repo.stackMembers(
-                                    updatedProject,
-                                  );
+                                  final members = updatedProject.isVirtual
+                                      ? repo.stackMembers(updatedProject)
+                                      : const <MusicProject>[];
                                   return ProjectVersionsSection(
                                     members: members,
                                     defaultLaunchMemberId:
@@ -1434,6 +1492,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                     setDefaultTooltip:
                                         l10n.stackSetDefaultVersion,
                                     removeTooltip: l10n.stackRemoveVersion,
+                                    emptyTitle: l10n.stackNotStackedYet,
+                                    emptyDescription: l10n.stackStartFromHere,
                                     padding: EdgeInsets.zero,
                                     subtitleBuilder: (member) {
                                       final modified = dateFormat.format(
@@ -1449,14 +1509,22 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                       repo,
                                       updatedProject,
                                     ),
-                                    onRemove: (member) =>
-                                        _removeVersionFromStack(repo, member),
-                                    onSetDefault: (member) =>
-                                        _setDefaultLaunchVersion(
-                                          repo,
-                                          updatedProject,
-                                          member,
-                                        ),
+                                    // Everything below acts on members, so it
+                                    // has no meaning until there is a stack.
+                                    onRemove: updatedProject.isVirtual
+                                        ? (member) => _removeVersionFromStack(
+                                            repo,
+                                            member,
+                                          )
+                                        : null,
+                                    onSetDefault: updatedProject.isVirtual
+                                        ? (member) =>
+                                              _setDefaultLaunchVersion(
+                                                repo,
+                                                updatedProject,
+                                                member,
+                                              )
+                                        : null,
                                     onOpen: (member) => Navigator.of(context)
                                         .push(
                                           MaterialPageRoute(
@@ -1465,8 +1533,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                             ),
                                           ),
                                         ),
-                                    onUnstack: () =>
-                                        _unstackSong(repo, updatedProject),
+                                    onUnstack: updatedProject.isVirtual
+                                        ? () =>
+                                              _unstackSong(repo, updatedProject)
+                                        : null,
                                   );
                                 },
                               ),

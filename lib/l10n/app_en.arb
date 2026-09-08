@@ -4299,5 +4299,15 @@
   "stackMetadataTodosLabel": "{count} tasks",
   "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
   "stackMetadataNotesLabel": "notes",
-  "@stackMetadataNotesLabel": {"description": "Chip shown when a version has notes written on it"}
+  "@stackMetadataNotesLabel": {"description": "Chip shown when a version has notes written on it"},
+  "stackNotStackedYet": "Not stacked yet",
+  "@stackNotStackedYet": {"description": "Empty state heading in the Versions section of an unstacked project"},
+  "stackStartFromHere": "Add another project file and the two become versions of one song, sharing metadata, tasks and work time.",
+  "@stackStartFromHere": {"description": "Explains how to start a stack from a project's own detail page"},
+  "stackSearchProjects": "Search projects",
+  "@stackSearchProjects": {"description": "Search field placeholder in the add-a-version picker"},
+  "stackSearchNoMatches": "No projects match your search.",
+  "@stackSearchNoMatches": {"description": "Shown when a search in the add-a-version picker matches nothing"},
+  "stackStartedMessage": "Stacked as one song.",
+  "@stackStartedMessage": {"description": "Confirmation after starting a stack from a project's own page"}
 }

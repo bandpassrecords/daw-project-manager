@@ -8086,6 +8086,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'notes'**
   String get stackMetadataNotesLabel;
+
+  /// Empty state heading in the Versions section of an unstacked project
+  ///
+  /// In en, this message translates to:
+  /// **'Not stacked yet'**
+  String get stackNotStackedYet;
+
+  /// Explains how to start a stack from a project's own detail page
+  ///
+  /// In en, this message translates to:
+  /// **'Add another project file and the two become versions of one song, sharing metadata, tasks and work time.'**
+  String get stackStartFromHere;
+
+  /// Search field placeholder in the add-a-version picker
+  ///
+  /// In en, this message translates to:
+  /// **'Search projects'**
+  String get stackSearchProjects;
+
+  /// Shown when a search in the add-a-version picker matches nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No projects match your search.'**
+  String get stackSearchNoMatches;
+
+  /// Confirmation after starting a stack from a project's own page
+  ///
+  /// In en, this message translates to:
+  /// **'Stacked as one song.'**
+  String get stackStartedMessage;
 }
 
 class _AppLocalizationsDelegate

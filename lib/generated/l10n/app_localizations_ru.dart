@@ -4777,4 +4777,20 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stackMetadataNotesLabel => 'заметки';
+
+  @override
+  String get stackNotStackedYet => 'Пока не объединено';
+
+  @override
+  String get stackStartFromHere =>
+      'Добавьте ещё один файл проекта, и оба станут версиями одной песни с общими метаданными, задачами и рабочим временем.';
+
+  @override
+  String get stackSearchProjects => 'Поиск проектов';
+
+  @override
+  String get stackSearchNoMatches => 'Нет проектов, соответствующих запросу.';
+
+  @override
+  String get stackStartedMessage => 'Объединено в одну песню.';
 }
