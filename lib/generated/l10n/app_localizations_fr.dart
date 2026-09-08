@@ -4712,4 +4712,107 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Une barre à gauche choisit une section à la fois.';
+
+  @override
+  String get stackAsVersions => 'Empiler comme versions';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Sélectionnez au moins deux projets pour les empiler comme versions d\'un même morceau.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count versions empilées en un seul morceau.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versions';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count versions';
+  }
+
+  @override
+  String get stackAddVersion => 'Ajouter une version';
+
+  @override
+  String get stackAddVersionTitle => 'Ajouter une version';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'Aucun projet non empilé disponible à ajouter.';
+
+  @override
+  String get stackRemoveVersion => 'Retirer de la pile';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'Le fichier du projet reste sur le disque et revient dans la liste comme projet à part entière.';
+
+  @override
+  String get stackUnstack => 'Désempiler';
+
+  @override
+  String get stackUnstackTitle => 'Désempiler ce morceau ?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Chaque version redevient un projet distinct avec les métadonnées qu\'elle avait avant l\'empilement. Les notes, tâches et l\'échéance partagées sur la pile sont supprimées.';
+
+  @override
+  String get stackDefaultVersion => 'Ouvert par défaut';
+
+  @override
+  String get stackSetDefaultVersion => 'Ouvrir cette version par défaut';
+
+  @override
+  String get stackChooseVersionToOpen => 'Quelle version voulez-vous ouvrir ?';
+
+  @override
+  String get stackMemberOf => 'Version de';
+
+  @override
+  String get stackMemberNotice =>
+      'Ce fichier est une version d\'un morceau empilé. Les métadonnées, tâches et temps de travail partagés sont sur le morceau, pas ici.';
+
+  @override
+  String get stackOpenSong => 'Ouvrir le morceau';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Total sur toutes les versions';
+
+  @override
+  String get scanModeVersionStack => 'Pile de versions';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Tous les fichiers de projet d\'un dossier deviennent un seul morceau partageant métadonnées, tâches et temps de travail. Les nouveaux fichiers rejoignent le morceau automatiquement.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count versions empilées en un seul morceau';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Quels détails le morceau doit-il utiliser ?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'Plusieurs d\'entre eux ont déjà leurs propres détails. Celui que vous choisissez devient le BPM, la tonalité, les notes, les tâches et l\'échéance partagés du morceau. Rien n\'est fusionné ni perdu : les autres conservent leurs détails, et le désempilement les restitue.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'La plus ancienne — suggérée';
+
+  @override
+  String get stackMetadataNoneLabel => 'Aucun détail';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    return '$count tâches';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'notes';
 }

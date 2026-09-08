@@ -61,6 +61,7 @@ import 'widgets/mobile_mini_player.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'session_actions.dart';
 import 'dialogs/create_project_dialog.dart';
+import 'dialogs/stack_metadata_source_dialog.dart';
 import 'dialogs/preview_song_not_found_dialog.dart';
 import 'preview_share.dart';
 import 'project_templates_page.dart';
@@ -799,6 +800,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             .addAll(newlyDiscoveredIds);
       }
 
+      // Roots set to Version Stack mode turn each project folder into one
+      // song. Runs after every root is upserted so a folder spanning two roots
+      // is considered once, with all of its files present.
+      await repo.autoStackFolders();
+
       // Snapshot pending folders with active session tracking before resolving,
       // so we can reconcile sessions for any that get resolved by this scan.
       final pendingWithSession = repo
@@ -1109,6 +1115,83 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
     // Clear selection after creating release
     ref.read(selectedProjectsProvider.notifier).clear();
+  }
+
+  /// Combines the selected projects into one stacked song (#94).
+  ///
+  /// Only real, unstacked projects can be stacked, so the selection is filtered
+  /// rather than rejected wholesale: selecting a folder's worth of rows where
+  /// one is already a stack should stack the rest, not refuse the lot.
+  Future<void> _stackSelectedProjects(
+    BuildContext context,
+    WidgetRef ref,
+    List<MusicProject> selectedProjects,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final stackable = selectedProjects
+        .where((p) => !p.isVirtual && !p.isStackMember)
+        .toList();
+
+    if (stackable.length < 2) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.stackNeedsTwoVersions)),
+      );
+      return;
+    }
+
+    // Stacking promotes exactly one member's metadata onto the song and
+    // leaves the rest untouched — nothing is merged. Ask which one only when
+    // more than one actually has details, otherwise the answer is forced.
+    final suggested = defaultStackMetadataSource(stackable);
+    var metadataSource = suggested;
+    final candidates = stackMetadataSourceCandidates(stackable);
+    if (candidates.isNotEmpty) {
+      final chosen = await showStackMetadataSourceDialog(
+        context,
+        candidates: candidates,
+        // The suggestion has to be one of the rows on offer: the oldest
+        // member may itself have no details, in which case it isn't listed.
+        suggested: candidates.contains(suggested)
+            ? suggested
+            : defaultStackMetadataSource(candidates),
+        summaryBuilder: (project) => _stackMetadataSummary(context, project),
+      );
+      if (chosen == null) return;
+      metadataSource = chosen;
+    }
+
+    final repo = await ref.read(repositoryProvider.future);
+    await repo.stackProjects(
+      memberIds: stackable.map((p) => p.id).toList(),
+      metadataSourceId: metadataSource.id,
+    );
+
+    ref.read(selectedProjectsProvider.notifier).clear();
+    ref.invalidate(allProjectsStreamProvider);
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.stackCreatedMessage(stackable.length))),
+    );
+  }
+
+  /// One-line summary of what a version would contribute as the song's
+  /// metadata — BPM, key, notes, tasks, logged time.
+  static String _stackMetadataSummary(
+    BuildContext context,
+    MusicProject project,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final parts = <String>[
+      if (project.bpm != null) '${project.bpm!.round()} BPM',
+      if (project.musicalKey?.trim().isNotEmpty ?? false)
+        project.musicalKey!.trim(),
+      if (project.notes?.trim().isNotEmpty ?? false) l10n.stackMetadataNotesLabel,
+      if (project.todos.isNotEmpty)
+        l10n.stackMetadataTodosLabel(project.todos.length),
+      if (project.totalWorkSeconds > 0)
+        '${(project.totalWorkSeconds / 3600).toStringAsFixed(1)}h',
+    ];
+    return parts.isEmpty ? l10n.stackMetadataNoneLabel : parts.join('  ·  ');
   }
 
   Future<void> _hideProjects(
@@ -3429,6 +3512,16 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                                 selectedProjects,
                                                               );
                                                             },
+                                                        onStackProjects:
+                                                            (
+                                                              selectedProjects,
+                                                            ) async {
+                                                              await _stackSelectedProjects(
+                                                                context,
+                                                                ref,
+                                                                selectedProjects,
+                                                              );
+                                                            },
                                                         onHideProjects:
                                                             (
                                                               selectedProjectIds,
@@ -3468,6 +3561,16 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                         onCreateRelease:
                                                             (selectedProjects) {
                                                               _createReleaseFromSelectedProjects(
+                                                                context,
+                                                                ref,
+                                                                selectedProjects,
+                                                              );
+                                                            },
+                                                        onStackProjects:
+                                                            (
+                                                              selectedProjects,
+                                                            ) async {
+                                                              await _stackSelectedProjects(
                                                                 context,
                                                                 ref,
                                                                 selectedProjects,
@@ -4184,6 +4287,7 @@ class _PlutoProjectsTableWithSelection extends ConsumerStatefulWidget {
   final List<MusicProject> projects;
   final DateFormat dateFormat;
   final Function(List<MusicProject>) onCreateRelease;
+  final Function(List<MusicProject>) onStackProjects;
   final Function(List<String>) onHideProjects;
   final Function(List<String>) onUnhideProjects;
   final Function(List<String>) onDeleteMissingProjects;
@@ -4198,6 +4302,7 @@ class _PlutoProjectsTableWithSelection extends ConsumerStatefulWidget {
     required this.projects,
     required this.dateFormat,
     required this.onCreateRelease,
+    required this.onStackProjects,
     required this.onHideProjects,
     required this.onUnhideProjects,
     required this.onDeleteMissingProjects,
@@ -5011,6 +5116,41 @@ class _PlutoProjectsTableWithSelectionState
                           _clearSelection();
                         },
                       ),
+                      // Stacking needs two or more standalone projects. The
+                      // button hides rather than disabling when it can't apply
+                      // — an always-visible dead button next to four live ones
+                      // reads as broken.
+                      Builder(
+                        builder: (context) {
+                          final stackable = widget.projects
+                              .where(
+                                (p) =>
+                                    _selectedProjectIds.contains(p.id) &&
+                                    !p.isVirtual &&
+                                    !p.isStackMember,
+                              )
+                              .toList();
+                          if (stackable.length < 2) {
+                            return const SizedBox.shrink();
+                          }
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(width: 8),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.layers),
+                                label: Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.stackAsVersions,
+                                ),
+                                onPressed: () =>
+                                    widget.onStackProjects(stackable),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                       Builder(
                         builder: (context) {
                           final missingIds = missingProjectIds(
@@ -5183,7 +5323,15 @@ List<String> missingProjectIds(
 ) {
   final selected = selectedIds.toSet();
   return projects
-      .where((p) => selected.contains(p.id) && !projectFileExists(p))
+      .where(
+        (p) =>
+            selected.contains(p.id) &&
+            // A stack's path points at a folder, not a file, so it never
+            // resolves — without this it would read as missing and offer to
+            // delete the one row holding the song's shared metadata.
+            p.isMissingFileCandidate &&
+            !projectFileExists(p),
+      )
       .map((p) => p.id)
       .toList();
 }
@@ -7112,6 +7260,47 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   ),
                 ),
               Expanded(child: Text(rendererContext.cell.value.toString())),
+              // Version count, so a stacked song is distinguishable from an
+              // ordinary project at a glance rather than only once opened.
+              if (project.isVirtual) ...[
+                const SizedBox(width: 6),
+                Tooltip(
+                  message: AppLocalizations.of(
+                    context,
+                  )!.stackTooltipStacked(project.versionCount),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 1,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.layers,
+                          size: 11,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          '${project.versionCount}',
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               if (isNewlyDiscovered) ...[
                 const SizedBox(width: 6),
                 _NewProjectBadge(
@@ -7146,7 +7335,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                     ),
                   ),
                 ),
-              if (!fileExists && !MobileUtils.isMobile())
+              // isMissingFileCandidate keeps this off stacks: their path is a
+              // folder, so "no file here" is normal, not a missing file.
+              if (!fileExists &&
+                  project.isMissingFileCandidate &&
+                  !MobileUtils.isMobile())
                 Tooltip(
                   message: AppLocalizations.of(
                     context,
@@ -10180,6 +10373,7 @@ class _MobileProjectsList extends ConsumerStatefulWidget {
   final List<MusicProject> projects;
   final DateFormat dateFormat;
   final Function(List<MusicProject>) onCreateRelease;
+  final Function(List<MusicProject>) onStackProjects;
   final Function(List<String>) onHideProjects;
   final Function(List<String>) onUnhideProjects;
   final bool showHidden;
@@ -10189,6 +10383,7 @@ class _MobileProjectsList extends ConsumerStatefulWidget {
     required this.projects,
     required this.dateFormat,
     required this.onCreateRelease,
+    required this.onStackProjects,
     required this.onHideProjects,
     required this.onUnhideProjects,
     required this.showHidden,
@@ -11028,6 +11223,29 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                       _clearSelection();
                     },
                   ),
+                ),
+                // Icon-only here: this bar is already three buttons wide on a
+                // phone, and a fourth label would wrap them all.
+                Builder(
+                  builder: (context) {
+                    final stackable = widget.projects
+                        .where(
+                          (p) =>
+                              _selectedProjectIds.contains(p.id) &&
+                              !p.isVirtual &&
+                              !p.isStackMember,
+                        )
+                        .toList();
+                    if (stackable.length < 2) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: IconButton.filled(
+                        icon: const Icon(Icons.layers),
+                        tooltip: l10n.stackAsVersions,
+                        onPressed: () => widget.onStackProjects(stackable),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(width: 8),
                 // Check if selected projects are hidden or visible

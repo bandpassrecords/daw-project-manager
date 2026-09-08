@@ -390,6 +390,12 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
       .whenData((allProjects) {
         var projects = allProjects;
 
+        // --- Collapse version stacks (#94) ---
+        // A stacked file is represented in the list by its stack, which owns
+        // the shared metadata. Showing both would list the same song twice and
+        // double-count it in every total derived from this list.
+        projects = projects.where((p) => !p.isStackMember).toList();
+
         // --- Filter out stale preserved projects ---
         // A "preserved" project is one attached to a release. We hide it only when its
         // source file DOES exist locally but falls outside every active scan root (the

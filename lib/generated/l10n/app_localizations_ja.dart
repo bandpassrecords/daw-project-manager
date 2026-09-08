@@ -4548,4 +4548,104 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get projectDetailLayoutSectionedDescription => '左のバーでセクションを1つずつ選択。';
+
+  @override
+  String get stackAsVersions => 'バージョンとしてまとめる';
+
+  @override
+  String get stackNeedsTwoVersions => '1曲のバージョンとしてまとめるには、プロジェクトを2つ以上選択してください。';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count 個のバージョンを1曲にまとめました。';
+  }
+
+  @override
+  String get stackVersionsTitle => 'バージョン';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count バージョン';
+  }
+
+  @override
+  String get stackAddVersion => 'バージョンを追加';
+
+  @override
+  String get stackAddVersionTitle => 'バージョンを追加';
+
+  @override
+  String get stackAddVersionEmpty => '追加できる未スタックのプロジェクトがありません。';
+
+  @override
+  String get stackRemoveVersion => 'スタックから削除';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'プロジェクトファイルはディスク上に残り、単独のプロジェクトとして一覧に戻ります。';
+
+  @override
+  String get stackUnstack => 'スタックを解除';
+
+  @override
+  String get stackUnstackTitle => 'この曲のスタックを解除しますか？';
+
+  @override
+  String get stackUnstackMessage =>
+      '各バージョンはスタック前のメタデータを持つ単独のプロジェクトに戻ります。スタック自体に保存された共有のノート・タスク・期限は削除されます。';
+
+  @override
+  String get stackDefaultVersion => 'デフォルトで開く';
+
+  @override
+  String get stackSetDefaultVersion => 'このバージョンをデフォルトで開く';
+
+  @override
+  String get stackChooseVersionToOpen => 'どのバージョンを開きますか？';
+
+  @override
+  String get stackMemberOf => '次の曲のバージョン';
+
+  @override
+  String get stackMemberNotice =>
+      'このファイルはスタックされた曲の1バージョンです。共有のメタデータ・タスク・作業時間は曲側にあり、ここにはありません。';
+
+  @override
+  String get stackOpenSong => '曲を開く';
+
+  @override
+  String get stackWorkTimeAcrossVersions => '全バージョンの合計';
+
+  @override
+  String get scanModeVersionStack => 'バージョンスタック';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'フォルダー内のすべてのプロジェクトファイルが1曲になり、メタデータ・タスク・作業時間を共有します。新しく見つかったファイルは自動的に追加されます。';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count 個のバージョンを1曲にまとめています';
+  }
+
+  @override
+  String get stackMetadataSourceTitle => '曲にはどのバージョンの詳細を使いますか？';
+
+  @override
+  String get stackMetadataSourceBody =>
+      '複数のバージョンにすでに独自の詳細があります。選んだものが曲の共有BPM・キー・ノート・タスク・期限になります。統合も消失もありません。他のバージョンは自分の詳細を保持し、スタックを解除すれば元に戻ります。';
+
+  @override
+  String get stackMetadataSourceOldestHint => '最も古い — 推奨';
+
+  @override
+  String get stackMetadataNoneLabel => '詳細なし';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    return '$count 件のタスク';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'ノート';
 }

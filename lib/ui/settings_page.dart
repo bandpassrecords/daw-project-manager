@@ -685,12 +685,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   Future<void> _updateScanMode(ScanRoot root, ScanMode newMode) async {
-    final newDepth = newMode == ScanMode.smartFolder ? 1 : 0;
-    if (newDepth == root.scanDepth) return;
+    if (newMode == root.scanMode) return;
     setState(() => _busy = true);
     try {
       final repo = await ref.read(repositoryProvider.future);
-      await repo.updateRootScanDepth(root.id, newDepth);
+      await repo.updateRootScanMode(root.id, newMode);
+      // Switching *to* Version Stack builds the stacks straight away rather
+      // than waiting for the next scan — the setting reads as a statement
+      // about the library, so leaving the list unchanged looks like it failed.
+      if (newMode == ScanMode.versionStack) {
+        await repo.autoStackFolders();
+      }
       ref.invalidate(scanRootsProvider);
       ref.invalidate(allProjectsStreamProvider);
     } finally {
@@ -724,6 +729,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 Text(l10n.scanModeSmartFolderDescription, style: Theme.of(ctx).textTheme.bodySmall),
                 const SizedBox(height: 6),
                 const _SmartFolderModePreview(),
+                const SizedBox(height: 16),
+                Text(l10n.scanModeVersionStack, style: Theme.of(ctx).textTheme.titleSmall),
+                const SizedBox(height: 2),
+                Text(l10n.scanModeVersionStackDescription, style: Theme.of(ctx).textTheme.bodySmall),
+                const SizedBox(height: 6),
+                const _VersionStackModePreview(),
               ],
             ),
           ),
@@ -1610,6 +1621,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     ButtonSegment(
                                       value: ScanMode.smartFolder,
                                       label: Text(l10n.scanModeSmartFolder),
+                                    ),
+                                    ButtonSegment(
+                                      value: ScanMode.versionStack,
+                                      label: Text(l10n.scanModeVersionStack),
                                     ),
                                   ],
                                   selected: {f.scanMode},
@@ -3404,6 +3419,31 @@ class _SmartFolderModePreview extends StatelessWidget {
           _PreviewRow(icon: Icons.folder_open, label: 'Album', bold: true),
           _PreviewRow(icon: Icons.music_note, label: 'Intro', indent: true),
           _PreviewRow(icon: Icons.music_note, label: 'Chorus', indent: true, last: true),
+        ],
+      ),
+    );
+  }
+}
+
+/// Version Stack: the *folder* becomes the song row, and the files inside it
+/// become versions of it — the same tree as Smart Folder, but the group row is
+/// a real project that owns the metadata rather than a display grouping.
+class _VersionStackModePreview extends StatelessWidget {
+  const _VersionStackModePreview();
+
+  @override
+  Widget build(BuildContext context) {
+    return _PreviewFrame(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _PreviewRow(icon: Icons.layers, label: 'Song Alpha  ·  3', bold: true),
+          _PreviewRow(icon: Icons.music_note, label: 'Alpha v1', indent: true),
+          _PreviewRow(icon: Icons.music_note, label: 'Alpha v2', indent: true),
+          _PreviewRow(icon: Icons.music_note, label: 'Alpha v3', indent: true, last: true),
+          _PreviewRow(icon: Icons.layers, label: 'Song Beta  ·  2', bold: true),
+          _PreviewRow(icon: Icons.music_note, label: 'Beta rough', indent: true),
+          _PreviewRow(icon: Icons.music_note, label: 'Beta final', indent: true, last: true),
         ],
       ),
     );

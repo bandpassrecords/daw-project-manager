@@ -4688,4 +4688,107 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Eine Leiste links wählt jeweils einen Abschnitt.';
+
+  @override
+  String get stackAsVersions => 'Als Versionen stapeln';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Wähle mindestens zwei Projekte aus, um sie als Versionen eines Songs zu stapeln.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count Versionen als ein Song gestapelt.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versionen';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count Versionen';
+  }
+
+  @override
+  String get stackAddVersion => 'Version hinzufügen';
+
+  @override
+  String get stackAddVersionTitle => 'Version hinzufügen';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'Keine ungestapelten Projekte zum Hinzufügen verfügbar.';
+
+  @override
+  String get stackRemoveVersion => 'Aus Stapel entfernen';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'Die Projektdatei bleibt auf der Festplatte und kehrt als eigenes Projekt in die Liste zurück.';
+
+  @override
+  String get stackUnstack => 'Entstapeln';
+
+  @override
+  String get stackUnstackTitle => 'Diesen Song entstapeln?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Jede Version wird wieder ein eigenes Projekt mit den Metadaten von vor dem Stapeln. Die gemeinsamen Notizen, Aufgaben und die Frist des Stapels werden gelöscht.';
+
+  @override
+  String get stackDefaultVersion => 'Wird standardmäßig geöffnet';
+
+  @override
+  String get stackSetDefaultVersion => 'Diese Version standardmäßig öffnen';
+
+  @override
+  String get stackChooseVersionToOpen => 'Welche Version möchtest du öffnen?';
+
+  @override
+  String get stackMemberOf => 'Version von';
+
+  @override
+  String get stackMemberNotice =>
+      'Diese Datei ist eine Version eines gestapelten Songs. Gemeinsame Metadaten, Aufgaben und Arbeitszeit liegen beim Song, nicht hier.';
+
+  @override
+  String get stackOpenSong => 'Song öffnen';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Gesamt über alle Versionen';
+
+  @override
+  String get scanModeVersionStack => 'Versionsstapel';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Alle Projektdateien in einem Ordner werden zu einem Song, der Metadaten, Aufgaben und Arbeitszeit teilt. Neu gefundene Dateien kommen automatisch hinzu.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count Versionen als ein Song gestapelt';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Welche Details soll der Song übernehmen?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'Mehr als eine davon hat bereits eigene Details. Die von dir gewählte liefert BPM, Tonart, Notizen, Aufgaben und Frist des Songs. Nichts wird zusammengeführt und nichts geht verloren — die anderen behalten ihre Details, und Entstapeln gibt sie zurück.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'Älteste — empfohlen';
+
+  @override
+  String get stackMetadataNoneLabel => 'Noch keine Details';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    return '$count Aufgaben';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'Notizen';
 }

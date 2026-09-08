@@ -4498,4 +4498,103 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get projectDetailLayoutSectionedDescription => '左侧栏每次选择一个分区。';
+
+  @override
+  String get stackAsVersions => '堆叠为版本';
+
+  @override
+  String get stackNeedsTwoVersions => '请至少选择两个项目，才能将它们堆叠为同一首歌的版本。';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '已将 $count 个版本堆叠为一首歌。';
+  }
+
+  @override
+  String get stackVersionsTitle => '版本';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count 个版本';
+  }
+
+  @override
+  String get stackAddVersion => '添加版本';
+
+  @override
+  String get stackAddVersionTitle => '添加版本';
+
+  @override
+  String get stackAddVersionEmpty => '没有可添加的未堆叠项目。';
+
+  @override
+  String get stackRemoveVersion => '从堆叠中移除';
+
+  @override
+  String get stackRemoveVersionMessage => '项目文件会保留在磁盘上，并作为独立项目回到列表中。';
+
+  @override
+  String get stackUnstack => '取消堆叠';
+
+  @override
+  String get stackUnstackTitle => '要取消这首歌的堆叠吗？';
+
+  @override
+  String get stackUnstackMessage =>
+      '每个版本将恢复为独立项目，并保留堆叠前的元数据。堆叠本身保存的共享笔记、待办事项和截止日期将被删除。';
+
+  @override
+  String get stackDefaultVersion => '默认打开';
+
+  @override
+  String get stackSetDefaultVersion => '默认打开此版本';
+
+  @override
+  String get stackChooseVersionToOpen => '要打开哪个版本？';
+
+  @override
+  String get stackMemberOf => '所属歌曲';
+
+  @override
+  String get stackMemberNotice =>
+      '此文件是某首堆叠歌曲的一个版本。共享的元数据、待办事项和工作时间保存在歌曲上，而不是这里。';
+
+  @override
+  String get stackOpenSong => '打开歌曲';
+
+  @override
+  String get stackWorkTimeAcrossVersions => '所有版本合计';
+
+  @override
+  String get scanModeVersionStack => '版本堆叠';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      '文件夹中的所有项目文件将合并为一首歌，共享元数据、待办事项和工作时间。新发现的文件会自动加入。';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count 个版本堆叠为一首歌';
+  }
+
+  @override
+  String get stackMetadataSourceTitle => '这首歌应使用哪个版本的详细信息？';
+
+  @override
+  String get stackMetadataSourceBody =>
+      '其中有多个已经有自己的详细信息。你选择的那个将成为歌曲共享的 BPM、调性、笔记、任务和截止日期。不会合并也不会丢失——其他版本保留各自的详细信息，取消堆叠后即可恢复。';
+
+  @override
+  String get stackMetadataSourceOldestHint => '最早的 — 建议';
+
+  @override
+  String get stackMetadataNoneLabel => '暂无详细信息';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    return '$count 个任务';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => '笔记';
 }

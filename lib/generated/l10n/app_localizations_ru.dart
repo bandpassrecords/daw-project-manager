@@ -4674,4 +4674,107 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Панель слева выбирает по одному разделу.';
+
+  @override
+  String get stackAsVersions => 'Объединить как версии';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Выберите не менее двух проектов, чтобы объединить их как версии одной песни.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count версий объединены в одну песню.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Версии';
+
+  @override
+  String stackVersionCount(int count) {
+    return 'Версий: $count';
+  }
+
+  @override
+  String get stackAddVersion => 'Добавить версию';
+
+  @override
+  String get stackAddVersionTitle => 'Добавить версию';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'Нет проектов вне стеков, которые можно добавить.';
+
+  @override
+  String get stackRemoveVersion => 'Убрать из стека';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'Файл проекта остаётся на диске и возвращается в список как отдельный проект.';
+
+  @override
+  String get stackUnstack => 'Разъединить';
+
+  @override
+  String get stackUnstackTitle => 'Разъединить эту песню?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Каждая версия снова станет отдельным проектом с метаданными, которые были до объединения. Общие заметки, задачи и срок, хранившиеся в стеке, будут удалены.';
+
+  @override
+  String get stackDefaultVersion => 'Открывается по умолчанию';
+
+  @override
+  String get stackSetDefaultVersion => 'Открывать эту версию по умолчанию';
+
+  @override
+  String get stackChooseVersionToOpen => 'Какую версию открыть?';
+
+  @override
+  String get stackMemberOf => 'Версия песни';
+
+  @override
+  String get stackMemberNotice =>
+      'Этот файл — одна из версий объединённой песни. Общие метаданные, задачи и рабочее время хранятся у песни, а не здесь.';
+
+  @override
+  String get stackOpenSong => 'Открыть песню';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Всего по всем версиям';
+
+  @override
+  String get scanModeVersionStack => 'Стек версий';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Все файлы проектов в папке становятся одной песней с общими метаданными, задачами и рабочим временем. Новые файлы добавляются автоматически.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count версий объединены в одну песню';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Какие данные версии использовать для песни?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'У нескольких из них уже есть собственные данные. Выбранная версия задаст общие BPM, тональность, заметки, задачи и срок песни. Ничего не объединяется и не теряется — остальные сохраняют свои данные, и разъединение их вернёт.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'Самая старая — рекомендуется';
+
+  @override
+  String get stackMetadataNoneLabel => 'Пока нет данных';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    return 'Задач: $count';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'заметки';
 }

@@ -37,5 +37,7 @@ Future<int> importProjectsFromRoot(
     await repo.upsertManyFromFileSystemEntities(entities);
   }
   await repo.updateRootLastScanAt(rootId, DateTime.now());
+  // No-op unless some root is in Version Stack mode.
+  await repo.autoStackFolders();
   return entities.length;
 }

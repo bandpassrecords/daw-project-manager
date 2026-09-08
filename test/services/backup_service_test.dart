@@ -11,6 +11,27 @@ import '../helpers/test_factories.dart';
 
 void main() {
   group('BackupService JSON round-trip', () {
+    test('preserves the version stacking links (#94)', () {
+      // Local backup is Flatpak's only backup path, so a field skipped here
+      // is one those users can never back up at all.
+      final stack = TestFactories.makeProject(
+        id: 'stack-1',
+        isVirtual: true,
+        memberProjectIds: const ['v1', 'v2'],
+        defaultLaunchMemberId: 'v1',
+      );
+      final restoredStack =
+          BackupService.projectFromJson(BackupService.projectToJson(stack));
+      expect(restoredStack.isVirtual, isTrue);
+      expect(restoredStack.memberProjectIds, ['v1', 'v2']);
+      expect(restoredStack.defaultLaunchMemberId, 'v1');
+
+      final member = TestFactories.makeProject(id: 'v1', stackId: 'stack-1');
+      final restoredMember =
+          BackupService.projectFromJson(BackupService.projectToJson(member));
+      expect(restoredMember.stackId, 'stack-1');
+    });
+
     test('preserves all basic fields', () {
       final original = TestFactories.makeProject(
         id: 'rt-1',

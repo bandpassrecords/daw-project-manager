@@ -4659,4 +4659,106 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'A rail on the left picks one section at a time.';
+
+  @override
+  String get stackAsVersions => 'Stack as Versions';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Select at least two projects to stack them as versions of one song.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return 'Stacked $count versions as one song.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versions';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count versions';
+  }
+
+  @override
+  String get stackAddVersion => 'Add Version';
+
+  @override
+  String get stackAddVersionTitle => 'Add a version';
+
+  @override
+  String get stackAddVersionEmpty => 'No unstacked projects available to add.';
+
+  @override
+  String get stackRemoveVersion => 'Remove from stack';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'The project file stays on disk and returns to the list as its own project.';
+
+  @override
+  String get stackUnstack => 'Unstack';
+
+  @override
+  String get stackUnstackTitle => 'Unstack this song?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Every version becomes its own project again with the metadata it had before stacking. The shared notes, todos and deadline kept on the stack itself are deleted.';
+
+  @override
+  String get stackDefaultVersion => 'Opens by default';
+
+  @override
+  String get stackSetDefaultVersion => 'Open this version by default';
+
+  @override
+  String get stackChooseVersionToOpen => 'Which version do you want to open?';
+
+  @override
+  String get stackMemberOf => 'Version of';
+
+  @override
+  String get stackMemberNotice =>
+      'This file is one version of a stacked song. Shared metadata, todos and work time live on the song, not here.';
+
+  @override
+  String get stackOpenSong => 'Open song';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Total across all versions';
+
+  @override
+  String get scanModeVersionStack => 'Version Stack';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Every project file in a folder becomes one song sharing metadata, todos and work time. Newly found files join the song automatically.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count versions stacked as one song';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Which version\'s details should the song use?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'More than one of these already has its own details. The one you pick becomes the song\'s shared BPM, key, notes, tasks and deadline. Nothing is merged and nothing is lost — the others keep their own details, and unstacking gives them back.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'Oldest — suggested';
+
+  @override
+  String get stackMetadataNoneLabel => 'No details yet';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    return '$count tasks';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'notes';
 }

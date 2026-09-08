@@ -9,6 +9,7 @@ import 'dart:convert';
 
 import '../models/music_project.dart';
 import '../models/pending_folder.dart';
+import '../models/scan_mode.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
 import '../models/release.dart';
@@ -564,6 +565,27 @@ class ProjectRepository {
     if (root != null) {
       await rootsBox.put(rootId, root.copyWith(scanDepth: depth));
     }
+  }
+
+  /// Sets a root's [ScanMode], writing both fields [ScanRoot.scanMode] is
+  /// derived from so the two can never disagree.
+  ///
+  /// Turning [ScanMode.versionStack] *off* deliberately leaves existing stacks
+  /// alone: they hold metadata and work time the user has accumulated, and
+  /// dissolving them because a display setting flipped would throw that away.
+  /// Unstacking stays an explicit, per-stack action.
+  Future<void> updateRootScanMode(String rootId, ScanMode mode) async {
+    final root = rootsBox.get(rootId);
+    if (root == null) return;
+    await rootsBox.put(
+      rootId,
+      root.copyWith(
+        autoStackVersions: mode == ScanMode.versionStack,
+        // Version stacking groups by immediate parent folder, so it wants the
+        // recursive walk that depth 0 gives, same as flat.
+        scanDepth: mode == ScanMode.smartFolder ? 1 : 0,
+      ),
+    );
   }
 
   /// Permanently deletes [projectIds] and all their data (notes, deadlines,
@@ -1134,6 +1156,60 @@ class ProjectRepository {
       ),
     );
     await projectsBox.put(projectId, project.copyWith(stackId: stackId));
+  }
+
+  /// Creates and grows stacks for every root in [ScanMode.versionStack],
+  /// treating each immediate parent folder holding two or more project files
+  /// as one song. Returns the number of stacks created.
+  ///
+  /// Called after a scan. Two rules keep it from destroying anything the user
+  /// arranged by hand:
+  /// - It only ever *adds*. A folder that is already stacked absorbs its new
+  ///   files (so a freshly saved `v4` inherits the song's notes, todos and
+  ///   deadline instead of arriving blank); nothing is ever unstacked here.
+  /// - A project the user already stacked elsewhere is left alone —
+  ///   [groupByImmediateFolder] skips anything carrying a `stackId`, so a
+  ///   hand-made stack spanning two folders survives a rescan intact.
+  Future<int> autoStackFolders() async {
+    final stackRoots = [
+      for (final root in rootsBox.values)
+        if (root.scanMode == ScanMode.versionStack) p.normalize(root.path),
+    ];
+    if (stackRoots.isEmpty) return 0;
+
+    bool underStackRoot(String filePath) {
+      final norm = p.normalize(filePath);
+      return stackRoots.any(
+        (root) => p.isWithin(root, norm) || p.equals(root, p.dirname(norm)),
+      );
+    }
+
+    // Folders that already have a stack, so their new files join it rather
+    // than starting a rival stack alongside it.
+    final stackByFolder = <String, MusicProject>{
+      for (final project in projectsBox.values)
+        if (project.isVirtual) p.normalize(project.filePath): project,
+    };
+
+    final candidates = projectsBox.values.where(
+      (project) => !project.hidden && underStackRoot(project.filePath),
+    );
+
+    var created = 0;
+    for (final entry in groupByImmediateFolder(candidates).entries) {
+      final folder = entry.key;
+      final loose = entry.value;
+      if (stackByFolder[folder] case final stack?) {
+        for (final project in loose) {
+          await addToStack(stackId: stack.id, projectId: project.id);
+        }
+        continue;
+      }
+      if (loose.length < 2) continue;
+      await stackProjects(memberIds: loose.map((m) => m.id).toList());
+      created++;
+    }
+    return created;
   }
 
   /// Detaches [projectId] from whatever stack holds it.

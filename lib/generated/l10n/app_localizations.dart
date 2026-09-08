@@ -7912,6 +7912,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A rail on the left picks one section at a time.'**
   String get projectDetailLayoutSectionedDescription;
+
+  /// Bulk action: combine the selected projects into one song
+  ///
+  /// In en, this message translates to:
+  /// **'Stack as Versions'**
+  String get stackAsVersions;
+
+  /// Error shown when fewer than two projects are selected for stacking
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least two projects to stack them as versions of one song.'**
+  String get stackNeedsTwoVersions;
+
+  /// No description provided for @stackCreatedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Stacked {count} versions as one song.'**
+  String stackCreatedMessage(int count);
+
+  /// Project detail section heading listing a stack's version files
+  ///
+  /// In en, this message translates to:
+  /// **'Versions'**
+  String get stackVersionsTitle;
+
+  /// No description provided for @stackVersionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} versions'**
+  String stackVersionCount(int count);
+
+  /// Button: attach another project file to this stack
+  ///
+  /// In en, this message translates to:
+  /// **'Add Version'**
+  String get stackAddVersion;
+
+  /// Dialog title for picking a project to add to a stack
+  ///
+  /// In en, this message translates to:
+  /// **'Add a version'**
+  String get stackAddVersionTitle;
+
+  /// Shown when every project already belongs to a stack
+  ///
+  /// In en, this message translates to:
+  /// **'No unstacked projects available to add.'**
+  String get stackAddVersionEmpty;
+
+  /// Tooltip: detach this version from the stack
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from stack'**
+  String get stackRemoveVersion;
+
+  /// Reassures the user that removing a version keeps the file
+  ///
+  /// In en, this message translates to:
+  /// **'The project file stays on disk and returns to the list as its own project.'**
+  String get stackRemoveVersionMessage;
+
+  /// Button: dissolve the stack back into separate projects
+  ///
+  /// In en, this message translates to:
+  /// **'Unstack'**
+  String get stackUnstack;
+
+  /// Confirmation dialog title for dissolving a stack
+  ///
+  /// In en, this message translates to:
+  /// **'Unstack this song?'**
+  String get stackUnstackTitle;
+
+  /// Explains what is lost when a stack is dissolved
+  ///
+  /// In en, this message translates to:
+  /// **'Every version becomes its own project again with the metadata it had before stacking. The shared notes, todos and deadline kept on the stack itself are deleted.'**
+  String get stackUnstackMessage;
+
+  /// Label marking the version that opens by default
+  ///
+  /// In en, this message translates to:
+  /// **'Opens by default'**
+  String get stackDefaultVersion;
+
+  /// Tooltip: make this the version the DAW launch button opens
+  ///
+  /// In en, this message translates to:
+  /// **'Open this version by default'**
+  String get stackSetDefaultVersion;
+
+  /// Dialog title when a stack has no nominated default version
+  ///
+  /// In en, this message translates to:
+  /// **'Which version do you want to open?'**
+  String get stackChooseVersionToOpen;
+
+  /// Shown on a version's own detail page, naming the song it belongs to
+  ///
+  /// In en, this message translates to:
+  /// **'Version of'**
+  String get stackMemberOf;
+
+  /// Explains that a version defers to its stack for shared metadata
+  ///
+  /// In en, this message translates to:
+  /// **'This file is one version of a stacked song. Shared metadata, todos and work time live on the song, not here.'**
+  String get stackMemberNotice;
+
+  /// Button on a version's page that navigates to the stack
+  ///
+  /// In en, this message translates to:
+  /// **'Open song'**
+  String get stackOpenSong;
+
+  /// Label for work time summed over every version in a stack
+  ///
+  /// In en, this message translates to:
+  /// **'Total across all versions'**
+  String get stackWorkTimeAcrossVersions;
+
+  /// Scan mode option: auto-stack every folder's files as one song
+  ///
+  /// In en, this message translates to:
+  /// **'Version Stack'**
+  String get scanModeVersionStack;
+
+  /// Description of the version stack scan mode
+  ///
+  /// In en, this message translates to:
+  /// **'Every project file in a folder becomes one song sharing metadata, todos and work time. Newly found files join the song automatically.'**
+  String get scanModeVersionStackDescription;
+
+  /// No description provided for @stackTooltipStacked.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} versions stacked as one song'**
+  String stackTooltipStacked(int count);
+
+  /// Dialog title asking which project's metadata the new stack should inherit
+  ///
+  /// In en, this message translates to:
+  /// **'Which version\'s details should the song use?'**
+  String get stackMetadataSourceTitle;
+
+  /// Explains that only the chosen project's metadata is promoted and the rest is kept
+  ///
+  /// In en, this message translates to:
+  /// **'More than one of these already has its own details. The one you pick becomes the song\'s shared BPM, key, notes, tasks and deadline. Nothing is merged and nothing is lost — the others keep their own details, and unstacking gives them back.'**
+  String get stackMetadataSourceBody;
+
+  /// Marks the version pre-selected as the default metadata source
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest — suggested'**
+  String get stackMetadataSourceOldestHint;
+
+  /// Shown for a version that has no user-entered metadata
+  ///
+  /// In en, this message translates to:
+  /// **'No details yet'**
+  String get stackMetadataNoneLabel;
+
+  /// No description provided for @stackMetadataTodosLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tasks'**
+  String stackMetadataTodosLabel(int count);
+
+  /// Chip shown when a version has notes written on it
+  ///
+  /// In en, this message translates to:
+  /// **'notes'**
+  String get stackMetadataNotesLabel;
 }
 
 class _AppLocalizationsDelegate

@@ -41,10 +41,12 @@ import '../services/mixdown_detector_service.dart';
 import '../services/project_text_export_service.dart';
 import '../services/scanner_service.dart';
 import 'dialogs/save_as_template_dialog.dart';
+import 'dialogs/stack_version_picker_dialog.dart';
 import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_detail_header.dart';
 import 'widgets/project_markers_section.dart';
+import 'widgets/project_versions_section.dart';
 import 'widgets/section_nav_rail.dart';
 import 'widgets/resizable_text_field.dart';
 import 'widgets/parts_summary_card.dart';
@@ -123,6 +125,130 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     }
   }
 
+
+  // --- Version stacking (#94) ---------------------------------------------
+  //
+  // A stack is a virtual project owning the shared metadata for several real
+  // files. All four actions below write through the repository and then
+  // invalidate the projects stream, because membership changes rewrite rows
+  // other than the one this page is showing.
+
+  Future<void> _addVersionToStack(
+    ProjectRepository repo,
+    MusicProject stack,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    // Anything real and not already spoken for. A project can only belong to
+    // one stack, so offering a stacked one would just throw in the repository.
+    final candidates =
+        repo.projectsBox.values
+            .where((p) => !p.isVirtual && !p.isStackMember)
+            .toList()
+          ..sort(
+            (a, b) => a.displayName.toLowerCase().compareTo(
+              b.displayName.toLowerCase(),
+            ),
+          );
+
+    final chosen = await showStackVersionPickerDialog(
+      context,
+      title: l10n.stackAddVersionTitle,
+      candidates: candidates,
+      emptyLabel: l10n.stackAddVersionEmpty,
+      subtitleBuilder: (p) => p.filePath,
+    );
+    if (chosen == null) return;
+
+    await repo.addToStack(stackId: stack.id, projectId: chosen.id);
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
+
+  Future<void> _removeVersionFromStack(
+    ProjectRepository repo,
+    MusicProject member,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).cardColor,
+        title: Text(l10n.stackRemoveVersion),
+        content: Text(l10n.stackRemoveVersionMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade300,
+              foregroundColor: Colors.black,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.stackRemoveVersion),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await repo.removeFromStack(member.id);
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
+
+  /// Dissolves the stack and leaves the page: the project this page was
+  /// showing no longer exists once [ProjectRepository.unstack] returns.
+  Future<void> _unstackSong(ProjectRepository repo, MusicProject stack) async {
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).cardColor,
+        title: Text(l10n.stackUnstackTitle),
+        content: Text(l10n.stackUnstackMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade700,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.stackUnstack),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await repo.unstack(stack.id);
+    if (!mounted) return;
+    ref.invalidate(allProjectsStreamProvider);
+    navigator.pop();
+  }
+
+  /// Compact work total for a version row, e.g. `2h 15m` / `45m`.
+  static String _formatWorkTime(int totalSeconds) {
+    final duration = Duration(seconds: totalSeconds);
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    return hours > 0 ? '${hours}h ${minutes}m' : '${minutes}m';
+  }
+
+  Future<void> _setDefaultLaunchVersion(
+    ProjectRepository repo,
+    MusicProject stack,
+    MusicProject member,
+  ) async {
+    await repo.updateProject(
+      stack.copyWith(defaultLaunchMemberId: member.id),
+    );
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
 
   @override
   void initState() {
@@ -669,6 +795,49 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                           icon: Icons.tune_outlined,
                           label: l10n.projectDetails,
                           children: [
+                            // A version's own page is reachable from its
+                            // song's Versions list. Say so, and offer the way
+                            // back — otherwise the page looks like an ordinary
+                            // project whose edits mysteriously don't show up
+                            // in the list.
+                            if (updatedProject.stackId case final stackId?)
+                              Builder(
+                                builder: (context) {
+                                  final stack = repo.projectsBox.get(stackId);
+                                  if (stack == null) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return Card(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    child: ListTile(
+                                      dense: true,
+                                      leading: const Icon(Icons.layers),
+                                      title: Text(
+                                        '${l10n.stackMemberOf}: '
+                                        '${stack.displayName}',
+                                      ),
+                                      subtitle: Text(
+                                        l10n.stackMemberNotice,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodySmall,
+                                      ),
+                                      trailing: TextButton(
+                                        onPressed: () => Navigator.of(context)
+                                            .pushReplacement(
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    ProjectDetailPage(
+                                                      projectId: stack.id,
+                                                    ),
+                                              ),
+                                            ),
+                                        child: Text(l10n.stackOpenSong),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
 
                         // Campo para editar o nome de exibição customizado
                             TextFormField(
@@ -1237,6 +1406,73 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             const SizedBox(height: 24),
                           ],
                         ),
+                        // Only a stack has versions. On a real project this
+                        // section is absent rather than empty — an empty
+                        // "Versions" rail entry on every ordinary project
+                        // would be a permanent dead end.
+                        if (updatedProject.isVirtual)
+                          _DetailSection(
+                            icon: Icons.layers_outlined,
+                            label: l10n.stackVersionsTitle,
+                            children: [
+                              Builder(
+                                builder: (context) {
+                                  final members = repo.stackMembers(
+                                    updatedProject,
+                                  );
+                                  return ProjectVersionsSection(
+                                    members: members,
+                                    defaultLaunchMemberId:
+                                        updatedProject.defaultLaunchMemberId,
+                                    title: l10n.stackVersionsTitle,
+                                    countLabel: l10n.stackVersionCount(
+                                      members.length,
+                                    ),
+                                    addLabel: l10n.stackAddVersion,
+                                    unstackLabel: l10n.stackUnstack,
+                                    defaultBadgeLabel: l10n.stackDefaultVersion,
+                                    setDefaultTooltip:
+                                        l10n.stackSetDefaultVersion,
+                                    removeTooltip: l10n.stackRemoveVersion,
+                                    padding: EdgeInsets.zero,
+                                    subtitleBuilder: (member) {
+                                      final modified = dateFormat.format(
+                                        member.lastModifiedAt,
+                                      );
+                                      if (member.totalWorkSeconds <= 0) {
+                                        return modified;
+                                      }
+                                      return '$modified  ·  '
+                                          '${_formatWorkTime(member.totalWorkSeconds)}';
+                                    },
+                                    onAdd: () => _addVersionToStack(
+                                      repo,
+                                      updatedProject,
+                                    ),
+                                    onRemove: (member) =>
+                                        _removeVersionFromStack(repo, member),
+                                    onSetDefault: (member) =>
+                                        _setDefaultLaunchVersion(
+                                          repo,
+                                          updatedProject,
+                                          member,
+                                        ),
+                                    onOpen: (member) => Navigator.of(context)
+                                        .push(
+                                          MaterialPageRoute(
+                                            builder: (_) => ProjectDetailPage(
+                                              projectId: member.id,
+                                            ),
+                                          ),
+                                        ),
+                                    onUnstack: () =>
+                                        _unstackSong(repo, updatedProject),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
                         _DetailSection(
                           icon: Icons.piano_outlined,
                           label: l10n.songParts,
@@ -1288,6 +1524,15 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                           icon: Icons.history_outlined,
                           label: l10n.sessionHistory,
                           children: [
+                            if (updatedProject.isVirtual)
+                              // Work time on a stack is the sum of its
+                              // versions', derived on read (see
+                              // ProjectRepository.stackSessions) — the stack
+                              // row itself never stores sessions.
+                              _SessionHistorySection(
+                                sessions: repo.stackSessions(updatedProject),
+                              )
+                            else
                             _SessionHistorySection(
                               sessions: updatedProject.sessions,
                               onRemove: (session) async {
@@ -3220,13 +3465,20 @@ class _RenameProjectDialogState extends State<_RenameProjectDialog> {
 
 class _SessionHistorySection extends StatefulWidget {
   final List<SessionRecord> sessions;
-  final void Function(SessionRecord) onRemove;
-  final void Function(SessionRecord updated) onEdit;
+
+  /// Null makes the list read-only. Used for a stack, whose sessions are
+  /// aggregated from its versions: the records belong to the member projects,
+  /// so editing one from here would have to guess which member to write back
+  /// to. Editing stays on the version's own page, which owns the record.
+  final void Function(SessionRecord)? onRemove;
+  final void Function(SessionRecord updated)? onEdit;
   const _SessionHistorySection({
     required this.sessions,
-    required this.onRemove,
-    required this.onEdit,
+    this.onRemove,
+    this.onEdit,
   });
+
+  bool get isReadOnly => onRemove == null || onEdit == null;
 
   @override
   State<_SessionHistorySection> createState() => _SessionHistorySectionState();
@@ -3240,7 +3492,7 @@ class _SessionHistorySectionState extends State<_SessionHistorySection> {
       context: context,
       builder: (ctx) => _EditSessionDialog(session: session),
     );
-    if (updated != null) widget.onEdit(updated);
+    if (updated != null) widget.onEdit?.call(updated);
   }
 
   void _confirmRemove(BuildContext context, SessionRecord session) {
@@ -3265,7 +3517,7 @@ class _SessionHistorySectionState extends State<_SessionHistorySection> {
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
-              widget.onRemove(session);
+              widget.onRemove?.call(session);
             },
             child: Text(l10n.delete,
                 style: TextStyle(color: theme.colorScheme.error)),
@@ -3409,26 +3661,28 @@ class _SessionHistorySectionState extends State<_SessionHistorySection> {
                                 Text(_fmtDuration(s.durationSeconds),
                                     style: bodySmall),
                                 const Spacer(),
-                                GestureDetector(
-                                  onTap: () =>
-                                      _editSessionDuration(context, s),
-                                  child: Icon(
-                                    Icons.edit_outlined,
-                                    size: 14,
-                                    color: theme.colorScheme.primary
-                                        .withValues(alpha: 0.7),
+                                if (!widget.isReadOnly) ...[
+                                  GestureDetector(
+                                    onTap: () =>
+                                        _editSessionDuration(context, s),
+                                    child: Icon(
+                                      Icons.edit_outlined,
+                                      size: 14,
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.7),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () => _confirmRemove(context, s),
-                                  child: Icon(
-                                    Icons.delete_outline,
-                                    size: 14,
-                                    color: theme.colorScheme.error
-                                        .withValues(alpha: 0.6),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: () => _confirmRemove(context, s),
+                                    child: Icon(
+                                      Icons.delete_outline,
+                                      size: 14,
+                                      color: theme.colorScheme.error
+                                          .withValues(alpha: 0.6),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ],
                             ),
                           ),

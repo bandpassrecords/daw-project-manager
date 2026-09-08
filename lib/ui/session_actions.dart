@@ -9,6 +9,7 @@ import '../providers/providers.dart';
 import '../utils/file_launcher.dart';
 import 'dialogs/daw_launch_command_dialog.dart';
 import 'dialogs/daw_launch_picker_dialog.dart';
+import 'dialogs/stack_version_picker_dialog.dart';
 
 /// What [launchProjectInDaw] should do for a project, once its DAW type and
 /// any configured executable overrides are known. Pure decision, split out so
@@ -69,6 +70,26 @@ bool shouldPromptDawLocationAfterFailedLaunch({
 }) =>
     dawType != null && (isMacOS || isWindows);
 
+/// Which version of a stack a launch should open without asking (#94).
+///
+/// Returns the nominated default when it is still a member, otherwise the sole
+/// member when there is only one left; null means "ask". Nomination is checked
+/// against the live member list because a member can be removed or deleted
+/// after being nominated, and silently opening a stale id would open the wrong
+/// song — or nothing at all.
+@visibleForTesting
+MusicProject? resolveStackLaunchTarget({
+  required String? defaultLaunchMemberId,
+  required List<MusicProject> members,
+}) {
+  if (members.isEmpty) return null;
+  if (members.length == 1) return members.single;
+  for (final member in members) {
+    if (member.id == defaultLaunchMemberId) return member;
+  }
+  return null;
+}
+
 /// Launches [project] in its DAW.
 ///
 /// Preference order: a user-registered executable override for the DAW type
@@ -88,6 +109,30 @@ Future<void> launchProjectInDaw(
   MusicProject project,
 ) async {
   final l10n = AppLocalizations.of(context)!;
+
+  // A stack has no file of its own — its path points at the folder — so a
+  // launch has to be redirected to one of its versions before anything below
+  // touches filePath.
+  if (project.isVirtual) {
+    final repo = await ref.read(repositoryProvider.future);
+    final members = repo.stackMembers(project);
+    var target = resolveStackLaunchTarget(
+      defaultLaunchMemberId: project.defaultLaunchMemberId,
+      members: members,
+    );
+    if (target == null) {
+      if (members.isEmpty || !context.mounted) return;
+      target = await showStackVersionPickerDialog(
+        context,
+        title: l10n.stackChooseVersionToOpen,
+        candidates: members,
+        emptyLabel: l10n.stackAddVersionEmpty,
+        subtitleBuilder: (m) => m.fileName,
+      );
+      if (target == null || !context.mounted) return;
+    }
+    return launchProjectInDaw(context, ref, target);
+  }
 
   if (!FileLauncher.targetExists(project.filePath)) {
     if (context.mounted) {

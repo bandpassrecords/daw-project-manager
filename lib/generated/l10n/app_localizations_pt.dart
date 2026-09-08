@@ -4677,4 +4677,107 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Uma barra à esquerda escolhe uma seção por vez.';
+
+  @override
+  String get stackAsVersions => 'Empilhar como versões';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Selecione pelo menos dois projetos para empilhá-los como versões de uma música.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count versões empilhadas como uma música.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versões';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count versões';
+  }
+
+  @override
+  String get stackAddVersion => 'Adicionar versão';
+
+  @override
+  String get stackAddVersionTitle => 'Adicionar uma versão';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'Nenhum projeto fora de uma pilha disponível para adicionar.';
+
+  @override
+  String get stackRemoveVersion => 'Remover da pilha';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'O arquivo do projeto permanece no disco e volta para a lista como um projeto próprio.';
+
+  @override
+  String get stackUnstack => 'Desempilhar';
+
+  @override
+  String get stackUnstackTitle => 'Desempilhar esta música?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Cada versão volta a ser um projeto próprio com os metadados que tinha antes do empilhamento. As notas, tarefas e o prazo compartilhados na pilha são excluídos.';
+
+  @override
+  String get stackDefaultVersion => 'Abre por padrão';
+
+  @override
+  String get stackSetDefaultVersion => 'Abrir esta versão por padrão';
+
+  @override
+  String get stackChooseVersionToOpen => 'Qual versão você quer abrir?';
+
+  @override
+  String get stackMemberOf => 'Versão de';
+
+  @override
+  String get stackMemberNotice =>
+      'Este arquivo é uma versão de uma música empilhada. Metadados, tarefas e tempo de trabalho compartilhados ficam na música, não aqui.';
+
+  @override
+  String get stackOpenSong => 'Abrir música';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Total em todas as versões';
+
+  @override
+  String get scanModeVersionStack => 'Pilha de versões';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Todos os arquivos de projeto em uma pasta viram uma música, compartilhando metadados, tarefas e tempo de trabalho. Arquivos novos entram na música automaticamente.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count versões empilhadas como uma música';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Quais detalhes de versão a música deve usar?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'Mais de um deles já tem seus próprios detalhes. O que você escolher vira o BPM, tom, notas, tarefas e prazo compartilhados da música. Nada é mesclado e nada é perdido — os outros mantêm seus detalhes, e desempilhar os devolve.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'Mais antiga — sugerida';
+
+  @override
+  String get stackMetadataNoneLabel => 'Ainda sem detalhes';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    return '$count tarefas';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'notas';
 }
