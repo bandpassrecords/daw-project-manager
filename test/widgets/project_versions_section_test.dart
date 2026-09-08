@@ -196,5 +196,21 @@ void main() {
       expect(find.byIcon(Icons.close), findsNothing);
       expect(find.byIcon(Icons.star_border), findsNothing);
     });
+
+    testWidgets('fills the section width like the version list it replaces',
+        (tester) async {
+      await tester.pumpWidget(wrap(const [], onAdd: () {}));
+      final emptyWidth = tester.getSize(find.byType(Card)).width;
+
+      await tester.pumpWidget(wrap([v1, v2], onAdd: () {}));
+      final listWidth = tester.getSize(find.byType(Card)).width;
+
+      // Left to itself the empty card shrink-wraps its text and sits as a
+      // stub against the left edge, while the populated list fills the
+      // section because ListTile takes the width it is offered.
+      expect(emptyWidth, listWidth);
+      // And that is the full width available, not just "the same as".
+      expect(emptyWidth, greaterThan(700));
+    });
   });
 }

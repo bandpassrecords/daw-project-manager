@@ -127,30 +127,37 @@ class ProjectVersionsSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           if (members.isEmpty)
-            Card(
-              margin: EdgeInsets.zero,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (emptyTitle != null)
-                      Text(
-                        emptyTitle!,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
+            // Full width, matching the populated list. Left to itself the
+            // card would shrink-wrap its two lines of text and sit as a stub
+            // against the left edge, while the version list it replaces fills
+            // the section — ListTile takes the width it is offered.
+            SizedBox(
+              width: double.infinity,
+              child: Card(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (emptyTitle != null)
+                        Text(
+                          emptyTitle!,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    if (emptyDescription != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        emptyDescription!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
+                      if (emptyDescription != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          emptyDescription!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             )
