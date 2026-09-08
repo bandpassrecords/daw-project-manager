@@ -3348,6 +3348,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get startupDontShowAgain => 'Не показывать при запуске';
 
   @override
+  String get pinnedLibraryWarningTitle => 'Используется тестовая библиотека';
+
+  @override
+  String get pinnedLibraryWarningBody =>
+      'Эта сборка хранит данные в отдельной тестовой библиотеке и не изменяет библиотеку установленного приложения. Проекты, профили и настройки, изменённые здесь, там не появятся.';
+
+  @override
+  String get pinnedLibraryWarningLibraryLabel => 'Библиотека';
+
+  @override
+  String get pinnedLibraryWarningLocationLabel => 'Расположение';
+
+  @override
+  String get pinnedLibraryWarningDontShowAgain =>
+      'Больше не предупреждать об этой библиотеке';
+
+  @override
   String get deleteAllData => 'Удалить все данные';
 
   @override

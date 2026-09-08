@@ -3341,6 +3341,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startupDontShowAgain => 'Don\'t show this on startup';
 
   @override
+  String get pinnedLibraryWarningTitle => 'Test library in use';
+
+  @override
+  String get pinnedLibraryWarningBody =>
+      'This build keeps its data in a separate test library, so it cannot touch the library your installed copy of the app uses. Projects, profiles and settings you change here will not appear there.';
+
+  @override
+  String get pinnedLibraryWarningLibraryLabel => 'Library';
+
+  @override
+  String get pinnedLibraryWarningLocationLabel => 'Location';
+
+  @override
+  String get pinnedLibraryWarningDontShowAgain =>
+      'Don\'t warn me again for this library';
+
+  @override
   String get deleteAllData => 'Delete All Data';
 
   @override

@@ -3356,6 +3356,23 @@ class AppLocalizationsIt extends AppLocalizations {
   String get startupDontShowAgain => 'Non mostrare all\'avvio';
 
   @override
+  String get pinnedLibraryWarningTitle => 'Libreria di prova in uso';
+
+  @override
+  String get pinnedLibraryWarningBody =>
+      'Questa build salva i dati in una libreria di prova separata, quindi non può modificare la libreria usata dalla copia installata dell\'app. Progetti, profili e impostazioni che modifichi qui non compariranno lì.';
+
+  @override
+  String get pinnedLibraryWarningLibraryLabel => 'Libreria';
+
+  @override
+  String get pinnedLibraryWarningLocationLabel => 'Posizione';
+
+  @override
+  String get pinnedLibraryWarningDontShowAgain =>
+      'Non avvisarmi più per questa libreria';
+
+  @override
   String get deleteAllData => 'Elimina tutti i dati';
 
   @override

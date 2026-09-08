@@ -3238,6 +3238,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get startupDontShowAgain => '启动时不再显示';
 
   @override
+  String get pinnedLibraryWarningTitle => '正在使用测试库';
+
+  @override
+  String get pinnedLibraryWarningBody =>
+      '此版本将数据保存在单独的测试库中，因此不会影响已安装应用所使用的库。你在这里更改的项目、配置文件和设置不会出现在那里。';
+
+  @override
+  String get pinnedLibraryWarningLibraryLabel => '库';
+
+  @override
+  String get pinnedLibraryWarningLocationLabel => '位置';
+
+  @override
+  String get pinnedLibraryWarningDontShowAgain => '不再为此库发出警告';
+
+  @override
   String get deleteAllData => '删除所有数据';
 
   @override
