@@ -11,6 +11,7 @@ import '../../providers/providers.dart';
 import '../../providers/theme_provider.dart';
 import '../../main.dart' show navigatorKey, quitApp;
 import '../dashboard_page.dart' show appVersion;
+import '../theme_labels.dart';
 import 'language_switcher.dart';
 import 'quit_confirm_dialog.dart';
 import 'shortcuts_help_dialog.dart';
@@ -69,7 +70,8 @@ class MacOSMenuBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (kIsWeb || !Platform.isMacOS) return child;
 
-    final themeType = ref.watch(themeTypeProvider);
+    final selectedThemeId = ref.watch(selectedThemeIdProvider);
+    final selectableThemes = ref.watch(selectableThemesProvider);
     final currentLocale = ref.watch(localeProvider);
     final warnBeforeQuit = ref.watch(warnBeforeQuitProvider);
 
@@ -114,21 +116,19 @@ class MacOSMenuBar extends ConsumerWidget {
                 PlatformMenu(
                   label: l10n.menuTheme,
                   menus: [
+                    // Built-ins first, then the user's own themes.
+                    // selectableThemesProvider already leaves out the hidden
+                    // studioLight built-in.
                     PlatformMenuItemGroup(
                       members: [
-                        PlatformMenuItem(
-                          label: '${themeType == AppThemeType.classicDark ? '✓ ' : ''}${l10n.classicDarkThemeName}',
-                          onSelected: () => ref.read(themeTypeProvider.notifier).setThemeType(AppThemeType.classicDark),
-                        ),
-                        PlatformMenuItem(
-                          label: '${themeType == AppThemeType.neonDark ? '✓ ' : ''}${l10n.neonDarkThemeName}',
-                          onSelected: () => ref.read(themeTypeProvider.notifier).setThemeType(AppThemeType.neonDark),
-                        ),
-                        // studioLight temporarily hidden from UI
-                        // PlatformMenuItem(
-                        //   label: '${themeType == AppThemeType.studioLight ? '✓ ' : ''}${l10n.studioLightThemeName}',
-                        //   onSelected: () => ref.read(themeTypeProvider.notifier).setThemeType(AppThemeType.studioLight),
-                        // ),
+                        for (final theme in selectableThemes)
+                          PlatformMenuItem(
+                            label:
+                                '${theme.id == selectedThemeId ? '✓ ' : ''}${themeDisplayName(theme, l10n)}',
+                            onSelected: () => ref
+                                .read(selectedThemeIdProvider.notifier)
+                                .select(theme.id),
+                          ),
                       ],
                     ),
                   ],

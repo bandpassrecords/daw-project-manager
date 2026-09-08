@@ -4903,4 +4903,97 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get stackAutoJoinsExisting =>
       'добавится к существующему основному проекту';
+
+  @override
+  String get untitledTheme => 'Тема без названия';
+
+  @override
+  String switchToTheme(String themeName) {
+    return 'Переключиться на $themeName';
+  }
+
+  @override
+  String get newTheme => 'Новая тема';
+
+  @override
+  String get editTheme => 'Изменить тему';
+
+  @override
+  String get duplicateTheme => 'Дублировать';
+
+  @override
+  String get deleteThemeTitle => 'Удалить тему?';
+
+  @override
+  String deleteThemeMessage(String name) {
+    return '«$name» будет удалена. Это действие необратимо.';
+  }
+
+  @override
+  String get themeNameLabel => 'Название темы';
+
+  @override
+  String get themeNameHint => 'например, Studio Amber';
+
+  @override
+  String get themeNameRequired => 'Укажите название темы.';
+
+  @override
+  String get themeColorAccent => 'Акцент';
+
+  @override
+  String get themeColorSecondaryAccent => 'Дополнительный акцент';
+
+  @override
+  String get themeColorBackground => 'Фон';
+
+  @override
+  String get themeColorCards => 'Карточки и панели';
+
+  @override
+  String get themeCardRoundness => 'Скругление карточек';
+
+  @override
+  String get themeButtonRoundness => 'Скругление кнопок';
+
+  @override
+  String themeLowContrastWarning(String ratio) {
+    return 'Низкий контраст ($ratio:1). Текст может быть трудно читать.';
+  }
+
+  @override
+  String get exportTheme => 'Экспорт темы';
+
+  @override
+  String get importTheme => 'Импорт темы';
+
+  @override
+  String themeExported(String path) {
+    return 'Тема экспортирована в $path';
+  }
+
+  @override
+  String themeImported(String name) {
+    return '«$name» импортирована';
+  }
+
+  @override
+  String get themeImportFailed => 'Этот файл не является допустимой темой.';
+
+  @override
+  String get themeHexLabel => 'Hex';
+
+  @override
+  String get themeHexInvalid => 'Используйте #RRGGBB';
+
+  @override
+  String get apply => 'Применить';
+
+  @override
+  String get pickColor => 'Выбрать цвет';
+
+  @override
+  String themeCopyName(String name) {
+    return '$name — копия';
+  }
 }

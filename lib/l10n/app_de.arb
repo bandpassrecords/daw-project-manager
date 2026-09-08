@@ -3044,5 +3044,62 @@
   "stackAutoConfirmApply": "Stapeln",
   "stackAutoFolderEntry": "{folder} — {count} Versionen",
   "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
-  "stackAutoJoinsExisting": "kommt zum bestehenden Hauptprojekt"
+  "stackAutoJoinsExisting": "kommt zum bestehenden Hauptprojekt",
+  "untitledTheme": "Unbenanntes Design",
+  "switchToTheme": "Zu {themeName} wechseln",
+  "@switchToTheme": {
+    "placeholders": {
+      "themeName": { "type": "String" }
+    }
+  },
+  "newTheme": "Neues Design",
+  "editTheme": "Design bearbeiten",
+  "duplicateTheme": "Duplizieren",
+  "deleteThemeTitle": "Design löschen?",
+  "deleteThemeMessage": "\"{name}\" wird entfernt. Das lässt sich nicht rückgängig machen.",
+  "@deleteThemeMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeNameLabel": "Designname",
+  "themeNameHint": "z. B. Studio Amber",
+  "themeNameRequired": "Gib dem Design einen Namen.",
+  "themeColorAccent": "Akzent",
+  "themeColorSecondaryAccent": "Zweitakzent",
+  "themeColorBackground": "Hintergrund",
+  "themeColorCards": "Karten und Bereiche",
+  "themeCardRoundness": "Kartenrundung",
+  "themeButtonRoundness": "Schaltflächenrundung",
+  "themeLowContrastWarning": "Geringer Kontrast ({ratio}:1). Text ist möglicherweise schwer lesbar.",
+  "@themeLowContrastWarning": {
+    "placeholders": {
+      "ratio": { "type": "String" }
+    }
+  },
+  "exportTheme": "Design exportieren",
+  "importTheme": "Design importieren",
+  "themeExported": "Design exportiert nach {path}",
+  "@themeExported": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "themeImported": "\"{name}\" importiert",
+  "@themeImported": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeImportFailed": "Diese Datei ist kein gültiges Design.",
+  "themeHexLabel": "Hex",
+  "themeHexInvalid": "#RRGGBB verwenden",
+  "apply": "Übernehmen",
+  "pickColor": "Farbe wählen",
+  "themeCopyName": "{name} Kopie",
+  "@themeCopyName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }

@@ -3044,5 +3044,62 @@
   "stackAutoConfirmApply": "堆叠",
   "stackAutoFolderEntry": "{folder} — {count} 个版本",
   "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
-  "stackAutoJoinsExisting": "加入现有的主项目"
+  "stackAutoJoinsExisting": "加入现有的主项目",
+  "untitledTheme": "未命名主题",
+  "switchToTheme": "切换到 {themeName}",
+  "@switchToTheme": {
+    "placeholders": {
+      "themeName": { "type": "String" }
+    }
+  },
+  "newTheme": "新建主题",
+  "editTheme": "编辑主题",
+  "duplicateTheme": "复制",
+  "deleteThemeTitle": "删除主题？",
+  "deleteThemeMessage": "将删除“{name}”。此操作无法撤销。",
+  "@deleteThemeMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeNameLabel": "主题名称",
+  "themeNameHint": "例如：Studio Amber",
+  "themeNameRequired": "请为主题命名。",
+  "themeColorAccent": "强调色",
+  "themeColorSecondaryAccent": "次强调色",
+  "themeColorBackground": "背景",
+  "themeColorCards": "卡片与面板",
+  "themeCardRoundness": "卡片圆角",
+  "themeButtonRoundness": "按钮圆角",
+  "themeLowContrastWarning": "对比度偏低（{ratio}:1），文字可能不易阅读。",
+  "@themeLowContrastWarning": {
+    "placeholders": {
+      "ratio": { "type": "String" }
+    }
+  },
+  "exportTheme": "导出主题",
+  "importTheme": "导入主题",
+  "themeExported": "主题已导出到 {path}",
+  "@themeExported": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "themeImported": "已导入“{name}”",
+  "@themeImported": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeImportFailed": "该文件不是有效的主题。",
+  "themeHexLabel": "Hex",
+  "themeHexInvalid": "请使用 #RRGGBB",
+  "apply": "应用",
+  "pickColor": "选择颜色",
+  "themeCopyName": "{name} 副本",
+  "@themeCopyName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }

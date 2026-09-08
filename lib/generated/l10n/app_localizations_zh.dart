@@ -4715,4 +4715,97 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stackAutoJoinsExisting => '加入现有的主项目';
+
+  @override
+  String get untitledTheme => '未命名主题';
+
+  @override
+  String switchToTheme(String themeName) {
+    return '切换到 $themeName';
+  }
+
+  @override
+  String get newTheme => '新建主题';
+
+  @override
+  String get editTheme => '编辑主题';
+
+  @override
+  String get duplicateTheme => '复制';
+
+  @override
+  String get deleteThemeTitle => '删除主题？';
+
+  @override
+  String deleteThemeMessage(String name) {
+    return '将删除“$name”。此操作无法撤销。';
+  }
+
+  @override
+  String get themeNameLabel => '主题名称';
+
+  @override
+  String get themeNameHint => '例如：Studio Amber';
+
+  @override
+  String get themeNameRequired => '请为主题命名。';
+
+  @override
+  String get themeColorAccent => '强调色';
+
+  @override
+  String get themeColorSecondaryAccent => '次强调色';
+
+  @override
+  String get themeColorBackground => '背景';
+
+  @override
+  String get themeColorCards => '卡片与面板';
+
+  @override
+  String get themeCardRoundness => '卡片圆角';
+
+  @override
+  String get themeButtonRoundness => '按钮圆角';
+
+  @override
+  String themeLowContrastWarning(String ratio) {
+    return '对比度偏低（$ratio:1），文字可能不易阅读。';
+  }
+
+  @override
+  String get exportTheme => '导出主题';
+
+  @override
+  String get importTheme => '导入主题';
+
+  @override
+  String themeExported(String path) {
+    return '主题已导出到 $path';
+  }
+
+  @override
+  String themeImported(String name) {
+    return '已导入“$name”';
+  }
+
+  @override
+  String get themeImportFailed => '该文件不是有效的主题。';
+
+  @override
+  String get themeHexLabel => 'Hex';
+
+  @override
+  String get themeHexInvalid => '请使用 #RRGGBB';
+
+  @override
+  String get apply => '应用';
+
+  @override
+  String get pickColor => '选择颜色';
+
+  @override
+  String themeCopyName(String name) {
+    return '$name 副本';
+  }
 }

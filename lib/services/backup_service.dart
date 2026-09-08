@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:file_picker/file_picker.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:path/path.dart' as p;
+import '../models/custom_theme.dart';
 import '../models/music_project.dart';
 import '../models/project_marker.dart';
 import '../models/scan_root.dart';
@@ -19,6 +20,7 @@ import '../models/project_template.dart';
 import '../models/template_root.dart';
 import '../repository/project_repository.dart';
 import '../repository/profile_repository.dart';
+import 'custom_theme_merge.dart';
 import '../utils/app_paths.dart';
 
 class BackupService {
@@ -48,6 +50,7 @@ class BackupService {
       final customMixdownFolders = await _readCustomMixdownFolders();
       final customMixdownFoldersByDaw = await _readCustomMixdownFoldersByDaw();
       final dawLaunchCommands = await _readDawLaunchCommands();
+      final customThemes = await _readCustomThemes();
       // Unlike Drive (which stores a byProfile map for every profile), a local
       // backup covers a single profile, so only that profile's phase settings
       // are relevant here.
@@ -57,9 +60,10 @@ class BackupService {
       final backupData = {
         // 1.1 added templates/projectTemplates/templateRoots/
         // customMixdownFolders/phaseSettings. 1.2 added partTemplates (and, on
-        // each project, its parts). Importing an older file still works
-        // — every new key is read with a null check on the way back in.
-        'version': '1.2',
+        // each project, its parts). 1.3 added customThemes. Importing an older
+        // file still works — every new key is read with a null check on the
+        // way back in.
+        'version': '1.3',
         'exportDate': DateTime.now().toIso8601String(),
         'profileId': profileId,
         'profile': profile != null ? await _profileToJson(profile) : null,
@@ -74,6 +78,11 @@ class BackupService {
         'customMixdownFolders': customMixdownFolders,
         'customMixdownFoldersByDaw': customMixdownFoldersByDaw,
         'dawLaunchCommands': dawLaunchCommands,
+        // User-authored themes. Global (not per-profile), and this is the only
+        // backup path Flatpak has, so leaving them out would mean Flatpak
+        // users could never back a theme up at all. The *selected* theme is
+        // deliberately absent: that is a device-local preference.
+        'customThemes': customThemes.map((t) => t.toJson()).toList(),
         'phaseSettings': phaseSettings,
       };
 
@@ -258,6 +267,12 @@ class BackupService {
         (backupData['dawLaunchCommands'] as Map?) ?? const {},
       );
 
+      // Absent in a pre-1.3 backup, which is fine — the user simply had no
+      // custom themes to restore.
+      final importedCustomThemes = customThemesFromJson(
+        backupData['customThemes'] as List?,
+      );
+
       final importedPhaseSettings =
           (backupData['phaseSettings'] as Map?)?.cast<String, dynamic>() ?? const <String, dynamic>{};
 
@@ -341,6 +356,7 @@ class BackupService {
       await _writeCustomMixdownFolders(importedCustomMixdownFolders);
       await _writeCustomMixdownFoldersByDaw(importedCustomMixdownFoldersByDaw);
       await _writeDawLaunchCommands(importedDawLaunchCommands);
+      await _writeCustomThemes(importedCustomThemes);
       await _writePhaseSettings(targetProfileId, importedPhaseSettings);
 
       // Restore profile photo if embedded in backup
@@ -397,6 +413,7 @@ class BackupService {
   static const String _customMixdownFoldersKey = 'customMixdownFolders';
   static const String _customMixdownFoldersByDawKey = 'customMixdownFoldersByDaw';
   static const String _dawLaunchCommandsByDawKey = 'dawLaunchCommandsByDaw';
+  static const String _customThemesKey = 'customThemes';
 
   static Future<List<TodoTemplate>> _readGlobalTemplates() async {
     try {
@@ -459,6 +476,45 @@ class BackupService {
     } catch (_) {
       return const {};
     }
+  }
+
+  /// User-authored themes. Global (not per-profile), stored as a JSON array
+  /// in the same box as the other global preferences.
+  static Future<List<CustomTheme>> _readCustomThemes() async {
+    try {
+      final box = await Hive.openBox<String>(_appSettingsBoxName);
+      return _customThemesFromRaw(box.get(_customThemesKey));
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  static List<CustomTheme> _customThemesFromRaw(String? raw) {
+    if (raw == null || raw.isEmpty) return const [];
+    try {
+      return customThemesFromJson(jsonDecode(raw) as List?);
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Merges [themes] into the stored ones — union rather than overwrite,
+  /// matching how the mixdown folder names above are restored, and resolved
+  /// by the same [mergeCustomThemes] that Drive sync uses so a restore and a
+  /// sync can't disagree about which copy of a theme wins.
+  static Future<void> _writeCustomThemes(List<CustomTheme> themes) async {
+    if (themes.isEmpty) return;
+    try {
+      final box = await Hive.openBox<String>(_appSettingsBoxName);
+      final merged = mergeCustomThemes(
+        _customThemesFromRaw(box.get(_customThemesKey)),
+        themes,
+      );
+      await box.put(
+        _customThemesKey,
+        jsonEncode(merged.map((t) => t.toJson()).toList()),
+      );
+    } catch (_) {}
   }
 
   /// "Launch in DAW" executable overrides, keyed by DAW display name. Global
@@ -689,6 +745,16 @@ class BackupService {
   @visibleForTesting
   static Future<void> writeGlobalTemplatesForTest(List<TodoTemplate> templates, ImportMode mode) =>
       _writeGlobalTemplates(templates, mode);
+
+  @visibleForTesting
+  static Future<List<CustomTheme>> readCustomThemesForTest() =>
+      _readCustomThemes();
+  @visibleForTesting
+  static Future<void> writeCustomThemesForTest(List<CustomTheme> themes) =>
+      _writeCustomThemes(themes);
+  @visibleForTesting
+  static List<CustomTheme> customThemesFromJsonForTest(List? entries) =>
+      customThemesFromJson(entries);
 
   @visibleForTesting
   static Future<List<PartTemplate>> readGlobalPartTemplatesForTest() =>

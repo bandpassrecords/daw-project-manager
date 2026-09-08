@@ -3044,5 +3044,62 @@
   "stackAutoConfirmApply": "Apilar",
   "stackAutoFolderEntry": "{folder} — {count} versiones",
   "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
-  "stackAutoJoinsExisting": "se une al proyecto principal existente"
+  "stackAutoJoinsExisting": "se une al proyecto principal existente",
+  "untitledTheme": "Tema sin nombre",
+  "switchToTheme": "Cambiar a {themeName}",
+  "@switchToTheme": {
+    "placeholders": {
+      "themeName": { "type": "String" }
+    }
+  },
+  "newTheme": "Nuevo tema",
+  "editTheme": "Editar tema",
+  "duplicateTheme": "Duplicar",
+  "deleteThemeTitle": "¿Eliminar tema?",
+  "deleteThemeMessage": "\"{name}\" se eliminará. Esta acción no se puede deshacer.",
+  "@deleteThemeMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeNameLabel": "Nombre del tema",
+  "themeNameHint": "p. ej. Ámbar de estudio",
+  "themeNameRequired": "Ponle un nombre al tema.",
+  "themeColorAccent": "Acento",
+  "themeColorSecondaryAccent": "Acento secundario",
+  "themeColorBackground": "Fondo",
+  "themeColorCards": "Tarjetas y paneles",
+  "themeCardRoundness": "Redondeo de las tarjetas",
+  "themeButtonRoundness": "Redondeo de los botones",
+  "themeLowContrastWarning": "Contraste bajo ({ratio}:1). El texto puede costar de leer.",
+  "@themeLowContrastWarning": {
+    "placeholders": {
+      "ratio": { "type": "String" }
+    }
+  },
+  "exportTheme": "Exportar tema",
+  "importTheme": "Importar tema",
+  "themeExported": "Tema exportado a {path}",
+  "@themeExported": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "themeImported": "\"{name}\" importado",
+  "@themeImported": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeImportFailed": "Ese archivo no es un tema válido.",
+  "themeHexLabel": "Hex",
+  "themeHexInvalid": "Usa #RRGGBB",
+  "apply": "Aplicar",
+  "pickColor": "Elegir un color",
+  "themeCopyName": "{name} copia",
+  "@themeCopyName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }

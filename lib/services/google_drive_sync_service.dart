@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../models/custom_theme.dart';
 import '../models/profile.dart';
 import '../models/music_project.dart';
 import '../models/project_marker.dart';
@@ -28,6 +29,7 @@ import '../models/template_root.dart';
 import '../models/backup_progress.dart';
 import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
+import 'custom_theme_merge.dart';
 import '../utils/app_paths.dart'
     show
         appDataDirName,
@@ -3062,6 +3064,25 @@ class GoogleDriveSyncService {
         }
       }
 
+      // Collect user-authored themes (global preference, not per-profile).
+      // The theme *definitions* sync; which one is selected does not — that
+      // is device-local, so a laptop and a desktop can sit on different
+      // themes while both still have the whole set available.
+      List<dynamic> customThemes = [];
+      try {
+        final raw = appSettingsBox.get('customThemes');
+        if (raw != null) {
+          customThemes = jsonDecode(raw) as List;
+        }
+        if (kDebugMode) {
+          print('Collected ${customThemes.length} custom themes');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error collecting custom themes: $e');
+        }
+      }
+
       // Collect per-DAW custom mixdown folders (global preference, not per-profile)
       Map<String, dynamic> customMixdownFoldersByDaw = {};
       try {
@@ -3080,7 +3101,7 @@ class GoogleDriveSyncService {
 
       final data = {
         'timestamp': DateTime.now().toIso8601String(),
-        'version': '1.6', // Incremented version to include release artwork
+        'version': '1.7', // Incremented to include custom themes
         'profiles': allProfiles.map((p) => _serializeProfile(p)).toList(),
         'projects': allProjects.map((p) => _serializeProject(p)).toList(),
         'releases': allReleases.map((r) => _serializeRelease(r)).toList(),
@@ -3093,6 +3114,9 @@ class GoogleDriveSyncService {
         'customMixdownFolders': customMixdownFolders,
         // NEW: Per-DAW custom mixdown folder names (global preference, not per-profile)
         'customMixdownFoldersByDaw': customMixdownFoldersByDaw,
+        // NEW: User-authored themes (global preference, not per-profile).
+        // Definitions only — the selected theme stays device-local.
+        'customThemes': customThemes,
         // NEW: Per-profile phase customization (custom phase names, colors, finished set)
         'phaseSettingsByProfile': phaseSettingsByProfile,
         // NEW: Profile mappings to restore correct associations
@@ -4693,6 +4717,35 @@ class GoogleDriveSyncService {
         }
       } catch (e) {
         if (kDebugMode) print('Error merging custom mixdown folders: $e');
+      }
+    }
+
+    // Merge user-authored themes (global preference, not per-profile) — union
+    // by theme id, newest updatedAt winning a same-id collision.
+    //
+    // Never deletes: a theme this device has and the remote doesn't is one
+    // the user made here and hasn't pushed yet, not one they removed.
+    if (remoteData['customThemes'] != null) {
+      try {
+        final remoteThemes =
+            customThemesFromJson(remoteData['customThemes'] as List);
+        if (remoteThemes.isNotEmpty) {
+          final appSettingsBox = await Hive.openBox<String>('app_settings');
+          final localRaw = appSettingsBox.get('customThemes');
+          final localThemes = localRaw != null
+              ? customThemesFromJson(jsonDecode(localRaw) as List)
+              : <CustomTheme>[];
+          final merged = mergeCustomThemes(localThemes, remoteThemes);
+          await appSettingsBox.put(
+            'customThemes',
+            jsonEncode(merged.map((t) => t.toJson()).toList()),
+          );
+          if (kDebugMode) {
+            print('  Custom themes: ${merged.length} after merge');
+          }
+        }
+      } catch (e) {
+        if (kDebugMode) print('Error merging custom themes: $e');
       }
     }
 

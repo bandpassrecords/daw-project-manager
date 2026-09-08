@@ -3068,5 +3068,62 @@
   "stackAutoConfirmApply": "Empilhar",
   "stackAutoFolderEntry": "{folder} — {count} versões",
   "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
-  "stackAutoJoinsExisting": "entra no projeto principal existente"
+  "stackAutoJoinsExisting": "entra no projeto principal existente",
+  "untitledTheme": "Tema sem nome",
+  "switchToTheme": "Mudar para {themeName}",
+  "@switchToTheme": {
+    "placeholders": {
+      "themeName": { "type": "String" }
+    }
+  },
+  "newTheme": "Novo tema",
+  "editTheme": "Editar tema",
+  "duplicateTheme": "Duplicar",
+  "deleteThemeTitle": "Excluir tema?",
+  "deleteThemeMessage": "\"{name}\" será removido. Isso não pode ser desfeito.",
+  "@deleteThemeMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeNameLabel": "Nome do tema",
+  "themeNameHint": "ex.: Âmbar de Estúdio",
+  "themeNameRequired": "Dê um nome ao tema.",
+  "themeColorAccent": "Destaque",
+  "themeColorSecondaryAccent": "Destaque secundário",
+  "themeColorBackground": "Fundo",
+  "themeColorCards": "Cartões e painéis",
+  "themeCardRoundness": "Arredondamento dos cartões",
+  "themeButtonRoundness": "Arredondamento dos botões",
+  "themeLowContrastWarning": "Contraste baixo ({ratio}:1). O texto pode ficar difícil de ler.",
+  "@themeLowContrastWarning": {
+    "placeholders": {
+      "ratio": { "type": "String" }
+    }
+  },
+  "exportTheme": "Exportar tema",
+  "importTheme": "Importar tema",
+  "themeExported": "Tema exportado para {path}",
+  "@themeExported": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "themeImported": "\"{name}\" importado",
+  "@themeImported": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeImportFailed": "Esse arquivo não é um tema válido.",
+  "themeHexLabel": "Hex",
+  "themeHexInvalid": "Use #RRGGBB",
+  "apply": "Aplicar",
+  "pickColor": "Escolher uma cor",
+  "themeCopyName": "{name} cópia",
+  "@themeCopyName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }

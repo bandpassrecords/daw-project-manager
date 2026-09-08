@@ -22,8 +22,10 @@ Instructions for AI assistants working on this codebase.
 ### New model fields must be evaluated for Drive sync AND local backup
 - When adding a field to `MusicProject` (or any synced model), decide: is this user-generated data or a device-local preference?
 - **User data** (metadata, timers, todos, paths) → add to `_serializeProject` AND `_deserializeProject` in `lib/services/google_drive_sync_service.dart`. If skipped, the field is silently lost on every Drive restore.
-- **Device-local settings** (theme, layout, update checks) → do NOT sync. `AppSettings` fields are generally device-local.
-- Also check `lib/services/backup_service.dart` (local file export/import) for the same question, for any *global* (non-per-profile) data — `TodoTemplate`, `ProjectTemplate`, `TemplateRoot`, custom mixdown folder names, phase settings. This is Flatpak's only backup path (see below), so a field skipped here is a field Flatpak users can never back up at all, not just "won't survive a Drive restore."
+- **Device-local settings** (which theme is selected, layout, update checks) → do NOT sync. `AppSettings` fields are generally device-local.
+- The split can run through one feature: a **custom theme's definition** is user data (synced and backed up), while **which theme is selected** is a device-local preference (neither). Ask the question per field, not per feature.
+- Also check `lib/services/backup_service.dart` (local file export/import) for the same question, for any *global* (non-per-profile) data — `TodoTemplate`, `ProjectTemplate`, `TemplateRoot`, custom mixdown folder names, custom themes, phase settings. This is Flatpak's only backup path (see below), so a field skipped here is a field Flatpak users can never back up at all, not just "won't survive a Drive restore."
+- Merging is **union, never deletion**: something present locally but absent in the incoming data is something made since, not something removed. On a same-id collision the newer `updatedAt` wins. `mergeCustomThemes` is the reference implementation.
 
 ### Google Drive sync is not offered inside Flatpak
 - `GoogleDriveSyncService.isSupported` is `false` only when actually running inside a Flatpak sandbox (detected via the `/.flatpak-info` marker file every Flatpak app has at runtime), `true` everywhere else — including the plain Linux tarball and the AppImage. Every UI entry point to `GoogleDriveSyncPage` (dashboard, profile page, startup dialog, tray menu) is gated on it — don't add a new one without the same gate.
@@ -50,9 +52,15 @@ Instructions for AI assistants working on this codebase.
 - Primary development and test target is **macOS**.
 - Linux is otherwise a full desktop target. The only feature gap is Google Drive sync specifically inside the Flatpak build (see `GoogleDriveSyncService.isSupported` above) — the tarball/AppImage have it.
 
-### Themes
-- Two active themes: `AppThemeType.neonDark` and `AppThemeType.classicDark`.
-- `AppThemeType.studioLight` exists in the enum but is hidden from the UI until it is ready — do not expose it in menus or the theme switcher cycle.
+### Themes — every theme is a `CustomTheme` spec fed through one builder
+- There is exactly **one** `ThemeData` builder: `AppThemes.buildFrom(CustomTheme)` in `lib/providers/theme_provider.dart`. The three built-ins are `CustomTheme` constants (`neonDarkSpec`, `classicDarkSpec`, `studioLightSpec`) run through it, and user themes go through the same call. Never hand-write a second `ThemeData` — a component styled in only one builder is a component user themes fall back to raw Material defaults for.
+- `test/providers/built_in_theme_regression_test.dart` keeps a verbatim copy of the pre-refactor themes and asserts `buildFrom` still reproduces them. If you change `buildFrom`, that test tells you which built-in you moved. Its one accepted deviation (`studioLight`'s `bodySmall` tone) is documented in the file.
+- Two active themes: `AppThemeType.neonDark` and `AppThemeType.classicDark`. `AppThemeType.studioLight` exists in the enum but is hidden from the UI until it is ready — `AppThemes.visibleBuiltIns` is the list every menu, switcher and picker must use; `allBuiltIns` is only for resolving a stored id.
+- The active theme is identified by a **string id**, not an enum: `selectedThemeIdProvider` holds either an `AppThemeType.name` or a user theme's uuid, and `activeThemeProvider` resolves it to a spec (falling back to Classic Dark for anything unknown). Watch `themeDataProvider` for colors and `activeThemeProvider` when you need the spec.
+- **Never branch on theme identity.** `themeType == AppThemeType.neonDark` used to pick grid row colors in four places, which silently lumped every user theme in with Classic Dark. Derive from the spec instead — `hasVividAccent`, `gridRowSelectColor`, `gridRowOddColor`, `gridRowEvenColor`, `gridBorderColor` in `lib/utils/theme_derivations.dart`.
+- A widget that caches colors (any `TrinaGrid`) must key on `spec.identityKey`, not `spec.id` — editing a user theme keeps its id, and the id alone would leave the old palette on screen.
+- User themes are **dark-only in v1**: the editor pins `brightness` to `Brightness.dark` because large parts of the UI still carry hardcoded `Colors.white70`-style literals that vanish on a light background. Unlocking the toggle is the same work as finishing `studioLight`.
+- Theme *definitions* are user data: they sync to Drive and go into local backup (see `mergeCustomThemes` in `lib/services/custom_theme_merge.dart`, shared by both so a restore and a sync can't disagree). The *selected* theme is a device-local preference and is deliberately in neither.
 
 ---
 
@@ -125,7 +133,11 @@ Instructions for AI assistants working on this codebase.
 | Main dashboard | `lib/ui/dashboard_page.dart` |
 | Project detail / editor | `lib/ui/project_detail_page.dart` |
 | Localization strings (source of truth) | `lib/l10n/app_en.arb` |
-| Theme definitions | `lib/ui/theme/` |
+| Theme specs, builder and providers | `lib/providers/theme_provider.dart` |
+| Theme spec model (`CustomTheme`) | `lib/models/custom_theme.dart` |
+| Theme-derived values (grid colors, vivid-accent test) | `lib/utils/theme_derivations.dart` |
+| Theme editor / color picker dialogs | `lib/ui/dialogs/theme_editor_dialog.dart`, `lib/ui/dialogs/color_picker_dialog.dart` |
+| Theme merge rules shared by backup + Drive sync | `lib/services/custom_theme_merge.dart` |
 | Platform helpers | `lib/utils/mobile_utils.dart` |
 | Test factories | `test/helpers/test_factories.dart` |
 | OAuth client config (not versioned) | `lib/config/oauth_config.dart` |

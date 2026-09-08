@@ -14,6 +14,8 @@ import '../services/update_check_service.dart';
 import '../utils/mobile_utils.dart';
 import 'dashboard_page.dart' show DashboardPage;
 import 'widgets/language_switcher.dart';
+import 'theme_labels.dart';
+import 'widgets/theme_preview_card.dart';
 
 class OnboardingWizardPage extends ConsumerStatefulWidget {
   const OnboardingWizardPage({super.key});
@@ -371,7 +373,10 @@ class _ThemePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final current = ref.watch(themeTypeProvider);
+    final current = ref.watch(selectedThemeIdProvider);
+    // Built-ins only. A first run has no user themes yet, and onboarding is
+    // not the place to open a theme editor — Settings > Appearance is.
+    // AppThemes.visibleBuiltIns already leaves out the hidden studioLight.
     return _WizardStep(
       icon: Icons.palette_outlined,
       title: l10n.onboardingThemeTitle,
@@ -379,27 +384,14 @@ class _ThemePage extends ConsumerWidget {
         spacing: 12,
         runSpacing: 12,
         children: [
-          _ThemeCard(
-            themeType: AppThemeType.classicDark,
-            label: l10n.classicDarkThemeName,
-            bg: const Color(0xFF1E1F22),
-            card: const Color(0xFF2B2D31),
-            primary: const Color(0xFF5A6B7A),
-            accent: const Color(0xFF7E8C99),
-            selected: current == AppThemeType.classicDark,
-            onTap: () => ref.read(themeTypeProvider.notifier).setThemeType(AppThemeType.classicDark),
-          ),
-          _ThemeCard(
-            themeType: AppThemeType.neonDark,
-            label: l10n.neonDarkThemeName,
-            bg: const Color(0xFF0A0A14),
-            card: const Color(0xFF1A1A2E),
-            primary: const Color(0xFF00D4FF),
-            accent: const Color(0xFF7B2CBF),
-            selected: current == AppThemeType.neonDark,
-            onTap: () => ref.read(themeTypeProvider.notifier).setThemeType(AppThemeType.neonDark),
-          ),
-          // studioLight hidden from UI — see theme_switcher.dart.
+          for (final spec in AppThemes.visibleBuiltIns)
+            ThemeChoiceCard(
+              spec: spec,
+              label: themeDisplayName(spec, l10n),
+              selected: current == spec.id,
+              onTap: () =>
+                  ref.read(selectedThemeIdProvider.notifier).select(spec.id),
+            ),
         ],
       ),
     );
@@ -1019,184 +1011,6 @@ class _DonePage extends StatelessWidget {
       title: l10n.onboardingDoneTitle,
       subtitle: l10n.onboardingDoneBody,
       child: const SizedBox.shrink(),
-    );
-  }
-}
-
-// ── Theme card ────────────────────────────────────────────────────────────────
-
-class _ThemeCard extends StatelessWidget {
-  final AppThemeType themeType;
-  final String label;
-  final Color bg;
-  final Color card;
-  final Color primary;
-  final Color accent;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _ThemeCard({
-    required this.themeType,
-    required this.label,
-    required this.bg,
-    required this.card,
-    required this.primary,
-    required this.accent,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest.withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected ? cs.primary : cs.outlineVariant,
-            width: selected ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Mini app preview
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-              child: _ThemePreviewMockup(bg: bg, card: card, primary: primary, accent: accent),
-            ),
-            // Label + selection indicator
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              child: Row(
-                children: [
-                  if (selected)
-                    Icon(Icons.radio_button_checked, size: 14, color: cs.primary)
-                  else
-                    Icon(Icons.radio_button_unchecked, size: 14, color: cs.outline),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      label,
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
-                        color: selected ? cs.primary : null,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ThemePreviewMockup extends StatelessWidget {
-  final Color bg;
-  final Color card;
-  final Color primary;
-  final Color accent;
-
-  const _ThemePreviewMockup({
-    required this.bg,
-    required this.card,
-    required this.primary,
-    required this.accent,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    const textColor = Colors.white;
-    const dimText = Color(0xFFAAAAAA);
-
-    final rows = [
-      ('Song Alpha',    'In Progress', '120'),
-      ('Dark Ambient',  'Done',        '90'),
-      ('Remix Final',   'In Progress', '128'),
-    ];
-
-    return Container(
-      color: bg,
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Fake sidebar + header bar
-          Container(
-            height: 20,
-            decoration: BoxDecoration(
-              color: card,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Row(
-              children: [
-                Container(width: 8, height: 8, decoration: BoxDecoration(color: primary, shape: BoxShape.circle)),
-                const SizedBox(width: 5),
-                Container(width: 40, height: 5, color: textColor.withValues(alpha: 0.3)),
-                const Spacer(),
-                Container(width: 24, height: 5, decoration: BoxDecoration(color: accent.withValues(alpha: 0.7), borderRadius: BorderRadius.circular(3))),
-              ],
-            ),
-          ),
-          const SizedBox(height: 5),
-          // Column headers
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: Row(
-              children: [
-                _previewText(l10n.name, dimText, flex: 3),
-                _previewText(l10n.status, dimText, flex: 2),
-                _previewText(l10n.bpm, dimText, flex: 1),
-              ],
-            ),
-          ),
-          const SizedBox(height: 3),
-          // Fake project rows
-          ...rows.map((r) => Container(
-            margin: const EdgeInsets.only(bottom: 3),
-            decoration: BoxDecoration(
-              color: card,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
-            child: Row(
-              children: [
-                Container(
-                  width: 6, height: 6,
-                  decoration: BoxDecoration(
-                    color: r.$2 == 'Done' ? Colors.greenAccent.shade400 : primary,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                _previewText(r.$1, textColor, flex: 3),
-                _previewText(r.$2, dimText, flex: 2),
-                _previewText(r.$3, dimText, flex: 1),
-              ],
-            ),
-          )),
-        ],
-      ),
-    );
-  }
-
-  Widget _previewText(String text, Color color, {required int flex}) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text,
-        style: TextStyle(fontSize: 10, color: color),
-        overflow: TextOverflow.ellipsis,
-      ),
     );
   }
 }

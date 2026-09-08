@@ -3044,5 +3044,62 @@
   "stackAutoConfirmApply": "Impila",
   "stackAutoFolderEntry": "{folder} — {count} versioni",
   "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
-  "stackAutoJoinsExisting": "si unisce al progetto principale esistente"
+  "stackAutoJoinsExisting": "si unisce al progetto principale esistente",
+  "untitledTheme": "Tema senza nome",
+  "switchToTheme": "Passa a {themeName}",
+  "@switchToTheme": {
+    "placeholders": {
+      "themeName": { "type": "String" }
+    }
+  },
+  "newTheme": "Nuovo tema",
+  "editTheme": "Modifica tema",
+  "duplicateTheme": "Duplica",
+  "deleteThemeTitle": "Eliminare il tema?",
+  "deleteThemeMessage": "\"{name}\" verrà rimosso. Non è possibile annullare.",
+  "@deleteThemeMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeNameLabel": "Nome del tema",
+  "themeNameHint": "es. Studio Ambra",
+  "themeNameRequired": "Dai un nome al tema.",
+  "themeColorAccent": "Accento",
+  "themeColorSecondaryAccent": "Accento secondario",
+  "themeColorBackground": "Sfondo",
+  "themeColorCards": "Schede e pannelli",
+  "themeCardRoundness": "Arrotondamento delle schede",
+  "themeButtonRoundness": "Arrotondamento dei pulsanti",
+  "themeLowContrastWarning": "Contrasto basso ({ratio}:1). Il testo potrebbe essere poco leggibile.",
+  "@themeLowContrastWarning": {
+    "placeholders": {
+      "ratio": { "type": "String" }
+    }
+  },
+  "exportTheme": "Esporta tema",
+  "importTheme": "Importa tema",
+  "themeExported": "Tema esportato in {path}",
+  "@themeExported": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "themeImported": "\"{name}\" importato",
+  "@themeImported": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeImportFailed": "Questo file non è un tema valido.",
+  "themeHexLabel": "Hex",
+  "themeHexInvalid": "Usa #RRGGBB",
+  "apply": "Applica",
+  "pickColor": "Scegli un colore",
+  "themeCopyName": "{name} copia",
+  "@themeCopyName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }

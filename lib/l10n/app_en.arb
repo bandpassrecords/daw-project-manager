@@ -4368,5 +4368,62 @@
   "stackAutoFolderEntry": "{folder} — {count} versions",
   "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
   "stackAutoJoinsExisting": "joins the existing main project",
-  "@stackAutoJoinsExisting": {"description": "Note on a folder row that already has a main project"}
+  "@stackAutoJoinsExisting": {"description": "Note on a folder row that already has a main project"},
+  "untitledTheme": "Untitled theme",
+  "switchToTheme": "Switch to {themeName}",
+  "@switchToTheme": {
+    "placeholders": {
+      "themeName": { "type": "String" }
+    }
+  },
+  "newTheme": "New theme",
+  "editTheme": "Edit theme",
+  "duplicateTheme": "Duplicate",
+  "deleteThemeTitle": "Delete theme?",
+  "deleteThemeMessage": "\"{name}\" will be removed. This cannot be undone.",
+  "@deleteThemeMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeNameLabel": "Theme name",
+  "themeNameHint": "e.g. Studio Amber",
+  "themeNameRequired": "Give the theme a name.",
+  "themeColorAccent": "Accent",
+  "themeColorSecondaryAccent": "Secondary accent",
+  "themeColorBackground": "Background",
+  "themeColorCards": "Cards and panels",
+  "themeCardRoundness": "Card roundness",
+  "themeButtonRoundness": "Button roundness",
+  "themeLowContrastWarning": "Low contrast ({ratio}:1). Text may be hard to read.",
+  "@themeLowContrastWarning": {
+    "placeholders": {
+      "ratio": { "type": "String" }
+    }
+  },
+  "exportTheme": "Export theme",
+  "importTheme": "Import theme",
+  "themeExported": "Theme exported to {path}",
+  "@themeExported": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "themeImported": "Imported \"{name}\"",
+  "@themeImported": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeImportFailed": "That file isn't a valid theme.",
+  "themeHexLabel": "Hex",
+  "themeHexInvalid": "Use #RRGGBB",
+  "apply": "Apply",
+  "pickColor": "Pick a color",
+  "themeCopyName": "{name} copy",
+  "@themeCopyName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }

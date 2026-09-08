@@ -4885,4 +4885,97 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stackAutoJoinsExisting => 'joins the existing main project';
+
+  @override
+  String get untitledTheme => 'Untitled theme';
+
+  @override
+  String switchToTheme(String themeName) {
+    return 'Switch to $themeName';
+  }
+
+  @override
+  String get newTheme => 'New theme';
+
+  @override
+  String get editTheme => 'Edit theme';
+
+  @override
+  String get duplicateTheme => 'Duplicate';
+
+  @override
+  String get deleteThemeTitle => 'Delete theme?';
+
+  @override
+  String deleteThemeMessage(String name) {
+    return '\"$name\" will be removed. This cannot be undone.';
+  }
+
+  @override
+  String get themeNameLabel => 'Theme name';
+
+  @override
+  String get themeNameHint => 'e.g. Studio Amber';
+
+  @override
+  String get themeNameRequired => 'Give the theme a name.';
+
+  @override
+  String get themeColorAccent => 'Accent';
+
+  @override
+  String get themeColorSecondaryAccent => 'Secondary accent';
+
+  @override
+  String get themeColorBackground => 'Background';
+
+  @override
+  String get themeColorCards => 'Cards and panels';
+
+  @override
+  String get themeCardRoundness => 'Card roundness';
+
+  @override
+  String get themeButtonRoundness => 'Button roundness';
+
+  @override
+  String themeLowContrastWarning(String ratio) {
+    return 'Low contrast ($ratio:1). Text may be hard to read.';
+  }
+
+  @override
+  String get exportTheme => 'Export theme';
+
+  @override
+  String get importTheme => 'Import theme';
+
+  @override
+  String themeExported(String path) {
+    return 'Theme exported to $path';
+  }
+
+  @override
+  String themeImported(String name) {
+    return 'Imported \"$name\"';
+  }
+
+  @override
+  String get themeImportFailed => 'That file isn\'t a valid theme.';
+
+  @override
+  String get themeHexLabel => 'Hex';
+
+  @override
+  String get themeHexInvalid => 'Use #RRGGBB';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get pickColor => 'Pick a color';
+
+  @override
+  String themeCopyName(String name) {
+    return '$name copy';
+  }
 }

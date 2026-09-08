@@ -3044,5 +3044,62 @@
   "stackAutoConfirmApply": "Объединить",
   "stackAutoFolderEntry": "{folder} — версий: {count}",
   "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
-  "stackAutoJoinsExisting": "добавится к существующему основному проекту"
+  "stackAutoJoinsExisting": "добавится к существующему основному проекту",
+  "untitledTheme": "Тема без названия",
+  "switchToTheme": "Переключиться на {themeName}",
+  "@switchToTheme": {
+    "placeholders": {
+      "themeName": { "type": "String" }
+    }
+  },
+  "newTheme": "Новая тема",
+  "editTheme": "Изменить тему",
+  "duplicateTheme": "Дублировать",
+  "deleteThemeTitle": "Удалить тему?",
+  "deleteThemeMessage": "«{name}» будет удалена. Это действие необратимо.",
+  "@deleteThemeMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeNameLabel": "Название темы",
+  "themeNameHint": "например, Studio Amber",
+  "themeNameRequired": "Укажите название темы.",
+  "themeColorAccent": "Акцент",
+  "themeColorSecondaryAccent": "Дополнительный акцент",
+  "themeColorBackground": "Фон",
+  "themeColorCards": "Карточки и панели",
+  "themeCardRoundness": "Скругление карточек",
+  "themeButtonRoundness": "Скругление кнопок",
+  "themeLowContrastWarning": "Низкий контраст ({ratio}:1). Текст может быть трудно читать.",
+  "@themeLowContrastWarning": {
+    "placeholders": {
+      "ratio": { "type": "String" }
+    }
+  },
+  "exportTheme": "Экспорт темы",
+  "importTheme": "Импорт темы",
+  "themeExported": "Тема экспортирована в {path}",
+  "@themeExported": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "themeImported": "«{name}» импортирована",
+  "@themeImported": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeImportFailed": "Этот файл не является допустимой темой.",
+  "themeHexLabel": "Hex",
+  "themeHexInvalid": "Используйте #RRGGBB",
+  "apply": "Применить",
+  "pickColor": "Выбрать цвет",
+  "themeCopyName": "{name} — копия",
+  "@themeCopyName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  }
 }
