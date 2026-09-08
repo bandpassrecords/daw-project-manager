@@ -7922,13 +7922,13 @@ abstract class AppLocalizations {
   /// Error shown when fewer than two projects are selected for stacking
   ///
   /// In en, this message translates to:
-  /// **'Select at least two projects to stack them as versions of one song.'**
+  /// **'Select at least two projects to stack them as versions of one main project.'**
   String get stackNeedsTwoVersions;
 
   /// No description provided for @stackCreatedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Stacked {count} versions as one song.'**
+  /// **'Stacked {count} versions into one main project.'**
   String stackCreatedMessage(int count);
 
   /// Project detail section heading listing a stack's version files
@@ -7982,13 +7982,13 @@ abstract class AppLocalizations {
   /// Confirmation dialog title for dissolving a stack
   ///
   /// In en, this message translates to:
-  /// **'Unstack this song?'**
+  /// **'Unstack this main project?'**
   String get stackUnstackTitle;
 
   /// Explains what is lost when a stack is dissolved
   ///
   /// In en, this message translates to:
-  /// **'Every version becomes its own project again with the metadata it had before stacking. The shared notes, todos and deadline kept on the stack itself are deleted.'**
+  /// **'Every version becomes its own project again with the metadata it had before stacking. The shared notes, tasks and deadline kept on the main project are deleted.'**
   String get stackUnstackMessage;
 
   /// Label marking the version that opens by default
@@ -8018,14 +8018,14 @@ abstract class AppLocalizations {
   /// Explains that a version defers to its stack for shared metadata
   ///
   /// In en, this message translates to:
-  /// **'This file is one version of a stacked song. Shared metadata, todos and work time live on the song, not here.'**
+  /// **'This file is one version of a stacked project. Shared metadata, tasks and work time live on the main project, not here.'**
   String get stackMemberNotice;
 
   /// Button on a version's page that navigates to the stack
   ///
   /// In en, this message translates to:
-  /// **'Open song'**
-  String get stackOpenSong;
+  /// **'Open main project'**
+  String get stackOpenMainProject;
 
   /// Label for work time summed over every version in a stack
   ///
@@ -8042,25 +8042,25 @@ abstract class AppLocalizations {
   /// Description of the version stack scan mode
   ///
   /// In en, this message translates to:
-  /// **'Every project file in a folder becomes one song sharing metadata, todos and work time. Newly found files join the song automatically.'**
+  /// **'Every project file in a folder becomes one main project sharing metadata, tasks and work time. Newly found files join it automatically.'**
   String get scanModeVersionStackDescription;
 
   /// No description provided for @stackTooltipStacked.
   ///
   /// In en, this message translates to:
-  /// **'{count} versions stacked as one song'**
+  /// **'{count} versions stacked into one main project'**
   String stackTooltipStacked(int count);
 
   /// Dialog title asking which project's metadata the new stack should inherit
   ///
   /// In en, this message translates to:
-  /// **'Which version\'s details should the song use?'**
+  /// **'Which project should become the main project?'**
   String get stackMetadataSourceTitle;
 
   /// Explains that only the chosen project's metadata is promoted and the rest is kept
   ///
   /// In en, this message translates to:
-  /// **'More than one of these already has its own details. The one you pick becomes the song\'s shared BPM, key, notes, tasks and deadline. Nothing is merged and nothing is lost — the others keep their own details, and unstacking gives them back.'**
+  /// **'More than one of these already has details of its own. The one you pick becomes the main project: its name, BPM, key, notes, tasks and deadline are the ones the stack uses. Nothing is merged and nothing is lost — the others keep their own details, and unstacking gives them back.'**
   String get stackMetadataSourceBody;
 
   /// Marks the version pre-selected as the default metadata source
@@ -8096,7 +8096,7 @@ abstract class AppLocalizations {
   /// Explains how to start a stack from a project's own detail page
   ///
   /// In en, this message translates to:
-  /// **'Add another project file and the two become versions of one song, sharing metadata, tasks and work time.'**
+  /// **'Add other project files and they become versions of one main project, sharing metadata, tasks and work time.'**
   String get stackStartFromHere;
 
   /// Search field placeholder in the add-a-version picker
@@ -8114,8 +8114,38 @@ abstract class AppLocalizations {
   /// Confirmation after starting a stack from a project's own page
   ///
   /// In en, this message translates to:
-  /// **'Stacked as one song.'**
+  /// **'Stacked into one main project.'**
   String get stackStartedMessage;
+
+  /// Tooltip on the filled star marking the version that opens by default
+  ///
+  /// In en, this message translates to:
+  /// **'This version opens by default when you launch the DAW.'**
+  String get stackDefaultVersionTooltip;
+
+  /// No description provided for @stackAddVersionsConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {count}'**
+  String stackAddVersionsConfirm(int count);
+
+  /// Dialog title when several projects can be added to a stack at once
+  ///
+  /// In en, this message translates to:
+  /// **'Add versions'**
+  String get stackAddVersionMultiTitle;
+
+  /// Selects every project currently listed in the add-versions picker
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get stackSelectAll;
+
+  /// Clears the current selection in the add-versions picker
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get stackClearSelection;
 }
 
 class _AppLocalizationsDelegate

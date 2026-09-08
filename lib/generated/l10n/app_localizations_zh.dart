@@ -4503,11 +4503,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stackAsVersions => '堆叠为版本';
 
   @override
-  String get stackNeedsTwoVersions => '请至少选择两个项目，才能将它们堆叠为同一首歌的版本。';
+  String get stackNeedsTwoVersions => '请至少选择两个项目，才能将它们堆叠为同一个主项目的版本。';
 
   @override
   String stackCreatedMessage(int count) {
-    return '已将 $count 个版本堆叠为一首歌。';
+    return '已将 $count 个版本堆叠为一个主项目。';
   }
 
   @override
@@ -4537,11 +4537,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stackUnstack => '取消堆叠';
 
   @override
-  String get stackUnstackTitle => '要取消这首歌的堆叠吗？';
+  String get stackUnstackTitle => '要取消这个主项目的堆叠吗？';
 
   @override
   String get stackUnstackMessage =>
-      '每个版本将恢复为独立项目，并保留堆叠前的元数据。堆叠本身保存的共享笔记、待办事项和截止日期将被删除。';
+      '每个版本将恢复为独立项目，并保留堆叠前的元数据。主项目上保存的共享笔记、任务和截止日期将被删除。';
 
   @override
   String get stackDefaultVersion => '默认打开';
@@ -4553,14 +4553,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stackChooseVersionToOpen => '要打开哪个版本？';
 
   @override
-  String get stackMemberOf => '所属歌曲';
+  String get stackMemberOf => '所属主项目';
 
   @override
   String get stackMemberNotice =>
-      '此文件是某首堆叠歌曲的一个版本。共享的元数据、待办事项和工作时间保存在歌曲上，而不是这里。';
+      '此文件是某个堆叠项目的一个版本。共享的元数据、任务和工作时间保存在主项目上，而不是这里。';
 
   @override
-  String get stackOpenSong => '打开歌曲';
+  String get stackOpenMainProject => '打开主项目';
 
   @override
   String get stackWorkTimeAcrossVersions => '所有版本合计';
@@ -4570,19 +4570,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scanModeVersionStackDescription =>
-      '文件夹中的所有项目文件将合并为一首歌，共享元数据、待办事项和工作时间。新发现的文件会自动加入。';
+      '文件夹中的所有项目文件将合并为一个主项目，共享元数据、任务和工作时间。新发现的文件会自动加入。';
 
   @override
   String stackTooltipStacked(int count) {
-    return '$count 个版本堆叠为一首歌';
+    return '$count 个版本堆叠为一个主项目';
   }
 
   @override
-  String get stackMetadataSourceTitle => '这首歌应使用哪个版本的详细信息？';
+  String get stackMetadataSourceTitle => '哪个项目应成为主项目？';
 
   @override
   String get stackMetadataSourceBody =>
-      '其中有多个已经有自己的详细信息。你选择的那个将成为歌曲共享的 BPM、调性、笔记、任务和截止日期。不会合并也不会丢失——其他版本保留各自的详细信息，取消堆叠后即可恢复。';
+      '其中有多个已经有自己的详细信息。你选择的那个将成为主项目：它的名称、BPM、调性、笔记、任务和截止日期将被堆叠使用。不会合并也不会丢失——其他项目保留各自的详细信息，取消堆叠后即可恢复。';
 
   @override
   String get stackMetadataSourceOldestHint => '最早的 — 建议';
@@ -4602,7 +4602,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stackNotStackedYet => '尚未堆叠';
 
   @override
-  String get stackStartFromHere => '添加另一个项目文件，两者将成为同一首歌的版本，共享元数据、任务和工作时间。';
+  String get stackStartFromHere => '添加其他项目文件，它们将成为同一个主项目的版本，共享元数据、任务和工作时间。';
 
   @override
   String get stackSearchProjects => '搜索项目';
@@ -4611,5 +4611,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stackSearchNoMatches => '没有与搜索匹配的项目。';
 
   @override
-  String get stackStartedMessage => '已堆叠为一首歌。';
+  String get stackStartedMessage => '已堆叠为一个主项目。';
+
+  @override
+  String get stackDefaultVersionTooltip => '启动 DAW 时默认打开此版本。';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return '添加 $count 个';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => '添加版本';
+
+  @override
+  String get stackSelectAll => '全选';
+
+  @override
+  String get stackClearSelection => '清除';
 }

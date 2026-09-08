@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/music_project.dart';
 
-/// The version files a stacked song is made of (#94).
+/// The version files a stacked main project is made of (#94).
 ///
 /// A stack is a virtual project owning the shared metadata for several real
 /// files. This is where that membership is visible and editable: every version
@@ -23,6 +23,7 @@ class ProjectVersionsSection extends StatelessWidget {
     required this.unstackLabel,
     required this.defaultBadgeLabel,
     required this.setDefaultTooltip,
+    required this.defaultTooltip,
     required this.removeTooltip,
     required this.subtitleBuilder,
     this.emptyTitle,
@@ -51,7 +52,16 @@ class ProjectVersionsSection extends StatelessWidget {
   final String addLabel;
   final String unstackLabel;
   final String defaultBadgeLabel;
+
+  /// Tooltip on an unstarred row — "make this the default".
   final String setDefaultTooltip;
+
+  /// Tooltip on the starred row, explaining what the filled star *means*.
+  /// The row that is already the default is the one a user is most likely to
+  /// hover to find out why it looks different, and it was the only row with
+  /// no tooltip at all.
+  final String defaultTooltip;
+
   final String removeTooltip;
 
   /// Shown instead of the version list when [members] is empty — the state an
@@ -174,6 +184,7 @@ class ProjectVersionsSection extends StatelessWidget {
                       subtitle: subtitleBuilder(members[i]),
                       defaultBadgeLabel: defaultBadgeLabel,
                       setDefaultTooltip: setDefaultTooltip,
+                      defaultTooltip: defaultTooltip,
                       removeTooltip: removeTooltip,
                       onRemove: onRemove,
                       onSetDefault: onSetDefault,
@@ -210,6 +221,7 @@ class _VersionRow extends StatelessWidget {
     required this.subtitle,
     required this.defaultBadgeLabel,
     required this.setDefaultTooltip,
+    required this.defaultTooltip,
     required this.removeTooltip,
     required this.onRemove,
     required this.onSetDefault,
@@ -221,6 +233,7 @@ class _VersionRow extends StatelessWidget {
   final String subtitle;
   final String defaultBadgeLabel;
   final String setDefaultTooltip;
+  final String defaultTooltip;
   final String removeTooltip;
   final void Function(MusicProject member)? onRemove;
   final void Function(MusicProject member)? onSetDefault;
@@ -282,7 +295,7 @@ class _VersionRow extends StatelessWidget {
                 size: 18,
                 color: isDefault ? colors.primary : null,
               ),
-              tooltip: isDefault ? null : setDefaultTooltip,
+              tooltip: isDefault ? defaultTooltip : setDefaultTooltip,
               onPressed: isDefault ? null : () => onSetDefault!(member),
             ),
           if (onRemove != null)

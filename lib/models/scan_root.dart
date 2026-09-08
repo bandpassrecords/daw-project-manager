@@ -33,7 +33,7 @@ class ScanRoot {
   final String? displayName;
 
   /// Opt-in: treat every project file sharing an immediate parent folder as
-  /// versions of one song (see [ScanMode.versionStack]).
+  /// versions of one main project (see [ScanMode.versionStack]).
   ///
   /// Stored as its own field rather than as another [scanDepth] value on
   /// purpose. Depth 2 was a real stored value before Smart Folder replaced it,

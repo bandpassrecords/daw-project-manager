@@ -4680,11 +4680,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stackNeedsTwoVersions =>
-      'Выберите не менее двух проектов, чтобы объединить их как версии одной песни.';
+      'Выберите не менее двух проектов, чтобы объединить их как версии одного основного проекта.';
 
   @override
   String stackCreatedMessage(int count) {
-    return '$count версий объединены в одну песню.';
+    return '$count версий объединены в один основной проект.';
   }
 
   @override
@@ -4716,11 +4716,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get stackUnstack => 'Разъединить';
 
   @override
-  String get stackUnstackTitle => 'Разъединить эту песню?';
+  String get stackUnstackTitle => 'Разъединить этот основной проект?';
 
   @override
   String get stackUnstackMessage =>
-      'Каждая версия снова станет отдельным проектом с метаданными, которые были до объединения. Общие заметки, задачи и срок, хранившиеся в стеке, будут удалены.';
+      'Каждая версия снова станет отдельным проектом с метаданными, которые были до объединения. Общие заметки, задачи и срок, хранившиеся в основном проекте, будут удалены.';
 
   @override
   String get stackDefaultVersion => 'Открывается по умолчанию';
@@ -4732,14 +4732,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get stackChooseVersionToOpen => 'Какую версию открыть?';
 
   @override
-  String get stackMemberOf => 'Версия песни';
+  String get stackMemberOf => 'Версия проекта';
 
   @override
   String get stackMemberNotice =>
-      'Этот файл — одна из версий объединённой песни. Общие метаданные, задачи и рабочее время хранятся у песни, а не здесь.';
+      'Этот файл — одна из версий объединённого проекта. Общие метаданные, задачи и рабочее время хранятся в основном проекте, а не здесь.';
 
   @override
-  String get stackOpenSong => 'Открыть песню';
+  String get stackOpenMainProject => 'Открыть основной проект';
 
   @override
   String get stackWorkTimeAcrossVersions => 'Всего по всем версиям';
@@ -4749,20 +4749,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scanModeVersionStackDescription =>
-      'Все файлы проектов в папке становятся одной песней с общими метаданными, задачами и рабочим временем. Новые файлы добавляются автоматически.';
+      'Все файлы проектов в папке становятся одним основным проектом с общими метаданными, задачами и рабочим временем. Новые файлы добавляются автоматически.';
 
   @override
   String stackTooltipStacked(int count) {
-    return '$count версий объединены в одну песню';
+    return '$count версий объединены в один основной проект';
   }
 
   @override
-  String get stackMetadataSourceTitle =>
-      'Какие данные версии использовать для песни?';
+  String get stackMetadataSourceTitle => 'Какой проект сделать основным?';
 
   @override
   String get stackMetadataSourceBody =>
-      'У нескольких из них уже есть собственные данные. Выбранная версия задаст общие BPM, тональность, заметки, задачи и срок песни. Ничего не объединяется и не теряется — остальные сохраняют свои данные, и разъединение их вернёт.';
+      'У нескольких из них уже есть собственные данные. Выбранный станет основным проектом: его имя, BPM, тональность, заметки, задачи и срок будут использоваться стеком. Ничего не объединяется и не теряется — остальные сохраняют свои данные, и разъединение их вернёт.';
 
   @override
   String get stackMetadataSourceOldestHint => 'Самая старая — рекомендуется';
@@ -4783,7 +4782,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stackStartFromHere =>
-      'Добавьте ещё один файл проекта, и оба станут версиями одной песни с общими метаданными, задачами и рабочим временем.';
+      'Добавьте другие файлы проектов, и они станут версиями одного основного проекта с общими метаданными, задачами и рабочим временем.';
 
   @override
   String get stackSearchProjects => 'Поиск проектов';
@@ -4792,5 +4791,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get stackSearchNoMatches => 'Нет проектов, соответствующих запросу.';
 
   @override
-  String get stackStartedMessage => 'Объединено в одну песню.';
+  String get stackStartedMessage => 'Объединено в один основной проект.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'Эта версия открывается по умолчанию при запуске DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Добавить: $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Добавить версии';
+
+  @override
+  String get stackSelectAll => 'Выбрать все';
+
+  @override
+  String get stackClearSelection => 'Очистить';
 }

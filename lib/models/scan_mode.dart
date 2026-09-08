@@ -8,8 +8,8 @@ enum ScanMode {
   smartFolder,
 
   /// Every project file sharing an immediate parent folder is treated as one
-  /// song: the folder becomes a *stack* (a virtual project) owning the shared
-  /// metadata, todos and work time, and the files inside it become its
+  /// *main project*: the folder becomes a stack (a virtual project) owning the
+  /// shared metadata, tasks and work time, and the files inside it become its
   /// versions.
   ///
   /// Unlike [smartFolder] this is not a display-only grouping — it creates and

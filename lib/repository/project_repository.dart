@@ -1107,7 +1107,17 @@ class ProjectRepository {
       // Synthesized: a stack has no file. The folder keeps the path
       // meaningful for display and for anything that groups by directory.
       filePath: folder,
-      fileName: p.basename(folder),
+      // The stack is named after the project promoted onto it, not after the
+      // folder. Naming it for the folder meant the main project appeared
+      // under a name the user never chose — and often one shared with a
+      // sibling stack, since "Bounces" or "Project" are common folder names.
+      //
+      // Carried as fileName rather than baked into customDisplayName so that
+      // displayName derives exactly the way the source's does, honouring the
+      // live date-stripping preference instead of freezing today's setting
+      // into stored text. (copyWith already carries any customDisplayName the
+      // source had, which still wins over this.)
+      fileName: source.fileName,
       fileSizeBytes: 0,
       createdAt: now,
       updatedAt: now,
@@ -1138,8 +1148,8 @@ class ProjectRepository {
   }
 
   /// Attaches [projectId] to [stackId] — used when a scan finds a new version
-  /// file in a folder that is already stacked, so it inherits the song's
-  /// metadata instead of arriving blank.
+  /// file in a folder that is already stacked, so it inherits the main
+  /// project's metadata instead of arriving blank.
   Future<void> addToStack({
     required String stackId,
     required String projectId,
@@ -1160,13 +1170,14 @@ class ProjectRepository {
 
   /// Creates and grows stacks for every root in [ScanMode.versionStack],
   /// treating each immediate parent folder holding two or more project files
-  /// as one song. Returns the number of stacks created.
+  /// as one main project. Returns the number of stacks created.
   ///
   /// Called after a scan. Two rules keep it from destroying anything the user
   /// arranged by hand:
   /// - It only ever *adds*. A folder that is already stacked absorbs its new
-  ///   files (so a freshly saved `v4` inherits the song's notes, todos and
-  ///   deadline instead of arriving blank); nothing is ever unstacked here.
+  ///   files (so a freshly saved `v4` inherits the main project's notes,
+  ///   tasks and deadline instead of arriving blank); nothing is ever
+  ///   unstacked here.
   /// - A project the user already stacked elsewhere is left alone —
   ///   [groupByImmediateFolder] skips anything carrying a `stackId`, so a
   ///   hand-made stack spanning two folders survives a rescan intact.

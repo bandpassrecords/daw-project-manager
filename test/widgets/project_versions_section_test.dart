@@ -39,6 +39,7 @@ void main() {
           unstackLabel: 'Unstack',
           defaultBadgeLabel: 'Opens by default',
           setDefaultTooltip: 'Open this version by default',
+          defaultTooltip: 'This version opens by default.',
           removeTooltip: 'Remove from stack',
           subtitleBuilder: (m) => m.fileName,
           emptyTitle: emptyTitle,
@@ -168,6 +169,37 @@ void main() {
     expect(find.text('Add Version'), findsNothing);
     expect(find.text('Unstack'), findsNothing);
     expect(find.byIcon(Icons.close), findsNothing);
+  });
+
+  group('default-version tooltips', () {
+    testWidgets('the starred row explains what the star means', (tester) async {
+      await tester.pumpWidget(wrap([v1, v2, v3], onSetDefault: (_) {}));
+
+      // The row that is already the default is the one a user hovers to find
+      // out why it looks different, and it was the only row with no tooltip.
+      final star = find.ancestor(
+        of: find.byIcon(Icons.star),
+        matching: find.byType(Tooltip),
+      );
+      expect(
+        tester.widget<Tooltip>(star).message,
+        'This version opens by default.',
+      );
+    });
+
+    testWidgets('an unstarred row offers to make it the default',
+        (tester) async {
+      await tester.pumpWidget(wrap([v1, v2, v3], onSetDefault: (_) {}));
+
+      final star = find.ancestor(
+        of: find.byIcon(Icons.star_border).first,
+        matching: find.byType(Tooltip),
+      );
+      expect(
+        tester.widget<Tooltip>(star).message,
+        'Open this version by default',
+      );
+    });
   });
 
   group('empty state', () {

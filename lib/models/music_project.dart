@@ -310,7 +310,7 @@ class MusicProject {
   ///
   /// Only fields a person types or curates count. Scanned facts (DAW type,
   /// version, file dates, `projectNotes` read out of the DAW file) are
-  /// excluded: every version of a song has those, they are identical across
+  /// excluded: every version of a project has those, they are identical across
   /// versions, and counting them would make every stack look like a
   /// metadata conflict.
   ///

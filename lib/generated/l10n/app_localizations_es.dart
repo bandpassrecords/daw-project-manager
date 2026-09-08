@@ -4706,11 +4706,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stackNeedsTwoVersions =>
-      'Selecciona al menos dos proyectos para apilarlos como versiones de una canción.';
+      'Selecciona al menos dos proyectos para apilarlos como versiones de un proyecto principal.';
 
   @override
   String stackCreatedMessage(int count) {
-    return '$count versiones apiladas como una canción.';
+    return '$count versiones apiladas en un proyecto principal.';
   }
 
   @override
@@ -4742,11 +4742,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get stackUnstack => 'Desapilar';
 
   @override
-  String get stackUnstackTitle => '¿Desapilar esta canción?';
+  String get stackUnstackTitle => '¿Desapilar este proyecto principal?';
 
   @override
   String get stackUnstackMessage =>
-      'Cada versión vuelve a ser un proyecto propio con los metadatos que tenía antes de apilarse. Las notas, tareas y la fecha límite compartidas en la pila se eliminan.';
+      'Cada versión vuelve a ser un proyecto propio con los metadatos que tenía antes de apilarse. Las notas, tareas y la fecha límite compartidas en el proyecto principal se eliminan.';
 
   @override
   String get stackDefaultVersion => 'Se abre por defecto';
@@ -4762,10 +4762,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stackMemberNotice =>
-      'Este archivo es una versión de una canción apilada. Los metadatos, tareas y tiempo de trabajo compartidos están en la canción, no aquí.';
+      'Este archivo es una versión de un proyecto apilado. Los metadatos, tareas y tiempo de trabajo compartidos están en el proyecto principal, no aquí.';
 
   @override
-  String get stackOpenSong => 'Abrir canción';
+  String get stackOpenMainProject => 'Abrir proyecto principal';
 
   @override
   String get stackWorkTimeAcrossVersions => 'Total en todas las versiones';
@@ -4775,20 +4775,20 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get scanModeVersionStackDescription =>
-      'Todos los archivos de proyecto de una carpeta se convierten en una canción que comparte metadatos, tareas y tiempo de trabajo. Los archivos nuevos se unen automáticamente.';
+      'Todos los archivos de proyecto de una carpeta se convierten en un proyecto principal que comparte metadatos, tareas y tiempo de trabajo. Los archivos nuevos se unen automáticamente.';
 
   @override
   String stackTooltipStacked(int count) {
-    return '$count versiones apiladas como una canción';
+    return '$count versiones apiladas en un proyecto principal';
   }
 
   @override
   String get stackMetadataSourceTitle =>
-      '¿Qué detalles de versión debe usar la canción?';
+      '¿Qué proyecto debe convertirse en el proyecto principal?';
 
   @override
   String get stackMetadataSourceBody =>
-      'Más de uno ya tiene sus propios detalles. El que elijas será el BPM, tonalidad, notas, tareas y fecha límite compartidos de la canción. Nada se fusiona ni se pierde: los demás conservan sus detalles y desapilar los devuelve.';
+      'Más de uno ya tiene detalles propios. El que elijas se convierte en el proyecto principal: su nombre, BPM, tonalidad, notas, tareas y fecha límite serán los que use la pila. Nada se fusiona ni se pierde: los demás conservan sus detalles y desapilar los devuelve.';
 
   @override
   String get stackMetadataSourceOldestHint => 'La más antigua — sugerida';
@@ -4809,7 +4809,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stackStartFromHere =>
-      'Añade otro archivo de proyecto y ambos se convertirán en versiones de una canción, compartiendo metadatos, tareas y tiempo de trabajo.';
+      'Añade otros archivos de proyecto y se convertirán en versiones de un proyecto principal, compartiendo metadatos, tareas y tiempo de trabajo.';
 
   @override
   String get stackSearchProjects => 'Buscar proyectos';
@@ -4819,5 +4819,23 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ningún proyecto coincide con tu búsqueda.';
 
   @override
-  String get stackStartedMessage => 'Apilado como una canción.';
+  String get stackStartedMessage => 'Apilado en un proyecto principal.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'Esta versión se abre por defecto al iniciar la DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Añadir $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Añadir versiones';
+
+  @override
+  String get stackSelectAll => 'Seleccionar todo';
+
+  @override
+  String get stackClearSelection => 'Borrar';
 }

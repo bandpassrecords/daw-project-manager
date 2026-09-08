@@ -4553,11 +4553,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get stackAsVersions => 'バージョンとしてまとめる';
 
   @override
-  String get stackNeedsTwoVersions => '1曲のバージョンとしてまとめるには、プロジェクトを2つ以上選択してください。';
+  String get stackNeedsTwoVersions =>
+      '1つのメインプロジェクトのバージョンとしてまとめるには、プロジェクトを2つ以上選択してください。';
 
   @override
   String stackCreatedMessage(int count) {
-    return '$count 個のバージョンを1曲にまとめました。';
+    return '$count 個のバージョンを1つのメインプロジェクトにまとめました。';
   }
 
   @override
@@ -4588,11 +4589,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get stackUnstack => 'スタックを解除';
 
   @override
-  String get stackUnstackTitle => 'この曲のスタックを解除しますか？';
+  String get stackUnstackTitle => 'このメインプロジェクトのスタックを解除しますか？';
 
   @override
   String get stackUnstackMessage =>
-      '各バージョンはスタック前のメタデータを持つ単独のプロジェクトに戻ります。スタック自体に保存された共有のノート・タスク・期限は削除されます。';
+      '各バージョンはスタック前のメタデータを持つ単独のプロジェクトに戻ります。メインプロジェクトに保存された共有のノート・タスク・期限は削除されます。';
 
   @override
   String get stackDefaultVersion => 'デフォルトで開く';
@@ -4604,14 +4605,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get stackChooseVersionToOpen => 'どのバージョンを開きますか？';
 
   @override
-  String get stackMemberOf => '次の曲のバージョン';
+  String get stackMemberOf => '次のプロジェクトのバージョン';
 
   @override
   String get stackMemberNotice =>
-      'このファイルはスタックされた曲の1バージョンです。共有のメタデータ・タスク・作業時間は曲側にあり、ここにはありません。';
+      'このファイルはスタックされたプロジェクトの1バージョンです。共有のメタデータ・タスク・作業時間はメインプロジェクト側にあり、ここにはありません。';
 
   @override
-  String get stackOpenSong => '曲を開く';
+  String get stackOpenMainProject => 'メインプロジェクトを開く';
 
   @override
   String get stackWorkTimeAcrossVersions => '全バージョンの合計';
@@ -4621,19 +4622,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scanModeVersionStackDescription =>
-      'フォルダー内のすべてのプロジェクトファイルが1曲になり、メタデータ・タスク・作業時間を共有します。新しく見つかったファイルは自動的に追加されます。';
+      'フォルダー内のすべてのプロジェクトファイルが1つのメインプロジェクトになり、メタデータ・タスク・作業時間を共有します。新しく見つかったファイルは自動的に追加されます。';
 
   @override
   String stackTooltipStacked(int count) {
-    return '$count 個のバージョンを1曲にまとめています';
+    return '$count 個のバージョンを1つのメインプロジェクトにまとめています';
   }
 
   @override
-  String get stackMetadataSourceTitle => '曲にはどのバージョンの詳細を使いますか？';
+  String get stackMetadataSourceTitle => 'どのプロジェクトをメインプロジェクトにしますか？';
 
   @override
   String get stackMetadataSourceBody =>
-      '複数のバージョンにすでに独自の詳細があります。選んだものが曲の共有BPM・キー・ノート・タスク・期限になります。統合も消失もありません。他のバージョンは自分の詳細を保持し、スタックを解除すれば元に戻ります。';
+      '複数のプロジェクトにすでに独自の詳細があります。選んだものがメインプロジェクトになり、その名前・BPM・キー・ノート・タスク・期限がスタックで使われます。統合も消失もありません。他のプロジェクトは自分の詳細を保持し、スタックを解除すれば元に戻ります。';
 
   @override
   String get stackMetadataSourceOldestHint => '最も古い — 推奨';
@@ -4654,7 +4655,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stackStartFromHere =>
-      '別のプロジェクトファイルを追加すると、2つが1曲のバージョンになり、メタデータ・タスク・作業時間を共有します。';
+      '他のプロジェクトファイルを追加すると、1つのメインプロジェクトのバージョンになり、メタデータ・タスク・作業時間を共有します。';
 
   @override
   String get stackSearchProjects => 'プロジェクトを検索';
@@ -4663,5 +4664,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get stackSearchNoMatches => '検索に一致するプロジェクトがありません。';
 
   @override
-  String get stackStartedMessage => '1曲にまとめました。';
+  String get stackStartedMessage => '1つのメインプロジェクトにまとめました。';
+
+  @override
+  String get stackDefaultVersionTooltip => 'DAW を起動すると、このバージョンがデフォルトで開きます。';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return '$count 件を追加';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'バージョンを追加';
+
+  @override
+  String get stackSelectAll => 'すべて選択';
+
+  @override
+  String get stackClearSelection => 'クリア';
 }

@@ -12,7 +12,8 @@ import '../helpers/test_factories.dart';
 
 /// Version stacking (#94), automatic folder grouping.
 ///
-/// A root in [ScanMode.versionStack] turns every project folder into one song.
+/// A root in [ScanMode.versionStack] turns every project folder into one
+/// main project.
 /// The rules that matter here are the destructive ones: auto-stacking may only
 /// ever *add*, and must never undo, re-parent or dissolve something the user
 /// arranged by hand.
@@ -134,6 +135,77 @@ void main() {
       // Dissolving it because a display setting flipped would throw that away.
       expect(repo.projectsBox.values.where((p) => p.isVirtual), hasLength(1));
       expect(repo.projectsBox.get('v1')!.isStackMember, isTrue);
+    });
+  });
+
+  group('stack naming', () {
+    test('the stack takes the promoted project name, not the folder name',
+        () async {
+      await addProject(
+        id: 'v1',
+        filePath: path([rootPath, 'Bounces', 'Midnight Drive v1.als']),
+      );
+      await addProject(
+        id: 'v2',
+        filePath: path([rootPath, 'Bounces', 'Midnight Drive v2.als']),
+      );
+
+      final stack = await repo.stackProjects(
+        memberIds: ['v1', 'v2'],
+        metadataSourceId: 'v1',
+      );
+
+      // Naming it for the folder put the main project under a name the user
+      // never chose — and "Bounces" is a folder name shared by every song.
+      expect(stack.displayName, 'Midnight Drive v1');
+    });
+
+    test('a renamed project keeps its custom name on the stack', () async {
+      await repo.projectsBox.put(
+        'v1',
+        TestFactories.makeProject(
+          id: 'v1',
+          filePath: path([rootPath, 'SongA', 'A1.als']),
+          customDisplayName: 'Midnight Drive',
+        ),
+      );
+      await addProject(id: 'v2', filePath: path([rootPath, 'SongA', 'A2.als']));
+
+      final stack = await repo.stackProjects(
+        memberIds: ['v1', 'v2'],
+        metadataSourceId: 'v1',
+      );
+
+      expect(stack.displayName, 'Midnight Drive');
+    });
+
+    test('the name follows whichever project is promoted', () async {
+      await addProject(
+        id: 'v1',
+        filePath: path([rootPath, 'SongA', 'Rough take.als']),
+      );
+      await addProject(
+        id: 'v2',
+        filePath: path([rootPath, 'SongA', 'Final master.als']),
+      );
+
+      final stack = await repo.stackProjects(
+        memberIds: ['v1', 'v2'],
+        metadataSourceId: 'v2',
+      );
+
+      expect(stack.displayName, 'Final master');
+    });
+
+    test('the stack still points at the folder for grouping', () async {
+      await addProject(id: 'v1', filePath: path([rootPath, 'SongA', 'A1.als']));
+      await addProject(id: 'v2', filePath: path([rootPath, 'SongA', 'A2.als']));
+
+      final stack = await repo.stackProjects(memberIds: ['v1', 'v2']);
+
+      // Naming comes off the project; the path still has to be the folder, or
+      // anything grouping by directory puts the stack in the wrong bucket.
+      expect(stack.filePath, path([rootPath, 'SongA']));
     });
   });
 

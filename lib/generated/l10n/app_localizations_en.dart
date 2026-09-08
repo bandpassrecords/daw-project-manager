@@ -4665,11 +4665,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stackNeedsTwoVersions =>
-      'Select at least two projects to stack them as versions of one song.';
+      'Select at least two projects to stack them as versions of one main project.';
 
   @override
   String stackCreatedMessage(int count) {
-    return 'Stacked $count versions as one song.';
+    return 'Stacked $count versions into one main project.';
   }
 
   @override
@@ -4700,11 +4700,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stackUnstack => 'Unstack';
 
   @override
-  String get stackUnstackTitle => 'Unstack this song?';
+  String get stackUnstackTitle => 'Unstack this main project?';
 
   @override
   String get stackUnstackMessage =>
-      'Every version becomes its own project again with the metadata it had before stacking. The shared notes, todos and deadline kept on the stack itself are deleted.';
+      'Every version becomes its own project again with the metadata it had before stacking. The shared notes, tasks and deadline kept on the main project are deleted.';
 
   @override
   String get stackDefaultVersion => 'Opens by default';
@@ -4720,10 +4720,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stackMemberNotice =>
-      'This file is one version of a stacked song. Shared metadata, todos and work time live on the song, not here.';
+      'This file is one version of a stacked project. Shared metadata, tasks and work time live on the main project, not here.';
 
   @override
-  String get stackOpenSong => 'Open song';
+  String get stackOpenMainProject => 'Open main project';
 
   @override
   String get stackWorkTimeAcrossVersions => 'Total across all versions';
@@ -4733,20 +4733,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanModeVersionStackDescription =>
-      'Every project file in a folder becomes one song sharing metadata, todos and work time. Newly found files join the song automatically.';
+      'Every project file in a folder becomes one main project sharing metadata, tasks and work time. Newly found files join it automatically.';
 
   @override
   String stackTooltipStacked(int count) {
-    return '$count versions stacked as one song';
+    return '$count versions stacked into one main project';
   }
 
   @override
   String get stackMetadataSourceTitle =>
-      'Which version\'s details should the song use?';
+      'Which project should become the main project?';
 
   @override
   String get stackMetadataSourceBody =>
-      'More than one of these already has its own details. The one you pick becomes the song\'s shared BPM, key, notes, tasks and deadline. Nothing is merged and nothing is lost — the others keep their own details, and unstacking gives them back.';
+      'More than one of these already has details of its own. The one you pick becomes the main project: its name, BPM, key, notes, tasks and deadline are the ones the stack uses. Nothing is merged and nothing is lost — the others keep their own details, and unstacking gives them back.';
 
   @override
   String get stackMetadataSourceOldestHint => 'Oldest — suggested';
@@ -4767,7 +4767,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stackStartFromHere =>
-      'Add another project file and the two become versions of one song, sharing metadata, tasks and work time.';
+      'Add other project files and they become versions of one main project, sharing metadata, tasks and work time.';
 
   @override
   String get stackSearchProjects => 'Search projects';
@@ -4776,5 +4776,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stackSearchNoMatches => 'No projects match your search.';
 
   @override
-  String get stackStartedMessage => 'Stacked as one song.';
+  String get stackStartedMessage => 'Stacked into one main project.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'This version opens by default when you launch the DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Add $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Add versions';
+
+  @override
+  String get stackSelectAll => 'Select all';
+
+  @override
+  String get stackClearSelection => 'Clear';
 }

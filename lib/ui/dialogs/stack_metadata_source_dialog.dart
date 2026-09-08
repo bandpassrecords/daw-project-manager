@@ -20,8 +20,8 @@ List<MusicProject> stackMetadataSourceCandidates(
   return withMetadata.length >= 2 ? withMetadata : const [];
 }
 
-/// The member whose metadata stacking promotes when the user isn't asked:
-/// the oldest, because with `v1 → v2 → v3` the details someone has been
+/// The member promoted to *main project* when the user isn't asked: the
+/// oldest, because with `v1 → v2 → v3` the details someone has been
 /// maintaining sit on the one they started from.
 MusicProject defaultStackMetadataSource(List<MusicProject> members) =>
     (members.toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt)))

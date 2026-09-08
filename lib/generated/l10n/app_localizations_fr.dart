@@ -4718,11 +4718,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stackNeedsTwoVersions =>
-      'Sélectionnez au moins deux projets pour les empiler comme versions d\'un même morceau.';
+      'Sélectionnez au moins deux projets pour les empiler comme versions d\'un projet principal.';
 
   @override
   String stackCreatedMessage(int count) {
-    return '$count versions empilées en un seul morceau.';
+    return '$count versions empilées en un projet principal.';
   }
 
   @override
@@ -4754,11 +4754,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stackUnstack => 'Désempiler';
 
   @override
-  String get stackUnstackTitle => 'Désempiler ce morceau ?';
+  String get stackUnstackTitle => 'Désempiler ce projet principal ?';
 
   @override
   String get stackUnstackMessage =>
-      'Chaque version redevient un projet distinct avec les métadonnées qu\'elle avait avant l\'empilement. Les notes, tâches et l\'échéance partagées sur la pile sont supprimées.';
+      'Chaque version redevient un projet distinct avec les métadonnées qu\'elle avait avant l\'empilement. Les notes, tâches et l\'échéance partagées sur le projet principal sont supprimées.';
 
   @override
   String get stackDefaultVersion => 'Ouvert par défaut';
@@ -4774,10 +4774,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stackMemberNotice =>
-      'Ce fichier est une version d\'un morceau empilé. Les métadonnées, tâches et temps de travail partagés sont sur le morceau, pas ici.';
+      'Ce fichier est une version d\'un projet empilé. Les métadonnées, tâches et temps de travail partagés sont sur le projet principal, pas ici.';
 
   @override
-  String get stackOpenSong => 'Ouvrir le morceau';
+  String get stackOpenMainProject => 'Ouvrir le projet principal';
 
   @override
   String get stackWorkTimeAcrossVersions => 'Total sur toutes les versions';
@@ -4787,20 +4787,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scanModeVersionStackDescription =>
-      'Tous les fichiers de projet d\'un dossier deviennent un seul morceau partageant métadonnées, tâches et temps de travail. Les nouveaux fichiers rejoignent le morceau automatiquement.';
+      'Tous les fichiers de projet d\'un dossier deviennent un projet principal partageant métadonnées, tâches et temps de travail. Les nouveaux fichiers le rejoignent automatiquement.';
 
   @override
   String stackTooltipStacked(int count) {
-    return '$count versions empilées en un seul morceau';
+    return '$count versions empilées en un projet principal';
   }
 
   @override
   String get stackMetadataSourceTitle =>
-      'Quels détails le morceau doit-il utiliser ?';
+      'Quel projet doit devenir le projet principal ?';
 
   @override
   String get stackMetadataSourceBody =>
-      'Plusieurs d\'entre eux ont déjà leurs propres détails. Celui que vous choisissez devient le BPM, la tonalité, les notes, les tâches et l\'échéance partagés du morceau. Rien n\'est fusionné ni perdu : les autres conservent leurs détails, et le désempilement les restitue.';
+      'Plusieurs d\'entre eux ont déjà leurs propres détails. Celui que vous choisissez devient le projet principal : son nom, BPM, tonalité, notes, tâches et échéance seront ceux de la pile. Rien n\'est fusionné ni perdu : les autres conservent leurs détails, et le désempilement les restitue.';
 
   @override
   String get stackMetadataSourceOldestHint => 'La plus ancienne — suggérée';
@@ -4821,7 +4821,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stackStartFromHere =>
-      'Ajoutez un autre fichier de projet et les deux deviendront des versions d\'un même morceau, partageant métadonnées, tâches et temps de travail.';
+      'Ajoutez d\'autres fichiers de projet et ils deviendront des versions d\'un projet principal, partageant métadonnées, tâches et temps de travail.';
 
   @override
   String get stackSearchProjects => 'Rechercher des projets';
@@ -4831,5 +4831,23 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucun projet ne correspond à votre recherche.';
 
   @override
-  String get stackStartedMessage => 'Empilé en un seul morceau.';
+  String get stackStartedMessage => 'Empilé en un projet principal.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'Cette version s\'ouvre par défaut au lancement du DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Ajouter $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Ajouter des versions';
+
+  @override
+  String get stackSelectAll => 'Tout sélectionner';
+
+  @override
+  String get stackClearSelection => 'Effacer';
 }

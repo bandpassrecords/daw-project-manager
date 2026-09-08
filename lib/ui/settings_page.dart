@@ -3425,9 +3425,10 @@ class _SmartFolderModePreview extends StatelessWidget {
   }
 }
 
-/// Version Stack: the *folder* becomes the song row, and the files inside it
-/// become versions of it — the same tree as Smart Folder, but the group row is
-/// a real project that owns the metadata rather than a display grouping.
+/// Version Stack: the *folder* becomes the main-project row, and the files
+/// inside it become versions of it — the same tree as Smart Folder, but the
+/// group row is a real project that owns the metadata rather than a display
+/// grouping.
 class _VersionStackModePreview extends StatelessWidget {
   const _VersionStackModePreview();
 

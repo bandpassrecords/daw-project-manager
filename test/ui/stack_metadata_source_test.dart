@@ -7,7 +7,7 @@ import 'package:daw_project_manager/ui/dialogs/stack_metadata_source_dialog.dart
 
 import '../helpers/test_factories.dart';
 
-/// Which version's metadata a new stack inherits (#94).
+/// Which project becomes the main project of a new stack (#94).
 ///
 /// Stacking promotes exactly one member's fields and leaves every other
 /// member's untouched, so two versions' details can never be merged into each

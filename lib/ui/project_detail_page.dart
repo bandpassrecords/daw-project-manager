@@ -178,29 +178,30 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
             ),
           );
 
-    final chosen = await showStackVersionPickerDialog(
+    // Multi-select: a project with five revision files needs all four
+    // siblings attached, and one dialog per sibling is four times the work.
+    final chosen = await showStackVersionMultiPickerDialog(
       context,
-      title: l10n.stackAddVersionTitle,
+      title: l10n.stackAddVersionMultiTitle,
       candidates: candidates,
       emptyLabel: l10n.stackAddVersionEmpty,
       subtitleBuilder: (p) => p.filePath,
-      // The list here can be the whole library, unlike a stack's own handful
-      // of versions.
-      searchable: true,
     );
-    if (chosen == null) return;
+    if (chosen.isEmpty) return;
 
     if (project.isVirtual) {
-      await repo.addToStack(stackId: project.id, projectId: chosen.id);
+      for (final version in chosen) {
+        await repo.addToStack(stackId: project.id, projectId: version.id);
+      }
       if (mounted) ref.invalidate(allProjectsStreamProvider);
       return;
     }
 
-    // Starting a stack from this project. Its own metadata is promoted
-    // without asking: it is the one the user is looking at, so anything else
+    // Starting a stack from this project. It becomes the main project without
+    // asking: it is the one the user is looking at, so promoting anything else
     // would be a surprise.
     final stack = await repo.stackProjects(
-      memberIds: [project.id, chosen.id],
+      memberIds: [project.id, ...chosen.map((p) => p.id)],
       metadataSourceId: project.id,
     );
     if (!mounted) return;
@@ -887,7 +888,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                                     ),
                                               ),
                                             ),
-                                        child: Text(l10n.stackOpenSong),
+                                        child: Text(l10n.stackOpenMainProject),
                                       ),
                                     ),
                                   );
@@ -1491,6 +1492,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                     defaultBadgeLabel: l10n.stackDefaultVersion,
                                     setDefaultTooltip:
                                         l10n.stackSetDefaultVersion,
+                                    defaultTooltip:
+                                        l10n.stackDefaultVersionTooltip,
                                     removeTooltip: l10n.stackRemoveVersion,
                                     emptyTitle: l10n.stackNotStackedYet,
                                     emptyDescription: l10n.stackStartFromHere,
