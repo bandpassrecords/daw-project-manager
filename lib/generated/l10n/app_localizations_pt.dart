@@ -4712,4 +4712,196 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Uma barra à esquerda escolhe uma seção por vez.';
+
+  @override
+  String get stackAsVersions => 'Empilhar como versões';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Selecione pelo menos dois projetos para empilhá-los como versões de um projeto principal.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count versões empilhadas em um projeto principal.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versões';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count versões';
+  }
+
+  @override
+  String get stackAddVersion => 'Adicionar versão';
+
+  @override
+  String get stackAddVersionTitle => 'Adicionar uma versão';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'Nenhum projeto fora de uma pilha disponível para adicionar.';
+
+  @override
+  String get stackRemoveVersion => 'Remover da pilha';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'O arquivo do projeto permanece no disco e volta para a lista como um projeto próprio.';
+
+  @override
+  String get stackUnstack => 'Desempilhar';
+
+  @override
+  String get stackUnstackTitle => 'Desempilhar este projeto principal?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Cada versão volta a ser um projeto próprio com os metadados que tinha antes do empilhamento. As notas, tarefas e o prazo compartilhados no projeto principal são excluídos.';
+
+  @override
+  String get stackDefaultVersion => 'Abre por padrão';
+
+  @override
+  String get stackSetDefaultVersion => 'Abrir esta versão por padrão';
+
+  @override
+  String get stackChooseVersionToOpen => 'Qual versão você quer abrir?';
+
+  @override
+  String get stackMemberOf => 'Versão de';
+
+  @override
+  String get stackMemberNotice =>
+      'Este arquivo é uma versão de um projeto empilhado. Metadados, tarefas e tempo de trabalho compartilhados ficam no projeto principal, não aqui.';
+
+  @override
+  String get stackOpenMainProject => 'Abrir projeto principal';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Total em todas as versões';
+
+  @override
+  String get scanModeVersionStack => 'Pilha de versões';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Todos os arquivos de projeto em uma pasta viram um projeto principal, compartilhando metadados, tarefas e tempo de trabalho. Arquivos novos entram nele automaticamente.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count versões empilhadas em um projeto principal';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Qual projeto deve se tornar o projeto principal?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'Mais de um deles já tem detalhes próprios. O que você escolher se torna o projeto principal: o nome, BPM, tom, notas, tarefas e prazo dele serão usados pela pilha. Nada é mesclado e nada é perdido — os outros mantêm seus detalhes, e desempilhar os devolve.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'Mais antiga — sugerida';
+
+  @override
+  String get stackMetadataNoneLabel => 'Ainda sem detalhes';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tarefas',
+      one: '1 tarefa',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'notas';
+
+  @override
+  String get stackNotStackedYet => 'Ainda não empilhado';
+
+  @override
+  String get stackStartFromHere =>
+      'Adicione outros arquivos de projeto e eles viram versões de um projeto principal, compartilhando metadados, tarefas e tempo de trabalho.';
+
+  @override
+  String get stackSearchProjects => 'Buscar projetos';
+
+  @override
+  String get stackSearchNoMatches => 'Nenhum projeto corresponde à sua busca.';
+
+  @override
+  String get stackStartedMessage => 'Empilhado em um projeto principal.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'Esta versão é aberta por padrão ao iniciar a DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Adicionar $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Adicionar versões';
+
+  @override
+  String get stackSelectAll => 'Selecionar tudo';
+
+  @override
+  String get stackClearSelection => 'Limpar';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partes',
+      one: '1 parte',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => 'prazo';
+
+  @override
+  String get stackMetadataRenamedLabel => 'nome personalizado';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '${hours}h registradas';
+  }
+
+  @override
+  String get stackUnstackReleaseTitle => 'Qual versão permanece no lançamento?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'Este projeto é uma faixa em $releases. Desempilhar remove a entrada empilhada, então uma de suas versões precisa ocupar esse lugar — escolha para qual o lançamento deve apontar.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'Empilhar estas versões?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'A Pilha de versões vai agrupar $projects projetos em $folders pastas. Cada pasta vira um projeto principal, compartilhando metadados, tarefas e tempo de trabalho. Nada é excluído, e você pode desempilhar qualquer um depois.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Empilhar';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count versões';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => 'entra no projeto principal existente';
 }

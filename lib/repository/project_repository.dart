@@ -9,6 +9,7 @@ import 'dart:convert';
 
 import '../models/music_project.dart';
 import '../models/pending_folder.dart';
+import '../models/scan_mode.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
 import '../models/release.dart';
@@ -566,6 +567,27 @@ class ProjectRepository {
     }
   }
 
+  /// Sets a root's [ScanMode], writing both fields [ScanRoot.scanMode] is
+  /// derived from so the two can never disagree.
+  ///
+  /// Turning [ScanMode.versionStack] *off* deliberately leaves existing stacks
+  /// alone: they hold metadata and work time the user has accumulated, and
+  /// dissolving them because a display setting flipped would throw that away.
+  /// Unstacking stays an explicit, per-stack action.
+  Future<void> updateRootScanMode(String rootId, ScanMode mode) async {
+    final root = rootsBox.get(rootId);
+    if (root == null) return;
+    await rootsBox.put(
+      rootId,
+      root.copyWith(
+        autoStackVersions: mode == ScanMode.versionStack,
+        // Version stacking groups by immediate parent folder, so it wants the
+        // recursive walk that depth 0 gives, same as flat.
+        scanDepth: mode == ScanMode.smartFolder ? 1 : 0,
+      ),
+    );
+  }
+
   /// Permanently deletes [projectIds] and all their data (notes, deadlines,
   /// session/timer history, etc.) — irreversible. Scans never call this on
   /// their own (see `upsertFromFileSystemEntity`): a project whose file goes
@@ -697,12 +719,38 @@ class ProjectRepository {
   Future<void> cleanUpDanglingStackLinks() async {
     for (final project in projectsBox.values.toList(growable: false)) {
       if (project.isVirtual) {
-        final live = project.memberProjectIds
-            .where((id) => projectsBox.containsKey(id))
-            .toList();
-        if (live.length == project.memberProjectIds.length) continue;
+        // A member counts as live only if it still exists *and* is not
+        // claimed by some other stack. Anything else is dropped from the
+        // list; a member that simply lost its backlink is re-linked below.
+        final live = <String>[];
+        final relink = <MusicProject>[];
+        for (final id in project.memberProjectIds) {
+          final member = projectsBox.get(id);
+          if (member == null) continue;
+          if (member.stackId != null && member.stackId != project.id) continue;
+          live.add(id);
+          if (member.stackId == null) relink.add(member);
+        }
+
         if (live.length < 2) {
           await unstack(project.id);
+          continue;
+        }
+
+        // Repairs stacks broken by scans that used to rebuild each project
+        // from scratch and drop its stackId (see _buildProjectAndEvent).
+        // That left the stack row listing members which no longer pointed
+        // back, so nothing collapsed: the versions showed as loose projects
+        // beside a stack row claiming to hold them.
+        for (final member in relink) {
+          await projectsBox.put(
+            member.id,
+            member.copyWith(stackId: project.id),
+          );
+        }
+
+        if (live.length == project.memberProjectIds.length &&
+            live.contains(project.defaultLaunchMemberId)) {
           continue;
         }
         await projectsBox.put(
@@ -905,58 +953,60 @@ class ProjectRepository {
       }
     }
 
-    // Cria o objeto base, usando os dados existentes se houver,
-    // mas atualizando os campos que vêm do sistema de arquivos (size, lastModified, fileName, etc.)
-    final projectToSave = MusicProject(
-      id: existing?.id ?? _uuid.v4(),
-      filePath: filePath,
-      fileName: fileName,
-      fileSizeBytes: size,
-      lastModifiedAt: lastModified,
-      fileExtension: ext,
-      createdAt: existing?.createdAt ?? DateTime.now(),
-      updatedAt: DateTime.now(),
-
-      // PRESERVAÇÃO: Estes campos foram editados pelo usuário e devem ser mantidos
-      customDisplayName: existing?.customDisplayName, // <--- PRESERVA
-      status:
-          existing?.status ??
-          'Idea', // <--- PRESERVA (default changed from 'Draft' to 'Idea')
-      bpm: bpm, // <--- USA EXISTENTE OU EXTRAÍDO
-      musicalKey: key, // <--- USA EXISTENTE OU EXTRAÍDO
-      notes: existing?.notes, // <--- NOVO: PRESERVA NOTAS
-      projectNotes:
-          projectNotes, // <--- USA EXISTENTE OU EXTRAÍDO DO ARQUIVO (ex: Reaper, Cubase/Nuendo)
-      markers: markers, // <--- EXTRAÍDO DO ARQUIVO (Reaper), PRESERVA EM SCAN LEVE
-      todos: existing?.todos ?? const [], // <--- CRITICAL: PRESERVA TODOS
-      hidden:
-          existing?.hidden ?? false, // <--- CRITICAL: PRESERVA HIDDEN STATUS
-      dawType: dawType, // <--- SEMPRE ATUALIZA DO ARQUIVO
-      dawVersion:
-          dawVersion, // <--- USA EXISTENTE OU EXTRAÍDO (preserva se já existe)
-      previewSongPath: existing?.previewSongPath, // <--- PRESERVA PREVIEW SONG
-      previewSongFileName:
-          existing?.previewSongFileName, // <--- PRESERVA PREVIEW SONG FILENAME
-      uploadedPreviewSongHash:
-          existing?.uploadedPreviewSongHash, // <--- PRESERVA PREVIEW SONG HASH
-      previewSongAutoPath:
-          existing?.previewSongAutoPath, // <--- PRESERVA AUTO-DETECTED PATH
-      fileCreatedAt:
-          fileCreatedAt, // <--- FILE CREATION DATE (never override once set)
-      statusChangedAt:
-          existing?.statusChangedAt, // <--- PRESERVA STATUS CHANGE DATE
-      deadline: existing?.deadline, // <--- PRESERVA DEADLINE
-      parentProjectId: parentProjectId ?? existing?.parentProjectId,
-      totalWorkSeconds:
-          existing?.totalWorkSeconds ??
-          0, // <--- CRITICAL: PRESERVA SESSION TIME
-      sessions:
-          existing?.sessions ??
-          const [], // <--- CRITICAL: PRESERVA SESSION HISTORY
-      metadataScanned: fullMetadata
-          ? true
-          : (existing?.metadataScanned ?? false),
-    );
+    // Preserve-by-default. An earlier version of this built a fresh
+    // MusicProject and re-listed every field worth keeping, which meant any
+    // field added to the model later was silently wiped by the next scan
+    // unless someone remembered to add it here — and several were: song
+    // parts, thumbnails, the source template link, the ignored-newer-song
+    // path, and every version-stacking link. Copying the existing row and
+    // overwriting only what the filesystem and extraction actually know
+    // inverts that: a new field is kept unless it is deliberately updated.
+    //
+    // Only fields listed below are touched; everything else survives a scan.
+    final projectToSave = existing != null
+        ? existing.copyWith(
+            filePath: filePath,
+            fileName: fileName,
+            fileSizeBytes: size,
+            lastModifiedAt: lastModified,
+            fileExtension: ext,
+            updatedAt: DateTime.now(),
+            // Null from extraction means "didn't find it", so the stored
+            // value stands — copyWith already treats null as "leave alone".
+            bpm: extractedMetadata?.bpm,
+            musicalKey: extractedMetadata?.key,
+            dawVersion: extractedMetadata?.dawVersion,
+            projectNotes: extractedMetadata?.projectNotes,
+            markers: extractedMetadata?.markers,
+            // DAW type is derived from the extension, so it always comes from
+            // the file; a failed extraction clears it rather than leaving a
+            // stale one behind.
+            dawType: dawType,
+            clearDawType: dawType == null,
+            fileCreatedAt: fileCreatedAt,
+            parentProjectId: parentProjectId,
+            metadataScanned: fullMetadata ? true : existing.metadataScanned,
+          )
+        : MusicProject(
+            id: _uuid.v4(),
+            filePath: filePath,
+            fileName: fileName,
+            fileSizeBytes: size,
+            lastModifiedAt: lastModified,
+            fileExtension: ext,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            status: 'Idea',
+            bpm: bpm,
+            musicalKey: key,
+            dawType: dawType,
+            dawVersion: dawVersion,
+            projectNotes: projectNotes,
+            markers: markers,
+            fileCreatedAt: fileCreatedAt,
+            parentProjectId: parentProjectId,
+            metadataScanned: fullMetadata,
+          );
 
     // Record a file_changed event if an existing project had its file mutated
     ProjectEvent? event;
@@ -1085,7 +1135,17 @@ class ProjectRepository {
       // Synthesized: a stack has no file. The folder keeps the path
       // meaningful for display and for anything that groups by directory.
       filePath: folder,
-      fileName: p.basename(folder),
+      // The stack is named after the project promoted onto it, not after the
+      // folder. Naming it for the folder meant the main project appeared
+      // under a name the user never chose — and often one shared with a
+      // sibling stack, since "Bounces" or "Project" are common folder names.
+      //
+      // Carried as fileName rather than baked into customDisplayName so that
+      // displayName derives exactly the way the source's does, honouring the
+      // live date-stripping preference instead of freezing today's setting
+      // into stored text. (copyWith already carries any customDisplayName the
+      // source had, which still wins over this.)
+      fileName: source.fileName,
       fileSizeBytes: 0,
       createdAt: now,
       updatedAt: now,
@@ -1101,23 +1161,75 @@ class ProjectRepository {
     return stack;
   }
 
+  /// Releases whose track list contains [projectId].
+  List<Release> releasesContaining(String projectId) => [
+    for (final release in releasesBox.values)
+      if (release.trackIds.contains(projectId)) release,
+  ];
+
+  /// Swaps [oldId] for [newId] in every release track list that holds it,
+  /// keeping the track's position. Returns the number of releases changed.
+  ///
+  /// If a release already lists [newId], [oldId] is simply dropped rather than
+  /// creating a duplicate entry.
+  Future<int> replaceProjectInReleases(String oldId, String newId) async {
+    var changed = 0;
+    for (final release in releasesContaining(oldId)) {
+      final updated = <String>[];
+      for (final id in release.trackIds) {
+        if (id != oldId) {
+          updated.add(id);
+        } else if (!release.trackIds.contains(newId)) {
+          updated.add(newId);
+        }
+      }
+      await releasesBox.put(release.id, release.copyWith(trackIds: updated));
+      changed++;
+    }
+    return changed;
+  }
+
   /// Dissolves [stackId], returning its members to independent projects.
   ///
   /// Members get their own metadata back untouched, because stacking never
   /// cleared it. The stack row itself is deleted along with any edits made to
   /// it — that is the lossy part, and the UI should say so before calling.
-  Future<void> unstack(String stackId) async {
+  ///
+  /// A stack can be a track on a release. Deleting the row without touching
+  /// the release would strand its id in `trackIds`, and the release page skips
+  /// ids it cannot resolve — so the track would vanish from the release with
+  /// no warning and the dead id would sit there forever. Its slot is handed to
+  /// [releaseSuccessorId], or, when the caller doesn't say (the automatic path
+  /// in [removeFromStack]), to whichever version was nominated to open by
+  /// default, falling back to the first. The UI should ask rather than rely on
+  /// that default.
+  Future<void> unstack(String stackId, {String? releaseSuccessorId}) async {
     final stack = projectsBox.get(stackId);
     if (stack == null || !stack.isVirtual) return;
-    for (final member in stackMembers(stack)) {
+    final members = stackMembers(stack);
+
+    if (members.isNotEmpty) {
+      final successor = releaseSuccessorId ?? stack.defaultLaunchMemberId;
+      final resolved = members.any((m) => m.id == successor)
+          ? successor!
+          : members.first.id;
+      await replaceProjectInReleases(stackId, resolved);
+    }
+
+    for (final member in members) {
+      // Only release a version that actually points back here. A stale stack
+      // can still list a version that has since joined another one, and
+      // clearing that member's link would quietly steal it from the stack it
+      // now belongs to.
+      if (member.stackId != null && member.stackId != stackId) continue;
       await projectsBox.put(member.id, member.copyWith(clearStackId: true));
     }
     await projectsBox.delete(stackId);
   }
 
   /// Attaches [projectId] to [stackId] — used when a scan finds a new version
-  /// file in a folder that is already stacked, so it inherits the song's
-  /// metadata instead of arriving blank.
+  /// file in a folder that is already stacked, so it inherits the main
+  /// project's metadata instead of arriving blank.
   Future<void> addToStack({
     required String stackId,
     required String projectId,
@@ -1126,6 +1238,11 @@ class ProjectRepository {
     final project = projectsBox.get(projectId);
     if (stack == null || !stack.isVirtual || project == null) return;
     if (project.isVirtual || stack.memberProjectIds.contains(projectId)) return;
+    // A project can only belong to one stack. Re-parenting silently would
+    // flip its stackId while leaving it listed on the old stack, so its work
+    // time would be counted by both and cleanUpDanglingStackLinks — which
+    // only repairs links pointing at nothing — would never notice.
+    if (project.isStackMember) return;
 
     await projectsBox.put(
       stackId,
@@ -1134,6 +1251,94 @@ class ProjectRepository {
       ),
     );
     await projectsBox.put(projectId, project.copyWith(stackId: stackId));
+  }
+
+  /// What [autoStackFolders] would do to one folder: the loose projects it
+  /// would pull in, and the stack they would join if that folder already has
+  /// one.
+  ///
+  /// Exists so the Version Stack setting can *show* its effect before applying
+  /// it. Auto-stacking rewrites rows rather than redrawing them, so flipping a
+  /// segmented button should not silently restructure someone's library.
+  List<AutoStackPlanEntry> planAutoStack(Iterable<String> rootPaths) {
+    final roots = [for (final path in rootPaths) p.normalize(path)];
+    if (roots.isEmpty) return const [];
+
+    bool underRoot(String filePath) {
+      final norm = p.normalize(filePath);
+      return roots.any(
+        (root) => p.isWithin(root, norm) || p.equals(root, p.dirname(norm)),
+      );
+    }
+
+    final stackByFolder = <String, MusicProject>{
+      for (final project in projectsBox.values)
+        if (project.isVirtual) p.normalize(project.filePath): project,
+    };
+    final rootFolders = roots.toSet();
+
+    final plan = <AutoStackPlanEntry>[];
+    final grouped = groupByImmediateFolder(
+      projectsBox.values.where(
+        (project) => !project.hidden && underRoot(project.filePath),
+      ),
+    );
+    for (final entry in grouped.entries) {
+      if (rootFolders.contains(entry.key)) continue;
+      final existing = stackByFolder[entry.key];
+      if (existing == null && entry.value.length < 2) continue;
+      plan.add(
+        AutoStackPlanEntry(
+          folder: entry.key,
+          projects: entry.value,
+          existingStack: existing,
+        ),
+      );
+    }
+    plan.sort((a, b) => a.folder.toLowerCase().compareTo(b.folder.toLowerCase()));
+    return plan;
+  }
+
+  /// Creates and grows stacks for every root in [ScanMode.versionStack],
+  /// treating each immediate parent folder holding two or more project files
+  /// as one main project. Returns the number of stacks created.
+  ///
+  /// Called after a scan. Two rules keep it from destroying anything the user
+  /// arranged by hand:
+  /// - It only ever *adds*. A folder that is already stacked absorbs its new
+  ///   files (so a freshly saved `v4` inherits the main project's notes,
+  ///   tasks and deadline instead of arriving blank); nothing is ever
+  ///   unstacked here.
+  /// - A project the user already stacked elsewhere is left alone —
+  ///   [groupByImmediateFolder] skips anything carrying a `stackId`, so a
+  ///   hand-made stack spanning two folders survives a rescan intact.
+  Future<int> autoStackFolders() async {
+    final stackRoots = [
+      for (final root in rootsBox.values)
+        if (root.scanMode == ScanMode.versionStack) root.path,
+    ];
+    if (stackRoots.isEmpty) return 0;
+    return applyAutoStackPlan(planAutoStack(stackRoots));
+  }
+
+  /// Applies what [planAutoStack] described. Returns the number of new stacks
+  /// created (folders joining an existing stack are not counted).
+  Future<int> applyAutoStackPlan(List<AutoStackPlanEntry> plan) async {
+    var created = 0;
+    for (final entry in plan) {
+      if (entry.existingStack case final stack?) {
+        for (final project in entry.projects) {
+          await addToStack(stackId: stack.id, projectId: project.id);
+        }
+        continue;
+      }
+      if (entry.projects.length < 2) continue;
+      await stackProjects(
+        memberIds: entry.projects.map((m) => m.id).toList(),
+      );
+      created++;
+    }
+    return created;
   }
 
   /// Detaches [projectId] from whatever stack holds it.
@@ -1483,4 +1688,31 @@ class ProjectRepository {
 
   ValueListenable<Box<Playlist>> playlistsListenable() =>
       playlistsBox.listenable();
+}
+
+/// One folder's worth of automatic stacking, as [ProjectRepository.planAutoStack]
+/// describes it before anything is written.
+class AutoStackPlanEntry {
+  const AutoStackPlanEntry({
+    required this.folder,
+    required this.projects,
+    this.existingStack,
+  });
+
+  /// The immediate parent folder whose files become one main project.
+  final String folder;
+
+  /// The loose projects that would be stacked — the whole group for a new
+  /// stack, or just the newcomers when [existingStack] is set.
+  final List<MusicProject> projects;
+
+  /// The stack this folder already has, if any. Non-null means these projects
+  /// would *join* it rather than form a new one.
+  final MusicProject? existingStack;
+
+  bool get createsNewStack => existingStack == null;
+
+  /// How many versions the main project ends up holding.
+  int get resultingVersionCount =>
+      (existingStack?.memberProjectIds.length ?? 0) + projects.length;
 }

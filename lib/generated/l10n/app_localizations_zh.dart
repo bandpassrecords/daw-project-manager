@@ -4531,4 +4531,188 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get projectDetailLayoutSectionedDescription => '左侧栏每次选择一个分区。';
+
+  @override
+  String get stackAsVersions => '堆叠为版本';
+
+  @override
+  String get stackNeedsTwoVersions => '请至少选择两个项目，才能将它们堆叠为同一个主项目的版本。';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '已将 $count 个版本堆叠为一个主项目。';
+  }
+
+  @override
+  String get stackVersionsTitle => '版本';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count 个版本';
+  }
+
+  @override
+  String get stackAddVersion => '添加版本';
+
+  @override
+  String get stackAddVersionTitle => '添加版本';
+
+  @override
+  String get stackAddVersionEmpty => '没有可添加的未堆叠项目。';
+
+  @override
+  String get stackRemoveVersion => '从堆叠中移除';
+
+  @override
+  String get stackRemoveVersionMessage => '项目文件会保留在磁盘上，并作为独立项目回到列表中。';
+
+  @override
+  String get stackUnstack => '取消堆叠';
+
+  @override
+  String get stackUnstackTitle => '要取消这个主项目的堆叠吗？';
+
+  @override
+  String get stackUnstackMessage =>
+      '每个版本将恢复为独立项目，并保留堆叠前的元数据。主项目上保存的共享笔记、任务和截止日期将被删除。';
+
+  @override
+  String get stackDefaultVersion => '默认打开';
+
+  @override
+  String get stackSetDefaultVersion => '默认打开此版本';
+
+  @override
+  String get stackChooseVersionToOpen => '要打开哪个版本？';
+
+  @override
+  String get stackMemberOf => '所属主项目';
+
+  @override
+  String get stackMemberNotice =>
+      '此文件是某个堆叠项目的一个版本。共享的元数据、任务和工作时间保存在主项目上，而不是这里。';
+
+  @override
+  String get stackOpenMainProject => '打开主项目';
+
+  @override
+  String get stackWorkTimeAcrossVersions => '所有版本合计';
+
+  @override
+  String get scanModeVersionStack => '版本堆叠';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      '文件夹中的所有项目文件将合并为一个主项目，共享元数据、任务和工作时间。新发现的文件会自动加入。';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count 个版本堆叠为一个主项目';
+  }
+
+  @override
+  String get stackMetadataSourceTitle => '哪个项目应成为主项目？';
+
+  @override
+  String get stackMetadataSourceBody =>
+      '其中有多个已经有自己的详细信息。你选择的那个将成为主项目：它的名称、BPM、调性、笔记、任务和截止日期将被堆叠使用。不会合并也不会丢失——其他项目保留各自的详细信息，取消堆叠后即可恢复。';
+
+  @override
+  String get stackMetadataSourceOldestHint => '最早的 — 建议';
+
+  @override
+  String get stackMetadataNoneLabel => '暂无详细信息';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个任务',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => '笔记';
+
+  @override
+  String get stackNotStackedYet => '尚未堆叠';
+
+  @override
+  String get stackStartFromHere => '添加其他项目文件，它们将成为同一个主项目的版本，共享元数据、任务和工作时间。';
+
+  @override
+  String get stackSearchProjects => '搜索项目';
+
+  @override
+  String get stackSearchNoMatches => '没有与搜索匹配的项目。';
+
+  @override
+  String get stackStartedMessage => '已堆叠为一个主项目。';
+
+  @override
+  String get stackDefaultVersionTooltip => '启动 DAW 时默认打开此版本。';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return '添加 $count 个';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => '添加版本';
+
+  @override
+  String get stackSelectAll => '全选';
+
+  @override
+  String get stackClearSelection => '清除';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个声部',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => '截止日期';
+
+  @override
+  String get stackMetadataRenamedLabel => '自定义名称';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '已记录 $hours 小时';
+  }
+
+  @override
+  String get stackUnstackReleaseTitle => '哪个版本保留在发行中？';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return '此项目是 $releases 中的一首曲目。取消堆叠会移除堆叠条目，因此需要由其中一个版本接替该位置——请选择发行应指向的版本。';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => '要堆叠这些版本吗？';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return '版本堆叠会将 $folders 个文件夹中的 $projects 个项目分组。每个文件夹将成为一个主项目，共享元数据、任务和工作时间。不会删除任何内容，之后也可以取消堆叠。';
+  }
+
+  @override
+  String get stackAutoConfirmApply => '堆叠';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count 个版本';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => '加入现有的主项目';
 }

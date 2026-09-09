@@ -9,6 +9,7 @@ import '../providers/providers.dart';
 import '../utils/file_launcher.dart';
 import 'dialogs/daw_launch_command_dialog.dart';
 import 'dialogs/daw_launch_picker_dialog.dart';
+import 'dialogs/stack_version_picker_dialog.dart';
 
 /// What [launchProjectInDaw] should do for a project, once its DAW type and
 /// any configured executable overrides are known. Pure decision, split out so
@@ -69,6 +70,55 @@ bool shouldPromptDawLocationAfterFailedLaunch({
 }) =>
     dawType != null && (isMacOS || isWindows);
 
+/// Which version of a stack a launch should open without asking (#94).
+///
+/// Returns the nominated default when it is still a member, otherwise the sole
+/// member when there is only one left; null means "ask". Nomination is checked
+/// against the live member list because a member can be removed or deleted
+/// after being nominated, and silently opening a stale id would open the wrong
+/// song — or nothing at all.
+@visibleForTesting
+MusicProject? resolveStackLaunchTarget({
+  required String? defaultLaunchMemberId,
+  required List<MusicProject> members,
+}) {
+  if (members.isEmpty) return null;
+  if (members.length == 1) return members.single;
+  for (final member in members) {
+    if (member.id == defaultLaunchMemberId) return member;
+  }
+  return null;
+}
+
+/// Resolves [stack] to the version an action should act on: the nominated
+/// default, or whichever version the user picks. Null when they cancel or the
+/// stack has no members left.
+///
+/// Shared by launching and by starting a work session, so both land on the
+/// same version and the user is asked at most one consistent question.
+Future<MusicProject?> _resolveStackSessionTarget(
+  BuildContext context,
+  WidgetRef ref,
+  MusicProject stack,
+) async {
+  final l10n = AppLocalizations.of(context)!;
+  final repo = await ref.read(repositoryProvider.future);
+  final members = repo.stackMembers(stack);
+  final resolved = resolveStackLaunchTarget(
+    defaultLaunchMemberId: stack.defaultLaunchMemberId,
+    members: members,
+  );
+  if (resolved != null) return resolved;
+  if (members.isEmpty || !context.mounted) return null;
+  return showStackVersionPickerDialog(
+    context,
+    title: l10n.stackChooseVersionToOpen,
+    candidates: members,
+    emptyLabel: l10n.stackAddVersionEmpty,
+    subtitleBuilder: (m) => m.fileName,
+  );
+}
+
 /// Launches [project] in its DAW.
 ///
 /// Preference order: a user-registered executable override for the DAW type
@@ -88,6 +138,15 @@ Future<void> launchProjectInDaw(
   MusicProject project,
 ) async {
   final l10n = AppLocalizations.of(context)!;
+
+  // A stack has no file of its own — its path points at the folder — so a
+  // launch has to be redirected to one of its versions before anything below
+  // touches filePath.
+  if (project.isVirtual) {
+    final target = await _resolveStackSessionTarget(context, ref, project);
+    if (target == null || !context.mounted) return;
+    return launchProjectInDaw(context, ref, target);
+  }
 
   if (!FileLauncher.targetExists(project.filePath)) {
     if (context.mounted) {
@@ -271,6 +330,18 @@ Future<void> confirmEndSession(BuildContext context, WidgetRef ref) async {
 Future<void> confirmStartSession(
     BuildContext context, WidgetRef ref, MusicProject project) async {
   final l10n = AppLocalizations.of(context)!;
+
+  // A stack has no file, and its work total is summed from its versions on
+  // read — it never stores sessions of its own. Timing against the stack row
+  // would write a session that no total counts and that `unstack` throws away
+  // with the row, so the session is redirected to a real version the same way
+  // a launch is (see [resolveStackLaunchTarget]).
+  if (project.isVirtual) {
+    final target = await _resolveStackSessionTarget(context, ref, project);
+    if (target == null || !context.mounted) return;
+    return confirmStartSession(context, ref, target);
+  }
+
   final current = ref.read(activeProjectProvider);
 
   if (current != null) {

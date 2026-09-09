@@ -4735,4 +4735,198 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Una barra a la izquierda elige una sección a la vez.';
+
+  @override
+  String get stackAsVersions => 'Apilar como versiones';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Selecciona al menos dos proyectos para apilarlos como versiones de un proyecto principal.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count versiones apiladas en un proyecto principal.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versiones';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count versiones';
+  }
+
+  @override
+  String get stackAddVersion => 'Añadir versión';
+
+  @override
+  String get stackAddVersionTitle => 'Añadir una versión';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'No hay proyectos sin apilar disponibles para añadir.';
+
+  @override
+  String get stackRemoveVersion => 'Quitar de la pila';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'El archivo del proyecto permanece en el disco y vuelve a la lista como un proyecto propio.';
+
+  @override
+  String get stackUnstack => 'Desapilar';
+
+  @override
+  String get stackUnstackTitle => '¿Desapilar este proyecto principal?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Cada versión vuelve a ser un proyecto propio con los metadatos que tenía antes de apilarse. Las notas, tareas y la fecha límite compartidas en el proyecto principal se eliminan.';
+
+  @override
+  String get stackDefaultVersion => 'Se abre por defecto';
+
+  @override
+  String get stackSetDefaultVersion => 'Abrir esta versión por defecto';
+
+  @override
+  String get stackChooseVersionToOpen => '¿Qué versión quieres abrir?';
+
+  @override
+  String get stackMemberOf => 'Versión de';
+
+  @override
+  String get stackMemberNotice =>
+      'Este archivo es una versión de un proyecto apilado. Los metadatos, tareas y tiempo de trabajo compartidos están en el proyecto principal, no aquí.';
+
+  @override
+  String get stackOpenMainProject => 'Abrir proyecto principal';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Total en todas las versiones';
+
+  @override
+  String get scanModeVersionStack => 'Pila de versiones';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Todos los archivos de proyecto de una carpeta se convierten en un proyecto principal que comparte metadatos, tareas y tiempo de trabajo. Los archivos nuevos se unen automáticamente.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count versiones apiladas en un proyecto principal';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      '¿Qué proyecto debe convertirse en el proyecto principal?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'Más de uno ya tiene detalles propios. El que elijas se convierte en el proyecto principal: su nombre, BPM, tonalidad, notas, tareas y fecha límite serán los que use la pila. Nada se fusiona ni se pierde: los demás conservan sus detalles y desapilar los devuelve.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'La más antigua — sugerida';
+
+  @override
+  String get stackMetadataNoneLabel => 'Aún sin detalles';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tareas',
+      one: '1 tarea',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'notas';
+
+  @override
+  String get stackNotStackedYet => 'Aún sin apilar';
+
+  @override
+  String get stackStartFromHere =>
+      'Añade otros archivos de proyecto y se convertirán en versiones de un proyecto principal, compartiendo metadatos, tareas y tiempo de trabajo.';
+
+  @override
+  String get stackSearchProjects => 'Buscar proyectos';
+
+  @override
+  String get stackSearchNoMatches =>
+      'Ningún proyecto coincide con tu búsqueda.';
+
+  @override
+  String get stackStartedMessage => 'Apilado en un proyecto principal.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'Esta versión se abre por defecto al iniciar la DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Añadir $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Añadir versiones';
+
+  @override
+  String get stackSelectAll => 'Seleccionar todo';
+
+  @override
+  String get stackClearSelection => 'Borrar';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partes',
+      one: '1 parte',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => 'fecha límite';
+
+  @override
+  String get stackMetadataRenamedLabel => 'nombre personalizado';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '$hours h registradas';
+  }
+
+  @override
+  String get stackUnstackReleaseTitle =>
+      '¿Qué versión permanece en el lanzamiento?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'Este proyecto es una pista en $releases. Desapilar elimina la entrada apilada, así que una de sus versiones debe ocupar ese lugar: elige a cuál debe apuntar el lanzamiento.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => '¿Apilar estas versiones?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'La Pila de versiones agrupará $projects proyectos en $folders carpetas. Cada carpeta se convierte en un proyecto principal que comparte metadatos, tareas y tiempo de trabajo. No se elimina nada y puedes desapilarlos después.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Apilar';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count versiones';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => 'se une al proyecto principal existente';
 }

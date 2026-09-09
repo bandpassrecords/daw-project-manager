@@ -305,6 +305,28 @@ class MusicProject {
   /// True when this project is a version inside a stack.
   bool get isStackMember => stackId != null;
 
+  /// Whether the user has put anything into this project that stacking could
+  /// hide behind another version's copy.
+  ///
+  /// Only fields a person types or curates count. Scanned facts (DAW type,
+  /// version, file dates, `projectNotes` read out of the DAW file) are
+  /// excluded: every version of a project has those, they are identical across
+  /// versions, and counting them would make every stack look like a
+  /// metadata conflict.
+  ///
+  /// Drives whether stacking has to *ask* which version's details the song
+  /// should inherit — with at most one such version there is nothing to
+  /// choose between.
+  bool get hasUserMetadata =>
+      bpm != null ||
+      (musicalKey?.trim().isNotEmpty ?? false) ||
+      (notes?.trim().isNotEmpty ?? false) ||
+      (customDisplayName?.trim().isNotEmpty ?? false) ||
+      deadline != null ||
+      todos.isNotEmpty ||
+      parts.isNotEmpty ||
+      totalWorkSeconds > 0;
+
   /// Whether a non-resolving [filePath] on this project means "the file was
   /// deleted or moved".
   ///

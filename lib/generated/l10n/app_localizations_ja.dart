@@ -4581,4 +4581,191 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get projectDetailLayoutSectionedDescription => '左のバーでセクションを1つずつ選択。';
+
+  @override
+  String get stackAsVersions => 'バージョンとしてまとめる';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      '1つのメインプロジェクトのバージョンとしてまとめるには、プロジェクトを2つ以上選択してください。';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count 個のバージョンを1つのメインプロジェクトにまとめました。';
+  }
+
+  @override
+  String get stackVersionsTitle => 'バージョン';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count バージョン';
+  }
+
+  @override
+  String get stackAddVersion => 'バージョンを追加';
+
+  @override
+  String get stackAddVersionTitle => 'バージョンを追加';
+
+  @override
+  String get stackAddVersionEmpty => '追加できる未スタックのプロジェクトがありません。';
+
+  @override
+  String get stackRemoveVersion => 'スタックから削除';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'プロジェクトファイルはディスク上に残り、単独のプロジェクトとして一覧に戻ります。';
+
+  @override
+  String get stackUnstack => 'スタックを解除';
+
+  @override
+  String get stackUnstackTitle => 'このメインプロジェクトのスタックを解除しますか？';
+
+  @override
+  String get stackUnstackMessage =>
+      '各バージョンはスタック前のメタデータを持つ単独のプロジェクトに戻ります。メインプロジェクトに保存された共有のノート・タスク・期限は削除されます。';
+
+  @override
+  String get stackDefaultVersion => 'デフォルトで開く';
+
+  @override
+  String get stackSetDefaultVersion => 'このバージョンをデフォルトで開く';
+
+  @override
+  String get stackChooseVersionToOpen => 'どのバージョンを開きますか？';
+
+  @override
+  String get stackMemberOf => '次のプロジェクトのバージョン';
+
+  @override
+  String get stackMemberNotice =>
+      'このファイルはスタックされたプロジェクトの1バージョンです。共有のメタデータ・タスク・作業時間はメインプロジェクト側にあり、ここにはありません。';
+
+  @override
+  String get stackOpenMainProject => 'メインプロジェクトを開く';
+
+  @override
+  String get stackWorkTimeAcrossVersions => '全バージョンの合計';
+
+  @override
+  String get scanModeVersionStack => 'バージョンスタック';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'フォルダー内のすべてのプロジェクトファイルが1つのメインプロジェクトになり、メタデータ・タスク・作業時間を共有します。新しく見つかったファイルは自動的に追加されます。';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count 個のバージョンを1つのメインプロジェクトにまとめています';
+  }
+
+  @override
+  String get stackMetadataSourceTitle => 'どのプロジェクトをメインプロジェクトにしますか？';
+
+  @override
+  String get stackMetadataSourceBody =>
+      '複数のプロジェクトにすでに独自の詳細があります。選んだものがメインプロジェクトになり、その名前・BPM・キー・ノート・タスク・期限がスタックで使われます。統合も消失もありません。他のプロジェクトは自分の詳細を保持し、スタックを解除すれば元に戻ります。';
+
+  @override
+  String get stackMetadataSourceOldestHint => '最も古い — 推奨';
+
+  @override
+  String get stackMetadataNoneLabel => '詳細なし';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のタスク',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'ノート';
+
+  @override
+  String get stackNotStackedYet => 'まだスタックされていません';
+
+  @override
+  String get stackStartFromHere =>
+      '他のプロジェクトファイルを追加すると、1つのメインプロジェクトのバージョンになり、メタデータ・タスク・作業時間を共有します。';
+
+  @override
+  String get stackSearchProjects => 'プロジェクトを検索';
+
+  @override
+  String get stackSearchNoMatches => '検索に一致するプロジェクトがありません。';
+
+  @override
+  String get stackStartedMessage => '1つのメインプロジェクトにまとめました。';
+
+  @override
+  String get stackDefaultVersionTooltip => 'DAW を起動すると、このバージョンがデフォルトで開きます。';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return '$count 件を追加';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'バージョンを追加';
+
+  @override
+  String get stackSelectAll => 'すべて選択';
+
+  @override
+  String get stackClearSelection => 'クリア';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のパート',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => '期限';
+
+  @override
+  String get stackMetadataRenamedLabel => 'カスタム名';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '$hours 時間記録';
+  }
+
+  @override
+  String get stackUnstackReleaseTitle => 'どのバージョンをリリースに残しますか？';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'このプロジェクトは $releases の収録曲です。スタックを解除すると、まとめられたエントリーがなくなるため、いずれかのバージョンがその位置を引き継ぐ必要があります。リリースが参照するバージョンを選んでください。';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'これらのバージョンをまとめますか？';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'バージョンスタックは $folders 個のフォルダーにある $projects 件のプロジェクトをまとめます。各フォルダーが1つのメインプロジェクトになり、メタデータ・タスク・作業時間を共有します。削除は行われず、後からスタックを解除できます。';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'まとめる';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count バージョン';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => '既存のメインプロジェクトに追加';
 }

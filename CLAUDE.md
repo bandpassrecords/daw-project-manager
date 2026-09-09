@@ -58,6 +58,13 @@ Instructions for AI assistants working on this codebase.
 
 ## UI conventions
 
+### A version stack is a *virtual* project — never assume a row has a file
+- Version stacking (#94) makes a stack a real row in the projects box with `isVirtual: true`, whose `filePath` is the **folder** its versions live in, not a file. Anything that treats a non-resolving path as "the file was deleted" must gate on `MusicProject.isMissingFileCandidate` — `missingProjectIds` and the grid's `cloud_off` indicator already do. Getting this wrong offers to delete the one row holding a song's shared notes, todos, deadline and work time.
+- A stack owns the shared metadata; its members keep their own fields **untouched but dormant**, which is what makes `unstack` lossless. Stacking promotes exactly one member's metadata (`stackProjects(metadataSourceId:)`) — nothing is ever merged, so two versions' details cannot be mangled together. The dashboard asks which member to promote only when two or more of them satisfy `MusicProject.hasUserMetadata`.
+- Work time and sessions on a stack are **derived on read** (`stackTotalWorkSeconds` / `stackSessions`), never stored on the stack row. Don't add a rolled-up copy — it would need invalidating on every timer tick, member deletion and Drive restore.
+- `projectsProvider` filters out stack members (`isStackMember`), so the list shows the stack instead of its versions. Anything totalling that list counts a stacked song once.
+- `ScanMode.versionStack` is the third scan mode: it auto-stacks by immediate parent folder via `ProjectRepository.autoStackFolders()`, which runs after every scan. It only ever *adds* — it never unstacks, re-parents or dissolves anything, so hand-made stacks survive a rescan. Manual stacking works in **all three** modes; the mode only controls the automatic pass.
+
 ### Launching a project in its DAW always goes through `launchProjectInDaw`
 - Use `launchProjectInDaw(context, ref, project)` from `lib/ui/session_actions.dart` for every "open/launch in DAW" button — never call `FileLauncher.launchProject`/`launchWithBinary` directly from UI code.
 - Why: this is the one place that knows about the DAW executable-override system (`ProjectRepository.getDawLaunchCommandPaths`, Settings > DAW Locations — every desktop platform), its missing-path remediation, and the configure prompt (`showDawLaunchCommandDialog`). A DAW type maps to a *list* of override paths: one resolves → run it, several resolve → `showDawLaunchPickerDialog` asks which. The configure prompt fires up front on Linux (no dependable OS file association) and only after a failed standard launch on Windows/macOS. A direct `FileLauncher` call bypasses all of that. The decision lives in the pure `resolveDawLaunchAction` / `shouldPromptDawLocationAfterFailedLaunch` helpers.
@@ -113,6 +120,7 @@ Instructions for AI assistants working on this codebase.
 | Metadata extractor (BPM, key, DAW version) | `lib/services/metadata_extractor.dart` |
 | Google Drive sync (not available inside Flatpak) | `lib/services/google_drive_sync_service.dart` |
 | Local backup/restore (Flatpak's only backup path) | `lib/services/backup_service.dart` |
+| Version stack list (project detail) | `lib/ui/widgets/project_versions_section.dart` |
 | Settings hub — single scrollable page, left nav jumps to section | `lib/ui/settings_page.dart` |
 | Main dashboard | `lib/ui/dashboard_page.dart` |
 | Project detail / editor | `lib/ui/project_detail_page.dart` |

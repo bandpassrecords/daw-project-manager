@@ -18,6 +18,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../utils/app_paths.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/version_stacks.dart';
 import '../utils/phase_colors.dart';
 
 import '../generated/l10n/app_localizations.dart';
@@ -390,6 +391,14 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
       .whenData((allProjects) {
         var projects = allProjects;
 
+        // --- Collapse version stacks (#94) ---
+        // A stacked file is represented in the list by its stack, which owns
+        // the shared metadata. Showing both would list the same project twice
+        // and double-count it in every total derived from this list. The
+        // helper also rolls each stack's work time up from its members, which
+        // is where it is actually stored.
+        projects = collapseVersionStacks(projects);
+
         // --- Filter out stale preserved projects ---
         // A "preserved" project is one attached to a release. We hide it only when its
         // source file DOES exist locally but falls outside every active scan root (the
@@ -412,6 +421,15 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
           projects = projects.where((project) {
             // Projects not attached to any release are always shown.
             if (!protectedProjectIds.contains(project.id)) return true;
+
+            // A stack has no scanned file: its path is the folder its versions
+            // sit in, which can be the scan root itself when a version lives
+            // directly in the root. That folder exists but is not *inside* any
+            // root by the prefix test below, so a stack on a release would be
+            // dropped from the list entirely — along with its versions, which
+            // are already collapsed into it. Judged by its members, never by a
+            // path it only synthesized.
+            if (!project.isMissingFileCandidate) return true;
 
             // File not present locally → metadata-only from backup / different machine.
             // Always show so the user can inspect / edit metadata.
@@ -758,6 +776,25 @@ abstract class SelectionNotifier extends Notifier<Set<String>> {
     state = current;
   }
 
+  /// Drops any selected id that is no longer among [visibleIds].
+  ///
+  /// Selection is a claim about rows on screen, so an id that leaves the list
+  /// has to leave the selection with it. Otherwise the selection bar counts
+  /// rows the user cannot see or deselect: stacking a project turns it into a
+  /// stack member and removes it from the list, and before this the bar went
+  /// on reporting "1 project selected" with nothing highlighted anywhere.
+  /// Hiding and deleting strand ids the same way.
+  ///
+  /// No-op when nothing would change, so this can be called on every rebuild
+  /// without churning the provider.
+  void retainAll(Iterable<String> visibleIds) {
+    if (state.isEmpty) return;
+    final visible = visibleIds.toSet();
+    final kept = state.where(visible.contains).toSet();
+    if (kept.length == state.length) return;
+    state = kept;
+  }
+
   /// Adds every id between [anchorId] and [targetId] (inclusive) in
   /// [orderedIds] to the current selection — the standard shift-click
   /// behavior for extending a selection from the last individually-clicked
@@ -891,7 +928,11 @@ class DawFilterNotifier extends Notifier<String?> {
 // the DAW filter dropdown only ever offers DAWs the user actually has.
 final availableDawsProvider = Provider<List<String>>((ref) {
   final allProjectsAsync = ref.watch(allProjectsStreamProvider);
-  final projects = allProjectsAsync.value ?? const <MusicProject>[];
+  // Collapsed: every version of a stacked project carries the same dawType,
+  // and the filter only needs the DAWs the user actually has.
+  final projects = collapseVersionStacks(
+    allProjectsAsync.value ?? const <MusicProject>[],
+  );
   final daws = projects
       .map((p) => p.dawType)
       .whereType<String>()
@@ -2166,7 +2207,7 @@ final projectsWithRecentActivityProvider = Provider<List<MusicProject>>((ref) {
   final hideFinished = ref.watch(statsHideFinishedProvider);
   final finishedPhases = ref.watch(finishedPhaseProvider);
 
-  final allProjects = projectsAsync.asData?.value ?? [];
+  final allProjects = collapseVersionStacks(projectsAsync.asData?.value ?? []);
   final projects = hideFinished
       ? allProjects.where((p) => !finishedPhases.contains(p.status)).toList()
       : allProjects;
@@ -2234,7 +2275,7 @@ final globalStatsProvider = Provider<GlobalStats>((ref) {
   final hideFinished = ref.watch(statsHideFinishedProvider);
   final finishedPhases = ref.watch(finishedPhaseProvider);
 
-  final allProjects = projectsAsync.asData?.value;
+  final allProjects = collapseVersionStacksOrNull(projectsAsync.asData?.value);
   final events = eventsAsync.asData?.value;
   if (allProjects == null || events == null) return GlobalStats.empty;
 

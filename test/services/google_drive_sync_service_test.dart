@@ -594,6 +594,34 @@ void main() {
       expect(restored.ignoredNewerSongPath, '/Users/artist/Live Sets/Bounces/rejected.wav');
     });
 
+    test('preserves the version stacking links (#94)', () {
+      // A stack is a row like any other in the Drive payload. Dropping these
+      // fields on restore would scatter a stacked song back into loose files
+      // and orphan the row holding its shared metadata.
+      final service = GoogleDriveSyncService();
+      final stack = TestFactories.makeProject(
+        id: 'stack-1',
+        isVirtual: true,
+        memberProjectIds: const ['v1', 'v2', 'v3'],
+        defaultLaunchMemberId: 'v2',
+      );
+      final member = TestFactories.makeProject(id: 'v2', stackId: 'stack-1');
+
+      final restoredStack = service.deserializeProjectForTest(
+        service.serializeProjectForTest(stack),
+      );
+      final restoredMember = service.deserializeProjectForTest(
+        service.serializeProjectForTest(member),
+      );
+
+      expect(restoredStack.isVirtual, isTrue);
+      expect(restoredStack.memberProjectIds, ['v1', 'v2', 'v3']);
+      expect(restoredStack.defaultLaunchMemberId, 'v2');
+      expect(restoredStack.versionCount, 3);
+      expect(restoredMember.stackId, 'stack-1');
+      expect(restoredMember.isStackMember, isTrue);
+    });
+
     test('preserves projectNotes', () {
       final service = GoogleDriveSyncService();
       final original = TestFactories.makeProject(

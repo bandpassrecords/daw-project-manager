@@ -4719,4 +4719,200 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Una barra a sinistra sceglie una sezione alla volta.';
+
+  @override
+  String get stackAsVersions => 'Impila come versioni';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Seleziona almeno due progetti per impilarli come versioni di un progetto principale.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count versioni impilate in un progetto principale.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versioni';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count versioni';
+  }
+
+  @override
+  String get stackAddVersion => 'Aggiungi versione';
+
+  @override
+  String get stackAddVersionTitle => 'Aggiungi una versione';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'Nessun progetto non impilato disponibile da aggiungere.';
+
+  @override
+  String get stackRemoveVersion => 'Rimuovi dalla pila';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'Il file del progetto resta su disco e torna nell\'elenco come progetto a sé.';
+
+  @override
+  String get stackUnstack => 'Separa';
+
+  @override
+  String get stackUnstackTitle => 'Separare questo progetto principale?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Ogni versione torna a essere un progetto a sé con i metadati che aveva prima dell\'impilamento. Le note, le attività e la scadenza condivise sul progetto principale vengono eliminate.';
+
+  @override
+  String get stackDefaultVersion => 'Si apre per impostazione predefinita';
+
+  @override
+  String get stackSetDefaultVersion =>
+      'Apri questa versione per impostazione predefinita';
+
+  @override
+  String get stackChooseVersionToOpen => 'Quale versione vuoi aprire?';
+
+  @override
+  String get stackMemberOf => 'Versione di';
+
+  @override
+  String get stackMemberNotice =>
+      'Questo file è una versione di un progetto impilato. Metadati, attività e tempo di lavoro condivisi si trovano sul progetto principale, non qui.';
+
+  @override
+  String get stackOpenMainProject => 'Apri progetto principale';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Totale su tutte le versioni';
+
+  @override
+  String get scanModeVersionStack => 'Pila di versioni';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Tutti i file di progetto in una cartella diventano un progetto principale che condivide metadati, attività e tempo di lavoro. I nuovi file si uniscono automaticamente.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count versioni impilate in un progetto principale';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Quale progetto deve diventare il progetto principale?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'Più di uno ha già dettagli propri. Quello che scegli diventa il progetto principale: nome, BPM, tonalità, note, attività e scadenza saranno quelli usati dalla pila. Nulla viene unito o perso: gli altri mantengono i propri dettagli e separandoli li riavrai.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'La più vecchia — suggerita';
+
+  @override
+  String get stackMetadataNoneLabel => 'Ancora nessun dettaglio';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count attività',
+      one: '1 attività',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'note';
+
+  @override
+  String get stackNotStackedYet => 'Non ancora impilato';
+
+  @override
+  String get stackStartFromHere =>
+      'Aggiungi altri file di progetto e diventeranno versioni di un progetto principale, condividendo metadati, attività e tempo di lavoro.';
+
+  @override
+  String get stackSearchProjects => 'Cerca progetti';
+
+  @override
+  String get stackSearchNoMatches =>
+      'Nessun progetto corrisponde alla tua ricerca.';
+
+  @override
+  String get stackStartedMessage => 'Impilato in un progetto principale.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'Questa versione si apre per impostazione predefinita all\'avvio della DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Aggiungi $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Aggiungi versioni';
+
+  @override
+  String get stackSelectAll => 'Seleziona tutto';
+
+  @override
+  String get stackClearSelection => 'Cancella';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count parti',
+      one: '1 parte',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => 'scadenza';
+
+  @override
+  String get stackMetadataRenamedLabel => 'nome personalizzato';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '$hours h registrate';
+  }
+
+  @override
+  String get stackUnstackReleaseTitle =>
+      'Quale versione resta nella pubblicazione?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'Questo progetto è una traccia in $releases. Separandolo, la voce impilata sparisce, quindi una delle sue versioni deve prenderne il posto: scegli quella a cui la pubblicazione deve puntare.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'Impilare queste versioni?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'La Pila di versioni raggrupperà $projects progetti in $folders cartelle. Ogni cartella diventa un progetto principale che condivide metadati, attività e tempo di lavoro. Nulla viene eliminato e potrai separarli in seguito.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Impila';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count versioni';
+  }
+
+  @override
+  String get stackAutoJoinsExisting =>
+      'si unisce al progetto principale esistente';
 }

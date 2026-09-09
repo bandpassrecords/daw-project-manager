@@ -4748,4 +4748,197 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Une barre à gauche choisit une section à la fois.';
+
+  @override
+  String get stackAsVersions => 'Empiler comme versions';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Sélectionnez au moins deux projets pour les empiler comme versions d\'un projet principal.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count versions empilées en un projet principal.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versions';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count versions';
+  }
+
+  @override
+  String get stackAddVersion => 'Ajouter une version';
+
+  @override
+  String get stackAddVersionTitle => 'Ajouter une version';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'Aucun projet non empilé disponible à ajouter.';
+
+  @override
+  String get stackRemoveVersion => 'Retirer de la pile';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'Le fichier du projet reste sur le disque et revient dans la liste comme projet à part entière.';
+
+  @override
+  String get stackUnstack => 'Désempiler';
+
+  @override
+  String get stackUnstackTitle => 'Désempiler ce projet principal ?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Chaque version redevient un projet distinct avec les métadonnées qu\'elle avait avant l\'empilement. Les notes, tâches et l\'échéance partagées sur le projet principal sont supprimées.';
+
+  @override
+  String get stackDefaultVersion => 'Ouvert par défaut';
+
+  @override
+  String get stackSetDefaultVersion => 'Ouvrir cette version par défaut';
+
+  @override
+  String get stackChooseVersionToOpen => 'Quelle version voulez-vous ouvrir ?';
+
+  @override
+  String get stackMemberOf => 'Version de';
+
+  @override
+  String get stackMemberNotice =>
+      'Ce fichier est une version d\'un projet empilé. Les métadonnées, tâches et temps de travail partagés sont sur le projet principal, pas ici.';
+
+  @override
+  String get stackOpenMainProject => 'Ouvrir le projet principal';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Total sur toutes les versions';
+
+  @override
+  String get scanModeVersionStack => 'Pile de versions';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Tous les fichiers de projet d\'un dossier deviennent un projet principal partageant métadonnées, tâches et temps de travail. Les nouveaux fichiers le rejoignent automatiquement.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count versions empilées en un projet principal';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Quel projet doit devenir le projet principal ?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'Plusieurs d\'entre eux ont déjà leurs propres détails. Celui que vous choisissez devient le projet principal : son nom, BPM, tonalité, notes, tâches et échéance seront ceux de la pile. Rien n\'est fusionné ni perdu : les autres conservent leurs détails, et le désempilement les restitue.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'La plus ancienne — suggérée';
+
+  @override
+  String get stackMetadataNoneLabel => 'Aucun détail';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tâches',
+      one: '1 tâche',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'notes';
+
+  @override
+  String get stackNotStackedYet => 'Pas encore empilé';
+
+  @override
+  String get stackStartFromHere =>
+      'Ajoutez d\'autres fichiers de projet et ils deviendront des versions d\'un projet principal, partageant métadonnées, tâches et temps de travail.';
+
+  @override
+  String get stackSearchProjects => 'Rechercher des projets';
+
+  @override
+  String get stackSearchNoMatches =>
+      'Aucun projet ne correspond à votre recherche.';
+
+  @override
+  String get stackStartedMessage => 'Empilé en un projet principal.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'Cette version s\'ouvre par défaut au lancement du DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Ajouter $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Ajouter des versions';
+
+  @override
+  String get stackSelectAll => 'Tout sélectionner';
+
+  @override
+  String get stackClearSelection => 'Effacer';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count parties',
+      one: '1 partie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => 'échéance';
+
+  @override
+  String get stackMetadataRenamedLabel => 'nom personnalisé';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '$hours h enregistrées';
+  }
+
+  @override
+  String get stackUnstackReleaseTitle => 'Quelle version reste sur la sortie ?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'Ce projet est un titre de $releases. Le désempilement supprime l\'entrée empilée, donc une de ses versions doit prendre cette place — choisissez celle vers laquelle la sortie doit pointer.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'Empiler ces versions ?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'La Pile de versions va regrouper $projects projets dans $folders dossiers. Chaque dossier devient un projet principal partageant métadonnées, tâches et temps de travail. Rien n\'est supprimé, et vous pourrez les désempiler ensuite.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Empiler';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count versions';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => 'rejoint le projet principal existant';
 }

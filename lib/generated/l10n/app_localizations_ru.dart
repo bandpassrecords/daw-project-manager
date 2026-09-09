@@ -4709,4 +4709,198 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Панель слева выбирает по одному разделу.';
+
+  @override
+  String get stackAsVersions => 'Объединить как версии';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Выберите не менее двух проектов, чтобы объединить их как версии одного основного проекта.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count версий объединены в один основной проект.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Версии';
+
+  @override
+  String stackVersionCount(int count) {
+    return 'Версий: $count';
+  }
+
+  @override
+  String get stackAddVersion => 'Добавить версию';
+
+  @override
+  String get stackAddVersionTitle => 'Добавить версию';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'Нет проектов вне стеков, которые можно добавить.';
+
+  @override
+  String get stackRemoveVersion => 'Убрать из стека';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'Файл проекта остаётся на диске и возвращается в список как отдельный проект.';
+
+  @override
+  String get stackUnstack => 'Разъединить';
+
+  @override
+  String get stackUnstackTitle => 'Разъединить этот основной проект?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Каждая версия снова станет отдельным проектом с метаданными, которые были до объединения. Общие заметки, задачи и срок, хранившиеся в основном проекте, будут удалены.';
+
+  @override
+  String get stackDefaultVersion => 'Открывается по умолчанию';
+
+  @override
+  String get stackSetDefaultVersion => 'Открывать эту версию по умолчанию';
+
+  @override
+  String get stackChooseVersionToOpen => 'Какую версию открыть?';
+
+  @override
+  String get stackMemberOf => 'Версия проекта';
+
+  @override
+  String get stackMemberNotice =>
+      'Этот файл — одна из версий объединённого проекта. Общие метаданные, задачи и рабочее время хранятся в основном проекте, а не здесь.';
+
+  @override
+  String get stackOpenMainProject => 'Открыть основной проект';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Всего по всем версиям';
+
+  @override
+  String get scanModeVersionStack => 'Стек версий';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Все файлы проектов в папке становятся одним основным проектом с общими метаданными, задачами и рабочим временем. Новые файлы добавляются автоматически.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count версий объединены в один основной проект';
+  }
+
+  @override
+  String get stackMetadataSourceTitle => 'Какой проект сделать основным?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'У нескольких из них уже есть собственные данные. Выбранный станет основным проектом: его имя, BPM, тональность, заметки, задачи и срок будут использоваться стеком. Ничего не объединяется и не теряется — остальные сохраняют свои данные, и разъединение их вернёт.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'Самая старая — рекомендуется';
+
+  @override
+  String get stackMetadataNoneLabel => 'Пока нет данных';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count задач',
+      few: '$count задачи',
+      one: '1 задача',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'заметки';
+
+  @override
+  String get stackNotStackedYet => 'Пока не объединено';
+
+  @override
+  String get stackStartFromHere =>
+      'Добавьте другие файлы проектов, и они станут версиями одного основного проекта с общими метаданными, задачами и рабочим временем.';
+
+  @override
+  String get stackSearchProjects => 'Поиск проектов';
+
+  @override
+  String get stackSearchNoMatches => 'Нет проектов, соответствующих запросу.';
+
+  @override
+  String get stackStartedMessage => 'Объединено в один основной проект.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'Эта версия открывается по умолчанию при запуске DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Добавить: $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Добавить версии';
+
+  @override
+  String get stackSelectAll => 'Выбрать все';
+
+  @override
+  String get stackClearSelection => 'Очистить';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count партий',
+      few: '$count партии',
+      one: '1 партия',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => 'срок';
+
+  @override
+  String get stackMetadataRenamedLabel => 'своё название';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return 'записано $hours ч';
+  }
+
+  @override
+  String get stackUnstackReleaseTitle => 'Какая версия останется в релизе?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'Этот проект — трек в $releases. При разъединении объединённая запись исчезает, поэтому её место должна занять одна из версий — выберите, на какую будет ссылаться релиз.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'Объединить эти версии?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'Стек версий сгруппирует $projects проектов в $folders папках. Каждая папка станет основным проектом с общими метаданными, задачами и рабочим временем. Ничего не удаляется, и позже их можно разъединить.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Объединить';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — версий: $count';
+  }
+
+  @override
+  String get stackAutoJoinsExisting =>
+      'добавится к существующему основному проекту';
 }

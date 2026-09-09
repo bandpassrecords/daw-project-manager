@@ -41,16 +41,33 @@ import '../services/mixdown_detector_service.dart';
 import '../services/project_text_export_service.dart';
 import '../services/scanner_service.dart';
 import 'dialogs/save_as_template_dialog.dart';
+import 'dialogs/stack_version_picker_dialog.dart';
 import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_detail_header.dart';
 import 'widgets/project_markers_section.dart';
+import 'widgets/project_versions_section.dart';
 import 'widgets/section_nav_rail.dart';
 import 'widgets/resizable_text_field.dart';
 import 'widgets/parts_summary_card.dart';
 import 'widgets/todo_list_widget.dart';
 import 'widgets/waveform_widget.dart';
 import 'project_statistics_page.dart';
+
+/// The project with [projectId], or null when it is not in [projects].
+///
+/// Null is a normal outcome, not an error: the row this page shows can be
+/// deleted underneath it — unstacking removes the stack, and "Delete Missing"
+/// or a Drive restore can remove any project. The stream rebuilds the page
+/// before the pop that follows has run, so a `firstWhere` without an `orElse`
+/// here throws "Bad state: No element" mid-frame.
+@visibleForTesting
+MusicProject? findProjectById(List<MusicProject> projects, String projectId) {
+  for (final project in projects) {
+    if (project.id == projectId) return project;
+  }
+  return null;
+}
 
 class ProjectDetailPage extends ConsumerStatefulWidget {
   final String projectId;
@@ -123,6 +140,195 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     }
   }
 
+
+  // --- Version stacking (#94) ---------------------------------------------
+  //
+  // A stack is a virtual project owning the shared metadata for several real
+  // files. All four actions below write through the repository and then
+  // invalidate the projects stream, because membership changes rewrite rows
+  // other than the one this page is showing.
+
+  /// Adds a version to [project].
+  ///
+  /// Handles both directions this can be reached from: [project] is already a
+  /// stack, in which case the chosen file joins it — or [project] is an
+  /// ordinary project, in which case picking a second file *starts* a stack
+  /// from the two. The second case is why the Versions section is offered on
+  /// unstacked projects at all: a song is often recognised as having versions
+  /// while looking at one of them, not while multi-selecting in the grid.
+  Future<void> _addVersionToStack(
+    ProjectRepository repo,
+    MusicProject project,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    // Anything real and not already spoken for, minus this project itself.
+    // A project can only belong to one stack, so offering a stacked one would
+    // just throw in the repository.
+    final candidates =
+        repo.projectsBox.values
+            .where(
+              (p) =>
+                  !p.isVirtual && !p.isStackMember && p.id != project.id,
+            )
+            .toList()
+          ..sort(
+            (a, b) => a.displayName.toLowerCase().compareTo(
+              b.displayName.toLowerCase(),
+            ),
+          );
+
+    // Multi-select: a project with five revision files needs all four
+    // siblings attached, and one dialog per sibling is four times the work.
+    final chosen = await showStackVersionMultiPickerDialog(
+      context,
+      title: l10n.stackAddVersionMultiTitle,
+      candidates: candidates,
+      emptyLabel: l10n.stackAddVersionEmpty,
+      subtitleBuilder: (p) => p.filePath,
+    );
+    if (chosen.isEmpty) return;
+
+    if (project.isVirtual) {
+      for (final version in chosen) {
+        await repo.addToStack(stackId: project.id, projectId: version.id);
+      }
+      if (mounted) ref.invalidate(allProjectsStreamProvider);
+      return;
+    }
+
+    // Starting a stack from this project. It becomes the main project without
+    // asking: it is the one the user is looking at, so promoting anything else
+    // would be a surprise.
+    final stack = await repo.stackProjects(
+      memberIds: [project.id, ...chosen.map((p) => p.id)],
+      metadataSourceId: project.id,
+    );
+    if (!mounted) return;
+    ref.invalidate(allProjectsStreamProvider);
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.stackStartedMessage)),
+    );
+    // This page was showing a project that is now a version inside the new
+    // song, so follow it there rather than leaving a member page open.
+    await Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => ProjectDetailPage(projectId: stack.id),
+      ),
+    );
+  }
+
+  Future<void> _removeVersionFromStack(
+    ProjectRepository repo,
+    MusicProject member,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).cardColor,
+        title: Text(l10n.stackRemoveVersion),
+        content: Text(l10n.stackRemoveVersionMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade300,
+              foregroundColor: Colors.black,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.stackRemoveVersion),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await repo.removeFromStack(member.id);
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
+
+  /// Dissolves the stack and leaves the page: the project this page was
+  /// showing no longer exists once [ProjectRepository.unstack] returns.
+  Future<void> _unstackSong(ProjectRepository repo, MusicProject stack) async {
+    final l10n = AppLocalizations.of(context)!;
+    final members = repo.stackMembers(stack);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).cardColor,
+        title: Text(l10n.stackUnstackTitle),
+        content: Text(l10n.stackUnstackMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade700,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.stackUnstack),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    // A stack can be a track on a release. Its row is about to be deleted, so
+    // one of its versions has to inherit that slot or the release silently
+    // loses the track. The repository falls back to the default-launch
+    // version, but which recording a release points at is the user's call.
+    String? releaseSuccessorId;
+    final releases = repo.releasesContaining(stack.id);
+    if (releases.isNotEmpty && members.length > 1 && mounted) {
+      final chosen = await showStackVersionPickerDialog(
+        context,
+        title: l10n.stackUnstackReleaseTitle,
+        message: l10n.stackUnstackReleaseBody(
+          releases.map((r) => r.title).join(', '),
+        ),
+        candidates: members,
+        emptyLabel: l10n.stackAddVersionEmpty,
+        subtitleBuilder: (m) => m.fileName,
+      );
+      // Cancelling the "which version" question cancels the unstack itself:
+      // going ahead would silently apply a choice they declined to make.
+      if (chosen == null) return;
+      releaseSuccessorId = chosen.id;
+    }
+
+    await repo.unstack(stack.id, releaseSuccessorId: releaseSuccessorId);
+    if (!mounted) return;
+    // No explicit pop here: the stack row is gone, so the next rebuild lands
+    // on _buildProjectGone, which pops exactly once. Popping here as well
+    // raced that and closed the parent route too.
+    ref.invalidate(allProjectsStreamProvider);
+  }
+
+  /// Compact work total for a version row, e.g. `2h 15m` / `45m`.
+  static String _formatWorkTime(int totalSeconds) {
+    final duration = Duration(seconds: totalSeconds);
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    return hours > 0 ? '${hours}h ${minutes}m' : '${minutes}m';
+  }
+
+  Future<void> _setDefaultLaunchVersion(
+    ProjectRepository repo,
+    MusicProject stack,
+    MusicProject member,
+  ) async {
+    await repo.updateProject(
+      stack.copyWith(defaultLaunchMemberId: member.id),
+    );
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
 
   @override
   void initState() {
@@ -458,43 +664,53 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
               data: (repo) {
                 // Use projects from stream to get latest data, fallback to repo if stream not ready
                 // The stream should automatically update when Hive emits changes
-                return allProjectsAsync.when(
-                  data: (allProjects) {
-                    final project = allProjects.firstWhere(
-                      (p) => p.id == widget.projectId,
-                      orElse: () {
-                        // Fallback to repo if not found in stream
-                        final allProjectsFromRepo = repo.getAllProjects();
-                        return allProjectsFromRepo.firstWhere(
-                          (p) => p.id == widget.projectId,
-                        );
-                      },
-                    );
-                    return _buildProjectContent(repo, project, allProjectsAsync);
-                  },
-                  loading: () {
-                    // Fallback to repo if stream is loading
-                    final allProjects = repo.getAllProjects();
-                    final project = allProjects.firstWhere(
-                      (p) => p.id == widget.projectId,
-                    );
-                    return _buildProjectContent(repo, project, allProjectsAsync);
-                  },
-                  error: (_, _) {
-                    // Fallback to repo if stream has error
-                    final allProjects = repo.getAllProjects();
-                    final project = allProjects.firstWhere(
-                      (p) => p.id == widget.projectId,
-                    );
-                    return _buildProjectContent(repo, project, allProjectsAsync);
-                  },
+                // The row this page is showing can disappear underneath it —
+                // unstacking deletes the stack, and "Delete Missing" or a
+                // Drive restore can remove any project. The stream rebuilds
+                // this widget before the pop that follows has run, so every
+                // lookup has to tolerate the project being gone rather than
+                // throwing "Bad state: No element" mid-frame.
+                final project = allProjectsAsync.when(
+                  data: (allProjects) =>
+                      _findProject(allProjects) ??
+                      _findProject(repo.getAllProjects()),
+                  loading: () => _findProject(repo.getAllProjects()),
+                  error: (_, _) => _findProject(repo.getAllProjects()),
                 );
+                if (project == null) return _buildProjectGone();
+                return _buildProjectContent(repo, project, allProjectsAsync);
               },
             ),
           ),
         ],
       ),
     );
+  }
+
+  MusicProject? _findProject(List<MusicProject> projects) =>
+      findProjectById(projects, widget.projectId);
+
+  /// Guards against popping more than once. Hive emits per write, so
+  /// dissolving a stack (one delete plus a write per member) rebuilds this
+  /// page several times over, and the page also stays mounted through its own
+  /// exit transition. Without the latch each of those rebuilds schedules
+  /// another pop, which walks back past this page and closes whatever pushed
+  /// it — Release detail, Queue, the mobile player.
+  bool _popScheduled = false;
+
+  /// Placeholder for the frame(s) between the project being deleted and this
+  /// page being popped. Pops itself, once — a page left showing a project that
+  /// no longer exists has nothing to offer.
+  Widget _buildProjectGone() {
+    if (!_popScheduled) {
+      _popScheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final navigator = Navigator.of(context);
+        if (navigator.canPop()) navigator.pop();
+      });
+    }
+    return const Center(child: CircularProgressIndicator());
   }
 
   Widget _buildProjectContent(
@@ -669,6 +885,49 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                           icon: Icons.tune_outlined,
                           label: l10n.projectDetails,
                           children: [
+                            // A version's own page is reachable from its
+                            // song's Versions list. Say so, and offer the way
+                            // back — otherwise the page looks like an ordinary
+                            // project whose edits mysteriously don't show up
+                            // in the list.
+                            if (updatedProject.stackId case final stackId?)
+                              Builder(
+                                builder: (context) {
+                                  final stack = repo.projectsBox.get(stackId);
+                                  if (stack == null) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return Card(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    child: ListTile(
+                                      dense: true,
+                                      leading: const Icon(Icons.layers),
+                                      title: Text(
+                                        '${l10n.stackMemberOf}: '
+                                        '${stack.displayName}',
+                                      ),
+                                      subtitle: Text(
+                                        l10n.stackMemberNotice,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodySmall,
+                                      ),
+                                      trailing: TextButton(
+                                        onPressed: () => Navigator.of(context)
+                                            .pushReplacement(
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    ProjectDetailPage(
+                                                      projectId: stack.id,
+                                                    ),
+                                              ),
+                                            ),
+                                        child: Text(l10n.stackOpenMainProject),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
 
                         // Campo para editar o nome de exibição customizado
                             TextFormField(
@@ -1237,6 +1496,90 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             const SizedBox(height: 24),
                           ],
                         ),
+                        // Offered on ordinary projects too, not just stacks:
+                        // a song is usually recognised as having versions
+                        // while looking at one of them, so the section shows
+                        // an empty state with "Add Version" that starts a
+                        // stack from here. Suppressed only on a version that
+                        // already belongs to a stack — its song owns the list,
+                        // and the banner at the top of this page links there.
+                        if (!updatedProject.isStackMember)
+                          _DetailSection(
+                            icon: Icons.layers_outlined,
+                            label: l10n.stackVersionsTitle,
+                            children: [
+                              Builder(
+                                builder: (context) {
+                                  final members = updatedProject.isVirtual
+                                      ? repo.stackMembers(updatedProject)
+                                      : const <MusicProject>[];
+                                  return ProjectVersionsSection(
+                                    members: members,
+                                    defaultLaunchMemberId:
+                                        updatedProject.defaultLaunchMemberId,
+                                    title: l10n.stackVersionsTitle,
+                                    countLabel: l10n.stackVersionCount(
+                                      members.length,
+                                    ),
+                                    addLabel: l10n.stackAddVersion,
+                                    unstackLabel: l10n.stackUnstack,
+                                    defaultBadgeLabel: l10n.stackDefaultVersion,
+                                    setDefaultTooltip:
+                                        l10n.stackSetDefaultVersion,
+                                    defaultTooltip:
+                                        l10n.stackDefaultVersionTooltip,
+                                    removeTooltip: l10n.stackRemoveVersion,
+                                    emptyTitle: l10n.stackNotStackedYet,
+                                    emptyDescription: l10n.stackStartFromHere,
+                                    padding: EdgeInsets.zero,
+                                    subtitleBuilder: (member) {
+                                      final modified = dateFormat.format(
+                                        member.lastModifiedAt,
+                                      );
+                                      if (member.totalWorkSeconds <= 0) {
+                                        return modified;
+                                      }
+                                      return '$modified  ·  '
+                                          '${_formatWorkTime(member.totalWorkSeconds)}';
+                                    },
+                                    onAdd: () => _addVersionToStack(
+                                      repo,
+                                      updatedProject,
+                                    ),
+                                    // Everything below acts on members, so it
+                                    // has no meaning until there is a stack.
+                                    onRemove: updatedProject.isVirtual
+                                        ? (member) => _removeVersionFromStack(
+                                            repo,
+                                            member,
+                                          )
+                                        : null,
+                                    onSetDefault: updatedProject.isVirtual
+                                        ? (member) =>
+                                              _setDefaultLaunchVersion(
+                                                repo,
+                                                updatedProject,
+                                                member,
+                                              )
+                                        : null,
+                                    onOpen: (member) => Navigator.of(context)
+                                        .push(
+                                          MaterialPageRoute(
+                                            builder: (_) => ProjectDetailPage(
+                                              projectId: member.id,
+                                            ),
+                                          ),
+                                        ),
+                                    onUnstack: updatedProject.isVirtual
+                                        ? () =>
+                                              _unstackSong(repo, updatedProject)
+                                        : null,
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
                         _DetailSection(
                           icon: Icons.piano_outlined,
                           label: l10n.songParts,
@@ -1288,6 +1631,15 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                           icon: Icons.history_outlined,
                           label: l10n.sessionHistory,
                           children: [
+                            if (updatedProject.isVirtual)
+                              // Work time on a stack is the sum of its
+                              // versions', derived on read (see
+                              // ProjectRepository.stackSessions) — the stack
+                              // row itself never stores sessions.
+                              _SessionHistorySection(
+                                sessions: repo.stackSessions(updatedProject),
+                              )
+                            else
                             _SessionHistorySection(
                               sessions: updatedProject.sessions,
                               onRemove: (session) async {
@@ -3287,13 +3639,20 @@ class _RenameProjectDialogState extends State<_RenameProjectDialog> {
 
 class _SessionHistorySection extends StatefulWidget {
   final List<SessionRecord> sessions;
-  final void Function(SessionRecord) onRemove;
-  final void Function(SessionRecord updated) onEdit;
+
+  /// Null makes the list read-only. Used for a stack, whose sessions are
+  /// aggregated from its versions: the records belong to the member projects,
+  /// so editing one from here would have to guess which member to write back
+  /// to. Editing stays on the version's own page, which owns the record.
+  final void Function(SessionRecord)? onRemove;
+  final void Function(SessionRecord updated)? onEdit;
   const _SessionHistorySection({
     required this.sessions,
-    required this.onRemove,
-    required this.onEdit,
+    this.onRemove,
+    this.onEdit,
   });
+
+  bool get isReadOnly => onRemove == null || onEdit == null;
 
   @override
   State<_SessionHistorySection> createState() => _SessionHistorySectionState();
@@ -3307,7 +3666,7 @@ class _SessionHistorySectionState extends State<_SessionHistorySection> {
       context: context,
       builder: (ctx) => _EditSessionDialog(session: session),
     );
-    if (updated != null) widget.onEdit(updated);
+    if (updated != null) widget.onEdit?.call(updated);
   }
 
   void _confirmRemove(BuildContext context, SessionRecord session) {
@@ -3332,7 +3691,7 @@ class _SessionHistorySectionState extends State<_SessionHistorySection> {
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
-              widget.onRemove(session);
+              widget.onRemove?.call(session);
             },
             child: Text(l10n.delete,
                 style: TextStyle(color: theme.colorScheme.error)),
@@ -3476,26 +3835,28 @@ class _SessionHistorySectionState extends State<_SessionHistorySection> {
                                 Text(_fmtDuration(s.durationSeconds),
                                     style: bodySmall),
                                 const Spacer(),
-                                GestureDetector(
-                                  onTap: () =>
-                                      _editSessionDuration(context, s),
-                                  child: Icon(
-                                    Icons.edit_outlined,
-                                    size: 14,
-                                    color: theme.colorScheme.primary
-                                        .withValues(alpha: 0.7),
+                                if (!widget.isReadOnly) ...[
+                                  GestureDetector(
+                                    onTap: () =>
+                                        _editSessionDuration(context, s),
+                                    child: Icon(
+                                      Icons.edit_outlined,
+                                      size: 14,
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.7),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () => _confirmRemove(context, s),
-                                  child: Icon(
-                                    Icons.delete_outline,
-                                    size: 14,
-                                    color: theme.colorScheme.error
-                                        .withValues(alpha: 0.6),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: () => _confirmRemove(context, s),
+                                    child: Icon(
+                                      Icons.delete_outline,
+                                      size: 14,
+                                      color: theme.colorScheme.error
+                                          .withValues(alpha: 0.6),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ],
                             ),
                           ),

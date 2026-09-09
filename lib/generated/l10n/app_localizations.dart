@@ -7966,6 +7966,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A rail on the left picks one section at a time.'**
   String get projectDetailLayoutSectionedDescription;
+
+  /// Bulk action: combine the selected projects into one song
+  ///
+  /// In en, this message translates to:
+  /// **'Stack as Versions'**
+  String get stackAsVersions;
+
+  /// Error shown when fewer than two projects are selected for stacking
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least two projects to stack them as versions of one main project.'**
+  String get stackNeedsTwoVersions;
+
+  /// No description provided for @stackCreatedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Stacked {count} versions into one main project.'**
+  String stackCreatedMessage(int count);
+
+  /// Project detail section heading listing a stack's version files
+  ///
+  /// In en, this message translates to:
+  /// **'Versions'**
+  String get stackVersionsTitle;
+
+  /// No description provided for @stackVersionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} versions'**
+  String stackVersionCount(int count);
+
+  /// Button: attach another project file to this stack
+  ///
+  /// In en, this message translates to:
+  /// **'Add Version'**
+  String get stackAddVersion;
+
+  /// Dialog title for picking a project to add to a stack
+  ///
+  /// In en, this message translates to:
+  /// **'Add a version'**
+  String get stackAddVersionTitle;
+
+  /// Shown when every project already belongs to a stack
+  ///
+  /// In en, this message translates to:
+  /// **'No unstacked projects available to add.'**
+  String get stackAddVersionEmpty;
+
+  /// Tooltip: detach this version from the stack
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from stack'**
+  String get stackRemoveVersion;
+
+  /// Reassures the user that removing a version keeps the file
+  ///
+  /// In en, this message translates to:
+  /// **'The project file stays on disk and returns to the list as its own project.'**
+  String get stackRemoveVersionMessage;
+
+  /// Button: dissolve the stack back into separate projects
+  ///
+  /// In en, this message translates to:
+  /// **'Unstack'**
+  String get stackUnstack;
+
+  /// Confirmation dialog title for dissolving a stack
+  ///
+  /// In en, this message translates to:
+  /// **'Unstack this main project?'**
+  String get stackUnstackTitle;
+
+  /// Explains what is lost when a stack is dissolved
+  ///
+  /// In en, this message translates to:
+  /// **'Every version becomes its own project again with the metadata it had before stacking. The shared notes, tasks and deadline kept on the main project are deleted.'**
+  String get stackUnstackMessage;
+
+  /// Label marking the version that opens by default
+  ///
+  /// In en, this message translates to:
+  /// **'Opens by default'**
+  String get stackDefaultVersion;
+
+  /// Tooltip: make this the version the DAW launch button opens
+  ///
+  /// In en, this message translates to:
+  /// **'Open this version by default'**
+  String get stackSetDefaultVersion;
+
+  /// Dialog title when a stack has no nominated default version
+  ///
+  /// In en, this message translates to:
+  /// **'Which version do you want to open?'**
+  String get stackChooseVersionToOpen;
+
+  /// Shown on a version's own detail page, naming the song it belongs to
+  ///
+  /// In en, this message translates to:
+  /// **'Version of'**
+  String get stackMemberOf;
+
+  /// Explains that a version defers to its stack for shared metadata
+  ///
+  /// In en, this message translates to:
+  /// **'This file is one version of a stacked project. Shared metadata, tasks and work time live on the main project, not here.'**
+  String get stackMemberNotice;
+
+  /// Button on a version's page that navigates to the stack
+  ///
+  /// In en, this message translates to:
+  /// **'Open main project'**
+  String get stackOpenMainProject;
+
+  /// Label for work time summed over every version in a stack
+  ///
+  /// In en, this message translates to:
+  /// **'Total across all versions'**
+  String get stackWorkTimeAcrossVersions;
+
+  /// Scan mode option: auto-stack every folder's files as one song
+  ///
+  /// In en, this message translates to:
+  /// **'Version Stack'**
+  String get scanModeVersionStack;
+
+  /// Description of the version stack scan mode
+  ///
+  /// In en, this message translates to:
+  /// **'Every project file in a folder becomes one main project sharing metadata, tasks and work time. Newly found files join it automatically.'**
+  String get scanModeVersionStackDescription;
+
+  /// No description provided for @stackTooltipStacked.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} versions stacked into one main project'**
+  String stackTooltipStacked(int count);
+
+  /// Dialog title asking which project's metadata the new stack should inherit
+  ///
+  /// In en, this message translates to:
+  /// **'Which project should become the main project?'**
+  String get stackMetadataSourceTitle;
+
+  /// Explains that only the chosen project's metadata is promoted and the rest is kept
+  ///
+  /// In en, this message translates to:
+  /// **'More than one of these already has details of its own. The one you pick becomes the main project: its name, BPM, key, notes, tasks and deadline are the ones the stack uses. Nothing is merged and nothing is lost — the others keep their own details, and unstacking gives them back.'**
+  String get stackMetadataSourceBody;
+
+  /// Marks the version pre-selected as the default metadata source
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest — suggested'**
+  String get stackMetadataSourceOldestHint;
+
+  /// Shown for a version that has no user-entered metadata
+  ///
+  /// In en, this message translates to:
+  /// **'No details yet'**
+  String get stackMetadataNoneLabel;
+
+  /// No description provided for @stackMetadataTodosLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 task} other{{count} tasks}}'**
+  String stackMetadataTodosLabel(int count);
+
+  /// Chip shown when a version has notes written on it
+  ///
+  /// In en, this message translates to:
+  /// **'notes'**
+  String get stackMetadataNotesLabel;
+
+  /// Empty state heading in the Versions section of an unstacked project
+  ///
+  /// In en, this message translates to:
+  /// **'Not stacked yet'**
+  String get stackNotStackedYet;
+
+  /// Explains how to start a stack from a project's own detail page
+  ///
+  /// In en, this message translates to:
+  /// **'Add other project files and they become versions of one main project, sharing metadata, tasks and work time.'**
+  String get stackStartFromHere;
+
+  /// Search field placeholder in the add-a-version picker
+  ///
+  /// In en, this message translates to:
+  /// **'Search projects'**
+  String get stackSearchProjects;
+
+  /// Shown when a search in the add-a-version picker matches nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No projects match your search.'**
+  String get stackSearchNoMatches;
+
+  /// Confirmation after starting a stack from a project's own page
+  ///
+  /// In en, this message translates to:
+  /// **'Stacked into one main project.'**
+  String get stackStartedMessage;
+
+  /// Tooltip on the filled star marking the version that opens by default
+  ///
+  /// In en, this message translates to:
+  /// **'This version opens by default when you launch the DAW.'**
+  String get stackDefaultVersionTooltip;
+
+  /// No description provided for @stackAddVersionsConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {count}'**
+  String stackAddVersionsConfirm(int count);
+
+  /// Dialog title when several projects can be added to a stack at once
+  ///
+  /// In en, this message translates to:
+  /// **'Add versions'**
+  String get stackAddVersionMultiTitle;
+
+  /// Selects every project currently listed in the add-versions picker
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get stackSelectAll;
+
+  /// Clears the current selection in the add-versions picker
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get stackClearSelection;
+
+  /// No description provided for @stackMetadataPartsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 part} other{{count} parts}}'**
+  String stackMetadataPartsLabel(int count);
+
+  /// Chip shown when a project has a deadline set
+  ///
+  /// In en, this message translates to:
+  /// **'deadline'**
+  String get stackMetadataDeadlineLabel;
+
+  /// Chip shown when a project has a custom name
+  ///
+  /// In en, this message translates to:
+  /// **'custom name'**
+  String get stackMetadataRenamedLabel;
+
+  /// No description provided for @stackMetadataWorkHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h logged'**
+  String stackMetadataWorkHours(String hours);
+
+  /// Dialog title asking which version keeps the release slot when a stacked project is unstacked
+  ///
+  /// In en, this message translates to:
+  /// **'Which version stays on the release?'**
+  String get stackUnstackReleaseTitle;
+
+  /// No description provided for @stackUnstackReleaseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This project is a track on {releases}. Unstacking removes the stacked entry, so one of its versions has to take that place — pick the one the release should point to.'**
+  String stackUnstackReleaseBody(String releases);
+
+  /// Confirmation dialog title before switching a scan root to Version Stack mode
+  ///
+  /// In en, this message translates to:
+  /// **'Stack these versions?'**
+  String get stackAutoConfirmTitle;
+
+  /// No description provided for @stackAutoConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Version Stack will group {projects} projects in {folders} folders. Each folder becomes one main project sharing metadata, tasks and work time. Nothing is deleted, and you can unstack any of them later.'**
+  String stackAutoConfirmBody(int projects, int folders);
+
+  /// Confirm button on the auto-stack confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Stack them'**
+  String get stackAutoConfirmApply;
+
+  /// No description provided for @stackAutoFolderEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'{folder} — {count} versions'**
+  String stackAutoFolderEntry(String folder, int count);
+
+  /// Note on a folder row that already has a main project
+  ///
+  /// In en, this message translates to:
+  /// **'joins the existing main project'**
+  String get stackAutoJoinsExisting;
 }
 
 class _AppLocalizationsDelegate

@@ -4694,4 +4694,195 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'A rail on the left picks one section at a time.';
+
+  @override
+  String get stackAsVersions => 'Stack as Versions';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Select at least two projects to stack them as versions of one main project.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return 'Stacked $count versions into one main project.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versions';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count versions';
+  }
+
+  @override
+  String get stackAddVersion => 'Add Version';
+
+  @override
+  String get stackAddVersionTitle => 'Add a version';
+
+  @override
+  String get stackAddVersionEmpty => 'No unstacked projects available to add.';
+
+  @override
+  String get stackRemoveVersion => 'Remove from stack';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'The project file stays on disk and returns to the list as its own project.';
+
+  @override
+  String get stackUnstack => 'Unstack';
+
+  @override
+  String get stackUnstackTitle => 'Unstack this main project?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Every version becomes its own project again with the metadata it had before stacking. The shared notes, tasks and deadline kept on the main project are deleted.';
+
+  @override
+  String get stackDefaultVersion => 'Opens by default';
+
+  @override
+  String get stackSetDefaultVersion => 'Open this version by default';
+
+  @override
+  String get stackChooseVersionToOpen => 'Which version do you want to open?';
+
+  @override
+  String get stackMemberOf => 'Version of';
+
+  @override
+  String get stackMemberNotice =>
+      'This file is one version of a stacked project. Shared metadata, tasks and work time live on the main project, not here.';
+
+  @override
+  String get stackOpenMainProject => 'Open main project';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Total across all versions';
+
+  @override
+  String get scanModeVersionStack => 'Version Stack';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Every project file in a folder becomes one main project sharing metadata, tasks and work time. Newly found files join it automatically.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count versions stacked into one main project';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Which project should become the main project?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'More than one of these already has details of its own. The one you pick becomes the main project: its name, BPM, key, notes, tasks and deadline are the ones the stack uses. Nothing is merged and nothing is lost — the others keep their own details, and unstacking gives them back.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'Oldest — suggested';
+
+  @override
+  String get stackMetadataNoneLabel => 'No details yet';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tasks',
+      one: '1 task',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'notes';
+
+  @override
+  String get stackNotStackedYet => 'Not stacked yet';
+
+  @override
+  String get stackStartFromHere =>
+      'Add other project files and they become versions of one main project, sharing metadata, tasks and work time.';
+
+  @override
+  String get stackSearchProjects => 'Search projects';
+
+  @override
+  String get stackSearchNoMatches => 'No projects match your search.';
+
+  @override
+  String get stackStartedMessage => 'Stacked into one main project.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'This version opens by default when you launch the DAW.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return 'Add $count';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Add versions';
+
+  @override
+  String get stackSelectAll => 'Select all';
+
+  @override
+  String get stackClearSelection => 'Clear';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count parts',
+      one: '1 part',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => 'deadline';
+
+  @override
+  String get stackMetadataRenamedLabel => 'custom name';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '${hours}h logged';
+  }
+
+  @override
+  String get stackUnstackReleaseTitle => 'Which version stays on the release?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'This project is a track on $releases. Unstacking removes the stacked entry, so one of its versions has to take that place — pick the one the release should point to.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'Stack these versions?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'Version Stack will group $projects projects in $folders folders. Each folder becomes one main project sharing metadata, tasks and work time. Nothing is deleted, and you can unstack any of them later.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Stack them';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count versions';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => 'joins the existing main project';
 }

@@ -508,6 +508,32 @@ void main() {
         await dir.delete(recursive: true);
       }
     });
+
+    test('never offers to delete a version stack (#94)', () {
+      // A stack's filePath points at the folder its versions live in, not at
+      // a file, so it never resolves. Without the isMissingFileCandidate
+      // guard "Delete Missing" would offer to delete the one row holding the
+      // song's shared notes, todos, deadline and accumulated work time.
+      final stack = TestFactories.makeProject(
+        id: 'stack',
+        filePath: '/nonexistent/SongA',
+        isVirtual: true,
+        memberProjectIds: const ['v1', 'v2'],
+      );
+      final missingMember = TestFactories.makeProject(
+        id: 'v1',
+        filePath: '/nonexistent/SongA/v1.als',
+        stackId: 'stack',
+      );
+
+      final result = missingProjectIds(
+        [stack, missingMember],
+        ['stack', 'v1'],
+      );
+
+      // The real file that genuinely went missing is still offered.
+      expect(result, ['v1']);
+    });
   });
 
   group('compareLastModifiedCellValues', () {

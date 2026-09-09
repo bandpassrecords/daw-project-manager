@@ -32,7 +32,20 @@ class ScanRoot {
   @HiveField(5)
   final String? displayName;
 
-  ScanMode get scanMode => scanDepth >= 1 ? ScanMode.smartFolder : ScanMode.flat;
+  /// Opt-in: treat every project file sharing an immediate parent folder as
+  /// versions of one main project (see [ScanMode.versionStack]).
+  ///
+  /// Stored as its own field rather than as another [scanDepth] value on
+  /// purpose. Depth 2 was a real stored value before Smart Folder replaced it,
+  /// so overloading it would silently turn auto-stacking on for roots that
+  /// were only ever asking to be grouped visually — and stacking rewrites the
+  /// library rather than just redrawing it.
+  @HiveField(6)
+  final bool autoStackVersions;
+
+  ScanMode get scanMode => autoStackVersions
+      ? ScanMode.versionStack
+      : (scanDepth >= 1 ? ScanMode.smartFolder : ScanMode.flat);
 
   /// [displayName] if set, otherwise the folder's own name derived from
   /// [path] — never the full [path] itself. Unified across every platform
@@ -49,6 +62,7 @@ class ScanRoot {
     this.lastScanAt,
     this.scanDepth = 0,
     this.displayName,
+    this.autoStackVersions = false,
   });
 
   ScanRoot copyWith({
@@ -58,6 +72,7 @@ class ScanRoot {
     DateTime? lastScanAt,
     int? scanDepth,
     String? displayName,
+    bool? autoStackVersions,
   }) {
     return ScanRoot(
       id: id ?? this.id,
@@ -66,6 +81,7 @@ class ScanRoot {
       lastScanAt: lastScanAt ?? this.lastScanAt,
       scanDepth: scanDepth ?? this.scanDepth,
       displayName: displayName ?? this.displayName,
+      autoStackVersions: autoStackVersions ?? this.autoStackVersions,
     );
   }
 }
@@ -88,13 +104,14 @@ class ScanRootAdapter extends TypeAdapter<ScanRoot> {
       lastScanAt: fields[3] as DateTime?,
       scanDepth: fields.containsKey(4) ? (fields[4] as int? ?? 0) : 0,
       displayName: fields[5] as String?,
+      autoStackVersions: fields[6] as bool? ?? false,
     );
   }
 
   @override
   void write(BinaryWriter writer, ScanRoot obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -106,7 +123,9 @@ class ScanRootAdapter extends TypeAdapter<ScanRoot> {
       ..writeByte(4)
       ..write(obj.scanDepth)
       ..writeByte(5)
-      ..write(obj.displayName);
+      ..write(obj.displayName)
+      ..writeByte(6)
+      ..write(obj.autoStackVersions);
   }
 }
 

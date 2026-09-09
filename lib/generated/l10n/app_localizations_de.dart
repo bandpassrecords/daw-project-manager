@@ -4723,4 +4723,197 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get projectDetailLayoutSectionedDescription =>
       'Eine Leiste links wählt jeweils einen Abschnitt.';
+
+  @override
+  String get stackAsVersions => 'Als Versionen stapeln';
+
+  @override
+  String get stackNeedsTwoVersions =>
+      'Wähle mindestens zwei Projekte aus, um sie als Versionen eines Hauptprojekts zu stapeln.';
+
+  @override
+  String stackCreatedMessage(int count) {
+    return '$count Versionen zu einem Hauptprojekt gestapelt.';
+  }
+
+  @override
+  String get stackVersionsTitle => 'Versionen';
+
+  @override
+  String stackVersionCount(int count) {
+    return '$count Versionen';
+  }
+
+  @override
+  String get stackAddVersion => 'Version hinzufügen';
+
+  @override
+  String get stackAddVersionTitle => 'Version hinzufügen';
+
+  @override
+  String get stackAddVersionEmpty =>
+      'Keine ungestapelten Projekte zum Hinzufügen verfügbar.';
+
+  @override
+  String get stackRemoveVersion => 'Aus Stapel entfernen';
+
+  @override
+  String get stackRemoveVersionMessage =>
+      'Die Projektdatei bleibt auf der Festplatte und kehrt als eigenes Projekt in die Liste zurück.';
+
+  @override
+  String get stackUnstack => 'Entstapeln';
+
+  @override
+  String get stackUnstackTitle => 'Dieses Hauptprojekt entstapeln?';
+
+  @override
+  String get stackUnstackMessage =>
+      'Jede Version wird wieder ein eigenes Projekt mit den Metadaten von vor dem Stapeln. Die gemeinsamen Notizen, Aufgaben und die Frist des Hauptprojekts werden gelöscht.';
+
+  @override
+  String get stackDefaultVersion => 'Wird standardmäßig geöffnet';
+
+  @override
+  String get stackSetDefaultVersion => 'Diese Version standardmäßig öffnen';
+
+  @override
+  String get stackChooseVersionToOpen => 'Welche Version möchtest du öffnen?';
+
+  @override
+  String get stackMemberOf => 'Version von';
+
+  @override
+  String get stackMemberNotice =>
+      'Diese Datei ist eine Version eines gestapelten Projekts. Gemeinsame Metadaten, Aufgaben und Arbeitszeit liegen beim Hauptprojekt, nicht hier.';
+
+  @override
+  String get stackOpenMainProject => 'Hauptprojekt öffnen';
+
+  @override
+  String get stackWorkTimeAcrossVersions => 'Gesamt über alle Versionen';
+
+  @override
+  String get scanModeVersionStack => 'Versionsstapel';
+
+  @override
+  String get scanModeVersionStackDescription =>
+      'Alle Projektdateien in einem Ordner werden zu einem Hauptprojekt, das Metadaten, Aufgaben und Arbeitszeit teilt. Neu gefundene Dateien kommen automatisch hinzu.';
+
+  @override
+  String stackTooltipStacked(int count) {
+    return '$count Versionen zu einem Hauptprojekt gestapelt';
+  }
+
+  @override
+  String get stackMetadataSourceTitle =>
+      'Welches Projekt soll das Hauptprojekt werden?';
+
+  @override
+  String get stackMetadataSourceBody =>
+      'Mehr als eines davon hat bereits eigene Details. Das von dir gewählte wird zum Hauptprojekt: sein Name, BPM, Tonart, Notizen, Aufgaben und Frist werden für den Stapel verwendet. Nichts wird zusammengeführt und nichts geht verloren — die anderen behalten ihre Details, und Entstapeln gibt sie zurück.';
+
+  @override
+  String get stackMetadataSourceOldestHint => 'Älteste — empfohlen';
+
+  @override
+  String get stackMetadataNoneLabel => 'Noch keine Details';
+
+  @override
+  String stackMetadataTodosLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Aufgaben',
+      one: '1 Aufgabe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataNotesLabel => 'Notizen';
+
+  @override
+  String get stackNotStackedYet => 'Noch nicht gestapelt';
+
+  @override
+  String get stackStartFromHere =>
+      'Füge weitere Projektdateien hinzu, und sie werden zu Versionen eines Hauptprojekts, die Metadaten, Aufgaben und Arbeitszeit teilen.';
+
+  @override
+  String get stackSearchProjects => 'Projekte suchen';
+
+  @override
+  String get stackSearchNoMatches => 'Keine Projekte entsprechen deiner Suche.';
+
+  @override
+  String get stackStartedMessage => 'Zu einem Hauptprojekt gestapelt.';
+
+  @override
+  String get stackDefaultVersionTooltip =>
+      'Diese Version wird standardmäßig geöffnet, wenn du die DAW startest.';
+
+  @override
+  String stackAddVersionsConfirm(int count) {
+    return '$count hinzufügen';
+  }
+
+  @override
+  String get stackAddVersionMultiTitle => 'Versionen hinzufügen';
+
+  @override
+  String get stackSelectAll => 'Alle auswählen';
+
+  @override
+  String get stackClearSelection => 'Zurücksetzen';
+
+  @override
+  String stackMetadataPartsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Parts',
+      one: '1 Part',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stackMetadataDeadlineLabel => 'Frist';
+
+  @override
+  String get stackMetadataRenamedLabel => 'eigener Name';
+
+  @override
+  String stackMetadataWorkHours(String hours) {
+    return '$hours h erfasst';
+  }
+
+  @override
+  String get stackUnstackReleaseTitle =>
+      'Welche Version bleibt auf dem Release?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'Dieses Projekt ist ein Track auf $releases. Beim Entstapeln verschwindet der gestapelte Eintrag, also muss eine seiner Versionen diesen Platz einnehmen — wähle die, auf die das Release zeigen soll.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'Diese Versionen stapeln?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'Versionsstapel gruppiert $projects Projekte in $folders Ordnern. Jeder Ordner wird zu einem Hauptprojekt, das Metadaten, Aufgaben und Arbeitszeit teilt. Nichts wird gelöscht, und du kannst sie später wieder entstapeln.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Stapeln';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count Versionen';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => 'kommt zum bestehenden Hauptprojekt';
 }

@@ -37,5 +37,10 @@ Future<int> importProjectsFromRoot(
     await repo.upsertManyFromFileSystemEntities(entities);
   }
   await repo.updateRootLastScanAt(rootId, DateTime.now());
+  // Repairs stacks left broken by older builds, whose scans dropped the
+  // stackId from every version (see _buildProjectAndEvent). No-op otherwise.
+  await repo.cleanUpDanglingStackLinks();
+  // No-op unless some root is in Version Stack mode.
+  await repo.autoStackFolders();
   return entities.length;
 }

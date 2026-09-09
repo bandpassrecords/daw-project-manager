@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../generated/l10n/app_localizations.dart';
+import '../utils/version_stacks.dart';
 import '../models/project_event.dart';
 import '../models/music_project.dart';
 import '../providers/providers.dart';
@@ -664,7 +665,8 @@ class _ProjectHealthList extends ConsumerWidget {
     final projectsAsync = ref.watch(allProjectsStreamProvider);
     final hideFinished = ref.watch(statsHideFinishedProvider);
     final finishedPhases = ref.watch(finishedPhaseProvider);
-    final allProjects = projectsAsync.asData?.value ?? [];
+    // One row per stacked project, with its versions' work time rolled up.
+    final allProjects = collapseVersionStacks(projectsAsync.asData?.value ?? []);
     final projects = hideFinished
         ? allProjects.where((p) => !finishedPhases.contains(p.status)).toList()
         : allProjects;
@@ -739,7 +741,8 @@ class _CatalogInsights extends ConsumerWidget {
     final projectsAsync = ref.watch(allProjectsStreamProvider);
     final hideFinished = ref.watch(statsHideFinishedProvider);
     final finishedPhases = ref.watch(finishedPhaseProvider);
-    final allProjects = projectsAsync.asData?.value ?? [];
+    // One row per stacked project, with its versions' work time rolled up.
+    final allProjects = collapseVersionStacks(projectsAsync.asData?.value ?? []);
     final projects = hideFinished
         ? allProjects.where((p) => !finishedPhases.contains(p.status)).toList()
         : allProjects;
