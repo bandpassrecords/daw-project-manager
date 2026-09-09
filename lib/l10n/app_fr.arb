@@ -3007,5 +3007,15 @@
   "stackMetadataDeadlineLabel": "échéance",
   "stackMetadataRenamedLabel": "nom personnalisé",
   "stackMetadataWorkHours": "{hours} h enregistrées",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "stackUnstackReleaseTitle": "Quelle version reste sur la sortie ?",
+  "stackUnstackReleaseBody": "Ce projet est un titre de {releases}. Le désempilement supprime l'entrée empilée, donc une de ses versions doit prendre cette place — choisissez celle vers laquelle la sortie doit pointer.",
+  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "stackAutoConfirmTitle": "Empiler ces versions ?",
+  "stackAutoConfirmBody": "La Pile de versions va regrouper {projects} projets dans {folders} dossiers. Chaque dossier devient un projet principal partageant métadonnées, tâches et temps de travail. Rien n'est supprimé, et vous pourrez les désempiler ensuite.",
+  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "stackAutoConfirmApply": "Empiler",
+  "stackAutoFolderEntry": "{folder} — {count} versions",
+  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "stackAutoJoinsExisting": "rejoint le projet principal existant"
 }

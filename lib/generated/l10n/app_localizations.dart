@@ -8170,6 +8170,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{hours}h logged'**
   String stackMetadataWorkHours(String hours);
+
+  /// Dialog title asking which version keeps the release slot when a stacked project is unstacked
+  ///
+  /// In en, this message translates to:
+  /// **'Which version stays on the release?'**
+  String get stackUnstackReleaseTitle;
+
+  /// No description provided for @stackUnstackReleaseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This project is a track on {releases}. Unstacking removes the stacked entry, so one of its versions has to take that place — pick the one the release should point to.'**
+  String stackUnstackReleaseBody(String releases);
+
+  /// Confirmation dialog title before switching a scan root to Version Stack mode
+  ///
+  /// In en, this message translates to:
+  /// **'Stack these versions?'**
+  String get stackAutoConfirmTitle;
+
+  /// No description provided for @stackAutoConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Version Stack will group {projects} projects in {folders} folders. Each folder becomes one main project sharing metadata, tasks and work time. Nothing is deleted, and you can unstack any of them later.'**
+  String stackAutoConfirmBody(int projects, int folders);
+
+  /// Confirm button on the auto-stack confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Stack them'**
+  String get stackAutoConfirmApply;
+
+  /// No description provided for @stackAutoFolderEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'{folder} — {count} versions'**
+  String stackAutoFolderEntry(String folder, int count);
+
+  /// Note on a folder row that already has a main project
+  ///
+  /// In en, this message translates to:
+  /// **'joins the existing main project'**
+  String get stackAutoJoinsExisting;
 }
 
 class _AppLocalizationsDelegate

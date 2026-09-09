@@ -4708,4 +4708,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String stackMetadataWorkHours(String hours) {
     return '$hours 時間記録';
   }
+
+  @override
+  String get stackUnstackReleaseTitle => 'どのバージョンをリリースに残しますか？';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'このプロジェクトは $releases の収録曲です。スタックを解除すると、まとめられたエントリーがなくなるため、いずれかのバージョンがその位置を引き継ぐ必要があります。リリースが参照するバージョンを選んでください。';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'これらのバージョンをまとめますか？';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'バージョンスタックは $folders 個のフォルダーにある $projects 件のプロジェクトをまとめます。各フォルダーが1つのメインプロジェクトになり、メタデータ・タスク・作業時間を共有します。削除は行われず、後からスタックを解除できます。';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'まとめる';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count バージョン';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => '既存のメインプロジェクトに追加';
 }

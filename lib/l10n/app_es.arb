@@ -3007,5 +3007,15 @@
   "stackMetadataDeadlineLabel": "fecha límite",
   "stackMetadataRenamedLabel": "nombre personalizado",
   "stackMetadataWorkHours": "{hours} h registradas",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "stackUnstackReleaseTitle": "¿Qué versión permanece en el lanzamiento?",
+  "stackUnstackReleaseBody": "Este proyecto es una pista en {releases}. Desapilar elimina la entrada apilada, así que una de sus versiones debe ocupar ese lugar: elige a cuál debe apuntar el lanzamiento.",
+  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "stackAutoConfirmTitle": "¿Apilar estas versiones?",
+  "stackAutoConfirmBody": "La Pila de versiones agrupará {projects} proyectos en {folders} carpetas. Cada carpeta se convierte en un proyecto principal que comparte metadatos, tareas y tiempo de trabajo. No se elimina nada y puedes desapilarlos después.",
+  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "stackAutoConfirmApply": "Apilar",
+  "stackAutoFolderEntry": "{folder} — {count} versiones",
+  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "stackAutoJoinsExisting": "se une al proyecto principal existente"
 }

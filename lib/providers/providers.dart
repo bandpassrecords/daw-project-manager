@@ -766,6 +766,25 @@ class SelectedProjectsNotifier extends Notifier<Set<String>> {
     state = current;
   }
 
+  /// Drops any selected id that is no longer among [visibleIds].
+  ///
+  /// Selection is a claim about rows on screen, so an id that leaves the list
+  /// has to leave the selection with it. Otherwise the selection bar counts
+  /// rows the user cannot see or deselect: stacking a project turns it into a
+  /// stack member and removes it from the list, and before this the bar went
+  /// on reporting "1 project selected" with nothing highlighted anywhere.
+  /// Hiding and deleting strand ids the same way.
+  ///
+  /// No-op when nothing would change, so this can be called on every rebuild
+  /// without churning the provider.
+  void retainAll(Iterable<String> visibleIds) {
+    if (state.isEmpty) return;
+    final visible = visibleIds.toSet();
+    final kept = state.where(visible.contains).toSet();
+    if (kept.length == state.length) return;
+    state = kept;
+  }
+
   /// Adds every id between [anchorId] and [targetId] (inclusive) in
   /// [orderedIds] to the current selection — the standard shift-click
   /// behavior for extending a selection from the last individually-clicked

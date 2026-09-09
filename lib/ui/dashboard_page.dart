@@ -4339,6 +4339,25 @@ class _PlutoProjectsTableWithSelectionState
   );
 
   @override
+  void didUpdateWidget(_PlutoProjectsTableWithSelection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Rows can leave the list while they are selected — stacking turns a
+    // project into a stack member and collapses it out of the list, and
+    // hiding or deleting do the same. The id has to leave the selection with
+    // the row, or the action bar counts rows that are nowhere on screen.
+    if (!identical(oldWidget.projects, widget.projects)) {
+      // Deferred: didUpdateWidget runs during the build phase, and Riverpod
+      // forbids provider writes at that point.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ref
+            .read(selectedProjectsProvider.notifier)
+            .retainAll(widget.projects.map((p) => p.id));
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _groupExpandState.dispose();
     super.dispose();
@@ -10414,6 +10433,25 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
   final Set<String> _selectedProjectIds = {};
   bool _isSelectionMode = false;
   _MobileSortField _sortField = _MobileSortField.lastModified;
+
+  @override
+  void didUpdateWidget(_MobileProjectsList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Same reconcile as the desktop table: a selected row can be stacked,
+    // hidden or deleted out of the list, and its id has to go with it or the
+    // action bar counts rows that are nowhere on screen. Local state here, so
+    // no deferral needed.
+    if (identical(oldWidget.projects, widget.projects) ||
+        _selectedProjectIds.isEmpty) {
+      return;
+    }
+    final visible = widget.projects.map((p) => p.id).toSet();
+    if (_selectedProjectIds.every(visible.contains)) return;
+    setState(() {
+      _selectedProjectIds.removeWhere((id) => !visible.contains(id));
+      if (_selectedProjectIds.isEmpty) _isSelectionMode = false;
+    });
+  }
 
   List<MusicProject> _sorted(List<MusicProject> projects) {
     final list = List<MusicProject>.from(projects);

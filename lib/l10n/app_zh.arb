@@ -3007,5 +3007,15 @@
   "stackMetadataDeadlineLabel": "截止日期",
   "stackMetadataRenamedLabel": "自定义名称",
   "stackMetadataWorkHours": "已记录 {hours} 小时",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "stackUnstackReleaseTitle": "哪个版本保留在发行中？",
+  "stackUnstackReleaseBody": "此项目是 {releases} 中的一首曲目。取消堆叠会移除堆叠条目，因此需要由其中一个版本接替该位置——请选择发行应指向的版本。",
+  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "stackAutoConfirmTitle": "要堆叠这些版本吗？",
+  "stackAutoConfirmBody": "版本堆叠会将 {folders} 个文件夹中的 {projects} 个项目分组。每个文件夹将成为一个主项目，共享元数据、任务和工作时间。不会删除任何内容，之后也可以取消堆叠。",
+  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "stackAutoConfirmApply": "堆叠",
+  "stackAutoFolderEntry": "{folder} — {count} 个版本",
+  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "stackAutoJoinsExisting": "加入现有的主项目"
 }

@@ -38,6 +38,7 @@ Future<MusicProject?> showStackVersionPickerDialog(
   required String title,
   required List<MusicProject> candidates,
   required String emptyLabel,
+  String? message,
   String Function(MusicProject project)? subtitleBuilder,
   bool searchable = false,
 }) async {
@@ -47,6 +48,7 @@ Future<MusicProject?> showStackVersionPickerDialog(
       title: title,
       candidates: candidates,
       emptyLabel: emptyLabel,
+      message: message,
       subtitleBuilder: subtitleBuilder,
       searchable: searchable,
       multiSelect: false,
@@ -89,12 +91,18 @@ class _StackVersionPickerDialog extends StatefulWidget {
     required this.emptyLabel,
     required this.searchable,
     required this.multiSelect,
+    this.message,
     this.subtitleBuilder,
   });
 
   final String title;
   final List<MusicProject> candidates;
   final String emptyLabel;
+
+  /// Optional explanation above the list, for the cases where picking is a
+  /// consequence of something else the user just did rather than a plain
+  /// choice.
+  final String? message;
 
   /// Whether to show the search field. On where the list can be the whole
   /// library (adding versions); off for a stack's own handful of versions.
@@ -152,6 +160,10 @@ class _StackVersionPickerDialogState extends State<_StackVersionPickerDialog> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (widget.message case final message?) ...[
+                    Text(message, style: theme.textTheme.bodySmall),
+                    const SizedBox(height: 12),
+                  ],
                   if (widget.searchable) ...[
                     TextField(
                       controller: _searchCtrl,

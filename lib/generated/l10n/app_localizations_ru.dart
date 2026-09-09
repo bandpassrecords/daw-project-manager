@@ -4840,4 +4840,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String stackMetadataWorkHours(String hours) {
     return 'записано $hours ч';
   }
+
+  @override
+  String get stackUnstackReleaseTitle => 'Какая версия останется в релизе?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'Этот проект — трек в $releases. При разъединении объединённая запись исчезает, поэтому её место должна занять одна из версий — выберите, на какую будет ссылаться релиз.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'Объединить эти версии?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'Стек версий сгруппирует $projects проектов в $folders папках. Каждая папка станет основным проектом с общими метаданными, задачами и рабочим временем. Ничего не удаляется, и позже их можно разъединить.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Объединить';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — версий: $count';
+  }
+
+  @override
+  String get stackAutoJoinsExisting =>
+      'добавится к существующему основному проекту';
 }

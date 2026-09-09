@@ -11,6 +11,7 @@ import '../models/scan_mode.dart';
 import '../models/project_detail_layout.dart';
 import '../models/waveform_style.dart';
 import '../models/scan_root.dart';
+import 'dialogs/auto_stack_confirm_dialog.dart';
 import '../providers/providers.dart';
 import '../providers/theme_provider.dart';
 import '../repository/project_repository.dart';
@@ -686,16 +687,31 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   Future<void> _updateScanMode(ScanRoot root, ScanMode newMode) async {
     if (newMode == root.scanMode) return;
+    final repo = await ref.read(repositoryProvider.future);
+
+    // Version Stack restructures rows rather than redrawing them, so the user
+    // sees what it would do before it happens. Only worth asking when it would
+    // actually stack something — with nothing to group, the switch is inert
+    // and a dialog would be pure friction.
+    var plan = const <AutoStackPlanEntry>[];
+    if (newMode == ScanMode.versionStack) {
+      plan = repo.planAutoStack([root.path]);
+      if (plan.isNotEmpty) {
+        if (!mounted) return;
+        final confirmed = await showAutoStackConfirmDialog(context, plan: plan);
+        if (confirmed != true) return;
+      }
+    }
+
+    if (!mounted) return;
     setState(() => _busy = true);
     try {
-      final repo = await ref.read(repositoryProvider.future);
       await repo.updateRootScanMode(root.id, newMode);
-      // Switching *to* Version Stack builds the stacks straight away rather
-      // than waiting for the next scan — the setting reads as a statement
-      // about the library, so leaving the list unchanged looks like it failed.
-      if (newMode == ScanMode.versionStack) {
-        await repo.autoStackFolders();
-      }
+      // Applied straight away rather than at the next scan — the setting reads
+      // as a statement about the library, so leaving the list unchanged looks
+      // like it failed. The plan is the one the user just approved, so what
+      // happens is exactly what they were shown.
+      if (plan.isNotEmpty) await repo.applyAutoStackPlan(plan);
       ref.invalidate(scanRootsProvider);
       ref.invalidate(allProjectsStreamProvider);
     } finally {

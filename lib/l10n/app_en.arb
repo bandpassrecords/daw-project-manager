@@ -4327,5 +4327,19 @@
   "stackMetadataRenamedLabel": "custom name",
   "@stackMetadataRenamedLabel": {"description": "Chip shown when a project has a custom name"},
   "stackMetadataWorkHours": "{hours}h logged",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "stackUnstackReleaseTitle": "Which version stays on the release?",
+  "@stackUnstackReleaseTitle": {"description": "Dialog title asking which version keeps the release slot when a stacked project is unstacked"},
+  "stackUnstackReleaseBody": "This project is a track on {releases}. Unstacking removes the stacked entry, so one of its versions has to take that place — pick the one the release should point to.",
+  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "stackAutoConfirmTitle": "Stack these versions?",
+  "@stackAutoConfirmTitle": {"description": "Confirmation dialog title before switching a scan root to Version Stack mode"},
+  "stackAutoConfirmBody": "Version Stack will group {projects} projects in {folders} folders. Each folder becomes one main project sharing metadata, tasks and work time. Nothing is deleted, and you can unstack any of them later.",
+  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "stackAutoConfirmApply": "Stack them",
+  "@stackAutoConfirmApply": {"description": "Confirm button on the auto-stack confirmation dialog"},
+  "stackAutoFolderEntry": "{folder} — {count} versions",
+  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "stackAutoJoinsExisting": "joins the existing main project",
+  "@stackAutoJoinsExisting": {"description": "Note on a folder row that already has a main project"}
 }

@@ -3007,5 +3007,15 @@
   "stackMetadataDeadlineLabel": "scadenza",
   "stackMetadataRenamedLabel": "nome personalizzato",
   "stackMetadataWorkHours": "{hours} h registrate",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "stackUnstackReleaseTitle": "Quale versione resta nella pubblicazione?",
+  "stackUnstackReleaseBody": "Questo progetto è una traccia in {releases}. Separandolo, la voce impilata sparisce, quindi una delle sue versioni deve prenderne il posto: scegli quella a cui la pubblicazione deve puntare.",
+  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "stackAutoConfirmTitle": "Impilare queste versioni?",
+  "stackAutoConfirmBody": "La Pila di versioni raggrupperà {projects} progetti in {folders} cartelle. Ogni cartella diventa un progetto principale che condivide metadati, attività e tempo di lavoro. Nulla viene eliminato e potrai separarli in seguito.",
+  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "stackAutoConfirmApply": "Impila",
+  "stackAutoFolderEntry": "{folder} — {count} versioni",
+  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "stackAutoJoinsExisting": "si unisce al progetto principale esistente"
 }

@@ -3007,5 +3007,15 @@
   "stackMetadataDeadlineLabel": "期限",
   "stackMetadataRenamedLabel": "カスタム名",
   "stackMetadataWorkHours": "{hours} 時間記録",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "stackUnstackReleaseTitle": "どのバージョンをリリースに残しますか？",
+  "stackUnstackReleaseBody": "このプロジェクトは {releases} の収録曲です。スタックを解除すると、まとめられたエントリーがなくなるため、いずれかのバージョンがその位置を引き継ぐ必要があります。リリースが参照するバージョンを選んでください。",
+  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "stackAutoConfirmTitle": "これらのバージョンをまとめますか？",
+  "stackAutoConfirmBody": "バージョンスタックは {folders} 個のフォルダーにある {projects} 件のプロジェクトをまとめます。各フォルダーが1つのメインプロジェクトになり、メタデータ・タスク・作業時間を共有します。削除は行われず、後からスタックを解除できます。",
+  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "stackAutoConfirmApply": "まとめる",
+  "stackAutoFolderEntry": "{folder} — {count} バージョン",
+  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "stackAutoJoinsExisting": "既存のメインプロジェクトに追加"
 }

@@ -4853,4 +4853,32 @@ class AppLocalizationsDe extends AppLocalizations {
   String stackMetadataWorkHours(String hours) {
     return '$hours h erfasst';
   }
+
+  @override
+  String get stackUnstackReleaseTitle =>
+      'Welche Version bleibt auf dem Release?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'Dieses Projekt ist ein Track auf $releases. Beim Entstapeln verschwindet der gestapelte Eintrag, also muss eine seiner Versionen diesen Platz einnehmen — wähle die, auf die das Release zeigen soll.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'Diese Versionen stapeln?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'Versionsstapel gruppiert $projects Projekte in $folders Ordnern. Jeder Ordner wird zu einem Hauptprojekt, das Metadaten, Aufgaben und Arbeitszeit teilt. Nichts wird gelöscht, und du kannst sie später wieder entstapeln.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Stapeln';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count Versionen';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => 'kommt zum bestehenden Hauptprojekt';
 }

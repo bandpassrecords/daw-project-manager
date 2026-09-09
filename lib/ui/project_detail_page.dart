@@ -255,6 +255,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   /// showing no longer exists once [ProjectRepository.unstack] returns.
   Future<void> _unstackSong(ProjectRepository repo, MusicProject stack) async {
     final l10n = AppLocalizations.of(context)!;
+    final members = repo.stackMembers(stack);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -279,7 +280,30 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     );
     if (confirmed != true) return;
 
-    await repo.unstack(stack.id);
+    // A stack can be a track on a release. Its row is about to be deleted, so
+    // one of its versions has to inherit that slot or the release silently
+    // loses the track. The repository falls back to the default-launch
+    // version, but which recording a release points at is the user's call.
+    String? releaseSuccessorId;
+    final releases = repo.releasesContaining(stack.id);
+    if (releases.isNotEmpty && members.length > 1 && mounted) {
+      final chosen = await showStackVersionPickerDialog(
+        context,
+        title: l10n.stackUnstackReleaseTitle,
+        message: l10n.stackUnstackReleaseBody(
+          releases.map((r) => r.title).join(', '),
+        ),
+        candidates: members,
+        emptyLabel: l10n.stackAddVersionEmpty,
+        subtitleBuilder: (m) => m.fileName,
+      );
+      // Cancelling the "which version" question cancels the unstack itself:
+      // going ahead would silently apply a choice they declined to make.
+      if (chosen == null) return;
+      releaseSuccessorId = chosen.id;
+    }
+
+    await repo.unstack(stack.id, releaseSuccessorId: releaseSuccessorId);
     if (!mounted) return;
     // No explicit pop here: the stack row is gone, so the next rebuild lands
     // on _buildProjectGone, which pops exactly once. Popping here as well

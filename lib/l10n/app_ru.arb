@@ -3007,5 +3007,15 @@
   "stackMetadataDeadlineLabel": "срок",
   "stackMetadataRenamedLabel": "своё название",
   "stackMetadataWorkHours": "записано {hours} ч",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "stackUnstackReleaseTitle": "Какая версия останется в релизе?",
+  "stackUnstackReleaseBody": "Этот проект — трек в {releases}. При разъединении объединённая запись исчезает, поэтому её место должна занять одна из версий — выберите, на какую будет ссылаться релиз.",
+  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "stackAutoConfirmTitle": "Объединить эти версии?",
+  "stackAutoConfirmBody": "Стек версий сгруппирует {projects} проектов в {folders} папках. Каждая папка станет основным проектом с общими метаданными, задачами и рабочим временем. Ничего не удаляется, и позже их можно разъединить.",
+  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "stackAutoConfirmApply": "Объединить",
+  "stackAutoFolderEntry": "{folder} — версий: {count}",
+  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "stackAutoJoinsExisting": "добавится к существующему основному проекту"
 }

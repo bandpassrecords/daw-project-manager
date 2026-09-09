@@ -164,4 +164,54 @@ void main() {
       });
     });
   });
+
+  group('retainAll', () {
+    // Rows can leave the list while selected — stacking turns a project into
+    // a stack member and collapses it out of the list, and hiding or deleting
+    // do the same. Before this the action bar went on counting rows that were
+    // nowhere on screen and could not be deselected.
+    test('drops ids that are no longer visible', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(selectedProjectsProvider.notifier);
+      notifier.selectAll(['a', 'b', 'c']);
+
+      notifier.retainAll(['a', 'c']);
+
+      expect(container.read(selectedProjectsProvider), {'a', 'c'});
+    });
+
+    test('keeps everything when all of it is still visible', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(selectedProjectsProvider.notifier);
+      notifier.selectAll(['a', 'b']);
+
+      notifier.retainAll(['a', 'b', 'c']);
+
+      expect(container.read(selectedProjectsProvider), {'a', 'b'});
+    });
+
+    test('clears the selection when nothing visible remains', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(selectedProjectsProvider.notifier);
+      notifier.selectAll(['a']);
+
+      // The whole selection got stacked away.
+      notifier.retainAll(['x', 'y']);
+
+      expect(container.read(selectedProjectsProvider), isEmpty);
+    });
+
+    test('an empty selection stays empty and untouched', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(selectedProjectsProvider.notifier);
+
+      notifier.retainAll(const []);
+
+      expect(container.read(selectedProjectsProvider), isEmpty);
+    });
+  });
 }

@@ -1133,15 +1133,62 @@ class ProjectRepository {
     return stack;
   }
 
+  /// Releases whose track list contains [projectId].
+  List<Release> releasesContaining(String projectId) => [
+    for (final release in releasesBox.values)
+      if (release.trackIds.contains(projectId)) release,
+  ];
+
+  /// Swaps [oldId] for [newId] in every release track list that holds it,
+  /// keeping the track's position. Returns the number of releases changed.
+  ///
+  /// If a release already lists [newId], [oldId] is simply dropped rather than
+  /// creating a duplicate entry.
+  Future<int> replaceProjectInReleases(String oldId, String newId) async {
+    var changed = 0;
+    for (final release in releasesContaining(oldId)) {
+      final updated = <String>[];
+      for (final id in release.trackIds) {
+        if (id != oldId) {
+          updated.add(id);
+        } else if (!release.trackIds.contains(newId)) {
+          updated.add(newId);
+        }
+      }
+      await releasesBox.put(release.id, release.copyWith(trackIds: updated));
+      changed++;
+    }
+    return changed;
+  }
+
   /// Dissolves [stackId], returning its members to independent projects.
   ///
   /// Members get their own metadata back untouched, because stacking never
   /// cleared it. The stack row itself is deleted along with any edits made to
   /// it — that is the lossy part, and the UI should say so before calling.
-  Future<void> unstack(String stackId) async {
+  ///
+  /// A stack can be a track on a release. Deleting the row without touching
+  /// the release would strand its id in `trackIds`, and the release page skips
+  /// ids it cannot resolve — so the track would vanish from the release with
+  /// no warning and the dead id would sit there forever. Its slot is handed to
+  /// [releaseSuccessorId], or, when the caller doesn't say (the automatic path
+  /// in [removeFromStack]), to whichever version was nominated to open by
+  /// default, falling back to the first. The UI should ask rather than rely on
+  /// that default.
+  Future<void> unstack(String stackId, {String? releaseSuccessorId}) async {
     final stack = projectsBox.get(stackId);
     if (stack == null || !stack.isVirtual) return;
-    for (final member in stackMembers(stack)) {
+    final members = stackMembers(stack);
+
+    if (members.isNotEmpty) {
+      final successor = releaseSuccessorId ?? stack.defaultLaunchMemberId;
+      final resolved = members.any((m) => m.id == successor)
+          ? successor!
+          : members.first.id;
+      await replaceProjectInReleases(stackId, resolved);
+    }
+
+    for (final member in members) {
       await projectsBox.put(member.id, member.copyWith(clearStackId: true));
     }
     await projectsBox.delete(stackId);
@@ -1173,6 +1220,52 @@ class ProjectRepository {
     await projectsBox.put(projectId, project.copyWith(stackId: stackId));
   }
 
+  /// What [autoStackFolders] would do to one folder: the loose projects it
+  /// would pull in, and the stack they would join if that folder already has
+  /// one.
+  ///
+  /// Exists so the Version Stack setting can *show* its effect before applying
+  /// it. Auto-stacking rewrites rows rather than redrawing them, so flipping a
+  /// segmented button should not silently restructure someone's library.
+  List<AutoStackPlanEntry> planAutoStack(Iterable<String> rootPaths) {
+    final roots = [for (final path in rootPaths) p.normalize(path)];
+    if (roots.isEmpty) return const [];
+
+    bool underRoot(String filePath) {
+      final norm = p.normalize(filePath);
+      return roots.any(
+        (root) => p.isWithin(root, norm) || p.equals(root, p.dirname(norm)),
+      );
+    }
+
+    final stackByFolder = <String, MusicProject>{
+      for (final project in projectsBox.values)
+        if (project.isVirtual) p.normalize(project.filePath): project,
+    };
+    final rootFolders = roots.toSet();
+
+    final plan = <AutoStackPlanEntry>[];
+    final grouped = groupByImmediateFolder(
+      projectsBox.values.where(
+        (project) => !project.hidden && underRoot(project.filePath),
+      ),
+    );
+    for (final entry in grouped.entries) {
+      if (rootFolders.contains(entry.key)) continue;
+      final existing = stackByFolder[entry.key];
+      if (existing == null && entry.value.length < 2) continue;
+      plan.add(
+        AutoStackPlanEntry(
+          folder: entry.key,
+          projects: entry.value,
+          existingStack: existing,
+        ),
+      );
+    }
+    plan.sort((a, b) => a.folder.toLowerCase().compareTo(b.folder.toLowerCase()));
+    return plan;
+  }
+
   /// Creates and grows stacks for every root in [ScanMode.versionStack],
   /// treating each immediate parent folder holding two or more project files
   /// as one main project. Returns the number of stacks created.
@@ -1189,47 +1282,27 @@ class ProjectRepository {
   Future<int> autoStackFolders() async {
     final stackRoots = [
       for (final root in rootsBox.values)
-        if (root.scanMode == ScanMode.versionStack) p.normalize(root.path),
+        if (root.scanMode == ScanMode.versionStack) root.path,
     ];
     if (stackRoots.isEmpty) return 0;
+    return applyAutoStackPlan(planAutoStack(stackRoots));
+  }
 
-    bool underStackRoot(String filePath) {
-      final norm = p.normalize(filePath);
-      return stackRoots.any(
-        (root) => p.isWithin(root, norm) || p.equals(root, p.dirname(norm)),
-      );
-    }
-
-    // Folders that already have a stack, so their new files join it rather
-    // than starting a rival stack alongside it.
-    final stackByFolder = <String, MusicProject>{
-      for (final project in projectsBox.values)
-        if (project.isVirtual) p.normalize(project.filePath): project,
-    };
-
-    final candidates = projectsBox.values.where(
-      (project) => !project.hidden && underStackRoot(project.filePath),
-    );
-
-    final rootFolders = stackRoots.toSet();
+  /// Applies what [planAutoStack] described. Returns the number of new stacks
+  /// created (folders joining an existing stack are not counted).
+  Future<int> applyAutoStackPlan(List<AutoStackPlanEntry> plan) async {
     var created = 0;
-    for (final entry in groupByImmediateFolder(candidates).entries) {
-      final folder = entry.key;
-      final loose = entry.value;
-      // Files sitting directly in the scan root are not versions of each
-      // other — they are simply the user's unfiled projects, and their shared
-      // "folder" is the root itself. Smart Folder leaves them ungrouped for
-      // the same reason; stacking them would fuse every loose project in the
-      // library into one row.
-      if (rootFolders.contains(folder)) continue;
-      if (stackByFolder[folder] case final stack?) {
-        for (final project in loose) {
+    for (final entry in plan) {
+      if (entry.existingStack case final stack?) {
+        for (final project in entry.projects) {
           await addToStack(stackId: stack.id, projectId: project.id);
         }
         continue;
       }
-      if (loose.length < 2) continue;
-      await stackProjects(memberIds: loose.map((m) => m.id).toList());
+      if (entry.projects.length < 2) continue;
+      await stackProjects(
+        memberIds: entry.projects.map((m) => m.id).toList(),
+      );
       created++;
     }
     return created;
@@ -1582,4 +1655,31 @@ class ProjectRepository {
 
   ValueListenable<Box<Playlist>> playlistsListenable() =>
       playlistsBox.listenable();
+}
+
+/// One folder's worth of automatic stacking, as [ProjectRepository.planAutoStack]
+/// describes it before anything is written.
+class AutoStackPlanEntry {
+  const AutoStackPlanEntry({
+    required this.folder,
+    required this.projects,
+    this.existingStack,
+  });
+
+  /// The immediate parent folder whose files become one main project.
+  final String folder;
+
+  /// The loose projects that would be stacked — the whole group for a new
+  /// stack, or just the newcomers when [existingStack] is set.
+  final List<MusicProject> projects;
+
+  /// The stack this folder already has, if any. Non-null means these projects
+  /// would *join* it rather than form a new one.
+  final MusicProject? existingStack;
+
+  bool get createsNewStack => existingStack == null;
+
+  /// How many versions the main project ends up holding.
+  int get resultingVersionCount =>
+      (existingStack?.memberProjectIds.length ?? 0) + projects.length;
 }

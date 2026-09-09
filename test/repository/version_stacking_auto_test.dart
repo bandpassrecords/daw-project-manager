@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/models/music_project.dart';
+import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/scan_mode.dart';
 import 'package:daw_project_manager/models/scan_root.dart';
 import 'package:daw_project_manager/repository/project_repository.dart';
@@ -135,6 +136,175 @@ void main() {
       // Dissolving it because a display setting flipped would throw that away.
       expect(repo.projectsBox.values.where((p) => p.isVirtual), hasLength(1));
       expect(repo.projectsBox.get('v1')!.isStackMember, isTrue);
+    });
+  });
+
+  group('planAutoStack', () {
+    test('describes each folder it would group, without writing', () async {
+      await addProject(id: 'a1', filePath: path([rootPath, 'SongA', 'A1.als']));
+      await addProject(id: 'a2', filePath: path([rootPath, 'SongA', 'A2.als']));
+      await addProject(id: 'b1', filePath: path([rootPath, 'SongB', 'B1.als']));
+      await addProject(id: 'b2', filePath: path([rootPath, 'SongB', 'B2.als']));
+
+      final plan = repo.planAutoStack([rootPath]);
+
+      expect(plan, hasLength(2));
+      expect(plan.every((e) => e.createsNewStack), isTrue);
+      expect(plan.map((e) => e.resultingVersionCount).toList(), [2, 2]);
+      // Nothing written: the point is to show the user first.
+      expect(repo.projectsBox.values.where((p) => p.isVirtual), isEmpty);
+      expect(repo.projectsBox.get('a1')!.isStackMember, isFalse);
+    });
+
+    test('is empty when there is nothing to group', () async {
+      await addProject(id: 'a1', filePath: path([rootPath, 'SongA', 'A1.als']));
+      await addProject(id: 'loose', filePath: path([rootPath, 'Loose.als']));
+
+      // The settings switch skips the confirmation entirely in this case.
+      expect(repo.planAutoStack([rootPath]), isEmpty);
+    });
+
+    test('marks a folder that would join an existing main project', () async {
+      await addProject(id: 'a1', filePath: path([rootPath, 'SongA', 'A1.als']));
+      await addProject(id: 'a2', filePath: path([rootPath, 'SongA', 'A2.als']));
+      await repo.stackProjects(memberIds: ['a1', 'a2']);
+      await addProject(id: 'a3', filePath: path([rootPath, 'SongA', 'A3.als']));
+
+      final plan = repo.planAutoStack([rootPath]);
+
+      expect(plan, hasLength(1));
+      expect(plan.single.createsNewStack, isFalse);
+      expect(plan.single.projects.map((p) => p.id).toList(), ['a3']);
+      // Two already stacked plus the newcomer.
+      expect(plan.single.resultingVersionCount, 3);
+    });
+
+    test('matches what applying it actually does', () async {
+      await addProject(id: 'a1', filePath: path([rootPath, 'SongA', 'A1.als']));
+      await addProject(id: 'a2', filePath: path([rootPath, 'SongA', 'A2.als']));
+      await addProject(id: 'b1', filePath: path([rootPath, 'SongB', 'B1.als']));
+      await addProject(id: 'b2', filePath: path([rootPath, 'SongB', 'B2.als']));
+
+      final plan = repo.planAutoStack([rootPath]);
+      final created = await repo.applyAutoStackPlan(plan);
+
+      // What the dialog promised is what happened.
+      expect(created, plan.where((e) => e.createsNewStack).length);
+      expect(
+        repo.projectsBox.values.where((p) => p.isVirtual).length,
+        plan.length,
+      );
+    });
+
+    test('excludes root-level files and hidden projects', () async {
+      await addProject(id: 'loose', filePath: path([rootPath, 'Loose.als']));
+      await addProject(id: 'x', filePath: path([rootPath, 'Other.als']));
+      await addProject(id: 'h1', filePath: path([rootPath, 'H', 'H1.als']));
+      await addProject(
+        id: 'h2',
+        filePath: path([rootPath, 'H', 'H2.als']),
+        hidden: true,
+      );
+
+      expect(repo.planAutoStack([rootPath]), isEmpty);
+    });
+  });
+
+  group('releases', () {
+    Future<void> addRelease(String id, List<String> trackIds) =>
+        repo.releasesBox.put(
+          id,
+          Release(id: id, title: 'EP $id', trackIds: trackIds),
+        );
+
+    test('unstacking hands the release slot to the chosen version', () async {
+      await addProject(id: 'v1', filePath: path([rootPath, 'A', 'v1.als']));
+      await addProject(id: 'v2', filePath: path([rootPath, 'A', 'v2.als']));
+      final stack = await repo.stackProjects(memberIds: ['v1', 'v2']);
+      await addRelease('r1', ['other', stack.id, 'another']);
+
+      await repo.unstack(stack.id, releaseSuccessorId: 'v2');
+
+      // The release page skips ids it can't resolve, so leaving the dead stack
+      // id here would drop the track silently and strand the id forever.
+      expect(repo.releasesBox.get('r1')!.trackIds, ['other', 'v2', 'another']);
+    });
+
+    test('falls back to the default-launch version when not told', () async {
+      await addProject(id: 'v1', filePath: path([rootPath, 'A', 'v1.als']));
+      await addProject(id: 'v2', filePath: path([rootPath, 'A', 'v2.als']));
+      final stack = await repo.stackProjects(
+        memberIds: ['v1', 'v2'],
+        metadataSourceId: 'v2',
+      );
+      await addRelease('r1', [stack.id]);
+
+      // The automatic path (removeFromStack dissolving a stack) passes no
+      // successor, and must still not lose the track.
+      await repo.unstack(stack.id);
+
+      expect(repo.releasesBox.get('r1')!.trackIds, ['v2']);
+    });
+
+    test('dissolving via removeFromStack keeps the release track', () async {
+      await addProject(id: 'v1', filePath: path([rootPath, 'A', 'v1.als']));
+      await addProject(id: 'v2', filePath: path([rootPath, 'A', 'v2.als']));
+      final stack = await repo.stackProjects(memberIds: ['v1', 'v2']);
+      await addRelease('r1', [stack.id]);
+
+      await repo.removeFromStack('v2');
+
+      final trackIds = repo.releasesBox.get('r1')!.trackIds;
+      expect(trackIds, hasLength(1));
+      expect(trackIds.single, isNot(stack.id));
+      expect(repo.projectsBox.get(trackIds.single), isNotNull);
+    });
+
+    test('does not duplicate a version already on the release', () async {
+      await addProject(id: 'v1', filePath: path([rootPath, 'A', 'v1.als']));
+      await addProject(id: 'v2', filePath: path([rootPath, 'A', 'v2.als']));
+      final stack = await repo.stackProjects(memberIds: ['v1', 'v2']);
+      await addRelease('r1', ['v2', stack.id]);
+
+      await repo.unstack(stack.id, releaseSuccessorId: 'v2');
+
+      expect(repo.releasesBox.get('r1')!.trackIds, ['v2']);
+    });
+
+    test('updates every release the stack appears on', () async {
+      await addProject(id: 'v1', filePath: path([rootPath, 'A', 'v1.als']));
+      await addProject(id: 'v2', filePath: path([rootPath, 'A', 'v2.als']));
+      final stack = await repo.stackProjects(memberIds: ['v1', 'v2']);
+      await addRelease('r1', [stack.id]);
+      await addRelease('r2', ['x', stack.id]);
+
+      await repo.unstack(stack.id, releaseSuccessorId: 'v1');
+
+      expect(repo.releasesBox.get('r1')!.trackIds, ['v1']);
+      expect(repo.releasesBox.get('r2')!.trackIds, ['x', 'v1']);
+    });
+
+    test('a stack on no release unstacks without touching any', () async {
+      await addProject(id: 'v1', filePath: path([rootPath, 'A', 'v1.als']));
+      await addProject(id: 'v2', filePath: path([rootPath, 'A', 'v2.als']));
+      final stack = await repo.stackProjects(memberIds: ['v1', 'v2']);
+      await addRelease('r1', ['unrelated']);
+
+      await repo.unstack(stack.id);
+
+      expect(repo.releasesBox.get('r1')!.trackIds, ['unrelated']);
+    });
+
+    test('releasesContaining finds the releases holding a project', () async {
+      await addRelease('r1', ['p1']);
+      await addRelease('r2', ['p2']);
+      await addRelease('r3', ['p1', 'p2']);
+
+      expect(
+        repo.releasesContaining('p1').map((r) => r.id).toList(),
+        ['r1', 'r3'],
+      );
+      expect(repo.releasesContaining('nobody'), isEmpty);
     });
   });
 

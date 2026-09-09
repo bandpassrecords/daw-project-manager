@@ -4866,4 +4866,32 @@ class AppLocalizationsEs extends AppLocalizations {
   String stackMetadataWorkHours(String hours) {
     return '$hours h registradas';
   }
+
+  @override
+  String get stackUnstackReleaseTitle =>
+      '¿Qué versión permanece en el lanzamiento?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'Este proyecto es una pista en $releases. Desapilar elimina la entrada apilada, así que una de sus versiones debe ocupar ese lugar: elige a cuál debe apuntar el lanzamiento.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => '¿Apilar estas versiones?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'La Pila de versiones agrupará $projects proyectos en $folders carpetas. Cada carpeta se convierte en un proyecto principal que comparte metadatos, tareas y tiempo de trabajo. No se elimina nada y puedes desapilarlos después.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Apilar';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count versiones';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => 'se une al proyecto principal existente';
 }

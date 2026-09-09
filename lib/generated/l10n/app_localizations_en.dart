@@ -4823,4 +4823,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String stackMetadataWorkHours(String hours) {
     return '${hours}h logged';
   }
+
+  @override
+  String get stackUnstackReleaseTitle => 'Which version stays on the release?';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return 'This project is a track on $releases. Unstacking removes the stacked entry, so one of its versions has to take that place — pick the one the release should point to.';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => 'Stack these versions?';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return 'Version Stack will group $projects projects in $folders folders. Each folder becomes one main project sharing metadata, tasks and work time. Nothing is deleted, and you can unstack any of them later.';
+  }
+
+  @override
+  String get stackAutoConfirmApply => 'Stack them';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count versions';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => 'joins the existing main project';
 }

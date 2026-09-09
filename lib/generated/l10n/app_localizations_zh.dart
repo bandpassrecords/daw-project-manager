@@ -4655,4 +4655,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String stackMetadataWorkHours(String hours) {
     return '已记录 $hours 小时';
   }
+
+  @override
+  String get stackUnstackReleaseTitle => '哪个版本保留在发行中？';
+
+  @override
+  String stackUnstackReleaseBody(String releases) {
+    return '此项目是 $releases 中的一首曲目。取消堆叠会移除堆叠条目，因此需要由其中一个版本接替该位置——请选择发行应指向的版本。';
+  }
+
+  @override
+  String get stackAutoConfirmTitle => '要堆叠这些版本吗？';
+
+  @override
+  String stackAutoConfirmBody(int projects, int folders) {
+    return '版本堆叠会将 $folders 个文件夹中的 $projects 个项目分组。每个文件夹将成为一个主项目，共享元数据、任务和工作时间。不会删除任何内容，之后也可以取消堆叠。';
+  }
+
+  @override
+  String get stackAutoConfirmApply => '堆叠';
+
+  @override
+  String stackAutoFolderEntry(String folder, int count) {
+    return '$folder — $count 个版本';
+  }
+
+  @override
+  String get stackAutoJoinsExisting => '加入现有的主项目';
 }

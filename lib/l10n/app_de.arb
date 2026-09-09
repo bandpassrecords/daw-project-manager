@@ -3007,5 +3007,15 @@
   "stackMetadataDeadlineLabel": "Frist",
   "stackMetadataRenamedLabel": "eigener Name",
   "stackMetadataWorkHours": "{hours} h erfasst",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}}
+  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "stackUnstackReleaseTitle": "Welche Version bleibt auf dem Release?",
+  "stackUnstackReleaseBody": "Dieses Projekt ist ein Track auf {releases}. Beim Entstapeln verschwindet der gestapelte Eintrag, also muss eine seiner Versionen diesen Platz einnehmen — wähle die, auf die das Release zeigen soll.",
+  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "stackAutoConfirmTitle": "Diese Versionen stapeln?",
+  "stackAutoConfirmBody": "Versionsstapel gruppiert {projects} Projekte in {folders} Ordnern. Jeder Ordner wird zu einem Hauptprojekt, das Metadaten, Aufgaben und Arbeitszeit teilt. Nichts wird gelöscht, und du kannst sie später wieder entstapeln.",
+  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "stackAutoConfirmApply": "Stapeln",
+  "stackAutoFolderEntry": "{folder} — {count} Versionen",
+  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "stackAutoJoinsExisting": "kommt zum bestehenden Hauptprojekt"
 }
