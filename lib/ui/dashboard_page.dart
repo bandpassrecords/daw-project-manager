@@ -24,6 +24,7 @@ import '../services/scanner_service.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
+import 'row_click_selection.dart';
 import 'widgets/shortcuts_help_dialog.dart';
 import 'widgets/waveform_widget.dart';
 import 'music_player_page.dart';
@@ -4271,41 +4272,15 @@ class _PlutoProjectsTableWithSelectionState
 
   Set<String> get _selectedProjectIds => ref.watch(selectedProjectsProvider);
 
-  void _clearSelection() {
-    ref.read(selectedProjectsProvider.notifier).clear();
-  }
+  /// Ctrl/cmd- and shift-click selection for this table, shared with every
+  /// other table in the app (see `row_click_selection.dart`).
+  late final _clickSelection = RowClickSelectionController(
+    notifier: () => ref.read(selectedProjectsProvider.notifier),
+    selectedIds: () => ref.read(selectedProjectsProvider),
+    orderedIds: () => widget.projects.map((p) => p.id).toList(),
+  );
 
-  // The last individually-clicked (non-shift) project checkbox — the anchor
-  // a subsequent shift-click range-selects against. Deliberately not synced
-  // to selectedProjectsProvider: it's a transient interaction concept, not
-  // part of the persisted selection.
-  String? _selectionAnchorId;
-
-  void _toggleProjectSelection(String projectId) {
-    ref.read(selectedProjectsProvider.notifier).toggle(projectId);
-    _selectionAnchorId = projectId;
-  }
-
-  void _selectProjectRange(String targetId) {
-    final anchor = _selectionAnchorId;
-    if (anchor == null) {
-      _toggleProjectSelection(targetId);
-      return;
-    }
-    ref
-        .read(selectedProjectsProvider.notifier)
-        .selectRange(
-          widget.projects.map((p) => p.id).toList(),
-          anchor,
-          targetId,
-        );
-  }
-
-  void _selectAll() {
-    ref
-        .read(selectedProjectsProvider.notifier)
-        .selectAll(widget.projects.map((p) => p.id).toList());
-  }
+  void _clearSelection() => _clickSelection.clear();
 
   bool get _areAllSelected {
     if (widget.projects.isEmpty) return false;
@@ -4321,11 +4296,10 @@ class _PlutoProjectsTableWithSelectionState
   /// first selecting everything else and without needing the group expanded.
   void _toggleGroupSelection(Set<String> groupProjectIds) {
     if (groupProjectIds.isEmpty) return;
-    final notifier = ref.read(selectedProjectsProvider.notifier);
     if (groupCheckboxShouldSelect(groupProjectIds, _selectedProjectIds)) {
-      notifier.addAll(groupProjectIds.toList());
+      _clickSelection.addAll(groupProjectIds.toList());
     } else {
-      notifier.removeAll(groupProjectIds.toList());
+      _clickSelection.removeAll(groupProjectIds.toList());
     }
   }
 
@@ -4793,17 +4767,18 @@ class _PlutoProjectsTableWithSelectionState
             scanRoots: scanRoots,
             dateFormat: widget.dateFormat,
             selectedIds: _selectedProjectIds,
-            onToggleSelection: _toggleProjectSelection,
-            onSelectRange: _selectProjectRange,
+            onToggleSelection: _clickSelection.toggle,
+            onRowClickSelection: _clickSelection.handleRowClick,
+            onRowHighlighted: _clickSelection.handleRowHighlight,
             onToggleGroupSelection: _toggleGroupSelection,
             onHideProjects: widget.onHideProjects,
             onUnhideProjects: widget.onUnhideProjects,
             areAllSelected: _areAllSelected,
             onToggleSelectAll: () {
               if (_areAllSelected) {
-                _clearSelection();
+                _clickSelection.clear();
               } else {
-                _selectAll();
+                _clickSelection.selectAll();
               }
             },
             onExtractingMetadataChanged: widget.onExtractingMetadataChanged,
@@ -5108,7 +5083,14 @@ class _PlutoProjectsTable extends ConsumerStatefulWidget {
   final DateFormat dateFormat;
   final Set<String> selectedIds;
   final Function(String) onToggleSelection;
-  final Function(String) onSelectRange;
+
+  /// A primary-button click anywhere on a project row, modifiers included —
+  /// the row-level counterpart to clicking the checkbox column. The parent
+  /// owns the anchor and the modifier rules, so this just reports the row.
+  final Function(String) onRowClickSelection;
+
+  /// The row highlight landed on a project with no selection modifier held.
+  final Function(String) onRowHighlighted;
   final Function(Set<String>) onToggleGroupSelection;
   final Function(List<String>) onHideProjects;
   final Function(List<String>) onUnhideProjects;
@@ -5125,7 +5107,8 @@ class _PlutoProjectsTable extends ConsumerStatefulWidget {
     required this.dateFormat,
     required this.selectedIds,
     required this.onToggleSelection,
-    required this.onSelectRange,
+    required this.onRowClickSelection,
+    required this.onRowHighlighted,
     required this.onToggleGroupSelection,
     required this.onHideProjects,
     required this.onUnhideProjects,
@@ -7075,11 +7058,12 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
             child: Checkbox(
               value: isSelected,
               onChanged: (value) {
-                if (HardwareKeyboard.instance.isShiftPressed) {
-                  widget.onSelectRange(project.id);
-                } else {
-                  widget.onToggleSelection(project.id);
-                }
+                // A modifier-held click on this cell is already handled once,
+                // at row level, by the grid's rowWrapper below — this cell is
+                // part of the row it wraps. Acting on it here as well would
+                // toggle the same project twice and cancel itself out.
+                if (selectionModifierHeld()) return;
+                widget.onToggleSelection(project.id);
               },
             ),
           );
@@ -7885,6 +7869,27 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
       columns: columns,
       rows: initialRows,
+      // Ctrl/cmd- and shift-click anywhere on a row extend the checkbox
+      // selection, so building a multi-selection doesn't mean aiming at the
+      // 50px checkbox column. Group header rows carry no project, so they stay
+      // unwrapped and keep their own (whole-folder) checkbox behavior.
+      rowWrapper: (context, rowWidget, row, _) => rowClickSelectionWrapper(
+        row: row,
+        rowWidget: rowWidget,
+        rowId: (r) => (r.cells['data']?.value as MusicProject?)?.id,
+        onRowClick: widget.onRowClickSelection,
+      ),
+      // Keeps the shift-click anchor on whichever row is highlighted, however
+      // the highlight got there — a plain click or an arrow-key move. Skipped
+      // while a selection modifier is held: a shift-click moves the highlight
+      // to the row it just range-selected to, which must not become the anchor
+      // for the *next* shift-click, and a ctrl-click has already recorded its
+      // own anchor by the time this fires.
+      onActiveCellChanged: (TrinaGridOnActiveCellChangedEvent event) {
+        if (selectionModifierHeld()) return;
+        final project = event.cell?.row.cells['data']?.value as MusicProject?;
+        if (project != null) widget.onRowHighlighted(project.id);
+      },
       rowColorCallback: (TrinaRowColorContext ctx) {
         final project = ctx.row.cells['data']?.value as MusicProject?;
         if (project != null) {
@@ -8005,6 +8010,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           evenRowColor: evenColor,
         ),
         scrollbar: const TrinaGridScrollbarConfig(showHorizontal: false),
+        // rowClickSelectionWrapper only adds a Listener around each row, so
+        // every row still measures exactly rowHeight. Saying so keeps
+        // TrinaGrid's ListView itemExtent fast path, which it otherwise drops
+        // for variable-height wrappers.
+        rowWrapperIsConstantHeight: true,
         columnSize: const TrinaGridColumnSizeConfig(
           autoSizeMode: TrinaAutoSizeMode.scale,
           resizeMode: TrinaResizeMode.pushAndPull,

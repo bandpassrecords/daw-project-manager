@@ -14,6 +14,7 @@ import '../providers/providers.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/search_utils.dart';
 import '../utils/trina_grid_locale.dart';
+import 'row_click_selection.dart';
 import 'widgets/trina_grid_menu_delegate.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../providers/theme_provider.dart';
@@ -27,6 +28,92 @@ class ReleasesTabPage extends ConsumerStatefulWidget {
 }
 
 class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
+
+  /// Deletes every selected release after one confirmation, mirroring the
+  /// project-templates table's bulk delete. Deliberately one dialog for the
+  /// whole batch rather than the per-release prompt the row action uses.
+  Future<void> _deleteSelectedReleases(List<Release> selected) async {
+    final l10n = AppLocalizations.of(context)!;
+    final plural = selected.length == 1 ? '' : 's';
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: Theme.of(dialogContext).cardColor,
+        title: Text(l10n.deleteSelectedReleases),
+        content: Text(
+          l10n.deleteSelectedReleasesConfirm(selected.length, plural),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade700,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final repo = await ref.read(repositoryProvider.future);
+    for (final release in selected) {
+      await repo.deleteRelease(release.id);
+    }
+    // releasesProvider is a stream off the repository, so the rows disappear on
+    // their own — only the selection (now pointing at deleted ids) needs reset.
+    ref.read(selectedReleasesProvider.notifier).clear();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.releasesDeleted(selected.length, plural))),
+      );
+    }
+  }
+
+  /// The bar that appears under the table while releases are selected — count,
+  /// clear, and the bulk delete. Same shape as the templates table's.
+  Widget _buildSelectionBar(AppLocalizations l10n, List<Release> selected) {
+    final plural = selected.length == 1 ? '' : 's';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: Theme.of(context).cardColor,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            l10n.releasesSelected(selected.length, plural),
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
+          ),
+          Row(
+            children: [
+              TextButton(
+                onPressed: () =>
+                    ref.read(selectedReleasesProvider.notifier).clear(),
+                child: Text(l10n.clearSelection),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.delete),
+                label: Text(l10n.deleteSelectedReleases),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.shade700,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => _deleteSelectedReleases(selected),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> _createNewRelease() async {
     final projects = ref.read(projectsProvider);
@@ -209,6 +296,13 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
 
         final isMobile = MobileUtils.isMobile();
         final l10n = AppLocalizations.of(context)!;
+        // Selection is keyed by id, so it survives a re-sort or a re-filter;
+        // resolving it against the visible rows keeps a bulk action from
+        // touching a release the user can no longer see.
+        final selectedReleaseIds = ref.watch(selectedReleasesProvider);
+        final selectedReleases = filteredReleases
+            .where((r) => selectedReleaseIds.contains(r.id))
+            .toList();
         return Column(
           children: [
             // Filter bar
@@ -280,6 +374,10 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
                       dateFormat: dateFormat,
                     ),
             ),
+            // Multi-select is the desktop table's; the mobile list has its own
+            // single-tap navigation and no checkbox column to drive this.
+            if (!isMobile && selectedReleases.isNotEmpty)
+              _buildSelectionBar(l10n, selectedReleases),
           ],
         );
       },
@@ -304,6 +402,28 @@ class _ReleasesTable extends ConsumerStatefulWidget {
 
 class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
   TrinaGridStateManager? stateManager;
+
+  /// Ctrl/cmd- and shift-click selection for this table, shared with the
+  /// projects and templates grids (see `row_click_selection.dart`) so all
+  /// three tables behave identically.
+  late final _clickSelection = RowClickSelectionController(
+    notifier: () => ref.read(selectedReleasesProvider.notifier),
+    selectedIds: () => ref.read(selectedReleasesProvider),
+    orderedIds: () => widget.releases.map((r) => r.id).toList(),
+  );
+
+  /// The selection as of the last build, for the checkbox renderers to read.
+  ///
+  /// TrinaGrid holds on to the `TrinaColumn` objects from its first build, so a
+  /// renderer closure that captured a local would keep painting that first
+  /// build's selection forever. Reading a field instead means every re-render
+  /// picks up the current value — the same reason the projects grid's renderers
+  /// go through `widget.selectedIds`.
+  Set<String> _selectedIds = const {};
+
+  bool get _areAllSelected =>
+      widget.releases.isNotEmpty &&
+      widget.releases.every((r) => _selectedIds.contains(r.id));
 
   @override
   void didUpdateWidget(_ReleasesTable oldWidget) {
@@ -333,6 +453,9 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
           .toList();
       
       return TrinaRow(cells: {
+        // Empty value: the checkbox column paints itself from the selection,
+        // but every declared column still needs a cell in every row.
+        'checkbox': TrinaCell(value: ''),
         'artwork': TrinaCell(value: release.artworkImagePath),
         'title': TrinaCell(value: release.title),
         'tracks': TrinaCell(value: releaseProjects.length),
@@ -386,6 +509,9 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
     if (confirm == true && mounted) {
       final repo = await ref.read(repositoryProvider.future);
       await repo.deleteRelease(release.id);
+      // Don't leave a deleted release sitting in the selection, where the bulk
+      // bar would keep counting it.
+      _clickSelection.removeAll([release.id]);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.releaseDeleted(release.title))),
@@ -444,7 +570,67 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
 
   @override
   Widget build(BuildContext context) {
+    // Watched (not read) so a selection change rebuilds the grid and re-renders
+    // the checkbox cells.
+    _selectedIds = ref.watch(selectedReleasesProvider);
     final columns = [
+      TrinaColumn(
+        title: '',
+        field: 'checkbox',
+        type: TrinaColumnType.text(),
+        width: 50,
+        minWidth: 50,
+        frozen: TrinaColumnFrozen.start,
+        enableColumnDrag: false,
+        enableContextMenu: false,
+        enableFilterMenuItem: false,
+        enableSorting: false,
+        enableEditingMode: false,
+        titleRenderer: (rendererContext) {
+          final style = rendererContext.stateManager.configuration.style;
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              color: rendererContext.column.backgroundColor,
+              border: BorderDirectional(
+                end: style.enableColumnBorderVertical
+                    ? BorderSide(color: style.borderColor)
+                    : BorderSide.none,
+              ),
+            ),
+            child: Center(
+              child: Transform.scale(
+                scale: 0.78,
+                child: Checkbox(
+                  value: _areAllSelected,
+                  tristate: _selectedIds.isNotEmpty && !_areAllSelected,
+                  onChanged: (_) => _areAllSelected
+                      ? _clickSelection.clear()
+                      : _clickSelection.selectAll(),
+                ),
+              ),
+            ),
+          );
+        },
+        renderer: (rendererContext) {
+          final release = rendererContext.row.cells['data']?.value as Release?;
+          if (release == null) return const SizedBox.shrink();
+          final isSelected = _selectedIds.contains(release.id);
+          return Transform.scale(
+            scale: 0.78,
+            child: Checkbox(
+              value: isSelected,
+              onChanged: (value) {
+                // A modifier-held click on this cell is already handled once,
+                // at row level, by the grid's rowWrapper below — this cell is
+                // part of the row it wraps. Acting on it here as well would
+                // toggle the same release twice and cancel itself out.
+                if (selectionModifierHeld()) return;
+                _clickSelection.toggle(release.id);
+              },
+            ),
+          );
+        },
+      ),
       TrinaColumn(
         title: AppLocalizations.of(context)!.artwork,
         field: 'artwork',
@@ -652,6 +838,26 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
       columns: columns,
       rows: initialRows,
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
+      // Ctrl/cmd- and shift-click anywhere on a row extend the checkbox
+      // selection, so building a multi-selection doesn't mean aiming at the
+      // 50px checkbox column.
+      rowWrapper: (context, rowWidget, row, _) => rowClickSelectionWrapper(
+        row: row,
+        rowWidget: rowWidget,
+        rowId: (r) => (r.cells['data']?.value as Release?)?.id,
+        onRowClick: _clickSelection.handleRowClick,
+      ),
+      // Keeps the shift-click anchor on whichever row is highlighted, however
+      // the highlight got there — a plain click or an arrow-key move. Skipped
+      // while a selection modifier is held: a shift-click moves the highlight
+      // to the row it just range-selected to, which must not become the anchor
+      // for the *next* shift-click, and a ctrl-click has already recorded its
+      // own anchor by the time this fires.
+      onActiveCellChanged: (TrinaGridOnActiveCellChangedEvent event) {
+        if (selectionModifierHeld()) return;
+        final release = event.cell?.row.cells['data']?.value as Release?;
+        if (release != null) _clickSelection.handleRowHighlight(release.id);
+      },
       rowColorCallback: (TrinaRowColorContext ctx) {
         final isActivated = stateManager?.currentRow == ctx.row;
         if (isActivated) return rowSelectColor;
@@ -659,6 +865,12 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
       },
       onLoaded: (TrinaGridOnLoadedEvent event) {
         stateManager = event.stateManager;
+        // Same as the projects and templates grids: nothing here acts on a
+        // cell/row range, so turn TrinaGrid's own selection off rather than
+        // have a ctrl/shift-click paint a range of outlined cells. Clicking a
+        // row still highlights it (currentCell), which is what the D/Enter
+        // shortcuts navigate from.
+        stateManager!.setSelectingMode(TrinaGridSelectingMode.none);
         stateManager!.addListener(_onStateManagerChanged);
       },
       configuration: TrinaGridConfiguration(
@@ -694,6 +906,11 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         scrollbar: const TrinaGridScrollbarConfig(
           showHorizontal: false,
         ),
+        // rowClickSelectionWrapper only adds a Listener around each row, so
+        // every row still measures exactly rowHeight. Saying so keeps
+        // TrinaGrid's ListView itemExtent fast path, which it otherwise drops
+        // for variable-height wrappers.
+        rowWrapperIsConstantHeight: true,
         columnSize: const TrinaGridColumnSizeConfig(
           autoSizeMode: TrinaAutoSizeMode.scale,
           resizeMode: TrinaResizeMode.pushAndPull,

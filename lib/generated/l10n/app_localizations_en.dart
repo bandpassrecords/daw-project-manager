@@ -684,6 +684,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String releasesSelected(int count, String plural) {
+    return '$count release$plural selected';
+  }
+
+  @override
+  String get deleteSelectedReleases => 'Delete Selected';
+
+  @override
+  String deleteSelectedReleasesConfirm(int count, String plural) {
+    return 'Are you sure you want to delete $count release$plural?';
+  }
+
+  @override
+  String releasesDeleted(int count, String plural) {
+    return '$count release$plural deleted';
+  }
+
+  @override
   String get selectTracks => 'Select Tracks';
 
   @override

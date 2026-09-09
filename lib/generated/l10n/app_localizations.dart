@@ -1253,6 +1253,30 @@ abstract class AppLocalizations {
   /// **'Release \"{title}\" deleted.'**
   String releaseDeleted(String title);
 
+  /// No description provided for @releasesSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} release{plural} selected'**
+  String releasesSelected(int count, String plural);
+
+  /// No description provided for @deleteSelectedReleases.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Selected'**
+  String get deleteSelectedReleases;
+
+  /// No description provided for @deleteSelectedReleasesConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {count} release{plural}?'**
+  String deleteSelectedReleasesConfirm(int count, String plural);
+
+  /// No description provided for @releasesDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} release{plural} deleted'**
+  String releasesDeleted(int count, String plural);
+
   /// No description provided for @selectTracks.
   ///
   /// In en, this message translates to:

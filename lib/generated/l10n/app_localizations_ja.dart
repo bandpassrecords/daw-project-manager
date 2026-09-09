@@ -676,6 +676,24 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String releasesSelected(int count, String plural) {
+    return '$count件のリリース$pluralを選択しました';
+  }
+
+  @override
+  String get deleteSelectedReleases => '選択項目を削除';
+
+  @override
+  String deleteSelectedReleasesConfirm(int count, String plural) {
+    return '$count件のリリース$pluralを削除してもよろしいですか?';
+  }
+
+  @override
+  String releasesDeleted(int count, String plural) {
+    return '$count件のリリース$pluralを削除しました';
+  }
+
+  @override
   String get selectTracks => 'トラックを選択';
 
   @override

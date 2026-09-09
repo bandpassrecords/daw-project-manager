@@ -687,6 +687,24 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String releasesSelected(int count, String plural) {
+    return 'Выбрано релизов: $count$plural';
+  }
+
+  @override
+  String get deleteSelectedReleases => 'Удалить выбранное';
+
+  @override
+  String deleteSelectedReleasesConfirm(int count, String plural) {
+    return 'Удалить выбранные релизы ($count$plural)?';
+  }
+
+  @override
+  String releasesDeleted(int count, String plural) {
+    return 'Удалено релизов: $count$plural';
+  }
+
+  @override
   String get selectTracks => 'Выбрать Треки';
 
   @override

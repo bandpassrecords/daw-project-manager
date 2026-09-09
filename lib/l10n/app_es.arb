@@ -527,6 +527,28 @@
       }
     }
   },
+  "releasesSelected": "{count} lanzamiento{plural} seleccionado{plural}",
+  "deleteSelectedReleases": "Eliminar selección",
+  "deleteSelectedReleasesConfirm": "¿Seguro que quieres eliminar {count} lanzamiento{plural}?",
+  "releasesDeleted": "{count} lanzamiento{plural} eliminado{plural}",
+  "@releasesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@deleteSelectedReleasesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@releasesDeleted": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "selectTracks": "Seleccionar Pistas",
   "continueButton": "Continuar",
   "noReleasesYet": "Aún no hay lanzamientos",

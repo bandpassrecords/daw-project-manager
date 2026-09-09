@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'
-    show HardwareKeyboard, LogicalKeyboardKey;
+import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:intl/intl.dart';
@@ -26,6 +25,7 @@ import '../utils/daw_logo.dart';
 import '../utils/file_launcher.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/trina_grid_locale.dart';
+import 'row_click_selection.dart';
 import 'widgets/trina_grid_menu_delegate.dart';
 import 'dialogs/create_project_dialog.dart';
 import 'dialogs/duplicate_template_dialog.dart';
@@ -75,11 +75,19 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
 
-  // The last individually-clicked (non-shift) template checkbox — the
-  // anchor a shift-click range-selects from. Mirrors the dashboard's
-  // project-table selection UX; intentionally not persisted to
-  // selectedTemplatesProvider since it's a transient interaction concept.
-  String? _selectionAnchorId;
+  /// Ctrl/cmd- and shift-click selection for this table, shared with the
+  /// projects grid (see `row_click_selection.dart`) so both tables behave
+  /// identically.
+  late final _clickSelection = RowClickSelectionController(
+    notifier: () => ref.read(selectedTemplatesProvider.notifier),
+    selectedIds: () => ref.read(selectedTemplatesProvider),
+    orderedIds: () => _visibleTemplateIds,
+  );
+
+  /// The ids of the rows currently on screen, in display order — what a
+  /// shift-click range and the header "select all" both work from. Refreshed
+  /// every build, since search filtering changes it.
+  List<String> _visibleTemplateIds = const [];
 
   TrinaGridStateManager? _tableStateManager;
 
@@ -144,27 +152,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
 
   Set<String> get _selectedTemplateIds => ref.watch(selectedTemplatesProvider);
 
-  void _toggleTemplateSelection(String templateId) {
-    _selectionAnchorId = templateId;
-    ref.read(selectedTemplatesProvider.notifier).toggle(templateId);
-  }
-
-  void _selectTemplateRange(List<String> orderedIds, String targetId) {
-    final anchor = _selectionAnchorId;
-    if (anchor == null) {
-      _toggleTemplateSelection(targetId);
-      return;
-    }
-    ref
-        .read(selectedTemplatesProvider.notifier)
-        .selectRange(orderedIds, anchor, targetId);
-    _selectionAnchorId = targetId;
-  }
-
-  void _clearTemplateSelection() {
-    _selectionAnchorId = null;
-    ref.read(selectedTemplatesProvider.notifier).clear();
-  }
+  void _clearTemplateSelection() => _clickSelection.clear();
 
   Future<void> _deleteSelectedTemplates(List<ProjectTemplate> selected) async {
     final l10n = AppLocalizations.of(context)!;
@@ -614,8 +602,8 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
   }
 
   /// [orderedIds] is the current filtered/visible row order — needed by the
-  /// header "select all" checkbox and by shift-click range selection, the
-  /// same way the main dashboard table's checkbox column works.
+  /// header "select all" checkbox, the same way the main dashboard table's
+  /// checkbox column works.
   List<TrinaColumn> _buildColumns(
     AppLocalizations l10n,
     List<String> orderedIds,
@@ -654,10 +642,8 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                   value: allSelected,
                   tristate: selected.isNotEmpty && !allSelected,
                   onChanged: (_) => allSelected
-                      ? _clearTemplateSelection()
-                      : ref
-                            .read(selectedTemplatesProvider.notifier)
-                            .selectAll(orderedIds),
+                      ? _clickSelection.clear()
+                      : _clickSelection.selectAll(),
                 ),
               ),
             ),
@@ -671,11 +657,12 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
             child: Checkbox(
               value: isSelected,
               onChanged: (value) {
-                if (HardwareKeyboard.instance.isShiftPressed) {
-                  _selectTemplateRange(orderedIds, template.id);
-                } else {
-                  _toggleTemplateSelection(template.id);
-                }
+                // A modifier-held click on this cell is already handled once,
+                // at row level, by the grid's rowWrapper — this cell is part
+                // of the row it wraps. Acting on it here as well would toggle
+                // the same template twice and cancel itself out.
+                if (selectionModifierHeld()) return;
+                _clickSelection.toggle(template.id);
               },
             ),
           );
@@ -1194,6 +1181,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                           }
 
                           final orderedIds = filtered.map((t) => t.id).toList();
+                          _visibleTemplateIds = orderedIds;
                           final selectedIds = _selectedTemplateIds;
                           final selectedTemplates = templates
                               .where((t) => selectedIds.contains(t.id))
@@ -1211,6 +1199,45 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                                   rows: _buildRows(filtered),
                                   columnMenuDelegate:
                                       const FitAllColumnsMenuDelegate(),
+                                  // Ctrl/cmd- and shift-click anywhere on a
+                                  // row extend the checkbox selection, so
+                                  // building a multi-selection doesn't mean
+                                  // aiming at the 50px checkbox column.
+                                  rowWrapper: (context, rowWidget, row, _) =>
+                                      rowClickSelectionWrapper(
+                                        row: row,
+                                        rowWidget: rowWidget,
+                                        rowId: (r) =>
+                                            (r.cells['data']?.value
+                                                    as ProjectTemplate?)
+                                                ?.id,
+                                        onRowClick:
+                                            _clickSelection.handleRowClick,
+                                      ),
+                                  // Keeps the shift-click anchor on whichever
+                                  // row is highlighted, however the highlight
+                                  // got there — a plain click or an arrow-key
+                                  // move. Skipped while a selection modifier
+                                  // is held: a shift-click moves the highlight
+                                  // to the row it just range-selected to,
+                                  // which must not become the anchor for the
+                                  // *next* shift-click, and a ctrl-click has
+                                  // already recorded its own anchor by the
+                                  // time this fires.
+                                  onActiveCellChanged:
+                                      (
+                                        TrinaGridOnActiveCellChangedEvent event,
+                                      ) {
+                                        if (selectionModifierHeld()) return;
+                                        final template =
+                                            event.cell?.row.cells['data']?.value
+                                                as ProjectTemplate?;
+                                        if (template != null) {
+                                          _clickSelection.handleRowHighlight(
+                                            template.id,
+                                          );
+                                        }
+                                      },
                                   rowColorCallback: (TrinaRowColorContext ctx) {
                                     final isActivated =
                                         _tableStateManager?.currentRow ==
@@ -1225,6 +1252,15 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                                       _onTableStateManagerChanged,
                                     );
                                     _tableStateManager = event.stateManager;
+                                    // Same as the projects grid: nothing here
+                                    // acts on a cell/row range — bulk actions
+                                    // go through the checkbox selection — so
+                                    // turn TrinaGrid's own selection off
+                                    // rather than have a ctrl/shift-click
+                                    // paint a range behind the real one.
+                                    _tableStateManager!.setSelectingMode(
+                                      TrinaGridSelectingMode.none,
+                                    );
                                     _tableStateManager!.addListener(
                                       _onTableStateManagerChanged,
                                     );
@@ -1296,6 +1332,13 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                                       oddRowColor: oddColor,
                                       evenRowColor: evenColor,
                                     ),
+                                    // rowClickSelectionWrapper only adds a
+                                    // Listener around each row, so every row
+                                    // still measures exactly rowHeight.
+                                    // Saying so keeps TrinaGrid's ListView
+                                    // itemExtent fast path, which it otherwise
+                                    // drops for variable-height wrappers.
+                                    rowWrapperIsConstantHeight: true,
                                     columnSize: const TrinaGridColumnSizeConfig(
                                       autoSizeMode: TrinaAutoSizeMode.scale,
                                       resizeMode: TrinaResizeMode.pushAndPull,

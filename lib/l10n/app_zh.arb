@@ -527,6 +527,28 @@
       }
     }
   },
+  "releasesSelected": "已选择{count}个发布{plural}",
+  "deleteSelectedReleases": "删除所选",
+  "deleteSelectedReleasesConfirm": "确定要删除{count}个发布{plural}吗?",
+  "releasesDeleted": "已删除{count}个发布{plural}",
+  "@releasesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@deleteSelectedReleasesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@releasesDeleted": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "selectTracks": "选择曲目",
   "continueButton": "继续",
   "noReleasesYet": "还没有发布",

@@ -715,45 +715,46 @@ final localeProvider = NotifierProvider<LocaleNotifier, Locale>(() {
   return LocaleNotifier();
 });
 
-// Selected Projects Provider - persists selection across language changes
-final selectedProjectsProvider =
-    NotifierProvider<SelectedProjectsNotifier, Set<String>>(() {
-      return SelectedProjectsNotifier();
-    });
-
-class SelectedProjectsNotifier extends Notifier<Set<String>> {
+/// The set of rows a table has checked, and the operations every table's
+/// selection supports.
+///
+/// The projects grid and the project-templates grid behave identically here —
+/// individual toggles, a header select-all, shift-click ranges, and the
+/// ctrl/cmd-click additions driven by `RowClickSelectionController`
+/// (`lib/ui/row_click_selection.dart`) — so the two notifiers differ only in
+/// which screen's ids they hold. Keeping one implementation is what stops the
+/// two tables' selection behavior from drifting apart again.
+abstract class SelectionNotifier extends Notifier<Set<String>> {
   @override
-  Set<String> build() {
-    return <String>{};
-  }
+  Set<String> build() => <String>{};
 
-  void toggle(String projectId) {
+  void toggle(String id) {
     final current = Set<String>.from(state);
-    if (current.contains(projectId)) {
-      current.remove(projectId);
+    if (current.contains(id)) {
+      current.remove(id);
     } else {
-      current.add(projectId);
+      current.add(id);
     }
     state = current;
   }
 
-  void selectAll(List<String> projectIds) {
-    state = Set<String>.from(projectIds);
+  void selectAll(List<String> ids) {
+    state = Set<String>.from(ids);
   }
 
   void clear() {
     state = <String>{};
   }
 
-  void addAll(List<String> projectIds) {
+  void addAll(List<String> ids) {
     final current = Set<String>.from(state);
-    current.addAll(projectIds);
+    current.addAll(ids);
     state = current;
   }
 
-  void removeAll(List<String> projectIds) {
+  void removeAll(List<String> ids) {
     final current = Set<String>.from(state);
-    current.removeAll(projectIds);
+    current.removeAll(ids);
     state = current;
   }
 
@@ -779,7 +780,15 @@ class SelectedProjectsNotifier extends Notifier<Set<String>> {
   }
 }
 
-// Selected Templates Provider — same shape as SelectedProjectsNotifier but
+// Selected Projects Provider - persists selection across language changes
+final selectedProjectsProvider =
+    NotifierProvider<SelectedProjectsNotifier, Set<String>>(() {
+      return SelectedProjectsNotifier();
+    });
+
+class SelectedProjectsNotifier extends SelectionNotifier {}
+
+// Selected Templates Provider — same behavior as SelectedProjectsNotifier but
 // kept separate since it tracks a different screen's selection (the
 // Project Templates table), not project ids.
 final selectedTemplatesProvider =
@@ -787,40 +796,17 @@ final selectedTemplatesProvider =
       return SelectedTemplatesNotifier();
     });
 
-class SelectedTemplatesNotifier extends Notifier<Set<String>> {
-  @override
-  Set<String> build() => <String>{};
+class SelectedTemplatesNotifier extends SelectionNotifier {}
 
-  void toggle(String templateId) {
-    final current = Set<String>.from(state);
-    if (current.contains(templateId)) {
-      current.remove(templateId);
-    } else {
-      current.add(templateId);
-    }
-    state = current;
-  }
+// Selected Releases Provider — same behavior as SelectedProjectsNotifier but
+// kept separate since it tracks a different screen's selection (the
+// Releases table), not project ids.
+final selectedReleasesProvider =
+    NotifierProvider<SelectedReleasesNotifier, Set<String>>(() {
+      return SelectedReleasesNotifier();
+    });
 
-  void selectAll(List<String> templateIds) {
-    state = Set<String>.from(templateIds);
-  }
-
-  void clear() {
-    state = <String>{};
-  }
-
-  void selectRange(List<String> orderedIds, String anchorId, String targetId) {
-    final anchorIndex = orderedIds.indexOf(anchorId);
-    final targetIndex = orderedIds.indexOf(targetId);
-    if (anchorIndex == -1 || targetIndex == -1) {
-      toggle(targetId);
-      return;
-    }
-    final start = anchorIndex < targetIndex ? anchorIndex : targetIndex;
-    final end = anchorIndex < targetIndex ? targetIndex : anchorIndex;
-    state = {...state, ...orderedIds.sublist(start, end + 1)};
-  }
-}
+class SelectedReleasesNotifier extends SelectionNotifier {}
 
 // Recently Discovered Projects Provider — IDs of projects the background
 // folder watcher (see FolderWatcherService, wired up in main.dart) has found
