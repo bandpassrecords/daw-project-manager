@@ -671,6 +671,24 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String releasesSelected(int count, String plural) {
+    return '已选择$count个发布$plural';
+  }
+
+  @override
+  String get deleteSelectedReleases => '删除所选';
+
+  @override
+  String deleteSelectedReleasesConfirm(int count, String plural) {
+    return '确定要删除$count个发布$plural吗?';
+  }
+
+  @override
+  String releasesDeleted(int count, String plural) {
+    return '已删除$count个发布$plural';
+  }
+
+  @override
   String get selectTracks => '选择曲目';
 
   @override

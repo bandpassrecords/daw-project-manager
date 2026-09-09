@@ -527,6 +527,28 @@
       }
     }
   },
+  "releasesSelected": "{count}件のリリース{plural}を選択しました",
+  "deleteSelectedReleases": "選択項目を削除",
+  "deleteSelectedReleasesConfirm": "{count}件のリリース{plural}を削除してもよろしいですか?",
+  "releasesDeleted": "{count}件のリリース{plural}を削除しました",
+  "@releasesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@deleteSelectedReleasesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@releasesDeleted": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "selectTracks": "トラックを選択",
   "continueButton": "続行",
   "noReleasesYet": "まだリリースがありません",

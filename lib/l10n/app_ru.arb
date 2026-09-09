@@ -527,6 +527,28 @@
       }
     }
   },
+  "releasesSelected": "Выбрано релизов: {count}{plural}",
+  "deleteSelectedReleases": "Удалить выбранное",
+  "deleteSelectedReleasesConfirm": "Удалить выбранные релизы ({count}{plural})?",
+  "releasesDeleted": "Удалено релизов: {count}{plural}",
+  "@releasesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@deleteSelectedReleasesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@releasesDeleted": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "selectTracks": "Выбрать Треки",
   "continueButton": "Продолжить",
   "noReleasesYet": "Пока нет релизов",

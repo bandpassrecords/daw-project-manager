@@ -608,6 +608,28 @@
     
 }
   },
+  "releasesSelected": "{count} release{plural} selected",
+  "deleteSelectedReleases": "Delete Selected",
+  "deleteSelectedReleasesConfirm": "Are you sure you want to delete {count} release{plural}?",
+  "releasesDeleted": "{count} release{plural} deleted",
+  "@releasesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@deleteSelectedReleasesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "@releasesDeleted": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "selectTracks": "Select Tracks",
   "continueButton": "Continue",
   "noReleasesYet": "No releases yet",
