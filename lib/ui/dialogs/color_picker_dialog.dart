@@ -121,51 +121,22 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Preset swatches. Tapping one picks it outright — this is the
-              // fast path, and the one the phase picker has always had.
+              // Preset swatches. Tapping one loads it into the wheel and the
+              // hex field rather than picking it outright, so a preset can be
+              // used as a starting point and nudged — the swatch, the wheel
+              // and the hex are all just ways of editing the same pending
+              // color, and only Apply commits it.
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
-                children: widget.palette.map((color) {
-                  final isSelected =
-                      color.toARGB32() == _color.toARGB32();
-                  return GestureDetector(
-                    onTap: () => Navigator.pop(context, color),
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.onSurface
-                              : Colors.transparent,
-                          width: 2.5,
-                        ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: color.withValues(alpha: 0.5),
-                                  blurRadius: 6,
-                                )
-                              ]
-                            : null,
-                      ),
-                      child: isSelected
-                          ? Icon(
-                              Icons.check,
-                              size: 18,
-                              color: ThemeData.estimateBrightnessForColor(
-                                          color) ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
-                            )
-                          : null,
+                children: [
+                  for (final color in widget.palette)
+                    _PresetSwatch(
+                      color: color,
+                      isSelected: color.toARGB32() == _color.toARGB32(),
+                      onTap: () => _setFromWheel(HSVColor.fromColor(color)),
                     ),
-                  );
-                }).toList(),
+                ],
               ),
               const SizedBox(height: 16),
               const Divider(height: 1),
@@ -226,6 +197,84 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
         ),
         FilledButton(onPressed: _confirmHex, child: Text(l10n.apply)),
       ],
+    );
+  }
+}
+
+/// One preset swatch.
+///
+/// Stateful only to track hover: on desktop a bare colored circle gives no
+/// hint that it does anything, so it lifts and grows a ring under the
+/// pointer, takes the click cursor, and shows its hex in a tooltip.
+class _PresetSwatch extends StatefulWidget {
+  final Color color;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _PresetSwatch({
+    required this.color,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  State<_PresetSwatch> createState() => _PresetSwatchState();
+}
+
+class _PresetSwatchState extends State<_PresetSwatch> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final tickColor =
+        ThemeData.estimateBrightnessForColor(widget.color) == Brightness.dark
+            ? Colors.white
+            : Colors.black;
+
+    return Tooltip(
+      message: colorToHex(widget.color),
+      waitDuration: const Duration(milliseconds: 400),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedScale(
+            scale: _hovered ? 1.12 : 1.0,
+            duration: const Duration(milliseconds: 120),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 120),
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: widget.color,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: widget.isSelected
+                      ? onSurface
+                      : _hovered
+                          ? onSurface.withValues(alpha: 0.5)
+                          : Colors.transparent,
+                  width: 2.5,
+                ),
+                boxShadow: widget.isSelected || _hovered
+                    ? [
+                        BoxShadow(
+                          color: widget.color.withValues(alpha: 0.5),
+                          blurRadius: 6,
+                        )
+                      ]
+                    : null,
+              ),
+              child: widget.isSelected
+                  ? Icon(Icons.check, size: 18, color: tickColor)
+                  : null,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

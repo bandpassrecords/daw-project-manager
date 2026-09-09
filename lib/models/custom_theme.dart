@@ -155,8 +155,22 @@ class CustomTheme {
   Color get resolvedTextTertiary =>
       textTertiary ?? resolvedOnSurface.withValues(alpha: 0.60);
 
+  /// Divider/border tone, blended onto [card] so it comes out **opaque**.
+  ///
+  /// Opacity is not cosmetic here. Several call sites fade the divider
+  /// further — `dividerColor.withValues(alpha: 0.25)` for grid lines, `0.4`
+  /// for a grid's outer border — and `withValues` *replaces* alpha rather
+  /// than scaling it. Classic Dark's divider is an opaque grey, so those
+  /// calls fade it to nearly nothing, which is why the built-in themes show
+  /// no borders in tables. A translucent `white@0.10` default would come
+  /// back out of the same call at `white@0.25`: brighter than it went in,
+  /// which is exactly the stark white grid line user themes were getting.
   Color get resolvedDivider =>
-      divider ?? resolvedOnSurface.withValues(alpha: 0.10);
+      divider ??
+      Color.alphaBlend(
+        (isDark ? Colors.white : Colors.black).withValues(alpha: 0.10),
+        card,
+      );
 
   Color get resolvedInputBorder =>
       inputBorder ?? resolvedOnSurface.withValues(alpha: 0.20);

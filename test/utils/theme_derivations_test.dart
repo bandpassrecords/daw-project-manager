@@ -85,6 +85,67 @@ void main() {
     });
   });
 
+  group('grid lines stay faint under a user theme', () {
+    // The reported bug: custom themes drew a stark white border in every
+    // table while the built-ins drew none.
+    //
+    // The grids fade the divider with `dividerColor.withValues(alpha: 0.25)`
+    // (and 0.4 for the outer border). withValues *replaces* alpha rather
+    // than scaling it, so an opaque divider — which is what Classic Dark
+    // has — comes out faded to nearly nothing, while a translucent
+    // `white@0.10` default came back out at `white@0.25`: brighter than it
+    // went in. CustomTheme.resolvedDivider is opaque for exactly this
+    // reason.
+
+    /// How far a composited line sits from the surface behind it, summed
+    /// across channels. Near zero means invisible.
+    double deltaFromCard(Color line, Color card) {
+      final blended = Color.alphaBlend(line, card);
+      return (blended.r - card.r).abs() +
+          (blended.g - card.g).abs() +
+          (blended.b - card.b).abs();
+    }
+
+    final mine = userTheme(primary: const Color(0xFF6B7078));
+
+    test('a derived divider is opaque', () {
+      expect(mine.resolvedDivider.a, 1.0);
+    });
+
+    test('fading it lowers its alpha instead of raising it', () {
+      final faded = mine.resolvedDivider.withValues(alpha: 0.25);
+      expect(faded.a, lessThan(mine.resolvedDivider.a));
+    });
+
+    test('the resulting grid line is nearly invisible against the card', () {
+      final line = mine.resolvedDivider.withValues(alpha: 0.25);
+      expect(deltaFromCard(line, mine.card), lessThan(0.15));
+    });
+
+    test('and no more visible than Classic Dark, which shows none', () {
+      final classic = AppThemes.classicDarkSpec;
+      expect(
+        deltaFromCard(mine.resolvedDivider.withValues(alpha: 0.25), mine.card),
+        lessThanOrEqualTo(
+          deltaFromCard(
+                classic.resolvedDivider.withValues(alpha: 0.25),
+                classic.card,
+              ) +
+              0.05,
+        ),
+      );
+    });
+
+    test('the pre-fix translucent divider would have been clearly visible',
+        () {
+      // Guards the regression itself: this is what the old default produced.
+      final oldStyle =
+          Colors.white.withValues(alpha: 0.10).withValues(alpha: 0.25);
+      expect(oldStyle.a, 0.25, reason: 'withValues replaced, not scaled');
+      expect(deltaFromCard(oldStyle, mine.card), greaterThan(0.4));
+    });
+  });
+
   group('identityKey', () {
     test('changes when a theme is edited in place', () {
       // TrinaGrid caches renderer colors, so keying only on the id would

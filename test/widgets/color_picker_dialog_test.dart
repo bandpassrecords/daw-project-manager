@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
@@ -233,7 +234,38 @@ void main() {
       expect(find.byType(ColorWheel), findsOneWidget);
     });
 
-    testWidgets('tapping a preset swatch picks it outright', (tester) async {
+    testWidgets('a preset swatch loads into the hex field without closing',
+        (tester) async {
+      await openPicker(
+        tester,
+        current: const Color(0xFF1E1F22),
+        palette: const [Color(0xFF4FC3F7), Color(0xFF66BB6A)],
+      );
+
+      await tester.tap(swatches().at(1));
+      await tester.pumpAndSettle();
+
+      expect(hexFieldText(tester), '#66BB6A');
+      // Still open, so the preset can be nudged from the wheel.
+      expect(find.byType(ColorWheel), findsOneWidget);
+    });
+
+    testWidgets('a preset moves the wheel, so it can be nudged from there',
+        (tester) async {
+      await openPicker(
+        tester,
+        current: const Color(0xFF1E1F22),
+        palette: const [Color(0xFFEF5350)],
+      );
+
+      await tester.tap(swatches().first);
+      await tester.pumpAndSettle();
+
+      final wheel = tester.widget<ColorWheel>(find.byType(ColorWheel));
+      expect(wheel.color, HSVColor.fromColor(const Color(0xFFEF5350)));
+    });
+
+    testWidgets('a preset then Apply returns that preset', (tester) async {
       Color? picked;
       await tester.pumpWidget(
         MaterialApp(
@@ -261,8 +293,29 @@ void main() {
 
       await tester.tap(swatches().at(1));
       await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
+      await tester.pumpAndSettle();
 
       expect(picked, const Color(0xFF66BB6A));
+    });
+
+    testWidgets('a swatch takes the click cursor so it reads as tappable',
+        (tester) async {
+      await openPicker(tester, palette: const [Color(0xFF4FC3F7)]);
+
+      // Tooltip wraps the swatch in a MouseRegion of its own, so look for
+      // the click cursor among them rather than assuming a position.
+      final regions = tester.widgetList<MouseRegion>(
+        find.descendant(
+          of: find.byType(Wrap),
+          matching: find.byType(MouseRegion),
+        ),
+      );
+      expect(
+        regions.any((r) => r.cursor == SystemMouseCursors.click),
+        isTrue,
+        reason: 'a swatch should show the click cursor on hover',
+      );
     });
 
     testWidgets('Cancel returns nothing', (tester) async {

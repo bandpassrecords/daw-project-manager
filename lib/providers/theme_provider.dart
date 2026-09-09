@@ -52,9 +52,12 @@ class AppThemes {
     textTertiary: Colors.white60,
     cardRadius: 16,
     controlRadius: 12,
-    // divider, inputBorder and chipBorder fall out of the white-on-dark
-    // defaults at exactly the alphas this theme used. cardBorder doesn't —
-    // null there means "no outline", so it has to be spelled out.
+    // inputBorder and chipBorder fall out of the white-on-dark defaults at
+    // exactly the alphas this theme used. divider and cardBorder don't:
+    // null cardBorder means "no outline", and the divider default is now an
+    // opaque blend (see CustomTheme.resolvedDivider), so Neon Dark's
+    // translucent white one has to be spelled out to stay as it shipped.
+    divider: Colors.white.withValues(alpha: 0.1),
     cardBorder: Colors.white.withValues(alpha: 0.1),
   );
 
