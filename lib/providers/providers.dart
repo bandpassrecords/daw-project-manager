@@ -2491,6 +2491,20 @@ final desktopPlayerPositionProvider =
       DesktopPlayerPositionNotifier.new,
     );
 
+/// Length of the desktop player's current track, published alongside
+/// [desktopPlayerPositionProvider]. The project detail page needs both to draw
+/// a live waveform for a track the player bar — not its own player — owns.
+class DesktopPlayerDurationNotifier extends Notifier<Duration> {
+  @override
+  Duration build() => Duration.zero;
+  void set(Duration value) => state = value;
+}
+
+final desktopPlayerDurationProvider =
+    NotifierProvider<DesktopPlayerDurationNotifier, Duration>(
+      DesktopPlayerDurationNotifier.new,
+    );
+
 /// Bumped to ask whoever owns the desktop player's AudioPlayer (currently
 /// _DesktopPlayerBarState) to toggle play/pause on the current track, from
 /// UI that doesn't have direct access to that widget's state — e.g. the
@@ -2892,6 +2906,29 @@ int? prevIndexIn(int length, int current, PlaybackMode mode) {
   return prev;
 }
 
+/// The file path each entry of [queue] should be played from, with
+/// [overridePath] substituted for the project whose id is [overrideProjectId].
+///
+/// The override exists for the mono button: it swaps the *file* backing one
+/// queue slot (stereo mixdown → generated mono WAV) while the queue itself,
+/// and therefore the current index, next/prev and the notification, stay
+/// exactly as they were. Replacing the player's whole audio source with a
+/// single-track one instead used to reset the reported index to 0, which
+/// dragged the UI back to the first track — see [MobilePlayerNotifier.switchSource].
+List<String> sourcePathsForQueue(
+  List<MusicProject> queue, {
+  String? overrideProjectId,
+  String? overridePath,
+}) => [
+  for (final project in queue)
+    (overrideProjectId != null &&
+            overridePath != null &&
+            overridePath.isNotEmpty &&
+            project.id == overrideProjectId)
+        ? overridePath
+        : resolvedPreviewPath(project),
+];
+
 class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
   static const _tag = '[MobilePlayer]';
 
@@ -2922,6 +2959,12 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
   StreamSubscription<Duration>? _fbPosSub;
   StreamSubscription<Duration>? _fbDurSub;
   StreamSubscription<void>? _fbCompleteSub;
+
+  // Mono button: the queue slot whose backing file has been swapped, and what
+  // it was swapped to. Applied by [_buildSources] so every later rebuild of
+  // the concat (reorder on shuffle toggle) keeps playing the same file.
+  String? _sourceOverrideProjectId;
+  String? _sourceOverridePath;
 
   // Rastreia qual player foi realmente usado no último _play().
   // _jabInitialized pode virar true DEPOIS de _play() ter usado audioplayers,
@@ -3059,8 +3102,7 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     await _play(project, path, ordered, idx);
   }
 
-  ja.AudioSource _toAudioSource(MusicProject project) {
-    final trackPath = resolvedPreviewPath(project);
+  ja.AudioSource _toAudioSource(MusicProject project, String trackPath) {
     return ja.AudioSource.uri(
       Uri.file(trackPath),
       tag: MediaItem(
@@ -3072,6 +3114,20 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     );
   }
 
+  /// The player sources for [queue], honouring an active mono swap. Every
+  /// rebuild of the concat goes through here so the swap survives a shuffle
+  /// reorder and — crucially — so the queue always keeps all of its entries.
+  List<ja.AudioSource> _buildSources(List<MusicProject> queue) {
+    final paths = sourcePathsForQueue(
+      queue,
+      overrideProjectId: _sourceOverrideProjectId,
+      overridePath: _sourceOverridePath,
+    );
+    return [
+      for (var i = 0; i < queue.length; i++) _toAudioSource(queue[i], paths[i]),
+    ];
+  }
+
   Future<void> _play(
     MusicProject project,
     String path,
@@ -3079,6 +3135,9 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     int queueIndex,
   ) async {
     debugPrint('$_tag playing ${project.displayName} at $path');
+    // A new playback session starts from the projects' own files again.
+    _sourceOverrideProjectId = null;
+    _sourceOverridePath = null;
     // Preservar o modo de playback — o reset de estado não deve apagar a
     // escolha do usuário (repeat/shuffle) ao trocar de faixa.
     final savedMode = state.playbackMode;
@@ -3094,8 +3153,7 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
       // ConcatenatingAudioSource para que skip prev/next da notificação funcione.
       // A fila já vem na ordem de reprodução (ver playProject/_reorderForMode),
       // então o avanço automático e os botões da notificação seguem o shuffle.
-      final sources = queue.map(_toAudioSource).toList();
-      _jaSource = ja.ConcatenatingAudioSource(children: sources);
+      _jaSource = ja.ConcatenatingAudioSource(children: _buildSources(queue));
       try {
         await _jaPlayer!.setAudioSource(
           _jaSource!,
@@ -3161,6 +3219,22 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     }
   }
 
+  Future<void> setVolume(double volume) async {
+    if (_useJa) {
+      await _jaPlayer?.setVolume(volume);
+    } else {
+      await _fallbackPlayer?.setVolume(volume);
+    }
+  }
+
+  /// Whether the track for [projectId] is currently playing from a swapped
+  /// file rather than its own mixdown — i.e. the mono button is on for it.
+  /// Lets a page that reopens on this track show the toggle in the right state
+  /// instead of assuming stereo.
+  bool hasSourceOverrideFor(String projectId) =>
+      _sourceOverrideProjectId == projectId &&
+      _sourceOverridePath?.isNotEmpty == true;
+
   Future<void> playNext() async {
     final target = nextIndexIn(
       state.queue.length,
@@ -3203,19 +3277,38 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
   }
 
   /// Troca a fonte sem mudar projeto/fila — usado pelo botão mono.
+  ///
+  /// On Android the whole queue is rebuilt with [path] substituted at the
+  /// current slot, rather than handing the player a single-track source: a
+  /// one-item source makes `currentIndexStream` report 0, and [_attachJaListeners]
+  /// then rewrites the state to the *first* track (the mono button appeared to
+  /// jump back to the top of the list), while next/prev seek-by-index would
+  /// throw on the truncated source.
   Future<void> switchSource(String path, Duration seekTo) async {
     if (_useJa) {
-      final tag = MediaItem(
-        id: path,
-        title: state.currentProject?.displayName ?? '',
-        artist: '',
-        artUri: _artUri,
-      );
-      await _jaPlayer?.setAudioSource(
-        ja.AudioSource.uri(Uri.file(path), tag: tag),
-      );
-      if (seekTo > Duration.zero) await _jaPlayer?.seek(seekTo);
-      await _jaPlayer?.play();
+      final current = state.currentProject;
+      final queue = state.queue;
+      final idx = state.queueIndex;
+      if (current == null || queue.isEmpty || idx < 0 || idx >= queue.length) {
+        return;
+      }
+      // An override equal to the track's own file is just "back to stereo".
+      final isOverride = path.isNotEmpty && path != resolvedPreviewPath(current);
+      _sourceOverrideProjectId = isOverride ? current.id : null;
+      _sourceOverridePath = isOverride ? path : null;
+      try {
+        _jaSource = ja.ConcatenatingAudioSource(children: _buildSources(queue));
+        await _jaPlayer!.setAudioSource(
+          _jaSource!,
+          initialIndex: idx,
+          initialPosition: seekTo > Duration.zero ? seekTo : Duration.zero,
+        );
+        await _applyPlaybackMode(state.playbackMode);
+        await _jaPlayer!.play();
+      } catch (e) {
+        debugPrint('$_tag failed to switch source: $e');
+        state = state.copyWith(isPlaying: false);
+      }
     } else {
       _cancelFallbackSubs();
       _attachFallbackListeners();
@@ -3253,9 +3346,7 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     state = state.copyWith(queue: ordered, queueIndex: idx, playbackMode: mode);
     if (_useJa) {
       try {
-        _jaSource = ja.ConcatenatingAudioSource(
-          children: ordered.map(_toAudioSource).toList(),
-        );
+        _jaSource = ja.ConcatenatingAudioSource(children: _buildSources(ordered));
         await _jaPlayer!.setAudioSource(
           _jaSource!,
           initialIndex: idx,

@@ -91,9 +91,12 @@ class _MobilePlayerPageState extends ConsumerState<MobilePlayerPage> {
   Future<void> _onPageChanged(int newPage, List<MusicProject> queue) async {
     if (_suppressPageChange) return;
     if (newPage < 0 || newPage >= queue.length) return;
-    // Reset mono when changing track
-    setState(() { _isMono = false; });
     final notifier = ref.read(mobilePlayerProvider.notifier);
+    // The mono swap is per-track and survives a swipe away and back, so show
+    // the toggle in whatever state the player actually holds for this track.
+    setState(() {
+      _isMono = notifier.hasSourceOverrideFor(queue[newPage].id);
+    });
     final stateQueue = ref.read(mobilePlayerProvider).queue;
     if (stateQueue.isEmpty) {
       // Player not initialised via playProject yet — start it from this queue.
@@ -481,7 +484,11 @@ class _MobilePlayerPageState extends ConsumerState<MobilePlayerPage> {
     // addPostFrameCallback causava race condition com múltiplos rebuilds.
     ref.listen<MobilePlayerState>(mobilePlayerProvider, (prev, next) {
       if (prev?.queueIndex != next.queueIndex) {
-        setState(() { _isMono = false; }); // reset mono ao trocar faixa
+        final id = next.currentProject?.id;
+        setState(() {
+          _isMono = id != null &&
+              ref.read(mobilePlayerProvider.notifier).hasSourceOverrideFor(id);
+        });
         _syncPageToState(next.queueIndex);
       }
     });

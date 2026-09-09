@@ -30,4 +30,86 @@ void main() {
           Duration.zero);
     });
   });
+
+  // Regression cover for: seeking in the project-detail player did nothing on
+  // Android while the track was playing through the global mobile player. The
+  // page delegated play/pause to that player but still sent every seek, volume
+  // change and mono swap to its own idle AudioPlayer.
+  group('playbackTargetFor', () {
+    test('routes to the mobile player when it holds this project', () {
+      expect(
+        playbackTargetFor(
+          isMobile: true,
+          projectId: 'p1',
+          mobilePlayerProjectId: 'p1',
+        ),
+        PlaybackTarget.mobilePlayer,
+      );
+    });
+
+    test('stays local on mobile when the global player holds another track',
+        () {
+      expect(
+        playbackTargetFor(
+          isMobile: true,
+          projectId: 'p1',
+          mobilePlayerProjectId: 'p2',
+        ),
+        PlaybackTarget.local,
+      );
+    });
+
+    test('stays local on mobile when nothing is playing globally', () {
+      expect(
+        playbackTargetFor(isMobile: true, projectId: 'p1'),
+        PlaybackTarget.local,
+      );
+    });
+
+    test('routes to the desktop bar when it holds this project', () {
+      expect(
+        playbackTargetFor(
+          isMobile: false,
+          projectId: 'p1',
+          desktopPlayerProjectId: 'p1',
+        ),
+        PlaybackTarget.desktopPlayerBar,
+      );
+    });
+
+    test('stays local on desktop when the bar holds another track or none', () {
+      expect(
+        playbackTargetFor(
+          isMobile: false,
+          projectId: 'p1',
+          desktopPlayerProjectId: 'p2',
+        ),
+        PlaybackTarget.local,
+      );
+      expect(
+        playbackTargetFor(isMobile: false, projectId: 'p1'),
+        PlaybackTarget.local,
+      );
+    });
+
+    test('ignores the player belonging to the other platform', () {
+      // A stale desktop request must not capture a mobile seek, and vice versa.
+      expect(
+        playbackTargetFor(
+          isMobile: true,
+          projectId: 'p1',
+          desktopPlayerProjectId: 'p1',
+        ),
+        PlaybackTarget.local,
+      );
+      expect(
+        playbackTargetFor(
+          isMobile: false,
+          projectId: 'p1',
+          mobilePlayerProjectId: 'p1',
+        ),
+        PlaybackTarget.local,
+      );
+    });
+  });
 }
