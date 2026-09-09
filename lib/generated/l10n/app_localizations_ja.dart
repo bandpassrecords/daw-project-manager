@@ -3269,6 +3269,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startupDontShowAgain => '起動時に表示しない';
 
   @override
+  String get pinnedLibraryWarningTitle => 'テスト用ライブラリを使用中';
+
+  @override
+  String get pinnedLibraryWarningBody =>
+      'このビルドは専用のテスト用ライブラリにデータを保存するため、インストール済みのアプリが使うライブラリには影響しません。ここで変更したプロジェクト・プロファイル・設定は、そちらには表示されません。';
+
+  @override
+  String get pinnedLibraryWarningLibraryLabel => 'ライブラリ';
+
+  @override
+  String get pinnedLibraryWarningLocationLabel => '場所';
+
+  @override
+  String get pinnedLibraryWarningDontShowAgain => 'このライブラリについて今後警告しない';
+
+  @override
   String get deleteAllData => 'すべてのデータを削除';
 
   @override

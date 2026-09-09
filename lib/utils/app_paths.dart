@@ -38,6 +38,25 @@ String? _runtimeDirName;
 /// pinning it.
 bool get canPickAppDataDir => !kReleaseMode && _dataDirOverride.isEmpty;
 
+/// Whether `--dart-define=DPM_DATA_DIR=…` pinned this build to a library of
+/// its own.
+///
+/// A pinned build is the one case that ends up with no in-app trace of which
+/// library it opened: it never sees the startup picker, and the Settings card
+/// that names the library in use is gated on [canPickAppDataDir] too. So it
+/// is the case worth warning the person running it about — see
+/// `showPinnedLibraryWarningDialog`. Never true in a shipping release, which
+/// passes no override.
+bool get isAppDataDirPinned => resolveIsAppDataDirPinned(_dataDirOverride);
+
+/// Whether [override] really pins a library, i.e. whether anything survives
+/// sanitizing. `--dart-define=DPM_DATA_DIR=..` is non-empty but pins nothing.
+///
+/// Pure — exposed for testing.
+@visibleForTesting
+bool resolveIsAppDataDirPinned(String override) =>
+    _sanitizeAppDataDirName(override).isNotEmpty;
+
 /// Points this run at [dirName]. Must be called before anything resolves a
 /// path — everything downstream (Hive boxes, preview songs, artwork) is
 /// derived from it and several are opened during startup.
@@ -104,16 +123,20 @@ String resolveAppDataDirName({
   required String override,
   required bool isRelease,
 }) {
-  final sanitized = override
-      // Anything that could act as a separator is dropped outright…
-      .replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '')
-      // …and leading dots go too, so what is left of a traversal attempt is a
-      // plain name rather than '..' or '....'.
-      .replaceAll(RegExp(r'^\.+'), '')
-      .trim();
+  final sanitized = _sanitizeAppDataDirName(override);
   if (sanitized.isNotEmpty) return sanitized;
   return isRelease ? defaultAppDataDirName : '${defaultAppDataDirName}_dev';
 }
+
+/// Reduces [override] to safe filename characters — it ends up as a path
+/// segment, and `..` or a separator in it would escape the app-data root.
+String _sanitizeAppDataDirName(String override) => override
+    // Anything that could act as a separator is dropped outright…
+    .replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '')
+    // …and leading dots go too, so what is left of a traversal attempt is a
+    // plain name rather than '..' or '....'.
+    .replaceAll(RegExp(r'^\.+'), '')
+    .trim();
 
 /// Static flag to track if Hive has been initialized
 bool _hiveInitialized = false;

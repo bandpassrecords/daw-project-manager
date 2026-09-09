@@ -27,6 +27,8 @@ import '../services/mixdown_detector_service.dart';
 import 'widgets/shortcuts_help_dialog.dart';
 import 'widgets/waveform_widget.dart';
 import 'music_player_page.dart';
+import '../utils/app_paths.dart' show isAppDataDirPinned;
+import 'widgets/pinned_library_warning_dialog.dart';
 import 'widgets/startup_dialog.dart';
 import 'widgets/tab_customization_dialog.dart';
 import '../services/dock_menu_service.dart';
@@ -179,6 +181,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   bool _startupDialogShown = false;
   bool _hideStartupDialog = false;
 
+  // Pinned-library warning. Pending covers both "still loading the
+  // preference" and "the dialog is up", so the first-launch startup dialog
+  // below can wait its turn instead of stacking on top of this one. Starts
+  // out false on mobile and in every build that is not pinned, which is all
+  // of them except a pull-request artifact.
+  bool _pinnedWarningPending = false;
+  bool _pinnedWarningShown = false;
+  PinnedLibraryWarning? _pinnedWarning;
+
   // Ordered list of currently visible tabs (derived from provider, updated via ref.listen)
   List<AppTab> _currentVisibleTabs = [
     AppTab.projects,
@@ -271,6 +282,21 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     if (!MobileUtils.isMobile()) {
       loadHideStartupDialog().then((v) {
         if (mounted) setState(() => _hideStartupDialog = v);
+      });
+    }
+
+    // Not gated on desktop: CI hands testers a pinned debug APK too
+    // (build_android), and it is isolated from their installed app in exactly
+    // the same way.
+    if (isAppDataDirPinned) {
+      _pinnedWarningPending = true;
+      loadPinnedLibraryWarning().then((warning) {
+        if (!mounted) return;
+        setState(() {
+          _pinnedWarning = warning;
+          // Silenced for this library: stop holding the startup dialog back.
+          if (warning == null) _pinnedWarningPending = false;
+        });
       });
     }
 
@@ -1461,12 +1487,27 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     // scan folder" FAB below doesn't flash on before data arrives.
     final hasAnyProjects = loadedProjects?.isNotEmpty ?? true;
 
+    // Warn a pinned build (a pull-request artifact) that it opened a library
+    // of its own. It is the only build with no other in-app trace of which
+    // one: no startup picker, and no Settings dev card.
+    if (_pinnedWarning != null && !_pinnedWarningShown) {
+      _pinnedWarningShown = true;
+      final warning = _pinnedWarning!;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        await showPinnedLibraryWarningDialog(context, warning);
+        // Releases the startup dialog below, and rebuilds so it can run.
+        if (mounted) setState(() => _pinnedWarningPending = false);
+      });
+    }
+
     // Show first-launch dialog on desktop when the profile is truly blank (no
     // roots AND no projects). Profiles that have projects but no roots (e.g.
     // restored from Google Drive) are already set up and should not see this.
     if (!MobileUtils.isMobile() &&
         !_startupDialogShown &&
         !_hideStartupDialog &&
+        !_pinnedWarningPending &&
         loadedProjects != null &&
         roots.isEmpty &&
         loadedProjects.isEmpty) {

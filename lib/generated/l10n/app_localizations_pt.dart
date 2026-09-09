@@ -3350,6 +3350,23 @@ class AppLocalizationsPt extends AppLocalizations {
   String get startupDontShowAgain => 'Não mostrar isso na inicialização';
 
   @override
+  String get pinnedLibraryWarningTitle => 'Biblioteca de teste em uso';
+
+  @override
+  String get pinnedLibraryWarningBody =>
+      'Esta versão guarda os dados em uma biblioteca de teste separada, então ela não altera a biblioteca usada pelo aplicativo instalado. Projetos, perfis e configurações que você mudar aqui não vão aparecer lá.';
+
+  @override
+  String get pinnedLibraryWarningLibraryLabel => 'Biblioteca';
+
+  @override
+  String get pinnedLibraryWarningLocationLabel => 'Local';
+
+  @override
+  String get pinnedLibraryWarningDontShowAgain =>
+      'Não avisar novamente sobre esta biblioteca';
+
+  @override
   String get deleteAllData => 'Excluir todos os dados';
 
   @override

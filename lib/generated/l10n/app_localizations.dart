@@ -5645,6 +5645,36 @@ abstract class AppLocalizations {
   /// **'Don\'t show this on startup'**
   String get startupDontShowAgain;
 
+  /// No description provided for @pinnedLibraryWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Test library in use'**
+  String get pinnedLibraryWarningTitle;
+
+  /// No description provided for @pinnedLibraryWarningBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This build keeps its data in a separate test library, so it cannot touch the library your installed copy of the app uses. Projects, profiles and settings you change here will not appear there.'**
+  String get pinnedLibraryWarningBody;
+
+  /// No description provided for @pinnedLibraryWarningLibraryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get pinnedLibraryWarningLibraryLabel;
+
+  /// No description provided for @pinnedLibraryWarningLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get pinnedLibraryWarningLocationLabel;
+
+  /// No description provided for @pinnedLibraryWarningDontShowAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t warn me again for this library'**
+  String get pinnedLibraryWarningDontShowAgain;
+
   /// No description provided for @deleteAllData.
   ///
   /// In en, this message translates to:

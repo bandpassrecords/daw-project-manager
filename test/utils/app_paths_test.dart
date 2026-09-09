@@ -117,6 +117,51 @@ void main() {
     });
   });
 
+  // Whether a build is *pinned* is what decides if it warns the person
+  // running it about the library it opened (see PinnedLibraryWarning): a
+  // pinned build sees neither the startup picker nor the Settings dev card,
+  // both of which are gated on canPickAppDataDir.
+  group('resolveIsAppDataDirPinned', () {
+    test('no override means not pinned', () {
+      expect(resolveIsAppDataDirPinned(''), isFalse);
+    });
+
+    test('a real override pins the build', () {
+      expect(resolveIsAppDataDirPinned('daw_project_manager_pr141'), isTrue);
+    });
+
+    test('a whitespace-only override does not pin', () {
+      expect(resolveIsAppDataDirPinned('   '), isFalse);
+    });
+
+    test('an override that sanitizes away does not pin', () {
+      // Non-empty, but nothing survives sanitizing — appDataDirName falls
+      // back to build mode, so claiming the build is pinned would name a
+      // directory it is not actually using.
+      expect(resolveIsAppDataDirPinned('../..'), isFalse);
+      expect(resolveIsAppDataDirPinned('/'), isFalse);
+    });
+
+    test('agrees with resolveAppDataDirName on whether the override won', () {
+      for (final override in [
+        '',
+        '   ',
+        '../..',
+        '/',
+        'daw_project_manager_pr141',
+        '../../Windows',
+      ]) {
+        final resolved =
+            resolveAppDataDirName(override: override, isRelease: true);
+        expect(
+          resolveIsAppDataDirPinned(override),
+          resolved != defaultAppDataDirName,
+          reason: 'override "$override" resolved to $resolved',
+        );
+      }
+    });
+  });
+
   // A PR build handed to a tester is pinned to its own app-data directory,
   // but the single-instance guard used to bind one fixed port regardless.
   // Starting such a build while the installed app was open therefore just
