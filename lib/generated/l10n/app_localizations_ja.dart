@@ -189,11 +189,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get desktopOnlyPathsSettings => 'このページはデスクトップアプリでのみ利用できます。';
 
   @override
-  String get renameProjectFolderTitle => 'Display Name';
+  String get renameProjectFolderTitle => '表示名';
 
   @override
   String get flatpakPortalPathExplanation =>
-      'This path is a sandboxed location, not the real folder location — Flatpak doesn\'t share that with the app. Use the name above to identify it instead.';
+      'このパスはサンドボックス化された場所であり、実際のフォルダーの場所ではありません — Flatpakはこの情報をアプリと共有しません。代わりに上の名前で識別してください。';
 
   @override
   String get removeProjectFolderTitle => 'プロジェクトフォルダーを削除しますか？';
@@ -275,7 +275,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get metadataExtractionIntro =>
-      'Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what\'s automatic for each supported DAW today.';
+      '詳細スキャンは、これらの項目の一部をプロジェクトファイルから自動的に読み取ることができます — 残りは手動で入力する必要があります。この表は、各対応DAWで現在何が自動化されているかを示しています。';
 
   @override
   String get metadataFieldKey => 'キー';
@@ -621,7 +621,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get scanCancelled => 'Scan cancelled.';
+  String get scanCancelled => 'スキャンをキャンセルしました。';
 
   @override
   String scanFailuresSnackbar(int count, String plural) {
@@ -1069,43 +1069,42 @@ class AppLocalizationsJa extends AppLocalizations {
   String get templateDetailTitle => 'Template';
 
   @override
-  String get templateNotFound => 'Template not found';
+  String get templateNotFound => 'テンプレートが見つかりません';
 
   @override
-  String get saveAsTemplate => 'Save as Template';
+  String get saveAsTemplate => 'テンプレートとして保存';
 
   @override
-  String get newTemplateNameLabel => 'Template name';
+  String get newTemplateNameLabel => 'テンプレート名';
 
   @override
-  String get savedAsTemplate => 'Saved as template';
+  String get savedAsTemplate => 'テンプレートとして保存しました';
 
   @override
-  String get duplicateTemplate => 'Duplicate';
+  String get duplicateTemplate => '複製';
 
   @override
-  String get templateDuplicated => 'Template duplicated';
+  String get templateDuplicated => 'テンプレートを複製しました';
 
   @override
-  String get fileInfo => 'File Info';
+  String get fileInfo => 'ファイル情報';
 
   @override
-  String get fileSize => 'File Size';
+  String get fileSize => 'ファイルサイズ';
 
   @override
-  String get filePath => 'Path';
+  String get filePath => 'パス';
 
   @override
-  String get fileModified => 'Last Modified';
+  String get fileModified => '最終更新';
 
   @override
   String projectsFromThisTemplate(int count) {
-    return 'Projects Created From This Template ($count)';
+    return 'このテンプレートから作成されたプロジェクト（$count件）';
   }
 
   @override
-  String get noProjectsFromThisTemplate =>
-      'No projects created from this template yet';
+  String get noProjectsFromThisTemplate => 'このテンプレートから作成されたプロジェクトはまだありません';
 
   @override
   String get importTodos => 'ファイルからタスクをインポート';

@@ -87,8 +87,8 @@
   },
   "removeExcludedFolderMessageNoPath": "该文件夹将不再被排除。",
   "desktopOnlyPathsSettings": "此页面仅在桌面应用中可用。",
-  "renameProjectFolderTitle": "Display Name",
-  "flatpakPortalPathExplanation": "This path is a sandboxed location, not the real folder location — Flatpak doesn't share that with the app. Use the name above to identify it instead.",
+  "renameProjectFolderTitle": "显示名称",
+  "flatpakPortalPathExplanation": "此路径是沙盒隔离位置，不是真实的文件夹位置 — Flatpak不会将其与应用共享。请改用上面的名称来识别它。",
   "removeProjectFolderTitle": "移除项目文件夹？",
   "removeProjectFolderMessage": "确定要移除「{path}」吗？这也会移除该文件夹中未包含在发布中的所有项目。",
   "@removeProjectFolderMessage": {
@@ -121,7 +121,7 @@
   "deepScanOnlyUnscanned": "仅扫描没有元数据的项目",
   "metadataExtractionTitle": "元数据提取",
   "metadataExtractionSubtitle": "查看每种DAW支持哪些数据",
-  "metadataExtractionIntro": "Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what's automatic for each supported DAW today.",
+  "metadataExtractionIntro": "深度扫描可以自动从项目文件中直接读取部分字段 — 其余字段需要手动输入。此表显示了每个受支持的DAW目前自动支持哪些字段。",
   "metadataFieldKey": "调性",
   "metadataFieldVersion": "DAW版本",
   "metadataExtractionManualNote": "没有自动支持的字段仍可以在项目详情中手动输入。特别是对于BPM和调性，在项目旁放置bpm.txt或key.txt文件，也会在下次扫描时被读取。",
@@ -462,7 +462,7 @@
       }
     }
   },
-  "scanCancelled": "Scan cancelled.",
+  "scanCancelled": "扫描已取消。",
   "scanFailuresSnackbar": "{count}个项目{plural}加载失败。",
   "@scanFailuresSnackbar": {
     "placeholders": {
@@ -820,23 +820,23 @@
     }
   },
   "templateDetailTitle": "Template",
-  "templateNotFound": "Template not found",
-  "saveAsTemplate": "Save as Template",
-  "newTemplateNameLabel": "Template name",
-  "savedAsTemplate": "Saved as template",
-  "duplicateTemplate": "Duplicate",
-  "templateDuplicated": "Template duplicated",
-  "fileInfo": "File Info",
-  "fileSize": "File Size",
-  "filePath": "Path",
-  "fileModified": "Last Modified",
-  "projectsFromThisTemplate": "Projects Created From This Template ({count})",
+  "templateNotFound": "未找到模板",
+  "saveAsTemplate": "另存为模板",
+  "newTemplateNameLabel": "模板名称",
+  "savedAsTemplate": "已保存为模板",
+  "duplicateTemplate": "复制",
+  "templateDuplicated": "模板已复制",
+  "fileInfo": "文件信息",
+  "fileSize": "文件大小",
+  "filePath": "路径",
+  "fileModified": "最后修改",
+  "projectsFromThisTemplate": "从此模板创建的项目（{count}个）",
   "@projectsFromThisTemplate": {
     "placeholders": {
       "count": { "type": "int" }
     }
   },
-  "noProjectsFromThisTemplate": "No projects created from this template yet",
+  "noProjectsFromThisTemplate": "尚未从此模板创建任何项目",
   "importTodos": "从文件导入待办事项",
   "noTodosInFile": "文件中未找到待办事项",
   "todosImported": "成功导入了{count}个待办事项",

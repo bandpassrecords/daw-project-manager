@@ -87,8 +87,8 @@
   },
   "removeExcludedFolderMessageNoPath": "Эта папка больше не будет исключаться.",
   "desktopOnlyPathsSettings": "Эта страница доступна только в настольном приложении.",
-  "renameProjectFolderTitle": "Display Name",
-  "flatpakPortalPathExplanation": "This path is a sandboxed location, not the real folder location — Flatpak doesn't share that with the app. Use the name above to identify it instead.",
+  "renameProjectFolderTitle": "Отображаемое Имя",
+  "flatpakPortalPathExplanation": "Этот путь — изолированное расположение в песочнице, а не реальный путь к папке — Flatpak не передаёт эту информацию приложению. Используйте имя выше, чтобы идентифицировать её.",
   "removeProjectFolderTitle": "Удалить папку проектов?",
   "removeProjectFolderMessage": "Вы уверены, что хотите удалить \"{path}\"? Это также удалит все проекты из этой папки, которые не находятся в релизах.",
   "@removeProjectFolderMessage": {
@@ -121,7 +121,7 @@
   "deepScanOnlyUnscanned": "Сканировать только проекты без метаданных",
   "metadataExtractionTitle": "Извлечение метаданных",
   "metadataExtractionSubtitle": "Посмотрите, какие данные поддерживает каждая DAW",
-  "metadataExtractionIntro": "Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what's automatic for each supported DAW today.",
+  "metadataExtractionIntro": "Глубокое сканирование может автоматически считывать некоторые из этих полей прямо из файла проекта — остальное нужно вводить вручную. В этой таблице показано, что сегодня автоматизировано для каждой поддерживаемой DAW.",
   "metadataFieldKey": "Тональность",
   "metadataFieldVersion": "Версия DAW",
   "metadataExtractionManualNote": "Любое поле без автоматической поддержки можно ввести вручную в деталях проекта. Специально для BPM и тональности: файл bpm.txt или key.txt, помещённый рядом с проектом, также будет обнаружен при следующем сканировании.",
@@ -462,7 +462,7 @@
       }
     }
   },
-  "scanCancelled": "Scan cancelled.",
+  "scanCancelled": "Сканирование отменено.",
   "scanFailuresSnackbar": "{count} проект{plural} не удалось загрузить.",
   "@scanFailuresSnackbar": {
     "placeholders": {
@@ -820,23 +820,23 @@
     }
   },
   "templateDetailTitle": "Template",
-  "templateNotFound": "Template not found",
-  "saveAsTemplate": "Save as Template",
-  "newTemplateNameLabel": "Template name",
-  "savedAsTemplate": "Saved as template",
-  "duplicateTemplate": "Duplicate",
-  "templateDuplicated": "Template duplicated",
-  "fileInfo": "File Info",
-  "fileSize": "File Size",
-  "filePath": "Path",
-  "fileModified": "Last Modified",
-  "projectsFromThisTemplate": "Projects Created From This Template ({count})",
+  "templateNotFound": "Шаблон не найден",
+  "saveAsTemplate": "Сохранить как Шаблон",
+  "newTemplateNameLabel": "Название шаблона",
+  "savedAsTemplate": "Сохранено как шаблон",
+  "duplicateTemplate": "Дублировать",
+  "templateDuplicated": "Шаблон продублирован",
+  "fileInfo": "Информация о Файле",
+  "fileSize": "Размер Файла",
+  "filePath": "Путь",
+  "fileModified": "Последнее Изменение",
+  "projectsFromThisTemplate": "Проекты, Созданные из Этого Шаблона ({count})",
   "@projectsFromThisTemplate": {
     "placeholders": {
       "count": { "type": "int" }
     }
   },
-  "noProjectsFromThisTemplate": "No projects created from this template yet",
+  "noProjectsFromThisTemplate": "Пока нет проектов, созданных из этого шаблона",
   "importTodos": "Импортировать Задачи из Файла",
   "noTodosInFile": "Задачи не найдены в файле",
   "todosImported": "{count} задач(и) импортировано успешно",

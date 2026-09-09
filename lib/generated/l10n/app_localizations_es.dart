@@ -193,11 +193,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'Esta página está disponible solo en la app de escritorio.';
 
   @override
-  String get renameProjectFolderTitle => 'Display Name';
+  String get renameProjectFolderTitle => 'Nombre para Mostrar';
 
   @override
   String get flatpakPortalPathExplanation =>
-      'This path is a sandboxed location, not the real folder location — Flatpak doesn\'t share that with the app. Use the name above to identify it instead.';
+      'Esta ruta es una ubicación en espacio aislado (sandbox), no la ubicación real de la carpeta — Flatpak no comparte esa información con la app. Usa el nombre de arriba para identificarla.';
 
   @override
   String get removeProjectFolderTitle => '¿Quitar carpeta de proyectos?';
@@ -280,7 +280,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get metadataExtractionIntro =>
-      'Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what\'s automatic for each supported DAW today.';
+      'El Escaneo Profundo puede leer automáticamente algunos de estos campos directamente desde un archivo de proyecto — el resto debe introducirse manualmente. Esta tabla muestra qué es automático hoy para cada DAW compatible.';
 
   @override
   String get metadataFieldKey => 'Tonalidad';
@@ -629,7 +629,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get scanCancelled => 'Scan cancelled.';
+  String get scanCancelled => 'Escaneo cancelado.';
 
   @override
   String scanFailuresSnackbar(int count, String plural) {
@@ -1090,43 +1090,43 @@ class AppLocalizationsEs extends AppLocalizations {
   String get templateDetailTitle => 'Template';
 
   @override
-  String get templateNotFound => 'Template not found';
+  String get templateNotFound => 'Plantilla no encontrada';
 
   @override
-  String get saveAsTemplate => 'Save as Template';
+  String get saveAsTemplate => 'Guardar como Plantilla';
 
   @override
-  String get newTemplateNameLabel => 'Template name';
+  String get newTemplateNameLabel => 'Nombre de la plantilla';
 
   @override
-  String get savedAsTemplate => 'Saved as template';
+  String get savedAsTemplate => 'Guardado como plantilla';
 
   @override
-  String get duplicateTemplate => 'Duplicate';
+  String get duplicateTemplate => 'Duplicar';
 
   @override
-  String get templateDuplicated => 'Template duplicated';
+  String get templateDuplicated => 'Plantilla duplicada';
 
   @override
-  String get fileInfo => 'File Info';
+  String get fileInfo => 'Información del Archivo';
 
   @override
-  String get fileSize => 'File Size';
+  String get fileSize => 'Tamaño del Archivo';
 
   @override
-  String get filePath => 'Path';
+  String get filePath => 'Ruta';
 
   @override
-  String get fileModified => 'Last Modified';
+  String get fileModified => 'Última Modificación';
 
   @override
   String projectsFromThisTemplate(int count) {
-    return 'Projects Created From This Template ($count)';
+    return 'Proyectos Creados a Partir de esta Plantilla ($count)';
   }
 
   @override
   String get noProjectsFromThisTemplate =>
-      'No projects created from this template yet';
+      'Aún no se han creado proyectos a partir de esta plantilla';
 
   @override
   String get importTodos => 'Importar Tareas desde Archivo';

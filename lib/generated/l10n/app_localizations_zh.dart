@@ -185,11 +185,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get desktopOnlyPathsSettings => '此页面仅在桌面应用中可用。';
 
   @override
-  String get renameProjectFolderTitle => 'Display Name';
+  String get renameProjectFolderTitle => '显示名称';
 
   @override
   String get flatpakPortalPathExplanation =>
-      'This path is a sandboxed location, not the real folder location — Flatpak doesn\'t share that with the app. Use the name above to identify it instead.';
+      '此路径是沙盒隔离位置，不是真实的文件夹位置 — Flatpak不会将其与应用共享。请改用上面的名称来识别它。';
 
   @override
   String get removeProjectFolderTitle => '移除项目文件夹？';
@@ -271,7 +271,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get metadataExtractionIntro =>
-      'Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what\'s automatic for each supported DAW today.';
+      '深度扫描可以自动从项目文件中直接读取部分字段 — 其余字段需要手动输入。此表显示了每个受支持的DAW目前自动支持哪些字段。';
 
   @override
   String get metadataFieldKey => '调性';
@@ -617,7 +617,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get scanCancelled => 'Scan cancelled.';
+  String get scanCancelled => '扫描已取消。';
 
   @override
   String scanFailuresSnackbar(int count, String plural) {
@@ -1064,43 +1064,42 @@ class AppLocalizationsZh extends AppLocalizations {
   String get templateDetailTitle => 'Template';
 
   @override
-  String get templateNotFound => 'Template not found';
+  String get templateNotFound => '未找到模板';
 
   @override
-  String get saveAsTemplate => 'Save as Template';
+  String get saveAsTemplate => '另存为模板';
 
   @override
-  String get newTemplateNameLabel => 'Template name';
+  String get newTemplateNameLabel => '模板名称';
 
   @override
-  String get savedAsTemplate => 'Saved as template';
+  String get savedAsTemplate => '已保存为模板';
 
   @override
-  String get duplicateTemplate => 'Duplicate';
+  String get duplicateTemplate => '复制';
 
   @override
-  String get templateDuplicated => 'Template duplicated';
+  String get templateDuplicated => '模板已复制';
 
   @override
-  String get fileInfo => 'File Info';
+  String get fileInfo => '文件信息';
 
   @override
-  String get fileSize => 'File Size';
+  String get fileSize => '文件大小';
 
   @override
-  String get filePath => 'Path';
+  String get filePath => '路径';
 
   @override
-  String get fileModified => 'Last Modified';
+  String get fileModified => '最后修改';
 
   @override
   String projectsFromThisTemplate(int count) {
-    return 'Projects Created From This Template ($count)';
+    return '从此模板创建的项目（$count个）';
   }
 
   @override
-  String get noProjectsFromThisTemplate =>
-      'No projects created from this template yet';
+  String get noProjectsFromThisTemplate => '尚未从此模板创建任何项目';
 
   @override
   String get importTodos => '从文件导入待办事项';

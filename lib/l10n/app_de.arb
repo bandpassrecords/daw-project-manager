@@ -87,8 +87,8 @@
   },
   "removeExcludedFolderMessageNoPath": "Dieser Ordner wird nicht mehr ausgeschlossen.",
   "desktopOnlyPathsSettings": "Diese Seite ist nur in der Desktop-App verfügbar.",
-  "renameProjectFolderTitle": "Display Name",
-  "flatpakPortalPathExplanation": "This path is a sandboxed location, not the real folder location — Flatpak doesn't share that with the app. Use the name above to identify it instead.",
+  "renameProjectFolderTitle": "Anzeigename",
+  "flatpakPortalPathExplanation": "Dieser Pfad ist ein isolierter Sandbox-Ort, nicht der tatsächliche Ordnerpfad — Flatpak gibt diese Information nicht an die App weiter. Verwenden Sie stattdessen den obigen Namen zur Identifizierung.",
   "removeProjectFolderTitle": "Projektordner entfernen?",
   "removeProjectFolderMessage": "Möchten Sie \"{path}\" wirklich entfernen? Dadurch werden auch alle Projekte aus diesem Ordner entfernt, die nicht in Veröffentlichungen sind.",
   "@removeProjectFolderMessage": {
@@ -121,7 +121,7 @@
   "deepScanOnlyUnscanned": "Nur Projekte ohne Metadaten scannen",
   "metadataExtractionTitle": "Metadaten-Extraktion",
   "metadataExtractionSubtitle": "Sehen Sie, welche Daten jede DAW unterstützt",
-  "metadataExtractionIntro": "Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what's automatic for each supported DAW today.",
+  "metadataExtractionIntro": "Der Tiefenscan kann einige dieser Felder automatisch direkt aus einer Projektdatei auslesen — der Rest muss manuell eingegeben werden. Diese Tabelle zeigt, was heute für jede unterstützte DAW automatisch funktioniert.",
   "metadataFieldKey": "Tonart",
   "metadataFieldVersion": "DAW-Version",
   "metadataExtractionManualNote": "Jedes Feld ohne automatische Unterstützung kann weiterhin manuell in den Projektdetails eingegeben werden. Speziell für BPM und Tonart wird auch eine bpm.txt- oder key.txt-Datei neben dem Projekt beim nächsten Scan erkannt.",
@@ -462,7 +462,7 @@
       }
     }
   },
-  "scanCancelled": "Scan cancelled.",
+  "scanCancelled": "Scan abgebrochen.",
   "scanFailuresSnackbar": "{count} Projekt{plural} konnte(n) nicht geladen werden.",
   "@scanFailuresSnackbar": {
     "placeholders": {
@@ -820,23 +820,23 @@
     }
   },
   "templateDetailTitle": "Template",
-  "templateNotFound": "Template not found",
-  "saveAsTemplate": "Save as Template",
-  "newTemplateNameLabel": "Template name",
-  "savedAsTemplate": "Saved as template",
-  "duplicateTemplate": "Duplicate",
-  "templateDuplicated": "Template duplicated",
-  "fileInfo": "File Info",
-  "fileSize": "File Size",
-  "filePath": "Path",
-  "fileModified": "Last Modified",
-  "projectsFromThisTemplate": "Projects Created From This Template ({count})",
+  "templateNotFound": "Vorlage nicht gefunden",
+  "saveAsTemplate": "Als Vorlage speichern",
+  "newTemplateNameLabel": "Vorlagenname",
+  "savedAsTemplate": "Als Vorlage gespeichert",
+  "duplicateTemplate": "Duplizieren",
+  "templateDuplicated": "Vorlage dupliziert",
+  "fileInfo": "Dateiinformationen",
+  "fileSize": "Dateigröße",
+  "filePath": "Pfad",
+  "fileModified": "Zuletzt geändert",
+  "projectsFromThisTemplate": "Aus dieser Vorlage erstellte Projekte ({count})",
   "@projectsFromThisTemplate": {
     "placeholders": {
       "count": { "type": "int" }
     }
   },
-  "noProjectsFromThisTemplate": "No projects created from this template yet",
+  "noProjectsFromThisTemplate": "Noch keine Projekte aus dieser Vorlage erstellt",
   "importTodos": "Aufgaben aus Datei importieren",
   "noTodosInFile": "Keine Aufgaben in Datei gefunden",
   "todosImported": "{count} Aufgabe(n) erfolgreich importiert",

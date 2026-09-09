@@ -87,8 +87,8 @@
   },
   "removeExcludedFolderMessageNoPath": "このフォルダーは除外されなくなります。",
   "desktopOnlyPathsSettings": "このページはデスクトップアプリでのみ利用できます。",
-  "renameProjectFolderTitle": "Display Name",
-  "flatpakPortalPathExplanation": "This path is a sandboxed location, not the real folder location — Flatpak doesn't share that with the app. Use the name above to identify it instead.",
+  "renameProjectFolderTitle": "表示名",
+  "flatpakPortalPathExplanation": "このパスはサンドボックス化された場所であり、実際のフォルダーの場所ではありません — Flatpakはこの情報をアプリと共有しません。代わりに上の名前で識別してください。",
   "removeProjectFolderTitle": "プロジェクトフォルダーを削除しますか？",
   "removeProjectFolderMessage": "「{path}」を削除してもよろしいですか？これにより、リリースに含まれていないこのフォルダー内のプロジェクトも削除されます。",
   "@removeProjectFolderMessage": {
@@ -121,7 +121,7 @@
   "deepScanOnlyUnscanned": "メタデータのないプロジェクトのみスキャン",
   "metadataExtractionTitle": "メタデータ抽出",
   "metadataExtractionSubtitle": "各DAWがサポートするデータを確認",
-  "metadataExtractionIntro": "Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what's automatic for each supported DAW today.",
+  "metadataExtractionIntro": "詳細スキャンは、これらの項目の一部をプロジェクトファイルから自動的に読み取ることができます — 残りは手動で入力する必要があります。この表は、各対応DAWで現在何が自動化されているかを示しています。",
   "metadataFieldKey": "キー",
   "metadataFieldVersion": "DAWバージョン",
   "metadataExtractionManualNote": "自動対応していない項目は、プロジェクト詳細で手動入力できます。特にBPMとキーについては、プロジェクトの隣にbpm.txtまたはkey.txtファイルを置くと、次回のスキャンで読み込まれます。",
@@ -462,7 +462,7 @@
       }
     }
   },
-  "scanCancelled": "Scan cancelled.",
+  "scanCancelled": "スキャンをキャンセルしました。",
   "scanFailuresSnackbar": "{count}件のプロジェクト{plural}を読み込めませんでした。",
   "@scanFailuresSnackbar": {
     "placeholders": {
@@ -820,23 +820,23 @@
     }
   },
   "templateDetailTitle": "Template",
-  "templateNotFound": "Template not found",
-  "saveAsTemplate": "Save as Template",
-  "newTemplateNameLabel": "Template name",
-  "savedAsTemplate": "Saved as template",
-  "duplicateTemplate": "Duplicate",
-  "templateDuplicated": "Template duplicated",
-  "fileInfo": "File Info",
-  "fileSize": "File Size",
-  "filePath": "Path",
-  "fileModified": "Last Modified",
-  "projectsFromThisTemplate": "Projects Created From This Template ({count})",
+  "templateNotFound": "テンプレートが見つかりません",
+  "saveAsTemplate": "テンプレートとして保存",
+  "newTemplateNameLabel": "テンプレート名",
+  "savedAsTemplate": "テンプレートとして保存しました",
+  "duplicateTemplate": "複製",
+  "templateDuplicated": "テンプレートを複製しました",
+  "fileInfo": "ファイル情報",
+  "fileSize": "ファイルサイズ",
+  "filePath": "パス",
+  "fileModified": "最終更新",
+  "projectsFromThisTemplate": "このテンプレートから作成されたプロジェクト（{count}件）",
   "@projectsFromThisTemplate": {
     "placeholders": {
       "count": { "type": "int" }
     }
   },
-  "noProjectsFromThisTemplate": "No projects created from this template yet",
+  "noProjectsFromThisTemplate": "このテンプレートから作成されたプロジェクトはまだありません",
   "importTodos": "ファイルからタスクをインポート",
   "noTodosInFile": "ファイルにタスクが見つかりません",
   "todosImported": "{count}個のタスクをインポートしました",

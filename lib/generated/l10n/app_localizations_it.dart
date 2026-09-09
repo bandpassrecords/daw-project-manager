@@ -193,11 +193,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Questa pagina è disponibile solo nell’app desktop.';
 
   @override
-  String get renameProjectFolderTitle => 'Display Name';
+  String get renameProjectFolderTitle => 'Nome Visualizzato';
 
   @override
   String get flatpakPortalPathExplanation =>
-      'This path is a sandboxed location, not the real folder location — Flatpak doesn\'t share that with the app. Use the name above to identify it instead.';
+      'Questo percorso è una posizione isolata (sandbox), non la posizione reale della cartella — Flatpak non condivide questa informazione con l\'app. Usa il nome sopra per identificarla.';
 
   @override
   String get removeProjectFolderTitle => 'Rimuovere la cartella di progetti?';
@@ -281,7 +281,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get metadataExtractionIntro =>
-      'Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what\'s automatic for each supported DAW today.';
+      'La Scansione Approfondita può leggere automaticamente alcuni di questi campi direttamente da un file di progetto — il resto deve essere inserito manualmente. Questa tabella mostra cosa è automatico oggi per ogni DAW supportata.';
 
   @override
   String get metadataFieldKey => 'Tonalità';
@@ -629,7 +629,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get scanCancelled => 'Scan cancelled.';
+  String get scanCancelled => 'Scansione annullata.';
 
   @override
   String scanFailuresSnackbar(int count, String plural) {
@@ -1090,43 +1090,43 @@ class AppLocalizationsIt extends AppLocalizations {
   String get templateDetailTitle => 'Template';
 
   @override
-  String get templateNotFound => 'Template not found';
+  String get templateNotFound => 'Modello non trovato';
 
   @override
-  String get saveAsTemplate => 'Save as Template';
+  String get saveAsTemplate => 'Salva come Modello';
 
   @override
-  String get newTemplateNameLabel => 'Template name';
+  String get newTemplateNameLabel => 'Nome del modello';
 
   @override
-  String get savedAsTemplate => 'Saved as template';
+  String get savedAsTemplate => 'Salvato come modello';
 
   @override
-  String get duplicateTemplate => 'Duplicate';
+  String get duplicateTemplate => 'Duplica';
 
   @override
-  String get templateDuplicated => 'Template duplicated';
+  String get templateDuplicated => 'Modello duplicato';
 
   @override
-  String get fileInfo => 'File Info';
+  String get fileInfo => 'Informazioni File';
 
   @override
-  String get fileSize => 'File Size';
+  String get fileSize => 'Dimensione File';
 
   @override
-  String get filePath => 'Path';
+  String get filePath => 'Percorso';
 
   @override
-  String get fileModified => 'Last Modified';
+  String get fileModified => 'Ultima Modifica';
 
   @override
   String projectsFromThisTemplate(int count) {
-    return 'Projects Created From This Template ($count)';
+    return 'Progetti Creati da Questo Modello ($count)';
   }
 
   @override
   String get noProjectsFromThisTemplate =>
-      'No projects created from this template yet';
+      'Nessun progetto creato da questo modello ancora';
 
   @override
   String get importTodos => 'Importa Attività da File';
