@@ -5031,4 +5031,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String themeCopyName(String name) {
     return '$name copie';
   }
+
+  @override
+  String get suggestedColorsLabel => 'Couleurs Suggérées';
 }

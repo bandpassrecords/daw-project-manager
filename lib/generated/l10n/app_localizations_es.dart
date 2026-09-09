@@ -5019,4 +5019,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String themeCopyName(String name) {
     return '$name copia';
   }
+
+  @override
+  String get suggestedColorsLabel => 'Colores Sugeridos';
 }

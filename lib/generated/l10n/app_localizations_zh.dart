@@ -4805,4 +4805,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String themeCopyName(String name) {
     return '$name 副本';
   }
+
+  @override
+  String get suggestedColorsLabel => '推荐颜色';
 }

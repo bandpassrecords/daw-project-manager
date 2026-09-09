@@ -2,19 +2,28 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-/// An HSV color wheel: hue around the circumference, saturation from the
-/// centre outwards. Brightness is a separate control — see [ColorValueSlider].
+/// An HSL hue/saturation wheel: hue around the circumference, saturation
+/// from the centre outward. Lightness is a separate control — see
+/// [ColorLightnessSlider] — and never changes how the disc itself is
+/// painted, so dragging the lightness slider doesn't redraw the disc out
+/// from under a thumb the user is still looking at.
+///
+/// HSL rather than HSV: the lightness slider needs to run black → the pure
+/// hue → white, and lightness 1.0 in HSL is exactly white regardless of hue
+/// or saturation. The HSV "value" axis has no such property — value 1.0 is
+/// just the fully-saturated hue, never white.
 ///
 /// Hand-rolled rather than pulled from a package because the Flathub build
 /// runs offline (see `flatpak/README.md`), so every dependency has to be
 /// vendored; a disc and a hit test are not worth that.
 class ColorWheel extends StatelessWidget {
-  /// The currently selected color. Its hue and saturation place the thumb;
-  /// its value shades the whole disc so the wheel matches what is selected.
-  final HSVColor color;
+  /// The currently selected color. Its hue and saturation place the thumb.
+  /// Its lightness is irrelevant to the disc — only [ColorLightnessSlider]
+  /// reads it — but is preserved across drags on the wheel.
+  final HSLColor color;
 
   /// Fired continuously while dragging, so the hex field can track the thumb.
-  final ValueChanged<HSVColor> onChanged;
+  final ValueChanged<HSLColor> onChanged;
 
   final double size;
 
@@ -30,7 +39,7 @@ class ColorWheel extends StatelessWidget {
   /// Points outside the disc clamp to its rim rather than doing nothing —
   /// dragging past the edge should keep tracking the hue, not stall.
   @visibleForTesting
-  static HSVColor colorAt(Offset position, double size, HSVColor current) {
+  static HSLColor colorAt(Offset position, double size, HSLColor current) {
     final radius = size / 2;
     final dx = position.dx - radius;
     final dy = position.dy - radius;
@@ -66,7 +75,7 @@ class ColorWheel extends StatelessWidget {
 }
 
 class _ColorWheelPainter extends CustomPainter {
-  final HSVColor color;
+  final HSLColor color;
   final Color thumbBorder;
 
   const _ColorWheelPainter({required this.color, required this.thumbBorder});
@@ -98,6 +107,9 @@ class _ColorWheelPainter extends CustomPainter {
     );
 
     // Saturation: white at the centre fading to fully saturated at the rim.
+    // Deliberately static — the disc always shows this one slice regardless
+    // of the current lightness, so it never changes while the lightness
+    // slider is being dragged.
     canvas.drawCircle(
       center,
       radius,
@@ -107,18 +119,9 @@ class _ColorWheelPainter extends CustomPainter {
         ).createShader(rect),
     );
 
-    // Brightness, so the disc reflects the value slider instead of always
-    // showing the fully-lit version of the selected hue.
-    if (color.value < 1) {
-      canvas.drawCircle(
-        center,
-        radius,
-        Paint()..color = Colors.black.withValues(alpha: 1 - color.value),
-      );
-    }
-
-    // Thumb, outlined in both black and the surface color so it stays
-    // visible over every part of the disc.
+    // Thumb, outlined in both the surface color and whichever of black/white
+    // contrasts with the selected color, so it stays visible over every part
+    // of the disc and at every lightness.
     final thumb = center +
         Offset(
           math.cos(color.hue * math.pi / 180),
@@ -152,12 +155,16 @@ class _ColorWheelPainter extends CustomPainter {
       oldDelegate.color != color || oldDelegate.thumbBorder != thumbBorder;
 }
 
-/// Brightness slider for the wheel, painted as a black-to-full-color ramp.
-class ColorValueSlider extends StatelessWidget {
-  final HSVColor color;
-  final ValueChanged<HSVColor> onChanged;
+/// Lightness slider for the wheel: black at one end, white at the other,
+/// the current hue and saturation at full strength in between.
+///
+/// This is what makes "drag to the end for white" work — an HSV "value"
+/// slider can't do that, since its top end is just the saturated hue.
+class ColorLightnessSlider extends StatelessWidget {
+  final HSLColor color;
+  final ValueChanged<HSLColor> onChanged;
 
-  const ColorValueSlider({
+  const ColorLightnessSlider({
     super.key,
     required this.color,
     required this.onChanged,
@@ -165,7 +172,7 @@ class ColorValueSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fullBright = color.withValue(1).toColor();
+    final pureHue = color.withLightness(0.5).toColor();
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -174,7 +181,10 @@ class ColorValueSlider extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            gradient: LinearGradient(colors: [Colors.black, fullBright]),
+            gradient: LinearGradient(
+              colors: [Colors.black, pureHue, Colors.white],
+              stops: const [0, 0.5, 1],
+            ),
           ),
         ),
         SliderTheme(
@@ -182,12 +192,12 @@ class ColorValueSlider extends StatelessWidget {
             trackHeight: 2,
             activeTrackColor: Colors.transparent,
             inactiveTrackColor: Colors.transparent,
-            thumbColor: fullBright,
+            thumbColor: color.toColor(),
             overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
           ),
           child: Slider(
-            value: color.value,
-            onChanged: (v) => onChanged(color.withValue(v)),
+            value: color.lightness,
+            onChanged: (v) => onChanged(color.withLightness(v)),
           ),
         ),
       ],

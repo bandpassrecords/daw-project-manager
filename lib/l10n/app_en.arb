@@ -4424,5 +4424,7 @@
     "placeholders": {
       "name": { "type": "String" }
     }
-  }
+  },
+
+  "suggestedColorsLabel": "Suggested Colors"
 }

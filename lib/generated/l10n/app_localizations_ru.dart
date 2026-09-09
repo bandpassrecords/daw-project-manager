@@ -4993,4 +4993,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String themeCopyName(String name) {
     return '$name — копия';
   }
+
+  @override
+  String get suggestedColorsLabel => 'Предлагаемые цвета';
 }

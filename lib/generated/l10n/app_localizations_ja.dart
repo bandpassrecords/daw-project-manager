@@ -4858,4 +4858,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String themeCopyName(String name) {
     return '$name のコピー';
   }
+
+  @override
+  String get suggestedColorsLabel => 'おすすめの色';
 }

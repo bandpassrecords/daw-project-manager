@@ -3124,5 +3124,7 @@
     "placeholders": {
       "name": { "type": "String" }
     }
-  }
+  },
+
+  "suggestedColorsLabel": "Cores Sugeridas"
 }

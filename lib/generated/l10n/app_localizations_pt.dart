@@ -4994,4 +4994,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String themeCopyName(String name) {
     return '$name cópia';
   }
+
+  @override
+  String get suggestedColorsLabel => 'Cores Sugeridas';
 }

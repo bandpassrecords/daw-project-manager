@@ -3100,5 +3100,7 @@
     "placeholders": {
       "name": { "type": "String" }
     }
-  }
+  },
+
+  "suggestedColorsLabel": "推荐颜色"
 }

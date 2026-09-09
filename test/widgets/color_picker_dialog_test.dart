@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
@@ -9,12 +8,13 @@ import 'package:daw_project_manager/ui/dialogs/color_picker_dialog.dart';
 import 'package:daw_project_manager/ui/widgets/color_wheel.dart';
 import 'package:daw_project_manager/utils/phase_colors.dart';
 
-/// The color picker offers three ways in — swatches, the HSV wheel, and hex.
+/// The color picker offers three ways in — swatches, the HSL wheel, and hex.
 /// These pin that they stay in sync, which is the whole point of having all
 /// three (#148).
 void main() {
-  // The picker is a desktop dialog: swatches, a 168px wheel, a brightness
-  // slider and a hex row. At the default 800x600 test surface the dialog
+  // The picker is a desktop dialog: a "Suggested Colors" heading and
+  // swatches, a 168px wheel, a lightness slider and a hex row. At the
+  // default 800x600 test surface the dialog
   // clips and the wheel ends up outside the viewport, so a gesture aimed at
   // its centre would land on nothing. Give the tests a window the whole
   // dialog fits in.
@@ -90,7 +90,7 @@ void main() {
   group('ColorWheel.colorAt', () {
     const size = 200.0;
     const centre = Offset(100, 100);
-    final base = HSVColor.fromColor(const Color(0xFF808080));
+    final base = HSLColor.fromColor(const Color(0xFF808080));
 
     test('the centre is fully desaturated', () {
       expect(ColorWheel.colorAt(centre, size, base).saturation, 0.0);
@@ -119,9 +119,12 @@ void main() {
           closeTo(180, 0.001));
     });
 
-    test('brightness is carried over, not reset by a hue change', () {
-      final dim = base.withValue(0.3);
-      expect(ColorWheel.colorAt(const Offset(200, 100), size, dim).value, 0.3);
+    test('lightness is carried over, not reset by a hue change', () {
+      final dim = base.withLightness(0.2);
+      expect(
+        ColorWheel.colorAt(const Offset(200, 100), size, dim).lightness,
+        0.2,
+      );
     });
 
     test('a point off-axis lands on the expected hue', () {
@@ -172,17 +175,45 @@ void main() {
       expect(wheel.color.hue, closeTo(0, 0.001));
     });
 
-    testWidgets('the brightness slider keeps hue and saturation', (tester) async {
+    testWidgets('the lightness slider keeps hue and saturation, only moves lightness',
+        (tester) async {
       await openPicker(tester, current: const Color(0xFFFF0000));
+      final before = tester.widget<ColorWheel>(find.byType(ColorWheel)).color;
 
       final slider = find.byType(Slider);
       await tester.drag(slider, const Offset(-60, 0));
       await tester.pumpAndSettle();
 
       final wheel = tester.widget<ColorWheel>(find.byType(ColorWheel));
-      expect(wheel.color.hue, closeTo(0, 0.001));
-      expect(wheel.color.saturation, closeTo(1, 0.001));
-      expect(wheel.color.value, lessThan(1.0));
+      expect(wheel.color.hue, closeTo(before.hue, 0.001));
+      expect(wheel.color.saturation, closeTo(before.saturation, 0.001));
+      expect(wheel.color.lightness, isNot(before.lightness));
+    });
+
+    testWidgets('dragging the lightness slider to its top gives pure white',
+        (tester) async {
+      // The whole point of a lightness (not a brightness/value) slider: its
+      // top end must be #FFFFFF regardless of which hue is selected.
+      await openPicker(tester, current: const Color(0xFF00D4FF));
+
+      final slider = find.byType(Slider);
+      await tester.drag(slider, const Offset(1000, 0));
+      await tester.pumpAndSettle();
+
+      expect(hexFieldText(tester), '#FFFFFF');
+      final wheel = tester.widget<ColorWheel>(find.byType(ColorWheel));
+      expect(wheel.color.lightness, 1.0);
+    });
+
+    testWidgets('dragging the lightness slider to its bottom gives black',
+        (tester) async {
+      await openPicker(tester, current: const Color(0xFF00D4FF));
+
+      final slider = find.byType(Slider);
+      await tester.drag(slider, const Offset(-1000, 0));
+      await tester.pumpAndSettle();
+
+      expect(hexFieldText(tester), '#000000');
     });
   });
 
@@ -262,7 +293,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final wheel = tester.widget<ColorWheel>(find.byType(ColorWheel));
-      expect(wheel.color, HSVColor.fromColor(const Color(0xFFEF5350)));
+      expect(wheel.color, HSLColor.fromColor(const Color(0xFFEF5350)));
     });
 
     testWidgets('a preset then Apply returns that preset', (tester) async {
@@ -357,5 +388,26 @@ void main() {
       (tester) async {
     await openPicker(tester);
     expect(swatches(), findsNWidgets(kPhaseColorPalette.length));
+  });
+
+  testWidgets('shows a "Suggested Colors" heading above the swatches',
+      (tester) async {
+    await openPicker(tester);
+    expect(find.text('Suggested Colors'), findsOneWidget);
+  });
+
+  testWidgets('there is visible space between the wheel and the slider',
+      (tester) async {
+    await openPicker(tester);
+
+    final wheelBottom = tester.getBottomLeft(find.byType(ColorWheel)).dy;
+    final sliderTop = tester
+        .getTopLeft(
+          find.byType(ColorLightnessSlider),
+        )
+        .dy;
+
+    // Regression guard: they used to be flush against each other.
+    expect(sliderTop - wheelBottom, greaterThan(8));
   });
 }

@@ -18,7 +18,7 @@ Color? parseHexColor(String input) {
   return Color(int.parse('FF$hex', radix: 16));
 }
 
-/// Color picker offering three ways in: the preset swatches, a full HSV
+/// Color picker offering three ways in: the preset swatches, a full HSL
 /// wheel, and a hex field. All three stay in sync — dragging the wheel
 /// rewrites the hex, and typing a hex moves the wheel thumb.
 ///
@@ -59,12 +59,12 @@ class AppColorPickerDialog extends StatefulWidget {
 }
 
 class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
-  late HSVColor _hsv = HSVColor.fromColor(widget.currentColor);
+  late HSLColor _hsl = HSLColor.fromColor(widget.currentColor);
   late final TextEditingController _hexController =
       TextEditingController(text: colorToHex(widget.currentColor));
   String? _error;
 
-  Color get _color => _hsv.toColor();
+  Color get _color => _hsl.toColor();
 
   @override
   void dispose() {
@@ -74,13 +74,13 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
 
   /// Moves the wheel, and rewrites the hex field to match.
   ///
-  /// Keeps [HSVColor] rather than round-tripping through [Color]: hue and
-  /// saturation are undefined for black and greys, so a round trip would
+  /// Keeps [HSLColor] rather than round-tripping through [Color]: hue and
+  /// saturation are undefined for black and white, so a round trip would
   /// snap the thumb back to the centre mid-drag.
-  void _setFromWheel(HSVColor next) {
+  void _setFromWheel(HSLColor next) {
     final hex = colorToHex(next.toColor());
     setState(() {
-      _hsv = next;
+      _hsl = next;
       _error = null;
       _hexController.value = TextEditingValue(
         text: hex,
@@ -95,7 +95,7 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
     final parsed = parseHexColor(text);
     setState(() {
       _error = null;
-      if (parsed != null) _hsv = HSVColor.fromColor(parsed);
+      if (parsed != null) _hsl = HSLColor.fromColor(parsed);
     });
   }
 
@@ -121,6 +121,13 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                l10n.suggestedColorsLabel,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).textTheme.bodySmall?.color,
+                    ),
+              ),
+              const SizedBox(height: 8),
               // Preset swatches. Tapping one loads it into the wheel and the
               // hex field rather than picking it outright, so a preset can be
               // used as a starting point and nudged — the swatch, the wheel
@@ -134,7 +141,7 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
                     _PresetSwatch(
                       color: color,
                       isSelected: color.toARGB32() == _color.toARGB32(),
-                      onTap: () => _setFromWheel(HSVColor.fromColor(color)),
+                      onTap: () => _setFromWheel(HSLColor.fromColor(color)),
                     ),
                 ],
               ),
@@ -145,11 +152,14 @@ class _AppColorPickerDialogState extends State<AppColorPickerDialog> {
               // any color is reachable by wheel or by hex.
               Center(
                 child: ColorWheel(
-                  color: _hsv,
+                  color: _hsl,
                   onChanged: _setFromWheel,
                 ),
               ),
-              ColorValueSlider(color: _hsv, onChanged: _setFromWheel),
+              // Breathing room below the wheel — without it the slider's
+              // gradient bar sits flush against the disc's bottom edge.
+              const SizedBox(height: 20),
+              ColorLightnessSlider(color: _hsl, onChanged: _setFromWheel),
               const SizedBox(height: 8),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

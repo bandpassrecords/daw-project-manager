@@ -8422,6 +8422,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} copy'**
   String themeCopyName(String name);
+
+  /// No description provided for @suggestedColorsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Colors'**
+  String get suggestedColorsLabel;
 }
 
 class _AppLocalizationsDelegate
