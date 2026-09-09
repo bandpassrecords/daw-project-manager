@@ -9412,6 +9412,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   late AudioPlayer _player;
   late DesktopIsPlayingNotifier _isPlayingNotifier;
   late DesktopPlayerPositionNotifier _positionNotifier;
+  late DesktopPlayerDurationNotifier _durationNotifier;
   bool _isPlaying = false;
   bool _playbackEnded = false;
   Duration _position = Duration.zero;
@@ -9494,6 +9495,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     super.initState();
     _isPlayingNotifier = ref.read(desktopIsPlayingProvider.notifier);
     _positionNotifier = ref.read(desktopPlayerPositionProvider.notifier);
+    _durationNotifier = ref.read(desktopPlayerDurationProvider.notifier);
     _loadBarHeight();
     HardwareKeyboard.instance.addHandler(_handleKeyboard);
     _player = AudioPlayer();
@@ -9506,6 +9508,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     _player.onDurationChanged.listen((d) {
       if (!mounted) return;
       setState(() => _duration = d);
+      _durationNotifier.set(d);
     });
     _player.onPositionChanged.listen((p) {
       if (!mounted) return;
@@ -9545,6 +9548,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _isPlayingNotifier.set(false);
         _positionNotifier.set(Duration.zero);
+        _durationNotifier.set(Duration.zero);
       });
       setState(() {
         _isPlaying = false;

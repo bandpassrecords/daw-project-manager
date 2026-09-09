@@ -80,4 +80,61 @@ void main() {
       expect(prevIndexIn(0, 0, PlaybackMode.repeatAll), isNull);
     });
   });
+
+  // Regression cover for: pressing MONO on Android jumped the player back to
+  // the first track. switchSource replaced the whole ConcatenatingAudioSource
+  // with a single-track one, so just_audio reported currentIndex 0 and the
+  // index listener rewrote the state to queue[0]. The swap must leave the
+  // queue's length and order alone and only change the file of one slot.
+  group('sourcePathsForQueue', () {
+    final q = _queue(4);
+
+    test('uses the preview path of each project when there is no override', () {
+      expect(sourcePathsForQueue(q),
+          ['/music/track0.wav', '/music/track1.wav', '/music/track2.wav',
+           '/music/track3.wav']);
+    });
+
+    test('substitutes only the overridden slot, keeping length and order', () {
+      final paths = sourcePathsForQueue(q,
+          overrideProjectId: 'p2', overridePath: '/tmp/mono_p2.wav');
+
+      expect(paths.length, q.length,
+          reason: 'the queue must not collapse to the swapped track');
+      expect(paths[2], '/tmp/mono_p2.wav');
+      expect(paths[0], '/music/track0.wav');
+      expect(paths[1], '/music/track1.wav');
+      expect(paths[3], '/music/track3.wav');
+    });
+
+    test('an override for a project outside the queue changes nothing', () {
+      expect(
+        sourcePathsForQueue(q,
+            overrideProjectId: 'not-in-queue', overridePath: '/tmp/x.wav'),
+        sourcePathsForQueue(q),
+      );
+    });
+
+    test('an empty or missing override path falls back to the real file', () {
+      // Toggling mono off passes the stereo path back through; a blank path
+      // must never end up in the queue as an unplayable source.
+      expect(
+        sourcePathsForQueue(q, overrideProjectId: 'p1', overridePath: ''),
+        sourcePathsForQueue(q),
+      );
+      expect(
+        sourcePathsForQueue(q, overrideProjectId: 'p1'),
+        sourcePathsForQueue(q),
+      );
+    });
+
+    test('a single-track queue still yields exactly one source', () {
+      final one = _queue(1);
+      expect(
+        sourcePathsForQueue(one,
+            overrideProjectId: 'p0', overridePath: '/tmp/mono_p0.wav'),
+        ['/tmp/mono_p0.wav'],
+      );
+    });
+  });
 }

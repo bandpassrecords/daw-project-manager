@@ -1869,6 +1869,18 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     final savedPosition = _position;
     setState(() => _isMono = newMono);
 
+    // When the global mobile player owns this track, the swap has to happen
+    // there. Doing it locally would start a second, parallel audio stream on
+    // top of the one just_audio is already playing.
+    if (_playbackTarget == PlaybackTarget.mobilePlayer) {
+      final target = newMono ? _monoFilePath : _effectivePreviewPath;
+      if (target == null || target.isEmpty) return;
+      await ref
+          .read(mobilePlayerProvider.notifier)
+          .switchSource(target, savedPosition);
+      return;
+    }
+
     // Grab (or create) the new active player.
     final newActive = _warmPlayer ?? AudioPlayer();
     _warmPlayer = null;
@@ -2080,8 +2092,43 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     }
   }
 
+  /// Which player the transport controls on this card are actually driving.
+  /// Not always the page's own [_audioPlayer]: on mobile play/pause is
+  /// delegated to the global player, and on desktop the bottom bar may hold
+  /// this same track.
+  PlaybackTarget get _playbackTarget => playbackTargetFor(
+        isMobile: MobileUtils.isMobile(),
+        projectId: widget.project.id,
+        mobilePlayerProjectId:
+            ref.read(mobilePlayerProvider).currentProject?.id,
+        desktopPlayerProjectId: ref.read(desktopPlayerProvider)?.project.id,
+      );
+
+  /// Sends an absolute seek to whichever player owns playback.
+  Future<void> _seekTo(Duration target) async {
+    switch (_playbackTarget) {
+      case PlaybackTarget.mobilePlayer:
+        await ref.read(mobilePlayerProvider.notifier).seek(target);
+      case PlaybackTarget.desktopPlayerBar:
+        ref.read(desktopPlayerSeekRequestProvider.notifier).seekTo(target);
+      case PlaybackTarget.local:
+        await _audioPlayer.seek(target);
+    }
+    if (mounted) setState(() => _position = target);
+  }
+
   Future<void> _seek(int seconds) async {
-    await _audioPlayer.seek(seekTarget(_position, seconds, _duration));
+    await _seekTo(seekTarget(_position, seconds, _duration));
+  }
+
+  /// Applies [value] to whichever player owns playback. The desktop bar owns
+  /// its own volume control, so there it stays a local-only setting.
+  Future<void> _applyVolume(double value) async {
+    if (_playbackTarget == PlaybackTarget.mobilePlayer) {
+      await ref.read(mobilePlayerProvider.notifier).setVolume(value);
+    } else {
+      await _audioPlayer.setVolume(value);
+    }
   }
 
   Future<void> _sharePreviewSong() async {
@@ -2551,6 +2598,27 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
       if (next != null && _isPlaying) _audioPlayer.pause();
     });
 
+    // Desktop: while the bottom player bar holds this project, it — not this
+    // page's player — is the one making sound, so mirror its clock. Without
+    // this the waveform sat at zero and a drag on it had nothing to move.
+    if (!MobileUtils.isMobile()) {
+      final barOwnsTrack =
+          ref.watch(desktopPlayerProvider)?.project.id == widget.project.id;
+      if (barOwnsTrack) {
+        final barPosition = ref.watch(desktopPlayerPositionProvider);
+        final barDuration = ref.watch(desktopPlayerDurationProvider);
+        if (barPosition != _position || barDuration != _duration) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            setState(() {
+              _position = barPosition;
+              _duration = barDuration;
+            });
+          });
+        }
+      }
+    }
+
     // Sync local display state from the global player when on mobile.
     if (MobileUtils.isMobile()) {
       ref.listen<MobilePlayerState>(mobilePlayerProvider, (prev, next) {
@@ -2800,11 +2868,11 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                   onPressed: () async {
                                     if (_volume > 0) {
                                       setState(() { _preMuteVolume = _volume; _volume = 0; });
-                                      await _audioPlayer.setVolume(0);
+                                      await _applyVolume(0);
                                     } else {
                                       final restore = _preMuteVolume > 0 ? _preMuteVolume : 1.0;
                                       setState(() { _volume = restore; });
-                                      await _audioPlayer.setVolume(restore);
+                                      await _applyVolume(restore);
                                     }
                                   },
                                   tooltip: _volume == 0 ? AppLocalizations.of(context)!.volumeUnmute : AppLocalizations.of(context)!.volumeMute,
@@ -2819,7 +2887,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                       max: 1.0,
                                       onChanged: (value) async {
                                         setState(() { _volume = value; });
-                                        await _audioPlayer.setVolume(value);
+                                        await _applyVolume(value);
                                       },
                                     ),
                                   ),
@@ -2859,8 +2927,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                               height: 80,
                               onSeek: (p) {
                                 final target = Duration(milliseconds: (p * _duration.inMilliseconds).round());
-                                setState(() => _position = target);
-                                _audioPlayer.seek(target);
+                                _seekTo(target);
                               },
                             ),
                           ],
