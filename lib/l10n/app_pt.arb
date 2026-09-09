@@ -87,8 +87,8 @@
   },
   "removeExcludedFolderMessageNoPath": "Esta pasta não será mais excluída.",
   "desktopOnlyPathsSettings": "Esta página está disponível apenas no app desktop.",
-  "renameProjectFolderTitle": "Display Name",
-  "flatpakPortalPathExplanation": "This path is a sandboxed location, not the real folder location — Flatpak doesn't share that with the app. Use the name above to identify it instead.",
+  "renameProjectFolderTitle": "Nome de Exibição",
+  "flatpakPortalPathExplanation": "Este caminho é um local isolado (sandbox), não o local real da pasta — o Flatpak não compartilha essa informação com o app. Use o nome acima para identificá-la.",
   "removeProjectFolderTitle": "Remover pasta de projetos?",
   "removeProjectFolderMessage": "Tem certeza de que deseja remover \"{path}\"? Isso também removerá todos os projetos desta pasta que não estão em lançamentos.",
   "@removeProjectFolderMessage": {
@@ -121,7 +121,7 @@
   "deepScanOnlyUnscanned": "Escanear apenas projetos sem metadados",
   "metadataExtractionTitle": "Extração de Metadados",
   "metadataExtractionSubtitle": "Veja quais dados cada DAW suporta",
-  "metadataExtractionIntro": "Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what's automatic for each supported DAW today.",
+  "metadataExtractionIntro": "A Varredura Profunda pode ler automaticamente alguns desses campos diretamente do arquivo do projeto — o restante precisa ser inserido manualmente. Esta tabela mostra o que é automático hoje para cada DAW suportada.",
   "metadataFieldKey": "Tom",
   "metadataFieldVersion": "Versão do DAW",
   "metadataExtractionManualNote": "Qualquer campo sem suporte automático ainda pode ser inserido manualmente no Detalhe do Projeto. Para BPM e Tom especificamente, colocar um arquivo bpm.txt ou key.txt ao lado do projeto também é detectado na próxima varredura.",
@@ -462,7 +462,7 @@
       }
     }
   },
-  "scanCancelled": "Scan cancelled.",
+  "scanCancelled": "Varredura cancelada.",
   "scanFailuresSnackbar": "{count} projeto{plural} não pôde/puderam ser carregado{plural}.",
   "@scanFailuresSnackbar": {
     "placeholders": {
@@ -820,23 +820,23 @@
     }
   },
   "templateDetailTitle": "Template",
-  "templateNotFound": "Template not found",
-  "saveAsTemplate": "Save as Template",
-  "newTemplateNameLabel": "Template name",
-  "savedAsTemplate": "Saved as template",
-  "duplicateTemplate": "Duplicate",
-  "templateDuplicated": "Template duplicated",
-  "fileInfo": "File Info",
-  "fileSize": "File Size",
-  "filePath": "Path",
-  "fileModified": "Last Modified",
-  "projectsFromThisTemplate": "Projects Created From This Template ({count})",
+  "templateNotFound": "Template não encontrado",
+  "saveAsTemplate": "Salvar como Template",
+  "newTemplateNameLabel": "Nome do template",
+  "savedAsTemplate": "Salvo como template",
+  "duplicateTemplate": "Duplicar",
+  "templateDuplicated": "Template duplicado",
+  "fileInfo": "Informações do Arquivo",
+  "fileSize": "Tamanho do Arquivo",
+  "filePath": "Caminho",
+  "fileModified": "Última Modificação",
+  "projectsFromThisTemplate": "Projetos Criados a Partir Deste Template ({count})",
   "@projectsFromThisTemplate": {
     "placeholders": {
       "count": { "type": "int" }
     }
   },
-  "noProjectsFromThisTemplate": "No projects created from this template yet",
+  "noProjectsFromThisTemplate": "Nenhum projeto criado a partir deste template ainda",
   "importTodos": "Importar Tarefas de Arquivo",
   "noTodosInFile": "Nenhuma tarefa encontrada no arquivo",
   "todosImported": "{count} tarefa(s) importada(s) com sucesso",

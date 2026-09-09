@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../generated/l10n/app_localizations.dart';
+import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
 import 'widgets/desktop_title_bar.dart';
 
@@ -79,6 +80,32 @@ class MetadataExtractionInfoPage extends StatelessWidget {
               : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
         );
 
+    Widget dawNameCell(String name) {
+      final logoPath = getDawLogoPath(name);
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (logoPath == null)
+            Icon(Icons.piano, size: 16, color: theme.colorScheme.onSurfaceVariant)
+          else
+            Image.asset(
+              logoPath,
+              width: 16,
+              height: 16,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => Icon(
+                Icons.piano,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          const SizedBox(width: 8),
+          Text(name),
+        ],
+      );
+    }
+
     return Scaffold(
       body: Column(
         children: [
@@ -120,7 +147,7 @@ class MetadataExtractionInfoPage extends StatelessWidget {
                                 for (final daw in _dawExtractionInfo)
                                   DataRow(
                                     cells: [
-                                      DataCell(Text(daw.name)),
+                                      DataCell(dawNameCell(daw.name)),
                                       DataCell(statusIcon(daw.bpm)),
                                       DataCell(statusIcon(daw.key)),
                                       DataCell(statusIcon(daw.version)),
