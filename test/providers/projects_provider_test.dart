@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,14 +35,18 @@ class _FakeShowOnlyWithDeadlineNotifier extends ShowOnlyWithDeadlineNotifier {
 // Helpers
 // ---------------------------------------------------------------------------
 
-ProviderContainer _makeContainer(List<MusicProject> projects) {
+ProviderContainer _makeContainer(
+  List<MusicProject> projects, {
+  List<Release> releases = const [],
+  List<ScanRoot> roots = const [],
+}) {
   return ProviderContainer(overrides: [
     allProjectsStreamProvider.overrideWith(
         (ref) => Stream.value(projects)),
     releasesProvider.overrideWith(
-        (ref) => Stream.value(<Release>[])),
+        (ref) => Stream.value(releases)),
     scanRootsProvider.overrideWith(
-        (ref) => <ScanRoot>[]),
+        (ref) => roots),
     finishedPhaseProvider.overrideWith(
         (ref) => const <String>{'Finished'}),
     showHiddenProjectsProvider.overrideWith(_FakeShowHiddenNotifier.new),
@@ -63,8 +68,22 @@ Future<List<MusicProject>> _readProjects(ProviderContainer c) async {
     },
     fireImmediately: true,
   );
+  // releasesProvider is a stream too, and projectsProvider reads it to decide
+  // which release-attached projects to hide. Without waiting for it to emit,
+  // that filter sees an empty release list and never runs — so a test about
+  // release-attached projects would pass no matter what the filter does.
+  final releasesReady = Completer<void>();
+  final releasesSub = c.listen<AsyncValue<List<Release>>>(
+    releasesProvider,
+    (_, next) {
+      if (next.hasValue && !releasesReady.isCompleted) releasesReady.complete();
+    },
+    fireImmediately: true,
+  );
   await completer.future;
+  await releasesReady.future;
   sub.close();
+  releasesSub.close();
   return c.read(projectsProvider);
 }
 
@@ -456,6 +475,125 @@ void main() {
       addTearDown(c.dispose);
 
       expect(await _readAvailableDaws(c), isEmpty);
+    });
+  });
+
+  group('version stacks (#94)', () {
+    // Reproduces a real library that lost rows: a stack formed from a version
+    // sitting directly in the scan root gets that root as its own path, and
+    // the stack was on a release.
+    // A real directory on disk: the bug only bites when the stack's folder
+    // *exists*, since a non-existent path takes the metadata-only branch above
+    // the scan-root check and is shown regardless.
+    late Directory rootDir;
+    late String root;
+
+    setUp(() async {
+      rootDir = await Directory.systemTemp.createTemp('stack_root_');
+      root = rootDir.path;
+    });
+
+    tearDown(() async {
+      if (await rootDir.exists()) await rootDir.delete(recursive: true);
+    });
+
+    ScanRoot scanRoot() => ScanRoot(
+          id: 'r1',
+          path: root,
+          addedAt: DateTime(2025, 1, 1),
+        );
+
+    List<MusicProject> stackAtRoot() => [
+          TestFactories.makeProject(
+            id: 'stack',
+            isVirtual: true,
+            memberProjectIds: const ['v1', 'v2'],
+            // dirname of a version living directly in the root *is* the root.
+            filePath: root,
+          ),
+          TestFactories.makeProject(
+            id: 'v1',
+            stackId: 'stack',
+            filePath: '$root/A.logicx',
+          ),
+          TestFactories.makeProject(
+            id: 'v2',
+            stackId: 'stack',
+            filePath: '$root/Sub/B.logicx',
+          ),
+        ];
+
+    test('shows the stack and hides its versions', () async {
+      final c = _makeContainer(stackAtRoot(), roots: [scanRoot()]);
+      addTearDown(c.dispose);
+
+      expect((await _readProjects(c)).map((p) => p.id).toList(), ['stack']);
+    });
+
+    test('a stack on a release is not dropped by the scan-root check',
+        () async {
+      // The stack's path is the root itself, which is not *inside* the root by
+      // a prefix test — so the release-protection filter used to drop it, and
+      // with its versions already collapsed away the whole project vanished
+      // from the dashboard.
+      final c = _makeContainer(
+        stackAtRoot(),
+        roots: [scanRoot()],
+        releases: [Release(id: 'rel', title: 'EP', trackIds: const ['stack'])],
+      );
+      addTearDown(c.dispose);
+
+      expect((await _readProjects(c)).map((p) => p.id).toList(), ['stack']);
+    });
+
+    test('a real project on a release outside every root is still hidden',
+        () async {
+      // The exemption is for stacks only; the original rule still applies to
+      // scanned files.
+      final c = _makeContainer(
+        [
+          TestFactories.makeProject(
+            id: 'outside',
+            filePath: '/Elsewhere/Gone.als',
+          ),
+        ],
+        roots: [scanRoot()],
+        releases: [
+          Release(id: 'rel', title: 'EP', trackIds: const ['outside']),
+        ],
+      );
+      addTearDown(c.dispose);
+
+      // Its file does not exist locally, so it stays visible as a
+      // metadata-only entry — the branch above the root check.
+      expect((await _readProjects(c)).map((p) => p.id).toList(), ['outside']);
+    });
+
+    test('work time is rolled up from the versions onto the stack', () async {
+      final c = _makeContainer([
+        TestFactories.makeProject(
+          id: 'stack',
+          isVirtual: true,
+          memberProjectIds: const ['v1', 'v2'],
+          filePath: root,
+        ),
+        TestFactories.makeProject(
+          id: 'v1',
+          stackId: 'stack',
+          totalWorkSeconds: 3600,
+          filePath: '$root/A.logicx',
+        ),
+        TestFactories.makeProject(
+          id: 'v2',
+          stackId: 'stack',
+          totalWorkSeconds: 1800,
+          filePath: '$root/B.logicx',
+        ),
+      ], roots: [scanRoot()]);
+      addTearDown(c.dispose);
+
+      final projects = await _readProjects(c);
+      expect(projects.single.totalWorkSeconds, 5400);
     });
   });
 }

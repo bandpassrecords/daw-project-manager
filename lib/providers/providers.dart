@@ -422,6 +422,15 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
             // Projects not attached to any release are always shown.
             if (!protectedProjectIds.contains(project.id)) return true;
 
+            // A stack has no scanned file: its path is the folder its versions
+            // sit in, which can be the scan root itself when a version lives
+            // directly in the root. That folder exists but is not *inside* any
+            // root by the prefix test below, so a stack on a release would be
+            // dropped from the list entirely — along with its versions, which
+            // are already collapsed into it. Judged by its members, never by a
+            // path it only synthesized.
+            if (!project.isMissingFileCandidate) return true;
+
             // File not present locally → metadata-only from backup / different machine.
             // Always show so the user can inspect / edit metadata.
             final fileExistsLocally = fileExistenceCache.exists(
