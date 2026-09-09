@@ -15,6 +15,7 @@ import 'package:audioplayers/audioplayers.dart';
 import '../models/release.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/mixdown_detector_service.dart';
+import '../services/scanner_service.dart';
 import 'widgets/desktop_title_bar.dart';
 import '../models/release_file.dart';
 import '../models/music_project.dart';
@@ -961,9 +962,10 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
   }
 
   Widget _buildDesktopTrackTile(BuildContext context, Release release, MusicProject project, int index) {
-    final folderPath = FileSystemEntity.isDirectorySync(project.filePath)
-        ? project.filePath
-        : path.dirname(project.filePath);
+    // Use the shared helper so a package-bundle project (.logicx/.luna/.band,
+    // a directory on disk) resolves to its *parent* folder — opening the bundle
+    // itself just launches the DAW. See ScannerService.projectContainingFolder.
+    final folderPath = ScannerService.projectContainingFolder(project.filePath);
     final fileExists = File(project.filePath).existsSync() ||
         Directory(project.filePath).existsSync();
     final sessionMode = ref.watch(sessionModeProvider);
@@ -1571,9 +1573,10 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                       },
                       itemBuilder: (context, index) {
                         final project = releaseProjects[index];
-                        final folderPath = FileSystemEntity.isDirectorySync(project.filePath)
-                            ? project.filePath
-                            : path.dirname(project.filePath);
+                        // Shared helper: a package-bundle project (.logicx/.luna
+                        // /.band) resolves to its parent folder, not the bundle.
+                        final folderPath =
+                            ScannerService.projectContainingFolder(project.filePath);
                         final fileExists = File(project.filePath).existsSync() ||
                             Directory(project.filePath).existsSync();
                         final sessionMode = ref.watch(sessionModeProvider);
