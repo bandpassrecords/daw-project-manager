@@ -800,9 +800,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             .addAll(newlyDiscoveredIds);
       }
 
+      // Repairs stacks left broken by older builds, whose scans dropped the
+      // stackId from every version (see _buildProjectAndEvent). No-op once a
+      // library is healthy.
+      await repo.cleanUpDanglingStackLinks();
+
       // Roots set to Version Stack mode turn each project folder into one
-      // song. Runs after every root is upserted so a folder spanning two roots
-      // is considered once, with all of its files present.
+      // main project. Runs after every root is upserted so a folder spanning
+      // two roots is considered once, with all of its files present.
       await repo.autoStackFolders();
 
       // Snapshot pending folders with active session tracking before resolving,

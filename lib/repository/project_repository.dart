@@ -719,12 +719,38 @@ class ProjectRepository {
   Future<void> cleanUpDanglingStackLinks() async {
     for (final project in projectsBox.values.toList(growable: false)) {
       if (project.isVirtual) {
-        final live = project.memberProjectIds
-            .where((id) => projectsBox.containsKey(id))
-            .toList();
-        if (live.length == project.memberProjectIds.length) continue;
+        // A member counts as live only if it still exists *and* is not
+        // claimed by some other stack. Anything else is dropped from the
+        // list; a member that simply lost its backlink is re-linked below.
+        final live = <String>[];
+        final relink = <MusicProject>[];
+        for (final id in project.memberProjectIds) {
+          final member = projectsBox.get(id);
+          if (member == null) continue;
+          if (member.stackId != null && member.stackId != project.id) continue;
+          live.add(id);
+          if (member.stackId == null) relink.add(member);
+        }
+
         if (live.length < 2) {
           await unstack(project.id);
+          continue;
+        }
+
+        // Repairs stacks broken by scans that used to rebuild each project
+        // from scratch and drop its stackId (see _buildProjectAndEvent).
+        // That left the stack row listing members which no longer pointed
+        // back, so nothing collapsed: the versions showed as loose projects
+        // beside a stack row claiming to hold them.
+        for (final member in relink) {
+          await projectsBox.put(
+            member.id,
+            member.copyWith(stackId: project.id),
+          );
+        }
+
+        if (live.length == project.memberProjectIds.length &&
+            live.contains(project.defaultLaunchMemberId)) {
           continue;
         }
         await projectsBox.put(
@@ -927,58 +953,60 @@ class ProjectRepository {
       }
     }
 
-    // Cria o objeto base, usando os dados existentes se houver,
-    // mas atualizando os campos que vêm do sistema de arquivos (size, lastModified, fileName, etc.)
-    final projectToSave = MusicProject(
-      id: existing?.id ?? _uuid.v4(),
-      filePath: filePath,
-      fileName: fileName,
-      fileSizeBytes: size,
-      lastModifiedAt: lastModified,
-      fileExtension: ext,
-      createdAt: existing?.createdAt ?? DateTime.now(),
-      updatedAt: DateTime.now(),
-
-      // PRESERVAÇÃO: Estes campos foram editados pelo usuário e devem ser mantidos
-      customDisplayName: existing?.customDisplayName, // <--- PRESERVA
-      status:
-          existing?.status ??
-          'Idea', // <--- PRESERVA (default changed from 'Draft' to 'Idea')
-      bpm: bpm, // <--- USA EXISTENTE OU EXTRAÍDO
-      musicalKey: key, // <--- USA EXISTENTE OU EXTRAÍDO
-      notes: existing?.notes, // <--- NOVO: PRESERVA NOTAS
-      projectNotes:
-          projectNotes, // <--- USA EXISTENTE OU EXTRAÍDO DO ARQUIVO (ex: Reaper, Cubase/Nuendo)
-      markers: markers, // <--- EXTRAÍDO DO ARQUIVO (Reaper), PRESERVA EM SCAN LEVE
-      todos: existing?.todos ?? const [], // <--- CRITICAL: PRESERVA TODOS
-      hidden:
-          existing?.hidden ?? false, // <--- CRITICAL: PRESERVA HIDDEN STATUS
-      dawType: dawType, // <--- SEMPRE ATUALIZA DO ARQUIVO
-      dawVersion:
-          dawVersion, // <--- USA EXISTENTE OU EXTRAÍDO (preserva se já existe)
-      previewSongPath: existing?.previewSongPath, // <--- PRESERVA PREVIEW SONG
-      previewSongFileName:
-          existing?.previewSongFileName, // <--- PRESERVA PREVIEW SONG FILENAME
-      uploadedPreviewSongHash:
-          existing?.uploadedPreviewSongHash, // <--- PRESERVA PREVIEW SONG HASH
-      previewSongAutoPath:
-          existing?.previewSongAutoPath, // <--- PRESERVA AUTO-DETECTED PATH
-      fileCreatedAt:
-          fileCreatedAt, // <--- FILE CREATION DATE (never override once set)
-      statusChangedAt:
-          existing?.statusChangedAt, // <--- PRESERVA STATUS CHANGE DATE
-      deadline: existing?.deadline, // <--- PRESERVA DEADLINE
-      parentProjectId: parentProjectId ?? existing?.parentProjectId,
-      totalWorkSeconds:
-          existing?.totalWorkSeconds ??
-          0, // <--- CRITICAL: PRESERVA SESSION TIME
-      sessions:
-          existing?.sessions ??
-          const [], // <--- CRITICAL: PRESERVA SESSION HISTORY
-      metadataScanned: fullMetadata
-          ? true
-          : (existing?.metadataScanned ?? false),
-    );
+    // Preserve-by-default. An earlier version of this built a fresh
+    // MusicProject and re-listed every field worth keeping, which meant any
+    // field added to the model later was silently wiped by the next scan
+    // unless someone remembered to add it here — and several were: song
+    // parts, thumbnails, the source template link, the ignored-newer-song
+    // path, and every version-stacking link. Copying the existing row and
+    // overwriting only what the filesystem and extraction actually know
+    // inverts that: a new field is kept unless it is deliberately updated.
+    //
+    // Only fields listed below are touched; everything else survives a scan.
+    final projectToSave = existing != null
+        ? existing.copyWith(
+            filePath: filePath,
+            fileName: fileName,
+            fileSizeBytes: size,
+            lastModifiedAt: lastModified,
+            fileExtension: ext,
+            updatedAt: DateTime.now(),
+            // Null from extraction means "didn't find it", so the stored
+            // value stands — copyWith already treats null as "leave alone".
+            bpm: extractedMetadata?.bpm,
+            musicalKey: extractedMetadata?.key,
+            dawVersion: extractedMetadata?.dawVersion,
+            projectNotes: extractedMetadata?.projectNotes,
+            markers: extractedMetadata?.markers,
+            // DAW type is derived from the extension, so it always comes from
+            // the file; a failed extraction clears it rather than leaving a
+            // stale one behind.
+            dawType: dawType,
+            clearDawType: dawType == null,
+            fileCreatedAt: fileCreatedAt,
+            parentProjectId: parentProjectId,
+            metadataScanned: fullMetadata ? true : existing.metadataScanned,
+          )
+        : MusicProject(
+            id: _uuid.v4(),
+            filePath: filePath,
+            fileName: fileName,
+            fileSizeBytes: size,
+            lastModifiedAt: lastModified,
+            fileExtension: ext,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            status: 'Idea',
+            bpm: bpm,
+            musicalKey: key,
+            dawType: dawType,
+            dawVersion: dawVersion,
+            projectNotes: projectNotes,
+            markers: markers,
+            fileCreatedAt: fileCreatedAt,
+            parentProjectId: parentProjectId,
+            metadataScanned: fullMetadata,
+          );
 
     // Record a file_changed event if an existing project had its file mutated
     ProjectEvent? event;
@@ -1189,6 +1217,11 @@ class ProjectRepository {
     }
 
     for (final member in members) {
+      // Only release a version that actually points back here. A stale stack
+      // can still list a version that has since joined another one, and
+      // clearing that member's link would quietly steal it from the stack it
+      // now belongs to.
+      if (member.stackId != null && member.stackId != stackId) continue;
       await projectsBox.put(member.id, member.copyWith(clearStackId: true));
     }
     await projectsBox.delete(stackId);
