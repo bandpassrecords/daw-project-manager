@@ -23,6 +23,7 @@ import '../services/scanner_service.dart';
 import '../utils/app_paths.dart';
 import '../utils/daw_logo.dart';
 import '../utils/file_launcher.dart';
+import '../utils/theme_derivations.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/trina_grid_locale.dart';
 import 'row_click_selection.dart';
@@ -968,29 +969,13 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
         availableDaws.isNotEmpty || availableKeys.isNotEmpty;
     final isMobile = MobileUtils.isMobile();
     final activeTheme = ref.watch(themeDataProvider);
-    final isNeon = ref.watch(themeTypeProvider) == AppThemeType.neonDark;
-    final isDark = activeTheme.brightness == Brightness.dark;
-    // Classic Dark's primary is a muted gray-blue, so tinting with it reads
-    // as barely-there against the dark card background — lean on white
-    // instead for a highlight that actually contrasts. Neon Dark's bright
-    // primary already pops, so keep that one colored.
-    final rowSelectColor = isNeon
-        ? activeTheme.colorScheme.primary.withValues(alpha: 0.18)
-        : Colors.white.withValues(alpha: 0.14);
-    final oddColor = isNeon
-        ? activeTheme.scaffoldBackgroundColor
-        : activeTheme.cardColor;
-    final evenColor = isNeon
-        ? activeTheme.cardColor
-        : isDark
-        ? Color.alphaBlend(
-            Colors.white.withValues(alpha: 0.05),
-            activeTheme.cardColor,
-          )
-        : Color.alphaBlend(
-            Colors.black.withValues(alpha: 0.04),
-            activeTheme.cardColor,
-          );
+    final themeSpec = ref.watch(activeThemeProvider);
+    final isVividAccent = themeSpec.hasVividAccent;
+    // Row colors come off the theme spec (see ThemeDerivations) rather than a
+    // "is this Neon Dark?" check, which treated every user theme as Classic.
+    final rowSelectColor = themeSpec.gridRowSelectColor;
+    final oddColor = themeSpec.gridRowOddColor;
+    final evenColor = themeSpec.gridRowEvenColor;
 
     return Shortcuts(
       shortcuts: <LogicalKeySet, Intent>{
@@ -1133,7 +1118,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: isNeon
+                          color: isVividAccent
                               ? activeTheme.colorScheme.primary.withValues(
                                   alpha: 0.25,
                                 )
@@ -1192,7 +1177,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                               Expanded(
                                 child: TrinaGrid(
                                   key: ValueKey(
-                                    'project_templates_grid_${l10n.localeName}_${ref.watch(themeTypeProvider).name}_'
+                                    'project_templates_grid_${l10n.localeName}_${themeSpec.identityKey}_'
                                     '${filtered.map((t) => '${t.id}_${t.updatedAt}').join(',')}_${selectedIds.join(',')}',
                                   ),
                                   columns: _buildColumns(l10n, orderedIds),
@@ -1280,13 +1265,13 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                                     style: TrinaGridStyleConfig(
                                       gridBackgroundColor:
                                           activeTheme.cardColor,
-                                      gridBorderColor: isNeon
+                                      gridBorderColor: isVividAccent
                                           ? activeTheme.colorScheme.primary
                                                 .withValues(alpha: 0.25)
                                           : activeTheme.dividerColor.withValues(
                                               alpha: 0.4,
                                             ),
-                                      borderColor: isNeon
+                                      borderColor: isVividAccent
                                           ? activeTheme.colorScheme.primary
                                                 .withValues(alpha: 0.15)
                                           : activeTheme.dividerColor.withValues(
@@ -1298,7 +1283,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                                       cellColorInReadOnlyState:
                                           Colors.transparent,
                                       columnTextStyle: TextStyle(
-                                        color: isNeon
+                                        color: isVividAccent
                                             ? activeTheme.colorScheme.primary
                                             : activeTheme
                                                   .textTheme
@@ -1319,7 +1304,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                                       // no per-cell border/fill on click.
                                       activatedBorderColor: Colors.transparent,
                                       activatedColor: Colors.transparent,
-                                      iconColor: isNeon
+                                      iconColor: isVividAccent
                                           ? activeTheme.colorScheme.primary
                                                 .withValues(alpha: 0.7)
                                           : activeTheme

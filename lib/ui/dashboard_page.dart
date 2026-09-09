@@ -37,6 +37,7 @@ import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/phase_colors.dart';
 import '../utils/project_file_status.dart';
+import '../utils/theme_derivations.dart';
 import '../providers/theme_provider.dart';
 import '../utils/file_launcher.dart';
 import '../utils/search_utils.dart';
@@ -7124,7 +7125,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     ref.listen(finishedPhaseProvider, (_, _) => rebuildForPhaseConfig());
     // Flag that the grid (recreated via key change) needs a full row rebuild
     // once onLoaded fires, to bust TrinaGrid's renderer cache on theme switch.
-    ref.listen(themeTypeProvider, (prev, next) {
+    ref.listen(activeThemeProvider, (prev, next) {
       if (prev != next) _needsThemeRefresh = true;
     });
     // When the search query changes, ask TrinaGrid to repaint so the
@@ -8055,46 +8056,34 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       );
     }
 
-    // Read from Riverpod so isNeon and all theme colors come from the same build tick,
-    // preventing a one-frame inversion when the user switches themes.
+    // Read from Riverpod so the spec and all theme colors come from the same
+    // build tick, preventing a one-frame inversion when the user switches
+    // themes.
     final activeTheme = ref.watch(themeDataProvider);
-    final isNeon = ref.watch(themeTypeProvider) == AppThemeType.neonDark;
-    final isDark = activeTheme.brightness == Brightness.dark;
+    final themeSpec = ref.watch(activeThemeProvider);
+    // Was `themeType == AppThemeType.neonDark`. A user theme with a saturated
+    // accent gets the accent-tinted grid chrome too; a muted one falls back
+    // to divider/text colors the way Classic Dark always has.
+    final isVividAccent = themeSpec.hasVividAccent;
 
     final playingHighlightColor = activeTheme.colorScheme.primary.withValues(
       alpha: 0.32,
     );
-    // Classic Dark's primary is a muted gray-blue, so tinting with it reads
-    // as barely-there against the dark card background — lean on white
-    // instead for a highlight that actually contrasts. Neon Dark's bright
-    // primary already pops, so keep that one colored.
-    final rowSelectColor = isNeon
-        ? activeTheme.colorScheme.primary.withValues(alpha: 0.18)
-        : Colors.white.withValues(alpha: 0.14);
-
-    // Neon Dark: use scaffold background (very dark navy) for odd rows so alternating rows are clearly visible.
-    // Classic Dark: use card colour for odd rows (current behaviour).
-    final oddColor = isNeon
-        ? activeTheme.scaffoldBackgroundColor
-        : activeTheme.cardColor;
-    final evenColor = isNeon
-        ? activeTheme.cardColor
-        : isDark
-        ? Color.alphaBlend(
-            Colors.white.withValues(alpha: 0.05),
-            activeTheme.cardColor,
-          )
-        : Color.alphaBlend(
-            Colors.black.withValues(alpha: 0.04),
-            activeTheme.cardColor,
-          );
+    // Row colors come off the spec rather than a "is this Neon Dark?" check —
+    // see ThemeDerivations for why a muted accent gets different treatment.
+    final rowSelectColor = themeSpec.gridRowSelectColor;
+    final oddColor = themeSpec.gridRowOddColor;
+    final evenColor = themeSpec.gridRowEvenColor;
 
     final grid = TrinaGrid(
       key: ValueKey(
         // nameDateStripping is in the key because displayName is cached into
         // TrinaCell values at row-build time — notifyListeners() alone would
         // leave the old, date-prefixed names on screen until the next scan.
-        'trina_grid_${l10n.localeName}_${ref.watch(themeTypeProvider).name}_${excludeFoldersFromSort}_${mergeFoldersByName}_${alwaysShowSmartFolders}_${ref.watch(nameDateStrippingProvider)}',
+        // themeSpec.identityKey rather than just the theme id: editing a user
+        // theme's colors keeps the same id, and TrinaGrid caches its renderer
+        // colors, so the id alone would leave the old palette on screen.
+        'trina_grid_${l10n.localeName}_${themeSpec.identityKey}_${excludeFoldersFromSort}_${mergeFoldersByName}_${alwaysShowSmartFolders}_${ref.watch(nameDateStrippingProvider)}',
       ),
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
       columns: columns,
@@ -8204,10 +8193,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         localeText: trinaGridLocaleTextFor(context),
         style: TrinaGridStyleConfig(
           gridBackgroundColor: activeTheme.cardColor,
-          gridBorderColor: isNeon
+          gridBorderColor: isVividAccent
               ? activeTheme.colorScheme.primary.withValues(alpha: 0.25)
               : activeTheme.dividerColor.withValues(alpha: 0.4),
-          borderColor: isNeon
+          borderColor: isVividAccent
               ? activeTheme.colorScheme.primary.withValues(alpha: 0.15)
               : activeTheme.dividerColor.withValues(alpha: 0.25),
           gridBorderRadius: BorderRadius.zero,
@@ -8217,7 +8206,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           cellColorInEditState: Colors.transparent,
           cellColorInReadOnlyState: Colors.transparent,
           columnTextStyle: TextStyle(
-            color: isNeon
+            color: isVividAccent
                 ? activeTheme.colorScheme.primary
                 : activeTheme.textTheme.titleMedium?.color,
             fontWeight: FontWeight.w600,
@@ -8232,7 +8221,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           // per-cell border/fill on click.
           activatedBorderColor: Colors.transparent,
           activatedColor: Colors.transparent,
-          iconColor: isNeon
+          iconColor: isVividAccent
               ? activeTheme.colorScheme.primary.withValues(alpha: 0.7)
               : activeTheme.textTheme.bodyMedium?.color ?? Colors.grey,
           menuBackgroundColor: activeTheme.cardColor,

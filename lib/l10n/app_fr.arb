@@ -3044,5 +3044,63 @@
   "stackAutoConfirmApply": "Empiler",
   "stackAutoFolderEntry": "{folder} — {count} versions",
   "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
-  "stackAutoJoinsExisting": "rejoint le projet principal existant"
+  "stackAutoJoinsExisting": "rejoint le projet principal existant",
+  "untitledTheme": "Thème sans nom",
+  "switchToTheme": "Passer à {themeName}",
+  "@switchToTheme": {
+    "placeholders": {
+      "themeName": { "type": "String" }
+    }
+  },
+  "newTheme": "Nouveau thème",
+  "editTheme": "Modifier le thème",
+  "duplicateTheme": "Dupliquer",
+  "deleteThemeTitle": "Supprimer le thème ?",
+  "deleteThemeMessage": "\"{name}\" sera supprimé. Cette action est irréversible.",
+  "@deleteThemeMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeNameLabel": "Nom du thème",
+  "themeNameHint": "ex. Studio Ambre",
+  "themeNameRequired": "Donnez un nom au thème.",
+  "themeColorAccent": "Accent",
+  "themeColorSecondaryAccent": "Accent secondaire",
+  "themeColorBackground": "Arrière-plan",
+  "themeColorCards": "Cartes et panneaux",
+  "themeCardRoundness": "Arrondi des cartes",
+  "themeButtonRoundness": "Arrondi des boutons",
+  "themeLowContrastWarning": "Contraste faible ({ratio}:1). Le texte peut être difficile à lire.",
+  "@themeLowContrastWarning": {
+    "placeholders": {
+      "ratio": { "type": "String" }
+    }
+  },
+  "exportTheme": "Exporter le thème",
+  "importTheme": "Importer un thème",
+  "themeExported": "Thème exporté vers {path}",
+  "@themeExported": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "themeImported": "« {name} » importé",
+  "@themeImported": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeImportFailed": "Ce fichier n'est pas un thème valide.",
+  "themeHexLabel": "Hex",
+  "themeHexInvalid": "Utilisez #RRGGBB",
+  "apply": "Appliquer",
+  "themeCopyName": "{name} copie",
+  "@themeCopyName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "suggestedColorsLabel": "Couleurs Suggérées"
 }

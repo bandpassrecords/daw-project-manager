@@ -5,8 +5,10 @@ import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 import '../generated/l10n/app_localizations.dart';
+import '../models/custom_theme.dart';
 import '../models/scan_mode.dart';
 import '../models/project_detail_layout.dart';
 import '../models/waveform_style.dart';
@@ -26,6 +28,7 @@ import '../services/project_parts_csv_export_service.dart';
 import '../services/project_parts_xlsx_export_service.dart';
 import '../services/project_text_export_service.dart';
 import '../services/scan_import_service.dart';
+import '../services/theme_file_service.dart';
 import '../services/update_check_service.dart';
 import '../utils/daw_logo.dart';
 import '../utils/file_launcher.dart';
@@ -37,7 +40,11 @@ import 'google_drive_sync_page.dart' show GoogleDriveSyncSection;
 import 'metadata_extraction_info_page.dart';
 import 'notification_settings_page.dart' show WorkTimerSection;
 import 'onboarding_wizard_page.dart';
+import 'dialogs/color_picker_dialog.dart';
+import 'dialogs/theme_editor_dialog.dart';
+import 'theme_labels.dart';
 import 'widgets/parts_export_card.dart';
+import 'widgets/theme_preview_card.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/section_nav_rail.dart';
 import 'widgets/language_switcher.dart' show LanguageSwitcher;
@@ -965,12 +972,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     Color currentColor,
     List<String> phases,
   ) async {
-    final picked = await showDialog<Color>(
-      context: context,
-      builder: (ctx) => _ColorPickerDialog(
-        phaseName: phase,
-        currentColor: currentColor,
-      ),
+    // Same picker the theme editor uses — swatches plus a hex field.
+    final picked = await showAppColorPicker(
+      context,
+      title: phase,
+      current: currentColor,
     );
     if (picked != null) await _saveColor(phase, picked);
   }
@@ -2719,10 +2725,244 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
+  // ---------------------------------------------------------------------
+  // Themes
+  // ---------------------------------------------------------------------
+
+  /// A new, editable theme carrying [source]'s colors under a fresh id.
+  ///
+  /// Every creation path goes through here, because starting from a theme
+  /// that already works is far more likely to end in a usable one than
+  /// starting from a blank slate — "New theme" copies whatever is active, and
+  /// "Duplicate" copies the card that was clicked.
+  ///
+  /// The structural overrides on the built-ins (Classic Dark's muted button
+  /// style, its explicit divider colors) are deliberately *not* carried over:
+  /// a user theme is always `ThemeAccentStyle.vivid` with derived borders, so
+  /// duplicating Classic Dark gives its palette in the standard chrome rather
+  /// than a half-copy the editor can't fully control.
+  CustomTheme _newThemeFrom(CustomTheme source, String name) {
+    final now = DateTime.now();
+    return CustomTheme(
+      id: const Uuid().v4(),
+      name: name,
+      // Pinned to dark in v1: large parts of the UI still carry hardcoded
+      // white-on-dark literals, so a light custom theme would have
+      // unreadable patches. Unlocking this is the same work as finishing the
+      // hidden studioLight built-in.
+      brightness: Brightness.dark,
+      primary: source.primary,
+      secondary: source.secondary,
+      background: source.background,
+      card: source.card,
+      cardRadius: source.cardRadius,
+      controlRadius: source.controlRadius,
+      createdAt: now,
+      updatedAt: now,
+    );
+  }
+
+  /// Opens the editor on [draft] and, if saved, stores it.
+  ///
+  /// [select] is the difference between the two creation paths: "New theme"
+  /// is something the user just designed and wants to see, while duplicating
+  /// is usually how you start a variant — switching the whole app to a copy
+  /// nobody asked to wear yet is jarring, so Duplicate only adds it.
+  Future<void> _createFrom(CustomTheme draft, {required bool select}) async {
+    final saved =
+        await showThemeEditorDialog(context, draft: draft, isNew: true);
+    if (saved == null) return;
+    await ref.read(customThemesProvider.notifier).upsert(saved);
+    if (select) {
+      await ref.read(selectedThemeIdProvider.notifier).select(saved.id);
+    }
+  }
+
+  Future<void> _createTheme(AppLocalizations l10n) => _createFrom(
+        _newThemeFrom(ref.read(activeThemeProvider), ''),
+        select: true,
+      );
+
+  Future<void> _duplicateTheme(CustomTheme source, AppLocalizations l10n) =>
+      _createFrom(
+        _newThemeFrom(
+            source, l10n.themeCopyName(themeDisplayName(source, l10n))),
+        select: false,
+      );
+
+  Future<void> _editTheme(CustomTheme theme) async {
+    final saved =
+        await showThemeEditorDialog(context, draft: theme, isNew: false);
+    if (saved == null) return;
+    await ref.read(customThemesProvider.notifier).upsert(saved);
+  }
+
+  Future<void> _deleteTheme(CustomTheme theme, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteThemeTitle),
+        content: Text(l10n.deleteThemeMessage(themeDisplayName(theme, l10n))),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await ref.read(customThemesProvider.notifier).delete(theme.id);
+  }
+
+  Future<void> _exportTheme(CustomTheme theme, AppLocalizations l10n) async {
+    try {
+      final file = await ThemeFileService.export(
+        theme,
+        dialogTitle: l10n.exportTheme,
+        fallbackName: l10n.untitledTheme,
+      );
+      if (file == null || !mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.themeExported(file.path))),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.themeImportFailed)),
+      );
+    }
+  }
+
+  Future<void> _importTheme(AppLocalizations l10n) async {
+    final result = await ThemeFileService.import(dialogTitle: l10n.importTheme);
+    if (result.wasCancelled) return;
+    if (!mounted) return;
+
+    if (result.isInvalid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.themeImportFailed)),
+      );
+      return;
+    }
+
+    final theme = result.theme!;
+    await ref.read(customThemesProvider.notifier).upsert(theme);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.themeImported(themeDisplayName(theme, l10n)))),
+    );
+  }
+
+  /// Theme picker: the built-ins, then the user's own, then the create and
+  /// import buttons.
+  ///
+  /// `AppThemes.visibleBuiltIns` leaves out `studioLight`, which stays hidden
+  /// from every menu and switcher until it's ready (see CLAUDE.md).
+  Widget _buildThemeCard(AppLocalizations l10n) {
+    final selectedId = ref.watch(selectedThemeIdProvider);
+    final customThemes = ref.watch(customThemesProvider);
+
+    Widget card(CustomTheme spec) {
+      final isCustom = !spec.isBuiltIn;
+      return ThemeChoiceCard(
+        spec: spec,
+        label: themeDisplayName(spec, l10n),
+        selected: spec.id == selectedId,
+        onTap: () =>
+            ref.read(selectedThemeIdProvider.notifier).select(spec.id),
+        trailing: PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert, size: 16),
+          padding: EdgeInsets.zero,
+          tooltip: '',
+          onSelected: (action) async {
+            switch (action) {
+              case 'edit':
+                await _editTheme(spec);
+              case 'duplicate':
+                await _duplicateTheme(spec, l10n);
+              case 'export':
+                await _exportTheme(spec, l10n);
+              case 'delete':
+                await _deleteTheme(spec, l10n);
+            }
+          },
+          itemBuilder: (_) => [
+            // Built-ins are read-only — they can be duplicated and exported,
+            // but never edited or deleted out from under the app.
+            if (isCustom)
+              PopupMenuItem(value: 'edit', child: Text(l10n.editTheme)),
+            PopupMenuItem(
+                value: 'duplicate', child: Text(l10n.duplicateTheme)),
+            PopupMenuItem(value: 'export', child: Text(l10n.exportTheme)),
+            if (isCustom)
+              PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+          ],
+        ),
+      );
+    }
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.palette_outlined),
+                const SizedBox(width: 10),
+                Text(l10n.theme,
+                    style: Theme.of(context).textTheme.titleMedium),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(l10n.themeSettingDescription,
+                style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                for (final spec in AppThemes.visibleBuiltIns) card(spec),
+                for (final spec in customThemes) card(spec),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton.icon(
+                  onPressed: () => _createTheme(l10n),
+                  icon: const Icon(Icons.add, size: 18),
+                  label: Text(l10n.newTheme),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => _importTheme(l10n),
+                  icon: const Icon(Icons.file_upload_outlined, size: 18),
+                  label: Text(l10n.importTheme),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildAppearanceSection(AppLocalizations l10n) {
     final visibleSet = ref.watch(visibleTabsProvider);
     final tabPos = ref.watch(tabPositionProvider);
-    final themeType = ref.watch(themeTypeProvider);
     final hideDatesInNames = ref.watch(nameDateStrippingProvider);
     final allTabs = VisibleTabsNotifier.canonicalOrder
         .where((t) => t != AppTab.playlists) // playlists is mobile-only
@@ -2731,46 +2971,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Theme selector. AppThemeType.studioLight is deliberately excluded —
-        // it's hidden from every menu/switcher until it's ready (see CLAUDE.md).
-        Card(
-          clipBehavior: Clip.antiAlias,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.palette_outlined),
-                    const SizedBox(width: 10),
-                    Text(l10n.theme, style: Theme.of(context).textTheme.titleMedium),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(l10n.themeSettingDescription, style: Theme.of(context).textTheme.bodySmall),
-                const SizedBox(height: 12),
-                SegmentedButton<AppThemeType>(
-                  segments: [
-                    ButtonSegment(
-                      value: AppThemeType.classicDark,
-                      icon: const Icon(Icons.dark_mode_outlined, size: 16),
-                      label: Text(l10n.classicDarkThemeName),
-                    ),
-                    ButtonSegment(
-                      value: AppThemeType.neonDark,
-                      icon: const Icon(Icons.bolt_outlined, size: 16),
-                      label: Text(l10n.neonDarkThemeName),
-                    ),
-                  ],
-                  selected: {themeType},
-                  onSelectionChanged: (s) =>
-                      ref.read(themeTypeProvider.notifier).setThemeType(s.first),
-                ),
-              ],
-            ),
-          ),
-        ),
+        _buildThemeCard(l10n),
         const SizedBox(height: 12),
         // How the project detail page arranges itself. Desktop only — a phone
         // has no room for a nav rail, so mobile ignores this.
@@ -3614,79 +3815,6 @@ class _SessionModeOption extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Phase color picker dialog
-// ---------------------------------------------------------------------------
-
-class _ColorPickerDialog extends StatelessWidget {
-  final String phaseName;
-  final Color currentColor;
-
-  const _ColorPickerDialog({
-    required this.phaseName,
-    required this.currentColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(phaseName),
-      content: SizedBox(
-        width: 220,
-        child: Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: kPhaseColorPalette.map((color) {
-            final isSelected = color.toARGB32() == currentColor.toARGB32();
-            return GestureDetector(
-              onTap: () => Navigator.pop(context, color),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.onSurface
-                        : Colors.transparent,
-                    width: 2.5,
-                  ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: color.withValues(alpha: 0.5),
-                            blurRadius: 6,
-                          )
-                        ]
-                      : null,
-                ),
-                child: isSelected
-                    ? Icon(
-                        Icons.check,
-                        size: 18,
-                        color: ThemeData.estimateBrightnessForColor(color) ==
-                                Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
-                      )
-                    : null,
-              ),
-            );
-          }).toList(),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-      ],
     );
   }
 }

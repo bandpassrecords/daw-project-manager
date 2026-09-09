@@ -43,6 +43,7 @@ import 'services/auto_start_service.dart';
 import 'services/thumbnail_toolbar_service.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'models/auto_backup_interval.dart';
+import 'models/custom_theme.dart';
 import 'utils/app_paths.dart';
 import 'utils/mobile_utils.dart';
 
@@ -1116,11 +1117,12 @@ class _DawProjectManagerAppState extends ConsumerState<DawProjectManagerApp>
   static bool get _isDesktop =>
       !kIsWeb && (Platform.isMacOS || Platform.isWindows || Platform.isLinux);
 
-  static Color _bgForTheme(AppThemeType t) => switch (t) {
-    AppThemeType.neonDark => const Color(0xFF0A0A14),
-    AppThemeType.studioLight => const Color(0xFFF8F4EE),
-    AppThemeType.classicDark => const Color(0xFF1E1F22),
-  };
+  /// The native macOS window background, painted behind the Flutter view.
+  ///
+  /// Read off the active theme spec rather than switched over a fixed list of
+  /// themes — a user theme has no enum case, and hardcoding one here would
+  /// flash the wrong color around the window frame.
+  static Color _bgForTheme(CustomTheme spec) => spec.background;
 
   @override
   void initState() {
@@ -1135,7 +1137,7 @@ class _DawProjectManagerAppState extends ConsumerState<DawProjectManagerApp>
     if (!kIsWeb && Platform.isMacOS) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         windowManager.setBackgroundColor(
-          _bgForTheme(ref.read(themeTypeProvider)),
+          _bgForTheme(ref.read(activeThemeProvider)),
         );
       });
     }
@@ -1217,7 +1219,9 @@ class _DawProjectManagerAppState extends ConsumerState<DawProjectManagerApp>
 
     // Keep window background colour in sync with the active theme (macOS only)
     if (!kIsWeb && Platform.isMacOS) {
-      ref.listen(themeTypeProvider, (_, next) {
+      // activeThemeProvider, not the selected id — editing the colors of the
+      // theme that is already selected has to move the window background too.
+      ref.listen(activeThemeProvider, (_, next) {
         windowManager.setBackgroundColor(_bgForTheme(next));
       });
     }

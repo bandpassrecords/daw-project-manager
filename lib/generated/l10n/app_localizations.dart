@@ -8266,6 +8266,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'joins the existing main project'**
   String get stackAutoJoinsExisting;
+
+  /// No description provided for @untitledTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled theme'**
+  String get untitledTheme;
+
+  /// No description provided for @switchToTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to {themeName}'**
+  String switchToTheme(String themeName);
+
+  /// No description provided for @newTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'New theme'**
+  String get newTheme;
+
+  /// No description provided for @editTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit theme'**
+  String get editTheme;
+
+  /// No description provided for @duplicateTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get duplicateTheme;
+
+  /// No description provided for @deleteThemeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete theme?'**
+  String get deleteThemeTitle;
+
+  /// No description provided for @deleteThemeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be removed. This cannot be undone.'**
+  String deleteThemeMessage(String name);
+
+  /// No description provided for @themeNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme name'**
+  String get themeNameLabel;
+
+  /// No description provided for @themeNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Studio Amber'**
+  String get themeNameHint;
+
+  /// No description provided for @themeNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Give the theme a name.'**
+  String get themeNameRequired;
+
+  /// No description provided for @themeColorAccent.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent'**
+  String get themeColorAccent;
+
+  /// No description provided for @themeColorSecondaryAccent.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary accent'**
+  String get themeColorSecondaryAccent;
+
+  /// No description provided for @themeColorBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Background'**
+  String get themeColorBackground;
+
+  /// No description provided for @themeColorCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards and panels'**
+  String get themeColorCards;
+
+  /// No description provided for @themeCardRoundness.
+  ///
+  /// In en, this message translates to:
+  /// **'Card roundness'**
+  String get themeCardRoundness;
+
+  /// No description provided for @themeButtonRoundness.
+  ///
+  /// In en, this message translates to:
+  /// **'Button roundness'**
+  String get themeButtonRoundness;
+
+  /// No description provided for @themeLowContrastWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Low contrast ({ratio}:1). Text may be hard to read.'**
+  String themeLowContrastWarning(String ratio);
+
+  /// No description provided for @exportTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Export theme'**
+  String get exportTheme;
+
+  /// No description provided for @importTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Import theme'**
+  String get importTheme;
+
+  /// No description provided for @themeExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme exported to {path}'**
+  String themeExported(String path);
+
+  /// No description provided for @themeImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported \"{name}\"'**
+  String themeImported(String name);
+
+  /// No description provided for @themeImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'That file isn\'t a valid theme.'**
+  String get themeImportFailed;
+
+  /// No description provided for @themeHexLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hex'**
+  String get themeHexLabel;
+
+  /// No description provided for @themeHexInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Use #RRGGBB'**
+  String get themeHexInvalid;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @themeCopyName.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} copy'**
+  String themeCopyName(String name);
+
+  /// No description provided for @suggestedColorsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Colors'**
+  String get suggestedColorsLabel;
 }
 
 class _AppLocalizationsDelegate

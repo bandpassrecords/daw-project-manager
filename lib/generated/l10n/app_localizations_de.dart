@@ -4916,4 +4916,97 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get stackAutoJoinsExisting => 'kommt zum bestehenden Hauptprojekt';
+
+  @override
+  String get untitledTheme => 'Unbenanntes Design';
+
+  @override
+  String switchToTheme(String themeName) {
+    return 'Zu $themeName wechseln';
+  }
+
+  @override
+  String get newTheme => 'Neues Design';
+
+  @override
+  String get editTheme => 'Design bearbeiten';
+
+  @override
+  String get duplicateTheme => 'Duplizieren';
+
+  @override
+  String get deleteThemeTitle => 'Design löschen?';
+
+  @override
+  String deleteThemeMessage(String name) {
+    return '\"$name\" wird entfernt. Das lässt sich nicht rückgängig machen.';
+  }
+
+  @override
+  String get themeNameLabel => 'Designname';
+
+  @override
+  String get themeNameHint => 'z. B. Studio Amber';
+
+  @override
+  String get themeNameRequired => 'Gib dem Design einen Namen.';
+
+  @override
+  String get themeColorAccent => 'Akzent';
+
+  @override
+  String get themeColorSecondaryAccent => 'Zweitakzent';
+
+  @override
+  String get themeColorBackground => 'Hintergrund';
+
+  @override
+  String get themeColorCards => 'Karten und Bereiche';
+
+  @override
+  String get themeCardRoundness => 'Kartenrundung';
+
+  @override
+  String get themeButtonRoundness => 'Schaltflächenrundung';
+
+  @override
+  String themeLowContrastWarning(String ratio) {
+    return 'Geringer Kontrast ($ratio:1). Text ist möglicherweise schwer lesbar.';
+  }
+
+  @override
+  String get exportTheme => 'Design exportieren';
+
+  @override
+  String get importTheme => 'Design importieren';
+
+  @override
+  String themeExported(String path) {
+    return 'Design exportiert nach $path';
+  }
+
+  @override
+  String themeImported(String name) {
+    return '\"$name\" importiert';
+  }
+
+  @override
+  String get themeImportFailed => 'Diese Datei ist kein gültiges Design.';
+
+  @override
+  String get themeHexLabel => 'Hex';
+
+  @override
+  String get themeHexInvalid => '#RRGGBB verwenden';
+
+  @override
+  String get apply => 'Übernehmen';
+
+  @override
+  String themeCopyName(String name) {
+    return '$name Kopie';
+  }
+
+  @override
+  String get suggestedColorsLabel => 'Vorgeschlagene Farben';
 }

@@ -71,31 +71,49 @@ void main() {
     });
   });
 
-  group('themeTypeProvider', () {
+  group('selectedThemeIdProvider', () {
     test('defaults to classicDark before any preference is saved', () async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      expect(container.read(themeTypeProvider), AppThemeType.classicDark);
+      expect(container.read(selectedThemeIdProvider),
+          AppThemeType.classicDark.name);
     });
 
-    test('setThemeType updates state immediately', () async {
+    test('selectBuiltIn updates state immediately', () async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      await container.read(themeTypeProvider.notifier).setThemeType(AppThemeType.neonDark);
+      await container
+          .read(selectedThemeIdProvider.notifier)
+          .selectBuiltIn(AppThemeType.neonDark);
 
-      expect(container.read(themeTypeProvider), AppThemeType.neonDark);
+      expect(container.read(selectedThemeIdProvider),
+          AppThemeType.neonDark.name);
     });
 
-    test('setThemeType persists the enum name to the settings box', () async {
+    test('selectBuiltIn persists the enum name to the settings box', () async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      await container.read(themeTypeProvider.notifier).setThemeType(AppThemeType.neonDark);
+      await container
+          .read(selectedThemeIdProvider.notifier)
+          .selectBuiltIn(AppThemeType.neonDark);
 
       final box = await Hive.openBox<String>('settings');
       expect(box.get('theme'), 'neonDark');
+    });
+
+    // The storage key and value format are unchanged from when this was
+    // themeTypeProvider, so an existing install keeps its theme rather than
+    // silently resetting to Classic Dark on upgrade.
+    test('a stored built-in name still resolves to that theme', () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await container.read(selectedThemeIdProvider.notifier).select('neonDark');
+
+      expect(container.read(activeThemeProvider), AppThemes.neonDarkSpec);
     });
   });
 }

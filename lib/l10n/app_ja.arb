@@ -3044,5 +3044,63 @@
   "stackAutoConfirmApply": "まとめる",
   "stackAutoFolderEntry": "{folder} — {count} バージョン",
   "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
-  "stackAutoJoinsExisting": "既存のメインプロジェクトに追加"
+  "stackAutoJoinsExisting": "既存のメインプロジェクトに追加",
+  "untitledTheme": "名称未設定のテーマ",
+  "switchToTheme": "{themeName} に切り替え",
+  "@switchToTheme": {
+    "placeholders": {
+      "themeName": { "type": "String" }
+    }
+  },
+  "newTheme": "新しいテーマ",
+  "editTheme": "テーマを編集",
+  "duplicateTheme": "複製",
+  "deleteThemeTitle": "テーマを削除しますか？",
+  "deleteThemeMessage": "「{name}」を削除します。元に戻せません。",
+  "@deleteThemeMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeNameLabel": "テーマ名",
+  "themeNameHint": "例: Studio Amber",
+  "themeNameRequired": "テーマ名を入力してください。",
+  "themeColorAccent": "アクセント",
+  "themeColorSecondaryAccent": "サブアクセント",
+  "themeColorBackground": "背景",
+  "themeColorCards": "カードとパネル",
+  "themeCardRoundness": "カードの角丸",
+  "themeButtonRoundness": "ボタンの角丸",
+  "themeLowContrastWarning": "コントラストが低いです（{ratio}:1）。文字が読みにくい可能性があります。",
+  "@themeLowContrastWarning": {
+    "placeholders": {
+      "ratio": { "type": "String" }
+    }
+  },
+  "exportTheme": "テーマを書き出す",
+  "importTheme": "テーマを読み込む",
+  "themeExported": "テーマを {path} に書き出しました",
+  "@themeExported": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "themeImported": "「{name}」を読み込みました",
+  "@themeImported": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "themeImportFailed": "このファイルは有効なテーマではありません。",
+  "themeHexLabel": "Hex",
+  "themeHexInvalid": "#RRGGBB の形式で入力",
+  "apply": "適用",
+  "themeCopyName": "{name} のコピー",
+  "@themeCopyName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "suggestedColorsLabel": "おすすめの色"
 }

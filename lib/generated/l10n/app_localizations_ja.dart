@@ -4768,4 +4768,97 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stackAutoJoinsExisting => '既存のメインプロジェクトに追加';
+
+  @override
+  String get untitledTheme => '名称未設定のテーマ';
+
+  @override
+  String switchToTheme(String themeName) {
+    return '$themeName に切り替え';
+  }
+
+  @override
+  String get newTheme => '新しいテーマ';
+
+  @override
+  String get editTheme => 'テーマを編集';
+
+  @override
+  String get duplicateTheme => '複製';
+
+  @override
+  String get deleteThemeTitle => 'テーマを削除しますか？';
+
+  @override
+  String deleteThemeMessage(String name) {
+    return '「$name」を削除します。元に戻せません。';
+  }
+
+  @override
+  String get themeNameLabel => 'テーマ名';
+
+  @override
+  String get themeNameHint => '例: Studio Amber';
+
+  @override
+  String get themeNameRequired => 'テーマ名を入力してください。';
+
+  @override
+  String get themeColorAccent => 'アクセント';
+
+  @override
+  String get themeColorSecondaryAccent => 'サブアクセント';
+
+  @override
+  String get themeColorBackground => '背景';
+
+  @override
+  String get themeColorCards => 'カードとパネル';
+
+  @override
+  String get themeCardRoundness => 'カードの角丸';
+
+  @override
+  String get themeButtonRoundness => 'ボタンの角丸';
+
+  @override
+  String themeLowContrastWarning(String ratio) {
+    return 'コントラストが低いです（$ratio:1）。文字が読みにくい可能性があります。';
+  }
+
+  @override
+  String get exportTheme => 'テーマを書き出す';
+
+  @override
+  String get importTheme => 'テーマを読み込む';
+
+  @override
+  String themeExported(String path) {
+    return 'テーマを $path に書き出しました';
+  }
+
+  @override
+  String themeImported(String name) {
+    return '「$name」を読み込みました';
+  }
+
+  @override
+  String get themeImportFailed => 'このファイルは有効なテーマではありません。';
+
+  @override
+  String get themeHexLabel => 'Hex';
+
+  @override
+  String get themeHexInvalid => '#RRGGBB の形式で入力';
+
+  @override
+  String get apply => '適用';
+
+  @override
+  String themeCopyName(String name) {
+    return '$name のコピー';
+  }
+
+  @override
+  String get suggestedColorsLabel => 'おすすめの色';
 }

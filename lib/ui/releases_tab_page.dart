@@ -15,6 +15,7 @@ import '../utils/mobile_utils.dart';
 import '../utils/search_utils.dart';
 import '../utils/trina_grid_locale.dart';
 import 'row_click_selection.dart';
+import '../utils/theme_derivations.dart';
 import 'widgets/trina_grid_menu_delegate.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../providers/theme_provider.dart';
@@ -815,14 +816,15 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
 
     final initialRows = _mapReleasesToRows(widget.releases);
 
-    final isNeon = ref.watch(themeTypeProvider) == AppThemeType.neonDark;
-    // Classic Dark's primary is a muted gray-blue, so tinting with it reads
-    // as barely-there against the dark card background — lean on white
-    // instead for a highlight that actually contrasts. Neon Dark's bright
-    // primary already pops, so keep that one colored.
-    final rowSelectColor = isNeon
-        ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.18)
-        : Colors.white.withValues(alpha: 0.14);
+    final themeSpec = ref.watch(activeThemeProvider);
+    // Row colors come off the theme spec (see ThemeDerivations) instead of a
+    // "is this Neon Dark?" check, so user themes get treated on their own
+    // merits rather than all falling into the Classic Dark branch.
+    //
+    // Unlike the projects grid, the releases grid keeps card-colored odd rows
+    // for every theme — it sits inside a card rather than filling the page,
+    // so striping against the page background would read as a gap.
+    final rowSelectColor = themeSpec.gridRowSelectColor;
     final oddColor = Theme.of(context).cardColor;
     final evenColor = Theme.of(context).brightness == Brightness.dark
         ? Color.alphaBlend(
@@ -878,9 +880,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
         style: TrinaGridStyleConfig(
           gridBackgroundColor: Theme.of(context).cardColor,
           gridBorderColor: Theme.of(context).dividerColor.withValues(alpha: 0.4),
-          borderColor: ref.watch(themeTypeProvider) == AppThemeType.neonDark
-                ? Theme.of(context).dividerColor
-                : Theme.of(context).dividerColor.withValues(alpha: 0.25),
+          borderColor: themeSpec.gridBorderColor(Theme.of(context).dividerColor),
           gridBorderRadius: BorderRadius.zero,
           rowColor: Theme.of(context).cardColor,
           cellColorInEditState: Theme.of(context).cardColor,

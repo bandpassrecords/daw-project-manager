@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../providers/theme_provider.dart';
+import '../../utils/theme_derivations.dart';
+import '../theme_labels.dart';
 
 class ThemeSwitcher extends ConsumerWidget {
   const ThemeSwitcher({super.key});
@@ -9,34 +11,18 @@ class ThemeSwitcher extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final themeType = ref.watch(themeTypeProvider);
+    final active = ref.watch(activeThemeProvider);
+    final selectable = ref.watch(selectableThemesProvider);
 
-    final themeName = switch (themeType) {
-      AppThemeType.neonDark    => l10n.neonDarkThemeName,
-      AppThemeType.classicDark => l10n.classicDarkThemeName,
-      // studioLight hidden from UI
-      AppThemeType.studioLight => l10n.classicDarkThemeName,
-    };
-    final tooltip = switch (themeType) {
-      AppThemeType.neonDark    => l10n.switchToClassicTheme,
-      // studioLight hidden — cycle goes neonDark ↔ classicDark only
-      AppThemeType.classicDark => l10n.switchToNeonTheme,
-      AppThemeType.studioLight => l10n.switchToNeonTheme,
-    };
-    final icon = switch (themeType) {
-      AppThemeType.neonDark    => Icons.palette,
-      AppThemeType.classicDark => Icons.palette_outlined,
-      // studioLight hidden from UI
-      AppThemeType.studioLight => Icons.palette_outlined,
-    };
+    final themeName = themeDisplayName(active, l10n);
+    final tooltip = l10n.switchToTheme(
+      nextThemeDisplayName(active.id, selectable, l10n),
+    );
+    // A vivid accent gets the filled palette icon, a muted one the outline —
+    // the same split Neon Dark and Classic Dark used to be hardcoded to.
+    final icon = active.hasVividAccent ? Icons.palette : Icons.palette_outlined;
 
-    // Cycles between dark themes only while studioLight is hidden.
-    void cycleVisible() {
-      final next = themeType == AppThemeType.neonDark
-          ? AppThemeType.classicDark
-          : AppThemeType.neonDark;
-      ref.read(themeTypeProvider.notifier).setThemeType(next);
-    }
+    void cycle() => ref.read(selectedThemeIdProvider.notifier).cycle();
 
     return Tooltip(
       message: tooltip,
@@ -48,18 +34,18 @@ class ThemeSwitcher extends ConsumerWidget {
               duration: const Duration(milliseconds: 300),
               child: Icon(
                 icon,
-                key: ValueKey(themeType),
+                key: ValueKey(active.id),
                 color: Theme.of(context).colorScheme.primary,
                 size: 20,
               ),
             ),
-            onPressed: () => cycleVisible(),
+            onPressed: cycle,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             tooltip: tooltip,
           ),
           TextButton(
-            onPressed: () => cycleVisible(),
+            onPressed: cycle,
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               minimumSize: Size.zero,
@@ -67,6 +53,8 @@ class ThemeSwitcher extends ConsumerWidget {
             ),
             child: Text(
               themeName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodyMedium?.color,
                 fontSize: 14,
