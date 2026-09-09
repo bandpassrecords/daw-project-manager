@@ -92,6 +92,29 @@ void main() {
       );
     });
 
+    test(
+      'release-detail "Open Folder" reveals the containing folder of a bundle '
+      'track, not the bundle (release_detail_page had its own un-fixed copy of '
+      'the #142 inline logic)',
+      () async {
+        // The releases tab track tile used to compute its folder as
+        // `isDirectorySync(path) ? path : dirname(path)` — the exact naive
+        // expression #142 removed from the dashboard. For a Logic Pro track
+        // that meant opening the `.logicx` bundle, launching Logic instead of
+        // showing the folder. It must now route through this helper like every
+        // other "Open Folder" entry point.
+        final songFolder = Directory(p.join(tempDir.path, 'Release', 'Track 01'));
+        await songFolder.create(recursive: true);
+        final logicx = Directory(p.join(songFolder.path, 'Track 01.logicx'));
+        await logicx.create();
+
+        expect(
+          ScannerService.projectContainingFolder(logicx.path),
+          songFolder.path,
+        );
+      },
+    );
+
     test('isBundlePath is case-insensitive and extension-anchored', () {
       expect(ScannerService.isBundlePath('/x/Song.logicx'), isTrue);
       expect(ScannerService.isBundlePath('/x/Song.LOGICX'), isTrue);
