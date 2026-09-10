@@ -8428,6 +8428,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Suggested Colors'**
   String get suggestedColorsLabel;
+
+  /// Section/dialog title for a project's cover art, accent color and icon (#110)
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get projectAppearance;
+
+  /// Tooltip on the project detail header's cover tile
+  ///
+  /// In en, this message translates to:
+  /// **'Change cover art, color and icon'**
+  String get projectAppearanceTooltip;
+
+  /// No description provided for @projectCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover Art'**
+  String get projectCoverArt;
+
+  /// No description provided for @chooseCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Image…'**
+  String get chooseCoverArt;
+
+  /// No description provided for @replaceCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace Image…'**
+  String get replaceCoverArt;
+
+  /// No description provided for @removeCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Cover Art'**
+  String get removeCoverArt;
+
+  /// No description provided for @removeCoverArtConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this project\'s cover art? The stored image will be deleted.'**
+  String get removeCoverArtConfirm;
+
+  /// No description provided for @coverArtRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover art removed'**
+  String get coverArtRemoved;
+
+  /// No description provided for @failedToRemoveCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove cover art: {error}'**
+  String failedToRemoveCoverArt(String error);
+
+  /// No description provided for @projectAccentColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent Color'**
+  String get projectAccentColor;
+
+  /// No description provided for @projectIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get projectIcon;
+
+  /// No description provided for @appearanceAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get appearanceAutomatic;
+
+  /// No description provided for @appearanceAutomaticHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic colors and icons come from the project itself, so every project looks different without any setup.'**
+  String get appearanceAutomaticHint;
+
+  /// No description provided for @resetAppearanceToAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to Automatic'**
+  String get resetAppearanceToAutomatic;
+
+  /// No description provided for @dropCoverArtHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop an image to set the cover'**
+  String get dropCoverArtHere;
+
+  /// Status message when uploading project cover art files
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading project cover art...'**
+  String get uploadingProjectCoverArt;
+
+  /// Status message when downloading project cover art files
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading project cover art...'**
+  String get downloadingProjectCoverArt;
 }
 
 class _AppLocalizationsDelegate

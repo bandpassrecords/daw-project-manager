@@ -258,6 +258,21 @@ class MusicProject {
   @HiveField(37)
   final List<ProjectMarker> markers; // Timeline markers/regions read from the DAW project file (Reaper only so far)
 
+  // Per-project visual identity (#110). Both are *overrides*: null means "use
+  // the value derived from the project id" — see `lib/utils/project_visuals.dart`.
+  // Deriving rather than storing at scan time is what gives every project
+  // already in the library a distinct look without a migration pass.
+
+  @HiveField(38)
+  /// User-chosen accent color as an ARGB int, or null to use the derived one.
+  final int? accentColor;
+
+  @HiveField(39)
+  /// User-chosen icon, as a key into `kProjectIconChoices`, or null to use the
+  /// derived one. A key that is no longer in the set falls back to derived, so
+  /// retiring an icon can never leave a project without one.
+  final String? iconKey;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -297,6 +312,8 @@ class MusicProject {
     this.defaultLaunchMemberId,
     this.stackId,
     this.markers = const [],
+    this.accentColor,
+    this.iconKey,
   });
 
   /// Number of version files this stack holds. 0 for a real project.
@@ -544,6 +561,7 @@ class MusicProject {
     String? customDisplayName,
     bool clearCustomDisplayName = false,
     String? thumbnailPath,
+    bool clearThumbnailPath = false,
     String? status,
     String? fileExtension,
     DateTime? createdAt,
@@ -590,6 +608,10 @@ class MusicProject {
     String? stackId,
     bool clearStackId = false,
     List<ProjectMarker>? markers,
+    int? accentColor,
+    bool clearAccentColor = false,
+    String? iconKey,
+    bool clearIconKey = false,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -598,7 +620,7 @@ class MusicProject {
       fileSizeBytes: fileSizeBytes ?? this.fileSizeBytes,
       lastModifiedAt: lastModifiedAt ?? this.lastModifiedAt,
       customDisplayName: clearCustomDisplayName ? null : (customDisplayName ?? this.customDisplayName),
-      thumbnailPath: thumbnailPath ?? this.thumbnailPath,
+      thumbnailPath: clearThumbnailPath ? null : (thumbnailPath ?? this.thumbnailPath),
       status: status ?? this.status,
       fileExtension: fileExtension ?? this.fileExtension,
       createdAt: createdAt ?? this.createdAt,
@@ -632,6 +654,8 @@ class MusicProject {
           : (defaultLaunchMemberId ?? this.defaultLaunchMemberId),
       stackId: clearStackId ? null : (stackId ?? this.stackId),
       markers: markers ?? this.markers,
+      accentColor: clearAccentColor ? null : (accentColor ?? this.accentColor),
+      iconKey: clearIconKey ? null : (iconKey ?? this.iconKey),
     );
   }
 
@@ -707,13 +731,21 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
               .map((e) => ProjectMarker.fromMap(e as Map))
               .toList()
           : const [],
+      // Absent on every box written before #110 — null there means "derive
+      // the accent/icon from the id", which is exactly the intended default.
+      //
+      // Type-tested rather than cast: `read` runs inside repository init, so a
+      // record carrying an unexpected type here would take the whole app down
+      // before the first scan instead of costing one project its override.
+      accentColor: fields[38] is int ? fields[38] as int : null,
+      iconKey: fields[39] is String ? fields[39] as String : null,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(38) // 38 fields (0-37)
+      ..writeByte(40) // 40 fields (0-39)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -789,6 +821,10 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(36)
       ..write(obj.stackId)
       ..writeByte(37)
-      ..write(obj.markers.map((m) => m.toMap()).toList());
+      ..write(obj.markers.map((m) => m.toMap()).toList())
+      ..writeByte(38)
+      ..write(obj.accentColor)
+      ..writeByte(39)
+      ..write(obj.iconKey);
   }
 }

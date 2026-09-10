@@ -5009,4 +5009,60 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Vorgeschlagene Farben';
+
+  @override
+  String get projectAppearance => 'Darstellung';
+
+  @override
+  String get projectAppearanceTooltip => 'Cover, Farbe und Symbol ändern';
+
+  @override
+  String get projectCoverArt => 'Cover';
+
+  @override
+  String get chooseCoverArt => 'Bild auswählen…';
+
+  @override
+  String get replaceCoverArt => 'Bild ersetzen…';
+
+  @override
+  String get removeCoverArt => 'Cover entfernen';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Cover dieses Projekts entfernen? Das gespeicherte Bild wird gelöscht.';
+
+  @override
+  String get coverArtRemoved => 'Cover entfernt';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Cover konnte nicht entfernt werden: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Akzentfarbe';
+
+  @override
+  String get projectIcon => 'Symbol';
+
+  @override
+  String get appearanceAutomatic => 'Automatisch';
+
+  @override
+  String get appearanceAutomaticHint =>
+      'Automatische Farben und Symbole stammen aus dem Projekt selbst – so sieht jedes Projekt ohne Einrichtung anders aus.';
+
+  @override
+  String get resetAppearanceToAutomatic => 'Auf automatisch zurücksetzen';
+
+  @override
+  String get dropCoverArtHere => 'Bild hier ablegen, um das Cover zu setzen';
+
+  @override
+  String get uploadingProjectCoverArt => 'Projekt-Cover werden hochgeladen...';
+
+  @override
+  String get downloadingProjectCoverArt =>
+      'Projekt-Cover werden heruntergeladen...';
 }

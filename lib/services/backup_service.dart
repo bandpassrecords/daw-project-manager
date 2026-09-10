@@ -67,7 +67,7 @@ class BackupService {
         'exportDate': DateTime.now().toIso8601String(),
         'profileId': profileId,
         'profile': profile != null ? await _profileToJson(profile) : null,
-        'projects': projects.map((proj) => _projectToJson(proj)).toList(),
+        'projects': await Future.wait(projects.map(_projectToJsonWithCoverArt)),
         'roots': roots.map((r) => _rootToJson(r)).toList(),
         'ignoredPaths': ignoredPaths.map((ip) => _ignoredPathToJson(ip)).toList(),
         'releases': await Future.wait(releases.map((r) => _releaseToJson(r))),
@@ -152,7 +152,9 @@ class BackupService {
         final projectsList = backupData['projects'] as List;
         for (var projectJson in projectsList) {
           try {
-            final project = _projectFromJson(projectJson as Map<String, dynamic>);
+            final project = await _projectFromJsonWithCoverArt(
+              projectJson as Map<String, dynamic>,
+            );
             importedProjects.add(project);
           } catch (e) {
             // Skip invalid projects
@@ -838,6 +840,72 @@ class BackupService {
   static MusicProject projectFromJson(Map<String, dynamic> json) =>
       _projectFromJson(json);
 
+  @visibleForTesting
+  static Future<Map<String, dynamic>> projectToJsonWithCoverArt(
+    MusicProject project,
+  ) =>
+      _projectToJsonWithCoverArt(project);
+
+  @visibleForTesting
+  static Future<MusicProject> projectFromJsonWithCoverArt(
+    Map<String, dynamic> json,
+  ) =>
+      _projectFromJsonWithCoverArt(json);
+
+  /// [_projectToJson] plus the cover art's bytes (#110).
+  ///
+  /// The image travels base64 inside the JSON, the way release artwork and
+  /// profile photos already do: this is Flatpak's only backup path, so a
+  /// cover left behind here is one those users could never back up at all —
+  /// and a bare path is worthless on the machine the backup is restored to.
+  /// Kept separate from [_projectToJson] so that stays synchronous for the
+  /// metadata-only round-trip tests.
+  static Future<Map<String, dynamic>> _projectToJsonWithCoverArt(
+    MusicProject project,
+  ) async {
+    final json = _projectToJson(project);
+    final coverPath = project.thumbnailPath;
+    if (coverPath != null && coverPath.isNotEmpty) {
+      try {
+        final file = File(coverPath);
+        if (await file.exists()) {
+          json['coverArtData'] = base64Encode(await file.readAsBytes());
+          json['coverArtFileName'] = p.basename(coverPath);
+        }
+      } catch (_) {
+        // Unreadable cover: back the metadata up without it rather than
+        // failing the export.
+      }
+    }
+    return json;
+  }
+
+  /// [_projectFromJson] plus materializing the embedded cover art (#110).
+  ///
+  /// The image is written into the managed cover-art folder and the project
+  /// re-pointed at it, because the exporting machine's path means nothing
+  /// here. A backup with no embedded bytes keeps whatever path it carried —
+  /// on the same machine that is still the right file.
+  static Future<MusicProject> _projectFromJsonWithCoverArt(
+    Map<String, dynamic> json,
+  ) async {
+    final project = _projectFromJson(json);
+    final coverBase64 = json['coverArtData'] as String?;
+    if (coverBase64 == null || coverBase64.isEmpty) return project;
+    try {
+      final coverFileName = json['coverArtFileName'] as String? ?? 'cover.jpg';
+      final coverDirPath = await getProjectCoverArtPath();
+      final dir = Directory(coverDirPath);
+      if (!await dir.exists()) await dir.create(recursive: true);
+      final destName = '${project.id}_cover${p.extension(coverFileName)}';
+      final destPath = p.join(coverDirPath, destName);
+      await File(destPath).writeAsBytes(base64Decode(coverBase64));
+      return project.copyWith(thumbnailPath: destPath);
+    } catch (_) {
+      return project;
+    }
+  }
+
   static Map<String, dynamic> _projectToJson(MusicProject project) {
     return {
       'id': project.id,
@@ -881,6 +949,10 @@ class BackupService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      // Per-project appearance (#110). Overrides only — null means "derive
+      // from the id", which needs nothing stored to survive a restore.
+      'accentColor': project.accentColor,
+      'iconKey': project.iconKey,
     };
   }
 
@@ -935,6 +1007,8 @@ class BackupService {
               ?.map((e) => ProjectMarker.fromMap(e as Map))
               .toList() ??
           const [],
+      accentColor: (json['accentColor'] as num?)?.toInt(),
+      iconKey: json['iconKey'] as String?,
     );
   }
 

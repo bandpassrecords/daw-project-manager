@@ -34,6 +34,7 @@ import 'session_actions.dart';
 import 'settings_page.dart' show SettingsPage, SettingsSection;
 import 'preview_share.dart';
 import 'dialogs/preview_song_not_found_dialog.dart';
+import 'dialogs/project_appearance_dialog.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/metadata_sidecar_service.dart';
@@ -822,6 +823,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                   isSessionActive: ref.watch(activeProjectProvider)?.id == widget.projectId,
                   liveSessionSeconds: ref.watch(workTimerProvider),
                   finishedPhase: ref.watch(finishedPhaseProvider),
+                  onEditAppearance: () => showProjectAppearanceDialog(
+                    context,
+                    projectId: updatedProject.id,
+                  ),
                 ),
                 _ProjectDetailActionBar(
                   project: updatedProject,

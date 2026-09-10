@@ -5008,4 +5008,62 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Colori Suggeriti';
+
+  @override
+  String get projectAppearance => 'Aspetto';
+
+  @override
+  String get projectAppearanceTooltip => 'Cambia copertina, colore e icona';
+
+  @override
+  String get projectCoverArt => 'Copertina';
+
+  @override
+  String get chooseCoverArt => 'Scegli immagine…';
+
+  @override
+  String get replaceCoverArt => 'Sostituisci immagine…';
+
+  @override
+  String get removeCoverArt => 'Rimuovi copertina';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Rimuovere la copertina di questo progetto? L\'immagine salvata verrà eliminata.';
+
+  @override
+  String get coverArtRemoved => 'Copertina rimossa';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Impossibile rimuovere la copertina: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Colore d\'accento';
+
+  @override
+  String get projectIcon => 'Icona';
+
+  @override
+  String get appearanceAutomatic => 'Automatico';
+
+  @override
+  String get appearanceAutomaticHint =>
+      'I colori e le icone automatiche derivano dal progetto stesso, così ogni progetto è diverso senza alcuna configurazione.';
+
+  @override
+  String get resetAppearanceToAutomatic => 'Ripristina automatico';
+
+  @override
+  String get dropCoverArtHere =>
+      'Trascina un\'immagine per impostare la copertina';
+
+  @override
+  String get uploadingProjectCoverArt =>
+      'Caricamento copertine dei progetti...';
+
+  @override
+  String get downloadingProjectCoverArt =>
+      'Scaricamento copertine dei progetti...';
 }

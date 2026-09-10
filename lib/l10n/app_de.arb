@@ -3102,5 +3102,23 @@
     }
   },
 
-  "suggestedColorsLabel": "Vorgeschlagene Farben"
+  "suggestedColorsLabel": "Vorgeschlagene Farben",
+
+  "projectAppearance": "Darstellung",
+  "projectAppearanceTooltip": "Cover, Farbe und Symbol ändern",
+  "projectCoverArt": "Cover",
+  "chooseCoverArt": "Bild auswählen…",
+  "replaceCoverArt": "Bild ersetzen…",
+  "removeCoverArt": "Cover entfernen",
+  "removeCoverArtConfirm": "Cover dieses Projekts entfernen? Das gespeicherte Bild wird gelöscht.",
+  "coverArtRemoved": "Cover entfernt",
+  "failedToRemoveCoverArt": "Cover konnte nicht entfernt werden: {error}",
+  "projectAccentColor": "Akzentfarbe",
+  "projectIcon": "Symbol",
+  "appearanceAutomatic": "Automatisch",
+  "appearanceAutomaticHint": "Automatische Farben und Symbole stammen aus dem Projekt selbst – so sieht jedes Projekt ohne Einrichtung anders aus.",
+  "resetAppearanceToAutomatic": "Auf automatisch zurücksetzen",
+  "dropCoverArtHere": "Bild hier ablegen, um das Cover zu setzen",
+  "uploadingProjectCoverArt": "Projekt-Cover werden hochgeladen...",
+  "downloadingProjectCoverArt": "Projekt-Cover werden heruntergeladen..."
 }

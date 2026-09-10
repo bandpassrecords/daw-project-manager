@@ -5022,4 +5022,60 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Colores Sugeridos';
+
+  @override
+  String get projectAppearance => 'Apariencia';
+
+  @override
+  String get projectAppearanceTooltip => 'Cambiar portada, color e icono';
+
+  @override
+  String get projectCoverArt => 'Portada';
+
+  @override
+  String get chooseCoverArt => 'Elegir imagen…';
+
+  @override
+  String get replaceCoverArt => 'Reemplazar imagen…';
+
+  @override
+  String get removeCoverArt => 'Quitar portada';
+
+  @override
+  String get removeCoverArtConfirm =>
+      '¿Quitar la portada de este proyecto? Se eliminará la imagen guardada.';
+
+  @override
+  String get coverArtRemoved => 'Portada eliminada';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'No se pudo quitar la portada: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Color de acento';
+
+  @override
+  String get projectIcon => 'Icono';
+
+  @override
+  String get appearanceAutomatic => 'Automático';
+
+  @override
+  String get appearanceAutomaticHint =>
+      'Los colores e iconos automáticos provienen del propio proyecto, así cada proyecto se ve distinto sin ninguna configuración.';
+
+  @override
+  String get resetAppearanceToAutomatic => 'Restablecer a automático';
+
+  @override
+  String get dropCoverArtHere => 'Suelta una imagen para definir la portada';
+
+  @override
+  String get uploadingProjectCoverArt => 'Subiendo portadas de proyectos...';
+
+  @override
+  String get downloadingProjectCoverArt =>
+      'Descargando portadas de proyectos...';
 }

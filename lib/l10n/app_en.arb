@@ -4426,5 +4426,28 @@
     }
   },
 
-  "suggestedColorsLabel": "Suggested Colors"
+  "suggestedColorsLabel": "Suggested Colors",
+
+  "projectAppearance": "Appearance",
+  "@projectAppearance": {"description": "Section/dialog title for a project's cover art, accent color and icon (#110)"},
+  "projectAppearanceTooltip": "Change cover art, color and icon",
+  "@projectAppearanceTooltip": {"description": "Tooltip on the project detail header's cover tile"},
+  "projectCoverArt": "Cover Art",
+  "chooseCoverArt": "Choose Image…",
+  "replaceCoverArt": "Replace Image…",
+  "removeCoverArt": "Remove Cover Art",
+  "removeCoverArtConfirm": "Remove this project's cover art? The stored image will be deleted.",
+  "coverArtRemoved": "Cover art removed",
+  "failedToRemoveCoverArt": "Failed to remove cover art: {error}",
+  "@failedToRemoveCoverArt": {"placeholders": {"error": {"type": "String"}}},
+  "projectAccentColor": "Accent Color",
+  "projectIcon": "Icon",
+  "appearanceAutomatic": "Automatic",
+  "appearanceAutomaticHint": "Automatic colors and icons come from the project itself, so every project looks different without any setup.",
+  "resetAppearanceToAutomatic": "Reset to Automatic",
+  "dropCoverArtHere": "Drop an image to set the cover",
+  "uploadingProjectCoverArt": "Uploading project cover art...",
+  "@uploadingProjectCoverArt": {"description": "Status message when uploading project cover art files"},
+  "downloadingProjectCoverArt": "Downloading project cover art...",
+  "@downloadingProjectCoverArt": {"description": "Status message when downloading project cover art files"}
 }

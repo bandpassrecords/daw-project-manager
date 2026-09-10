@@ -62,6 +62,7 @@ import 'widgets/filter_dropdown.dart';
 import 'widgets/language_switcher.dart';
 import 'widgets/theme_switcher.dart';
 import 'widgets/mobile_mini_player.dart';
+import 'widgets/project_cover_avatar.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'session_actions.dart';
 import 'dialogs/create_project_dialog.dart';
@@ -7322,6 +7323,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                     ),
                   ),
                 ),
+              // Cover art if the project has one, otherwise its accent
+              // colour + icon (#110) — the point is that no two rows look
+              // alike, so this is never omitted.
+              ProjectCoverAvatar(project: project, size: 22),
+              const SizedBox(width: 8),
               Expanded(child: Text(rendererContext.cell.value.toString())),
               // Version count, so a stacked song is distinguishable from an
               // ordinary project at a glance rather than only once opened.
@@ -11040,7 +11046,7 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                             onChanged: (_) =>
                                 _toggleProjectSelection(project.id),
                           )
-                        : null,
+                        : ProjectCoverAvatar(project: project, size: 40),
                     title: Row(
                       children: [
                         Expanded(

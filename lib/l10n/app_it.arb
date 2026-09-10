@@ -3102,5 +3102,23 @@
     }
   },
 
-  "suggestedColorsLabel": "Colori Suggeriti"
+  "suggestedColorsLabel": "Colori Suggeriti",
+
+  "projectAppearance": "Aspetto",
+  "projectAppearanceTooltip": "Cambia copertina, colore e icona",
+  "projectCoverArt": "Copertina",
+  "chooseCoverArt": "Scegli immagine…",
+  "replaceCoverArt": "Sostituisci immagine…",
+  "removeCoverArt": "Rimuovi copertina",
+  "removeCoverArtConfirm": "Rimuovere la copertina di questo progetto? L'immagine salvata verrà eliminata.",
+  "coverArtRemoved": "Copertina rimossa",
+  "failedToRemoveCoverArt": "Impossibile rimuovere la copertina: {error}",
+  "projectAccentColor": "Colore d'accento",
+  "projectIcon": "Icona",
+  "appearanceAutomatic": "Automatico",
+  "appearanceAutomaticHint": "I colori e le icone automatiche derivano dal progetto stesso, così ogni progetto è diverso senza alcuna configurazione.",
+  "resetAppearanceToAutomatic": "Ripristina automatico",
+  "dropCoverArtHere": "Trascina un'immagine per impostare la copertina",
+  "uploadingProjectCoverArt": "Caricamento copertine dei progetti...",
+  "downloadingProjectCoverArt": "Scaricamento copertine dei progetti..."
 }

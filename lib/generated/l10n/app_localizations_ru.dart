@@ -4996,4 +4996,59 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Предлагаемые цвета';
+
+  @override
+  String get projectAppearance => 'Оформление';
+
+  @override
+  String get projectAppearanceTooltip => 'Изменить обложку, цвет и значок';
+
+  @override
+  String get projectCoverArt => 'Обложка';
+
+  @override
+  String get chooseCoverArt => 'Выбрать изображение…';
+
+  @override
+  String get replaceCoverArt => 'Заменить изображение…';
+
+  @override
+  String get removeCoverArt => 'Удалить обложку';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Удалить обложку этого проекта? Сохранённое изображение будет удалено.';
+
+  @override
+  String get coverArtRemoved => 'Обложка удалена';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Не удалось удалить обложку: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Акцентный цвет';
+
+  @override
+  String get projectIcon => 'Значок';
+
+  @override
+  String get appearanceAutomatic => 'Автоматически';
+
+  @override
+  String get appearanceAutomaticHint =>
+      'Автоматические цвета и значки берутся из самого проекта, поэтому каждый проект выглядит по-своему без настройки.';
+
+  @override
+  String get resetAppearanceToAutomatic => 'Вернуть автоматический';
+
+  @override
+  String get dropCoverArtHere => 'Перетащите изображение, чтобы задать обложку';
+
+  @override
+  String get uploadingProjectCoverArt => 'Загрузка обложек проектов...';
+
+  @override
+  String get downloadingProjectCoverArt => 'Скачивание обложек проектов...';
 }

@@ -3102,5 +3102,23 @@
     }
   },
 
-  "suggestedColorsLabel": "おすすめの色"
+  "suggestedColorsLabel": "おすすめの色",
+
+  "projectAppearance": "外観",
+  "projectAppearanceTooltip": "カバーアート・色・アイコンを変更",
+  "projectCoverArt": "カバーアート",
+  "chooseCoverArt": "画像を選択…",
+  "replaceCoverArt": "画像を変更…",
+  "removeCoverArt": "カバーアートを削除",
+  "removeCoverArtConfirm": "このプロジェクトのカバーアートを削除しますか？保存された画像は削除されます。",
+  "coverArtRemoved": "カバーアートを削除しました",
+  "failedToRemoveCoverArt": "カバーアートの削除に失敗しました: {error}",
+  "projectAccentColor": "アクセントカラー",
+  "projectIcon": "アイコン",
+  "appearanceAutomatic": "自動",
+  "appearanceAutomaticHint": "自動の色とアイコンはプロジェクト自体から決まるため、設定なしでもすべてのプロジェクトが見分けられます。",
+  "resetAppearanceToAutomatic": "自動に戻す",
+  "dropCoverArtHere": "画像をドロップしてカバーアートに設定",
+  "uploadingProjectCoverArt": "プロジェクトのカバーアートをアップロード中...",
+  "downloadingProjectCoverArt": "プロジェクトのカバーアートをダウンロード中..."
 }

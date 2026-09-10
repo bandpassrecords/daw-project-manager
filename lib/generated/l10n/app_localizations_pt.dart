@@ -4997,4 +4997,59 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Cores Sugeridas';
+
+  @override
+  String get projectAppearance => 'Aparência';
+
+  @override
+  String get projectAppearanceTooltip => 'Alterar capa, cor e ícone';
+
+  @override
+  String get projectCoverArt => 'Capa';
+
+  @override
+  String get chooseCoverArt => 'Escolher Imagem…';
+
+  @override
+  String get replaceCoverArt => 'Substituir Imagem…';
+
+  @override
+  String get removeCoverArt => 'Remover Capa';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Remover a capa deste projeto? A imagem armazenada será excluída.';
+
+  @override
+  String get coverArtRemoved => 'Capa removida';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Falha ao remover a capa: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Cor de Destaque';
+
+  @override
+  String get projectIcon => 'Ícone';
+
+  @override
+  String get appearanceAutomatic => 'Automático';
+
+  @override
+  String get appearanceAutomaticHint =>
+      'As cores e os ícones automáticos vêm do próprio projeto, então cada projeto fica diferente sem nenhuma configuração.';
+
+  @override
+  String get resetAppearanceToAutomatic => 'Restaurar para Automático';
+
+  @override
+  String get dropCoverArtHere => 'Solte uma imagem para definir a capa';
+
+  @override
+  String get uploadingProjectCoverArt => 'Enviando capas dos projetos...';
+
+  @override
+  String get downloadingProjectCoverArt => 'Baixando capas dos projetos...';
 }

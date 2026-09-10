@@ -240,6 +240,17 @@ Future<String> getReleaseArtworkPath() async {
   return path.join(basePath, 'release_artwork');
 }
 
+/// Gets the path for per-project cover art storage (#110).
+///
+/// Managed copies live here — the picker copies the chosen image in rather
+/// than pointing at wherever the user had it, so moving or deleting the
+/// original doesn't blank the cover, and Drive sync/local backup have one
+/// place to look.
+Future<String> getProjectCoverArtPath() async {
+  final basePath = await getLocalAppDataPath();
+  return path.join(basePath, 'project_cover_art');
+}
+
 /// Gets the path for preview songs storage
 /// On mobile, this uses the application documents directory for persistence
 /// On desktop, this uses the app data directory

@@ -29,6 +29,8 @@ class _UploadProgressDialogState extends State<UploadProgressDialog> {
         return l.uploadingProfilePhotos;
       case BackupProgressStage.uploadingReleaseArtwork:
         return l.uploadingReleaseArtwork;
+      case BackupProgressStage.uploadingProjectCoverArt:
+        return l.uploadingProjectCoverArt;
       case BackupProgressStage.uploadingDatabase:
         return l.uploadingDatabase;
       case BackupProgressStage.completed:
@@ -128,6 +130,8 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
         return AppLocalizations.of(context)!.downloadingPreviewSongs;
       case BackupProgressStage.downloadingProfilePhotos:
         return AppLocalizations.of(context)!.downloadingProfilePhotos;
+      case BackupProgressStage.downloadingProjectCoverArt:
+        return AppLocalizations.of(context)!.downloadingProjectCoverArt;
       case BackupProgressStage.mergingData:
         return AppLocalizations.of(context)!.mergingData;
       case BackupProgressStage.completed:
