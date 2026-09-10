@@ -4861,4 +4861,58 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'おすすめの色';
+
+  @override
+  String get todoDueDate => '期限';
+
+  @override
+  String get todoSetDueDate => '期限を設定';
+
+  @override
+  String get todoClearDueDate => '期限を削除';
+
+  @override
+  String get todoNoDueDate => '期限なし';
+
+  @override
+  String get todoDueToday => '今日が期限';
+
+  @override
+  String get todoDueTomorrow => '明日が期限';
+
+  @override
+  String todoDueOn(String date) {
+    return '期限 $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days日超過',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => '期限';
+
+  @override
+  String get queueDueFilterAll => 'すべてのタスク';
+
+  @override
+  String get queueDueFilterOverdue => '期限切れ';
+
+  @override
+  String get queueDueFilterToday => '今日が期限';
+
+  @override
+  String get queueDueFilterThisWeek => '今週が期限';
+
+  @override
+  String get queueDueFilterNoDate => '期限なし';
+
+  @override
+  String get queueNoTasksForDueFilter => 'この期限フィルターに一致するタスクはありません';
 }

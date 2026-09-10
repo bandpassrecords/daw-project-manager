@@ -4808,4 +4808,58 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => '推荐颜色';
+
+  @override
+  String get todoDueDate => '截止日期';
+
+  @override
+  String get todoSetDueDate => '设置截止日期';
+
+  @override
+  String get todoClearDueDate => '清除截止日期';
+
+  @override
+  String get todoNoDueDate => '无截止日期';
+
+  @override
+  String get todoDueToday => '今天到期';
+
+  @override
+  String get todoDueTomorrow => '明天到期';
+
+  @override
+  String todoDueOn(String date) {
+    return '$date 到期';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '已逾期 $days 天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => '截止';
+
+  @override
+  String get queueDueFilterAll => '全部任务';
+
+  @override
+  String get queueDueFilterOverdue => '已逾期';
+
+  @override
+  String get queueDueFilterToday => '今天到期';
+
+  @override
+  String get queueDueFilterThisWeek => '本周到期';
+
+  @override
+  String get queueDueFilterNoDate => '无截止日期';
+
+  @override
+  String get queueNoTasksForDueFilter => '没有任务符合此截止筛选条件';
 }

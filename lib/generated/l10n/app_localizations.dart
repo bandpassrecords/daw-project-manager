@@ -8428,6 +8428,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Suggested Colors'**
   String get suggestedColorsLabel;
+
+  /// Label for a todo item's optional due date
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get todoDueDate;
+
+  /// Tooltip on the button that picks a due date for a todo
+  ///
+  /// In en, this message translates to:
+  /// **'Set due date'**
+  String get todoSetDueDate;
+
+  /// Tooltip on the button that clears a todo's due date
+  ///
+  /// In en, this message translates to:
+  /// **'Clear due date'**
+  String get todoClearDueDate;
+
+  /// Shown when a todo has no due date set
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get todoNoDueDate;
+
+  /// Due-date chip for a todo due today
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get todoDueToday;
+
+  /// Due-date chip for a todo due tomorrow
+  ///
+  /// In en, this message translates to:
+  /// **'Due tomorrow'**
+  String get todoDueTomorrow;
+
+  /// Due-date chip for a todo due on a specific date
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}'**
+  String todoDueOn(String date);
+
+  /// Due-date chip for a todo whose due date has passed
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{1 day overdue} other{{days} days overdue}}'**
+  String todoOverdueByDays(int days);
+
+  /// Label of the Task Queue due-date filter
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get queueDueFilterLabel;
+
+  /// Task Queue due filter: show every pending task
+  ///
+  /// In en, this message translates to:
+  /// **'All tasks'**
+  String get queueDueFilterAll;
+
+  /// Task Queue due filter: only overdue tasks
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get queueDueFilterOverdue;
+
+  /// Task Queue due filter: only tasks due today
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get queueDueFilterToday;
+
+  /// Task Queue due filter: overdue plus tasks due within a week
+  ///
+  /// In en, this message translates to:
+  /// **'Due this week'**
+  String get queueDueFilterThisWeek;
+
+  /// Task Queue due filter: only tasks with no due date
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get queueDueFilterNoDate;
+
+  /// Task Queue empty state when the due filter excludes everything
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks match this due filter'**
+  String get queueNoTasksForDueFilter;
 }
 
 class _AppLocalizationsDelegate

@@ -5034,4 +5034,60 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Couleurs Suggérées';
+
+  @override
+  String get todoDueDate => 'Échéance';
+
+  @override
+  String get todoSetDueDate => 'Définir l\'échéance';
+
+  @override
+  String get todoClearDueDate => 'Supprimer l\'échéance';
+
+  @override
+  String get todoNoDueDate => 'Sans échéance';
+
+  @override
+  String get todoDueToday => 'Échéance aujourd’hui';
+
+  @override
+  String get todoDueTomorrow => 'Échéance demain';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Échéance le $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days jours de retard',
+      one: '1 jour de retard',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Échéance';
+
+  @override
+  String get queueDueFilterAll => 'Toutes les tâches';
+
+  @override
+  String get queueDueFilterOverdue => 'En retard';
+
+  @override
+  String get queueDueFilterToday => 'Échéance aujourd’hui';
+
+  @override
+  String get queueDueFilterThisWeek => 'Échéance cette semaine';
+
+  @override
+  String get queueDueFilterNoDate => 'Sans échéance';
+
+  @override
+  String get queueNoTasksForDueFilter =>
+      'Aucune tâche ne correspond à ce filtre d’échéance';
 }

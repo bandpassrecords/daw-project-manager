@@ -5009,4 +5009,60 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Vorgeschlagene Farben';
+
+  @override
+  String get todoDueDate => 'Fälligkeitsdatum';
+
+  @override
+  String get todoSetDueDate => 'Fälligkeitsdatum festlegen';
+
+  @override
+  String get todoClearDueDate => 'Fälligkeitsdatum entfernen';
+
+  @override
+  String get todoNoDueDate => 'Kein Fälligkeitsdatum';
+
+  @override
+  String get todoDueToday => 'Heute fällig';
+
+  @override
+  String get todoDueTomorrow => 'Morgen fällig';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Fällig am $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days Tage überfällig',
+      one: '1 Tag überfällig',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Fällig';
+
+  @override
+  String get queueDueFilterAll => 'Alle Aufgaben';
+
+  @override
+  String get queueDueFilterOverdue => 'Überfällig';
+
+  @override
+  String get queueDueFilterToday => 'Heute fällig';
+
+  @override
+  String get queueDueFilterThisWeek => 'Diese Woche fällig';
+
+  @override
+  String get queueDueFilterNoDate => 'Ohne Fälligkeitsdatum';
+
+  @override
+  String get queueNoTasksForDueFilter =>
+      'Keine Aufgabe passt zu diesem Fälligkeitsfilter';
 }

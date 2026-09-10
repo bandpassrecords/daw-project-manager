@@ -3102,5 +3102,20 @@
     }
   },
 
-  "suggestedColorsLabel": "Couleurs Suggérées"
+  "suggestedColorsLabel": "Couleurs Suggérées",
+  "todoDueDate": "Échéance",
+  "todoSetDueDate": "Définir l'échéance",
+  "todoClearDueDate": "Supprimer l'échéance",
+  "todoNoDueDate": "Sans échéance",
+  "todoDueToday": "Échéance aujourd’hui",
+  "todoDueTomorrow": "Échéance demain",
+  "todoDueOn": "Échéance le {date}",
+  "todoOverdueByDays": "{days, plural, =1{1 jour de retard} other{{days} jours de retard}}",
+  "queueDueFilterLabel": "Échéance",
+  "queueDueFilterAll": "Toutes les tâches",
+  "queueDueFilterOverdue": "En retard",
+  "queueDueFilterToday": "Échéance aujourd’hui",
+  "queueDueFilterThisWeek": "Échéance cette semaine",
+  "queueDueFilterNoDate": "Sans échéance",
+  "queueNoTasksForDueFilter": "Aucune tâche ne correspond à ce filtre d’échéance"
 }

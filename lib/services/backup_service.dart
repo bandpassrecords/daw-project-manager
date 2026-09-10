@@ -1153,6 +1153,7 @@ class BackupService {
       'text': todo.text,
       'completed': todo.completed,
       'createdAt': todo.createdAt.toIso8601String(),
+      'dueAt': todo.dueAt?.toIso8601String(),
     };
   }
 
@@ -1162,6 +1163,10 @@ class BackupService {
       text: json['text'] as String,
       completed: json['completed'] as bool? ?? false,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      // Backups written before #113 carry no 'dueAt'.
+      dueAt: json['dueAt'] != null
+          ? DateTime.parse(json['dueAt'] as String)
+          : null,
     );
   }
 }

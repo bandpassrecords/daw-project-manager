@@ -5008,4 +5008,60 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Colori Suggeriti';
+
+  @override
+  String get todoDueDate => 'Scadenza';
+
+  @override
+  String get todoSetDueDate => 'Imposta scadenza';
+
+  @override
+  String get todoClearDueDate => 'Rimuovi scadenza';
+
+  @override
+  String get todoNoDueDate => 'Senza scadenza';
+
+  @override
+  String get todoDueToday => 'Scade oggi';
+
+  @override
+  String get todoDueTomorrow => 'Scade domani';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Scade il $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days giorni di ritardo',
+      one: '1 giorno di ritardo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Scadenza';
+
+  @override
+  String get queueDueFilterAll => 'Tutte le attività';
+
+  @override
+  String get queueDueFilterOverdue => 'In ritardo';
+
+  @override
+  String get queueDueFilterToday => 'Scadono oggi';
+
+  @override
+  String get queueDueFilterThisWeek => 'Scadono questa settimana';
+
+  @override
+  String get queueDueFilterNoDate => 'Senza scadenza';
+
+  @override
+  String get queueNoTasksForDueFilter =>
+      'Nessuna attività corrisponde a questo filtro di scadenza';
 }

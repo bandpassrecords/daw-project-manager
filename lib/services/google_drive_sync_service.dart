@@ -3623,9 +3623,10 @@ class GoogleDriveSyncService {
   bool _todosEqual(List<TodoItem> a, List<TodoItem> b) {
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
-      if (a[i].id != b[i].id || 
-          a[i].text != b[i].text || 
-          a[i].completed != b[i].completed) {
+      if (a[i].id != b[i].id ||
+          a[i].text != b[i].text ||
+          a[i].completed != b[i].completed ||
+          a[i].dueAt != b[i].dueAt) {
         return false;
       }
     }
@@ -5056,6 +5057,7 @@ class GoogleDriveSyncService {
         'text': t.text,
         'completed': t.completed,
         'createdAt': t.createdAt.toIso8601String(),
+        'dueAt': t.dueAt?.toIso8601String(),
       }).toList(),
       'parts': project.parts.map((p) => p.toJson()).toList(),
       'hidden': project.hidden,
@@ -5107,6 +5109,7 @@ class GoogleDriveSyncService {
         text: t['text'] as String,
         completed: t['completed'] as bool? ?? false,
         createdAt: DateTime.parse(t['createdAt'] as String),
+        dueAt: t['dueAt'] != null ? DateTime.parse(t['dueAt'] as String) : null,
       )).toList() ?? const [],
       parts: (data['parts'] as List?)
               ?.map((p) => ProjectPart.fromJson(p as Map<dynamic, dynamic>))
@@ -5160,6 +5163,14 @@ class GoogleDriveSyncService {
   MusicProject deserializeProjectForTest(Map<String, dynamic> data) =>
       _deserializeProject(data);
 
+  @visibleForTesting
+  Map<String, dynamic> serializeReleaseForTest(Release release) =>
+      _serializeRelease(release);
+
+  @visibleForTesting
+  Release deserializeReleaseForTest(Map<String, dynamic> data) =>
+      _deserializeRelease(data);
+
   /// Test-only accessor for [_autoPreviewAlreadyMatches] — the merge-time check
   /// that stops a locally auto-detected preview from being re-downloaded (and
   /// promoted into [MusicProject.previewSongPath]) when it's already the same
@@ -5195,6 +5206,7 @@ class GoogleDriveSyncService {
         'text': t.text,
         'completed': t.completed,
         'createdAt': t.createdAt.toIso8601String(),
+        'dueAt': t.dueAt?.toIso8601String(),
       }).toList(),
     };
   }
@@ -5223,6 +5235,7 @@ class GoogleDriveSyncService {
         text: t['text'] as String,
         completed: t['completed'] as bool,
         createdAt: DateTime.parse(t['createdAt'] as String),
+        dueAt: t['dueAt'] != null ? DateTime.parse(t['dueAt'] as String) : null,
       )).toList() ?? const [],
     );
   }

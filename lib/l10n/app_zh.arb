@@ -3102,5 +3102,20 @@
     }
   },
 
-  "suggestedColorsLabel": "推荐颜色"
+  "suggestedColorsLabel": "推荐颜色",
+  "todoDueDate": "截止日期",
+  "todoSetDueDate": "设置截止日期",
+  "todoClearDueDate": "清除截止日期",
+  "todoNoDueDate": "无截止日期",
+  "todoDueToday": "今天到期",
+  "todoDueTomorrow": "明天到期",
+  "todoDueOn": "{date} 到期",
+  "todoOverdueByDays": "{days, plural, other{已逾期 {days} 天}}",
+  "queueDueFilterLabel": "截止",
+  "queueDueFilterAll": "全部任务",
+  "queueDueFilterOverdue": "已逾期",
+  "queueDueFilterToday": "今天到期",
+  "queueDueFilterThisWeek": "本周到期",
+  "queueDueFilterNoDate": "无截止日期",
+  "queueNoTasksForDueFilter": "没有任务符合此截止筛选条件"
 }

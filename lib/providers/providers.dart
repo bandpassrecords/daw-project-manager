@@ -20,6 +20,7 @@ import '../utils/app_paths.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/version_stacks.dart';
 import '../utils/phase_colors.dart';
+import '../utils/todo_due_utils.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
@@ -2416,6 +2417,20 @@ class QueueSearchNotifier extends Notifier<String> {
 
 final queueSearchProvider = NotifierProvider<QueueSearchNotifier, String>(
   QueueSearchNotifier.new,
+);
+
+/// Which due dates the Task Queue is currently narrowed to. Session state, on
+/// purpose — like the tab's search text, it isn't worth persisting.
+class QueueDueFilterNotifier extends Notifier<QueueDueFilter> {
+  @override
+  QueueDueFilter build() => QueueDueFilter.all;
+  void set(QueueDueFilter filter) => state = filter;
+  void clear() => state = QueueDueFilter.all;
+}
+
+final queueDueFilterProvider =
+    NotifierProvider<QueueDueFilterNotifier, QueueDueFilter>(
+  QueueDueFilterNotifier.new,
 );
 
 // ─── Desktop embedded player ──────────────────────────────────────────────────

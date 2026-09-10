@@ -803,6 +803,7 @@ Future<void> _main(List<String> args) async {
       try {
         final notificationService = DeadlineNotificationService();
         final projects = repo.getAllProjects();
+        final releases = repo.getAllReleases();
 
         if (kDebugMode) {
           print('\n🔔 Scheduling deadline notifications on app start...');
@@ -811,6 +812,7 @@ Future<void> _main(List<String> args) async {
 
         await notificationService.scheduleAllDeadlineNotifications(
           projects: projects,
+          releases: releases,
         );
       } catch (e) {
         if (kDebugMode)

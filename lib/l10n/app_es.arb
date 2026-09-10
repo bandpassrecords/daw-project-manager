@@ -3102,5 +3102,20 @@
     }
   },
 
-  "suggestedColorsLabel": "Colores Sugeridos"
+  "suggestedColorsLabel": "Colores Sugeridos",
+  "todoDueDate": "Fecha límite",
+  "todoSetDueDate": "Definir fecha límite",
+  "todoClearDueDate": "Quitar fecha límite",
+  "todoNoDueDate": "Sin fecha límite",
+  "todoDueToday": "Vence hoy",
+  "todoDueTomorrow": "Vence mañana",
+  "todoDueOn": "Vence el {date}",
+  "todoOverdueByDays": "{days, plural, =1{1 día de retraso} other{{days} días de retraso}}",
+  "queueDueFilterLabel": "Vencimiento",
+  "queueDueFilterAll": "Todas las tareas",
+  "queueDueFilterOverdue": "Atrasadas",
+  "queueDueFilterToday": "Vencen hoy",
+  "queueDueFilterThisWeek": "Vencen esta semana",
+  "queueDueFilterNoDate": "Sin fecha límite",
+  "queueNoTasksForDueFilter": "Ninguna tarea coincide con este filtro de vencimiento"
 }

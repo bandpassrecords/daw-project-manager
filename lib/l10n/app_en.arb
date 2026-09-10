@@ -4426,5 +4426,75 @@
     }
   },
 
-  "suggestedColorsLabel": "Suggested Colors"
+  "suggestedColorsLabel": "Suggested Colors",
+  "todoDueDate": "Due date",
+  "@todoDueDate": {
+    "description": "Label for a todo item's optional due date"
+  },
+  "todoSetDueDate": "Set due date",
+  "@todoSetDueDate": {
+    "description": "Tooltip on the button that picks a due date for a todo"
+  },
+  "todoClearDueDate": "Clear due date",
+  "@todoClearDueDate": {
+    "description": "Tooltip on the button that clears a todo's due date"
+  },
+  "todoNoDueDate": "No due date",
+  "@todoNoDueDate": {
+    "description": "Shown when a todo has no due date set"
+  },
+  "todoDueToday": "Due today",
+  "@todoDueToday": {
+    "description": "Due-date chip for a todo due today"
+  },
+  "todoDueTomorrow": "Due tomorrow",
+  "@todoDueTomorrow": {
+    "description": "Due-date chip for a todo due tomorrow"
+  },
+  "todoDueOn": "Due {date}",
+  "@todoDueOn": {
+    "description": "Due-date chip for a todo due on a specific date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "todoOverdueByDays": "{days, plural, =1{1 day overdue} other{{days} days overdue}}",
+  "@todoOverdueByDays": {
+    "description": "Due-date chip for a todo whose due date has passed",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "queueDueFilterLabel": "Due",
+  "@queueDueFilterLabel": {
+    "description": "Label of the Task Queue due-date filter"
+  },
+  "queueDueFilterAll": "All tasks",
+  "@queueDueFilterAll": {
+    "description": "Task Queue due filter: show every pending task"
+  },
+  "queueDueFilterOverdue": "Overdue",
+  "@queueDueFilterOverdue": {
+    "description": "Task Queue due filter: only overdue tasks"
+  },
+  "queueDueFilterToday": "Due today",
+  "@queueDueFilterToday": {
+    "description": "Task Queue due filter: only tasks due today"
+  },
+  "queueDueFilterThisWeek": "Due this week",
+  "@queueDueFilterThisWeek": {
+    "description": "Task Queue due filter: overdue plus tasks due within a week"
+  },
+  "queueDueFilterNoDate": "No due date",
+  "@queueDueFilterNoDate": {
+    "description": "Task Queue due filter: only tasks with no due date"
+  },
+  "queueNoTasksForDueFilter": "No tasks match this due filter",
+  "@queueNoTasksForDueFilter": {
+    "description": "Task Queue empty state when the due filter excludes everything"
+  }
 }

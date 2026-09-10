@@ -3126,5 +3126,20 @@
     }
   },
 
-  "suggestedColorsLabel": "Cores Sugeridas"
+  "suggestedColorsLabel": "Cores Sugeridas",
+  "todoDueDate": "Prazo",
+  "todoSetDueDate": "Definir prazo",
+  "todoClearDueDate": "Remover prazo",
+  "todoNoDueDate": "Sem prazo",
+  "todoDueToday": "Vence hoje",
+  "todoDueTomorrow": "Vence amanhã",
+  "todoDueOn": "Vence em {date}",
+  "todoOverdueByDays": "{days, plural, =1{1 dia de atraso} other{{days} dias de atraso}}",
+  "queueDueFilterLabel": "Prazo",
+  "queueDueFilterAll": "Todas as tarefas",
+  "queueDueFilterOverdue": "Atrasadas",
+  "queueDueFilterToday": "Vencem hoje",
+  "queueDueFilterThisWeek": "Vencem esta semana",
+  "queueDueFilterNoDate": "Sem prazo",
+  "queueNoTasksForDueFilter": "Nenhuma tarefa corresponde a este filtro de prazo"
 }

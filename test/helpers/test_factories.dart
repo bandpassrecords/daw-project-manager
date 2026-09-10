@@ -93,12 +93,14 @@ class TestFactories {
     String text = 'Mix the kick drum',
     bool completed = false,
     DateTime? createdAt,
+    DateTime? dueAt,
   }) {
     return TodoItem(
       id: id,
       text: text,
       completed: completed,
       createdAt: createdAt ?? DateTime(2025, 1, 10),
+      dueAt: dueAt,
     );
   }
 

@@ -3102,5 +3102,20 @@
     }
   },
 
-  "suggestedColorsLabel": "Colori Suggeriti"
+  "suggestedColorsLabel": "Colori Suggeriti",
+  "todoDueDate": "Scadenza",
+  "todoSetDueDate": "Imposta scadenza",
+  "todoClearDueDate": "Rimuovi scadenza",
+  "todoNoDueDate": "Senza scadenza",
+  "todoDueToday": "Scade oggi",
+  "todoDueTomorrow": "Scade domani",
+  "todoDueOn": "Scade il {date}",
+  "todoOverdueByDays": "{days, plural, =1{1 giorno di ritardo} other{{days} giorni di ritardo}}",
+  "queueDueFilterLabel": "Scadenza",
+  "queueDueFilterAll": "Tutte le attività",
+  "queueDueFilterOverdue": "In ritardo",
+  "queueDueFilterToday": "Scadono oggi",
+  "queueDueFilterThisWeek": "Scadono questa settimana",
+  "queueDueFilterNoDate": "Senza scadenza",
+  "queueNoTasksForDueFilter": "Nessuna attività corrisponde a questo filtro di scadenza"
 }

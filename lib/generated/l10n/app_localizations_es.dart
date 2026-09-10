@@ -5022,4 +5022,60 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Colores Sugeridos';
+
+  @override
+  String get todoDueDate => 'Fecha límite';
+
+  @override
+  String get todoSetDueDate => 'Definir fecha límite';
+
+  @override
+  String get todoClearDueDate => 'Quitar fecha límite';
+
+  @override
+  String get todoNoDueDate => 'Sin fecha límite';
+
+  @override
+  String get todoDueToday => 'Vence hoy';
+
+  @override
+  String get todoDueTomorrow => 'Vence mañana';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Vence el $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días de retraso',
+      one: '1 día de retraso',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Vencimiento';
+
+  @override
+  String get queueDueFilterAll => 'Todas las tareas';
+
+  @override
+  String get queueDueFilterOverdue => 'Atrasadas';
+
+  @override
+  String get queueDueFilterToday => 'Vencen hoy';
+
+  @override
+  String get queueDueFilterThisWeek => 'Vencen esta semana';
+
+  @override
+  String get queueDueFilterNoDate => 'Sin fecha límite';
+
+  @override
+  String get queueNoTasksForDueFilter =>
+      'Ninguna tarea coincide con este filtro de vencimiento';
 }

@@ -112,7 +112,8 @@ class ProjectTextExportService {
         ..writeln()
         ..writeln(l10n.projectExportTodosLabel);
       for (final todo in project.todos) {
-        buffer.writeln('  [${todo.completed ? 'x' : ' '}] ${todo.text}');
+        final due = todo.dueAt != null ? ' (${_formatDate(todo.dueAt!)})' : '';
+        buffer.writeln('  [${todo.completed ? 'x' : ' '}] ${todo.text}$due');
       }
     }
 

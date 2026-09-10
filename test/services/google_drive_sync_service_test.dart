@@ -12,6 +12,7 @@ import 'package:path/path.dart' as path;
 import 'package:daw_project_manager/models/part_template.dart';
 import 'package:daw_project_manager/models/profile.dart';
 import 'package:daw_project_manager/models/project_part.dart';
+import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/todo_template.dart';
 import 'package:daw_project_manager/repository/profile_repository.dart';
 import 'package:daw_project_manager/repository/project_repository.dart';
@@ -683,6 +684,60 @@ void main() {
         ..remove('parts');
 
       expect(service.deserializeProjectForTest(data).parts, isEmpty);
+    });
+
+    test('preserves per-todo due dates (#113)', () {
+      // TodoItem is nested inside the project payload, so a field missed here
+      // is silently dropped on every Drive restore.
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(todos: [
+        TestFactories.makeTodo(
+            id: 't1', text: 'Vocals', dueAt: DateTime(2025, 2, 14)),
+        TestFactories.makeTodo(id: 't2', text: 'Mix'),
+      ]);
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.todos[0].dueAt, DateTime(2025, 2, 14));
+      expect(restored.todos[1].dueAt, isNull);
+    });
+
+    test('a backup written before due dates existed restores them as null', () {
+      final service = GoogleDriveSyncService();
+      final data = service.serializeProjectForTest(
+        TestFactories.makeProject(
+          todos: [TestFactories.makeTodo(dueAt: DateTime(2025, 2, 14))],
+        ),
+      );
+      for (final todo in data['todos'] as List) {
+        (todo as Map).remove('dueAt');
+      }
+
+      expect(service.deserializeProjectForTest(data).todos.single.dueAt, isNull);
+    });
+
+    test('preserves due dates on release todos too (#113)', () {
+      // Release.todos reuses TodoItem, and has its own serializer pair.
+      final service = GoogleDriveSyncService();
+      final original = Release(
+        id: 'r1',
+        title: 'Summer EP',
+        trackIds: const ['p1'],
+        todos: [
+          TestFactories.makeTodo(
+              id: 't1', text: 'Cover art', dueAt: DateTime(2025, 2, 14)),
+          TestFactories.makeTodo(id: 't2', text: 'Distribution'),
+        ],
+      );
+
+      final restored = service.deserializeReleaseForTest(
+        service.serializeReleaseForTest(original),
+      );
+
+      expect(restored.todos[0].dueAt, DateTime(2025, 2, 14));
+      expect(restored.todos[1].dueAt, isNull);
     });
   });
 

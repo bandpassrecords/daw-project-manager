@@ -4996,4 +4996,60 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Предлагаемые цвета';
+
+  @override
+  String get todoDueDate => 'Срок';
+
+  @override
+  String get todoSetDueDate => 'Задать срок';
+
+  @override
+  String get todoClearDueDate => 'Убрать срок';
+
+  @override
+  String get todoNoDueDate => 'Без срока';
+
+  @override
+  String get todoDueToday => 'Срок сегодня';
+
+  @override
+  String get todoDueTomorrow => 'Срок завтра';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Срок: $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'просрочено на $days дн.',
+      one: 'просрочено на 1 день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Срок';
+
+  @override
+  String get queueDueFilterAll => 'Все задачи';
+
+  @override
+  String get queueDueFilterOverdue => 'Просроченные';
+
+  @override
+  String get queueDueFilterToday => 'Срок сегодня';
+
+  @override
+  String get queueDueFilterThisWeek => 'Срок на этой неделе';
+
+  @override
+  String get queueDueFilterNoDate => 'Без срока';
+
+  @override
+  String get queueNoTasksForDueFilter =>
+      'Нет задач, подходящих под этот фильтр срока';
 }

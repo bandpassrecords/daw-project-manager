@@ -3102,5 +3102,20 @@
     }
   },
 
-  "suggestedColorsLabel": "Предлагаемые цвета"
+  "suggestedColorsLabel": "Предлагаемые цвета",
+  "todoDueDate": "Срок",
+  "todoSetDueDate": "Задать срок",
+  "todoClearDueDate": "Убрать срок",
+  "todoNoDueDate": "Без срока",
+  "todoDueToday": "Срок сегодня",
+  "todoDueTomorrow": "Срок завтра",
+  "todoDueOn": "Срок: {date}",
+  "todoOverdueByDays": "{days, plural, =1{просрочено на 1 день} other{просрочено на {days} дн.}}",
+  "queueDueFilterLabel": "Срок",
+  "queueDueFilterAll": "Все задачи",
+  "queueDueFilterOverdue": "Просроченные",
+  "queueDueFilterToday": "Срок сегодня",
+  "queueDueFilterThisWeek": "Срок на этой неделе",
+  "queueDueFilterNoDate": "Без срока",
+  "queueNoTasksForDueFilter": "Нет задач, подходящих под этот фильтр срока"
 }

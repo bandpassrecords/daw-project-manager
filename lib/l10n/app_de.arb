@@ -3102,5 +3102,20 @@
     }
   },
 
-  "suggestedColorsLabel": "Vorgeschlagene Farben"
+  "suggestedColorsLabel": "Vorgeschlagene Farben",
+  "todoDueDate": "Fälligkeitsdatum",
+  "todoSetDueDate": "Fälligkeitsdatum festlegen",
+  "todoClearDueDate": "Fälligkeitsdatum entfernen",
+  "todoNoDueDate": "Kein Fälligkeitsdatum",
+  "todoDueToday": "Heute fällig",
+  "todoDueTomorrow": "Morgen fällig",
+  "todoDueOn": "Fällig am {date}",
+  "todoOverdueByDays": "{days, plural, =1{1 Tag überfällig} other{{days} Tage überfällig}}",
+  "queueDueFilterLabel": "Fällig",
+  "queueDueFilterAll": "Alle Aufgaben",
+  "queueDueFilterOverdue": "Überfällig",
+  "queueDueFilterToday": "Heute fällig",
+  "queueDueFilterThisWeek": "Diese Woche fällig",
+  "queueDueFilterNoDate": "Ohne Fälligkeitsdatum",
+  "queueNoTasksForDueFilter": "Keine Aufgabe passt zu diesem Fälligkeitsfilter"
 }

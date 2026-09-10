@@ -173,6 +173,35 @@ void main() {
       expect(restored.todos, isEmpty);
     });
 
+    test('preserves per-todo due dates (#113)', () {
+      // Local backup is Flatpak's only backup path — a due date skipped here
+      // is one those users can never back up at all.
+      final original = TestFactories.makeProject(todos: [
+        TestFactories.makeTodo(
+            id: 't1', text: 'Vocals', dueAt: DateTime(2025, 2, 14)),
+        TestFactories.makeTodo(id: 't2', text: 'Mix'),
+      ]);
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(original));
+
+      expect(restored.todos[0].dueAt, DateTime(2025, 2, 14));
+      expect(restored.todos[1].dueAt, isNull);
+    });
+
+    test('a backup written before due dates existed restores them as null', () {
+      final json = BackupService.projectToJson(
+        TestFactories.makeProject(
+          todos: [TestFactories.makeTodo(dueAt: DateTime(2025, 2, 14))],
+        ),
+      );
+      for (final todo in json['todos'] as List) {
+        (todo as Map).remove('dueAt');
+      }
+
+      expect(BackupService.projectFromJson(json).todos.single.dueAt, isNull);
+    });
+
     test('preserves hidden flag', () {
       final original = TestFactories.makeProject(hidden: true);
 

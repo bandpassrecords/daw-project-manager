@@ -3102,5 +3102,20 @@
     }
   },
 
-  "suggestedColorsLabel": "おすすめの色"
+  "suggestedColorsLabel": "おすすめの色",
+  "todoDueDate": "期限",
+  "todoSetDueDate": "期限を設定",
+  "todoClearDueDate": "期限を削除",
+  "todoNoDueDate": "期限なし",
+  "todoDueToday": "今日が期限",
+  "todoDueTomorrow": "明日が期限",
+  "todoDueOn": "期限 {date}",
+  "todoOverdueByDays": "{days, plural, other{{days}日超過}}",
+  "queueDueFilterLabel": "期限",
+  "queueDueFilterAll": "すべてのタスク",
+  "queueDueFilterOverdue": "期限切れ",
+  "queueDueFilterToday": "今日が期限",
+  "queueDueFilterThisWeek": "今週が期限",
+  "queueDueFilterNoDate": "期限なし",
+  "queueNoTasksForDueFilter": "この期限フィルターに一致するタスクはありません"
 }

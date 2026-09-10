@@ -4997,4 +4997,60 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Cores Sugeridas';
+
+  @override
+  String get todoDueDate => 'Prazo';
+
+  @override
+  String get todoSetDueDate => 'Definir prazo';
+
+  @override
+  String get todoClearDueDate => 'Remover prazo';
+
+  @override
+  String get todoNoDueDate => 'Sem prazo';
+
+  @override
+  String get todoDueToday => 'Vence hoje';
+
+  @override
+  String get todoDueTomorrow => 'Vence amanhã';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Vence em $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days dias de atraso',
+      one: '1 dia de atraso',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Prazo';
+
+  @override
+  String get queueDueFilterAll => 'Todas as tarefas';
+
+  @override
+  String get queueDueFilterOverdue => 'Atrasadas';
+
+  @override
+  String get queueDueFilterToday => 'Vencem hoje';
+
+  @override
+  String get queueDueFilterThisWeek => 'Vencem esta semana';
+
+  @override
+  String get queueDueFilterNoDate => 'Sem prazo';
+
+  @override
+  String get queueNoTasksForDueFilter =>
+      'Nenhuma tarefa corresponde a este filtro de prazo';
 }

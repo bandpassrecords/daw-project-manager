@@ -4978,4 +4978,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Suggested Colors';
+
+  @override
+  String get todoDueDate => 'Due date';
+
+  @override
+  String get todoSetDueDate => 'Set due date';
+
+  @override
+  String get todoClearDueDate => 'Clear due date';
+
+  @override
+  String get todoNoDueDate => 'No due date';
+
+  @override
+  String get todoDueToday => 'Due today';
+
+  @override
+  String get todoDueTomorrow => 'Due tomorrow';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Due $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days overdue',
+      one: '1 day overdue',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Due';
+
+  @override
+  String get queueDueFilterAll => 'All tasks';
+
+  @override
+  String get queueDueFilterOverdue => 'Overdue';
+
+  @override
+  String get queueDueFilterToday => 'Due today';
+
+  @override
+  String get queueDueFilterThisWeek => 'Due this week';
+
+  @override
+  String get queueDueFilterNoDate => 'No due date';
+
+  @override
+  String get queueNoTasksForDueFilter => 'No tasks match this due filter';
 }
