@@ -45,6 +45,7 @@ class TestFactories {
     String? defaultLaunchMemberId,
     String? stackId,
     List<ProjectMarker>? markers,
+    String? cardInitials,
   }) {
     return MusicProject(
       id: id,
@@ -85,6 +86,7 @@ class TestFactories {
       defaultLaunchMemberId: defaultLaunchMemberId,
       stackId: stackId,
       markers: markers ?? const [],
+      cardInitials: cardInitials,
     );
   }
 

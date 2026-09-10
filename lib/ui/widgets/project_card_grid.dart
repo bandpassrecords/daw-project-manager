@@ -35,7 +35,11 @@ class ProjectCardGrid extends StatefulWidget {
     required this.onRowClick,
     required this.onHighlight,
     required this.onContextMenu,
+    required this.onPrimaryAction,
+    required this.onOpenFolder,
+    required this.onPlayPreview,
     this.activeProjectId,
+    this.sessionMode = false,
     this.selectionModifierHeld = _noModifier,
   });
 
@@ -73,6 +77,17 @@ class ProjectCardGrid extends StatefulWidget {
 
   final void Function(MusicProject, Offset globalPosition) onContextMenu;
 
+  /// The card's first action icon: launch in the DAW, or — while work sessions
+  /// are being tracked — start/end the session on it, exactly as the grid row
+  /// and the context menu behave.
+  final void Function(MusicProject) onPrimaryAction;
+
+  final void Function(MusicProject) onOpenFolder;
+  final void Function(MusicProject) onPlayPreview;
+
+  /// Whether session tracking is on, which changes what the first icon means.
+  final bool sessionMode;
+
   /// Whether a selection modifier key is down right now. Injected so tests can
   /// drive both click paths without synthesising hardware key events.
   final bool Function() selectionModifierHeld;
@@ -97,6 +112,11 @@ class ProjectCardLabels {
     required this.today,
     required this.daysLeft,
     required this.daysLate,
+    required this.launchTooltip,
+    required this.startSessionTooltip,
+    required this.endSessionTooltip,
+    required this.openFolderTooltip,
+    required this.playPreviewTooltip,
   });
 
   final String emptyMessage;
@@ -107,6 +127,11 @@ class ProjectCardLabels {
   final String today;
   final String Function(int days) daysLeft;
   final String Function(int days) daysLate;
+  final String launchTooltip;
+  final String startSessionTooltip;
+  final String endSessionTooltip;
+  final String openFolderTooltip;
+  final String playPreviewTooltip;
 }
 
 class _ProjectCardGridState extends State<ProjectCardGrid> {
@@ -165,6 +190,10 @@ class _ProjectCardGridState extends State<ProjectCardGrid> {
           onDoubleTap: () => widget.onOpen(project),
           onToggleSelection: () => widget.onToggleSelection(project.id),
           onContextMenu: (position) => widget.onContextMenu(project, position),
+          sessionMode: widget.sessionMode,
+          onPrimaryAction: () => widget.onPrimaryAction(project),
+          onOpenFolder: () => widget.onOpenFolder(project),
+          onPlayPreview: () => widget.onPlayPreview(project),
         );
       },
     );
@@ -186,6 +215,10 @@ class _ProjectCard extends StatefulWidget {
     required this.onDoubleTap,
     required this.onToggleSelection,
     required this.onContextMenu,
+    required this.sessionMode,
+    required this.onPrimaryAction,
+    required this.onOpenFolder,
+    required this.onPlayPreview,
   });
 
   final MusicProject project;
@@ -201,6 +234,10 @@ class _ProjectCard extends StatefulWidget {
   final VoidCallback onDoubleTap;
   final VoidCallback onToggleSelection;
   final void Function(Offset globalPosition) onContextMenu;
+  final bool sessionMode;
+  final VoidCallback onPrimaryAction;
+  final VoidCallback onOpenFolder;
+  final VoidCallback onPlayPreview;
 
   @override
   State<_ProjectCard> createState() => _ProjectCardState();
@@ -315,7 +352,90 @@ class _ProjectCardState extends State<_ProjectCard> {
             ],
           ),
         ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: _buildActionBar(context),
+        ),
       ],
+    );
+  }
+
+  /// Launch / reveal / play, small and always visible along the foot of the
+  /// cover rather than in the footer: the metadata block under it has a fixed
+  /// height, and dropping a row of buttons into it would either grow every
+  /// card or squeeze the name.
+  Widget _buildActionBar(BuildContext context) {
+    final project = widget.project;
+    final isActiveSession = widget.sessionMode && widget.active;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.black.withValues(alpha: 0.0),
+            Colors.black.withValues(alpha: 0.55),
+          ],
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _actionIcon(
+            icon: widget.sessionMode
+                ? (isActiveSession
+                      ? Icons.bookmark
+                      : Icons.bookmark_add_outlined)
+                : Icons.open_in_new,
+            tooltip: widget.sessionMode
+                ? (isActiveSession
+                      ? widget.labels.endSessionTooltip
+                      : widget.labels.startSessionTooltip)
+                : widget.labels.launchTooltip,
+            onPressed: widget.onPrimaryAction,
+          ),
+          _actionIcon(
+            icon: Icons.folder_open,
+            tooltip: widget.labels.openFolderTooltip,
+            onPressed: widget.onOpenFolder,
+          ),
+          _actionIcon(
+            icon: Icons.play_arrow,
+            tooltip: widget.labels.playPreviewTooltip,
+            onPressed: widget.onPlayPreview,
+            // Same three-state colouring the mobile list uses: green for a
+            // preview the user set, amber for an auto-detected mixdown, grey
+            // when neither is known yet.
+            color: project.previewSongPath?.isNotEmpty == true
+                ? Colors.greenAccent.shade100
+                : project.previewSongAutoPath != null
+                ? Colors.amberAccent.shade100
+                : Colors.white70,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionIcon({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onPressed,
+    Color? color,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: InkResponse(
+        onTap: onPressed,
+        radius: 16,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          child: Icon(icon, size: 16, color: color ?? Colors.white),
+        ),
+      ),
     );
   }
 
@@ -337,7 +457,6 @@ class _ProjectCardState extends State<_ProjectCard> {
   }
 
   Widget _buildGeneratedCover(Color accent) {
-    final logoPath = getDawLogoPath(widget.project.dawType);
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -346,37 +465,22 @@ class _ProjectCardState extends State<_ProjectCard> {
           colors: [accent, Color.lerp(accent, Colors.black, 0.45)!],
         ),
       ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Center(
-            child: Text(
-              projectInitials(widget.project.displayName),
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.9),
-                fontSize: 34,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
-            ),
+      child: Center(
+        child: Text(
+          // A label the user typed wins over the one derived from the name.
+          projectCardInitials(
+            widget.project.cardInitials,
+            widget.project.displayName,
           ),
-          if (logoPath != null)
-            Positioned(
-              bottom: 6,
-              right: 6,
-              child: Opacity(
-                opacity: 0.85,
-                child: Image.asset(
-                  logoPath,
-                  width: 18,
-                  height: 18,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, _, _) =>
-                      const Icon(Icons.piano, size: 16, color: Colors.white70),
-                ),
-              ),
-            ),
-        ],
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.9),
+            fontSize: 34,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2,
+          ),
+        ),
       ),
     );
   }
@@ -438,30 +542,37 @@ class _ProjectCardState extends State<_ProjectCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (project.isVirtual) ...[
-                Padding(
-                  padding: const EdgeInsets.only(top: 2, right: 4),
-                  child: Icon(
-                    Icons.layers,
-                    size: 13,
-                    color: theme.textTheme.bodySmall?.color,
+          // Always two lines tall, whether the name needs one or two: the
+          // cover above is what takes up the slack, so a long name can't make
+          // one card taller than its neighbours.
+          SizedBox(
+            height: _nameBlockHeight,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (project.isVirtual) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2, right: 4),
+                    child: Icon(
+                      Icons.layers,
+                      size: 13,
+                      color: theme.textTheme.bodySmall?.color,
+                    ),
+                  ),
+                ],
+                Expanded(
+                  child: Text(
+                    project.displayName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      height: _nameLineHeight,
+                    ),
                   ),
                 ),
               ],
-              Expanded(
-                child: Text(
-                  project.displayName,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
           const SizedBox(height: 4),
           Row(
@@ -557,6 +668,19 @@ class _ProjectCardState extends State<_ProjectCard> {
       ),
     );
   }
+
+  /// Two lines of the name style, so the block is the same height on every
+  /// card. Scaled with the platform text size so a larger accessibility
+  /// setting still fits two lines rather than clipping one.
+  double get _nameBlockHeight {
+    final fontSize =
+        Theme.of(context).textTheme.bodyMedium?.fontSize ?? _nameFontFallback;
+    final scaled = MediaQuery.textScalerOf(context).scale(fontSize);
+    return scaled * _nameLineHeight * 2;
+  }
+
+  static const double _nameLineHeight = 1.25;
+  static const double _nameFontFallback = 14.0;
 
   /// "128", not "128.0" — same rule the active-project chip uses.
   String _formatBpm(double bpm) =>

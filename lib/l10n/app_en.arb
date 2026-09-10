@@ -3115,6 +3115,11 @@
     
 }
   },
+  "sortByDeadline": "Deadline",
+  "sortByLabel": "Sort by",
+  "cardInitialsTitle": "Card initials",
+  "cardInitialsDescription": "The letters shown on this project's card when it has no cover art.",
+  "cardInitialsEmptyHint": "Leave empty to use the initials of the name.",
   "sortByLastModified": "Last modified",
   "sortByName": "Name",
   "sortByPhase": "Phase",

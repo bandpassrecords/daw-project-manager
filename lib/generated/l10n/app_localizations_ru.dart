@@ -2889,6 +2889,23 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => 'Срок';
+
+  @override
+  String get sortByLabel => 'Сортировать по';
+
+  @override
+  String get cardInitialsTitle => 'Инициалы карточки';
+
+  @override
+  String get cardInitialsDescription =>
+      'Буквы на карточке этого проекта, когда у него нет обложки.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Оставьте пустым, чтобы использовать инициалы названия.';
+
+  @override
   String get sortByLastModified => 'Дата изменения';
 
   @override

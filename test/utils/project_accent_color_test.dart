@@ -57,6 +57,27 @@ void main() {
     });
   });
 
+  group('projectCardInitials', () {
+    test('uses the label the user typed', () {
+      expect(projectCardInitials('X7', 'Night Drive'), 'X7');
+    });
+
+    test('derives from the name when nothing was typed', () {
+      expect(projectCardInitials(null, 'Night Drive'), 'ND');
+      expect(projectCardInitials('', 'Night Drive'), 'ND');
+    });
+
+    test('treats a whitespace-only label as nothing typed', () {
+      // Clearing the field in the editor is how a user goes back to the
+      // derived label; a card must never come out blank.
+      expect(projectCardInitials('   ', 'Night Drive'), 'ND');
+    });
+
+    test('trims what the user typed', () {
+      expect(projectCardInitials(' X7 ', 'Night Drive'), 'X7');
+    });
+  });
+
   group('projectInitials', () {
     test('takes one letter from each of the first two words', () {
       expect(projectInitials('Night Drive'), 'ND');

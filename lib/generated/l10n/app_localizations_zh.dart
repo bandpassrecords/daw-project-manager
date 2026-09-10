@@ -2799,6 +2799,21 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => '截止日期';
+
+  @override
+  String get sortByLabel => '排序方式';
+
+  @override
+  String get cardInitialsTitle => '卡片字母';
+
+  @override
+  String get cardInitialsDescription => '此项目没有封面时，卡片上显示的字母。';
+
+  @override
+  String get cardInitialsEmptyHint => '留空则使用名称的首字母。';
+
+  @override
   String get sortByLastModified => '最后修改';
 
   @override

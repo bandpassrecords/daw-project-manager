@@ -2903,6 +2903,23 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => 'Frist';
+
+  @override
+  String get sortByLabel => 'Sortieren nach';
+
+  @override
+  String get cardInitialsTitle => 'Kartenkürzel';
+
+  @override
+  String get cardInitialsDescription =>
+      'Die Buchstaben auf der Karte dieses Projekts, wenn es kein Cover hat.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Leer lassen, um die Initialen des Namens zu verwenden.';
+
+  @override
   String get sortByLastModified => 'Zuletzt geändert';
 
   @override

@@ -2891,6 +2891,23 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => 'Prazo';
+
+  @override
+  String get sortByLabel => 'Ordenar por';
+
+  @override
+  String get cardInitialsTitle => 'Iniciais do cartão';
+
+  @override
+  String get cardInitialsDescription =>
+      'As letras exibidas no cartão deste projeto quando ele não tem capa.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Deixe vazio para usar as iniciais do nome.';
+
+  @override
   String get sortByLastModified => 'Última modificação';
 
   @override

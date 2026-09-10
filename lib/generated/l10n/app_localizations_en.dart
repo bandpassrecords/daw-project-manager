@@ -2884,6 +2884,23 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => 'Deadline';
+
+  @override
+  String get sortByLabel => 'Sort by';
+
+  @override
+  String get cardInitialsTitle => 'Card initials';
+
+  @override
+  String get cardInitialsDescription =>
+      'The letters shown on this project\'s card when it has no cover art.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Leave empty to use the initials of the name.';
+
+  @override
   String get sortByLastModified => 'Last modified';
 
   @override

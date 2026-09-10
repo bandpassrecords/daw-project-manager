@@ -128,6 +128,26 @@ void main() {
       expect(restored.notes, isNull);
     });
 
+    test('preserves the card label the user typed (#111)', () {
+      // Flatpak's only backup path — a field skipped here is one those users
+      // can never back up at all.
+      final original = TestFactories.makeProject(cardInitials: 'X7');
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(original));
+
+      expect(restored.cardInitials, 'X7');
+    });
+
+    test('preserves an unset card label', () {
+      final original = TestFactories.makeProject(cardInitials: null);
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(original));
+
+      expect(restored.cardInitials, isNull);
+    });
+
     test('preserves deadline', () {
       final deadline = DateTime(2026, 9, 1);
       final original = TestFactories.makeProject(deadline: deadline);

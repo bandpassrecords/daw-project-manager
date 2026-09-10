@@ -19,6 +19,11 @@ void main() {
     today: 'Today',
     daysLeft: (d) => '${d}d left',
     daysLate: (d) => '${d}d late',
+    launchTooltip: 'Launch in DAW',
+    startSessionTooltip: 'Start session',
+    endSessionTooltip: 'End session',
+    openFolderTooltip: 'Open folder',
+    playPreviewTooltip: 'Play preview',
   );
 
   MusicProject project(
@@ -29,6 +34,9 @@ void main() {
     String? musicalKey,
     DateTime? deadline,
     bool isVirtual = false,
+    String? cardInitials,
+    String? previewSongPath,
+    String? previewSongAutoPath,
   }) => TestFactories.makeProject(
     id: id,
     customDisplayName: name,
@@ -37,6 +45,9 @@ void main() {
     musicalKey: musicalKey,
     deadline: deadline,
     isVirtual: isVirtual,
+    cardInitials: cardInitials,
+    previewSongPath: previewSongPath,
+    previewSongAutoPath: previewSongAutoPath,
   );
 
   Widget wrap(
@@ -45,6 +56,10 @@ void main() {
     String? activeProjectId,
     bool fileExists = true,
     bool modifierHeld = false,
+    bool sessionMode = false,
+    void Function(MusicProject)? onPrimaryAction,
+    void Function(MusicProject)? onOpenFolder,
+    void Function(MusicProject)? onPlayPreview,
     void Function(MusicProject)? onOpen,
     void Function(String)? onToggleSelection,
     void Function(String)? onRowClick,
@@ -67,6 +82,10 @@ void main() {
         onRowClick: onRowClick ?? (_) {},
         onHighlight: onHighlight ?? (_) {},
         onContextMenu: onContextMenu ?? (_, _) {},
+        sessionMode: sessionMode,
+        onPrimaryAction: onPrimaryAction ?? (_) {},
+        onOpenFolder: onOpenFolder ?? (_) {},
+        onPlayPreview: onPlayPreview ?? (_) {},
       ),
     ),
   );
@@ -309,6 +328,132 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
+  group('card label', () {
+    testWidgets('falls back to initials derived from the name', (tester) async {
+      await tester.pumpWidget(wrap([project('a', 'Night Drive')]));
+
+      expect(find.text('ND'), findsOneWidget);
+    });
+
+    testWidgets('shows what the user typed instead', (tester) async {
+      await tester.pumpWidget(
+        wrap([project('a', 'Night Drive', cardInitials: 'X7')]),
+      );
+
+      expect(find.text('X7'), findsOneWidget);
+      expect(find.text('ND'), findsNothing);
+    });
+
+    testWidgets('a blank override falls back rather than blanking the card', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrap([project('a', 'Night Drive', cardInitials: '   ')]),
+      );
+
+      expect(find.text('ND'), findsOneWidget);
+    });
+  });
+
+  group('action icons', () {
+    testWidgets('launch, open folder and play each report their project', (
+      tester,
+    ) async {
+      final launched = <String>[];
+      final folders = <String>[];
+      final played = <String>[];
+      await tester.pumpWidget(
+        wrap(
+          [project('a', 'Night Drive')],
+          onPrimaryAction: (p) => launched.add(p.id),
+          onOpenFolder: (p) => folders.add(p.id),
+          onPlayPreview: (p) => played.add(p.id),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.open_in_new));
+      await tester.pump(const Duration(seconds: 1));
+      await tester.tap(find.byIcon(Icons.folder_open));
+      await tester.pump(const Duration(seconds: 1));
+      await tester.tap(find.byIcon(Icons.play_arrow));
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(launched, ['a']);
+      expect(folders, ['a']);
+      expect(played, ['a']);
+    });
+
+    testWidgets('the launch icon becomes a session bookmark in session mode', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrap([project('a', 'Night Drive')], sessionMode: true),
+      );
+
+      expect(find.byIcon(Icons.open_in_new), findsNothing);
+      expect(find.byIcon(Icons.bookmark_add_outlined), findsOneWidget);
+    });
+
+    testWidgets('and a filled bookmark on the project being tracked', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrap(
+          [project('a', 'Night Drive')],
+          sessionMode: true,
+          activeProjectId: 'a',
+        ),
+      );
+
+      expect(find.byIcon(Icons.bookmark), findsOneWidget);
+    });
+
+    testWidgets('the play icon says which kind of preview it would play', (
+      tester,
+    ) async {
+      Color playColor(WidgetTester tester) =>
+          tester.widget<Icon>(find.byIcon(Icons.play_arrow)).color!;
+
+      await tester.pumpWidget(wrap([project('a', 'A song')]));
+      final none = playColor(tester);
+
+      await tester.pumpWidget(
+        wrap([project('b', 'A song', previewSongAutoPath: '/tmp/auto.wav')]),
+      );
+      final auto = playColor(tester);
+
+      await tester.pumpWidget(
+        wrap([project('c', 'A song', previewSongPath: '/tmp/manual.wav')]),
+      );
+      final manual = playColor(tester);
+
+      expect({none, auto, manual}, hasLength(3));
+    });
+  });
+
+  testWidgets('a long name does not make its card taller than its neighbours', (
+    tester,
+  ) async {
+    // The whole point of the fixed name block: two cards side by side, one
+    // with a name that wraps and one that doesn't, still line up.
+    await tester.binding.setSurfaceSize(const Size(900, 600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      wrap([
+        project('a', 'Short'),
+        project(
+          'b',
+          'An Extremely Long Project Name That Has To Wrap Onto Two Lines',
+        ),
+      ]),
+    );
+    await tester.pumpAndSettle();
+
+    final cards = tester.widgetList<Card>(find.byType(Card)).toList();
+    expect(cards, hasLength(2));
+    final sizes = find.byType(Card).evaluate().map((e) => e.size).toList();
+    expect(sizes[0], sizes[1]);
+  });
   testWidgets('a long press asks for the context menu', (tester) async {
     final menus = <String>[];
     await tester.pumpWidget(

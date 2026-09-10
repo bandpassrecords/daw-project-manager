@@ -258,6 +258,15 @@ class MusicProject {
   @HiveField(37)
   final List<ProjectMarker> markers; // Timeline markers/regions read from the DAW project file (Reaper only so far)
 
+  @HiveField(38)
+  /// The short label drawn on the dashboard card when the project has no
+  /// cover art. Null means "derive it from the name" (see `projectInitials`),
+  /// which is what every project starts as.
+  ///
+  /// User data: someone typed it, so it syncs to Drive and goes into a
+  /// backup like the notes and the deadline do.
+  final String? cardInitials;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -297,6 +306,7 @@ class MusicProject {
     this.defaultLaunchMemberId,
     this.stackId,
     this.markers = const [],
+    this.cardInitials,
   });
 
   /// Number of version files this stack holds. 0 for a real project.
@@ -590,6 +600,8 @@ class MusicProject {
     String? stackId,
     bool clearStackId = false,
     List<ProjectMarker>? markers,
+    String? cardInitials,
+    bool clearCardInitials = false,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -632,6 +644,9 @@ class MusicProject {
           : (defaultLaunchMemberId ?? this.defaultLaunchMemberId),
       stackId: clearStackId ? null : (stackId ?? this.stackId),
       markers: markers ?? this.markers,
+      cardInitials: clearCardInitials
+          ? null
+          : (cardInitials ?? this.cardInitials),
     );
   }
 
@@ -707,13 +722,14 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
               .map((e) => ProjectMarker.fromMap(e as Map))
               .toList()
           : const [],
+      cardInitials: fields.containsKey(38) ? fields[38] as String? : null,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(38) // 38 fields (0-37)
+      ..writeByte(39) // 39 fields (0-38)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -789,6 +805,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(36)
       ..write(obj.stackId)
       ..writeByte(37)
-      ..write(obj.markers.map((m) => m.toMap()).toList());
+      ..write(obj.markers.map((m) => m.toMap()).toList())
+      ..writeByte(38)
+      ..write(obj.cardInitials);
   }
 }

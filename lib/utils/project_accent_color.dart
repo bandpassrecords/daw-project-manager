@@ -37,6 +37,17 @@ Color projectAccentColor(String projectId) {
   return HSLColor.fromAHSL(1.0, hue, 0.45, 0.42).toColor();
 }
 
+/// The short label drawn on a project's generated cover: what the user typed,
+/// or the initials derived from the name when they have typed nothing.
+///
+/// Whitespace-only counts as nothing — clearing the field in the editor is how
+/// a user goes back to the derived label, and a card must never be blank.
+String projectCardInitials(String? custom, String displayName) {
+  final trimmed = custom?.trim();
+  if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+  return projectInitials(displayName);
+}
+
 /// One or two letters standing in for a project with no cover art.
 ///
 /// Two initials when the name has two or more words ("Night Drive" → "ND"),

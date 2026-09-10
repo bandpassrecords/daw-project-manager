@@ -881,6 +881,8 @@ class BackupService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      // User data: someone typed these two letters onto the card.
+      'cardInitials': project.cardInitials,
     };
   }
 
@@ -935,6 +937,7 @@ class BackupService {
               ?.map((e) => ProjectMarker.fromMap(e as Map))
               .toList() ??
           const [],
+      cardInitials: json['cardInitials'] as String?,
     );
   }
 

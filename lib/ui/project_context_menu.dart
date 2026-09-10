@@ -10,6 +10,7 @@ import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
 import '../services/scanner_service.dart';
 import '../utils/file_launcher.dart';
+import 'dialogs/card_initials_dialog.dart';
 import 'preview_share.dart';
 import 'project_detail_page.dart';
 import 'session_actions.dart';
@@ -103,6 +104,7 @@ Future<void> showProjectContextMenu({
   required void Function(List<String> ids) onHideProjects,
   required void Function(List<String> ids) onUnhideProjects,
   required void Function(bool) onExtractingMetadataChanged,
+  bool includeCardOptions = false,
 }) async {
   final l10n = AppLocalizations.of(context)!;
   final driveService = ref.read(googleDriveSyncServiceProvider);
@@ -145,6 +147,19 @@ Future<void> showProjectContextMenu({
           ],
         ),
       ),
+      // Card-only: the label is drawn on the card's generated cover, so
+      // offering it on a grid row would point at something not on screen.
+      if (includeCardOptions)
+        PopupMenuItem<String>(
+          value: 'cardInitials',
+          child: Row(
+            children: [
+              const Icon(Icons.text_fields, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.cardInitialsTitle),
+            ],
+          ),
+        ),
       PopupMenuItem<String>(
         value: 'view',
         child: Row(
@@ -247,6 +262,9 @@ Future<void> showProjectContextMenu({
         break;
       case 'endSession':
         await confirmEndSession(context, ref);
+        break;
+      case 'cardInitials':
+        await showCardInitialsDialog(context, ref, project);
         break;
       case 'view':
         await openProjectDetail(context, project);

@@ -2898,6 +2898,23 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => 'Scadenza';
+
+  @override
+  String get sortByLabel => 'Ordina per';
+
+  @override
+  String get cardInitialsTitle => 'Iniziali della scheda';
+
+  @override
+  String get cardInitialsDescription =>
+      'Le lettere mostrate sulla scheda di questo progetto quando non ha una copertina.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Lascia vuoto per usare le iniziali del nome.';
+
+  @override
   String get sortByLastModified => 'Ultima modifica';
 
   @override

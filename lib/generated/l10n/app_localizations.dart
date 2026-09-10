@@ -4865,6 +4865,36 @@ abstract class AppLocalizations {
   /// **'Not touched in {days} days'**
   String statsNotTouchedDays(int days);
 
+  /// No description provided for @sortByDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get sortByDeadline;
+
+  /// No description provided for @sortByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortByLabel;
+
+  /// No description provided for @cardInitialsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Card initials'**
+  String get cardInitialsTitle;
+
+  /// No description provided for @cardInitialsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The letters shown on this project\'s card when it has no cover art.'**
+  String get cardInitialsDescription;
+
+  /// No description provided for @cardInitialsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use the initials of the name.'**
+  String get cardInitialsEmptyHint;
+
   /// No description provided for @sortByLastModified.
   ///
   /// In en, this message translates to:

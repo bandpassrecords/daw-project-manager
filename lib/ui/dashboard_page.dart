@@ -37,6 +37,7 @@ import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/phase_colors.dart';
 import '../utils/project_file_status.dart';
+import '../utils/project_sort.dart';
 import '../utils/theme_derivations.dart';
 import '../providers/theme_provider.dart';
 import '../utils/file_launcher.dart';
@@ -4440,6 +4441,16 @@ class _PlutoProjectsTableWithSelectionState
   /// toggle). Lets a user pick a single group's checkbox to bulk-edit just
   /// that folder — e.g. move every project in it to a new phase — without
   /// first selecting everything else and without needing the group expanded.
+  String _sortFieldLabel(AppLocalizations l10n, ProjectSortField field) =>
+      switch (field) {
+        ProjectSortField.lastModified => l10n.sortByLastModified,
+        ProjectSortField.name => l10n.sortByName,
+        ProjectSortField.phase => l10n.sortByPhase,
+        ProjectSortField.createdAt => l10n.sortByCreatedAt,
+        ProjectSortField.bpm => l10n.sortByBpm,
+        ProjectSortField.deadline => l10n.sortByDeadline,
+      };
+
   void _toggleGroupSelection(Set<String> groupProjectIds) {
     if (groupProjectIds.isEmpty) return;
     if (groupCheckboxShouldSelect(groupProjectIds, _selectedProjectIds)) {
@@ -4610,6 +4621,7 @@ class _PlutoProjectsTableWithSelectionState
     final availableDaws = ref.watch(availableDawsProvider);
     final scanRoots = ref.watch(scanRootsProvider);
     final viewMode = ref.watch(dashboardViewModeProvider);
+    final cardSort = ref.watch(dashboardCardSortProvider);
     final l10n = AppLocalizations.of(context)!;
 
     // Filtering an empty grid makes no sense — hide the whole filter bar
@@ -4877,6 +4889,74 @@ class _PlutoProjectsTableWithSelectionState
                   ),
                 ],
                 const Spacer(),
+                // Cards have no column headers to click, so the order needs
+                // its own control. Hidden in table mode, where TrinaGrid's
+                // headers already own sorting.
+                if (viewMode == DashboardViewMode.cards) ...[
+                  Icon(
+                    cardSort.descending
+                        ? Icons.arrow_downward
+                        : Icons.arrow_upward,
+                    size: 14,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                  ),
+                  const SizedBox(width: 2),
+                  Tooltip(
+                    message: l10n.sortByLabel,
+                    child: DropdownButton<ProjectSortField>(
+                      value: cardSort.field,
+                      underline: const SizedBox.shrink(),
+                      isDense: true,
+                      style: const TextStyle(fontSize: 12),
+                      selectedItemBuilder: (context) => [
+                        for (final field in ProjectSortField.values)
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              _sortFieldLabel(l10n, field),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.color,
+                              ),
+                            ),
+                          ),
+                      ],
+                      items: [
+                        for (final field in ProjectSortField.values)
+                          DropdownMenuItem(
+                            value: field,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(_sortFieldLabel(l10n, field)),
+                                // The field already in use flips direction
+                                // when picked again, so show which way it
+                                // currently points.
+                                if (field == cardSort.field) ...[
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    cardSort.descending
+                                        ? Icons.arrow_downward
+                                        : Icons.arrow_upward,
+                                    size: 12,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                      ],
+                      onChanged: (field) {
+                        if (field == null) return;
+                        ref
+                            .read(dashboardCardSortProvider.notifier)
+                            .selectField(field);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 // Table ⇄ cards. Same projects either way — the toggle only
                 // changes how the already-filtered list is drawn.
                 SegmentedButton<DashboardViewMode>(
@@ -4941,7 +5021,14 @@ class _PlutoProjectsTableWithSelectionState
         Expanded(
           child: viewMode == DashboardViewMode.cards
               ? ProjectCardGrid(
-                  projects: widget.projects,
+                  // The only thing the card view does to the shared list is
+                  // reorder it — filtering and searching stay in
+                  // projectsProvider, where both views read them from.
+                  projects: sortProjects(
+                    widget.projects,
+                    cardSort.field,
+                    descending: cardSort.descending,
+                  ),
                   selectedIds: _selectedProjectIds,
                   activeProjectId: ref.watch(activeProjectProvider)?.id,
                   phaseColor: (phase) => resolvePhaseColor(
@@ -4950,7 +5037,7 @@ class _PlutoProjectsTableWithSelectionState
                     customPhases,
                   ),
                   phaseLabel: (phase) => _translateStatus(context, phase),
-                  dateFormat: widget.dateFormat.format,
+                  dateFormat: ref.watch(compactDateFormatProvider).format,
                   fileExists: projectFileExists,
                   selectionModifierHeld: selectionModifierHeld,
                   labels: ProjectCardLabels(
@@ -4962,7 +5049,32 @@ class _PlutoProjectsTableWithSelectionState
                     today: l10n.today,
                     daysLeft: l10n.daysLeft,
                     daysLate: l10n.daysLate,
+                    launchTooltip: l10n.tooltipLaunchInDaw,
+                    startSessionTooltip: l10n.startSession,
+                    endSessionTooltip: l10n.endSession,
+                    openFolderTooltip: l10n.openFolder,
+                    playPreviewTooltip: l10n.playPreview,
                   ),
+                  sessionMode: ref.watch(sessionModeProvider),
+                  onPrimaryAction: (project) async {
+                    // Session mode turns "launch" into "start/end the session
+                    // on this project", exactly as the grid row and the
+                    // context menu already behave.
+                    if (!ref.read(sessionModeProvider)) {
+                      await launchProjectFromMenu(context, ref, project);
+                      return;
+                    }
+                    if (!context.mounted) return;
+                    if (ref.read(activeProjectProvider)?.id == project.id) {
+                      await confirmEndSession(context, ref);
+                    } else {
+                      await confirmStartSession(context, ref, project);
+                    }
+                  },
+                  onOpenFolder: (project) =>
+                      openProjectFolder(context, project),
+                  onPlayPreview: (project) =>
+                      playProjectPreview(context, ref, project),
                   onOpen: (project) => openProjectDetail(context, project),
                   onToggleSelection: _clickSelection.toggle,
                   onRowClick: _clickSelection.handleRowClick,
@@ -4976,6 +5088,7 @@ class _PlutoProjectsTableWithSelectionState
                     onUnhideProjects: widget.onUnhideProjects,
                     onExtractingMetadataChanged:
                         widget.onExtractingMetadataChanged,
+                    includeCardOptions: true,
                   ),
                 )
               : _PlutoProjectsTable(
@@ -5328,6 +5441,237 @@ class _PlutoProjectsTableWithSelectionState
   }
 }
 
+
+/// Plays a project's preview song, resolving what "the preview song" is along
+/// the way: the manually set file, the auto-detected mixdown, a newly detected
+/// one, or a file the user picks when there is none. Also offers to adopt a
+/// newer export sitting next to the current one, and recovers a preview whose
+/// file has since moved.
+///
+/// Top-level because three call sites need it — the projects table, the mobile
+/// list and the dashboard card (#111) — and it was already duplicated verbatim
+/// between the first two. It stays in this file rather than moving out to its
+/// own because of `_PreviewSongDialog`, which is private to it.
+Future<void> playProjectPreview(
+  BuildContext context,
+  WidgetRef ref,
+  MusicProject project,
+) async {
+  final customFolders = ref.read(customMixdownFoldersProvider).value;
+  final customFoldersByDaw = ref
+      .read(customMixdownFoldersByDawProvider)
+      .value;
+  var effectivePath = project.previewSongPath?.isNotEmpty == true
+      ? project.previewSongPath!
+      : project.previewSongAutoPath;
+
+  if (effectivePath == null) {
+    final detected = MixdownDetectorService.findLatestMixdown(
+      project,
+      customFolders: customFolders,
+      customFoldersByDaw: customFoldersByDaw,
+    );
+    if (detected != null) {
+      effectivePath = detected.path;
+      final repo = await ref.read(repositoryProvider.future);
+      await repo.updateProject(
+        project.copyWith(previewSongAutoPath: detected.path),
+      );
+      ref.invalidate(allProjectsStreamProvider);
+    }
+  }
+
+  if (effectivePath == null) {
+    if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.audio_file_outlined, size: 20),
+            const SizedBox(width: 8),
+            Text(l10n.noPreviewSongTitle),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.noPreviewSongMessage),
+            if (!MobileUtils.isMobile()) ...[
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.drag_indicator,
+                    size: 16,
+                    color: Theme.of(ctx).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      l10n.noPreviewSongDragHint,
+                      style: Theme.of(ctx).textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.selectPreviewSong),
+          ),
+        ],
+      ),
+    );
+    if (!context.mounted || confirmed != true) return;
+    final picked = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: previewAudioExtensions,
+      dialogTitle: l10n.selectPreviewSong,
+    );
+    if (!context.mounted || picked == null || picked.files.single.path == null)
+      return;
+    final newPath = picked.files.single.path!;
+    final repo = await ref.read(repositoryProvider.future);
+    await repo.updateProject(
+      project.copyWith(
+        previewSongPath: newPath,
+        previewSongFileName: path.basename(newPath),
+      ),
+    );
+    if (!context.mounted) return;
+    if (MobileUtils.isMobile()) {
+      final pickedProject = project.copyWith(
+        previewSongPath: newPath,
+        previewSongFileName: path.basename(newPath),
+      );
+      final queue = ref.read(mobilePlayerQueueProvider);
+      final idx = queue.indexWhere((p) => p.id == pickedProject.id);
+      await ref
+          .read(mobilePlayerProvider.notifier)
+          .playProject(
+            pickedProject,
+            newPath,
+            queue: queue,
+            queueIndex: idx >= 0 ? idx : null,
+          );
+    } else {
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => _PreviewSongDialog(
+          project: project.copyWith(
+            previewSongPath: newPath,
+            previewSongFileName: path.basename(newPath),
+          ),
+          onClose: () {},
+        ),
+      );
+    }
+    return;
+  }
+
+  final file = File(effectivePath);
+  if (!await file.exists()) {
+    if (!context.mounted) return;
+    final recovered = await recoverMissingPreviewSong(context, ref, project);
+    if (!context.mounted || recovered == null) return;
+    // Adopt the persisted project, not the stale one this method was called
+    // with — everything below (the newer-export check, the object handed to
+    // the player) has to agree with what the grid row will refresh to.
+    project = recovered.project;
+    effectivePath = recovered.path;
+  }
+
+  // Check for a newer audio file in the same folder as the current preview,
+  // regardless of whether the path was manually set or auto-detected.
+  // Skip the prompt if the user previously rejected this specific file.
+  final newer = MixdownDetectorService.findNewerFileInSameFolder(
+    effectivePath,
+    ignoredPath: project.ignoredNewerSongPath,
+  );
+  if (newer != null && context.mounted) {
+    final l10n = AppLocalizations.of(context)!;
+    final replace = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.newerExportFound),
+        content: Text(
+          l10n.newerExportFoundMessage(path.basename(newer.path)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          OutlinedButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.keepCurrent),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.replaceAndPlay),
+          ),
+        ],
+      ),
+    );
+    if (!context.mounted) return;
+    if (replace == null) return;
+    final repo = await ref.read(repositoryProvider.future);
+    if (replace) {
+      final isManual = project.previewSongPath?.isNotEmpty == true;
+      final updated = isManual
+          ? project.copyWith(
+              previewSongPath: newer.path,
+              previewSongFileName: path.basename(newer.path),
+            )
+          : project.copyWith(previewSongAutoPath: newer.path);
+      await repo.updateProject(updated);
+      project = updated;
+      effectivePath = newer.path;
+    } else {
+      // "Keep Current" — remember the user rejected this specific file so
+      // we don't ask again unless an even newer file appears.
+      project = project.copyWith(ignoredNewerSongPath: newer.path);
+      await repo.updateProject(project);
+    }
+    // Refresh the grid row's cached MusicProject; without it the row's play
+    // button keeps advertising the old export until the next scan.
+    ref.invalidate(allProjectsStreamProvider);
+  }
+
+  if (!context.mounted) return;
+  // Always build playProject from effectivePath so the player shows the
+  // correct filename whether we replaced or not.
+  final playProject = project.copyWith(
+    previewSongPath: effectivePath,
+    previewSongFileName: path.basename(effectivePath),
+  );
+
+  if (MobileUtils.isMobile()) {
+    final queue = ref.read(mobilePlayerQueueProvider);
+    final idx = queue.indexWhere((p) => p.id == playProject.id);
+    await ref
+        .read(mobilePlayerProvider.notifier)
+        .playProject(
+          playProject,
+          effectivePath,
+          queue: queue,
+          queueIndex: idx >= 0 ? idx : null,
+        );
+  } else {
+    ref.read(desktopPlayerProvider.notifier).play(playProject, effectivePath);
+  }
+}
 
 class _PlutoProjectsTable extends ConsumerStatefulWidget {
   final List<MusicProject> projects;
@@ -6274,222 +6618,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     }
   }
 
-  Future<void> _playPreviewSong(MusicProject project) async {
-    final customFolders = ref.read(customMixdownFoldersProvider).value;
-    final customFoldersByDaw = ref
-        .read(customMixdownFoldersByDawProvider)
-        .value;
-    var effectivePath = project.previewSongPath?.isNotEmpty == true
-        ? project.previewSongPath!
-        : project.previewSongAutoPath;
-
-    if (effectivePath == null) {
-      final detected = MixdownDetectorService.findLatestMixdown(
-        project,
-        customFolders: customFolders,
-        customFoldersByDaw: customFoldersByDaw,
-      );
-      if (detected != null) {
-        effectivePath = detected.path;
-        final repo = await ref.read(repositoryProvider.future);
-        await repo.updateProject(
-          project.copyWith(previewSongAutoPath: detected.path),
-        );
-        ref.invalidate(allProjectsStreamProvider);
-      }
-    }
-
-    if (effectivePath == null) {
-      if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Row(
-            children: [
-              const Icon(Icons.audio_file_outlined, size: 20),
-              const SizedBox(width: 8),
-              Text(l10n.noPreviewSongTitle),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.noPreviewSongMessage),
-              if (!MobileUtils.isMobile()) ...[
-                const SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.drag_indicator,
-                      size: 16,
-                      color: Theme.of(ctx).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        l10n.noPreviewSongDragHint,
-                        style: Theme.of(ctx).textTheme.bodySmall,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.selectPreviewSong),
-            ),
-          ],
-        ),
-      );
-      if (!mounted || confirmed != true) return;
-      final picked = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: previewAudioExtensions,
-        dialogTitle: l10n.selectPreviewSong,
-      );
-      if (!mounted || picked == null || picked.files.single.path == null)
-        return;
-      final newPath = picked.files.single.path!;
-      final repo = await ref.read(repositoryProvider.future);
-      await repo.updateProject(
-        project.copyWith(
-          previewSongPath: newPath,
-          previewSongFileName: path.basename(newPath),
-        ),
-      );
-      if (!mounted) return;
-      if (MobileUtils.isMobile()) {
-        final pickedProject = project.copyWith(
-          previewSongPath: newPath,
-          previewSongFileName: path.basename(newPath),
-        );
-        final queue = ref.read(mobilePlayerQueueProvider);
-        final idx = queue.indexWhere((p) => p.id == pickedProject.id);
-        await ref
-            .read(mobilePlayerProvider.notifier)
-            .playProject(
-              pickedProject,
-              newPath,
-              queue: queue,
-              queueIndex: idx >= 0 ? idx : null,
-            );
-      } else {
-        await showDialog(
-          context: context,
-          builder: (dialogContext) => _PreviewSongDialog(
-            project: project.copyWith(
-              previewSongPath: newPath,
-              previewSongFileName: path.basename(newPath),
-            ),
-            onClose: () {},
-          ),
-        );
-      }
-      return;
-    }
-
-    final file = File(effectivePath);
-    if (!await file.exists()) {
-      if (!mounted) return;
-      final recovered = await recoverMissingPreviewSong(context, ref, project);
-      if (!mounted || recovered == null) return;
-      // Adopt the persisted project, not the stale one this method was called
-      // with — everything below (the newer-export check, the object handed to
-      // the player) has to agree with what the grid row will refresh to.
-      project = recovered.project;
-      effectivePath = recovered.path;
-    }
-
-    // Check for a newer audio file in the same folder as the current preview,
-    // regardless of whether the path was manually set or auto-detected.
-    // Skip the prompt if the user previously rejected this specific file.
-    final newer = MixdownDetectorService.findNewerFileInSameFolder(
-      effectivePath,
-      ignoredPath: project.ignoredNewerSongPath,
-    );
-    if (newer != null && mounted) {
-      final l10n = AppLocalizations.of(context)!;
-      final replace = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(l10n.newerExportFound),
-          content: Text(
-            l10n.newerExportFoundMessage(path.basename(newer.path)),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(l10n.cancel),
-            ),
-            OutlinedButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.keepCurrent),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.replaceAndPlay),
-            ),
-          ],
-        ),
-      );
-      if (!mounted) return;
-      if (replace == null) return;
-      final repo = await ref.read(repositoryProvider.future);
-      if (replace) {
-        final isManual = project.previewSongPath?.isNotEmpty == true;
-        final updated = isManual
-            ? project.copyWith(
-                previewSongPath: newer.path,
-                previewSongFileName: path.basename(newer.path),
-              )
-            : project.copyWith(previewSongAutoPath: newer.path);
-        await repo.updateProject(updated);
-        project = updated;
-        effectivePath = newer.path;
-      } else {
-        // "Keep Current" — remember the user rejected this specific file so
-        // we don't ask again unless an even newer file appears.
-        project = project.copyWith(ignoredNewerSongPath: newer.path);
-        await repo.updateProject(project);
-      }
-      // Refresh the grid row's cached MusicProject; without it the row's play
-      // button keeps advertising the old export until the next scan.
-      ref.invalidate(allProjectsStreamProvider);
-    }
-
-    if (!mounted) return;
-    // Always build playProject from effectivePath so the player shows the
-    // correct filename whether we replaced or not.
-    final playProject = project.copyWith(
-      previewSongPath: effectivePath,
-      previewSongFileName: path.basename(effectivePath),
-    );
-
-    if (MobileUtils.isMobile()) {
-      final queue = ref.read(mobilePlayerQueueProvider);
-      final idx = queue.indexWhere((p) => p.id == playProject.id);
-      await ref
-          .read(mobilePlayerProvider.notifier)
-          .playProject(
-            playProject,
-            effectivePath,
-            queue: queue,
-            queueIndex: idx >= 0 ? idx : null,
-          );
-    } else {
-      ref.read(desktopPlayerProvider.notifier).play(playProject, effectivePath);
-    }
-  }
+  Future<void> _playPreviewSong(MusicProject project) =>
+      playProjectPreview(context, ref, project);
 
   String _translateStatus(BuildContext context, String status) {
     final l10n = AppLocalizations.of(context)!;
@@ -10210,12 +10340,10 @@ class _MobileProjectsList extends ConsumerStatefulWidget {
       _MobileProjectsListState();
 }
 
-enum _MobileSortField { lastModified, name, phase, createdAt, bpm }
-
 class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
   final Set<String> _selectedProjectIds = {};
   bool _isSelectionMode = false;
-  _MobileSortField _sortField = _MobileSortField.lastModified;
+  ProjectSortField _sortField = ProjectSortField.lastModified;
 
   @override
   void didUpdateWidget(_MobileProjectsList oldWidget) {
@@ -10236,26 +10364,13 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
     });
   }
 
-  List<MusicProject> _sorted(List<MusicProject> projects) {
-    final list = List<MusicProject>.from(projects);
-    switch (_sortField) {
-      case _MobileSortField.lastModified:
-        list.sort((a, b) => b.lastModifiedAt.compareTo(a.lastModifiedAt));
-      case _MobileSortField.name:
-        list.sort(
-          (a, b) => a.displayName.toLowerCase().compareTo(
-            b.displayName.toLowerCase(),
-          ),
-        );
-      case _MobileSortField.phase:
-        list.sort((a, b) => a.status.compareTo(b.status));
-      case _MobileSortField.createdAt:
-        list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      case _MobileSortField.bpm:
-        list.sort((a, b) => (b.bpm ?? 0).compareTo(a.bpm ?? 0));
-    }
-    return list;
-  }
+  /// Shared with the desktop card grid so "sort by phase" means the same
+  /// thing in both — see `lib/utils/project_sort.dart`.
+  List<MusicProject> _sorted(List<MusicProject> projects) => sortProjects(
+    projects,
+    _sortField,
+    descending: defaultDescendingFor(_sortField),
+  );
 
   void _toggleProjectSelection(String projectId) {
     setState(() {
@@ -10360,220 +10475,8 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
     );
   }
 
-  Future<void> _playPreviewSong(MusicProject project) async {
-    final customFolders = ref.read(customMixdownFoldersProvider).value;
-    final customFoldersByDaw = ref
-        .read(customMixdownFoldersByDawProvider)
-        .value;
-    var effectivePath = project.previewSongPath?.isNotEmpty == true
-        ? project.previewSongPath!
-        : project.previewSongAutoPath;
-
-    if (effectivePath == null) {
-      final detected = MixdownDetectorService.findLatestMixdown(
-        project,
-        customFolders: customFolders,
-        customFoldersByDaw: customFoldersByDaw,
-      );
-      if (detected != null) {
-        effectivePath = detected.path;
-        final repo = await ref.read(repositoryProvider.future);
-        await repo.updateProject(
-          project.copyWith(previewSongAutoPath: detected.path),
-        );
-        ref.invalidate(allProjectsStreamProvider);
-      }
-    }
-
-    if (effectivePath == null) {
-      if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Row(
-            children: [
-              const Icon(Icons.audio_file_outlined, size: 20),
-              const SizedBox(width: 8),
-              Text(l10n.noPreviewSongTitle),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.noPreviewSongMessage),
-              if (!MobileUtils.isMobile()) ...[
-                const SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.drag_indicator,
-                      size: 16,
-                      color: Theme.of(ctx).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        l10n.noPreviewSongDragHint,
-                        style: Theme.of(ctx).textTheme.bodySmall,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.selectPreviewSong),
-            ),
-          ],
-        ),
-      );
-      if (!mounted || confirmed != true) return;
-      final picked = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: previewAudioExtensions,
-        dialogTitle: l10n.selectPreviewSong,
-      );
-      if (!mounted || picked == null || picked.files.single.path == null)
-        return;
-      final newPath = picked.files.single.path!;
-      final repo = await ref.read(repositoryProvider.future);
-      await repo.updateProject(
-        project.copyWith(
-          previewSongPath: newPath,
-          previewSongFileName: path.basename(newPath),
-        ),
-      );
-      if (!mounted) return;
-      if (MobileUtils.isMobile()) {
-        final pickedProject = project.copyWith(
-          previewSongPath: newPath,
-          previewSongFileName: path.basename(newPath),
-        );
-        final queue = ref.read(mobilePlayerQueueProvider);
-        final idx = queue.indexWhere((p) => p.id == pickedProject.id);
-        await ref
-            .read(mobilePlayerProvider.notifier)
-            .playProject(
-              pickedProject,
-              newPath,
-              queue: queue,
-              queueIndex: idx >= 0 ? idx : null,
-            );
-      } else {
-        await showDialog(
-          context: context,
-          builder: (dialogContext) => _PreviewSongDialog(
-            project: project.copyWith(
-              previewSongPath: newPath,
-              previewSongFileName: path.basename(newPath),
-            ),
-            onClose: () {},
-          ),
-        );
-      }
-      return;
-    }
-
-    final file = File(effectivePath);
-    if (!await file.exists()) {
-      if (!mounted) return;
-      final recovered = await recoverMissingPreviewSong(context, ref, project);
-      if (!mounted || recovered == null) return;
-      // Adopt the persisted project, not the stale one this method was called
-      // with — everything below (the newer-export check, the object handed to
-      // the player) has to agree with what the grid row will refresh to.
-      project = recovered.project;
-      effectivePath = recovered.path;
-    }
-
-    // Check for a newer audio file in the same folder as the current preview,
-    // regardless of whether the path was manually set or auto-detected.
-    // Skip the prompt if the user previously rejected this specific file.
-    final newer = MixdownDetectorService.findNewerFileInSameFolder(
-      effectivePath,
-      ignoredPath: project.ignoredNewerSongPath,
-    );
-    if (newer != null && mounted) {
-      final l10n = AppLocalizations.of(context)!;
-      final replace = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(l10n.newerExportFound),
-          content: Text(
-            l10n.newerExportFoundMessage(path.basename(newer.path)),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(l10n.cancel),
-            ),
-            OutlinedButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.keepCurrent),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.replaceAndPlay),
-            ),
-          ],
-        ),
-      );
-      if (!mounted) return;
-      if (replace == null) return;
-      final repo = await ref.read(repositoryProvider.future);
-      if (replace) {
-        final isManual = project.previewSongPath?.isNotEmpty == true;
-        final updated = isManual
-            ? project.copyWith(
-                previewSongPath: newer.path,
-                previewSongFileName: path.basename(newer.path),
-              )
-            : project.copyWith(previewSongAutoPath: newer.path);
-        await repo.updateProject(updated);
-        project = updated;
-        effectivePath = newer.path;
-      } else {
-        // "Keep Current" — remember the user rejected this specific file so
-        // we don't ask again unless an even newer file appears.
-        project = project.copyWith(ignoredNewerSongPath: newer.path);
-        await repo.updateProject(project);
-      }
-      // Refresh the grid row's cached MusicProject; without it the row's play
-      // button keeps advertising the old export until the next scan.
-      ref.invalidate(allProjectsStreamProvider);
-    }
-
-    if (!mounted) return;
-    final playProject = project.copyWith(
-      previewSongPath: effectivePath,
-      previewSongFileName: path.basename(effectivePath),
-    );
-
-    if (MobileUtils.isMobile()) {
-      final queue = ref.read(mobilePlayerQueueProvider);
-      final idx = queue.indexWhere((p) => p.id == playProject.id);
-      await ref
-          .read(mobilePlayerProvider.notifier)
-          .playProject(
-            playProject,
-            effectivePath,
-            queue: queue,
-            queueIndex: idx >= 0 ? idx : null,
-          );
-    } else {
-      ref.read(desktopPlayerProvider.notifier).play(playProject, effectivePath);
-    }
-  }
+  Future<void> _playPreviewSong(MusicProject project) =>
+      playProjectPreview(context, ref, project);
 
   String _getStatusDisplayName(String status, BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -10706,30 +10609,30 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                 color: Theme.of(context).textTheme.bodySmall?.color,
               ),
               const SizedBox(width: 4),
-              DropdownButton<_MobileSortField>(
+              DropdownButton<ProjectSortField>(
                 value: _sortField,
                 underline: const SizedBox.shrink(),
                 isDense: true,
                 style: Theme.of(context).textTheme.bodySmall,
                 items: [
                   DropdownMenuItem(
-                    value: _MobileSortField.lastModified,
+                    value: ProjectSortField.lastModified,
                     child: Text(l10n.sortByLastModified),
                   ),
                   DropdownMenuItem(
-                    value: _MobileSortField.name,
+                    value: ProjectSortField.name,
                     child: Text(l10n.sortByName),
                   ),
                   DropdownMenuItem(
-                    value: _MobileSortField.phase,
+                    value: ProjectSortField.phase,
                     child: Text(l10n.sortByPhase),
                   ),
                   DropdownMenuItem(
-                    value: _MobileSortField.createdAt,
+                    value: ProjectSortField.createdAt,
                     child: Text(l10n.sortByCreatedAt),
                   ),
                   DropdownMenuItem(
-                    value: _MobileSortField.bpm,
+                    value: ProjectSortField.bpm,
                     child: Text(l10n.sortByBpm),
                   ),
                 ],
