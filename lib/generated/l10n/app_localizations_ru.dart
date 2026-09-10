@@ -444,6 +444,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get clearSelection => 'Очистить Выбор';
 
   @override
+  String get viewModeTable => 'Таблица';
+
+  @override
+  String get viewModeCards => 'Карточки';
+
+  @override
+  String get selectProject => 'Выбрать проект';
+
+  @override
   String get selectAllProjects => 'Выбрать все проекты';
 
   @override

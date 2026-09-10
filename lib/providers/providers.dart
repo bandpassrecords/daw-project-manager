@@ -27,6 +27,7 @@ import '../services/audio_analysis_service.dart';
 import '../services/thumbnail_toolbar_service.dart';
 import '../services/waveform_disk_cache.dart';
 import '../models/project_detail_layout.dart';
+import '../models/dashboard_view_mode.dart';
 import '../models/waveform_style.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
@@ -2788,6 +2789,55 @@ class ProjectDetailLayoutNotifier extends Notifier<ProjectDetailLayout> {
 final projectDetailLayoutProvider =
     NotifierProvider<ProjectDetailLayoutNotifier, ProjectDetailLayout>(
       ProjectDetailLayoutNotifier.new,
+    );
+
+// ─── Dashboard view mode ──────────────────────────────────────────────────────
+
+/// Whether the desktop dashboard draws the projects table or the card grid.
+///
+/// Device-local, in the same `settings` box as the theme, the waveform style
+/// and the detail-page layout: which shape this screen is comfortable showing
+/// a library in is a property of the machine, not of the library, so it is
+/// deliberately not synced or backed up.
+class DashboardViewModeNotifier extends Notifier<DashboardViewMode> {
+  static const _boxKey = 'dashboardViewMode';
+
+  @override
+  DashboardViewMode build() {
+    SchedulerBinding.instance.addPostFrameCallback((_) => _load());
+    return DashboardViewMode.table;
+  }
+
+  Future<void> _load() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      final saved = box.get(_boxKey);
+      if (saved == null || saved.isEmpty) return;
+      state = DashboardViewMode.values.firstWhere(
+        (e) => e.name == saved,
+        orElse: () => DashboardViewMode.table,
+      );
+    } catch (_) {
+      // Keep the default if the box cannot be read.
+    }
+  }
+
+  Future<void> set(DashboardViewMode mode) async {
+    state = mode;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.put(_boxKey, mode.name);
+    } catch (e) {
+      debugPrint('[DashboardViewMode] failed to save: $e');
+    }
+  }
+}
+
+final dashboardViewModeProvider =
+    NotifierProvider<DashboardViewModeNotifier, DashboardViewMode>(
+      DashboardViewModeNotifier.new,
     );
 
 /// Whether the waveform draws left and right as separate lanes.

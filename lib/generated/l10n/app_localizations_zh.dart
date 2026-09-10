@@ -432,6 +432,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearSelection => '清除选择';
 
   @override
+  String get viewModeTable => '表格视图';
+
+  @override
+  String get viewModeCards => '卡片视图';
+
+  @override
+  String get selectProject => '选择项目';
+
+  @override
   String get selectAllProjects => '选择所有项目';
 
   @override

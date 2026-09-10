@@ -444,6 +444,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get clearSelection => 'Auswahl Löschen';
 
   @override
+  String get viewModeTable => 'Tabellenansicht';
+
+  @override
+  String get viewModeCards => 'Kartenansicht';
+
+  @override
+  String get selectProject => 'Projekt auswählen';
+
+  @override
   String get selectAllProjects => 'Alle Projekte auswählen';
 
   @override

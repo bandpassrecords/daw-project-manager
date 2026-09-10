@@ -443,6 +443,15 @@ class AppLocalizationsIt extends AppLocalizations {
   String get clearSelection => 'Cancella Selezione';
 
   @override
+  String get viewModeTable => 'Vista tabella';
+
+  @override
+  String get viewModeCards => 'Vista schede';
+
+  @override
+  String get selectProject => 'Seleziona progetto';
+
+  @override
   String get selectAllProjects => 'Seleziona tutti i progetti';
 
   @override

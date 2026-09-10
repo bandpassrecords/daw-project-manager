@@ -89,6 +89,13 @@ Instructions for AI assistants working on this codebase.
 - `Image.asset(getDawLogoPath(dawType), ...)` renders at the source PNG's native size if unconstrained — oversized and breaking the field's layout when used as an `InputDecoration.prefixIcon`.
 - Always pass `width: 16, height: 16, fit: BoxFit.contain`, with an `errorBuilder` falling back to `Icon(Icons.piano, color: color)` for DAWs with no logo asset. See `_buildDawPrefixIcon` in `lib/ui/project_detail_page.dart` for the canonical implementation to mirror.
 
+### The dashboard has two views and exactly one filtered list
+- The desktop projects tab draws either the `TrinaGrid` table or `ProjectCardGrid` (`lib/ui/widgets/project_card_grid.dart`, #111). Both are handed the **same** `projectsProvider` output — the toggle in the filter bar chooses how that list is drawn, never what is in it. Never filter, search or re-sort inside a view; that belongs in `projectsProvider` so both views can't disagree.
+- `dashboardViewModeProvider` is a device-local preference in the `settings` box, like the theme and the detail-page layout — deliberately not Drive-synced and not backed up.
+- `ProjectCardGrid` takes plain values, label strings and callbacks — no `Ref`, no Hive, no `AppLocalizations` — which is what makes it widget-testable. Resolve strings in the page and pass a `ProjectCardLabels`.
+- A project with no cover art still needs a visual identity: `projectAccentColor`/`projectInitials` in `lib/utils/project_accent_color.dart` derive one from the project id, so it is identical on every machine with nothing stored. Cover art (`thumbnailPath`) wins over the generated colour.
+- The right-click menu on a project lives in `lib/ui/project_context_menu.dart` and is shared by the grid row and the card. Add new entries there — a second copy is how the two views drift apart.
+
 ### A grid row's "open full detail page" action uses `Icons.assignment` + `tooltipViewDetails`
 - Every `TrinaGrid` actions column that navigates to a dedicated detail page (not an inline edit dialog) uses `Icon(Icons.assignment)` with `tooltip: l10n.tooltipViewDetails`, matching `dashboard_page.dart`'s project rows. Keep new detail-page entry points (grid action icon, row double-tap) consistent with this rather than inventing a new icon/label per page.
 
@@ -131,6 +138,8 @@ Instructions for AI assistants working on this codebase.
 | Version stack list (project detail) | `lib/ui/widgets/project_versions_section.dart` |
 | Settings hub — single scrollable page, left nav jumps to section | `lib/ui/settings_page.dart` |
 | Main dashboard | `lib/ui/dashboard_page.dart` |
+| Dashboard card/gallery view | `lib/ui/widgets/project_card_grid.dart` |
+| Project right-click menu (grid + cards) | `lib/ui/project_context_menu.dart` |
 | Project detail / editor | `lib/ui/project_detail_page.dart` |
 | Localization strings (source of truth) | `lib/l10n/app_en.arb` |
 | Theme specs, builder and providers | `lib/providers/theme_provider.dart` |

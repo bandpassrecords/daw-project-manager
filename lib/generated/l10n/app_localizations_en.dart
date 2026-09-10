@@ -441,6 +441,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearSelection => 'Clear Selection';
 
   @override
+  String get viewModeTable => 'Table view';
+
+  @override
+  String get viewModeCards => 'Card view';
+
+  @override
+  String get selectProject => 'Select project';
+
+  @override
   String get selectAllProjects => 'Select all projects';
 
   @override

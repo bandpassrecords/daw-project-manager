@@ -898,6 +898,24 @@ abstract class AppLocalizations {
   /// **'Clear Selection'**
   String get clearSelection;
 
+  /// No description provided for @viewModeTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Table view'**
+  String get viewModeTable;
+
+  /// No description provided for @viewModeCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Card view'**
+  String get viewModeCards;
+
+  /// No description provided for @selectProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Select project'**
+  String get selectProject;
+
   /// No description provided for @selectAllProjects.
   ///
   /// In en, this message translates to:

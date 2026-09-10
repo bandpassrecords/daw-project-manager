@@ -57,6 +57,7 @@ import 'queue_page.dart';
 import 'notification_settings_page.dart';
 import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
+import 'widgets/project_card_grid.dart';
 import 'widgets/drag_to_share_button.dart';
 import 'widgets/filter_dropdown.dart';
 import 'widgets/language_switcher.dart';
@@ -68,6 +69,7 @@ import 'dialogs/create_project_dialog.dart';
 import 'dialogs/stack_metadata_source_dialog.dart';
 import 'dialogs/preview_song_not_found_dialog.dart';
 import 'preview_share.dart';
+import 'project_context_menu.dart';
 import 'project_templates_page.dart';
 import '../models/pending_folder.dart';
 
@@ -76,6 +78,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import '../models/music_project.dart';
 import '../models/release.dart';
 import '../models/scan_mode.dart';
+import '../models/dashboard_view_mode.dart';
 import '../models/scan_root.dart';
 import '../models/todo_item.dart';
 import '../providers/providers.dart';
@@ -4606,6 +4609,7 @@ class _PlutoProjectsTableWithSelectionState
     final dawFilter = ref.watch(dawFilterProvider);
     final availableDaws = ref.watch(availableDawsProvider);
     final scanRoots = ref.watch(scanRootsProvider);
+    final viewMode = ref.watch(dashboardViewModeProvider);
     final l10n = AppLocalizations.of(context)!;
 
     // Filtering an empty grid makes no sense — hide the whole filter bar
@@ -4873,10 +4877,41 @@ class _PlutoProjectsTableWithSelectionState
                   ),
                 ],
                 const Spacer(),
+                // Table ⇄ cards. Same projects either way — the toggle only
+                // changes how the already-filtered list is drawn.
+                SegmentedButton<DashboardViewMode>(
+                  segments: [
+                    ButtonSegment(
+                      value: DashboardViewMode.table,
+                      icon: const Icon(Icons.table_rows, size: 16),
+                      tooltip: l10n.viewModeTable,
+                    ),
+                    ButtonSegment(
+                      value: DashboardViewMode.cards,
+                      icon: const Icon(Icons.grid_view, size: 16),
+                      tooltip: l10n.viewModeCards,
+                    ),
+                  ],
+                  selected: {viewMode},
+                  showSelectedIcon: false,
+                  style: const ButtonStyle(
+                    visualDensity: VisualDensity.compact,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  onSelectionChanged: (selection) => ref
+                      .read(dashboardViewModeProvider.notifier)
+                      .set(selection.first),
+                ),
+                const SizedBox(width: 8),
                 ValueListenableBuilder<({bool hasGroups, bool anyExpanded})>(
                   valueListenable: _groupExpandState,
                   builder: (context, state, _) {
-                    if (!state.hasGroups) return const SizedBox.shrink();
+                    // Smart-folder groups are a table shape; the card grid is
+                    // flat, so the expand/collapse pair has nothing to act on.
+                    if (viewMode == DashboardViewMode.cards ||
+                        !state.hasGroups) {
+                      return const SizedBox.shrink();
+                    }
                     return TextButton.icon(
                       icon: Icon(
                         state.anyExpanded
@@ -4904,30 +4939,69 @@ class _PlutoProjectsTableWithSelectionState
             ),
           ),
         Expanded(
-          child: _PlutoProjectsTable(
-            key: _innerTableKey,
-            projects: widget.projects,
-            scanRoots: scanRoots,
-            dateFormat: widget.dateFormat,
-            selectedIds: _selectedProjectIds,
-            onToggleSelection: _clickSelection.toggle,
-            onRowClickSelection: _clickSelection.handleRowClick,
-            onRowHighlighted: _clickSelection.handleRowHighlight,
-            onToggleGroupSelection: _toggleGroupSelection,
-            onHideProjects: widget.onHideProjects,
-            onUnhideProjects: widget.onUnhideProjects,
-            areAllSelected: _areAllSelected,
-            onToggleSelectAll: () {
-              if (_areAllSelected) {
-                _clickSelection.clear();
-              } else {
-                _clickSelection.selectAll();
-              }
-            },
-            onExtractingMetadataChanged: widget.onExtractingMetadataChanged,
-            isScanning: widget.isAnyOperation,
-            groupExpandNotifier: _groupExpandState,
-          ),
+          child: viewMode == DashboardViewMode.cards
+              ? ProjectCardGrid(
+                  projects: widget.projects,
+                  selectedIds: _selectedProjectIds,
+                  activeProjectId: ref.watch(activeProjectProvider)?.id,
+                  phaseColor: (phase) => resolvePhaseColor(
+                    phase,
+                    ref.watch(phaseColorsProvider),
+                    customPhases,
+                  ),
+                  phaseLabel: (phase) => _translateStatus(context, phase),
+                  dateFormat: widget.dateFormat.format,
+                  fileExists: projectFileExists,
+                  selectionModifierHeld: selectionModifierHeld,
+                  labels: ProjectCardLabels(
+                    emptyMessage: l10n.noResultsForFilter,
+                    selectTooltip: l10n.selectProject,
+                    missingFileTooltip: l10n.sourceFileNotFoundOnThisMachine,
+                    bpmTooltip: l10n.bpmInfoLabel,
+                    keyTooltip: l10n.keyInfoLabel,
+                    today: l10n.today,
+                    daysLeft: l10n.daysLeft,
+                    daysLate: l10n.daysLate,
+                  ),
+                  onOpen: (project) => openProjectDetail(context, project),
+                  onToggleSelection: _clickSelection.toggle,
+                  onRowClick: _clickSelection.handleRowClick,
+                  onHighlight: _clickSelection.handleRowHighlight,
+                  onContextMenu: (project, position) => showProjectContextMenu(
+                    context: context,
+                    ref: ref,
+                    project: project,
+                    position: position,
+                    onHideProjects: widget.onHideProjects,
+                    onUnhideProjects: widget.onUnhideProjects,
+                    onExtractingMetadataChanged:
+                        widget.onExtractingMetadataChanged,
+                  ),
+                )
+              : _PlutoProjectsTable(
+                key: _innerTableKey,
+                projects: widget.projects,
+                scanRoots: scanRoots,
+                dateFormat: widget.dateFormat,
+                selectedIds: _selectedProjectIds,
+                onToggleSelection: _clickSelection.toggle,
+                onRowClickSelection: _clickSelection.handleRowClick,
+                onRowHighlighted: _clickSelection.handleRowHighlight,
+                onToggleGroupSelection: _toggleGroupSelection,
+                onHideProjects: widget.onHideProjects,
+                onUnhideProjects: widget.onUnhideProjects,
+                areAllSelected: _areAllSelected,
+                onToggleSelectAll: () {
+                  if (_areAllSelected) {
+                    _clickSelection.clear();
+                  } else {
+                    _clickSelection.selectAll();
+                  }
+                },
+                onExtractingMetadataChanged: widget.onExtractingMetadataChanged,
+                isScanning: widget.isAnyOperation,
+                groupExpandNotifier: _groupExpandState,
+              ),
         ),
         // Selection action bar
         if (_selectedProjectIds.isNotEmpty)
@@ -6441,65 +6515,17 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     ref.read(customPhasesProvider),
   );
 
-  Future<void> _launchProject(MusicProject project) async {
-    // In session mode, tapping/launching a row toggles the session instead
-    // of launching — see the session-mode branches elsewhere that call
-    // confirmStartSession/confirmEndSession for that path.
-    if (ref.read(sessionModeProvider)) return;
-    await launchProjectInDaw(context, ref, project);
-  }
+  // In session mode, tapping/launching a row toggles the session instead of
+  // launching — see the session-mode branches elsewhere that call
+  // confirmStartSession/confirmEndSession for that path.
+  Future<void> _launchProject(MusicProject project) =>
+      launchProjectFromMenu(context, ref, project);
 
-  Future<void> _viewProjectDetails(MusicProject project) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ProjectDetailPage(projectId: project.id),
-      ),
-    );
-  }
+  Future<void> _viewProjectDetails(MusicProject project) =>
+      openProjectDetail(context, project);
 
-  Future<void> _openProjectFolder(MusicProject project) async {
-    // A package-bundle project (.logicx/.luna/.band) is a directory, but
-    // revealing it would just launch the DAW — resolve to its parent. See
-    // ScannerService.projectContainingFolder.
-    final String folderPath =
-        ScannerService.projectContainingFolder(project.filePath);
-
-    final exists = Directory(folderPath).existsSync();
-    if (!exists) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.fileMissing)),
-        );
-      }
-      return;
-    }
-
-    final success = await FileLauncher.openFolder(folderPath);
-
-    if (success) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.openingFolder(project.displayName),
-            ),
-          ),
-        );
-      }
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(
-                context,
-              )!.couldNotOpenFolder('Unable to open folder'),
-            ),
-          ),
-        );
-      }
-    }
-  }
+  Future<void> _openProjectFolder(MusicProject project) =>
+      openProjectFolder(context, project);
 
   Future<void> _toggleSession(MusicProject project) async {
     if (!mounted) return;
@@ -6569,315 +6595,23 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     }
   }
 
+  /// Delegates to the shared menu the card view uses too — see
+  /// `project_context_menu.dart`.
   Future<void> _showContextMenu(
     BuildContext context,
     MusicProject project,
     Offset position,
   ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final driveService = ref.read(googleDriveSyncServiceProvider);
-    final sessionMode = ref.read(sessionModeProvider);
-    final isSubscribed =
-        sessionMode && ref.read(activeProjectProvider)?.id == project.id;
-    final extractionSupported =
-        MetadataExtractor.supportsFullExtraction(project.filePath);
-
-    final result = await showMenu<String>(
+    await showProjectContextMenu(
       context: context,
-      position: RelativeRect.fromLTRB(
-        position.dx,
-        position.dy,
-        position.dx,
-        position.dy,
-      ),
-      items: [
-        PopupMenuItem<String>(
-          value: sessionMode
-              ? (isSubscribed ? 'endSession' : 'startSession')
-              : 'launch',
-          child: Row(
-            children: [
-              Icon(
-                sessionMode
-                    ? (isSubscribed
-                          ? Icons.bookmark
-                          : Icons.bookmark_add_outlined)
-                    : Icons.open_in_new,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                sessionMode
-                    ? (isSubscribed ? l10n.endSession : l10n.startSession)
-                    : l10n.tooltipLaunchInDaw,
-              ),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'view',
-          child: Row(
-            children: [
-              const Icon(Icons.assignment, size: 20),
-              const SizedBox(width: 8),
-              Text(l10n.tooltipViewDetails),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'openFolder',
-          child: Row(
-            children: [
-              const Icon(Icons.folder_open, size: 20),
-              const SizedBox(width: 8),
-              Text(l10n.openFolder),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: project.hidden ? 'unhide' : 'hide',
-          child: Row(
-            children: [
-              Icon(
-                project.hidden ? Icons.visibility : Icons.visibility_off,
-                size: 20,
-                color: project.hidden
-                    ? Colors.green.shade300
-                    : Colors.red.shade300,
-              ),
-              const SizedBox(width: 8),
-              Text(project.hidden ? l10n.unhide : l10n.hide),
-            ],
-          ),
-        ),
-        if (File(project.filePath).existsSync() ||
-            Directory(project.filePath).existsSync())
-          PopupMenuItem<String>(
-            value: 'refresh',
-            child: Row(
-              children: [
-                const Icon(Icons.refresh, size: 20),
-                const SizedBox(width: 8),
-                Text(l10n.refreshProject),
-              ],
-            ),
-          ),
-        if (File(project.filePath).existsSync() ||
-            Directory(project.filePath).existsSync())
-          PopupMenuItem<String>(
-            value: 'extractMetadata',
-            enabled: extractionSupported,
-            child: Tooltip(
-              message: extractionSupported
-                  ? ''
-                  : l10n.metadataExtractionNotSupportedForDaw,
-              child: Row(
-                children: [
-                  const Icon(Icons.search, size: 20),
-                  const SizedBox(width: 8),
-                  Text(l10n.extractMetadata),
-                ],
-              ),
-            ),
-          ),
-        PopupMenuItem<String>(
-          value: 'restoreFromDrive',
-          child: Row(
-            children: [
-              const Icon(Icons.cloud_download, size: 20),
-              const SizedBox(width: 8),
-              Text(l10n.restoreProjectFromDrive),
-            ],
-          ),
-        ),
-        if (_effectivePreviewPathFor(project) != null &&
-            !_effectivePreviewPathFor(project)!.startsWith('drive://'))
-          PopupMenuItem<String>(
-            value: 'share',
-            child: Row(
-              children: [
-                const Icon(Icons.share, size: 20),
-                const SizedBox(width: 8),
-                Text(l10n.sharePreviewSong),
-              ],
-            ),
-          ),
-      ],
-      color: Theme.of(context).cardColor,
+      ref: ref,
+      project: project,
+      position: position,
+      onHideProjects: widget.onHideProjects,
+      onUnhideProjects: widget.onUnhideProjects,
+      onExtractingMetadataChanged: widget.onExtractingMetadataChanged,
     );
-
-    if (result != null && mounted) {
-      switch (result) {
-        case 'launch':
-          await _launchProject(project);
-          break;
-        case 'startSession':
-          await confirmStartSession(context, ref, project);
-          break;
-        case 'endSession':
-          await confirmEndSession(context, ref);
-          break;
-        case 'view':
-          await _viewProjectDetails(project);
-          break;
-        case 'openFolder':
-          await _openProjectFolder(project);
-          break;
-        case 'hide':
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              backgroundColor: Theme.of(context).cardColor,
-              title: Text(l10n.hide),
-              content: Text(l10n.hideProjectMessage(project.displayName)),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx, false),
-                  child: Text(l10n.cancel),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(ctx, true),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade300,
-                    foregroundColor: Colors.black,
-                  ),
-                  child: Text(l10n.hide),
-                ),
-              ],
-            ),
-          );
-          if (confirm == true) {
-            widget.onHideProjects([project.id]);
-          }
-          break;
-        case 'unhide':
-          widget.onUnhideProjects([project.id]);
-          break;
-        case 'refresh':
-          try {
-            final repo = await ref.read(repositoryProvider.future);
-            final entity = Directory(project.filePath).existsSync()
-                ? Directory(project.filePath) as FileSystemEntity
-                : File(project.filePath);
-            await repo.upsertFromFileSystemEntity(entity, fullMetadata: true);
-            if (project.previewSongPath?.isNotEmpty != true &&
-                project.previewSongAutoPath == null) {
-              final customFolders = ref
-                  .read(customMixdownFoldersProvider)
-                  .value;
-              final customFoldersByDaw = ref
-                  .read(customMixdownFoldersByDawProvider)
-                  .value;
-              final detected = MixdownDetectorService.findLatestMixdown(
-                project,
-                customFolders: customFolders,
-                customFoldersByDaw: customFoldersByDaw,
-              );
-              if (detected != null) {
-                final fresh = repo.getById(project.id) ?? project;
-                await repo.updateProject(
-                  fresh.copyWith(previewSongAutoPath: detected.path),
-                );
-              }
-            }
-            ref.invalidate(allProjectsStreamProvider);
-          } catch (e) {
-            if (mounted) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
-            }
-          }
-          break;
-        case 'extractMetadata':
-          widget.onExtractingMetadataChanged(true);
-          try {
-            final repo = await ref.read(repositoryProvider.future);
-            await repo.extractFullMetadataForProject(project.id);
-            ref.invalidate(allProjectsStreamProvider);
-            if (mounted) {
-              final msg = l10n.metadataExtractedForProjects(1, '', '');
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(msg)));
-            }
-          } catch (e) {
-            if (mounted) {
-              final msg = '${l10n.error}: $e';
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(msg)));
-            }
-          } finally {
-            widget.onExtractingMetadataChanged(false);
-          }
-          break;
-        case 'restoreFromDrive':
-          if (!mounted) break;
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => AlertDialog(
-              backgroundColor: Theme.of(context).cardColor,
-              content: Row(
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(width: 16),
-                  Text(l10n.restoringProjectFromDrive),
-                ],
-              ),
-            ),
-          );
-          try {
-            // Restore session if not already authenticated (e.g. Drive page was never opened)
-            if (!driveService.isSignedIn) {
-              await driveService.restoreSession();
-            }
-            if (!driveService.isSignedIn) {
-              throw Exception('not_signed_in');
-            }
-            final profileRepo = await ref.read(
-              profileRepositoryProvider.future,
-            );
-            await driveService.restoreSingleProject(
-              projectId: project.id,
-              profileRepo: profileRepo,
-            );
-            if (mounted) {
-              Navigator.of(this.context, rootNavigator: true).pop();
-              ref.invalidate(allProjectsStreamProvider);
-              ScaffoldMessenger.of(this.context).showSnackBar(
-                SnackBar(content: Text(l10n.projectRestoredFromDrive)),
-              );
-            }
-          } catch (e) {
-            if (mounted) {
-              Navigator.of(this.context, rootNavigator: true).pop();
-              final errStr = e.toString();
-              final String msg;
-              if (errStr.contains('not_signed_in') ||
-                  errStr.contains('Not signed in')) {
-                msg = l10n.signInToGoogleDriveFirst;
-              } else if (errStr.contains('not found in backup')) {
-                msg = l10n.projectNotFoundInBackup;
-              } else {
-                msg = '${l10n.error}: $e';
-              }
-              ScaffoldMessenger.of(
-                this.context,
-              ).showSnackBar(SnackBar(content: Text(msg)));
-            }
-          }
-          break;
-        case 'share':
-          if (mounted) await shareProjectPreview(context, project);
-          break;
-      }
-    }
   }
-
-  String? _effectivePreviewPathFor(MusicProject project) =>
-      effectivePreviewPathFor(project);
 
   TrinaRow _projectToRow(MusicProject p) {
     final dawDisplay = dawDisplayLabel(p.dawType, p.dawVersion);

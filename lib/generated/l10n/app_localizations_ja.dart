@@ -436,6 +436,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get clearSelection => '選択をクリア';
 
   @override
+  String get viewModeTable => 'テーブル表示';
+
+  @override
+  String get viewModeCards => 'カード表示';
+
+  @override
+  String get selectProject => 'プロジェクトを選択';
+
+  @override
   String get selectAllProjects => 'すべてのプロジェクトを選択';
 
   @override
