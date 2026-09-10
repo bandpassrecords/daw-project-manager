@@ -5081,6 +5081,13 @@ class GoogleDriveSyncService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      // Archiving (#116). User data: skipping these would restore an archived
+      // project as a plain one whose files aren't where filePath says, i.e.
+      // "missing" — losing both the pointer to the archive and the reason the
+      // originals are gone.
+      'archivePath': project.archivePath,
+      'archivedAt': project.archivedAt?.toIso8601String(),
+      'archiveEntryPath': project.archiveEntryPath,
     };
   }
 
@@ -5146,6 +5153,11 @@ class GoogleDriveSyncService {
               ?.map((e) => ProjectMarker.fromMap(e as Map))
               .toList() ??
           const [],
+      archivePath: data['archivePath'] as String?,
+      archivedAt: data['archivedAt'] != null
+          ? DateTime.parse(data['archivedAt'] as String)
+          : null,
+      archiveEntryPath: data['archiveEntryPath'] as String?,
     );
   }
 

@@ -45,6 +45,9 @@ class TestFactories {
     String? defaultLaunchMemberId,
     String? stackId,
     List<ProjectMarker>? markers,
+    String? archivePath,
+    DateTime? archivedAt,
+    String? archiveEntryPath,
   }) {
     return MusicProject(
       id: id,
@@ -85,6 +88,9 @@ class TestFactories {
       defaultLaunchMemberId: defaultLaunchMemberId,
       stackId: stackId,
       markers: markers ?? const [],
+      archivePath: archivePath,
+      archivedAt: archivedAt,
+      archiveEntryPath: archiveEntryPath,
     );
   }
 

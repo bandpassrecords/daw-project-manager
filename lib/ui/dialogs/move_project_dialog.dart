@@ -55,7 +55,7 @@ Future<bool> showMoveProjectDialog(
       .map((e) => e.filePath)
       .toList(growable: false);
 
-  final moved = await showDialog<MusicProject>(
+  final result = await showDialog<ProjectMoveResult>(
     context: context,
     builder: (_) => _MoveProjectDialog(
       project: project,
@@ -67,8 +67,9 @@ Future<bool> showMoveProjectDialog(
       ),
     ),
   );
-  if (moved == null) return false;
+  if (result == null) return false;
 
+  final moved = result.project;
   final repo = await ref.read(repositoryProvider.future);
   await repo.updateProject(moved);
   ref.invalidate(allProjectsStreamProvider);
@@ -80,10 +81,62 @@ Future<bool> showMoveProjectDialog(
         content: Text(
           l10n.moveProjectSuccess(moved.displayName, p.dirname(moved.filePath)),
         ),
+        // Undo is just the same move in reverse: back to the folder the moved
+        // entity came out of. `movedTo` names what actually moved (the file or
+        // the whole folder), so the reverse knows which of the two to send
+        // back without re-deriving it from the checkbox.
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () => _undoMove(
+            context,
+            ref,
+            moved: moved,
+            movedTo: result.movedTo,
+            originalFolder: p.dirname(
+              p.normalize(
+                result.movedContainingFolder
+                    ? containingFolderOf(project.filePath)
+                    : project.filePath,
+              ),
+            ),
+            movedContainingFolder: result.movedContainingFolder,
+          ),
+        ),
+        duration: const Duration(seconds: 8),
       ),
     );
   }
   return true;
+}
+
+/// Sends a just-moved project back where it came from.
+Future<void> _undoMove(
+  BuildContext context,
+  WidgetRef ref, {
+  required MusicProject moved,
+  required String movedTo,
+  required String originalFolder,
+  required bool movedContainingFolder,
+}) async {
+  final l10n = AppLocalizations.of(context)!;
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    final back = await moveProject(
+      moved,
+      originalFolder,
+      moveContainingFolder: movedContainingFolder,
+    );
+    final repo = await ref.read(repositoryProvider.future);
+    await repo.updateProject(back.project);
+    ref.invalidate(allProjectsStreamProvider);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.moveUndone)));
+  } on ProjectMoveException catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text(moveErrorMessage(l10n, e))));
+  } catch (e) {
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.moveUndoFailed(e.toString()))),
+    );
+  }
 }
 
 class _MoveProjectDialog extends StatefulWidget {
@@ -132,7 +185,7 @@ class _MoveProjectDialogState extends State<_MoveProjectDialog> {
         destination,
         moveContainingFolder: _moveFolder,
       );
-      if (mounted) Navigator.pop(context, result.project);
+      if (mounted) Navigator.pop(context, result);
     } on ProjectMoveException catch (e) {
       if (mounted) {
         setState(() {

@@ -41,7 +41,18 @@ class ProjectMoveResult {
   /// Where the moved file, bundle or folder now lives.
   final String movedTo;
 
-  const ProjectMoveResult({required this.project, required this.movedTo});
+  /// Whether the whole containing folder moved, or just the project entity.
+  ///
+  /// Carried out so undo can send back the same thing that came over —
+  /// re-deriving it afterwards would mean asking `folderIsDedicatedTo` about a
+  /// path that has since moved.
+  final bool movedContainingFolder;
+
+  const ProjectMoveResult({
+    required this.project,
+    required this.movedTo,
+    required this.movedContainingFolder,
+  });
 }
 
 /// Rewrites every stored path on [project] that lives under [from] so that it
@@ -141,6 +152,7 @@ Future<ProjectMoveResult> moveProject(
   return ProjectMoveResult(
     project: repathProject(project, from: sourcePath, to: destPath),
     movedTo: destPath,
+    movedContainingFolder: moveContainingFolder,
   );
 }
 

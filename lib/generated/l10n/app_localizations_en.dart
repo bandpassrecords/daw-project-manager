@@ -5046,4 +5046,262 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectMoveDestinationTitle => 'Select destination folder';
+
+  @override
+  String get archiveProjectButtonLabel => 'Archive…';
+
+  @override
+  String get archiveProjectDialogTitle => 'Archive Project';
+
+  @override
+  String get archiveProjectWhatToArchive => 'What to archive';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return 'Whole \"$folder\" folder';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => 'Project file only';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files files',
+      one: '1 file',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals =>
+      'Delete the originals after verifying the archive';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      'The archive is re-opened and checked entry by entry first. Nothing is deleted if that check fails.';
+
+  @override
+  String get archiveProjectConfirm => 'Archive';
+
+  @override
+  String get archiveStageScanning => 'Reading the project folder…';
+
+  @override
+  String get archiveStageCompressing => 'Compressing…';
+
+  @override
+  String get archiveStageVerifying => 'Verifying the archive…';
+
+  @override
+  String get archiveStageDeleting => 'Removing the originals…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return 'Archived \"$name\"';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return 'Failed to archive: $error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing =>
+      'This project\'s files aren\'t on this machine.';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return 'Archives can\'t go inside a scanned folder — \"$root\" would index them straight back in.';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return 'An archive named \"$name\" is already there.';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return 'The archive is missing files, so nothing was deleted: $entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => 'This project isn\'t archived.';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unreadable files were skipped',
+      one: '1 unreadable file was skipped',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => 'Archive location';
+
+  @override
+  String get archiveLocationSubtitle =>
+      'Where \"Archive project\" writes its zip files. Kept on this device.';
+
+  @override
+  String get archiveLocationNotSet =>
+      'Not set — you\'ll be asked when you first archive';
+
+  @override
+  String get selectArchiveLocationTitle => 'Select archive folder';
+
+  @override
+  String get restoreProjectButtonLabel => 'Restore…';
+
+  @override
+  String get restoreProjectDialogTitle => 'Restore Project';
+
+  @override
+  String get restoreProjectDescription =>
+      'Extracts the archive to a folder you choose and points the project back at the restored files.';
+
+  @override
+  String get restoreProjectConfirm => 'Restore';
+
+  @override
+  String get restoreProjectInProgress => 'Restoring…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return 'Restored \"$name\"';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return 'Failed to restore: $error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle => 'Select a folder to restore into';
+
+  @override
+  String get archivedLabel => 'Archived';
+
+  @override
+  String archivedOnLabel(String date) {
+    return 'Archived $date';
+  }
+
+  @override
+  String get showArchivedProjects => 'Show archived';
+
+  @override
+  String get showOnlyArchivedProjects => 'Only archived';
+
+  @override
+  String get hideArchivedProjects => 'Hide archived';
+
+  @override
+  String get archivedFilterLabel => 'Archived';
+
+  @override
+  String get archiveProjectStackUnsupported =>
+      'A version stack has no files of its own — archive its versions individually.';
+
+  @override
+  String get archiveBulkButtonLabel => 'Archive selected';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Archive $count projects?',
+      one: 'Archive 1 project?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects archived',
+      one: '1 project archived',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => 'Open archive folder';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '$current of $total';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects could not be archived',
+      one: '1 project could not be archived',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      'Each project is archived with the scope that fits it — a folder of its own when it has one, the project file alone when it shares a folder.';
+
+  @override
+  String get archivedWithLocalCopy => 'Archived — the originals are still here';
+
+  @override
+  String get archivedAwayTooltip =>
+      'Archived — the files are in the archive only';
+
+  @override
+  String get archiveUndone => 'Archive undone';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return 'Couldn\'t undo the archive: $error';
+  }
+
+  @override
+  String get moveUndone => 'Move undone';
+
+  @override
+  String moveUndoFailed(String error) {
+    return 'Couldn\'t undo the move: $error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => 'Back to its original location';
+
+  @override
+  String get restoreToChosenFolder => 'Into another folder…';
+
+  @override
+  String get restoreWhereTo => 'Where should it go?';
+
+  @override
+  String get restoreOriginalLocationOccupied =>
+      'Something is already at the original location';
+
+  @override
+  String get discardArchiveButtonLabel => 'Discard archive';
+
+  @override
+  String get discardArchiveConfirmTitle => 'Discard archive?';
+
+  @override
+  String get discardArchiveConfirmMessage =>
+      'Deletes the zip and clears the archived flag. The project\'s own files stay where they are.';
+
+  @override
+  String get discardArchiveDone => 'Archive discarded';
 }

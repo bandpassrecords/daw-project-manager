@@ -5077,4 +5077,265 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get selectMoveDestinationTitle =>
       'Seleziona la cartella di destinazione';
+
+  @override
+  String get archiveProjectButtonLabel => 'Archivia…';
+
+  @override
+  String get archiveProjectDialogTitle => 'Archivia progetto';
+
+  @override
+  String get archiveProjectWhatToArchive => 'Cosa archiviare';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return 'L\'intera cartella \"$folder\"';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => 'Solo il file del progetto';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files file',
+      one: '1 file',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals =>
+      'Elimina gli originali dopo aver verificato l\'archivio';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      'L\'archivio viene prima riaperto e controllato voce per voce. Non viene eliminato nulla se il controllo fallisce.';
+
+  @override
+  String get archiveProjectConfirm => 'Archivia';
+
+  @override
+  String get archiveStageScanning => 'Lettura della cartella del progetto…';
+
+  @override
+  String get archiveStageCompressing => 'Compressione…';
+
+  @override
+  String get archiveStageVerifying => 'Verifica dell\'archivio…';
+
+  @override
+  String get archiveStageDeleting => 'Rimozione degli originali…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return '\"$name\" archiviato';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return 'Archiviazione non riuscita: $error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing =>
+      'I file di questo progetto non sono su questa macchina.';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return 'Gli archivi non possono stare dentro una cartella scansionata: \"$root\" li reindicizzerebbe subito.';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return 'Lì c\'è già un archivio chiamato \"$name\".';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return 'Nell\'archivio mancano dei file, quindi non è stato eliminato nulla: $entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => 'Questo progetto non è archiviato.';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count file illeggibili sono stati saltati',
+      one: '1 file illeggibile è stato saltato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => 'Posizione degli archivi';
+
+  @override
+  String get archiveLocationSubtitle =>
+      'Dove \"Archivia progetto\" scrive i suoi file zip. Resta su questo dispositivo.';
+
+  @override
+  String get archiveLocationNotSet =>
+      'Non impostata: ti verrà chiesta alla prima archiviazione';
+
+  @override
+  String get selectArchiveLocationTitle =>
+      'Seleziona la cartella degli archivi';
+
+  @override
+  String get restoreProjectButtonLabel => 'Ripristina…';
+
+  @override
+  String get restoreProjectDialogTitle => 'Ripristina progetto';
+
+  @override
+  String get restoreProjectDescription =>
+      'Estrae l\'archivio in una cartella a tua scelta e riporta il progetto ai file ripristinati.';
+
+  @override
+  String get restoreProjectConfirm => 'Ripristina';
+
+  @override
+  String get restoreProjectInProgress => 'Ripristino…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return '\"$name\" ripristinato';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return 'Ripristino non riuscito: $error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle =>
+      'Seleziona una cartella in cui ripristinare';
+
+  @override
+  String get archivedLabel => 'Archiviato';
+
+  @override
+  String archivedOnLabel(String date) {
+    return 'Archiviato il $date';
+  }
+
+  @override
+  String get showArchivedProjects => 'Mostra archiviati';
+
+  @override
+  String get showOnlyArchivedProjects => 'Solo archiviati';
+
+  @override
+  String get hideArchivedProjects => 'Nascondi archiviati';
+
+  @override
+  String get archivedFilterLabel => 'Archiviati';
+
+  @override
+  String get archiveProjectStackUnsupported =>
+      'Uno stack di versioni non ha file propri: archivia le versioni singolarmente.';
+
+  @override
+  String get archiveBulkButtonLabel => 'Archivia selezionati';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Archiviare $count progetti?',
+      one: 'Archiviare 1 progetto?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count progetti archiviati',
+      one: '1 progetto archiviato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => 'Apri la cartella degli archivi';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '$current di $total';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count progetti non sono stati archiviati',
+      one: '1 progetto non è stato archiviato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      'Ogni progetto viene archiviato con l\'ambito che gli si addice: l\'intera cartella se ne ha una sua, il solo file del progetto se la condivide.';
+
+  @override
+  String get archivedWithLocalCopy =>
+      'Archiviato — gli originali sono ancora qui';
+
+  @override
+  String get archivedAwayTooltip =>
+      'Archiviato — i file sono solo nell\'archivio';
+
+  @override
+  String get archiveUndone => 'Archiviazione annullata';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return 'Impossibile annullare l\'archiviazione: $error';
+  }
+
+  @override
+  String get moveUndone => 'Spostamento annullato';
+
+  @override
+  String moveUndoFailed(String error) {
+    return 'Impossibile annullare lo spostamento: $error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => 'Nella sua posizione originale';
+
+  @override
+  String get restoreToChosenFolder => 'In un\'altra cartella…';
+
+  @override
+  String get restoreWhereTo => 'Dove deve andare?';
+
+  @override
+  String get restoreOriginalLocationOccupied =>
+      'C\'è già qualcosa nella posizione originale';
+
+  @override
+  String get discardArchiveButtonLabel => 'Elimina archivio';
+
+  @override
+  String get discardArchiveConfirmTitle => 'Eliminare l\'archivio?';
+
+  @override
+  String get discardArchiveConfirmMessage =>
+      'Elimina lo zip e toglie il contrassegno di archiviato. I file del progetto restano dove sono.';
+
+  @override
+  String get discardArchiveDone => 'Archivio eliminato';
 }

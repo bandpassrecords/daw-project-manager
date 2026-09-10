@@ -881,6 +881,10 @@ class BackupService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      // Archiving (#116) — user data, same reasoning as the block above.
+      'archivePath': project.archivePath,
+      'archivedAt': project.archivedAt?.toIso8601String(),
+      'archiveEntryPath': project.archiveEntryPath,
     };
   }
 
@@ -935,6 +939,11 @@ class BackupService {
               ?.map((e) => ProjectMarker.fromMap(e as Map))
               .toList() ??
           const [],
+      archivePath: json['archivePath'] as String?,
+      archivedAt: json['archivedAt'] != null
+          ? DateTime.parse(json['archivedAt'] as String)
+          : null,
+      archiveEntryPath: json['archiveEntryPath'] as String?,
     );
   }
 

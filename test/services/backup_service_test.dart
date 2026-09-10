@@ -32,6 +32,39 @@ void main() {
       expect(restoredMember.stackId, 'stack-1');
     });
 
+    test('preserves the archived state (#116)', () {
+      // Skipping these would restore an archived project as a plain one whose
+      // files aren't where filePath says — i.e. as "missing" — losing both the
+      // pointer to the archive and the reason the originals are gone. And this
+      // is Flatpak's only backup path.
+      final archived = TestFactories.makeProject(
+        id: 'archived-1',
+        archivePath: '/Volumes/Archive/Midnight.zip',
+        archivedAt: DateTime(2026, 3, 4, 15, 30),
+        archiveEntryPath: 'Midnight/Midnight.als',
+      );
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(archived));
+
+      expect(restored.archivePath, '/Volumes/Archive/Midnight.zip');
+      expect(restored.archivedAt, DateTime(2026, 3, 4, 15, 30));
+      expect(restored.archiveEntryPath, 'Midnight/Midnight.als');
+      expect(restored.isArchived, isTrue);
+      expect(restored.isMissingFileCandidate, isFalse);
+    });
+
+    test('a project that was never archived round-trips unarchived', () {
+      final restored = BackupService.projectFromJson(
+        BackupService.projectToJson(TestFactories.makeProject()),
+      );
+
+      expect(restored.archivePath, isNull);
+      expect(restored.archivedAt, isNull);
+      expect(restored.archiveEntryPath, isNull);
+      expect(restored.isArchived, isFalse);
+    });
+
     test('preserves all basic fields', () {
       final original = TestFactories.makeProject(
         id: 'rt-1',

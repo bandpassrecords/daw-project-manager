@@ -3142,5 +3142,156 @@
   "moveProjectErrorDestinationInsideSource": "No puedes mover una carpeta dentro de sí misma.",
   "moveProjectErrorSameLocation": "El proyecto ya está en esa carpeta.",
   "moveProjectStackUnsupported": "Una pila de versiones no tiene archivo propio: mueve sus versiones individualmente.",
-  "selectMoveDestinationTitle": "Seleccionar carpeta de destino"
+  "selectMoveDestinationTitle": "Seleccionar carpeta de destino",
+
+  "archiveProjectButtonLabel": "Archivar…",
+  "archiveProjectDialogTitle": "Archivar Proyecto",
+  "archiveProjectWhatToArchive": "Qué archivar",
+  "archiveProjectScopeFolder": "Toda la carpeta \"{folder}\"",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "archiveProjectScopeFileOnly": "Solo el archivo del proyecto",
+  "archiveScopeSummary": "{size} · {files, plural, =1{1 archivo} other{{files} archivos}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": { "type": "String" },
+      "files": { "type": "int" }
+    }
+  },
+  "archiveProjectDeleteOriginals": "Eliminar los originales tras verificar el archivo comprimido",
+  "archiveProjectDeleteOriginalsDescription": "Primero se vuelve a abrir el comprimido y se comprueba entrada por entrada. No se elimina nada si esa comprobación falla.",
+  "archiveProjectConfirm": "Archivar",
+  "archiveStageScanning": "Leyendo la carpeta del proyecto…",
+  "archiveStageCompressing": "Comprimiendo…",
+  "archiveStageVerifying": "Verificando el comprimido…",
+  "archiveStageDeleting": "Eliminando los originales…",
+  "archiveProjectSuccess": "\"{name}\" archivado",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "archiveProjectFailed": "Error al archivar: {error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "archiveErrorSourceMissing": "Los archivos de este proyecto no están en este equipo.",
+  "archiveErrorDestinationInScanRoot": "Los comprimidos no pueden ir dentro de una carpeta escaneada: \"{root}\" volvería a indexarlos de inmediato.",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": { "type": "String" }
+    }
+  },
+  "archiveErrorDestinationOccupied": "Ya hay un comprimido llamado \"{name}\" ahí.",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "archiveErrorVerificationFailed": "Al comprimido le faltan archivos, así que no se eliminó nada: {entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": { "type": "String" }
+    }
+  },
+  "archiveErrorNotArchived": "Este proyecto no está archivado.",
+  "archiveWarningsSkipped": "{count, plural, =1{Se omitió 1 archivo ilegible} other{Se omitieron {count} archivos ilegibles}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "archiveLocationTitle": "Ubicación de archivado",
+  "archiveLocationSubtitle": "Donde \"Archivar proyecto\" escribe sus archivos zip. Se guarda en este dispositivo.",
+  "archiveLocationNotSet": "Sin definir: se te preguntará la primera vez que archives",
+  "selectArchiveLocationTitle": "Seleccionar carpeta de archivado",
+  "restoreProjectButtonLabel": "Restaurar…",
+  "restoreProjectDialogTitle": "Restaurar Proyecto",
+  "restoreProjectDescription": "Extrae el comprimido en la carpeta que elijas y apunta el proyecto de nuevo a los archivos restaurados.",
+  "restoreProjectConfirm": "Restaurar",
+  "restoreProjectInProgress": "Restaurando…",
+  "restoreProjectSuccess": "\"{name}\" restaurado",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "restoreProjectFailed": "Error al restaurar: {error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "selectRestoreDestinationTitle": "Selecciona una carpeta donde restaurar",
+  "archivedLabel": "Archivado",
+  "archivedOnLabel": "Archivado el {date}",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "showArchivedProjects": "Mostrar archivados",
+  "showOnlyArchivedProjects": "Solo archivados",
+  "hideArchivedProjects": "Ocultar archivados",
+  "archivedFilterLabel": "Archivados",
+  "archiveProjectStackUnsupported": "Una pila de versiones no tiene archivos propios: archiva sus versiones individualmente.",
+  "archiveBulkButtonLabel": "Archivar seleccionados",
+  "archiveBulkConfirmMessage": "{count, plural, =1{¿Archivar 1 proyecto?} other{¿Archivar {count} proyectos?}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, =1{1 proyecto archivado} other{{count} proyectos archivados}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "openArchiveFolder": "Abrir carpeta de archivado",
+
+  "archiveBulkProgress": "{current} de {total}",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, =1{No se pudo archivar 1 proyecto} other{No se pudieron archivar {count} proyectos}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "archiveBulkScopeNote": "Cada proyecto se archiva con el alcance que le corresponde: la carpeta entera cuando tiene una propia, solo el archivo del proyecto cuando comparte carpeta.",
+
+  "archivedWithLocalCopy": "Archivado: los originales siguen aquí",
+  "archivedAwayTooltip": "Archivado: los archivos están solo en el comprimido",
+  "archiveUndone": "Archivado deshecho",
+  "archiveUndoFailed": "No se pudo deshacer el archivado: {error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveUndone": "Movimiento deshecho",
+  "moveUndoFailed": "No se pudo deshacer el movimiento: {error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "restoreToOriginalLocation": "De vuelta a su ubicación original",
+  "restoreToChosenFolder": "A otra carpeta…",
+  "restoreWhereTo": "¿Dónde debe ir?",
+  "restoreOriginalLocationOccupied": "Ya hay algo en la ubicación original",
+  "discardArchiveButtonLabel": "Descartar comprimido",
+  "discardArchiveConfirmTitle": "¿Descartar el comprimido?",
+  "discardArchiveConfirmMessage": "Elimina el zip y quita la marca de archivado. Los archivos del proyecto se quedan donde están.",
+  "discardArchiveDone": "Comprimido descartado"
 }

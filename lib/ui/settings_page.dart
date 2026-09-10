@@ -23,6 +23,7 @@ import '../utils/app_paths.dart' show canPickAppDataDir;
 import 'dev_library_picker.dart' show DevLibraryCard;
 import '../services/crash_logger.dart';
 import '../services/google_drive_sync_service.dart' show GoogleDriveSyncService;
+import '../services/project_archive_service.dart' show conflictingScanRoot;
 import '../services/mixdown_detector_service.dart';
 import '../services/project_parts_csv_export_service.dart';
 import '../services/project_parts_xlsx_export_service.dart';
@@ -772,6 +773,45 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
+  /// Picks where "Archive project" writes its zips (#116).
+  ///
+  /// The scan-root check runs here, at pick time, rather than only when an
+  /// archive is attempted: a destination inside a scanned folder would have
+  /// every archive re-indexed on the next scan, and finding that out halfway
+  /// through zipping 4 GB is far too late.
+  Future<void> _pickArchiveFolder() async {
+    if (_busy) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final picked = await FilePicker.getDirectoryPath(
+      dialogTitle: l10n.selectArchiveLocationTitle,
+    );
+    if (picked == null) return;
+
+    final conflict = conflictingScanRoot(picked, ref.read(scanRootsProvider));
+    if (conflict != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n.archiveErrorDestinationInScanRoot(
+                conflict.effectiveDisplayName,
+              ),
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _busy = true);
+    try {
+      await ref.read(archiveFolderProvider.notifier).set(picked);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _addExcludedFolder() async {
     if (_busy) return;
 
@@ -1096,6 +1136,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.projectFolders, Icons.sort, l10n.excludeSmartFoldersFromSort, l10n.excludeSmartFoldersFromSortDescription),
         _SearchEntry(SettingsSection.projectFolders, Icons.merge, l10n.mergeSmartFoldersByName, l10n.mergeSmartFoldersByNameDescription),
         _SearchEntry(SettingsSection.projectFolders, Icons.visibility_outlined, l10n.alwaysShowSmartFolders, l10n.alwaysShowSmartFoldersDescription),
+        _SearchEntry(SettingsSection.projectFolders, Icons.archive_outlined, l10n.archiveLocationTitle, l10n.archiveLocationSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.block, l10n.excludedFoldersSectionTitle, l10n.excludedFoldersSectionSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.description_outlined, l10n.exportAllProjectsInfo, l10n.exportAllProjectsInfoSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.table_view_outlined, l10n.exportAllPartsCsv, l10n.exportAllPartsCsvSubtitle),
@@ -1691,6 +1732,89 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       ),
                     );
                   }),
+              ],
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Archive location (#116). Device-local: it names a folder on this
+        // machine (often an external drive), so unlike the project data around
+        // it this is deliberately in neither Drive sync nor local backup.
+        Card(
+          clipBehavior: Clip.antiAlias,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.archive_outlined),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.archiveLocationTitle,
+                              style: Theme.of(context).textTheme.titleMedium),
+                          Text(l10n.archiveLocationSubtitle,
+                              style: Theme.of(context).textTheme.bodySmall),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Builder(
+                  builder: (context) {
+                    final archiveFolder = ref.watch(archiveFolderProvider);
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.inventory_2_outlined),
+                      title: Text(
+                        archiveFolder ?? l10n.archiveLocationNotSet,
+                        style: archiveFolder == null
+                            ? Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.color,
+                                )
+                            : null,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (archiveFolder != null)
+                            IconButton(
+                              tooltip: l10n.openArchiveFolder,
+                              onPressed: () =>
+                                  FileLauncher.openFolder(archiveFolder),
+                              icon: const Icon(Icons.folder_open_outlined),
+                            ),
+                          IconButton(
+                            tooltip: l10n.selectArchiveLocationTitle,
+                            onPressed: _busy ? null : _pickArchiveFolder,
+                            icon: const Icon(Icons.edit_outlined),
+                          ),
+                          if (archiveFolder != null)
+                            IconButton(
+                              tooltip: l10n.remove,
+                              onPressed: _busy
+                                  ? null
+                                  : () => ref
+                                      .read(archiveFolderProvider.notifier)
+                                      .set(null),
+                              icon: const Icon(Icons.delete_outline),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),

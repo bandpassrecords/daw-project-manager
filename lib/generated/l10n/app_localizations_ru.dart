@@ -5064,4 +5064,262 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get selectMoveDestinationTitle => 'Выберите папку назначения';
+
+  @override
+  String get archiveProjectButtonLabel => 'Архивировать…';
+
+  @override
+  String get archiveProjectDialogTitle => 'Архивировать проект';
+
+  @override
+  String get archiveProjectWhatToArchive => 'Что архивировать';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return 'Всю папку «$folder»';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => 'Только файл проекта';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files файлов',
+      one: '1 файл',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals =>
+      'Удалить оригиналы после проверки архива';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      'Сначала архив открывается заново и проверяется запись за записью. Если проверка не пройдена, ничего не удаляется.';
+
+  @override
+  String get archiveProjectConfirm => 'Архивировать';
+
+  @override
+  String get archiveStageScanning => 'Чтение папки проекта…';
+
+  @override
+  String get archiveStageCompressing => 'Сжатие…';
+
+  @override
+  String get archiveStageVerifying => 'Проверка архива…';
+
+  @override
+  String get archiveStageDeleting => 'Удаление оригиналов…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return '«$name» заархивирован';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return 'Не удалось заархивировать: $error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing =>
+      'Файлов этого проекта нет на этом компьютере.';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return 'Архивы нельзя класть в сканируемую папку — «$root» тут же добавит их обратно.';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return 'Там уже есть архив с именем «$name».';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return 'В архиве не хватает файлов, поэтому ничего не удалено: $entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => 'Этот проект не заархивирован.';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Пропущено нечитаемых файлов: $count',
+      one: '1 нечитаемый файл пропущен',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => 'Расположение архивов';
+
+  @override
+  String get archiveLocationSubtitle =>
+      'Куда «Архивировать проект» записывает zip-файлы. Хранится на этом устройстве.';
+
+  @override
+  String get archiveLocationNotSet =>
+      'Не задано — вас спросят при первом архивировании';
+
+  @override
+  String get selectArchiveLocationTitle => 'Выберите папку для архивов';
+
+  @override
+  String get restoreProjectButtonLabel => 'Восстановить…';
+
+  @override
+  String get restoreProjectDialogTitle => 'Восстановить проект';
+
+  @override
+  String get restoreProjectDescription =>
+      'Распаковывает архив в выбранную вами папку и возвращает проект к восстановленным файлам.';
+
+  @override
+  String get restoreProjectConfirm => 'Восстановить';
+
+  @override
+  String get restoreProjectInProgress => 'Восстановление…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return '«$name» восстановлен';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return 'Не удалось восстановить: $error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle =>
+      'Выберите папку для восстановления';
+
+  @override
+  String get archivedLabel => 'В архиве';
+
+  @override
+  String archivedOnLabel(String date) {
+    return 'В архиве с $date';
+  }
+
+  @override
+  String get showArchivedProjects => 'Показать архивные';
+
+  @override
+  String get showOnlyArchivedProjects => 'Только архивные';
+
+  @override
+  String get hideArchivedProjects => 'Скрыть архивные';
+
+  @override
+  String get archivedFilterLabel => 'Архив';
+
+  @override
+  String get archiveProjectStackUnsupported =>
+      'У стопки версий нет собственных файлов — архивируйте её версии по отдельности.';
+
+  @override
+  String get archiveBulkButtonLabel => 'Архивировать выбранные';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Архивировать проектов: $count?',
+      one: 'Архивировать 1 проект?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Заархивировано проектов: $count',
+      one: '1 проект заархивирован',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => 'Открыть папку архивов';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '$current из $total';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Не удалось заархивировать проектов: $count',
+      one: '1 проект не удалось заархивировать',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      'Каждый проект архивируется в подходящем ему объёме: вся папка, если она у него своя, и только файл проекта, если папка общая.';
+
+  @override
+  String get archivedWithLocalCopy => 'В архиве — оригиналы всё ещё здесь';
+
+  @override
+  String get archivedAwayTooltip => 'В архиве — файлы остались только в архиве';
+
+  @override
+  String get archiveUndone => 'Архивирование отменено';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return 'Не удалось отменить архивирование: $error';
+  }
+
+  @override
+  String get moveUndone => 'Перемещение отменено';
+
+  @override
+  String moveUndoFailed(String error) {
+    return 'Не удалось отменить перемещение: $error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => 'Обратно в исходное место';
+
+  @override
+  String get restoreToChosenFolder => 'В другую папку…';
+
+  @override
+  String get restoreWhereTo => 'Куда его поместить?';
+
+  @override
+  String get restoreOriginalLocationOccupied =>
+      'В исходном месте уже что-то есть';
+
+  @override
+  String get discardArchiveButtonLabel => 'Удалить архив';
+
+  @override
+  String get discardArchiveConfirmTitle => 'Удалить архив?';
+
+  @override
+  String get discardArchiveConfirmMessage =>
+      'Удаляет zip и снимает пометку «в архиве». Файлы самого проекта остаются на месте.';
+
+  @override
+  String get discardArchiveDone => 'Архив удалён';
 }

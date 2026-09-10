@@ -3142,5 +3142,156 @@
   "moveProjectErrorDestinationInsideSource": "Ein Ordner kann nicht in sich selbst verschoben werden.",
   "moveProjectErrorSameLocation": "Das Projekt liegt bereits in diesem Ordner.",
   "moveProjectStackUnsupported": "Ein Versions-Stack hat keine eigene Datei — verschiebe seine Versionen einzeln.",
-  "selectMoveDestinationTitle": "Zielordner auswählen"
+  "selectMoveDestinationTitle": "Zielordner auswählen",
+
+  "archiveProjectButtonLabel": "Archivieren…",
+  "archiveProjectDialogTitle": "Projekt archivieren",
+  "archiveProjectWhatToArchive": "Was archiviert wird",
+  "archiveProjectScopeFolder": "Gesamter Ordner „{folder}“",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "archiveProjectScopeFileOnly": "Nur die Projektdatei",
+  "archiveScopeSummary": "{size} · {files, plural, =1{1 Datei} other{{files} Dateien}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": { "type": "String" },
+      "files": { "type": "int" }
+    }
+  },
+  "archiveProjectDeleteOriginals": "Originale löschen, nachdem das Archiv geprüft wurde",
+  "archiveProjectDeleteOriginalsDescription": "Das Archiv wird zuerst erneut geöffnet und Eintrag für Eintrag geprüft. Schlägt die Prüfung fehl, wird nichts gelöscht.",
+  "archiveProjectConfirm": "Archivieren",
+  "archiveStageScanning": "Projektordner wird gelesen…",
+  "archiveStageCompressing": "Wird komprimiert…",
+  "archiveStageVerifying": "Archiv wird geprüft…",
+  "archiveStageDeleting": "Originale werden entfernt…",
+  "archiveProjectSuccess": "„{name}“ archiviert",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "archiveProjectFailed": "Archivieren fehlgeschlagen: {error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "archiveErrorSourceMissing": "Die Dateien dieses Projekts sind nicht auf diesem Rechner.",
+  "archiveErrorDestinationInScanRoot": "Archive dürfen nicht in einem durchsuchten Ordner liegen — „{root}“ würde sie sofort wieder indizieren.",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": { "type": "String" }
+    }
+  },
+  "archiveErrorDestinationOccupied": "Dort liegt bereits ein Archiv namens „{name}“.",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "archiveErrorVerificationFailed": "Im Archiv fehlen Dateien, daher wurde nichts gelöscht: {entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": { "type": "String" }
+    }
+  },
+  "archiveErrorNotArchived": "Dieses Projekt ist nicht archiviert.",
+  "archiveWarningsSkipped": "{count, plural, =1{1 nicht lesbare Datei wurde übersprungen} other{{count} nicht lesbare Dateien wurden übersprungen}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "archiveLocationTitle": "Archivspeicherort",
+  "archiveLocationSubtitle": "Wohin „Projekt archivieren“ seine ZIP-Dateien schreibt. Bleibt auf diesem Gerät.",
+  "archiveLocationNotSet": "Nicht festgelegt — du wirst beim ersten Archivieren gefragt",
+  "selectArchiveLocationTitle": "Archivordner auswählen",
+  "restoreProjectButtonLabel": "Wiederherstellen…",
+  "restoreProjectDialogTitle": "Projekt wiederherstellen",
+  "restoreProjectDescription": "Entpackt das Archiv in einen Ordner deiner Wahl und richtet das Projekt wieder auf die entpackten Dateien aus.",
+  "restoreProjectConfirm": "Wiederherstellen",
+  "restoreProjectInProgress": "Wird wiederhergestellt…",
+  "restoreProjectSuccess": "„{name}“ wiederhergestellt",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "restoreProjectFailed": "Wiederherstellen fehlgeschlagen: {error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "selectRestoreDestinationTitle": "Ordner zum Wiederherstellen auswählen",
+  "archivedLabel": "Archiviert",
+  "archivedOnLabel": "Archiviert am {date}",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "showArchivedProjects": "Archivierte anzeigen",
+  "showOnlyArchivedProjects": "Nur archivierte",
+  "hideArchivedProjects": "Archivierte ausblenden",
+  "archivedFilterLabel": "Archiviert",
+  "archiveProjectStackUnsupported": "Ein Versions-Stack hat keine eigenen Dateien — archiviere seine Versionen einzeln.",
+  "archiveBulkButtonLabel": "Auswahl archivieren",
+  "archiveBulkConfirmMessage": "{count, plural, =1{1 Projekt archivieren?} other{{count} Projekte archivieren?}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, =1{1 Projekt archiviert} other{{count} Projekte archiviert}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "openArchiveFolder": "Archivordner öffnen",
+
+  "archiveBulkProgress": "{current} von {total}",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, =1{1 Projekt konnte nicht archiviert werden} other{{count} Projekte konnten nicht archiviert werden}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "archiveBulkScopeNote": "Jedes Projekt wird im passenden Umfang archiviert — der ganze Ordner, wenn es einen eigenen hat, nur die Projektdatei, wenn es sich einen teilt.",
+
+  "archivedWithLocalCopy": "Archiviert — die Originale sind noch da",
+  "archivedAwayTooltip": "Archiviert — die Dateien liegen nur noch im Archiv",
+  "archiveUndone": "Archivierung rückgängig gemacht",
+  "archiveUndoFailed": "Archivierung ließ sich nicht rückgängig machen: {error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveUndone": "Verschieben rückgängig gemacht",
+  "moveUndoFailed": "Verschieben ließ sich nicht rückgängig machen: {error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "restoreToOriginalLocation": "Zurück an den ursprünglichen Ort",
+  "restoreToChosenFolder": "In einen anderen Ordner…",
+  "restoreWhereTo": "Wohin soll es?",
+  "restoreOriginalLocationOccupied": "Am ursprünglichen Ort liegt bereits etwas",
+  "discardArchiveButtonLabel": "Archiv verwerfen",
+  "discardArchiveConfirmTitle": "Archiv verwerfen?",
+  "discardArchiveConfirmMessage": "Löscht die ZIP-Datei und entfernt die Archiv-Markierung. Die Projektdateien selbst bleiben, wo sie sind.",
+  "discardArchiveDone": "Archiv verworfen"
 }
