@@ -5034,4 +5034,74 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Couleurs Suggérées';
+
+  @override
+  String get moveProjectButtonLabel => 'Déplacer…';
+
+  @override
+  String get moveProjectDialogTitle => 'Déplacer le projet';
+
+  @override
+  String get moveProjectDestinationLabel => 'Destination';
+
+  @override
+  String get moveProjectChooseDestination => 'Choisir…';
+
+  @override
+  String get moveProjectNoDestinationChosen =>
+      'Aucun dossier choisi pour l\'instant';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Déplacer tout le dossier « $folder »';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'Ce dossier ne contient que ce projet : ses samples et mixages sont déplacés avec lui.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Seul le fichier du projet est déplacé. Les samples et mixages à côté restent en place.';
+
+  @override
+  String get moveProjectConfirm => 'Déplacer';
+
+  @override
+  String get moveProjectInProgress => 'Déplacement…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '« $name » déplacé vers $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Échec du déplacement : $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'Le fichier de ce projet n\'est pas sur cette machine.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '« $name » existe déjà dans ce dossier.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'Vous ne pouvez pas déplacer un dossier dans lui-même.';
+
+  @override
+  String get moveProjectErrorSameLocation =>
+      'Le projet est déjà dans ce dossier.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'Une pile de versions n\'a pas de fichier propre — déplacez ses versions individuellement.';
+
+  @override
+  String get selectMoveDestinationTitle =>
+      'Sélectionner le dossier de destination';
 }

@@ -3102,5 +3102,45 @@
     }
   },
 
-  "suggestedColorsLabel": "Couleurs Suggérées"
+  "suggestedColorsLabel": "Couleurs Suggérées",
+
+  "moveProjectButtonLabel": "Déplacer…",
+  "moveProjectDialogTitle": "Déplacer le projet",
+  "moveProjectDestinationLabel": "Destination",
+  "moveProjectChooseDestination": "Choisir…",
+  "moveProjectNoDestinationChosen": "Aucun dossier choisi pour l'instant",
+  "moveProjectIncludeFolder": "Déplacer tout le dossier « {folder} »",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "Ce dossier ne contient que ce projet : ses samples et mixages sont déplacés avec lui.",
+  "moveProjectFileOnlyDescription": "Seul le fichier du projet est déplacé. Les samples et mixages à côté restent en place.",
+  "moveProjectConfirm": "Déplacer",
+  "moveProjectInProgress": "Déplacement…",
+  "moveProjectSuccess": "« {name} » déplacé vers {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "path": { "type": "String" }
+    }
+  },
+  "moveProjectFailed": "Échec du déplacement : {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveProjectErrorSourceMissing": "Le fichier de ce projet n'est pas sur cette machine.",
+  "moveProjectErrorDestinationOccupied": "« {name} » existe déjà dans ce dossier.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Vous ne pouvez pas déplacer un dossier dans lui-même.",
+  "moveProjectErrorSameLocation": "Le projet est déjà dans ce dossier.",
+  "moveProjectStackUnsupported": "Une pile de versions n'a pas de fichier propre — déplacez ses versions individuellement.",
+  "selectMoveDestinationTitle": "Sélectionner le dossier de destination"
 }

@@ -4808,4 +4808,67 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => '推荐颜色';
+
+  @override
+  String get moveProjectButtonLabel => '移动…';
+
+  @override
+  String get moveProjectDialogTitle => '移动项目';
+
+  @override
+  String get moveProjectDestinationLabel => '目标位置';
+
+  @override
+  String get moveProjectChooseDestination => '选择…';
+
+  @override
+  String get moveProjectNoDestinationChosen => '尚未选择文件夹';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return '移动整个“$folder”文件夹';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      '此文件夹中只有这个项目，因此它的采样和缩混会一并移动。';
+
+  @override
+  String get moveProjectFileOnlyDescription => '仅移动项目文件。旁边的采样和缩混将留在原处。';
+
+  @override
+  String get moveProjectConfirm => '移动';
+
+  @override
+  String get moveProjectInProgress => '正在移动…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '“$name” 已移动到 $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return '移动失败：$error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing => '此项目的文件不在这台电脑上。';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '“$name” 在该文件夹中已存在。';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource => '无法将文件夹移动到其自身内部。';
+
+  @override
+  String get moveProjectErrorSameLocation => '项目已在该文件夹中。';
+
+  @override
+  String get moveProjectStackUnsupported => '版本堆栈没有自己的文件——请单独移动各个版本。';
+
+  @override
+  String get selectMoveDestinationTitle => '选择目标文件夹';
 }

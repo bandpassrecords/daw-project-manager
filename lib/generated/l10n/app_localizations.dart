@@ -8428,6 +8428,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Suggested Colors'**
   String get suggestedColorsLabel;
+
+  /// No description provided for @moveProjectButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Move…'**
+  String get moveProjectButtonLabel;
+
+  /// No description provided for @moveProjectDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move Project'**
+  String get moveProjectDialogTitle;
+
+  /// No description provided for @moveProjectDestinationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get moveProjectDestinationLabel;
+
+  /// No description provided for @moveProjectChooseDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose…'**
+  String get moveProjectChooseDestination;
+
+  /// No description provided for @moveProjectNoDestinationChosen.
+  ///
+  /// In en, this message translates to:
+  /// **'No folder chosen yet'**
+  String get moveProjectNoDestinationChosen;
+
+  /// No description provided for @moveProjectIncludeFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the whole \"{folder}\" folder'**
+  String moveProjectIncludeFolder(String folder);
+
+  /// No description provided for @moveProjectIncludeFolderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This folder holds only this project, so its samples and bounces move with it.'**
+  String get moveProjectIncludeFolderDescription;
+
+  /// No description provided for @moveProjectFileOnlyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the project file moves. Samples and bounces beside it stay where they are.'**
+  String get moveProjectFileOnlyDescription;
+
+  /// No description provided for @moveProjectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Move'**
+  String get moveProjectConfirm;
+
+  /// No description provided for @moveProjectInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving…'**
+  String get moveProjectInProgress;
+
+  /// No description provided for @moveProjectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved \"{name}\" to {path}'**
+  String moveProjectSuccess(String name, String path);
+
+  /// No description provided for @moveProjectFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to move: {error}'**
+  String moveProjectFailed(String error);
+
+  /// No description provided for @moveProjectErrorSourceMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'This project\'s file isn\'t on this machine.'**
+  String get moveProjectErrorSourceMissing;
+
+  /// No description provided for @moveProjectErrorDestinationOccupied.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" already exists in that folder.'**
+  String moveProjectErrorDestinationOccupied(String name);
+
+  /// No description provided for @moveProjectErrorDestinationInsideSource.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t move a folder into itself.'**
+  String get moveProjectErrorDestinationInsideSource;
+
+  /// No description provided for @moveProjectErrorSameLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'The project is already in that folder.'**
+  String get moveProjectErrorSameLocation;
+
+  /// No description provided for @moveProjectStackUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'A version stack has no file of its own — move its versions individually.'**
+  String get moveProjectStackUnsupported;
+
+  /// No description provided for @selectMoveDestinationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select destination folder'**
+  String get selectMoveDestinationTitle;
 }
 
 class _AppLocalizationsDelegate

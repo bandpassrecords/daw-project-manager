@@ -33,6 +33,7 @@ import 'marker_navigation.dart';
 import 'session_actions.dart';
 import 'settings_page.dart' show SettingsPage, SettingsSection;
 import 'preview_share.dart';
+import 'dialogs/move_project_dialog.dart';
 import 'dialogs/preview_song_not_found_dialog.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
@@ -829,6 +830,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                   sourceFileExists: sourceFileExists,
                   onOpenFolder: () => _openProjectFolder(updatedProject.filePath),
                   onRename: () => _renameProjectFile(updatedProject),
+                  onMove: () => showMoveProjectDialog(context, ref, updatedProject),
                   onOpenInDaw: () => launchProjectInDaw(context, ref, updatedProject),
                   onStats: () => Navigator.push(
                     context,
@@ -1774,6 +1776,7 @@ class _ProjectDetailActionBar extends ConsumerWidget {
   final bool sourceFileExists;
   final VoidCallback onOpenFolder;
   final VoidCallback onRename;
+  final VoidCallback onMove;
   final VoidCallback onOpenInDaw;
   final VoidCallback onStats;
   final VoidCallback onExport;
@@ -1785,6 +1788,7 @@ class _ProjectDetailActionBar extends ConsumerWidget {
     required this.sourceFileExists,
     required this.onOpenFolder,
     required this.onRename,
+    required this.onMove,
     required this.onOpenInDaw,
     required this.onStats,
     required this.onExport,
@@ -1804,11 +1808,15 @@ class _ProjectDetailActionBar extends ConsumerWidget {
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+      // Wrap, not Row: this bar holds seven buttons on desktop and a Row would
+      // hard-overflow on a narrow window rather than reflowing.
+      child: Wrap(
+        alignment: WrapAlignment.end,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8,
+        runSpacing: 6,
         children: [
           if (!isMobile) ...[
-            const SizedBox(width: 8),
             if (sessionMode) ...[
               OutlinedButton.icon(
                 onPressed: () => isSubscribed
@@ -1824,7 +1832,6 @@ class _ProjectDetailActionBar extends ConsumerWidget {
               // Once this project's session is active, still let the user
               // launch the DAW from here instead of needing the dashboard.
               if (isSubscribed) ...[
-                const SizedBox(width: 8),
                 Tooltip(
                   message: sourceFileExists ? '' : notFoundMsg,
                   child: OutlinedButton.icon(
@@ -1845,7 +1852,6 @@ class _ProjectDetailActionBar extends ConsumerWidget {
               ),
           ],
           if (!isMobile) ...[
-            const SizedBox(width: 8),
             Tooltip(
               message: sourceFileExists ? '' : notFoundMsg,
               child: OutlinedButton.icon(
@@ -1856,7 +1862,6 @@ class _ProjectDetailActionBar extends ConsumerWidget {
             ),
           ],
           if (!isMobile) ...[
-            const SizedBox(width: 8),
             Tooltip(
               message: sourceFileExists ? '' : notFoundMsg,
               child: OutlinedButton.icon(
@@ -1865,19 +1870,27 @@ class _ProjectDetailActionBar extends ConsumerWidget {
                 label: Text(l10n.renameFileButtonLabel),
               ),
             ),
-            const SizedBox(width: 8),
+            // A stack owns no file of its own, so there is nothing to move —
+            // its versions are moved from their own pages.
+            if (!project.isVirtual)
+              Tooltip(
+                message: sourceFileExists ? '' : notFoundMsg,
+                child: OutlinedButton.icon(
+                  onPressed: sourceFileExists ? onMove : null,
+                  icon: const Icon(Icons.drive_file_move_outline, size: 16),
+                  label: Text(l10n.moveProjectButtonLabel),
+                ),
+              ),
             OutlinedButton.icon(
               onPressed: onStats,
               icon: const Icon(Icons.bar_chart, size: 16),
               label: Text(l10n.statsSingleProjectActivity),
             ),
-            const SizedBox(width: 8),
             OutlinedButton.icon(
               onPressed: onExport,
               icon: const Icon(Icons.description_outlined, size: 16),
               label: Text(l10n.exportProjectInfo),
             ),
-            const SizedBox(width: 8),
             OutlinedButton.icon(
               onPressed: onSaveAsTemplate,
               icon: const Icon(Icons.bookmark_add_outlined, size: 16),

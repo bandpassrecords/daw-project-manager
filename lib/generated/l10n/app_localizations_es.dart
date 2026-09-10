@@ -5022,4 +5022,73 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Colores Sugeridos';
+
+  @override
+  String get moveProjectButtonLabel => 'Mover…';
+
+  @override
+  String get moveProjectDialogTitle => 'Mover Proyecto';
+
+  @override
+  String get moveProjectDestinationLabel => 'Destino';
+
+  @override
+  String get moveProjectChooseDestination => 'Elegir…';
+
+  @override
+  String get moveProjectNoDestinationChosen =>
+      'Aún no se ha elegido una carpeta';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Mover toda la carpeta \"$folder\"';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'Esta carpeta contiene solo este proyecto, así que sus samples y mezclas se mueven con él.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Solo se mueve el archivo del proyecto. Los samples y mezclas junto a él se quedan donde están.';
+
+  @override
+  String get moveProjectConfirm => 'Mover';
+
+  @override
+  String get moveProjectInProgress => 'Moviendo…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '\"$name\" movido a $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Error al mover: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'El archivo de este proyecto no está en este equipo.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '\"$name\" ya existe en esa carpeta.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'No puedes mover una carpeta dentro de sí misma.';
+
+  @override
+  String get moveProjectErrorSameLocation =>
+      'El proyecto ya está en esa carpeta.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'Una pila de versiones no tiene archivo propio: mueve sus versiones individualmente.';
+
+  @override
+  String get selectMoveDestinationTitle => 'Seleccionar carpeta de destino';
 }

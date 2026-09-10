@@ -3102,5 +3102,45 @@
     }
   },
 
-  "suggestedColorsLabel": "Предлагаемые цвета"
+  "suggestedColorsLabel": "Предлагаемые цвета",
+
+  "moveProjectButtonLabel": "Переместить…",
+  "moveProjectDialogTitle": "Переместить проект",
+  "moveProjectDestinationLabel": "Назначение",
+  "moveProjectChooseDestination": "Выбрать…",
+  "moveProjectNoDestinationChosen": "Папка ещё не выбрана",
+  "moveProjectIncludeFolder": "Переместить всю папку «{folder}»",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "В этой папке только этот проект, поэтому его сэмплы и миксдауны переместятся вместе с ним.",
+  "moveProjectFileOnlyDescription": "Переместится только файл проекта. Сэмплы и миксдауны рядом с ним останутся на месте.",
+  "moveProjectConfirm": "Переместить",
+  "moveProjectInProgress": "Перемещение…",
+  "moveProjectSuccess": "«{name}» перемещён в {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "path": { "type": "String" }
+    }
+  },
+  "moveProjectFailed": "Не удалось переместить: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveProjectErrorSourceMissing": "Файл этого проекта отсутствует на этом компьютере.",
+  "moveProjectErrorDestinationOccupied": "«{name}» уже есть в этой папке.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Нельзя переместить папку внутрь неё самой.",
+  "moveProjectErrorSameLocation": "Проект уже находится в этой папке.",
+  "moveProjectStackUnsupported": "У стопки версий нет собственного файла — перемещайте её версии по отдельности.",
+  "selectMoveDestinationTitle": "Выберите папку назначения"
 }

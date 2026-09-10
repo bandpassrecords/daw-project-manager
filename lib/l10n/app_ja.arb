@@ -3102,5 +3102,45 @@
     }
   },
 
-  "suggestedColorsLabel": "おすすめの色"
+  "suggestedColorsLabel": "おすすめの色",
+
+  "moveProjectButtonLabel": "移動…",
+  "moveProjectDialogTitle": "プロジェクトを移動",
+  "moveProjectDestinationLabel": "移動先",
+  "moveProjectChooseDestination": "選択…",
+  "moveProjectNoDestinationChosen": "フォルダーが未選択です",
+  "moveProjectIncludeFolder": "「{folder}」フォルダー全体を移動",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "このフォルダーにはこのプロジェクトしかないため、サンプルやミックスダウンも一緒に移動します。",
+  "moveProjectFileOnlyDescription": "プロジェクトファイルのみを移動します。隣にあるサンプルやミックスダウンはそのまま残ります。",
+  "moveProjectConfirm": "移動",
+  "moveProjectInProgress": "移動中…",
+  "moveProjectSuccess": "「{name}」を {path} に移動しました",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "path": { "type": "String" }
+    }
+  },
+  "moveProjectFailed": "移動に失敗しました: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveProjectErrorSourceMissing": "このプロジェクトのファイルはこのマシンにありません。",
+  "moveProjectErrorDestinationOccupied": "「{name}」はそのフォルダーに既に存在します。",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "フォルダーを自分自身の中へ移動することはできません。",
+  "moveProjectErrorSameLocation": "プロジェクトは既にそのフォルダーにあります。",
+  "moveProjectStackUnsupported": "バージョンスタックには固有のファイルがありません。各バージョンを個別に移動してください。",
+  "selectMoveDestinationTitle": "移動先フォルダーを選択"
 }

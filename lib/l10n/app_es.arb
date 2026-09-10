@@ -3102,5 +3102,45 @@
     }
   },
 
-  "suggestedColorsLabel": "Colores Sugeridos"
+  "suggestedColorsLabel": "Colores Sugeridos",
+
+  "moveProjectButtonLabel": "Mover…",
+  "moveProjectDialogTitle": "Mover Proyecto",
+  "moveProjectDestinationLabel": "Destino",
+  "moveProjectChooseDestination": "Elegir…",
+  "moveProjectNoDestinationChosen": "Aún no se ha elegido una carpeta",
+  "moveProjectIncludeFolder": "Mover toda la carpeta \"{folder}\"",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "Esta carpeta contiene solo este proyecto, así que sus samples y mezclas se mueven con él.",
+  "moveProjectFileOnlyDescription": "Solo se mueve el archivo del proyecto. Los samples y mezclas junto a él se quedan donde están.",
+  "moveProjectConfirm": "Mover",
+  "moveProjectInProgress": "Moviendo…",
+  "moveProjectSuccess": "\"{name}\" movido a {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "path": { "type": "String" }
+    }
+  },
+  "moveProjectFailed": "Error al mover: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveProjectErrorSourceMissing": "El archivo de este proyecto no está en este equipo.",
+  "moveProjectErrorDestinationOccupied": "\"{name}\" ya existe en esa carpeta.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "No puedes mover una carpeta dentro de sí misma.",
+  "moveProjectErrorSameLocation": "El proyecto ya está en esa carpeta.",
+  "moveProjectStackUnsupported": "Una pila de versiones no tiene archivo propio: mueve sus versiones individualmente.",
+  "selectMoveDestinationTitle": "Seleccionar carpeta de destino"
 }

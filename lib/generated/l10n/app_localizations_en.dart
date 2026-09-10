@@ -4978,4 +4978,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Suggested Colors';
+
+  @override
+  String get moveProjectButtonLabel => 'Move…';
+
+  @override
+  String get moveProjectDialogTitle => 'Move Project';
+
+  @override
+  String get moveProjectDestinationLabel => 'Destination';
+
+  @override
+  String get moveProjectChooseDestination => 'Choose…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'No folder chosen yet';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Move the whole \"$folder\" folder';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'This folder holds only this project, so its samples and bounces move with it.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Only the project file moves. Samples and bounces beside it stay where they are.';
+
+  @override
+  String get moveProjectConfirm => 'Move';
+
+  @override
+  String get moveProjectInProgress => 'Moving…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return 'Moved \"$name\" to $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Failed to move: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'This project\'s file isn\'t on this machine.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '\"$name\" already exists in that folder.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'You can\'t move a folder into itself.';
+
+  @override
+  String get moveProjectErrorSameLocation =>
+      'The project is already in that folder.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'A version stack has no file of its own — move its versions individually.';
+
+  @override
+  String get selectMoveDestinationTitle => 'Select destination folder';
 }

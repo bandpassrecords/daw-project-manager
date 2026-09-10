@@ -5009,4 +5009,72 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Vorgeschlagene Farben';
+
+  @override
+  String get moveProjectButtonLabel => 'Verschieben…';
+
+  @override
+  String get moveProjectDialogTitle => 'Projekt verschieben';
+
+  @override
+  String get moveProjectDestinationLabel => 'Ziel';
+
+  @override
+  String get moveProjectChooseDestination => 'Auswählen…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'Noch kein Ordner ausgewählt';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Den gesamten Ordner „$folder“ verschieben';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'Dieser Ordner enthält nur dieses Projekt, seine Samples und Mixdowns werden mitverschoben.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Nur die Projektdatei wird verschoben. Samples und Mixdowns daneben bleiben, wo sie sind.';
+
+  @override
+  String get moveProjectConfirm => 'Verschieben';
+
+  @override
+  String get moveProjectInProgress => 'Wird verschoben…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '„$name“ nach $path verschoben';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Verschieben fehlgeschlagen: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'Die Datei dieses Projekts ist nicht auf diesem Rechner.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '„$name“ existiert in diesem Ordner bereits.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'Ein Ordner kann nicht in sich selbst verschoben werden.';
+
+  @override
+  String get moveProjectErrorSameLocation =>
+      'Das Projekt liegt bereits in diesem Ordner.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'Ein Versions-Stack hat keine eigene Datei — verschiebe seine Versionen einzeln.';
+
+  @override
+  String get selectMoveDestinationTitle => 'Zielordner auswählen';
 }

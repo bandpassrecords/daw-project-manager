@@ -4996,4 +4996,72 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Предлагаемые цвета';
+
+  @override
+  String get moveProjectButtonLabel => 'Переместить…';
+
+  @override
+  String get moveProjectDialogTitle => 'Переместить проект';
+
+  @override
+  String get moveProjectDestinationLabel => 'Назначение';
+
+  @override
+  String get moveProjectChooseDestination => 'Выбрать…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'Папка ещё не выбрана';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Переместить всю папку «$folder»';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'В этой папке только этот проект, поэтому его сэмплы и миксдауны переместятся вместе с ним.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Переместится только файл проекта. Сэмплы и миксдауны рядом с ним останутся на месте.';
+
+  @override
+  String get moveProjectConfirm => 'Переместить';
+
+  @override
+  String get moveProjectInProgress => 'Перемещение…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '«$name» перемещён в $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Не удалось переместить: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'Файл этого проекта отсутствует на этом компьютере.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '«$name» уже есть в этой папке.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'Нельзя переместить папку внутрь неё самой.';
+
+  @override
+  String get moveProjectErrorSameLocation =>
+      'Проект уже находится в этой папке.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'У стопки версий нет собственного файла — перемещайте её версии по отдельности.';
+
+  @override
+  String get selectMoveDestinationTitle => 'Выберите папку назначения';
 }

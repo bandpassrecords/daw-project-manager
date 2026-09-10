@@ -4997,4 +4997,71 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Cores Sugeridas';
+
+  @override
+  String get moveProjectButtonLabel => 'Mover…';
+
+  @override
+  String get moveProjectDialogTitle => 'Mover Projeto';
+
+  @override
+  String get moveProjectDestinationLabel => 'Destino';
+
+  @override
+  String get moveProjectChooseDestination => 'Escolher…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'Nenhuma pasta escolhida ainda';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Mover a pasta \"$folder\" inteira';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'Esta pasta contém apenas este projeto, então os samples e mixagens vão junto.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Somente o arquivo do projeto será movido. Os samples e mixagens ao lado dele continuam onde estão.';
+
+  @override
+  String get moveProjectConfirm => 'Mover';
+
+  @override
+  String get moveProjectInProgress => 'Movendo…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '\"$name\" movido para $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Falha ao mover: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'O arquivo deste projeto não está nesta máquina.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '\"$name\" já existe nessa pasta.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'Você não pode mover uma pasta para dentro dela mesma.';
+
+  @override
+  String get moveProjectErrorSameLocation => 'O projeto já está nessa pasta.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'Uma pilha de versões não tem arquivo próprio — mova as versões individualmente.';
+
+  @override
+  String get selectMoveDestinationTitle => 'Selecionar pasta de destino';
 }

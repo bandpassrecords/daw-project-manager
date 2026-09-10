@@ -4426,5 +4426,45 @@
     }
   },
 
-  "suggestedColorsLabel": "Suggested Colors"
+  "suggestedColorsLabel": "Suggested Colors",
+
+  "moveProjectButtonLabel": "Move…",
+  "moveProjectDialogTitle": "Move Project",
+  "moveProjectDestinationLabel": "Destination",
+  "moveProjectChooseDestination": "Choose…",
+  "moveProjectNoDestinationChosen": "No folder chosen yet",
+  "moveProjectIncludeFolder": "Move the whole \"{folder}\" folder",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "This folder holds only this project, so its samples and bounces move with it.",
+  "moveProjectFileOnlyDescription": "Only the project file moves. Samples and bounces beside it stay where they are.",
+  "moveProjectConfirm": "Move",
+  "moveProjectInProgress": "Moving…",
+  "moveProjectSuccess": "Moved \"{name}\" to {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "path": { "type": "String" }
+    }
+  },
+  "moveProjectFailed": "Failed to move: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveProjectErrorSourceMissing": "This project's file isn't on this machine.",
+  "moveProjectErrorDestinationOccupied": "\"{name}\" already exists in that folder.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "You can't move a folder into itself.",
+  "moveProjectErrorSameLocation": "The project is already in that folder.",
+  "moveProjectStackUnsupported": "A version stack has no file of its own — move its versions individually.",
+  "selectMoveDestinationTitle": "Select destination folder"
 }

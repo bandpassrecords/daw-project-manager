@@ -3102,5 +3102,45 @@
     }
   },
 
-  "suggestedColorsLabel": "Vorgeschlagene Farben"
+  "suggestedColorsLabel": "Vorgeschlagene Farben",
+
+  "moveProjectButtonLabel": "Verschieben…",
+  "moveProjectDialogTitle": "Projekt verschieben",
+  "moveProjectDestinationLabel": "Ziel",
+  "moveProjectChooseDestination": "Auswählen…",
+  "moveProjectNoDestinationChosen": "Noch kein Ordner ausgewählt",
+  "moveProjectIncludeFolder": "Den gesamten Ordner „{folder}“ verschieben",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "Dieser Ordner enthält nur dieses Projekt, seine Samples und Mixdowns werden mitverschoben.",
+  "moveProjectFileOnlyDescription": "Nur die Projektdatei wird verschoben. Samples und Mixdowns daneben bleiben, wo sie sind.",
+  "moveProjectConfirm": "Verschieben",
+  "moveProjectInProgress": "Wird verschoben…",
+  "moveProjectSuccess": "„{name}“ nach {path} verschoben",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "path": { "type": "String" }
+    }
+  },
+  "moveProjectFailed": "Verschieben fehlgeschlagen: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveProjectErrorSourceMissing": "Die Datei dieses Projekts ist nicht auf diesem Rechner.",
+  "moveProjectErrorDestinationOccupied": "„{name}“ existiert in diesem Ordner bereits.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Ein Ordner kann nicht in sich selbst verschoben werden.",
+  "moveProjectErrorSameLocation": "Das Projekt liegt bereits in diesem Ordner.",
+  "moveProjectStackUnsupported": "Ein Versions-Stack hat keine eigene Datei — verschiebe seine Versionen einzeln.",
+  "selectMoveDestinationTitle": "Zielordner auswählen"
 }

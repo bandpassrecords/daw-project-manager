@@ -65,6 +65,7 @@ import 'widgets/mobile_mini_player.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'session_actions.dart';
 import 'dialogs/create_project_dialog.dart';
+import 'dialogs/move_project_dialog.dart';
 import 'dialogs/stack_metadata_source_dialog.dart';
 import 'dialogs/preview_song_not_found_dialog.dart';
 import 'preview_share.dart';
@@ -6634,6 +6635,19 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
             ],
           ),
         ),
+        // A stack has no file of its own to move; its versions are moved
+        // individually from their own rows.
+        if (!project.isVirtual)
+          PopupMenuItem<String>(
+            value: 'move',
+            child: Row(
+              children: [
+                const Icon(Icons.drive_file_move_outline, size: 20),
+                const SizedBox(width: 8),
+                Text(l10n.moveProjectButtonLabel),
+              ],
+            ),
+          ),
         PopupMenuItem<String>(
           value: project.hidden ? 'unhide' : 'hide',
           child: Row(
@@ -6722,6 +6736,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           break;
         case 'openFolder':
           await _openProjectFolder(project);
+          break;
+        case 'move':
+          await showMoveProjectDialog(context, ref, project);
           break;
         case 'hide':
           final confirm = await showDialog<bool>(

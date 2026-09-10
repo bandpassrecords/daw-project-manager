@@ -3126,5 +3126,45 @@
     }
   },
 
-  "suggestedColorsLabel": "Cores Sugeridas"
+  "suggestedColorsLabel": "Cores Sugeridas",
+
+  "moveProjectButtonLabel": "Mover…",
+  "moveProjectDialogTitle": "Mover Projeto",
+  "moveProjectDestinationLabel": "Destino",
+  "moveProjectChooseDestination": "Escolher…",
+  "moveProjectNoDestinationChosen": "Nenhuma pasta escolhida ainda",
+  "moveProjectIncludeFolder": "Mover a pasta \"{folder}\" inteira",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "Esta pasta contém apenas este projeto, então os samples e mixagens vão junto.",
+  "moveProjectFileOnlyDescription": "Somente o arquivo do projeto será movido. Os samples e mixagens ao lado dele continuam onde estão.",
+  "moveProjectConfirm": "Mover",
+  "moveProjectInProgress": "Movendo…",
+  "moveProjectSuccess": "\"{name}\" movido para {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "path": { "type": "String" }
+    }
+  },
+  "moveProjectFailed": "Falha ao mover: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveProjectErrorSourceMissing": "O arquivo deste projeto não está nesta máquina.",
+  "moveProjectErrorDestinationOccupied": "\"{name}\" já existe nessa pasta.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Você não pode mover uma pasta para dentro dela mesma.",
+  "moveProjectErrorSameLocation": "O projeto já está nessa pasta.",
+  "moveProjectStackUnsupported": "Uma pilha de versões não tem arquivo próprio — mova as versões individualmente.",
+  "selectMoveDestinationTitle": "Selecionar pasta de destino"
 }

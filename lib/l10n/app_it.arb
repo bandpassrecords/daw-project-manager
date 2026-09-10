@@ -3102,5 +3102,45 @@
     }
   },
 
-  "suggestedColorsLabel": "Colori Suggeriti"
+  "suggestedColorsLabel": "Colori Suggeriti",
+
+  "moveProjectButtonLabel": "Sposta…",
+  "moveProjectDialogTitle": "Sposta progetto",
+  "moveProjectDestinationLabel": "Destinazione",
+  "moveProjectChooseDestination": "Scegli…",
+  "moveProjectNoDestinationChosen": "Nessuna cartella ancora scelta",
+  "moveProjectIncludeFolder": "Sposta l'intera cartella \"{folder}\"",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": { "type": "String" }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "Questa cartella contiene solo questo progetto, quindi i suoi sample e mixdown si spostano con lui.",
+  "moveProjectFileOnlyDescription": "Viene spostato solo il file del progetto. I sample e i mixdown accanto restano dove sono.",
+  "moveProjectConfirm": "Sposta",
+  "moveProjectInProgress": "Spostamento…",
+  "moveProjectSuccess": "\"{name}\" spostato in {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "path": { "type": "String" }
+    }
+  },
+  "moveProjectFailed": "Spostamento non riuscito: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "moveProjectErrorSourceMissing": "Il file di questo progetto non è su questa macchina.",
+  "moveProjectErrorDestinationOccupied": "\"{name}\" esiste già in quella cartella.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Non puoi spostare una cartella dentro sé stessa.",
+  "moveProjectErrorSameLocation": "Il progetto è già in quella cartella.",
+  "moveProjectStackUnsupported": "Uno stack di versioni non ha un file proprio: sposta le versioni singolarmente.",
+  "selectMoveDestinationTitle": "Seleziona la cartella di destinazione"
 }

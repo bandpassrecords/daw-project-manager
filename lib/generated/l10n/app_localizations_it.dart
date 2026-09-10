@@ -5008,4 +5008,73 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Colori Suggeriti';
+
+  @override
+  String get moveProjectButtonLabel => 'Sposta…';
+
+  @override
+  String get moveProjectDialogTitle => 'Sposta progetto';
+
+  @override
+  String get moveProjectDestinationLabel => 'Destinazione';
+
+  @override
+  String get moveProjectChooseDestination => 'Scegli…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'Nessuna cartella ancora scelta';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Sposta l\'intera cartella \"$folder\"';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'Questa cartella contiene solo questo progetto, quindi i suoi sample e mixdown si spostano con lui.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Viene spostato solo il file del progetto. I sample e i mixdown accanto restano dove sono.';
+
+  @override
+  String get moveProjectConfirm => 'Sposta';
+
+  @override
+  String get moveProjectInProgress => 'Spostamento…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '\"$name\" spostato in $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Spostamento non riuscito: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'Il file di questo progetto non è su questa macchina.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '\"$name\" esiste già in quella cartella.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'Non puoi spostare una cartella dentro sé stessa.';
+
+  @override
+  String get moveProjectErrorSameLocation =>
+      'Il progetto è già in quella cartella.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'Uno stack di versioni non ha un file proprio: sposta le versioni singolarmente.';
+
+  @override
+  String get selectMoveDestinationTitle =>
+      'Seleziona la cartella di destinazione';
 }

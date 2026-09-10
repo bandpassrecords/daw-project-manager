@@ -4861,4 +4861,70 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'おすすめの色';
+
+  @override
+  String get moveProjectButtonLabel => '移動…';
+
+  @override
+  String get moveProjectDialogTitle => 'プロジェクトを移動';
+
+  @override
+  String get moveProjectDestinationLabel => '移動先';
+
+  @override
+  String get moveProjectChooseDestination => '選択…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'フォルダーが未選択です';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return '「$folder」フォルダー全体を移動';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'このフォルダーにはこのプロジェクトしかないため、サンプルやミックスダウンも一緒に移動します。';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'プロジェクトファイルのみを移動します。隣にあるサンプルやミックスダウンはそのまま残ります。';
+
+  @override
+  String get moveProjectConfirm => '移動';
+
+  @override
+  String get moveProjectInProgress => '移動中…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '「$name」を $path に移動しました';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return '移動に失敗しました: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing => 'このプロジェクトのファイルはこのマシンにありません。';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '「$name」はそのフォルダーに既に存在します。';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'フォルダーを自分自身の中へ移動することはできません。';
+
+  @override
+  String get moveProjectErrorSameLocation => 'プロジェクトは既にそのフォルダーにあります。';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'バージョンスタックには固有のファイルがありません。各バージョンを個別に移動してください。';
+
+  @override
+  String get selectMoveDestinationTitle => '移動先フォルダーを選択';
 }
