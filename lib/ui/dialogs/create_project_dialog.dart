@@ -1067,6 +1067,10 @@ class _CreateProjectDialogState extends ConsumerState<CreateProjectDialog> {
 
   Widget _buildStartStep(AppLocalizations l10n) {
     final templatesAsync = ref.watch(projectTemplatesProvider);
+    // Hidden templates are put away, not deleted — they stay registered so a
+    // template-folder refresh won't re-import them, but they are not offered
+    // here any more.
+    final visibleTemplates = ref.watch(visibleProjectTemplatesProvider);
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -1106,7 +1110,8 @@ class _CreateProjectDialogState extends ConsumerState<CreateProjectDialog> {
           if (_startMode == _StartMode.template)
             Expanded(
               child: templatesAsync.when(
-                data: (templates) {
+                data: (_) {
+                  final templates = visibleTemplates;
                   if (templates.isEmpty) {
                     return Center(
                       child: Column(

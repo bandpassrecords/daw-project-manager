@@ -326,6 +326,32 @@ final showHiddenProjectsProvider =
       return ShowHiddenProjectsNotifier();
     });
 
+// Show hidden templates state provider — same 0/1/2 modes and the same
+// session-only lifetime as ShowHiddenProjectsNotifier above, applied to the
+// project templates table. Templates are hidden rather than deleted while
+// their files are still on disk, so this is how a user gets back to one.
+class ShowHiddenTemplatesNotifier extends Notifier<int> {
+  @override
+  int build() => 0; // Always starts showing only visible templates.
+
+  void setShowAll(bool show) {
+    state = show ? 1 : 0;
+  }
+
+  void setShowOnlyHidden(bool show) {
+    state = show ? 2 : 0;
+  }
+
+  bool get isShowingAll => state == 1;
+  bool get isShowingOnlyHidden => state == 2;
+  bool get isShowingVisible => state == 0;
+}
+
+final showHiddenTemplatesProvider =
+    NotifierProvider<ShowHiddenTemplatesNotifier, int>(() {
+      return ShowHiddenTemplatesNotifier();
+    });
+
 // REMOVEMOS: projectsWatchProvider (substituído pela reatividade do stream abaixo)
 
 // Caches File(...).existsSync() / Directory(...).existsSync() results by
@@ -1488,12 +1514,32 @@ final projectTemplatesProvider = StreamProvider<List<ProjectTemplate>>((
   }
 });
 
+// Selectable Project Templates Provider — every template that is not hidden,
+// for the places that offer templates to pick from (the create-project
+// dialog). Deliberately not tied to showHiddenTemplatesProvider: that mode is
+// the templates page's own view state, and turning it on there must not start
+// offering put-away templates elsewhere in the app.
+final visibleProjectTemplatesProvider = Provider<List<ProjectTemplate>>((ref) {
+  final templatesAsync = ref.watch(projectTemplatesProvider);
+  final templates = templatesAsync.value ?? const <ProjectTemplate>[];
+  return templates.where((t) => !t.hidden).toList();
+});
+
 // Filtered Project Templates Provider — applies the templates page's own
 // search text + DAW/Key filters on top of projectTemplatesProvider,
 // mirroring how projectsProvider layers its filters over allProjectsStreamProvider.
 final filteredProjectTemplatesProvider = Provider<List<ProjectTemplate>>((ref) {
   final templatesAsync = ref.watch(projectTemplatesProvider);
   var templates = templatesAsync.value ?? const <ProjectTemplate>[];
+
+  // Hidden templates are filtered first, exactly as projectsProvider does it
+  // — 0 = visible only, 1 = all, 2 = hidden only.
+  final hiddenMode = ref.watch(showHiddenTemplatesProvider);
+  if (hiddenMode == 0) {
+    templates = templates.where((t) => !t.hidden).toList();
+  } else if (hiddenMode == 2) {
+    templates = templates.where((t) => t.hidden).toList();
+  }
 
   final query = ref.watch(templateSearchProvider).trim().toLowerCase();
   if (query.isNotEmpty) {
@@ -1578,6 +1624,24 @@ class ProjectTemplatesNotifier extends Notifier<void> {
     await ensureHiveInitialized();
     final box = await Hive.openBox<ProjectTemplate>('projectTemplates');
     await box.delete(id);
+  }
+
+  /// Hides or unhides [ids], mirroring the dashboard's hide/unhide of
+  /// projects. The records stay in the box either way, which is what keeps a
+  /// template-folder refresh from re-importing a hidden template as a brand
+  /// new one — its main-file path is still registered.
+  ///
+  /// `updatedAt` is deliberately left alone: hiding is a view preference, and
+  /// bumping it would reshuffle the table's default sort (most recently
+  /// updated first) for every template the user just hid.
+  Future<void> setTemplatesHidden(Iterable<String> ids, bool hidden) async {
+    await ensureHiveInitialized();
+    final box = await Hive.openBox<ProjectTemplate>('projectTemplates');
+    for (final id in ids) {
+      final template = box.get(id);
+      if (template == null || template.hidden == hidden) continue;
+      await box.put(id, template.copyWith(hidden: hidden));
+    }
   }
 
   /// Re-extracts bpm/key/DAW version/project notes from the template's main

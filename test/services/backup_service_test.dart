@@ -388,6 +388,7 @@ void main() {
         dawVersion: '11.3',
         notes: 'Great starting point for peak-time sets',
         projectNotes: 'Author: DJ Example',
+        hidden: true,
       );
 
       final restored =
@@ -404,6 +405,9 @@ void main() {
       expect(restored.dawVersion, '11.3');
       expect(restored.notes, 'Great starting point for peak-time sets');
       expect(restored.projectNotes, 'Author: DJ Example');
+      // Hiding a template is user data, not a device preference — losing it
+      // on restore would resurrect templates the user had put away.
+      expect(restored.hidden, isTrue);
     });
 
     test('ProjectTemplate preserves null optional metadata', () {
@@ -424,6 +428,7 @@ void main() {
       expect(restored.dawVersion, isNull);
       expect(restored.notes, isNull);
       expect(restored.projectNotes, isNull);
+      expect(restored.hidden, isFalse);
     });
 
     test('TemplateRoot preserves all fields', () {

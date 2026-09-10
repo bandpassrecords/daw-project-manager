@@ -943,7 +943,45 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String deleteTemplateConfirm(String name) {
-    return 'Êtes-vous sûr de vouloir supprimer le modèle \"$name\" ?';
+    return 'Êtes-vous sûr de vouloir supprimer le modèle \"$name\" ? Seule l\'entrée du modèle est supprimée — le dossier du modèle sur votre disque est conservé.';
+  }
+
+  @override
+  String deleteTemplateFolderKept(String path) {
+    return 'Dossier conservé sur le disque : $path';
+  }
+
+  @override
+  String templatesCount(int count) {
+    return 'Modèles : $count';
+  }
+
+  @override
+  String templatesHidden(int count, String plural) {
+    return '$count modèle$plural masqué$plural.';
+  }
+
+  @override
+  String templatesUnhidden(int count, String plural) {
+    return '$count modèle$plural réaffiché$plural.';
+  }
+
+  @override
+  String failedToHideTemplates(String error) {
+    return 'Échec du masquage des modèles : $error';
+  }
+
+  @override
+  String failedToUnhideTemplates(String error) {
+    return 'Échec du réaffichage des modèles : $error';
+  }
+
+  @override
+  String get deleteMissingTemplates => 'Supprimer les Manquants';
+
+  @override
+  String deleteMissingTemplatesConfirm(int count, String plural) {
+    return '$count modèle$plural dont le fichier est introuvable sur cette machine sera définitivement supprimé. Seule l\'entrée est supprimée — ce qui reste du dossier du modèle sur votre disque est conservé. Cette action est irréversible.';
   }
 
   @override
@@ -1093,14 +1131,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String templatesSelected(int count, String plural) {
     return '$count modèle$plural sélectionné$plural';
-  }
-
-  @override
-  String get deleteSelectedTemplates => 'Supprimer la sélection';
-
-  @override
-  String deleteSelectedTemplatesConfirm(int count, String plural) {
-    return 'Voulez-vous vraiment supprimer $count modèle$plural ?';
   }
 
   @override

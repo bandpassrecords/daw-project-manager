@@ -894,7 +894,7 @@
   "createTemplate": "Create Template",
   "editTemplate": "Edit Template",
   "deleteTemplate": "Delete Template",
-  "deleteTemplateConfirm": "Are you sure you want to delete template \"{name}\"?",
+  "deleteTemplateConfirm": "Are you sure you want to delete template \"{name}\"? Only the template entry is removed — the template folder on your disk is kept.",
   "@deleteTemplateConfirm": {
     "placeholders": {
       "name": {
@@ -903,6 +903,52 @@
 }
     
 }
+  },
+  "deleteTemplateFolderKept": "Folder kept on disk: {path}",
+  "@deleteTemplateFolderKept": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "templatesCount": "Templates: {count}",
+  "@templatesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "templatesHidden": "{count} template{plural} hidden.",
+  "@templatesHidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "templatesUnhidden": "{count} template{plural} unhidden.",
+  "@templatesUnhidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "failedToHideTemplates": "Failed to hide templates: {error}",
+  "@failedToHideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "failedToUnhideTemplates": "Failed to unhide templates: {error}",
+  "@failedToUnhideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "deleteMissingTemplates": "Delete Missing",
+  "deleteMissingTemplatesConfirm": "{count} template{plural} whose file could not be found on this machine will be permanently deleted. Only the entry is removed — whatever is left of the template folder on your disk is kept. This can't be undone.",
+  "@deleteMissingTemplatesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
   },
   "templateName": "Template Name",
   "templateNameHint": "e.g., Mixing Checklist",
@@ -984,14 +1030,6 @@
   },
   "templatesSelected": "{count} template{plural} selected",
   "@templatesSelected": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
-    }
-  },
-  "deleteSelectedTemplates": "Delete Selected",
-  "deleteSelectedTemplatesConfirm": "Are you sure you want to delete {count} template{plural}?",
-  "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": { "type": "int" },
       "plural": { "type": "String" }

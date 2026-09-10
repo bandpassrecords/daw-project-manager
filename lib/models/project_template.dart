@@ -60,6 +60,14 @@ class ProjectTemplate extends HiveObject {
   @HiveField(10)
   final String? projectNotes;
 
+  /// Hidden from the templates table unless the user asks to see hidden ones
+  /// — the templates equivalent of `MusicProject.hidden`. Hiding, rather
+  /// than deleting, is what a user gets for a template whose files are still
+  /// on disk: the record stays, so a template-folder refresh recognizes the
+  /// path as already registered instead of re-importing it as new.
+  @HiveField(11)
+  final bool hidden;
+
   ProjectTemplate({
     required this.id,
     required this.name,
@@ -72,6 +80,7 @@ class ProjectTemplate extends HiveObject {
     this.dawVersion,
     this.notes,
     this.projectNotes,
+    this.hidden = false,
   });
 
   ProjectTemplate copyWith({
@@ -89,6 +98,7 @@ class ProjectTemplate extends HiveObject {
     String? notes,
     bool clearNotes = false,
     String? projectNotes,
+    bool? hidden,
   }) {
     return ProjectTemplate(
       id: id ?? this.id,
@@ -102,6 +112,7 @@ class ProjectTemplate extends HiveObject {
       dawVersion: dawVersion ?? this.dawVersion,
       notes: clearNotes ? null : (notes ?? this.notes),
       projectNotes: projectNotes ?? this.projectNotes,
+      hidden: hidden ?? this.hidden,
     );
   }
 }

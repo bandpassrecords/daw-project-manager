@@ -761,7 +761,53 @@
   "createTemplate": "Crear Plantilla",
   "editTemplate": "Editar Plantilla",
   "deleteTemplate": "Eliminar Plantilla",
-  "deleteTemplateConfirm": "¿Estás seguro de eliminar la plantilla \"{name}\"?",
+  "deleteTemplateConfirm": "¿Estás seguro de eliminar la plantilla \"{name}\"? Solo se elimina la entrada de la plantilla; la carpeta de la plantilla en tu disco se conserva.",
+  "deleteTemplateFolderKept": "Carpeta conservada en el disco: {path}",
+  "@deleteTemplateFolderKept": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "templatesCount": "Plantillas: {count}",
+  "@templatesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "templatesHidden": "{count} plantilla{plural} ocultada{plural}.",
+  "@templatesHidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "templatesUnhidden": "{count} plantilla{plural} vuelta{plural} a mostrar.",
+  "@templatesUnhidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "failedToHideTemplates": "Error al ocultar las plantillas: {error}",
+  "@failedToHideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "failedToUnhideTemplates": "Error al volver a mostrar las plantillas: {error}",
+  "@failedToUnhideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "deleteMissingTemplates": "Eliminar Faltantes",
+  "deleteMissingTemplatesConfirm": "{count} plantilla{plural} cuyo archivo no se encontró en este equipo se eliminará permanentemente. Solo se elimina la entrada; lo que quede de la carpeta de la plantilla en tu disco se conserva. Esto no se puede deshacer.",
+  "@deleteMissingTemplatesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "templateName": "Nombre de la Plantilla",
   "templateNameHint": "ej. Lista de Mezcla",
   "templateItems": "Elementos de la Plantilla",
@@ -821,14 +867,6 @@
   },
   "templatesSelected": "{count} plantilla{plural} seleccionada{plural}",
   "@templatesSelected": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
-    }
-  },
-  "deleteSelectedTemplates": "Eliminar selección",
-  "deleteSelectedTemplatesConfirm": "¿Seguro que quieres eliminar {count} plantilla{plural}?",
-  "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": { "type": "int" },
       "plural": { "type": "String" }

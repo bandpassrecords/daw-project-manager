@@ -107,13 +107,45 @@ class _TemplateDetailPageState extends ConsumerState<TemplateDetailPage> {
         );
   }
 
+  /// Hides or unhides this template, mirroring the templates table's own
+  /// hide action. Leaving the record in place is what keeps a template-folder
+  /// refresh from re-importing it as a brand new template.
+  Future<void> _setHidden(ProjectTemplate template, bool hidden) async {
+    final l10n = AppLocalizations.of(context)!;
+    await ref
+        .read(projectTemplatesNotifierProvider.notifier)
+        .setTemplatesHidden([template.id], hidden);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            hidden
+                ? l10n.templatesHidden(1, '')
+                : l10n.templatesUnhidden(1, ''),
+          ),
+        ),
+      );
+    }
+  }
+
   Future<void> _deleteTemplate(ProjectTemplate template) async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.deleteTemplate),
-        content: Text(l10n.deleteTemplateConfirm(template.name)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.deleteTemplateConfirm(template.name)),
+            const SizedBox(height: 12),
+            Text(
+              l10n.deleteTemplateFolderKept(template.sourceFolderPath),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
@@ -121,7 +153,10 @@ class _TemplateDetailPageState extends ConsumerState<TemplateDetailPage> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: Text(l10n.delete),
           ),
         ],
@@ -317,14 +352,34 @@ class _TemplateDetailPageState extends ConsumerState<TemplateDetailPage> {
                         label: Text(l10n.duplicateTemplate),
                       ),
                       OutlinedButton.icon(
-                        onPressed: () => _deleteTemplate(currentTemplate),
-                        icon: const Icon(
-                          Icons.delete,
-                          size: 16,
-                          color: Colors.red,
+                        onPressed: () => _setHidden(
+                          currentTemplate,
+                          !currentTemplate.hidden,
                         ),
-                        label: Text(l10n.delete),
+                        icon: Icon(
+                          currentTemplate.hidden
+                              ? Icons.visibility
+                              : Icons.visibility_off_outlined,
+                          size: 16,
+                        ),
+                        label: Text(
+                          currentTemplate.hidden ? l10n.unhide : l10n.hide,
+                        ),
                       ),
+                      // Deleting is offered only once the main file is gone —
+                      // otherwise hiding is the durable answer, since a
+                      // template-folder refresh would re-import a deleted
+                      // template as a brand new one.
+                      if (!sourceExists)
+                        OutlinedButton.icon(
+                          onPressed: () => _deleteTemplate(currentTemplate),
+                          icon: const Icon(
+                            Icons.delete,
+                            size: 16,
+                            color: Colors.red,
+                          ),
+                          label: Text(l10n.delete),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 16),

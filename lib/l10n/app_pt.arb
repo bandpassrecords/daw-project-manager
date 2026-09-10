@@ -761,7 +761,53 @@
   "createTemplate": "Criar Template",
   "editTemplate": "Editar Template",
   "deleteTemplate": "Excluir Template",
-  "deleteTemplateConfirm": "Tem certeza que deseja excluir o template \"{name}\"?",
+  "deleteTemplateConfirm": "Tem certeza que deseja excluir o template \"{name}\"? Apenas o registro do template é removido — a pasta do template no seu disco é mantida.",
+  "deleteTemplateFolderKept": "Pasta mantida no disco: {path}",
+  "@deleteTemplateFolderKept": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "templatesCount": "Templates: {count}",
+  "@templatesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "templatesHidden": "{count} template{plural} ocultado{plural}.",
+  "@templatesHidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "templatesUnhidden": "{count} template{plural} exibido{plural} novamente.",
+  "@templatesUnhidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "failedToHideTemplates": "Falha ao ocultar templates: {error}",
+  "@failedToHideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "failedToUnhideTemplates": "Falha ao exibir templates novamente: {error}",
+  "@failedToUnhideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "deleteMissingTemplates": "Excluir Ausentes",
+  "deleteMissingTemplatesConfirm": "{count} template{plural} cujo arquivo não foi encontrado nesta máquina será excluído permanentemente. Apenas o registro é removido — o que restar da pasta do template no seu disco é mantido. Isso não pode ser desfeito.",
+  "@deleteMissingTemplatesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "templateName": "Nome do Template",
   "templateNameHint": "ex. Checklist de Mixagem",
   "templateItems": "Itens do Template",
@@ -821,14 +867,6 @@
   },
   "templatesSelected": "{count} template{plural} selecionado{plural}",
   "@templatesSelected": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
-    }
-  },
-  "deleteSelectedTemplates": "Excluir selecionados",
-  "deleteSelectedTemplatesConfirm": "Tem certeza de que deseja excluir {count} template{plural}?",
-  "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": { "type": "int" },
       "plural": { "type": "String" }

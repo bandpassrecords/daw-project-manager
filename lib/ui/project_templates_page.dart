@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show kDebugMode, visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,6 +46,31 @@ int compareTemplateModifiedCellValues(dynamic a, dynamic b) {
   if (dateA == null) return -1;
   if (dateB == null) return 1;
   return dateA.compareTo(dateB);
+}
+
+/// Whether [template]'s main project file is still on disk. A template
+/// whose file is gone can no longer be used for anything, which is the only
+/// state in which deleting it is offered — everything else is hidden
+/// instead, exactly as the dashboard treats projects.
+bool templateFileExists(ProjectTemplate template) => File(
+  p.join(template.sourceFolderPath, template.mainFileRelativePath),
+).existsSync();
+
+/// The subset of [selectedIds] among [templates] whose main file no longer
+/// exists on disk — the exact set the "Delete Missing" bulk action targets,
+/// mirroring `missingProjectIds` on the dashboard. Templates still present on
+/// disk are left alone even if selected alongside missing ones, so a mixed
+/// selection only ever deletes the missing half.
+@visibleForTesting
+List<String> missingTemplateIds(
+  List<ProjectTemplate> templates,
+  Iterable<String> selectedIds,
+) {
+  final selected = selectedIds.toSet();
+  return templates
+      .where((t) => selected.contains(t.id) && !templateFileExists(t))
+      .map((t) => t.id)
+      .toList();
 }
 
 class ProjectTemplatesPage extends ConsumerStatefulWidget {
@@ -155,15 +180,67 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
 
   void _clearTemplateSelection() => _clickSelection.clear();
 
-  Future<void> _deleteSelectedTemplates(List<ProjectTemplate> selected) async {
+  /// Hides or unhides every template in [selected]. Hiding is the answer for
+  /// a template the user is done with but whose files are still on disk:
+  /// deleting the record would only make the next template-folder refresh
+  /// re-import it as a brand new template, losing the name, notes and
+  /// metadata edits along the way.
+  Future<void> _setTemplatesHidden(
+    List<ProjectTemplate> selected,
+    bool hidden,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     final plural = selected.length == 1 ? '' : 's';
+    try {
+      await ref
+          .read(projectTemplatesNotifierProvider.notifier)
+          .setTemplatesHidden(selected.map((t) => t.id), hidden);
+      _clearTemplateSelection();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              hidden
+                  ? l10n.templatesHidden(selected.length, plural)
+                  : l10n.templatesUnhidden(selected.length, plural),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              hidden
+                  ? l10n.failedToHideTemplates(e.toString())
+                  : l10n.failedToUnhideTemplates(e.toString()),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Permanently deletes whichever of [selected] are missing (main file gone
+  /// from disk) — templates still present are left untouched even if
+  /// selected alongside missing ones, matching the dashboard's "Delete
+  /// Missing" for projects. Nothing on disk is touched either way.
+  Future<void> _deleteMissingTemplates(List<ProjectTemplate> selected) async {
+    final l10n = AppLocalizations.of(context)!;
+    final missingIds = missingTemplateIds(
+      selected,
+      selected.map((t) => t.id),
+    ).toSet();
+    if (missingIds.isEmpty) return;
+    final plural = missingIds.length == 1 ? '' : 's';
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.deleteSelectedTemplates),
+        title: Text(l10n.deleteMissingTemplates),
         content: Text(
-          l10n.deleteSelectedTemplatesConfirm(selected.length, plural),
+          l10n.deleteMissingTemplatesConfirm(missingIds.length, plural),
         ),
         actions: [
           TextButton(
@@ -172,7 +249,10 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: Text(l10n.delete),
           ),
         ],
@@ -181,13 +261,15 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
     if (confirmed != true) return;
 
     final notifier = ref.read(projectTemplatesNotifierProvider.notifier);
-    for (final template in selected) {
-      await notifier.deleteTemplate(template.id);
+    for (final id in missingIds) {
+      await notifier.deleteTemplate(id);
     }
     _clearTemplateSelection();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.templatesDeleted(selected.length, plural))),
+        SnackBar(
+          content: Text(l10n.templatesDeleted(missingIds.length, plural)),
+        ),
       );
     }
   }
@@ -413,7 +495,10 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: Text(l10n.remove),
           ),
         ],
@@ -529,7 +614,18 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.deleteTemplate),
-        content: Text(l10n.deleteTemplateConfirm(template.name)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.deleteTemplateConfirm(template.name)),
+            const SizedBox(height: 12),
+            Text(
+              l10n.deleteTemplateFolderKept(template.sourceFolderPath),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
@@ -537,7 +633,10 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: Text(l10n.delete),
           ),
         ],
@@ -900,11 +999,27 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                     : null,
               ),
               IconButton(
-                icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                tooltip: l10n.delete,
+                icon: Icon(
+                  template.hidden
+                      ? Icons.visibility
+                      : Icons.visibility_off_outlined,
+                  size: 18,
+                ),
+                tooltip: template.hidden ? l10n.unhide : l10n.hide,
                 visualDensity: VisualDensity.compact,
-                onPressed: () => _deleteTemplate(template),
+                onPressed: () =>
+                    _setTemplatesHidden([template], !template.hidden),
               ),
+              // Deleting is offered only once the main file is gone: while it
+              // is still on disk the template can be re-imported by a
+              // template-folder refresh, so hiding is the durable answer.
+              if (!sourceExists)
+                IconButton(
+                  icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                  tooltip: l10n.delete,
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => _deleteTemplate(template),
+                ),
             ],
           );
         },
@@ -965,8 +1080,13 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
     final availableDaws = ref.watch(availableTemplateDawsProvider);
     final keyFilter = ref.watch(templateKeyFilterProvider);
     final availableKeys = ref.watch(availableTemplateKeysProvider);
-    final hasAnyFilterOptions =
-        availableDaws.isNotEmpty || availableKeys.isNotEmpty;
+    // Counted across every registered template, not the filtered list, so
+    // the "show hidden" controls stay reachable while a DAW/key filter or a
+    // search happens to be narrowing everything out.
+    final allTemplates = templatesAsync.value ?? const <ProjectTemplate>[];
+    final hiddenTemplateCount = allTemplates.where((t) => t.hidden).length;
+    final hiddenMode = ref.watch(showHiddenTemplatesProvider);
+    final hiddenNotifier = ref.read(showHiddenTemplatesProvider.notifier);
     final isMobile = MobileUtils.isMobile();
     final activeTheme = ref.watch(themeDataProvider);
     final themeSpec = ref.watch(activeThemeProvider);
@@ -1056,62 +1176,152 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                     ],
                   ),
                 ),
-                if (hasAnyFilterOptions)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Row(
-                      children: [
-                        if (availableDaws.isNotEmpty) ...[
-                          FilterDropdown<String>(
-                            icon: Icons.piano,
-                            value: dawFilter,
-                            hintText: l10n.filterByDaw,
-                            items: [
-                              DropdownMenuItem<String>(
-                                value: null,
-                                child: Text(l10n.allDaws),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: Row(
+                    children: [
+                      if (availableDaws.isNotEmpty) ...[
+                        FilterDropdown<String>(
+                          icon: Icons.piano,
+                          value: dawFilter,
+                          hintText: l10n.filterByDaw,
+                          items: [
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text(l10n.allDaws),
+                            ),
+                            ...availableDaws.map(
+                              (daw) => DropdownMenuItem<String>(
+                                value: daw,
+                                child: Text(daw),
                               ),
-                              ...availableDaws.map(
-                                (daw) => DropdownMenuItem<String>(
-                                  value: daw,
-                                  child: Text(daw),
-                                ),
-                              ),
-                            ],
-                            onChanged: (value) {
-                              ref
-                                  .read(templateDawFilterProvider.notifier)
-                                  .setDaw(value);
-                            },
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                        if (availableKeys.isNotEmpty)
-                          FilterDropdown<String>(
-                            icon: Icons.music_note,
-                            value: keyFilter,
-                            hintText: l10n.filterByKey,
-                            items: [
-                              DropdownMenuItem<String>(
-                                value: null,
-                                child: Text(l10n.allKeys),
-                              ),
-                              ...availableKeys.map(
-                                (key) => DropdownMenuItem<String>(
-                                  value: key,
-                                  child: Text(key),
-                                ),
-                              ),
-                            ],
-                            onChanged: (value) {
-                              ref
-                                  .read(templateKeyFilterProvider.notifier)
-                                  .setKey(value);
-                            },
-                          ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            ref
+                                .read(templateDawFilterProvider.notifier)
+                                .setDaw(value);
+                          },
+                        ),
+                        const SizedBox(width: 8),
                       ],
-                    ),
+                      if (availableKeys.isNotEmpty)
+                        FilterDropdown<String>(
+                          icon: Icons.music_note,
+                          value: keyFilter,
+                          hintText: l10n.filterByKey,
+                          items: [
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text(l10n.allKeys),
+                            ),
+                            ...availableKeys.map(
+                              (key) => DropdownMenuItem<String>(
+                                value: key,
+                                child: Text(key),
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            ref
+                                .read(templateKeyFilterProvider.notifier)
+                                .setKey(value);
+                          },
+                        ),
+                      const Spacer(),
+                      Text(
+                        hiddenMode == 2
+                            ? '${l10n.templatesCount(filtered.length)} ${l10n.hiddenOnly}'
+                            : (hiddenTemplateCount > 0 && hiddenMode == 0)
+                            ? '${l10n.templatesCount(filtered.length)} ${l10n.hiddenCount(hiddenTemplateCount)}'
+                            : l10n.templatesCount(filtered.length),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: hiddenMode == 2
+                              ? Colors.orange.shade700
+                              : Theme.of(context).textTheme.bodySmall?.color,
+                        ),
+                      ),
+                      // Only worth showing once something is actually
+                      // hidden — except while a hidden-only/show-all mode is
+                      // on, where these are the way back out of it.
+                      if (hiddenTemplateCount > 0 || hiddenMode != 0) ...[
+                        const SizedBox(width: 12),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Checkbox(
+                              value: hiddenMode == 1,
+                              visualDensity: VisualDensity.compact,
+                              onChanged: (value) =>
+                                  hiddenNotifier.setShowAll(value == true),
+                            ),
+                            Text(
+                              l10n.showHidden,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 8),
+                        // Stack keeps the button at the width of whichever
+                        // label is wider — the ghost (opposite label,
+                        // opacity 0) pins the layout so toggling it doesn't
+                        // shuffle the row, same as the dashboard's.
+                        Stack(
+                          children: [
+                            Opacity(
+                              opacity: 0,
+                              child: IgnorePointer(
+                                child: TextButton.icon(
+                                  icon: Icon(
+                                    hiddenMode == 2
+                                        ? Icons.visibility_off_outlined
+                                        : Icons.visibility,
+                                    size: 16,
+                                  ),
+                                  label: Text(
+                                    hiddenMode == 2
+                                        ? l10n.showOnlyHidden
+                                        : l10n.showAll,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ),
+                            TextButton.icon(
+                              icon: Icon(
+                                hiddenMode == 2
+                                    ? Icons.visibility
+                                    : Icons.visibility_off_outlined,
+                                size: 16,
+                              ),
+                              label: Text(
+                                hiddenMode == 2
+                                    ? l10n.showAll
+                                    : l10n.showOnlyHidden,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              style: TextButton.styleFrom(
+                                backgroundColor: hiddenMode == 2
+                                    ? Colors.orange.shade700
+                                    : null,
+                                foregroundColor: hiddenMode == 2
+                                    ? Colors.white
+                                    : Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium?.color,
+                              ),
+                              onPressed: () => hiddenNotifier.setShowOnlyHidden(
+                                hiddenMode != 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
                   ),
+                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -1357,6 +1567,12 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
     List<ProjectTemplate> selected,
   ) {
     final plural = selected.length == 1 ? '' : 's';
+    final allHidden = selected.isNotEmpty && selected.every((t) => t.hidden);
+    final allVisible = selected.isNotEmpty && selected.every((t) => !t.hidden);
+    final missingCount = missingTemplateIds(
+      selected,
+      selected.map((t) => t.id),
+    ).length;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: Theme.of(context).cardColor,
@@ -1376,15 +1592,43 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                 child: Text(l10n.clearSelection),
               ),
               const SizedBox(width: 8),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.delete),
-                label: Text(l10n.deleteSelectedTemplates),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade700,
-                  foregroundColor: Colors.white,
+              // Same shape as the dashboard's bulk bar: one button when the
+              // selection is all-hidden or all-visible, both when it is mixed.
+              if (!allHidden)
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.visibility_off),
+                  label: Text(l10n.hide),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange.shade700,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => _setTemplatesHidden(selected, true),
                 ),
-                onPressed: () => _deleteSelectedTemplates(selected),
-              ),
+              if (!allHidden && !allVisible) const SizedBox(width: 8),
+              if (!allVisible)
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.visibility),
+                  label: Text(l10n.unhide),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green.shade700,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => _setTemplatesHidden(selected, false),
+                ),
+              // Shown only when something selected is actually missing, so
+              // permanent deletion never sits next to a healthy selection.
+              if (missingCount > 0) ...[
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.delete_forever),
+                  label: Text(l10n.deleteMissingTemplates),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade700,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => _deleteMissingTemplates(selected),
+                ),
+              ],
             ],
           ),
         ],

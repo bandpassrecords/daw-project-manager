@@ -939,7 +939,45 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String deleteTemplateConfirm(String name) {
-    return 'Möchten Sie die Vorlage \"$name\" wirklich löschen?';
+    return 'Möchten Sie die Vorlage \"$name\" wirklich löschen? Nur der Vorlageneintrag wird entfernt — der Vorlagenordner auf Ihrer Festplatte bleibt erhalten.';
+  }
+
+  @override
+  String deleteTemplateFolderKept(String path) {
+    return 'Ordner bleibt auf der Festplatte erhalten: $path';
+  }
+
+  @override
+  String templatesCount(int count) {
+    return 'Vorlagen: $count';
+  }
+
+  @override
+  String templatesHidden(int count, String plural) {
+    return '$count Vorlage$plural ausgeblendet.';
+  }
+
+  @override
+  String templatesUnhidden(int count, String plural) {
+    return '$count Vorlage$plural wieder eingeblendet.';
+  }
+
+  @override
+  String failedToHideTemplates(String error) {
+    return 'Vorlagen konnten nicht ausgeblendet werden: $error';
+  }
+
+  @override
+  String failedToUnhideTemplates(String error) {
+    return 'Vorlagen konnten nicht wieder eingeblendet werden: $error';
+  }
+
+  @override
+  String get deleteMissingTemplates => 'Fehlende Löschen';
+
+  @override
+  String deleteMissingTemplatesConfirm(int count, String plural) {
+    return '$count Vorlage$plural, deren Datei auf diesem Computer nicht gefunden wurde, wird endgültig gelöscht. Nur der Eintrag wird entfernt — was vom Vorlagenordner auf Ihrer Festplatte übrig ist, bleibt erhalten. Dies kann nicht rückgängig gemacht werden.';
   }
 
   @override
@@ -1088,14 +1126,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String templatesSelected(int count, String plural) {
     return '$count Vorlage$plural ausgewählt';
-  }
-
-  @override
-  String get deleteSelectedTemplates => 'Auswahl löschen';
-
-  @override
-  String deleteSelectedTemplatesConfirm(int count, String plural) {
-    return 'Möchten Sie $count Vorlage$plural wirklich löschen?';
   }
 
   @override

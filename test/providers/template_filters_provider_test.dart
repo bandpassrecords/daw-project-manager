@@ -11,6 +11,7 @@ ProjectTemplate _makeTemplate({
   String name = 'Song Template',
   String mainFileRelativePath = 'Song Template.als',
   String? musicalKey,
+  bool hidden = false,
 }) {
   return ProjectTemplate(
     id: id,
@@ -20,6 +21,7 @@ ProjectTemplate _makeTemplate({
     createdAt: DateTime(2025, 1, 1),
     updatedAt: DateTime(2025, 1, 1),
     musicalKey: musicalKey,
+    hidden: hidden,
   );
 }
 
@@ -54,6 +56,109 @@ Future<T> _afterTemplatesLoaded<T>(
 }
 
 void main() {
+  // Same three modes as the dashboard's showHiddenProjectsProvider:
+  // 0 = visible only (default), 1 = all, 2 = hidden only.
+  group('filteredProjectTemplatesProvider — hidden templates', () {
+    test('hides hidden templates by default', () async {
+      final c = _makeContainer([
+        _makeTemplate(id: 'visible'),
+        _makeTemplate(id: 'gone', hidden: true),
+      ]);
+      addTearDown(c.dispose);
+
+      final ids = await _afterTemplatesLoaded(
+        c,
+        () =>
+            c.read(filteredProjectTemplatesProvider).map((t) => t.id).toList(),
+      );
+      expect(ids, ['visible']);
+    });
+
+    test('show-all mode (1) returns both', () async {
+      final c = _makeContainer([
+        _makeTemplate(id: 'visible'),
+        _makeTemplate(id: 'gone', hidden: true),
+      ]);
+      addTearDown(c.dispose);
+      c.read(showHiddenTemplatesProvider.notifier).setShowAll(true);
+
+      final ids = await _afterTemplatesLoaded(
+        c,
+        () =>
+            c.read(filteredProjectTemplatesProvider).map((t) => t.id).toList(),
+      );
+      expect(ids, ['visible', 'gone']);
+    });
+
+    test('hidden-only mode (2) returns just the hidden ones', () async {
+      final c = _makeContainer([
+        _makeTemplate(id: 'visible'),
+        _makeTemplate(id: 'gone', hidden: true),
+      ]);
+      addTearDown(c.dispose);
+      c.read(showHiddenTemplatesProvider.notifier).setShowOnlyHidden(true);
+
+      final ids = await _afterTemplatesLoaded(
+        c,
+        () =>
+            c.read(filteredProjectTemplatesProvider).map((t) => t.id).toList(),
+      );
+      expect(ids, ['gone']);
+    });
+
+    test('search still applies on top of the hidden filter', () async {
+      final c = _makeContainer([
+        _makeTemplate(id: 'a', name: 'Bass Session', hidden: true),
+        _makeTemplate(id: 'b', name: 'Drum Loop', hidden: true),
+      ]);
+      addTearDown(c.dispose);
+      c.read(showHiddenTemplatesProvider.notifier).setShowOnlyHidden(true);
+      c.read(templateSearchProvider.notifier).setSearchText('bass');
+
+      final ids = await _afterTemplatesLoaded(
+        c,
+        () =>
+            c.read(filteredProjectTemplatesProvider).map((t) => t.id).toList(),
+      );
+      expect(ids, ['a']);
+    });
+  });
+
+  // What the create-project dialog picks from. Kept separate from the
+  // templates page's show-hidden mode on purpose: switching that page to
+  // "show all" must not start offering put-away templates when creating a
+  // project.
+  group('visibleProjectTemplatesProvider', () {
+    test('excludes hidden templates', () async {
+      final c = _makeContainer([
+        _makeTemplate(id: 'visible'),
+        _makeTemplate(id: 'gone', hidden: true),
+      ]);
+      addTearDown(c.dispose);
+
+      final ids = await _afterTemplatesLoaded(
+        c,
+        () => c.read(visibleProjectTemplatesProvider).map((t) => t.id).toList(),
+      );
+      expect(ids, ['visible']);
+    });
+
+    test('is unaffected by the templates page show-hidden mode', () async {
+      final c = _makeContainer([
+        _makeTemplate(id: 'visible'),
+        _makeTemplate(id: 'gone', hidden: true),
+      ]);
+      addTearDown(c.dispose);
+      c.read(showHiddenTemplatesProvider.notifier).setShowAll(true);
+
+      final ids = await _afterTemplatesLoaded(
+        c,
+        () => c.read(visibleProjectTemplatesProvider).map((t) => t.id).toList(),
+      );
+      expect(ids, ['visible']);
+    });
+  });
+
   group('filteredProjectTemplatesProvider — search text', () {
     test('filters by template name, case-insensitively', () async {
       final c = _makeContainer([

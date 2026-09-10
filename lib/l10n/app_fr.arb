@@ -761,7 +761,53 @@
   "createTemplate": "Créer un Modèle",
   "editTemplate": "Modifier le Modèle",
   "deleteTemplate": "Supprimer le Modèle",
-  "deleteTemplateConfirm": "Êtes-vous sûr de vouloir supprimer le modèle \"{name}\" ?",
+  "deleteTemplateConfirm": "Êtes-vous sûr de vouloir supprimer le modèle \"{name}\" ? Seule l'entrée du modèle est supprimée — le dossier du modèle sur votre disque est conservé.",
+  "deleteTemplateFolderKept": "Dossier conservé sur le disque : {path}",
+  "@deleteTemplateFolderKept": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "templatesCount": "Modèles : {count}",
+  "@templatesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "templatesHidden": "{count} modèle{plural} masqué{plural}.",
+  "@templatesHidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "templatesUnhidden": "{count} modèle{plural} réaffiché{plural}.",
+  "@templatesUnhidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "failedToHideTemplates": "Échec du masquage des modèles : {error}",
+  "@failedToHideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "failedToUnhideTemplates": "Échec du réaffichage des modèles : {error}",
+  "@failedToUnhideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "deleteMissingTemplates": "Supprimer les Manquants",
+  "deleteMissingTemplatesConfirm": "{count} modèle{plural} dont le fichier est introuvable sur cette machine sera définitivement supprimé. Seule l'entrée est supprimée — ce qui reste du dossier du modèle sur votre disque est conservé. Cette action est irréversible.",
+  "@deleteMissingTemplatesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "templateName": "Nom du Modèle",
   "templateNameHint": "ex. Liste de Mixage",
   "templateItems": "Éléments du Modèle",
@@ -821,14 +867,6 @@
   },
   "templatesSelected": "{count} modèle{plural} sélectionné{plural}",
   "@templatesSelected": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
-    }
-  },
-  "deleteSelectedTemplates": "Supprimer la sélection",
-  "deleteSelectedTemplatesConfirm": "Voulez-vous vraiment supprimer {count} modèle{plural} ?",
-  "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": { "type": "int" },
       "plural": { "type": "String" }

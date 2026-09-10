@@ -28,13 +28,14 @@ class ProjectTemplateAdapter extends TypeAdapter<ProjectTemplate> {
       dawVersion: fields[8] as String?,
       notes: fields[9] as String?,
       projectNotes: fields[10] as String?,
+      hidden: fields[11] == null ? false : fields[11] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProjectTemplate obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +57,9 @@ class ProjectTemplateAdapter extends TypeAdapter<ProjectTemplate> {
       ..writeByte(9)
       ..write(obj.notes)
       ..writeByte(10)
-      ..write(obj.projectNotes);
+      ..write(obj.projectNotes)
+      ..writeByte(11)
+      ..write(obj.hidden);
   }
 
   @override

@@ -926,7 +926,45 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String deleteTemplateConfirm(String name) {
-    return 'テンプレート「$name」を削除してもよろしいですか？';
+    return 'テンプレート「$name」を削除してもよろしいですか？削除されるのはテンプレートの登録情報だけで、ディスク上のテンプレートフォルダは残ります。';
+  }
+
+  @override
+  String deleteTemplateFolderKept(String path) {
+    return 'ディスク上に残るフォルダ: $path';
+  }
+
+  @override
+  String templatesCount(int count) {
+    return 'テンプレート: $count件';
+  }
+
+  @override
+  String templatesHidden(int count, String plural) {
+    return '$count件のテンプレート$pluralを非表示にしました。';
+  }
+
+  @override
+  String templatesUnhidden(int count, String plural) {
+    return '$count件のテンプレート$pluralを再表示しました。';
+  }
+
+  @override
+  String failedToHideTemplates(String error) {
+    return 'テンプレートを非表示にできませんでした: $error';
+  }
+
+  @override
+  String failedToUnhideTemplates(String error) {
+    return 'テンプレートを再表示できませんでした: $error';
+  }
+
+  @override
+  String get deleteMissingTemplates => '見つからないものを削除';
+
+  @override
+  String deleteMissingTemplatesConfirm(int count, String plural) {
+    return 'このマシンでファイルが見つからなかった$count件のテンプレート$pluralを完全に削除します。削除されるのは登録情報だけで、ディスク上に残っているテンプレートフォルダはそのままです。この操作は取り消せません。';
   }
 
   @override
@@ -1068,14 +1106,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String templatesSelected(int count, String plural) {
     return '$count件のテンプレート$pluralを選択しました';
-  }
-
-  @override
-  String get deleteSelectedTemplates => '選択項目を削除';
-
-  @override
-  String deleteSelectedTemplatesConfirm(int count, String plural) {
-    return '$count件のテンプレート$pluralを削除してもよろしいですか?';
   }
 
   @override

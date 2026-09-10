@@ -5280,6 +5280,7 @@ class GoogleDriveSyncService {
       'dawVersion': template.dawVersion,
       'notes': template.notes,
       'projectNotes': template.projectNotes,
+      'hidden': template.hidden,
     };
   }
 
@@ -5296,6 +5297,7 @@ class GoogleDriveSyncService {
       dawVersion: data['dawVersion'] as String?,
       notes: data['notes'] as String?,
       projectNotes: data['projectNotes'] as String?,
+      hidden: data['hidden'] as bool? ?? false,
     );
   }
 

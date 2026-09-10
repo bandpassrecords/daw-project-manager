@@ -936,7 +936,45 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String deleteTemplateConfirm(String name) {
-    return 'Tem certeza que deseja excluir o template \"$name\"?';
+    return 'Tem certeza que deseja excluir o template \"$name\"? Apenas o registro do template é removido — a pasta do template no seu disco é mantida.';
+  }
+
+  @override
+  String deleteTemplateFolderKept(String path) {
+    return 'Pasta mantida no disco: $path';
+  }
+
+  @override
+  String templatesCount(int count) {
+    return 'Templates: $count';
+  }
+
+  @override
+  String templatesHidden(int count, String plural) {
+    return '$count template$plural ocultado$plural.';
+  }
+
+  @override
+  String templatesUnhidden(int count, String plural) {
+    return '$count template$plural exibido$plural novamente.';
+  }
+
+  @override
+  String failedToHideTemplates(String error) {
+    return 'Falha ao ocultar templates: $error';
+  }
+
+  @override
+  String failedToUnhideTemplates(String error) {
+    return 'Falha ao exibir templates novamente: $error';
+  }
+
+  @override
+  String get deleteMissingTemplates => 'Excluir Ausentes';
+
+  @override
+  String deleteMissingTemplatesConfirm(int count, String plural) {
+    return '$count template$plural cujo arquivo não foi encontrado nesta máquina será excluído permanentemente. Apenas o registro é removido — o que restar da pasta do template no seu disco é mantido. Isso não pode ser desfeito.';
   }
 
   @override
@@ -1087,14 +1125,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String templatesSelected(int count, String plural) {
     return '$count template$plural selecionado$plural';
-  }
-
-  @override
-  String get deleteSelectedTemplates => 'Excluir selecionados';
-
-  @override
-  String deleteSelectedTemplatesConfirm(int count, String plural) {
-    return 'Tem certeza de que deseja excluir $count template$plural?';
   }
 
   @override

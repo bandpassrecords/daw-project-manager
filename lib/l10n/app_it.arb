@@ -761,7 +761,53 @@
   "createTemplate": "Crea Modello",
   "editTemplate": "Modifica Modello",
   "deleteTemplate": "Elimina Modello",
-  "deleteTemplateConfirm": "Sei sicuro di voler eliminare il modello \"{name}\"?",
+  "deleteTemplateConfirm": "Sei sicuro di voler eliminare il modello \"{name}\"? Viene rimossa solo la voce del modello — la cartella del modello sul disco viene mantenuta.",
+  "deleteTemplateFolderKept": "Cartella mantenuta sul disco: {path}",
+  "@deleteTemplateFolderKept": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "templatesCount": "Modelli: {count}",
+  "@templatesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "templatesHidden": "{count} modello{plural} nascosto{plural}.",
+  "@templatesHidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "templatesUnhidden": "{count} modello{plural} di nuovo visibile.",
+  "@templatesUnhidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "failedToHideTemplates": "Impossibile nascondere i modelli: {error}",
+  "@failedToHideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "failedToUnhideTemplates": "Impossibile mostrare di nuovo i modelli: {error}",
+  "@failedToUnhideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "deleteMissingTemplates": "Elimina Mancanti",
+  "deleteMissingTemplatesConfirm": "{count} modello{plural} il cui file non è stato trovato su questo computer verrà eliminato definitivamente. Viene rimossa solo la voce — quel che resta della cartella del modello sul disco viene mantenuto. Questa azione non può essere annullata.",
+  "@deleteMissingTemplatesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "templateName": "Nome Modello",
   "templateNameHint": "es. Lista di Mixaggio",
   "templateItems": "Elementi del Modello",
@@ -821,14 +867,6 @@
   },
   "templatesSelected": "{count} modello{plural} selezionato{plural}",
   "@templatesSelected": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
-    }
-  },
-  "deleteSelectedTemplates": "Elimina selezione",
-  "deleteSelectedTemplatesConfirm": "Eliminare {count} modello{plural}?",
-  "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": { "type": "int" },
       "plural": { "type": "String" }

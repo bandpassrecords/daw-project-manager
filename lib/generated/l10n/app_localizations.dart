@@ -1658,8 +1658,56 @@ abstract class AppLocalizations {
   /// No description provided for @deleteTemplateConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete template \"{name}\"?'**
+  /// **'Are you sure you want to delete template \"{name}\"? Only the template entry is removed — the template folder on your disk is kept.'**
   String deleteTemplateConfirm(String name);
+
+  /// No description provided for @deleteTemplateFolderKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder kept on disk: {path}'**
+  String deleteTemplateFolderKept(String path);
+
+  /// No description provided for @templatesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Templates: {count}'**
+  String templatesCount(int count);
+
+  /// No description provided for @templatesHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} template{plural} hidden.'**
+  String templatesHidden(int count, String plural);
+
+  /// No description provided for @templatesUnhidden.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} template{plural} unhidden.'**
+  String templatesUnhidden(int count, String plural);
+
+  /// No description provided for @failedToHideTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to hide templates: {error}'**
+  String failedToHideTemplates(String error);
+
+  /// No description provided for @failedToUnhideTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to unhide templates: {error}'**
+  String failedToUnhideTemplates(String error);
+
+  /// No description provided for @deleteMissingTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Missing'**
+  String get deleteMissingTemplates;
+
+  /// No description provided for @deleteMissingTemplatesConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} template{plural} whose file could not be found on this machine will be permanently deleted. Only the entry is removed — whatever is left of the template folder on your disk is kept. This can\'t be undone.'**
+  String deleteMissingTemplatesConfirm(int count, String plural);
 
   /// No description provided for @templateName.
   ///
@@ -1918,18 +1966,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} template{plural} selected'**
   String templatesSelected(int count, String plural);
-
-  /// No description provided for @deleteSelectedTemplates.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete Selected'**
-  String get deleteSelectedTemplates;
-
-  /// No description provided for @deleteSelectedTemplatesConfirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to delete {count} template{plural}?'**
-  String deleteSelectedTemplatesConfirm(int count, String plural);
 
   /// No description provided for @templatesDeleted.
   ///

@@ -936,7 +936,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String deleteTemplateConfirm(String name) {
-    return 'Are you sure you want to delete template \"$name\"?';
+    return 'Are you sure you want to delete template \"$name\"? Only the template entry is removed — the template folder on your disk is kept.';
+  }
+
+  @override
+  String deleteTemplateFolderKept(String path) {
+    return 'Folder kept on disk: $path';
+  }
+
+  @override
+  String templatesCount(int count) {
+    return 'Templates: $count';
+  }
+
+  @override
+  String templatesHidden(int count, String plural) {
+    return '$count template$plural hidden.';
+  }
+
+  @override
+  String templatesUnhidden(int count, String plural) {
+    return '$count template$plural unhidden.';
+  }
+
+  @override
+  String failedToHideTemplates(String error) {
+    return 'Failed to hide templates: $error';
+  }
+
+  @override
+  String failedToUnhideTemplates(String error) {
+    return 'Failed to unhide templates: $error';
+  }
+
+  @override
+  String get deleteMissingTemplates => 'Delete Missing';
+
+  @override
+  String deleteMissingTemplatesConfirm(int count, String plural) {
+    return '$count template$plural whose file could not be found on this machine will be permanently deleted. Only the entry is removed — whatever is left of the template folder on your disk is kept. This can\'t be undone.';
   }
 
   @override
@@ -1084,14 +1122,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String templatesSelected(int count, String plural) {
     return '$count template$plural selected';
-  }
-
-  @override
-  String get deleteSelectedTemplates => 'Delete Selected';
-
-  @override
-  String deleteSelectedTemplatesConfirm(int count, String plural) {
-    return 'Are you sure you want to delete $count template$plural?';
   }
 
   @override

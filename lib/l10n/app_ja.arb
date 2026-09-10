@@ -761,7 +761,53 @@
   "createTemplate": "テンプレート作成",
   "editTemplate": "テンプレート編集",
   "deleteTemplate": "テンプレート削除",
-  "deleteTemplateConfirm": "テンプレート「{name}」を削除してもよろしいですか？",
+  "deleteTemplateConfirm": "テンプレート「{name}」を削除してもよろしいですか？削除されるのはテンプレートの登録情報だけで、ディスク上のテンプレートフォルダは残ります。",
+  "deleteTemplateFolderKept": "ディスク上に残るフォルダ: {path}",
+  "@deleteTemplateFolderKept": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "templatesCount": "テンプレート: {count}件",
+  "@templatesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "templatesHidden": "{count}件のテンプレート{plural}を非表示にしました。",
+  "@templatesHidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "templatesUnhidden": "{count}件のテンプレート{plural}を再表示しました。",
+  "@templatesUnhidden": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
+  "failedToHideTemplates": "テンプレートを非表示にできませんでした: {error}",
+  "@failedToHideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "failedToUnhideTemplates": "テンプレートを再表示できませんでした: {error}",
+  "@failedToUnhideTemplates": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "deleteMissingTemplates": "見つからないものを削除",
+  "deleteMissingTemplatesConfirm": "このマシンでファイルが見つからなかった{count}件のテンプレート{plural}を完全に削除します。削除されるのは登録情報だけで、ディスク上に残っているテンプレートフォルダはそのままです。この操作は取り消せません。",
+  "@deleteMissingTemplatesConfirm": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "plural": { "type": "String" }
+    }
+  },
   "templateName": "テンプレート名",
   "templateNameHint": "例：ミキシングチェックリスト",
   "templateItems": "テンプレート項目",
@@ -821,14 +867,6 @@
   },
   "templatesSelected": "{count}件のテンプレート{plural}を選択しました",
   "@templatesSelected": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
-    }
-  },
-  "deleteSelectedTemplates": "選択項目を削除",
-  "deleteSelectedTemplatesConfirm": "{count}件のテンプレート{plural}を削除してもよろしいですか?",
-  "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": { "type": "int" },
       "plural": { "type": "String" }
