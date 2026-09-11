@@ -36,19 +36,19 @@ void main() {
 
   group('projectAccentColor', () {
     test('is stable across calls', () {
-      expect(projectAccentColor('uuid-1'), projectAccentColor('uuid-1'));
+      expect(derivedAccentColor('uuid-1'), derivedAccentColor('uuid-1'));
     });
 
     test('gives different ids different colours', () {
       final colors = {
-        for (final id in ['a', 'b', 'c', 'd', 'e', 'f']) projectAccentColor(id),
+        for (final id in ['a', 'b', 'c', 'd', 'e', 'f']) derivedAccentColor(id),
       };
       expect(colors.length, greaterThan(1));
     });
 
     test('every colour is opaque and dark enough for white text', () {
       for (var i = 0; i < 200; i++) {
-        final color = projectAccentColor('project-$i');
+        final color = derivedAccentColor('project-$i');
         expect(color.a, 1.0);
         final hsl = HSLColor.fromColor(color);
         expect(hsl.lightness, closeTo(0.42, 0.01));

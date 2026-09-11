@@ -94,6 +94,15 @@ MusicProject repathProject(
     fileName: p.basename(newFilePath),
     previewSongPath: repath(project.previewSongPath),
     previewSongAutoPath: repath(project.previewSongAutoPath),
+    // Attachments (#112) are pointers, and the lyric sheet or reference bounce
+    // a user attaches most often lives in the project's own folder — moving
+    // the folder without rewriting those leaves every one of them broken.
+    // A link is not a path and is never touched.
+    attachments: project.attachments
+        .map(
+          (a) => a.isLink ? a : a.copyWith(target: repath(a.target)),
+        )
+        .toList(growable: false),
   );
 }
 

@@ -5,6 +5,7 @@ import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as p;
 
 import '../models/music_project.dart';
+import '../models/project_attachment.dart';
 import '../models/scan_root.dart';
 import 'scanner_service.dart';
 import '../utils/project_folder_utils.dart';
@@ -163,6 +164,51 @@ ScanRoot? conflictingScanRoot(String destFolder, Iterable<ScanRoot> roots) {
   return null;
 }
 
+/// Where gathered attachments live inside the zip.
+///
+/// A fixed top-level folder rather than anything derived, so restore can find
+/// them without the archive having to carry a manifest.
+const String kArchiveAttachmentsDir = '_attachments';
+
+/// The zip-relative path a gathered attachment is written to.
+///
+/// Keyed by attachment id, not by name: two attachments can perfectly well
+/// both be called `notes.pdf`, and flattening them into one folder would have
+/// the second silently overwrite the first.
+String attachmentEntryPathFor(ProjectAttachment attachment) => p.url.join(
+      kArchiveAttachmentsDir,
+      attachment.id,
+      p.split(p.basename(attachment.target)).join('/'),
+    );
+
+/// The file attachments (#112) an archive of [sourcePath] would otherwise
+/// miss, so they can be gathered into the zip alongside the project.
+///
+/// A project drags material behind it that is not in its folder — the
+/// reference track in Downloads, the lyric sheet on the Desktop, the client's
+/// feedback PDF. Those are stored as *pointers*, so archiving the project
+/// folder and deleting the originals would leave an archive that is missing
+/// exactly the context the user attached on purpose.
+///
+/// Excluded, each for its own reason:
+/// - **links**, which have no bytes to put in a zip;
+/// - attachments **already inside** [sourcePath], which the folder walk has
+///   picked up already — gathering them too would store them twice;
+/// - targets that **don't resolve**, which are already broken and would only
+///   fail the archive's verification.
+List<ProjectAttachment> attachmentsToGather(
+  MusicProject project,
+  String sourcePath,
+) {
+  final source = p.normalize(sourcePath);
+  return project.attachments.where((a) {
+    if (a.isLink) return false;
+    final target = p.normalize(a.target);
+    if (target == source || p.isWithin(source, target)) return false;
+    return File(target).existsSync();
+  }).toList(growable: false);
+}
+
 /// The archive file name for [project] — its display name, made safe for a
 /// filesystem.
 String archiveFileNameFor(MusicProject project) {
@@ -275,6 +321,29 @@ Future<ArchiveResult> archiveProject(
       }
       await encoder.addFile(File(sourcePath), name);
       expectedEntries.add(name);
+    }
+
+    // Attachments that live outside the archived folder (#112 × #116). Without
+    // these the archive is missing the material the user deliberately attached
+    // to the song, and deleting the originals would be the moment they notice.
+    for (final attachment in attachmentsToGather(project, sourcePath)) {
+      if (cancelToken?.isCancelled ?? false) {
+        throw const ArchiveCancelledException();
+      }
+      final file = File(attachment.target);
+      if (!_isReadable(file)) {
+        warnings.add(p.basename(attachment.target));
+        continue;
+      }
+      final entry = attachmentEntryPathFor(attachment);
+      onProgress?.call(
+        ArchiveProgress(
+          stage: ArchiveStage.compressing,
+          currentItem: p.basename(attachment.target),
+        ),
+      );
+      await encoder.addFile(file, entry);
+      expectedEntries.add(entry);
     }
 
     await encoder.close();
@@ -475,12 +544,41 @@ Future<MusicProject> restoreProject(
 
   await extractFileToDisk(archivePath, destFolder);
 
+  return repathRestoredAttachments(
+    project.copyWith(
+      filePath: restoredPath,
+      fileName: p.basename(restoredPath),
+      clearArchivePath: true,
+      clearArchivedAt: true,
+      clearArchiveEntryPath: true,
+    ),
+    destFolder,
+  );
+}
+
+/// Repoints gathered attachments at their extracted copies, for the ones whose
+/// originals are no longer where they were.
+///
+/// Archiving never deletes an attachment's target — only the project's own
+/// files — so after a restore most attachments still resolve exactly as
+/// before, and rewriting those would be wrong: it would drag a still-live
+/// reference track out of Downloads and into a restore folder behind the
+/// user's back. Only a target that has since gone away gets repointed, and
+/// only if the archive actually carried a copy of it.
+MusicProject repathRestoredAttachments(MusicProject project, String destFolder) {
+  if (project.attachments.isEmpty) return project;
+
   return project.copyWith(
-    filePath: restoredPath,
-    fileName: p.basename(restoredPath),
-    clearArchivePath: true,
-    clearArchivedAt: true,
-    clearArchiveEntryPath: true,
+    attachments: project.attachments.map((a) {
+      if (a.isLink) return a;
+      if (File(a.target).existsSync()) return a;
+
+      final extracted = p.join(
+        destFolder,
+        p.joinAll(p.url.split(attachmentEntryPathFor(a))),
+      );
+      return File(extracted).existsSync() ? a.copyWith(target: extracted) : a;
+    }).toList(growable: false),
   );
 }
 

@@ -4,10 +4,17 @@ import 'package:flutter/material.dart';
 ///
 /// Everything here is derived from the project id, so the same song gets the
 /// same colour on every machine and after every restore without storing a
-/// single byte. #110 adds a stored, user-overridable accent colour; when that
-/// lands this stays the fallback for the (many) projects nobody ever sets one
-/// on — a freshly scanned library of 300 folders has to look distinguishable
-/// with zero user effort, or the card view is just a bigger table.
+/// single byte. #110 added the stored, user-overridable accent colour this
+/// anticipated; this is now the fallback under it, for the (many) projects
+/// nobody ever sets one on — a freshly scanned library of 300 folders has to
+/// look distinguishable with zero user effort, or the card view is just a
+/// bigger table.
+///
+/// [resolvedAccentColor] in `project_visuals.dart` is what UI should call: it
+/// layers the stored override over [derivedAccentColor]. The two used to share
+/// the name `projectAccentColor` on separate branches, with opposite meanings
+/// — one nullable and user-set, one always-derived — which is exactly the
+/// confusion the rename is here to prevent.
 
 /// FNV-1a over the UTF-16 code units.
 ///
@@ -26,13 +33,14 @@ int stableStringHash(String value) {
   return hash;
 }
 
-/// A stable accent colour for [projectId].
+/// A stable accent colour derived from [projectId], for a project whose owner
+/// has chosen none.
 ///
 /// The hue comes off the hash; saturation and lightness are pinned so every
 /// generated colour sits in the same band — white text stays readable on all
 /// of them, and no project draws the eye just because it rolled a brighter
 /// number than its neighbours.
-Color projectAccentColor(String projectId) {
+Color derivedAccentColor(String projectId) {
   final hue = (stableStringHash(projectId) % 360).toDouble();
   return HSLColor.fromAHSL(1.0, hue, 0.45, 0.42).toColor();
 }

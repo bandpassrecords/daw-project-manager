@@ -66,6 +66,14 @@ Instructions for AI assistants working on this codebase.
 
 ## UI conventions
 
+### Where these features meet each other
+- **A new `@HiveField` index must be chosen against `main`, not against your branch.** Four branches independently claimed 38 because it was next-free on each of them, and git merged all four silently — a duplicated index is data corruption, not a conflict. `test/models/music_project_test.dart` now asserts indices are unique, that `writeByte(n)`'s count matches the highest index + 1, and that every declared field is actually written.
+- **Two accent colours, on purpose.** `projectAccentColor(MusicProject)` in `project_visuals.dart` is the user's override and is *nullable* — a list row with nothing chosen draws nothing, which is #110's whole point. `derivedAccentColor(String id)` in `project_accent_color.dart` always returns one. `resolvedAccentColor` layers them and is what a **card** uses, because a card is mostly artwork and cannot be left blank. Don't use the resolver for rows or badges; don't use the nullable one where something must be painted.
+- **A card honours the full visual stack**: cover art → chosen icon → chosen/derived colour with initials. Anything added to `ProjectCardGrid`'s cover has to keep that order, or the appearance editor's choices stop showing up.
+- **Archiving gathers out-of-folder attachments** (`attachmentsToGather`) into `_attachments/<id>/<basename>` in the zip, keyed by id so two `notes.pdf` can't collide. Links have no bytes; attachments already inside the folder are picked up by the walk. `deleteOriginals` still only ever deletes the project's own files — an attachment in `~/Downloads` is not ours to delete. `repathRestoredAttachments` repoints a gathered attachment on restore **only** when its original has since gone away.
+- **Moving repaths attachments** under the moved prefix (`repathProject`). The lyric sheet beside the project file is the common case and a move that ignored it would break every one.
+- Cover art lives in the app-managed `project_cover_art` folder (`app_paths.dart`), so it is untouched by moves and archives and rides along in Drive sync / local backup instead.
+
 ### An archived project is not a missing one
 - Archiving (#116) zips a project out of the working library and sets `archivePath` / `archivedAt` / `archiveEntryPath`. `filePath` deliberately keeps naming the **original location** — it is what `fileExtension`, DAW launching and the containing-folder helpers read, and leaving it alone is what makes "restore to where it came from" free.
 - So `isMissingFileCandidate` is `!isVirtual && !isArchived`. Anything new that reads a non-resolving path as "the file was deleted" must gate on it, exactly as version stacks already require. Getting this wrong offers to delete the one row pointing at the archive holding the work.

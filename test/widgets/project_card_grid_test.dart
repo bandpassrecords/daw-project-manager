@@ -24,6 +24,8 @@ void main() {
     endSessionTooltip: 'End session',
     openFolderTooltip: 'Open folder',
     playPreviewTooltip: 'Play preview',
+    archivedWithLocalCopyTooltip: 'Archived — the originals are still here',
+    archivedAwayTooltip: 'Archived — the files are in the archive only',
   );
 
   MusicProject project(

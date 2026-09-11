@@ -5137,6 +5137,8 @@ class _PlutoProjectsTableWithSelectionState
                     endSessionTooltip: l10n.endSession,
                     openFolderTooltip: l10n.openFolder,
                     playPreviewTooltip: l10n.playPreview,
+                    archivedWithLocalCopyTooltip: l10n.archivedWithLocalCopy,
+                    archivedAwayTooltip: l10n.archivedAwayTooltip,
                   ),
                   sessionMode: ref.watch(sessionModeProvider),
                   onPrimaryAction: (project) async {

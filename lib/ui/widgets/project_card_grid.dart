@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../models/music_project.dart';
 import '../../utils/daw_logo.dart';
 import '../../utils/project_accent_color.dart';
+import '../../utils/project_visuals.dart';
 
 /// The dashboard's card/gallery view: the same projects the table shows, drawn
 /// cover-first (#111).
@@ -117,6 +118,8 @@ class ProjectCardLabels {
     required this.endSessionTooltip,
     required this.openFolderTooltip,
     required this.playPreviewTooltip,
+    required this.archivedWithLocalCopyTooltip,
+    required this.archivedAwayTooltip,
   });
 
   final String emptyMessage;
@@ -132,6 +135,13 @@ class ProjectCardLabels {
   final String endSessionTooltip;
   final String openFolderTooltip;
   final String playPreviewTooltip;
+
+  /// Archived, but the project's own files are still on disk — the zip
+  /// beside them is a backup, so the card stays fully usable.
+  final String archivedWithLocalCopyTooltip;
+
+  /// Archived and the originals removed: the files exist only in the zip.
+  final String archivedAwayTooltip;
 }
 
 class _ProjectCardGridState extends State<ProjectCardGrid> {
@@ -250,7 +260,7 @@ class _ProjectCardState extends State<_ProjectCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final project = widget.project;
-    final accent = projectAccentColor(project.id);
+    final accent = resolvedAccentColor(project);
     final borderColor = widget.selected
         ? theme.colorScheme.primary
         : widget.active
@@ -328,8 +338,34 @@ class _ProjectCardState extends State<_ProjectCard> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               if (_deadlineDays != null) _buildDeadlineChip(_deadlineDays!),
+              // Archived (#116). Without this an archived card is
+              // indistinguishable from any other — and the cloud_off badge
+              // below deliberately does not fire for one, because its files
+              // are gone on purpose rather than lost.
+              if (widget.project.isArchived)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Tooltip(
+                    message: widget.fileExists
+                        ? widget.labels.archivedWithLocalCopyTooltip
+                        : widget.labels.archivedAwayTooltip,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.45),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Icon(
+                        Icons.archive_outlined,
+                        size: 14,
+                        color: Colors.blueGrey.shade200,
+                      ),
+                    ),
+                  ),
+                ),
               // isMissingFileCandidate keeps this off stacks: their path is a
-              // folder, so "no file here" is normal, not a missing file.
+              // folder, so "no file here" is normal, not a missing file. It
+              // keeps it off archived projects too, per the badge above.
               if (!widget.fileExists && widget.project.isMissingFileCandidate)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
@@ -457,6 +493,13 @@ class _ProjectCardState extends State<_ProjectCard> {
   }
 
   Widget _buildGeneratedCover(Color accent) {
+    // The icon the user picked in the appearance editor (#110) wins over the
+    // initials: they chose a symbol for this song, so showing letters instead
+    // would quietly ignore it. With no icon chosen we fall back to the label,
+    // which is never blank — a card is mostly cover, and an empty one reads as
+    // a loading failure rather than as a project nobody has decorated.
+    final icon = projectIcon(widget.project);
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -466,21 +509,27 @@ class _ProjectCardState extends State<_ProjectCard> {
         ),
       ),
       child: Center(
-        child: Text(
-          // A label the user typed wins over the one derived from the name.
-          projectCardInitials(
-            widget.project.cardInitials,
-            widget.project.displayName,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.9),
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-          ),
-        ),
+        child: icon != null
+            ? Icon(
+                icon,
+                size: 44,
+                color: Colors.white.withValues(alpha: 0.9),
+              )
+            : Text(
+                // A label the user typed wins over the one derived from the name.
+                projectCardInitials(
+                  widget.project.cardInitials,
+                  widget.project.displayName,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontSize: 34,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                ),
+              ),
       ),
     );
   }

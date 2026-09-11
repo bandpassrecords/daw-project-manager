@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/music_project.dart';
+import 'project_accent_color.dart';
 
 /// Per-project visual identity (#110): the cover art, accent color and icon
 /// that let a project be picked out of a list without reading its name.
@@ -59,6 +60,21 @@ const Map<String, IconData> kProjectIconChoices = {
 /// The accent color the user chose for [project], or null if they chose none.
 Color? projectAccentColor(MusicProject project) =>
     project.accentColor == null ? null : Color(project.accentColor!);
+
+/// The accent color to actually paint when something *must* be painted.
+///
+/// The stored override if the user set one, otherwise the colour derived from
+/// the project id. Use this wherever a surface cannot be left blank — a
+/// dashboard card is mostly artwork, so an undecorated project still needs a
+/// colour to fill it with.
+///
+/// Do **not** use it for list rows or badges: there, [projectAccentColor]'s
+/// null is the point. A generated colour on every row of a table is noise, and
+/// "nothing is assigned by default" is the rule #110 is built on. The two
+/// surfaces genuinely want different answers, which is why there are two
+/// functions rather than one with a flag.
+Color resolvedAccentColor(MusicProject project) =>
+    projectAccentColor(project) ?? derivedAccentColor(project.id);
 
 /// The icon the user chose for [project], or null if they chose none.
 ///

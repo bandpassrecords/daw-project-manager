@@ -6,6 +6,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
 import '../../providers/providers.dart';
 import '../../utils/project_accent_color.dart';
+import '../../utils/project_visuals.dart';
 
 /// Edits the short label on a project's dashboard card (#111).
 ///
@@ -63,7 +64,7 @@ class _CardInitialsDialogState extends State<_CardInitialsDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = widget.l10n;
-    final accent = projectAccentColor(widget.project.id);
+    final accent = resolvedAccentColor(widget.project);
     final preview = projectCardInitials(
       widget.controller.text,
       widget.project.displayName,

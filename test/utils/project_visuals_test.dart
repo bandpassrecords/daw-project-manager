@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:daw_project_manager/utils/project_accent_color.dart';
 import 'package:daw_project_manager/utils/project_visuals.dart';
 
 import '../helpers/test_factories.dart';
@@ -132,6 +133,40 @@ void main() {
           TestFactories.makeProject(iconKey: 'theremin'),
         ),
         isFalse,
+      );
+    });
+  });
+
+  // #110 (cover art) and #111 (card view) each landed a `projectAccentColor`
+  // on its own branch, with opposite meanings: nullable-and-user-set, versus
+  // always-derived-from-the-id. Both are right for their own surface, so the
+  // derived one is now `derivedAccentColor` and this layers them.
+  group('resolvedAccentColor', () {
+    test('prefers the colour the user chose', () {
+      final project = TestFactories.makeProject(accentColor: 0xFF123456);
+
+      expect(resolvedAccentColor(project), const Color(0xFF123456));
+    });
+
+    test('falls back to the derived colour when none was chosen', () {
+      final project = TestFactories.makeProject(id: 'uuid-1');
+
+      expect(resolvedAccentColor(project), derivedAccentColor('uuid-1'));
+    });
+
+    test('never returns null, unlike the override accessor', () {
+      // A card is mostly artwork; it has to be filled with something. That is
+      // the whole reason this exists next to the nullable one.
+      final undecorated = TestFactories.makeProject();
+
+      expect(projectAccentColor(undecorated), isNull);
+      expect(resolvedAccentColor(undecorated), isA<Color>());
+    });
+
+    test('two undecorated projects still differ from each other', () {
+      expect(
+        resolvedAccentColor(TestFactories.makeProject(id: 'a')),
+        isNot(resolvedAccentColor(TestFactories.makeProject(id: 'b'))),
       );
     });
   });
