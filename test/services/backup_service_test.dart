@@ -32,6 +32,39 @@ void main() {
       expect(restoredMember.stackId, 'stack-1');
     });
 
+    test('preserves the archived state (#116)', () {
+      // Skipping these would restore an archived project as a plain one whose
+      // files aren't where filePath says — i.e. as "missing" — losing both the
+      // pointer to the archive and the reason the originals are gone. And this
+      // is Flatpak's only backup path.
+      final archived = TestFactories.makeProject(
+        id: 'archived-1',
+        archivePath: '/Volumes/Archive/Midnight.zip',
+        archivedAt: DateTime(2026, 3, 4, 15, 30),
+        archiveEntryPath: 'Midnight/Midnight.als',
+      );
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(archived));
+
+      expect(restored.archivePath, '/Volumes/Archive/Midnight.zip');
+      expect(restored.archivedAt, DateTime(2026, 3, 4, 15, 30));
+      expect(restored.archiveEntryPath, 'Midnight/Midnight.als');
+      expect(restored.isArchived, isTrue);
+      expect(restored.isMissingFileCandidate, isFalse);
+    });
+
+    test('a project that was never archived round-trips unarchived', () {
+      final restored = BackupService.projectFromJson(
+        BackupService.projectToJson(TestFactories.makeProject()),
+      );
+
+      expect(restored.archivePath, isNull);
+      expect(restored.archivedAt, isNull);
+      expect(restored.archiveEntryPath, isNull);
+      expect(restored.isArchived, isFalse);
+    });
+
     test('preserves all basic fields', () {
       final original = TestFactories.makeProject(
         id: 'rt-1',
@@ -128,6 +161,26 @@ void main() {
       expect(restored.notes, isNull);
     });
 
+    test('preserves the card label the user typed (#111)', () {
+      // Flatpak's only backup path — a field skipped here is one those users
+      // can never back up at all.
+      final original = TestFactories.makeProject(cardInitials: 'X7');
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(original));
+
+      expect(restored.cardInitials, 'X7');
+    });
+
+    test('preserves an unset card label', () {
+      final original = TestFactories.makeProject(cardInitials: null);
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(original));
+
+      expect(restored.cardInitials, isNull);
+    });
+
     test('preserves deadline', () {
       final deadline = DateTime(2026, 9, 1);
       final original = TestFactories.makeProject(deadline: deadline);
@@ -171,6 +224,35 @@ void main() {
           BackupService.projectFromJson(BackupService.projectToJson(original));
 
       expect(restored.todos, isEmpty);
+    });
+
+    test('preserves per-todo due dates (#113)', () {
+      // Local backup is Flatpak's only backup path — a due date skipped here
+      // is one those users can never back up at all.
+      final original = TestFactories.makeProject(todos: [
+        TestFactories.makeTodo(
+            id: 't1', text: 'Vocals', dueAt: DateTime(2025, 2, 14)),
+        TestFactories.makeTodo(id: 't2', text: 'Mix'),
+      ]);
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(original));
+
+      expect(restored.todos[0].dueAt, DateTime(2025, 2, 14));
+      expect(restored.todos[1].dueAt, isNull);
+    });
+
+    test('a backup written before due dates existed restores them as null', () {
+      final json = BackupService.projectToJson(
+        TestFactories.makeProject(
+          todos: [TestFactories.makeTodo(dueAt: DateTime(2025, 2, 14))],
+        ),
+      );
+      for (final todo in json['todos'] as List) {
+        (todo as Map).remove('dueAt');
+      }
+
+      expect(BackupService.projectFromJson(json).todos.single.dueAt, isNull);
     });
 
     test('preserves hidden flag', () {

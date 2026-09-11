@@ -436,6 +436,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get clearSelection => '選択をクリア';
 
   @override
+  String get viewModeTable => 'テーブル表示';
+
+  @override
+  String get viewModeCards => 'カード表示';
+
+  @override
+  String get selectProject => 'プロジェクトを選択';
+
+  @override
   String get selectAllProjects => 'すべてのプロジェクトを選択';
 
   @override
@@ -2819,6 +2828,21 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => '締め切り';
+
+  @override
+  String get sortByLabel => '並び替え';
+
+  @override
+  String get cardInitialsTitle => 'カードの文字';
+
+  @override
+  String get cardInitialsDescription => 'カバーアートがないときにカードに表示される文字です。';
+
+  @override
+  String get cardInitialsEmptyHint => '空欄にすると名前の頭文字を使います。';
+
+  @override
   String get sortByLastModified => '最終更新';
 
   @override
@@ -4861,4 +4885,519 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'おすすめの色';
+
+  @override
+  String get todoDueDate => '期限';
+
+  @override
+  String get todoSetDueDate => '期限を設定';
+
+  @override
+  String get todoClearDueDate => '期限を削除';
+
+  @override
+  String get todoNoDueDate => '期限なし';
+
+  @override
+  String get todoDueToday => '今日が期限';
+
+  @override
+  String get todoDueTomorrow => '明日が期限';
+
+  @override
+  String todoDueOn(String date) {
+    return '期限 $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days日超過',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => '期限';
+
+  @override
+  String get queueDueFilterAll => 'すべてのタスク';
+
+  @override
+  String get queueDueFilterOverdue => '期限切れ';
+
+  @override
+  String get queueDueFilterToday => '今日が期限';
+
+  @override
+  String get queueDueFilterThisWeek => '今週が期限';
+
+  @override
+  String get queueDueFilterNoDate => '期限なし';
+
+  @override
+  String get queueNoTasksForDueFilter => 'この期限フィルターに一致するタスクはありません';
+
+  @override
+  String get projectAttachments => '添付';
+
+  @override
+  String get attachmentAddFile => 'ファイルを追加';
+
+  @override
+  String get attachmentAddLink => 'リンクを追加';
+
+  @override
+  String get attachmentsEmptyTitle => 'まだ何も添付されていません';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'リファレンス曲、ステム納品リンク、歌詞、契約書をチャットではなく曲と一緒に保管できます。';
+
+  @override
+  String get attachmentEditDialogTitle => '添付を編集';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'ファイルパス';
+
+  @override
+  String get attachmentLabelLabel => 'ラベル（任意）';
+
+  @override
+  String get attachmentNoteLabel => 'メモ（任意）';
+
+  @override
+  String get attachmentUrlInvalid => '有効なリンクを入力してください（例: https://example.com）';
+
+  @override
+  String get attachmentPathRequired => 'ファイルパスを入力してください';
+
+  @override
+  String get attachmentOpenTooltip => '開く';
+
+  @override
+  String get attachmentRemoveTitle => '添付を削除';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return 'このプロジェクトから「$label」を削除しますか？ファイル自体は削除されません。';
+  }
+
+  @override
+  String get attachmentRemoved => '添付を削除しました';
+
+  @override
+  String get attachmentAdded => '添付を追加しました';
+
+  @override
+  String get attachmentOpenFailed => 'この添付を開けませんでした';
+
+  @override
+  String get attachmentPickFileTitle => '添付するファイルを選択';
+
+  @override
+  String get attachmentAlreadyAdded => 'すでにこのプロジェクトに添付されています';
+
+  @override
+  String get attachmentExport => '書き出し';
+
+  @override
+  String get attachmentExportTooltip => '添付ファイルとリンクを保存';
+
+  @override
+  String get attachmentExportSaveTitle => '添付を保存';
+
+  @override
+  String get attachmentExportNothing => '書き出すものがありません';
+
+  @override
+  String get attachmentExporting => '添付を書き出しています...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return '保存先: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '見つからないファイル $count 件をスキップしました$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return '添付の書き出しに失敗しました: $error';
+  }
+
+  @override
+  String get projectAppearance => '外観';
+
+  @override
+  String get projectAppearanceTooltip => 'カバーアート・色・アイコンを変更';
+
+  @override
+  String get projectCoverArt => 'カバーアート';
+
+  @override
+  String get chooseCoverArt => '画像を選択…';
+
+  @override
+  String get replaceCoverArt => '画像を変更…';
+
+  @override
+  String get removeCoverArt => 'カバーアートを削除';
+
+  @override
+  String get removeCoverArtConfirm => 'このプロジェクトのカバーアートを削除しますか？保存された画像は削除されます。';
+
+  @override
+  String get coverArtRemoved => 'カバーアートを削除しました';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'カバーアートの削除に失敗しました: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'アクセントカラー';
+
+  @override
+  String get projectIcon => 'アイコン';
+
+  @override
+  String get appearanceNone => 'なし';
+
+  @override
+  String get appearanceNoneHint =>
+      '色とアイコンは選ぶまで表示されません。選択中のアイコンをもう一度タップすると解除できます。';
+
+  @override
+  String get clearColorAndIcon => '色とアイコンを解除';
+
+  @override
+  String get dropCoverArtHere => '画像をドロップしてカバーアートに設定';
+
+  @override
+  String get uploadingProjectCoverArt => 'プロジェクトのカバーアートをアップロード中...';
+
+  @override
+  String get downloadingProjectCoverArt => 'プロジェクトのカバーアートをダウンロード中...';
+
+  @override
+  String get moveProjectButtonLabel => '移動…';
+
+  @override
+  String get moveProjectDialogTitle => 'プロジェクトを移動';
+
+  @override
+  String get moveProjectDestinationLabel => '移動先';
+
+  @override
+  String get moveProjectChooseDestination => '選択…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'フォルダーが未選択です';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return '「$folder」フォルダー全体を移動';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'このフォルダーにはこのプロジェクトしかないため、サンプルやミックスダウンも一緒に移動します。';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'プロジェクトファイルのみを移動します。隣にあるサンプルやミックスダウンはそのまま残ります。';
+
+  @override
+  String get moveProjectConfirm => '移動';
+
+  @override
+  String get moveProjectInProgress => '移動中…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '「$name」を $path に移動しました';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return '移動に失敗しました: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing => 'このプロジェクトのファイルはこのマシンにありません。';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '「$name」はそのフォルダーに既に存在します。';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'フォルダーを自分自身の中へ移動することはできません。';
+
+  @override
+  String get moveProjectErrorSameLocation => 'プロジェクトは既にそのフォルダーにあります。';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'バージョンスタックには固有のファイルがありません。各バージョンを個別に移動してください。';
+
+  @override
+  String get selectMoveDestinationTitle => '移動先フォルダーを選択';
+
+  @override
+  String get archiveProjectButtonLabel => 'アーカイブ…';
+
+  @override
+  String get archiveProjectDialogTitle => 'プロジェクトをアーカイブ';
+
+  @override
+  String get archiveProjectWhatToArchive => 'アーカイブする対象';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return '「$folder」フォルダー全体';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => 'プロジェクトファイルのみ';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files 個のファイル',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals => 'アーカイブを検証してから元のファイルを削除する';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      '先にアーカイブを開き直し、項目ごとに確認します。この確認に失敗した場合は何も削除しません。';
+
+  @override
+  String get archiveProjectConfirm => 'アーカイブ';
+
+  @override
+  String get archiveStageScanning => 'プロジェクトフォルダーを読み込み中…';
+
+  @override
+  String get archiveStageCompressing => '圧縮中…';
+
+  @override
+  String get archiveStageVerifying => 'アーカイブを検証中…';
+
+  @override
+  String get archiveStageDeleting => '元のファイルを削除中…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return '「$name」をアーカイブしました';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return 'アーカイブに失敗しました: $error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing => 'このプロジェクトのファイルはこのマシンにありません。';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return 'アーカイブはスキャン対象フォルダーの中には置けません。「$root」がすぐに再登録してしまいます。';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return 'そこには既に「$name」というアーカイブがあります。';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return 'アーカイブにファイルが不足しているため、何も削除していません: $entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => 'このプロジェクトはアーカイブされていません。';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '読み取れないファイル $count 個をスキップしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => 'アーカイブの保存先';
+
+  @override
+  String get archiveLocationSubtitle =>
+      '「プロジェクトをアーカイブ」が zip を書き出す場所です。この端末に保存されます。';
+
+  @override
+  String get archiveLocationNotSet => '未設定 — 最初のアーカイブ時に確認します';
+
+  @override
+  String get selectArchiveLocationTitle => 'アーカイブフォルダーを選択';
+
+  @override
+  String get restoreProjectButtonLabel => '復元…';
+
+  @override
+  String get restoreProjectDialogTitle => 'プロジェクトを復元';
+
+  @override
+  String get restoreProjectDescription =>
+      '選択したフォルダーにアーカイブを展開し、プロジェクトを復元後のファイルに向け直します。';
+
+  @override
+  String get restoreProjectConfirm => '復元';
+
+  @override
+  String get restoreProjectInProgress => '復元中…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return '「$name」を復元しました';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return '復元に失敗しました: $error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle => '復元先のフォルダーを選択';
+
+  @override
+  String get archivedLabel => 'アーカイブ済み';
+
+  @override
+  String archivedOnLabel(String date) {
+    return '$date にアーカイブ';
+  }
+
+  @override
+  String get showArchivedProjects => 'アーカイブ済みを表示';
+
+  @override
+  String get showOnlyArchivedProjects => 'アーカイブ済みのみ';
+
+  @override
+  String get hideArchivedProjects => 'アーカイブ済みを非表示';
+
+  @override
+  String get archivedFilterLabel => 'アーカイブ';
+
+  @override
+  String get archiveProjectStackUnsupported =>
+      'バージョンスタックには固有のファイルがありません。各バージョンを個別にアーカイブしてください。';
+
+  @override
+  String get archiveBulkButtonLabel => '選択項目をアーカイブ';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のプロジェクトをアーカイブしますか？',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のプロジェクトをアーカイブしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => 'アーカイブフォルダーを開く';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '$total 件中 $current 件';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のプロジェクトをアーカイブできませんでした',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      '各プロジェクトはそれぞれに合った範囲でアーカイブされます。専用のフォルダーがあればフォルダー全体、フォルダーを共有している場合はプロジェクトファイルのみです。';
+
+  @override
+  String get archivedWithLocalCopy => 'アーカイブ済み — 元のファイルはまだここにあります';
+
+  @override
+  String get archivedAwayTooltip => 'アーカイブ済み — ファイルはアーカイブ内にのみあります';
+
+  @override
+  String get archiveUndone => 'アーカイブを取り消しました';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return 'アーカイブを取り消せませんでした: $error';
+  }
+
+  @override
+  String get moveUndone => '移動を取り消しました';
+
+  @override
+  String moveUndoFailed(String error) {
+    return '移動を取り消せませんでした: $error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => '元の場所に戻す';
+
+  @override
+  String get restoreToChosenFolder => '別のフォルダーへ…';
+
+  @override
+  String get restoreWhereTo => 'どこに配置しますか？';
+
+  @override
+  String get restoreOriginalLocationOccupied => '元の場所には既に何かがあります';
+
+  @override
+  String get discardArchiveButtonLabel => 'アーカイブを破棄';
+
+  @override
+  String get discardArchiveConfirmTitle => 'アーカイブを破棄しますか？';
+
+  @override
+  String get discardArchiveConfirmMessage =>
+      'zip を削除し、アーカイブ済みの印を外します。プロジェクト自体のファイルはそのまま残ります。';
+
+  @override
+  String get discardArchiveDone => 'アーカイブを破棄しました';
 }

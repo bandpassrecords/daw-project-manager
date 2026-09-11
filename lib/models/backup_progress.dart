@@ -41,11 +41,13 @@ enum BackupProgressStage {
   uploadingPreviewSongs,
   uploadingProfilePhotos,
   uploadingReleaseArtwork,
+  uploadingProjectCoverArt,
   uploadingDatabase,
   downloadingDatabase,
   downloadingPreviewSongs,
   downloadingProfilePhotos,
   downloadingReleaseArtwork,
+  downloadingProjectCoverArt,
   mergingData,
   completed,
 }

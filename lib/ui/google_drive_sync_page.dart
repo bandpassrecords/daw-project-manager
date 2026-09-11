@@ -1409,6 +1409,8 @@ class _BackupProgressDialogState extends State<_BackupProgressDialog> {
         return AppLocalizations.of(context)!.uploadingProfilePhotos;
       case BackupProgressStage.uploadingReleaseArtwork:
         return AppLocalizations.of(context)!.uploadingReleaseArtwork;
+      case BackupProgressStage.uploadingProjectCoverArt:
+        return AppLocalizations.of(context)!.uploadingProjectCoverArt;
       case BackupProgressStage.uploadingDatabase:
         return AppLocalizations.of(context)!.uploadingDatabase;
       case BackupProgressStage.downloadingDatabase:
@@ -1419,6 +1421,8 @@ class _BackupProgressDialogState extends State<_BackupProgressDialog> {
         return AppLocalizations.of(context)!.downloadingProfilePhotos;
       case BackupProgressStage.downloadingReleaseArtwork:
         return AppLocalizations.of(context)!.downloadingReleaseArtwork;
+      case BackupProgressStage.downloadingProjectCoverArt:
+        return AppLocalizations.of(context)!.downloadingProjectCoverArt;
       case BackupProgressStage.mergingData:
         return AppLocalizations.of(context)!.mergingData;
       case BackupProgressStage.completed:

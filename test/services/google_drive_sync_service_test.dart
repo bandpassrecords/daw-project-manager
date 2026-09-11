@@ -12,6 +12,7 @@ import 'package:path/path.dart' as path;
 import 'package:daw_project_manager/models/part_template.dart';
 import 'package:daw_project_manager/models/profile.dart';
 import 'package:daw_project_manager/models/project_part.dart';
+import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/todo_template.dart';
 import 'package:daw_project_manager/repository/profile_repository.dart';
 import 'package:daw_project_manager/repository/project_repository.dart';
@@ -622,6 +623,64 @@ void main() {
       expect(restoredMember.isStackMember, isTrue);
     });
 
+    test('preserves the card label the user typed (#111)', () {
+      // User data: someone chose these letters, so a restore on another
+      // machine has to bring them along.
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(cardInitials: 'X7');
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.cardInitials, 'X7');
+    });
+
+    test('preserves an unset card label', () {
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(cardInitials: null);
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.cardInitials, isNull);
+    });
+
+    test('preserves the archived state (#116)', () {
+      // An archived project's files are deliberately gone from filePath. Drop
+      // these on restore and it comes back looking merely missing, with no
+      // pointer to the archive holding the work.
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(
+        archivePath: '/Volumes/Archive/Midnight.zip',
+        archivedAt: DateTime(2026, 3, 4, 15, 30),
+        archiveEntryPath: 'Midnight/Midnight.als',
+      );
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.archivePath, '/Volumes/Archive/Midnight.zip');
+      expect(restored.archivedAt, DateTime(2026, 3, 4, 15, 30));
+      expect(restored.archiveEntryPath, 'Midnight/Midnight.als');
+      expect(restored.isArchived, isTrue);
+      expect(restored.isMissingFileCandidate, isFalse);
+    });
+
+    test('a project that was never archived round-trips unarchived', () {
+      final service = GoogleDriveSyncService();
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(TestFactories.makeProject()),
+      );
+
+      expect(restored.isArchived, isFalse);
+      expect(restored.archivedAt, isNull);
+      expect(restored.archiveEntryPath, isNull);
+    });
+
     test('preserves projectNotes', () {
       final service = GoogleDriveSyncService();
       final original = TestFactories.makeProject(
@@ -683,6 +742,60 @@ void main() {
         ..remove('parts');
 
       expect(service.deserializeProjectForTest(data).parts, isEmpty);
+    });
+
+    test('preserves per-todo due dates (#113)', () {
+      // TodoItem is nested inside the project payload, so a field missed here
+      // is silently dropped on every Drive restore.
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(todos: [
+        TestFactories.makeTodo(
+            id: 't1', text: 'Vocals', dueAt: DateTime(2025, 2, 14)),
+        TestFactories.makeTodo(id: 't2', text: 'Mix'),
+      ]);
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.todos[0].dueAt, DateTime(2025, 2, 14));
+      expect(restored.todos[1].dueAt, isNull);
+    });
+
+    test('a backup written before due dates existed restores them as null', () {
+      final service = GoogleDriveSyncService();
+      final data = service.serializeProjectForTest(
+        TestFactories.makeProject(
+          todos: [TestFactories.makeTodo(dueAt: DateTime(2025, 2, 14))],
+        ),
+      );
+      for (final todo in data['todos'] as List) {
+        (todo as Map).remove('dueAt');
+      }
+
+      expect(service.deserializeProjectForTest(data).todos.single.dueAt, isNull);
+    });
+
+    test('preserves due dates on release todos too (#113)', () {
+      // Release.todos reuses TodoItem, and has its own serializer pair.
+      final service = GoogleDriveSyncService();
+      final original = Release(
+        id: 'r1',
+        title: 'Summer EP',
+        trackIds: const ['p1'],
+        todos: [
+          TestFactories.makeTodo(
+              id: 't1', text: 'Cover art', dueAt: DateTime(2025, 2, 14)),
+          TestFactories.makeTodo(id: 't2', text: 'Distribution'),
+        ],
+      );
+
+      final restored = service.deserializeReleaseForTest(
+        service.serializeReleaseForTest(original),
+      );
+
+      expect(restored.todos[0].dueAt, DateTime(2025, 2, 14));
+      expect(restored.todos[1].dueAt, isNull);
     });
   });
 

@@ -439,6 +439,7 @@ class _NotificationSettingsPageState extends ConsumerState<NotificationSettingsP
                                       
                                       await _notificationService.scheduleAllDeadlineNotifications(
                                         projects: projects,
+                                        releases: projectRepo.getAllReleases(),
                                       );
                                       
                                       final pending = await _notificationService.getPendingNotifications();

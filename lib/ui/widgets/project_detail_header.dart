@@ -3,19 +3,27 @@ import 'package:intl/intl.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
+import '../../utils/project_visuals.dart';
+import 'project_cover_avatar.dart';
 
-/// Compact header for the project detail page: title + phase chip on top and
-/// a single muted meta line below (age · last edited · time worked · live
-/// session). Secondary details stay reachable without cluttering the header:
-/// the source file path lives in the title's tooltip and the exact
-/// modified/created/completed-in dates in the meta line's tooltip. BPM, key
-/// and DAW are intentionally absent — they are editable fields directly below.
+/// Compact header for the project detail page: the project's cover tile on the
+/// left, then title + phase chip on top and a single muted meta line below
+/// (age · last edited · time worked · live session). Secondary details stay
+/// reachable without cluttering the header: the source file path lives in the
+/// title's tooltip and the exact modified/created/completed-in dates in the
+/// meta line's tooltip. BPM, key and DAW are intentionally absent — they are
+/// editable fields directly below.
 class ProjectDetailHeader extends StatelessWidget {
   final MusicProject project;
   final DateFormat dateFormat;
   final bool isSessionActive;
   final int liveSessionSeconds;
   final Set<String> finishedPhase;
+
+  /// Tapping the cover tile opens the appearance editor (#110). Null leaves
+  /// the tile inert — the header is also rendered in contexts with no page to
+  /// push a dialog from.
+  final VoidCallback? onEditAppearance;
 
   const ProjectDetailHeader({
     super.key,
@@ -24,6 +32,7 @@ class ProjectDetailHeader extends StatelessWidget {
     required this.isSessionActive,
     required this.liveSessionSeconds,
     required this.finishedPhase,
+    this.onEditAppearance,
   });
 
   String _formatAge(AppLocalizations l10n, Duration duration) {
@@ -141,64 +150,84 @@ class ProjectDetailHeader extends StatelessWidget {
         color: surfaceColor,
         border: Border(bottom: BorderSide(color: theme.dividerColor)),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Tooltip(
-                  message: project.filePath,
-                  waitDuration: const Duration(milliseconds: 500),
-                  child: Text(
-                    project.displayName,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: phaseColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: phaseColor.withValues(alpha: 0.4)),
-                ),
-                child: Text(
-                  project.status,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: phaseColor,
-                  ),
-                ),
-              ),
-            ],
+          // The one surface that shows a placeholder for an undecorated
+          // project: here the tile is the way into the appearance editor, so
+          // collapsing it to nothing would hide the feature entirely.
+          ProjectCoverAvatar(
+            project: project,
+            size: 56,
+            onTap: onEditAppearance,
+            tooltip:
+                onEditAppearance == null ? null : l10n.projectAppearanceTooltip,
+            showEmptyPlaceholder: onEditAppearance != null,
           ),
-          const SizedBox(height: 6),
-          Tooltip(
-            message: detailLines.join('\n'),
-            waitDuration: const Duration(milliseconds: 500),
-            child: Text.rich(
-              TextSpan(
-                style: TextStyle(fontSize: 12, color: mutedColor),
-                children: [
-                  TextSpan(text: metaParts.join(' · ')),
-                  if (isSessionActive) ...[
-                    const TextSpan(text: ' · '),
-                    TextSpan(
-                      text: l10n.sessionTime(_formatLiveSession(liveSessionSeconds)),
-                      style: TextStyle(
-                        color: Colors.green.shade400,
-                        fontWeight: FontWeight.w600,
+          if (onEditAppearance != null || projectHasVisualIdentity(project))
+            const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Tooltip(
+                        message: project.filePath,
+                        waitDuration: const Duration(milliseconds: 500),
+                        child: Text(
+                          project.displayName,
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: phaseColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: phaseColor.withValues(alpha: 0.4)),
+                      ),
+                      child: Text(
+                        project.status,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: phaseColor,
+                        ),
                       ),
                     ),
                   ],
-                ],
-              ),
+                ),
+                const SizedBox(height: 6),
+                Tooltip(
+                  message: detailLines.join('\n'),
+                  waitDuration: const Duration(milliseconds: 500),
+                  child: Text.rich(
+                    TextSpan(
+                      style: TextStyle(fontSize: 12, color: mutedColor),
+                      children: [
+                        TextSpan(text: metaParts.join(' · ')),
+                        if (isSessionActive) ...[
+                          const TextSpan(text: ' · '),
+                          TextSpan(
+                            text: l10n.sessionTime(_formatLiveSession(liveSessionSeconds)),
+                            style: TextStyle(
+                              color: Colors.green.shade400,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

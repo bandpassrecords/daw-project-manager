@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/custom_theme.dart';
 import '../models/profile.dart';
 import '../models/music_project.dart';
+import '../models/project_attachment.dart';
 import '../models/project_marker.dart';
 import '../models/release.dart';
 import '../models/release_file.dart';
@@ -36,6 +37,7 @@ import '../utils/app_paths.dart'
         ensureHiveInitialized,
         getLocalAppDataPath,
         getPreviewSongsPath,
+        getProjectCoverArtPath,
         getReleaseArtworkPath,
         isUsingIsolatedAppData;
 import '../config/oauth_config.dart' show desktopClientSecret, desktopClientId, androidWebClientId;
@@ -1552,6 +1554,33 @@ class GoogleDriveSyncService {
     return createdFolder.id!;
   }
 
+  /// Ensure the project_cover_art folder exists in Google Drive (#110)
+  Future<String> _ensureProjectCoverArtFolder() async {
+    if (_driveApi == null || _appDataFolderId == null) {
+      throw Exception('Not signed in to Google Drive');
+    }
+
+    const folderName = 'project_cover_art';
+
+    var response = await _driveApi!.files.list(
+      q: "name='$folderName' and mimeType='application/vnd.google-apps.folder' and parents in '$_appDataFolderId' and trashed=false",
+      spaces: 'drive',
+    );
+
+    if (response.files != null && response.files!.isNotEmpty) {
+      return response.files!.first.id!;
+    }
+
+    final folder = drive.File();
+    folder.name = folderName;
+    folder.mimeType = 'application/vnd.google-apps.folder';
+    folder.parents = [_appDataFolderId!];
+
+    final createdFolder = await _driveApi!.files.create(folder);
+    if (kDebugMode) print('Created project_cover_art folder: ${createdFolder.id}');
+    return createdFolder.id!;
+  }
+
   /// Upload a preview song file to Google Drive
   /// Returns the file ID in Google Drive, the file hash, and the original filename
   /// Only uploads if the file hash has changed
@@ -1873,6 +1902,181 @@ class GoogleDriveSyncService {
       };
     } catch (e) {
       if (kDebugMode) print('Error uploading release artwork: $e');
+      return null;
+    }
+  }
+
+  /// Upload a project's cover art to Google Drive (#110).
+  ///
+  /// Mirrors [_uploadReleaseArtworkFile]: hash-gated so an unchanged cover
+  /// costs one metadata query instead of a re-upload, and named
+  /// `<projectId>_cover<ext>` so the file is addressable without the manifest.
+  /// Returns the Drive file id and the hash that was uploaded, or null when
+  /// there was nothing to upload.
+  Future<Map<String, String>?> _uploadProjectCoverArtFile({
+    required String projectId,
+    required String localFilePath,
+    String? existingHash, // Hash from previous backup (if available)
+  }) async {
+    if (_driveApi == null) {
+      throw Exception('Not signed in to Google Drive');
+    }
+
+    final file = File(localFilePath);
+    if (!await file.exists()) {
+      if (kDebugMode) print('Project cover art file not found: $localFilePath');
+      return null;
+    }
+
+    try {
+      final currentHash = await _calculateFileHash(localFilePath);
+      final fileExtension = path.extension(localFilePath);
+      final driveFileName = '${projectId}_cover$fileExtension';
+      final coverArtFolderId = await _ensureProjectCoverArtFolder();
+
+      if (existingHash != null && existingHash == currentHash) {
+        if (kDebugMode) {
+          print('Project cover art unchanged for project $projectId (hash: $currentHash), skipping upload');
+        }
+        var response = await _driveApi!.files.list(
+          q: "name='$driveFileName' and parents in '$coverArtFolderId' and trashed=false",
+          spaces: 'drive',
+        );
+        if (response.files != null && response.files!.isNotEmpty) {
+          return {'fileId': response.files!.first.id!, 'hash': currentHash};
+        }
+        // Hash matched but the file isn't on Drive — fall through and upload.
+      }
+
+      if (kDebugMode) {
+        if (existingHash != null) {
+          print('Project cover art changed for project $projectId (old: $existingHash, new: $currentHash), uploading...');
+        } else {
+          print('Uploading new project cover art for project $projectId (hash: $currentHash)');
+        }
+      }
+
+      var response = await _driveApi!.files.list(
+        q: "name='$driveFileName' and parents in '$coverArtFolderId' and trashed=false",
+        spaces: 'drive',
+      );
+
+      final fileBytes = await file.readAsBytes();
+      final media = drive.Media(
+        Stream.value(fileBytes),
+        fileBytes.length,
+        contentType: _getContentTypeForFile(fileExtension),
+      );
+
+      String fileId;
+      if (response.files != null && response.files!.isNotEmpty) {
+        fileId = response.files!.first.id!;
+        await _driveApi!.files.update(
+          drive.File()..name = driveFileName,
+          fileId,
+          uploadMedia: media,
+        );
+        if (kDebugMode) print('Updated project cover art: $driveFileName (ID: $fileId)');
+      } else {
+        final driveFile = drive.File();
+        driveFile.name = driveFileName;
+        driveFile.parents = [coverArtFolderId];
+
+        final createdFile = await _driveApi!.files.create(driveFile, uploadMedia: media);
+        fileId = createdFile.id!;
+        if (kDebugMode) print('Uploaded project cover art: $driveFileName (ID: $fileId)');
+      }
+
+      return {'fileId': fileId, 'hash': currentHash};
+    } catch (e) {
+      if (kDebugMode) print('Error uploading project cover art: $e');
+      return null;
+    }
+  }
+
+  /// Download a project's cover art from Google Drive to local storage (#110).
+  ///
+  /// Returns the local file path, or null if the download failed. Unlike a
+  /// preview song, a cover that fails to download stores nothing: the avatar
+  /// falls back to the project's accent colour and icon, which is a better
+  /// result than a `drive://` path no image widget can open.
+  Future<String?> downloadProjectCoverArtFile({
+    required String driveFileId,
+    required String projectId,
+    String? expectedHash,
+    String? fileExtension,
+  }) async {
+    if (_driveApi == null) {
+      if (kDebugMode) print('Drive API not initialized, attempting to restore session...');
+      final restored = await restoreSession();
+      if (!restored) {
+        if (kDebugMode) print('Failed to restore session for project cover art download');
+        return null;
+      }
+    }
+
+    try {
+      final coverArtPath = await getProjectCoverArtPath();
+      final coverArtDir = Directory(coverArtPath);
+      if (!await coverArtDir.exists()) {
+        await coverArtDir.create(recursive: true);
+      }
+
+      final ext = fileExtension ?? '.jpg';
+      final localFilePath = path.join(coverArtPath, '${projectId}_cover$ext');
+
+      final existingFile = File(localFilePath);
+      if (await existingFile.exists() && expectedHash != null) {
+        try {
+          final existingHash = await _calculateFileHash(localFilePath);
+          if (existingHash == expectedHash) {
+            if (kDebugMode) {
+              print('Project cover art already downloaded with matching hash, skipping download');
+            }
+            return localFilePath;
+          }
+          await existingFile.delete();
+        } catch (e) {
+          if (kDebugMode) print('Error checking existing project cover art hash: $e, will re-download');
+          if (await existingFile.exists()) {
+            await existingFile.delete();
+          }
+        }
+      }
+
+      final file = File(localFilePath);
+      await _withRetry(() async {
+        final media = (await _driveApi!.files.get(
+          driveFileId,
+          downloadOptions: drive.DownloadOptions.fullMedia,
+        )) as drive.Media;
+
+        if (await file.exists()) await file.delete();
+
+        final sink = file.openWrite();
+        try {
+          await for (final chunk in media.stream) {
+            sink.add(chunk);
+          }
+        } catch (e) {
+          await sink.close();
+          if (await file.exists()) await file.delete();
+          rethrow;
+        }
+        await sink.close();
+      });
+
+      if (expectedHash != null) {
+        final downloadedHash = await _calculateFileHash(localFilePath);
+        if (downloadedHash != expectedHash && kDebugMode) {
+          print('WARNING: Downloaded project cover art hash mismatch! Expected: $expectedHash, Got: $downloadedHash');
+        }
+      }
+
+      if (kDebugMode) print('Downloaded project cover art to: $localFilePath');
+      return localFilePath;
+    } catch (e) {
+      if (kDebugMode) print('Error downloading project cover art: $e');
       return null;
     }
   }
@@ -2389,11 +2593,19 @@ class GoogleDriveSyncService {
       // Map to track release artwork hashes
       // releaseId -> fileHash
       final releaseArtworkHashes = <String, String>{};
+
+      // Map to track project cover art files in Google Drive (#110)
+      // projectId -> driveFileId
+      final projectCoverArtFileMap = <String, String>{};
+      // Map to track project cover art hashes
+      // projectId -> fileHash
+      final projectCoverArtHashes = <String, String>{};
       
       // Get existing hashes from previous backup (if available) to avoid unnecessary uploads
       Map<String, String> existingHashes = {};
       Map<String, String> existingProfilePhotoHashes = {};
       Map<String, String> existingReleaseArtworkHashes = {};
+      Map<String, String> existingProjectCoverArtHashes = {};
       try {
         final existingBackup = await downloadDatabase();
         if (existingBackup['previewSongHashes'] != null) {
@@ -2412,6 +2624,12 @@ class GoogleDriveSyncService {
           existingReleaseArtworkHashes = Map<String, String>.from(existingBackup['releaseArtworkHashes'] as Map);
           if (kDebugMode) {
             print('Found ${existingReleaseArtworkHashes.length} existing release artwork hashes from previous backup');
+          }
+        }
+        if (existingBackup['projectCoverArtHashes'] != null) {
+          existingProjectCoverArtHashes = Map<String, String>.from(existingBackup['projectCoverArtHashes'] as Map);
+          if (kDebugMode) {
+            print('Found ${existingProjectCoverArtHashes.length} existing project cover art hashes from previous backup');
           }
         }
       } catch (_) {
@@ -2449,6 +2667,9 @@ class GoogleDriveSyncService {
       
       // Structure to hold release artwork that needs upload
       final releaseArtworkToUpload = <Map<String, dynamic>>[];
+
+      // Structure to hold project cover art that needs upload (#110)
+      final projectCoverArtToUpload = <Map<String, dynamic>>[];
       
       int profileIndex = 0;
       for (final profile in allProfiles) {
@@ -2522,7 +2743,54 @@ class GoogleDriveSyncService {
             }
             // Track that this project belongs to this profile
             projectToProfileMap[project.id] = profile.id;
-            
+
+            // Check project cover art status (#110). Unlike preview songs and
+            // release artwork this runs on mobile too: the appearance dialog
+            // is available there, and a cover is a few dozen KB — skipping the
+            // upload would silently strand every cover set on a phone.
+            if (project.thumbnailPath != null && project.thumbnailPath!.isNotEmpty) {
+              try {
+                final latestProject = profileProjectsBox.get(project.id);
+                final coverPath = latestProject?.thumbnailPath;
+                if (latestProject != null && coverPath != null && coverPath.isNotEmpty) {
+                  final currentLocalHash = await _calculateFileHash(coverPath);
+                  final existingHash = existingProjectCoverArtHashes[latestProject.id];
+
+                  if (existingHash != null && existingHash == currentLocalHash) {
+                    // Hash matches — only skip the upload if the file really is
+                    // still on Drive.
+                    final coverArtFolderId = await _ensureProjectCoverArtFolder();
+                    final driveFileName = '${latestProject.id}_cover${path.extension(coverPath)}';
+                    final response = await _driveApi!.files.list(
+                      q: "name='$driveFileName' and parents in '$coverArtFolderId' and trashed=false",
+                      spaces: 'drive',
+                    );
+                    if (response.files != null && response.files!.isNotEmpty) {
+                      projectCoverArtFileMap[latestProject.id] = response.files!.first.id!;
+                      projectCoverArtHashes[latestProject.id] = currentLocalHash;
+                      if (kDebugMode) print('  Project cover art found in Drive, skipping upload');
+                    } else {
+                      projectCoverArtToUpload.add({
+                        'project': latestProject,
+                        'filePath': coverPath,
+                        'existingHash': existingHash,
+                      });
+                    }
+                  } else {
+                    projectCoverArtToUpload.add({
+                      'project': latestProject,
+                      'filePath': coverPath,
+                      'existingHash': existingHash,
+                    });
+                  }
+                }
+              } catch (e) {
+                if (kDebugMode) {
+                  print('  Error checking cover art for project ${project.id}: $e');
+                }
+              }
+            }
+
             // Check preview song status (only on desktop - mobile doesn't add preview songs)
             // On mobile, we only download preview songs, never upload them
             if (!MobileUtils.isMobile()) {
@@ -2992,6 +3260,54 @@ class GoogleDriveSyncService {
         }
       }
       
+      // Now upload all project cover art that needs uploading (#110)
+      if (kDebugMode) {
+        print('Found ${projectCoverArtToUpload.length} project covers that need upload');
+      }
+
+      uploadedCount = 0;
+      for (final uploadInfo in projectCoverArtToUpload) {
+        if (_isCancelled) {
+          throw UploadCancelledException();
+        }
+
+        uploadedCount++;
+        final project = uploadInfo['project'] as MusicProject;
+        final filePath = uploadInfo['filePath'] as String;
+        final existingHash = uploadInfo['existingHash'] as String?;
+
+        _progressController.add(BackupProgress(
+          stage: BackupProgressStage.uploadingProjectCoverArt,
+          currentItem: 'Uploading cover art: ${project.displayName}',
+          currentIndex: uploadedCount,
+          totalItems: projectCoverArtToUpload.length,
+          progress: 0.2 + (uploadedCount / projectCoverArtToUpload.length * 0.6), // 20-80% range
+        ));
+
+        try {
+          final result = await _uploadProjectCoverArtFile(
+            projectId: project.id,
+            localFilePath: filePath,
+            existingHash: existingHash,
+          );
+
+          if (result != null) {
+            projectCoverArtFileMap[project.id] = result['fileId']!;
+            projectCoverArtHashes[project.id] = result['hash']!;
+            if (kDebugMode) {
+              print('  Uploaded cover art for project ${project.id}: ${result['fileId']} (hash: ${result['hash']})');
+            }
+          } else {
+            _lastUploadWarnings.add('Project cover art failed to upload: ${project.displayName}');
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('  Error uploading cover art for project ${project.id}: $e');
+          }
+          _lastUploadWarnings.add('Project cover art error (${project.displayName}): $e');
+        }
+      }
+
       // Collect TODO templates (global, not per-profile)
       final List<TodoTemplate> allTemplates = [];
       try {
@@ -3137,6 +3453,10 @@ class GoogleDriveSyncService {
         'releaseArtworkFiles': releaseArtworkFileMap,
         // NEW: Release artwork hashes (releaseId -> fileHash) for change detection
         'releaseArtworkHashes': releaseArtworkHashes,
+        // NEW: Project cover art file mappings (projectId -> driveFileId) (#110)
+        'projectCoverArtFiles': projectCoverArtFileMap,
+        // NEW: Project cover art hashes (projectId -> fileHash) for change detection
+        'projectCoverArtHashes': projectCoverArtHashes,
       };
 
       // Check for cancellation before database upload
@@ -3623,9 +3943,10 @@ class GoogleDriveSyncService {
   bool _todosEqual(List<TodoItem> a, List<TodoItem> b) {
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
-      if (a[i].id != b[i].id || 
-          a[i].text != b[i].text || 
-          a[i].completed != b[i].completed) {
+      if (a[i].id != b[i].id ||
+          a[i].text != b[i].text ||
+          a[i].completed != b[i].completed ||
+          a[i].dueAt != b[i].dueAt) {
         return false;
       }
     }
@@ -3642,6 +3963,7 @@ class GoogleDriveSyncService {
     return remote.notes != local.notes ||
         !_todosEqual(remote.todos, local.todos) ||
         !_listEquals(remote.parts, local.parts) ||
+        !_listEquals(remote.attachments, local.attachments) ||
         remote.bpm != local.bpm ||
         remote.musicalKey != local.musicalKey ||
         remote.status != local.status ||
@@ -3650,7 +3972,9 @@ class GoogleDriveSyncService {
         remote.deadline != local.deadline ||
         remote.ignoredNewerSongPath != local.ignoredNewerSongPath ||
         remote.lastModifiedAt != local.lastModifiedAt ||
-        remote.fileCreatedAt != local.fileCreatedAt;
+        remote.fileCreatedAt != local.fileCreatedAt ||
+        remote.accentColor != local.accentColor ||
+        remote.iconKey != local.iconKey;
   }
 
   /// Merge remote data with local data
@@ -3808,6 +4132,18 @@ class GoogleDriveSyncService {
     }
     
     int artworkIndex = 0;
+
+    // Get project cover art mappings (#110). Maps projectId -> driveFileId and
+    // projectId -> fileHash; both absent on any backup written before #110.
+    final projectCoverArtFiles = remoteData['projectCoverArtFiles'] as Map<String, dynamic>?;
+    final projectCoverArtHashes = remoteData['projectCoverArtHashes'] as Map<String, dynamic>?;
+
+    int coverArtToDownload = 0;
+    if (downloadPreviewSongs && projectCoverArtFiles != null) {
+      coverArtToDownload = projectCoverArtFiles.length;
+    }
+
+    int coverArtIndex = 0;
     
     // Create reverse lookup: profileId -> list of project/release/root IDs
     final profileToProjects = <String, List<String>>{};
@@ -4166,6 +4502,7 @@ class GoogleDriveSyncService {
                     notes: remoteProject.notes,
                     todos: remoteProject.todos,
                     parts: remoteProject.parts,
+                    attachments: remoteProject.attachments,
                     bpm: remoteProject.bpm,
                     musicalKey: remoteProject.musicalKey,
                     status: remoteProject.status,
@@ -4176,6 +4513,13 @@ class GoogleDriveSyncService {
                     statusChangedAt: remoteProject.statusChangedAt,
                     ignoredNewerSongPath: remoteProject.ignoredNewerSongPath,
                     clearIgnoredNewerSongPath: remoteProject.ignoredNewerSongPath == null,
+                    // Appearance overrides are user data like any other; the
+                    // clear flags are what let "reset to automatic" propagate
+                    // rather than being read as "nothing to say".
+                    accentColor: remoteProject.accentColor,
+                    clearAccentColor: remoteProject.accentColor == null,
+                    iconKey: remoteProject.iconKey,
+                    clearIconKey: remoteProject.iconKey == null,
                     previewSongPath: previewSongPath,
                     previewSongFileName: previewSongFileName ?? remoteProject.previewSongFileName,
                     uploadedPreviewSongHash: uploadedPreviewSongHash ?? remoteProject.uploadedPreviewSongHash,
@@ -4458,6 +4802,71 @@ class GoogleDriveSyncService {
             }
           }
           
+          // Project cover art (#110). A separate pass over the manifest rather
+          // than a branch inside the merge above: the cover is a file sitting
+          // beside the metadata, not one of its fields, and the merge's three
+          // paths (added / metadata-changed / unchanged) would each need the
+          // identical download. Working off the stored project also means a
+          // cover lands correctly whichever of those paths the row took.
+          if (downloadPreviewSongs && projectCoverArtFiles != null) {
+            for (final coverEntry in projectCoverArtFiles.entries) {
+              if (_isCancelled) throw UploadCancelledException('Download cancelled by user');
+              final coverProjectId = coverEntry.key;
+              if (!profileProjectIds.contains(coverProjectId)) continue;
+              final storedProject = profileProjectsBox.get(coverProjectId);
+              if (storedProject == null) continue;
+
+              try {
+                coverArtIndex++;
+                _progressController.add(BackupProgress(
+                  stage: BackupProgressStage.downloadingProjectCoverArt,
+                  currentItem: 'Downloading cover art: ${storedProject.displayName}',
+                  currentIndex: coverArtIndex,
+                  totalItems: coverArtToDownload,
+                  progress: 0.20 + (coverArtIndex / coverArtToDownload * 0.10), // 20-30%
+                ));
+
+                final expectedHash = projectCoverArtHashes?[coverProjectId] as String?;
+
+                // The extension comes from whatever the uploading machine's
+                // path had; the local filename is ours either way.
+                String? fileExtension;
+                for (final remoteProject in remoteProjects) {
+                  if (remoteProject.id == coverProjectId) {
+                    final remoteCover = remoteProject.thumbnailPath;
+                    if (remoteCover != null && remoteCover.isNotEmpty) {
+                      fileExtension = path.extension(remoteCover);
+                    }
+                    break;
+                  }
+                }
+
+                final localCoverPath = await downloadProjectCoverArtFile(
+                  driveFileId: coverEntry.value as String,
+                  projectId: coverProjectId,
+                  expectedHash: expectedHash,
+                  fileExtension: fileExtension,
+                );
+
+                if (localCoverPath != null && localCoverPath != storedProject.thumbnailPath) {
+                  await profileProjectsBox.put(
+                    coverProjectId,
+                    storedProject.copyWith(thumbnailPath: localCoverPath),
+                  );
+                  if (kDebugMode) {
+                    print('    Downloaded cover art for: ${storedProject.displayName}');
+                  }
+                }
+              } catch (e) {
+                if (kDebugMode) {
+                  print('    Error downloading cover art for project $coverProjectId: $e');
+                }
+                // A missing cover falls back to the accent colour and icon —
+                // never a reason to fail the whole restore.
+              }
+            }
+          }
+
           // Force box to notify listeners by doing a dummy update on modified projects
           // This ensures Hive streams detect the changes even after batch updates
           if (profileProjectsUpdated > 0 && profileProjectsBox.isNotEmpty) {
@@ -5056,6 +5465,7 @@ class GoogleDriveSyncService {
         'text': t.text,
         'completed': t.completed,
         'createdAt': t.createdAt.toIso8601String(),
+        'dueAt': t.dueAt?.toIso8601String(),
       }).toList(),
       'parts': project.parts.map((p) => p.toJson()).toList(),
       'hidden': project.hidden,
@@ -5081,6 +5491,24 @@ class GoogleDriveSyncService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      // Attachments (#112) are user data — the reference track, the
+      // stem-delivery link, the contract. Only the path/URL travels, never the
+      // file itself, exactly as with `filePath` and `previewSongPath`.
+      'attachments': project.attachments.map((a) => a.toMap()).toList(),
+      // Per-project appearance (#110). Overrides only — null means the
+      // accent/icon is derived from the id, which every machine agrees on
+      // without any of it travelling.
+      'accentColor': project.accentColor,
+      'iconKey': project.iconKey,
+      // User data: someone typed these two letters onto the card.
+      'cardInitials': project.cardInitials,
+      // Archiving (#116). User data: skipping these would restore an archived
+      // project as a plain one whose files aren't where filePath says, i.e.
+      // "missing" — losing both the pointer to the archive and the reason the
+      // originals are gone.
+      'archivePath': project.archivePath,
+      'archivedAt': project.archivedAt?.toIso8601String(),
+      'archiveEntryPath': project.archiveEntryPath,
     };
   }
 
@@ -5107,6 +5535,7 @@ class GoogleDriveSyncService {
         text: t['text'] as String,
         completed: t['completed'] as bool? ?? false,
         createdAt: DateTime.parse(t['createdAt'] as String),
+        dueAt: t['dueAt'] != null ? DateTime.parse(t['dueAt'] as String) : null,
       )).toList() ?? const [],
       parts: (data['parts'] as List?)
               ?.map((p) => ProjectPart.fromJson(p as Map<dynamic, dynamic>))
@@ -5146,6 +5575,18 @@ class GoogleDriveSyncService {
               ?.map((e) => ProjectMarker.fromMap(e as Map))
               .toList() ??
           const [],
+      attachments: (data['attachments'] as List?)
+              ?.map((e) => ProjectAttachment.fromMap(e as Map))
+              .toList() ??
+          const [],
+      accentColor: (data['accentColor'] as num?)?.toInt(),
+      iconKey: data['iconKey'] as String?,
+      cardInitials: data['cardInitials'] as String?,
+      archivePath: data['archivePath'] as String?,
+      archivedAt: data['archivedAt'] != null
+          ? DateTime.parse(data['archivedAt'] as String)
+          : null,
+      archiveEntryPath: data['archiveEntryPath'] as String?,
     );
   }
 
@@ -5159,6 +5600,14 @@ class GoogleDriveSyncService {
   @visibleForTesting
   MusicProject deserializeProjectForTest(Map<String, dynamic> data) =>
       _deserializeProject(data);
+
+  @visibleForTesting
+  Map<String, dynamic> serializeReleaseForTest(Release release) =>
+      _serializeRelease(release);
+
+  @visibleForTesting
+  Release deserializeReleaseForTest(Map<String, dynamic> data) =>
+      _deserializeRelease(data);
 
   /// Test-only accessor for [_autoPreviewAlreadyMatches] — the merge-time check
   /// that stops a locally auto-detected preview from being re-downloaded (and
@@ -5195,6 +5644,7 @@ class GoogleDriveSyncService {
         'text': t.text,
         'completed': t.completed,
         'createdAt': t.createdAt.toIso8601String(),
+        'dueAt': t.dueAt?.toIso8601String(),
       }).toList(),
     };
   }
@@ -5223,6 +5673,7 @@ class GoogleDriveSyncService {
         text: t['text'] as String,
         completed: t['completed'] as bool,
         createdAt: DateTime.parse(t['createdAt'] as String),
+        dueAt: t['dueAt'] != null ? DateTime.parse(t['dueAt'] as String) : null,
       )).toList() ?? const [],
     );
   }
@@ -5409,6 +5860,26 @@ class GoogleDriveSyncService {
       uploadedPreviewSongHash = expectedHash;
     }
 
+    // Download this project's cover art if the backup carries one (#110).
+    // A failed download leaves the local path untouched — the avatar falls
+    // back to the accent colour and icon rather than to a broken image.
+    final projectCoverArtFiles = remoteData['projectCoverArtFiles'] as Map<String, dynamic>?;
+    final projectCoverArtHashes = remoteData['projectCoverArtHashes'] as Map<String, dynamic>?;
+
+    String? coverArtPath = localProject?.thumbnailPath;
+    if (projectCoverArtFiles != null && projectCoverArtFiles.containsKey(projectId)) {
+      final remoteCover = remoteProject.thumbnailPath;
+      final downloadedCover = await downloadProjectCoverArtFile(
+        driveFileId: projectCoverArtFiles[projectId] as String,
+        projectId: projectId,
+        expectedHash: projectCoverArtHashes?[projectId] as String?,
+        fileExtension: remoteCover != null && remoteCover.isNotEmpty
+            ? path.extension(remoteCover)
+            : null,
+      );
+      if (downloadedCover != null) coverArtPath = downloadedCover;
+    }
+
     // Merge into local project or use remote directly for a new project
     final MusicProject projectToSave;
     if (localProject != null) {
@@ -5416,6 +5887,7 @@ class GoogleDriveSyncService {
         notes: remoteProject.notes,
         todos: remoteProject.todos,
         parts: remoteProject.parts,
+        attachments: remoteProject.attachments,
         bpm: remoteProject.bpm,
         musicalKey: remoteProject.musicalKey,
         status: remoteProject.status,
@@ -5432,6 +5904,12 @@ class GoogleDriveSyncService {
         updatedAt: remoteProject.updatedAt,
         lastModifiedAt: remoteProject.lastModifiedAt,
         fileCreatedAt: remoteProject.fileCreatedAt,
+        thumbnailPath: coverArtPath,
+        clearThumbnailPath: coverArtPath == null,
+        accentColor: remoteProject.accentColor,
+        clearAccentColor: remoteProject.accentColor == null,
+        iconKey: remoteProject.iconKey,
+        clearIconKey: remoteProject.iconKey == null,
       );
     } else {
       projectToSave = remoteProject.copyWith(
@@ -5440,6 +5918,8 @@ class GoogleDriveSyncService {
             previewSongFileName ?? remoteProject.previewSongFileName,
         uploadedPreviewSongHash:
             uploadedPreviewSongHash ?? remoteProject.uploadedPreviewSongHash,
+        thumbnailPath: coverArtPath,
+        clearThumbnailPath: coverArtPath == null,
       );
     }
 

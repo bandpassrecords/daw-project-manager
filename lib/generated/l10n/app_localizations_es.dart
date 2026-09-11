@@ -443,6 +443,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clearSelection => 'Limpiar Selección';
 
   @override
+  String get viewModeTable => 'Vista de tabla';
+
+  @override
+  String get viewModeCards => 'Vista de tarjetas';
+
+  @override
+  String get selectProject => 'Seleccionar proyecto';
+
+  @override
   String get selectAllProjects => 'Seleccionar todos los proyectos';
 
   @override
@@ -2896,6 +2905,23 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => 'Fecha límite';
+
+  @override
+  String get sortByLabel => 'Ordenar por';
+
+  @override
+  String get cardInitialsTitle => 'Iniciales de la tarjeta';
+
+  @override
+  String get cardInitialsDescription =>
+      'Las letras que se muestran en la tarjeta de este proyecto cuando no tiene portada.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Déjalo vacío para usar las iniciales del nombre.';
+
+  @override
   String get sortByLastModified => 'Última modificación';
 
   @override
@@ -5022,4 +5048,539 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Colores Sugeridos';
+
+  @override
+  String get todoDueDate => 'Fecha límite';
+
+  @override
+  String get todoSetDueDate => 'Definir fecha límite';
+
+  @override
+  String get todoClearDueDate => 'Quitar fecha límite';
+
+  @override
+  String get todoNoDueDate => 'Sin fecha límite';
+
+  @override
+  String get todoDueToday => 'Vence hoy';
+
+  @override
+  String get todoDueTomorrow => 'Vence mañana';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Vence el $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días de retraso',
+      one: '1 día de retraso',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Vencimiento';
+
+  @override
+  String get queueDueFilterAll => 'Todas las tareas';
+
+  @override
+  String get queueDueFilterOverdue => 'Atrasadas';
+
+  @override
+  String get queueDueFilterToday => 'Vencen hoy';
+
+  @override
+  String get queueDueFilterThisWeek => 'Vencen esta semana';
+
+  @override
+  String get queueDueFilterNoDate => 'Sin fecha límite';
+
+  @override
+  String get queueNoTasksForDueFilter =>
+      'Ninguna tarea coincide con este filtro de vencimiento';
+
+  @override
+  String get projectAttachments => 'Adjuntos';
+
+  @override
+  String get attachmentAddFile => 'Añadir archivo';
+
+  @override
+  String get attachmentAddLink => 'Añadir enlace';
+
+  @override
+  String get attachmentsEmptyTitle => 'Todavía no hay nada adjunto';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'Guarda la pista de referencia, el enlace de entrega de pistas, la letra y el contrato junto a la canción, en lugar de en un chat.';
+
+  @override
+  String get attachmentEditDialogTitle => 'Editar adjunto';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'Ruta del archivo';
+
+  @override
+  String get attachmentLabelLabel => 'Etiqueta (opcional)';
+
+  @override
+  String get attachmentNoteLabel => 'Nota (opcional)';
+
+  @override
+  String get attachmentUrlInvalid =>
+      'Introduce un enlace válido, p. ej. https://ejemplo.com';
+
+  @override
+  String get attachmentPathRequired => 'Introduce la ruta del archivo';
+
+  @override
+  String get attachmentOpenTooltip => 'Abrir';
+
+  @override
+  String get attachmentRemoveTitle => 'Quitar adjunto';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return '¿Quitar \"$label\" de este proyecto? El archivo en sí no se elimina.';
+  }
+
+  @override
+  String get attachmentRemoved => 'Adjunto eliminado';
+
+  @override
+  String get attachmentAdded => 'Adjunto añadido';
+
+  @override
+  String get attachmentOpenFailed => 'No se pudo abrir ese adjunto';
+
+  @override
+  String get attachmentPickFileTitle => 'Elige un archivo para adjuntar';
+
+  @override
+  String get attachmentAlreadyAdded => 'Eso ya está adjunto a este proyecto';
+
+  @override
+  String get attachmentExport => 'Exportar';
+
+  @override
+  String get attachmentExportTooltip =>
+      'Guardar los archivos y enlaces adjuntos';
+
+  @override
+  String get attachmentExportSaveTitle => 'Guardar adjuntos';
+
+  @override
+  String get attachmentExportNothing => 'No hay nada que exportar';
+
+  @override
+  String get attachmentExporting => 'Exportando adjuntos...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return 'Guardado en: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '$count archivo$plural no encontrado$plural omitido$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return 'No se pudieron exportar los adjuntos: $error';
+  }
+
+  @override
+  String get projectAppearance => 'Apariencia';
+
+  @override
+  String get projectAppearanceTooltip => 'Cambiar portada, color e icono';
+
+  @override
+  String get projectCoverArt => 'Portada';
+
+  @override
+  String get chooseCoverArt => 'Elegir imagen…';
+
+  @override
+  String get replaceCoverArt => 'Reemplazar imagen…';
+
+  @override
+  String get removeCoverArt => 'Quitar portada';
+
+  @override
+  String get removeCoverArtConfirm =>
+      '¿Quitar la portada de este proyecto? Se eliminará la imagen guardada.';
+
+  @override
+  String get coverArtRemoved => 'Portada eliminada';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'No se pudo quitar la portada: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Color de acento';
+
+  @override
+  String get projectIcon => 'Icono';
+
+  @override
+  String get appearanceNone => 'Ninguno';
+
+  @override
+  String get appearanceNoneHint =>
+      'Los proyectos no muestran color ni icono hasta que elijas uno. Toca de nuevo el icono seleccionado para quitarlo.';
+
+  @override
+  String get clearColorAndIcon => 'Quitar color e icono';
+
+  @override
+  String get dropCoverArtHere => 'Suelta una imagen para definir la portada';
+
+  @override
+  String get uploadingProjectCoverArt => 'Subiendo portadas de proyectos...';
+
+  @override
+  String get downloadingProjectCoverArt =>
+      'Descargando portadas de proyectos...';
+
+  @override
+  String get moveProjectButtonLabel => 'Mover…';
+
+  @override
+  String get moveProjectDialogTitle => 'Mover Proyecto';
+
+  @override
+  String get moveProjectDestinationLabel => 'Destino';
+
+  @override
+  String get moveProjectChooseDestination => 'Elegir…';
+
+  @override
+  String get moveProjectNoDestinationChosen =>
+      'Aún no se ha elegido una carpeta';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Mover toda la carpeta \"$folder\"';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'Esta carpeta contiene solo este proyecto, así que sus samples y mezclas se mueven con él.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Solo se mueve el archivo del proyecto. Los samples y mezclas junto a él se quedan donde están.';
+
+  @override
+  String get moveProjectConfirm => 'Mover';
+
+  @override
+  String get moveProjectInProgress => 'Moviendo…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '\"$name\" movido a $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Error al mover: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'El archivo de este proyecto no está en este equipo.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '\"$name\" ya existe en esa carpeta.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'No puedes mover una carpeta dentro de sí misma.';
+
+  @override
+  String get moveProjectErrorSameLocation =>
+      'El proyecto ya está en esa carpeta.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'Una pila de versiones no tiene archivo propio: mueve sus versiones individualmente.';
+
+  @override
+  String get selectMoveDestinationTitle => 'Seleccionar carpeta de destino';
+
+  @override
+  String get archiveProjectButtonLabel => 'Archivar…';
+
+  @override
+  String get archiveProjectDialogTitle => 'Archivar Proyecto';
+
+  @override
+  String get archiveProjectWhatToArchive => 'Qué archivar';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return 'Toda la carpeta \"$folder\"';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => 'Solo el archivo del proyecto';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files archivos',
+      one: '1 archivo',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals =>
+      'Eliminar los originales tras verificar el archivo comprimido';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      'Primero se vuelve a abrir el comprimido y se comprueba entrada por entrada. No se elimina nada si esa comprobación falla.';
+
+  @override
+  String get archiveProjectConfirm => 'Archivar';
+
+  @override
+  String get archiveStageScanning => 'Leyendo la carpeta del proyecto…';
+
+  @override
+  String get archiveStageCompressing => 'Comprimiendo…';
+
+  @override
+  String get archiveStageVerifying => 'Verificando el comprimido…';
+
+  @override
+  String get archiveStageDeleting => 'Eliminando los originales…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return '\"$name\" archivado';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return 'Error al archivar: $error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing =>
+      'Los archivos de este proyecto no están en este equipo.';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return 'Los comprimidos no pueden ir dentro de una carpeta escaneada: \"$root\" volvería a indexarlos de inmediato.';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return 'Ya hay un comprimido llamado \"$name\" ahí.';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return 'Al comprimido le faltan archivos, así que no se eliminó nada: $entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => 'Este proyecto no está archivado.';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se omitieron $count archivos ilegibles',
+      one: 'Se omitió 1 archivo ilegible',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => 'Ubicación de archivado';
+
+  @override
+  String get archiveLocationSubtitle =>
+      'Donde \"Archivar proyecto\" escribe sus archivos zip. Se guarda en este dispositivo.';
+
+  @override
+  String get archiveLocationNotSet =>
+      'Sin definir: se te preguntará la primera vez que archives';
+
+  @override
+  String get selectArchiveLocationTitle => 'Seleccionar carpeta de archivado';
+
+  @override
+  String get restoreProjectButtonLabel => 'Restaurar…';
+
+  @override
+  String get restoreProjectDialogTitle => 'Restaurar Proyecto';
+
+  @override
+  String get restoreProjectDescription =>
+      'Extrae el comprimido en la carpeta que elijas y apunta el proyecto de nuevo a los archivos restaurados.';
+
+  @override
+  String get restoreProjectConfirm => 'Restaurar';
+
+  @override
+  String get restoreProjectInProgress => 'Restaurando…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return '\"$name\" restaurado';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return 'Error al restaurar: $error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle =>
+      'Selecciona una carpeta donde restaurar';
+
+  @override
+  String get archivedLabel => 'Archivado';
+
+  @override
+  String archivedOnLabel(String date) {
+    return 'Archivado el $date';
+  }
+
+  @override
+  String get showArchivedProjects => 'Mostrar archivados';
+
+  @override
+  String get showOnlyArchivedProjects => 'Solo archivados';
+
+  @override
+  String get hideArchivedProjects => 'Ocultar archivados';
+
+  @override
+  String get archivedFilterLabel => 'Archivados';
+
+  @override
+  String get archiveProjectStackUnsupported =>
+      'Una pila de versiones no tiene archivos propios: archiva sus versiones individualmente.';
+
+  @override
+  String get archiveBulkButtonLabel => 'Archivar seleccionados';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '¿Archivar $count proyectos?',
+      one: '¿Archivar 1 proyecto?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count proyectos archivados',
+      one: '1 proyecto archivado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => 'Abrir carpeta de archivado';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '$current de $total';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'No se pudieron archivar $count proyectos',
+      one: 'No se pudo archivar 1 proyecto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      'Cada proyecto se archiva con el alcance que le corresponde: la carpeta entera cuando tiene una propia, solo el archivo del proyecto cuando comparte carpeta.';
+
+  @override
+  String get archivedWithLocalCopy => 'Archivado: los originales siguen aquí';
+
+  @override
+  String get archivedAwayTooltip =>
+      'Archivado: los archivos están solo en el comprimido';
+
+  @override
+  String get archiveUndone => 'Archivado deshecho';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return 'No se pudo deshacer el archivado: $error';
+  }
+
+  @override
+  String get moveUndone => 'Movimiento deshecho';
+
+  @override
+  String moveUndoFailed(String error) {
+    return 'No se pudo deshacer el movimiento: $error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => 'De vuelta a su ubicación original';
+
+  @override
+  String get restoreToChosenFolder => 'A otra carpeta…';
+
+  @override
+  String get restoreWhereTo => '¿Dónde debe ir?';
+
+  @override
+  String get restoreOriginalLocationOccupied =>
+      'Ya hay algo en la ubicación original';
+
+  @override
+  String get discardArchiveButtonLabel => 'Descartar comprimido';
+
+  @override
+  String get discardArchiveConfirmTitle => '¿Descartar el comprimido?';
+
+  @override
+  String get discardArchiveConfirmMessage =>
+      'Elimina el zip y quita la marca de archivado. Los archivos del proyecto se quedan donde están.';
+
+  @override
+  String get discardArchiveDone => 'Comprimido descartado';
 }

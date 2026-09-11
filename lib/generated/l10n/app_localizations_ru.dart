@@ -444,6 +444,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get clearSelection => 'Очистить Выбор';
 
   @override
+  String get viewModeTable => 'Таблица';
+
+  @override
+  String get viewModeCards => 'Карточки';
+
+  @override
+  String get selectProject => 'Выбрать проект';
+
+  @override
   String get selectAllProjects => 'Выбрать все проекты';
 
   @override
@@ -2880,6 +2889,23 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => 'Срок';
+
+  @override
+  String get sortByLabel => 'Сортировать по';
+
+  @override
+  String get cardInitialsTitle => 'Инициалы карточки';
+
+  @override
+  String get cardInitialsDescription =>
+      'Буквы на карточке этого проекта, когда у него нет обложки.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Оставьте пустым, чтобы использовать инициалы названия.';
+
+  @override
   String get sortByLastModified => 'Дата изменения';
 
   @override
@@ -4996,4 +5022,536 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Предлагаемые цвета';
+
+  @override
+  String get todoDueDate => 'Срок';
+
+  @override
+  String get todoSetDueDate => 'Задать срок';
+
+  @override
+  String get todoClearDueDate => 'Убрать срок';
+
+  @override
+  String get todoNoDueDate => 'Без срока';
+
+  @override
+  String get todoDueToday => 'Срок сегодня';
+
+  @override
+  String get todoDueTomorrow => 'Срок завтра';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Срок: $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'просрочено на $days дн.',
+      one: 'просрочено на 1 день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Срок';
+
+  @override
+  String get queueDueFilterAll => 'Все задачи';
+
+  @override
+  String get queueDueFilterOverdue => 'Просроченные';
+
+  @override
+  String get queueDueFilterToday => 'Срок сегодня';
+
+  @override
+  String get queueDueFilterThisWeek => 'Срок на этой неделе';
+
+  @override
+  String get queueDueFilterNoDate => 'Без срока';
+
+  @override
+  String get queueNoTasksForDueFilter =>
+      'Нет задач, подходящих под этот фильтр срока';
+
+  @override
+  String get projectAttachments => 'Вложения';
+
+  @override
+  String get attachmentAddFile => 'Добавить файл';
+
+  @override
+  String get attachmentAddLink => 'Добавить ссылку';
+
+  @override
+  String get attachmentsEmptyTitle => 'Пока ничего не прикреплено';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'Держите референс, ссылку на стемы, текст песни и договор рядом с треком, а не в переписке.';
+
+  @override
+  String get attachmentEditDialogTitle => 'Изменить вложение';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'Путь к файлу';
+
+  @override
+  String get attachmentLabelLabel => 'Название (необязательно)';
+
+  @override
+  String get attachmentNoteLabel => 'Заметка (необязательно)';
+
+  @override
+  String get attachmentUrlInvalid =>
+      'Введите корректную ссылку, например https://example.com';
+
+  @override
+  String get attachmentPathRequired => 'Укажите путь к файлу';
+
+  @override
+  String get attachmentOpenTooltip => 'Открыть';
+
+  @override
+  String get attachmentRemoveTitle => 'Удалить вложение';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return 'Убрать \"$label\" из этого проекта? Сам файл не будет удалён.';
+  }
+
+  @override
+  String get attachmentRemoved => 'Вложение удалено';
+
+  @override
+  String get attachmentAdded => 'Вложение добавлено';
+
+  @override
+  String get attachmentOpenFailed => 'Не удалось открыть это вложение';
+
+  @override
+  String get attachmentPickFileTitle => 'Выберите файл для вложения';
+
+  @override
+  String get attachmentAlreadyAdded => 'Это уже прикреплено к проекту';
+
+  @override
+  String get attachmentExport => 'Экспорт';
+
+  @override
+  String get attachmentExportTooltip =>
+      'Сохранить прикреплённые файлы и ссылки';
+
+  @override
+  String get attachmentExportSaveTitle => 'Сохранить вложения';
+
+  @override
+  String get attachmentExportNothing => 'Нечего экспортировать';
+
+  @override
+  String get attachmentExporting => 'Экспорт вложений...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return 'Сохранено: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return 'Пропущено отсутствующих файлов: $count$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return 'Не удалось экспортировать вложения: $error';
+  }
+
+  @override
+  String get projectAppearance => 'Оформление';
+
+  @override
+  String get projectAppearanceTooltip => 'Изменить обложку, цвет и значок';
+
+  @override
+  String get projectCoverArt => 'Обложка';
+
+  @override
+  String get chooseCoverArt => 'Выбрать изображение…';
+
+  @override
+  String get replaceCoverArt => 'Заменить изображение…';
+
+  @override
+  String get removeCoverArt => 'Удалить обложку';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Удалить обложку этого проекта? Сохранённое изображение будет удалено.';
+
+  @override
+  String get coverArtRemoved => 'Обложка удалена';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Не удалось удалить обложку: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Акцентный цвет';
+
+  @override
+  String get projectIcon => 'Значок';
+
+  @override
+  String get appearanceNone => 'Нет';
+
+  @override
+  String get appearanceNoneHint =>
+      'Проекты не показывают цвет и значок, пока вы их не выберете. Нажмите выбранный значок ещё раз, чтобы убрать его.';
+
+  @override
+  String get clearColorAndIcon => 'Убрать цвет и значок';
+
+  @override
+  String get dropCoverArtHere => 'Перетащите изображение, чтобы задать обложку';
+
+  @override
+  String get uploadingProjectCoverArt => 'Загрузка обложек проектов...';
+
+  @override
+  String get downloadingProjectCoverArt => 'Скачивание обложек проектов...';
+
+  @override
+  String get moveProjectButtonLabel => 'Переместить…';
+
+  @override
+  String get moveProjectDialogTitle => 'Переместить проект';
+
+  @override
+  String get moveProjectDestinationLabel => 'Назначение';
+
+  @override
+  String get moveProjectChooseDestination => 'Выбрать…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'Папка ещё не выбрана';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Переместить всю папку «$folder»';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'В этой папке только этот проект, поэтому его сэмплы и миксдауны переместятся вместе с ним.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Переместится только файл проекта. Сэмплы и миксдауны рядом с ним останутся на месте.';
+
+  @override
+  String get moveProjectConfirm => 'Переместить';
+
+  @override
+  String get moveProjectInProgress => 'Перемещение…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '«$name» перемещён в $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Не удалось переместить: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'Файл этого проекта отсутствует на этом компьютере.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '«$name» уже есть в этой папке.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'Нельзя переместить папку внутрь неё самой.';
+
+  @override
+  String get moveProjectErrorSameLocation =>
+      'Проект уже находится в этой папке.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'У стопки версий нет собственного файла — перемещайте её версии по отдельности.';
+
+  @override
+  String get selectMoveDestinationTitle => 'Выберите папку назначения';
+
+  @override
+  String get archiveProjectButtonLabel => 'Архивировать…';
+
+  @override
+  String get archiveProjectDialogTitle => 'Архивировать проект';
+
+  @override
+  String get archiveProjectWhatToArchive => 'Что архивировать';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return 'Всю папку «$folder»';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => 'Только файл проекта';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files файлов',
+      one: '1 файл',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals =>
+      'Удалить оригиналы после проверки архива';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      'Сначала архив открывается заново и проверяется запись за записью. Если проверка не пройдена, ничего не удаляется.';
+
+  @override
+  String get archiveProjectConfirm => 'Архивировать';
+
+  @override
+  String get archiveStageScanning => 'Чтение папки проекта…';
+
+  @override
+  String get archiveStageCompressing => 'Сжатие…';
+
+  @override
+  String get archiveStageVerifying => 'Проверка архива…';
+
+  @override
+  String get archiveStageDeleting => 'Удаление оригиналов…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return '«$name» заархивирован';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return 'Не удалось заархивировать: $error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing =>
+      'Файлов этого проекта нет на этом компьютере.';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return 'Архивы нельзя класть в сканируемую папку — «$root» тут же добавит их обратно.';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return 'Там уже есть архив с именем «$name».';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return 'В архиве не хватает файлов, поэтому ничего не удалено: $entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => 'Этот проект не заархивирован.';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Пропущено нечитаемых файлов: $count',
+      one: '1 нечитаемый файл пропущен',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => 'Расположение архивов';
+
+  @override
+  String get archiveLocationSubtitle =>
+      'Куда «Архивировать проект» записывает zip-файлы. Хранится на этом устройстве.';
+
+  @override
+  String get archiveLocationNotSet =>
+      'Не задано — вас спросят при первом архивировании';
+
+  @override
+  String get selectArchiveLocationTitle => 'Выберите папку для архивов';
+
+  @override
+  String get restoreProjectButtonLabel => 'Восстановить…';
+
+  @override
+  String get restoreProjectDialogTitle => 'Восстановить проект';
+
+  @override
+  String get restoreProjectDescription =>
+      'Распаковывает архив в выбранную вами папку и возвращает проект к восстановленным файлам.';
+
+  @override
+  String get restoreProjectConfirm => 'Восстановить';
+
+  @override
+  String get restoreProjectInProgress => 'Восстановление…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return '«$name» восстановлен';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return 'Не удалось восстановить: $error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle =>
+      'Выберите папку для восстановления';
+
+  @override
+  String get archivedLabel => 'В архиве';
+
+  @override
+  String archivedOnLabel(String date) {
+    return 'В архиве с $date';
+  }
+
+  @override
+  String get showArchivedProjects => 'Показать архивные';
+
+  @override
+  String get showOnlyArchivedProjects => 'Только архивные';
+
+  @override
+  String get hideArchivedProjects => 'Скрыть архивные';
+
+  @override
+  String get archivedFilterLabel => 'Архив';
+
+  @override
+  String get archiveProjectStackUnsupported =>
+      'У стопки версий нет собственных файлов — архивируйте её версии по отдельности.';
+
+  @override
+  String get archiveBulkButtonLabel => 'Архивировать выбранные';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Архивировать проектов: $count?',
+      one: 'Архивировать 1 проект?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Заархивировано проектов: $count',
+      one: '1 проект заархивирован',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => 'Открыть папку архивов';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '$current из $total';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Не удалось заархивировать проектов: $count',
+      one: '1 проект не удалось заархивировать',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      'Каждый проект архивируется в подходящем ему объёме: вся папка, если она у него своя, и только файл проекта, если папка общая.';
+
+  @override
+  String get archivedWithLocalCopy => 'В архиве — оригиналы всё ещё здесь';
+
+  @override
+  String get archivedAwayTooltip => 'В архиве — файлы остались только в архиве';
+
+  @override
+  String get archiveUndone => 'Архивирование отменено';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return 'Не удалось отменить архивирование: $error';
+  }
+
+  @override
+  String get moveUndone => 'Перемещение отменено';
+
+  @override
+  String moveUndoFailed(String error) {
+    return 'Не удалось отменить перемещение: $error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => 'Обратно в исходное место';
+
+  @override
+  String get restoreToChosenFolder => 'В другую папку…';
+
+  @override
+  String get restoreWhereTo => 'Куда его поместить?';
+
+  @override
+  String get restoreOriginalLocationOccupied =>
+      'В исходном месте уже что-то есть';
+
+  @override
+  String get discardArchiveButtonLabel => 'Удалить архив';
+
+  @override
+  String get discardArchiveConfirmTitle => 'Удалить архив?';
+
+  @override
+  String get discardArchiveConfirmMessage =>
+      'Удаляет zip и снимает пометку «в архиве». Файлы самого проекта остаются на месте.';
+
+  @override
+  String get discardArchiveDone => 'Архив удалён';
 }
