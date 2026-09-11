@@ -955,6 +955,8 @@ class BackupService {
       // from the id", which needs nothing stored to survive a restore.
       'accentColor': project.accentColor,
       'iconKey': project.iconKey,
+      // User data: someone typed these two letters onto the card.
+      'cardInitials': project.cardInitials,
     };
   }
 
@@ -1015,6 +1017,7 @@ class BackupService {
           const [],
       accentColor: (json['accentColor'] as num?)?.toInt(),
       iconKey: json['iconKey'] as String?,
+      cardInitials: json['cardInitials'] as String?,
     );
   }
 

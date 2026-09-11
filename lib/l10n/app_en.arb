@@ -229,6 +229,9 @@
   "extractMetadata": "Extract Metadata",
   "createRelease": "Create Release",
   "clearSelection": "Clear Selection",
+  "viewModeTable": "Table view",
+  "viewModeCards": "Card view",
+  "selectProject": "Select project",
   "selectAllProjects": "Select all projects",
   "switchingProfiles": "Switching Profiles...",
   "scanningProjects": "Scanning projects...",
@@ -2898,6 +2901,11 @@
       }
     }
   },
+  "sortByDeadline": "Deadline",
+  "sortByLabel": "Sort by",
+  "cardInitialsTitle": "Card initials",
+  "cardInitialsDescription": "The letters shown on this project's card when it has no cover art.",
+  "cardInitialsEmptyHint": "Leave empty to use the initials of the name.",
   "sortByLastModified": "Last modified",
   "sortByName": "Name",
   "sortByPhase": "Phase",

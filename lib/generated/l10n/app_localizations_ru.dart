@@ -444,6 +444,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get clearSelection => 'Очистить Выбор';
 
   @override
+  String get viewModeTable => 'Таблица';
+
+  @override
+  String get viewModeCards => 'Карточки';
+
+  @override
+  String get selectProject => 'Выбрать проект';
+
+  @override
   String get selectAllProjects => 'Выбрать все проекты';
 
   @override
@@ -2878,6 +2887,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String statsNotTouchedDays(int days) {
     return 'Не изменялся $days дн.';
   }
+
+  @override
+  String get sortByDeadline => 'Срок';
+
+  @override
+  String get sortByLabel => 'Сортировать по';
+
+  @override
+  String get cardInitialsTitle => 'Инициалы карточки';
+
+  @override
+  String get cardInitialsDescription =>
+      'Буквы на карточке этого проекта, когда у него нет обложки.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Оставьте пустым, чтобы использовать инициалы названия.';
 
   @override
   String get sortByLastModified => 'Дата изменения';

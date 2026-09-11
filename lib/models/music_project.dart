@@ -288,6 +288,15 @@ class MusicProject {
   /// retiring an icon can never leave a project without one.
   final String? iconKey;
 
+  @HiveField(41)
+  /// The short label drawn on the dashboard card when the project has no
+  /// cover art. Null means "derive it from the name" (see `projectInitials`),
+  /// which is what every project starts as.
+  ///
+  /// User data: someone typed it, so it syncs to Drive and goes into a
+  /// backup like the notes and the deadline do.
+  final String? cardInitials;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -330,6 +339,7 @@ class MusicProject {
     this.attachments = const [],
     this.accentColor,
     this.iconKey,
+    this.cardInitials,
   });
 
   /// Number of version files this stack holds. 0 for a real project.
@@ -630,6 +640,8 @@ class MusicProject {
     bool clearAccentColor = false,
     String? iconKey,
     bool clearIconKey = false,
+    String? cardInitials,
+    bool clearCardInitials = false,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -675,6 +687,9 @@ class MusicProject {
       attachments: attachments ?? this.attachments,
       accentColor: clearAccentColor ? null : (accentColor ?? this.accentColor),
       iconKey: clearIconKey ? null : (iconKey ?? this.iconKey),
+      cardInitials: clearCardInitials
+          ? null
+          : (cardInitials ?? this.cardInitials),
     );
   }
 
@@ -763,13 +778,14 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       // before the first scan instead of costing one project its override.
       accentColor: fields[39] is int ? fields[39] as int : null,
       iconKey: fields[40] is String ? fields[40] as String : null,
+      cardInitials: fields.containsKey(41) ? fields[41] as String? : null,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(41) // 41 fields (0-40)
+      ..writeByte(42) // 42 fields (0-41)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -851,6 +867,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(39)
       ..write(obj.accentColor)
       ..writeByte(40)
-      ..write(obj.iconKey);
+      ..write(obj.iconKey)
+      ..writeByte(41)
+      ..write(obj.cardInitials);
   }
 }

@@ -432,6 +432,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearSelection => '清除选择';
 
   @override
+  String get viewModeTable => '表格视图';
+
+  @override
+  String get viewModeCards => '卡片视图';
+
+  @override
+  String get selectProject => '选择项目';
+
+  @override
   String get selectAllProjects => '选择所有项目';
 
   @override
@@ -2788,6 +2797,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String statsNotTouchedDays(int days) {
     return '$days天未修改';
   }
+
+  @override
+  String get sortByDeadline => '截止日期';
+
+  @override
+  String get sortByLabel => '排序方式';
+
+  @override
+  String get cardInitialsTitle => '卡片字母';
+
+  @override
+  String get cardInitialsDescription => '此项目没有封面时，卡片上显示的字母。';
+
+  @override
+  String get cardInitialsEmptyHint => '留空则使用名称的首字母。';
 
   @override
   String get sortByLastModified => '最后修改';

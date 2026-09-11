@@ -49,6 +49,7 @@ class TestFactories {
     List<ProjectAttachment>? attachments,
     int? accentColor,
     String? iconKey,
+    String? cardInitials,
   }) {
     return MusicProject(
       id: id,
@@ -92,6 +93,7 @@ class TestFactories {
       attachments: attachments ?? const [],
       accentColor: accentColor,
       iconKey: iconKey,
+      cardInitials: cardInitials,
     );
   }
 

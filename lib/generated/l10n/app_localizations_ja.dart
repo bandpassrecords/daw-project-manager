@@ -436,6 +436,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get clearSelection => '選択をクリア';
 
   @override
+  String get viewModeTable => 'テーブル表示';
+
+  @override
+  String get viewModeCards => 'カード表示';
+
+  @override
+  String get selectProject => 'プロジェクトを選択';
+
+  @override
   String get selectAllProjects => 'すべてのプロジェクトを選択';
 
   @override
@@ -2817,6 +2826,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String statsNotTouchedDays(int days) {
     return '$days日間変更なし';
   }
+
+  @override
+  String get sortByDeadline => '締め切り';
+
+  @override
+  String get sortByLabel => '並び替え';
+
+  @override
+  String get cardInitialsTitle => 'カードの文字';
+
+  @override
+  String get cardInitialsDescription => 'カバーアートがないときにカードに表示される文字です。';
+
+  @override
+  String get cardInitialsEmptyHint => '空欄にすると名前の頭文字を使います。';
 
   @override
   String get sortByLastModified => '最終更新';

@@ -540,6 +540,29 @@ void main() {
       expect(restored.todos.first.text, todo.text);
     });
 
+    test('preserves the card label the user typed (#111)', () async {
+      final original = TestFactories.makeProject(
+        id: 'card-initials-round-trip',
+        cardInitials: 'X7',
+      );
+
+      final box = await Hive.openBox<MusicProject>('card_initials_round_trip');
+      await box.put(original.id, original);
+
+      expect(box.get(original.id)!.cardInitials, 'X7');
+    });
+
+    test('reads back a project written before card labels existed', () async {
+      // Field 38 is simply absent in every box written by an older build; the
+      // adapter has to hand back null there rather than throwing.
+      final original = TestFactories.makeProject(id: 'no-card-initials');
+
+      final box = await Hive.openBox<MusicProject>('card_initials_absent');
+      await box.put(original.id, original);
+
+      expect(box.get(original.id)!.cardInitials, isNull);
+    });
+
     test('reads back null optional fields correctly', () async {
       final original = TestFactories.makeMinimalProject(id: 'minimal-hive');
       final box = await Hive.openBox<MusicProject>('minimal_round_trip_test');

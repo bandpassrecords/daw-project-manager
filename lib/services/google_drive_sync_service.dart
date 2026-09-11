@@ -5500,6 +5500,8 @@ class GoogleDriveSyncService {
       // without any of it travelling.
       'accentColor': project.accentColor,
       'iconKey': project.iconKey,
+      // User data: someone typed these two letters onto the card.
+      'cardInitials': project.cardInitials,
     };
   }
 
@@ -5572,6 +5574,7 @@ class GoogleDriveSyncService {
           const [],
       accentColor: (data['accentColor'] as num?)?.toInt(),
       iconKey: data['iconKey'] as String?,
+      cardInitials: data['cardInitials'] as String?,
     );
   }
 

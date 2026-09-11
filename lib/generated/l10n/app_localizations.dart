@@ -898,6 +898,24 @@ abstract class AppLocalizations {
   /// **'Clear Selection'**
   String get clearSelection;
 
+  /// No description provided for @viewModeTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Table view'**
+  String get viewModeTable;
+
+  /// No description provided for @viewModeCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Card view'**
+  String get viewModeCards;
+
+  /// No description provided for @selectProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Select project'**
+  String get selectProject;
+
   /// No description provided for @selectAllProjects.
   ///
   /// In en, this message translates to:
@@ -4846,6 +4864,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not touched in {days} days'**
   String statsNotTouchedDays(int days);
+
+  /// No description provided for @sortByDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get sortByDeadline;
+
+  /// No description provided for @sortByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortByLabel;
+
+  /// No description provided for @cardInitialsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Card initials'**
+  String get cardInitialsTitle;
+
+  /// No description provided for @cardInitialsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The letters shown on this project\'s card when it has no cover art.'**
+  String get cardInitialsDescription;
+
+  /// No description provided for @cardInitialsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use the initials of the name.'**
+  String get cardInitialsEmptyHint;
 
   /// No description provided for @sortByLastModified.
   ///

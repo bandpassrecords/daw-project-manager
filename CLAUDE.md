@@ -96,6 +96,16 @@ Instructions for AI assistants working on this codebase.
 - A stored `iconKey` this build no longer ships reads as "no icon", not as a crash — retiring an icon from `kProjectIconChoices` is safe.
 - The grid's Name column sets `cellPadding: EdgeInsets.zero` so the cover can reach the cell's left border and span the full row height; everything else in that cell re-applies `_kNameCellInset` itself.
 
+### The dashboard has two views and exactly one filtered list
+- The desktop projects tab draws either the `TrinaGrid` table or `ProjectCardGrid` (`lib/ui/widgets/project_card_grid.dart`, #111). Both are handed the **same** `projectsProvider` output — the toggle in the filter bar chooses how that list is drawn, never what is in it. Never filter, search or re-sort inside a view; that belongs in `projectsProvider` so both views can't disagree.
+- `dashboardViewModeProvider` is a device-local preference in the `settings` box, like the theme and the detail-page layout — deliberately not Drive-synced and not backed up.
+- `ProjectCardGrid` takes plain values, label strings and callbacks — no `Ref`, no Hive, no `AppLocalizations` — which is what makes it widget-testable. Resolve strings in the page and pass a `ProjectCardLabels`.
+- A project with no cover art still needs a visual identity: `projectAccentColor`/`projectInitials` in `lib/utils/project_accent_color.dart` derive one from the project id, so it is identical on every machine with nothing stored. Cover art (`thumbnailPath`) wins over the generated colour, and a user-typed `MusicProject.cardInitials` wins over the derived letters (`projectCardInitials` resolves that order; blank means "go back to derived", never a blank card).
+- Every card is the same size regardless of its name: the name block is a fixed two lines tall and the cover above it absorbs the difference. Anything else added to the footer has to keep that property, or one long title makes one card taller than the row.
+- The card's launch / open-folder / play icons sit on the cover, not in the footer, for the same reason. The first one follows session mode — bookmark instead of launch — exactly as the grid row and the context menu do.
+- Cards are ordered by `sortProjects` (`lib/utils/project_sort.dart`), shared with the mobile list's sort dropdown, driven by the device-local `dashboardCardSortProvider`. This is the *only* thing a view is allowed to do to the shared list.
+- The right-click menu on a project lives in `lib/ui/project_context_menu.dart` and is shared by the grid row and the card. Add new entries there — a second copy is how the two views drift apart.
+
 ### A grid row's "open full detail page" action uses `Icons.assignment` + `tooltipViewDetails`
 - Every `TrinaGrid` actions column that navigates to a dedicated detail page (not an inline edit dialog) uses `Icon(Icons.assignment)` with `tooltip: l10n.tooltipViewDetails`, matching `dashboard_page.dart`'s project rows. Keep new detail-page entry points (grid action icon, row double-tap) consistent with this rather than inventing a new icon/label per page.
 
@@ -138,6 +148,9 @@ Instructions for AI assistants working on this codebase.
 | Version stack list (project detail) | `lib/ui/widgets/project_versions_section.dart` |
 | Settings hub — single scrollable page, left nav jumps to section | `lib/ui/settings_page.dart` |
 | Main dashboard | `lib/ui/dashboard_page.dart` |
+| Dashboard card/gallery view | `lib/ui/widgets/project_card_grid.dart` |
+| Project right-click menu (grid + cards) | `lib/ui/project_context_menu.dart` |
+| Sorting shared by cards + mobile list | `lib/utils/project_sort.dart` |
 | Project detail / editor | `lib/ui/project_detail_page.dart` |
 | Localization strings (source of truth) | `lib/l10n/app_en.arb` |
 | Theme specs, builder and providers | `lib/providers/theme_provider.dart` |

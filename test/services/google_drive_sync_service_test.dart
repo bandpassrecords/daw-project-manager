@@ -623,6 +623,30 @@ void main() {
       expect(restoredMember.isStackMember, isTrue);
     });
 
+    test('preserves the card label the user typed (#111)', () {
+      // User data: someone chose these letters, so a restore on another
+      // machine has to bring them along.
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(cardInitials: 'X7');
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.cardInitials, 'X7');
+    });
+
+    test('preserves an unset card label', () {
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(cardInitials: null);
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.cardInitials, isNull);
+    });
+
     test('preserves projectNotes', () {
       final service = GoogleDriveSyncService();
       final original = TestFactories.makeProject(

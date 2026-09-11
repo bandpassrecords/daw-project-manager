@@ -444,6 +444,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get clearSelection => 'Auswahl Löschen';
 
   @override
+  String get viewModeTable => 'Tabellenansicht';
+
+  @override
+  String get viewModeCards => 'Kartenansicht';
+
+  @override
+  String get selectProject => 'Projekt auswählen';
+
+  @override
   String get selectAllProjects => 'Alle Projekte auswählen';
 
   @override
@@ -2892,6 +2901,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String statsNotTouchedDays(int days) {
     return 'Seit $days Tagen unverändert';
   }
+
+  @override
+  String get sortByDeadline => 'Frist';
+
+  @override
+  String get sortByLabel => 'Sortieren nach';
+
+  @override
+  String get cardInitialsTitle => 'Kartenkürzel';
+
+  @override
+  String get cardInitialsDescription =>
+      'Die Buchstaben auf der Karte dieses Projekts, wenn es kein Cover hat.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Leer lassen, um die Initialen des Namens zu verwenden.';
 
   @override
   String get sortByLastModified => 'Zuletzt geändert';
