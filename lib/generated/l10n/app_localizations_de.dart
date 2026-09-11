@@ -5009,4 +5009,101 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Vorgeschlagene Farben';
+
+  @override
+  String get projectAttachments => 'Anhänge';
+
+  @override
+  String get attachmentAddFile => 'Datei hinzufügen';
+
+  @override
+  String get attachmentAddLink => 'Link hinzufügen';
+
+  @override
+  String get attachmentsEmptyTitle => 'Noch nichts angehängt';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'Bewahre Referenztrack, Stem-Link, Songtext und Vertrag beim Song auf statt in einem Chatverlauf.';
+
+  @override
+  String get attachmentEditDialogTitle => 'Anhang bearbeiten';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'Dateipfad';
+
+  @override
+  String get attachmentLabelLabel => 'Bezeichnung (optional)';
+
+  @override
+  String get attachmentNoteLabel => 'Notiz (optional)';
+
+  @override
+  String get attachmentUrlInvalid =>
+      'Gib einen gültigen Link ein, z. B. https://beispiel.com';
+
+  @override
+  String get attachmentPathRequired => 'Gib einen Dateipfad ein';
+
+  @override
+  String get attachmentOpenTooltip => 'Öffnen';
+
+  @override
+  String get attachmentRemoveTitle => 'Anhang entfernen';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return '\"$label\" aus diesem Projekt entfernen? Die Datei selbst wird nicht gelöscht.';
+  }
+
+  @override
+  String get attachmentRemoved => 'Anhang entfernt';
+
+  @override
+  String get attachmentAdded => 'Anhang hinzugefügt';
+
+  @override
+  String get attachmentOpenFailed =>
+      'Dieser Anhang konnte nicht geöffnet werden';
+
+  @override
+  String get attachmentPickFileTitle => 'Datei zum Anhängen auswählen';
+
+  @override
+  String get attachmentAlreadyAdded =>
+      'Das ist bereits an dieses Projekt angehängt';
+
+  @override
+  String get attachmentExport => 'Exportieren';
+
+  @override
+  String get attachmentExportTooltip =>
+      'Angehängte Dateien und Links speichern';
+
+  @override
+  String get attachmentExportSaveTitle => 'Anhänge speichern';
+
+  @override
+  String get attachmentExportNothing => 'Nichts zu exportieren';
+
+  @override
+  String get attachmentExporting => 'Anhänge werden exportiert...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return 'Gespeichert unter: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '$count fehlende Datei$plural übersprungen';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return 'Anhänge konnten nicht exportiert werden: $error';
+  }
 }

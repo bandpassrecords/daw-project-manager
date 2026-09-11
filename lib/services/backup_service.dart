@@ -6,6 +6,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:path/path.dart' as p;
 import '../models/custom_theme.dart';
 import '../models/music_project.dart';
+import '../models/project_attachment.dart';
 import '../models/project_marker.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
@@ -881,6 +882,7 @@ class BackupService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      'attachments': project.attachments.map((a) => a.toMap()).toList(),
     };
   }
 
@@ -933,6 +935,10 @@ class BackupService {
       stackId: json['stackId'] as String?,
       markers: (json['markers'] as List?)
               ?.map((e) => ProjectMarker.fromMap(e as Map))
+              .toList() ??
+          const [],
+      attachments: (json['attachments'] as List?)
+              ?.map((e) => ProjectAttachment.fromMap(e as Map))
               .toList() ??
           const [],
     );

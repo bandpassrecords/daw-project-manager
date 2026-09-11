@@ -4426,5 +4426,64 @@
     }
   },
 
-  "suggestedColorsLabel": "Suggested Colors"
+  "suggestedColorsLabel": "Suggested Colors",
+
+  "projectAttachments": "Attachments",
+  "attachmentAddFile": "Add File",
+  "attachmentAddLink": "Add Link",
+  "attachmentsEmptyTitle": "Nothing attached yet",
+  "attachmentsEmptyDescription": "Keep the reference track, the stem-delivery link, the lyric sheet and the contract with the song, instead of in a chat thread.",
+  "attachmentEditDialogTitle": "Edit Attachment",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "File path",
+  "attachmentLabelLabel": "Label (optional)",
+  "attachmentNoteLabel": "Note (optional)",
+  "attachmentUrlInvalid": "Enter a valid link, e.g. https://example.com",
+  "attachmentPathRequired": "Enter a file path",
+  "attachmentOpenTooltip": "Open",
+  "attachmentRemoveTitle": "Remove Attachment",
+  "attachmentRemoveMessage": "Remove \"{label}\" from this project? The file itself is not deleted.",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "attachmentRemoved": "Attachment removed",
+  "attachmentAdded": "Attachment added",
+  "attachmentOpenFailed": "Couldn't open that attachment",
+  "attachmentPickFileTitle": "Choose a file to attach",
+  "attachmentAlreadyAdded": "That is already attached to this project",
+
+  "attachmentExport": "Export",
+  "attachmentExportTooltip": "Save the attached files and links",
+  "attachmentExportSaveTitle": "Save attachments",
+  "attachmentExportNothing": "Nothing to export",
+  "attachmentExporting": "Exporting attachments...",
+  "attachmentExportSaved": "Saved to: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "{count} missing file{plural} skipped",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "Failed to export attachments: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

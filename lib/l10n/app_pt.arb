@@ -3126,5 +3126,64 @@
     }
   },
 
-  "suggestedColorsLabel": "Cores Sugeridas"
+  "suggestedColorsLabel": "Cores Sugeridas",
+
+  "projectAttachments": "Anexos",
+  "attachmentAddFile": "Adicionar Arquivo",
+  "attachmentAddLink": "Adicionar Link",
+  "attachmentsEmptyTitle": "Nada anexado ainda",
+  "attachmentsEmptyDescription": "Mantenha a faixa de referência, o link de entrega das stems, a letra e o contrato junto da música, em vez de espalhados em conversas.",
+  "attachmentEditDialogTitle": "Editar Anexo",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "Caminho do arquivo",
+  "attachmentLabelLabel": "Rótulo (opcional)",
+  "attachmentNoteLabel": "Observação (opcional)",
+  "attachmentUrlInvalid": "Informe um link válido, ex.: https://exemplo.com",
+  "attachmentPathRequired": "Informe o caminho do arquivo",
+  "attachmentOpenTooltip": "Abrir",
+  "attachmentRemoveTitle": "Remover Anexo",
+  "attachmentRemoveMessage": "Remover \"{label}\" deste projeto? O arquivo em si não é excluído.",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "attachmentRemoved": "Anexo removido",
+  "attachmentAdded": "Anexo adicionado",
+  "attachmentOpenFailed": "Não foi possível abrir esse anexo",
+  "attachmentPickFileTitle": "Escolha um arquivo para anexar",
+  "attachmentAlreadyAdded": "Isso já está anexado a este projeto",
+
+  "attachmentExport": "Exportar",
+  "attachmentExportTooltip": "Salvar os arquivos e links anexados",
+  "attachmentExportSaveTitle": "Salvar anexos",
+  "attachmentExportNothing": "Nada para exportar",
+  "attachmentExporting": "Exportando anexos...",
+  "attachmentExportSaved": "Salvo em: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "{count} arquivo{plural} ausente{plural} ignorado{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "Falha ao exportar anexos: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3102,5 +3102,64 @@
     }
   },
 
-  "suggestedColorsLabel": "Colori Suggeriti"
+  "suggestedColorsLabel": "Colori Suggeriti",
+
+  "projectAttachments": "Allegati",
+  "attachmentAddFile": "Aggiungi file",
+  "attachmentAddLink": "Aggiungi link",
+  "attachmentsEmptyTitle": "Ancora nessun allegato",
+  "attachmentsEmptyDescription": "Tieni la traccia di riferimento, il link di consegna degli stem, il testo e il contratto insieme al brano, invece che in una chat.",
+  "attachmentEditDialogTitle": "Modifica allegato",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "Percorso del file",
+  "attachmentLabelLabel": "Etichetta (facoltativa)",
+  "attachmentNoteLabel": "Nota (facoltativa)",
+  "attachmentUrlInvalid": "Inserisci un link valido, es. https://esempio.com",
+  "attachmentPathRequired": "Inserisci il percorso del file",
+  "attachmentOpenTooltip": "Apri",
+  "attachmentRemoveTitle": "Rimuovi allegato",
+  "attachmentRemoveMessage": "Rimuovere \"{label}\" da questo progetto? Il file non viene eliminato.",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "attachmentRemoved": "Allegato rimosso",
+  "attachmentAdded": "Allegato aggiunto",
+  "attachmentOpenFailed": "Impossibile aprire questo allegato",
+  "attachmentPickFileTitle": "Scegli un file da allegare",
+  "attachmentAlreadyAdded": "È già allegato a questo progetto",
+
+  "attachmentExport": "Esporta",
+  "attachmentExportTooltip": "Salva i file e i link allegati",
+  "attachmentExportSaveTitle": "Salva allegati",
+  "attachmentExportNothing": "Niente da esportare",
+  "attachmentExporting": "Esportazione degli allegati...",
+  "attachmentExportSaved": "Salvato in: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "{count} file mancante{plural} ignorato{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "Impossibile esportare gli allegati: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3102,5 +3102,64 @@
     }
   },
 
-  "suggestedColorsLabel": "Colores Sugeridos"
+  "suggestedColorsLabel": "Colores Sugeridos",
+
+  "projectAttachments": "Adjuntos",
+  "attachmentAddFile": "Añadir archivo",
+  "attachmentAddLink": "Añadir enlace",
+  "attachmentsEmptyTitle": "Todavía no hay nada adjunto",
+  "attachmentsEmptyDescription": "Guarda la pista de referencia, el enlace de entrega de pistas, la letra y el contrato junto a la canción, en lugar de en un chat.",
+  "attachmentEditDialogTitle": "Editar adjunto",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "Ruta del archivo",
+  "attachmentLabelLabel": "Etiqueta (opcional)",
+  "attachmentNoteLabel": "Nota (opcional)",
+  "attachmentUrlInvalid": "Introduce un enlace válido, p. ej. https://ejemplo.com",
+  "attachmentPathRequired": "Introduce la ruta del archivo",
+  "attachmentOpenTooltip": "Abrir",
+  "attachmentRemoveTitle": "Quitar adjunto",
+  "attachmentRemoveMessage": "¿Quitar \"{label}\" de este proyecto? El archivo en sí no se elimina.",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "attachmentRemoved": "Adjunto eliminado",
+  "attachmentAdded": "Adjunto añadido",
+  "attachmentOpenFailed": "No se pudo abrir ese adjunto",
+  "attachmentPickFileTitle": "Elige un archivo para adjuntar",
+  "attachmentAlreadyAdded": "Eso ya está adjunto a este proyecto",
+
+  "attachmentExport": "Exportar",
+  "attachmentExportTooltip": "Guardar los archivos y enlaces adjuntos",
+  "attachmentExportSaveTitle": "Guardar adjuntos",
+  "attachmentExportNothing": "No hay nada que exportar",
+  "attachmentExporting": "Exportando adjuntos...",
+  "attachmentExportSaved": "Guardado en: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "{count} archivo{plural} no encontrado{plural} omitido{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "No se pudieron exportar los adjuntos: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

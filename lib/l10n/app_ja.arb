@@ -3102,5 +3102,64 @@
     }
   },
 
-  "suggestedColorsLabel": "おすすめの色"
+  "suggestedColorsLabel": "おすすめの色",
+
+  "projectAttachments": "添付",
+  "attachmentAddFile": "ファイルを追加",
+  "attachmentAddLink": "リンクを追加",
+  "attachmentsEmptyTitle": "まだ何も添付されていません",
+  "attachmentsEmptyDescription": "リファレンス曲、ステム納品リンク、歌詞、契約書をチャットではなく曲と一緒に保管できます。",
+  "attachmentEditDialogTitle": "添付を編集",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "ファイルパス",
+  "attachmentLabelLabel": "ラベル（任意）",
+  "attachmentNoteLabel": "メモ（任意）",
+  "attachmentUrlInvalid": "有効なリンクを入力してください（例: https://example.com）",
+  "attachmentPathRequired": "ファイルパスを入力してください",
+  "attachmentOpenTooltip": "開く",
+  "attachmentRemoveTitle": "添付を削除",
+  "attachmentRemoveMessage": "このプロジェクトから「{label}」を削除しますか？ファイル自体は削除されません。",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "attachmentRemoved": "添付を削除しました",
+  "attachmentAdded": "添付を追加しました",
+  "attachmentOpenFailed": "この添付を開けませんでした",
+  "attachmentPickFileTitle": "添付するファイルを選択",
+  "attachmentAlreadyAdded": "すでにこのプロジェクトに添付されています",
+
+  "attachmentExport": "書き出し",
+  "attachmentExportTooltip": "添付ファイルとリンクを保存",
+  "attachmentExportSaveTitle": "添付を保存",
+  "attachmentExportNothing": "書き出すものがありません",
+  "attachmentExporting": "添付を書き出しています...",
+  "attachmentExportSaved": "保存先: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "見つからないファイル {count} 件をスキップしました{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "添付の書き出しに失敗しました: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

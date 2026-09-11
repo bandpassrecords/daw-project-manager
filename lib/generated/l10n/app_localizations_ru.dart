@@ -4996,4 +4996,99 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Предлагаемые цвета';
+
+  @override
+  String get projectAttachments => 'Вложения';
+
+  @override
+  String get attachmentAddFile => 'Добавить файл';
+
+  @override
+  String get attachmentAddLink => 'Добавить ссылку';
+
+  @override
+  String get attachmentsEmptyTitle => 'Пока ничего не прикреплено';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'Держите референс, ссылку на стемы, текст песни и договор рядом с треком, а не в переписке.';
+
+  @override
+  String get attachmentEditDialogTitle => 'Изменить вложение';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'Путь к файлу';
+
+  @override
+  String get attachmentLabelLabel => 'Название (необязательно)';
+
+  @override
+  String get attachmentNoteLabel => 'Заметка (необязательно)';
+
+  @override
+  String get attachmentUrlInvalid =>
+      'Введите корректную ссылку, например https://example.com';
+
+  @override
+  String get attachmentPathRequired => 'Укажите путь к файлу';
+
+  @override
+  String get attachmentOpenTooltip => 'Открыть';
+
+  @override
+  String get attachmentRemoveTitle => 'Удалить вложение';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return 'Убрать \"$label\" из этого проекта? Сам файл не будет удалён.';
+  }
+
+  @override
+  String get attachmentRemoved => 'Вложение удалено';
+
+  @override
+  String get attachmentAdded => 'Вложение добавлено';
+
+  @override
+  String get attachmentOpenFailed => 'Не удалось открыть это вложение';
+
+  @override
+  String get attachmentPickFileTitle => 'Выберите файл для вложения';
+
+  @override
+  String get attachmentAlreadyAdded => 'Это уже прикреплено к проекту';
+
+  @override
+  String get attachmentExport => 'Экспорт';
+
+  @override
+  String get attachmentExportTooltip =>
+      'Сохранить прикреплённые файлы и ссылки';
+
+  @override
+  String get attachmentExportSaveTitle => 'Сохранить вложения';
+
+  @override
+  String get attachmentExportNothing => 'Нечего экспортировать';
+
+  @override
+  String get attachmentExporting => 'Экспорт вложений...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return 'Сохранено: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return 'Пропущено отсутствующих файлов: $count$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return 'Не удалось экспортировать вложения: $error';
+  }
 }

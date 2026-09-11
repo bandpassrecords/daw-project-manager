@@ -5008,4 +5008,98 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Colori Suggeriti';
+
+  @override
+  String get projectAttachments => 'Allegati';
+
+  @override
+  String get attachmentAddFile => 'Aggiungi file';
+
+  @override
+  String get attachmentAddLink => 'Aggiungi link';
+
+  @override
+  String get attachmentsEmptyTitle => 'Ancora nessun allegato';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'Tieni la traccia di riferimento, il link di consegna degli stem, il testo e il contratto insieme al brano, invece che in una chat.';
+
+  @override
+  String get attachmentEditDialogTitle => 'Modifica allegato';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'Percorso del file';
+
+  @override
+  String get attachmentLabelLabel => 'Etichetta (facoltativa)';
+
+  @override
+  String get attachmentNoteLabel => 'Nota (facoltativa)';
+
+  @override
+  String get attachmentUrlInvalid =>
+      'Inserisci un link valido, es. https://esempio.com';
+
+  @override
+  String get attachmentPathRequired => 'Inserisci il percorso del file';
+
+  @override
+  String get attachmentOpenTooltip => 'Apri';
+
+  @override
+  String get attachmentRemoveTitle => 'Rimuovi allegato';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return 'Rimuovere \"$label\" da questo progetto? Il file non viene eliminato.';
+  }
+
+  @override
+  String get attachmentRemoved => 'Allegato rimosso';
+
+  @override
+  String get attachmentAdded => 'Allegato aggiunto';
+
+  @override
+  String get attachmentOpenFailed => 'Impossibile aprire questo allegato';
+
+  @override
+  String get attachmentPickFileTitle => 'Scegli un file da allegare';
+
+  @override
+  String get attachmentAlreadyAdded => 'È già allegato a questo progetto';
+
+  @override
+  String get attachmentExport => 'Esporta';
+
+  @override
+  String get attachmentExportTooltip => 'Salva i file e i link allegati';
+
+  @override
+  String get attachmentExportSaveTitle => 'Salva allegati';
+
+  @override
+  String get attachmentExportNothing => 'Niente da esportare';
+
+  @override
+  String get attachmentExporting => 'Esportazione degli allegati...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return 'Salvato in: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '$count file mancante$plural ignorato$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return 'Impossibile esportare gli allegati: $error';
+  }
 }

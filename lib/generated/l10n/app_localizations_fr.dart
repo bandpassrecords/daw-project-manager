@@ -5034,4 +5034,99 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Couleurs Suggérées';
+
+  @override
+  String get projectAttachments => 'Pièces jointes';
+
+  @override
+  String get attachmentAddFile => 'Ajouter un fichier';
+
+  @override
+  String get attachmentAddLink => 'Ajouter un lien';
+
+  @override
+  String get attachmentsEmptyTitle => 'Rien de joint pour l\'instant';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'Gardez la piste de référence, le lien de livraison des stems, le texte et le contrat avec le morceau plutôt que dans une conversation.';
+
+  @override
+  String get attachmentEditDialogTitle => 'Modifier la pièce jointe';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'Chemin du fichier';
+
+  @override
+  String get attachmentLabelLabel => 'Libellé (facultatif)';
+
+  @override
+  String get attachmentNoteLabel => 'Note (facultative)';
+
+  @override
+  String get attachmentUrlInvalid =>
+      'Saisissez un lien valide, p. ex. https://exemple.com';
+
+  @override
+  String get attachmentPathRequired => 'Saisissez le chemin du fichier';
+
+  @override
+  String get attachmentOpenTooltip => 'Ouvrir';
+
+  @override
+  String get attachmentRemoveTitle => 'Retirer la pièce jointe';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return 'Retirer \"$label\" de ce projet ? Le fichier lui-même n\'est pas supprimé.';
+  }
+
+  @override
+  String get attachmentRemoved => 'Pièce jointe retirée';
+
+  @override
+  String get attachmentAdded => 'Pièce jointe ajoutée';
+
+  @override
+  String get attachmentOpenFailed => 'Impossible d\'ouvrir cette pièce jointe';
+
+  @override
+  String get attachmentPickFileTitle => 'Choisissez un fichier à joindre';
+
+  @override
+  String get attachmentAlreadyAdded => 'C\'est déjà joint à ce projet';
+
+  @override
+  String get attachmentExport => 'Exporter';
+
+  @override
+  String get attachmentExportTooltip =>
+      'Enregistrer les fichiers et liens joints';
+
+  @override
+  String get attachmentExportSaveTitle => 'Enregistrer les pièces jointes';
+
+  @override
+  String get attachmentExportNothing => 'Rien à exporter';
+
+  @override
+  String get attachmentExporting => 'Exportation des pièces jointes...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return 'Enregistré dans : $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '$count fichier$plural introuvable$plural ignoré$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return 'Échec de l\'exportation des pièces jointes : $error';
+  }
 }

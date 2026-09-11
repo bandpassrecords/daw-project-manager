@@ -4978,4 +4978,99 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Suggested Colors';
+
+  @override
+  String get projectAttachments => 'Attachments';
+
+  @override
+  String get attachmentAddFile => 'Add File';
+
+  @override
+  String get attachmentAddLink => 'Add Link';
+
+  @override
+  String get attachmentsEmptyTitle => 'Nothing attached yet';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'Keep the reference track, the stem-delivery link, the lyric sheet and the contract with the song, instead of in a chat thread.';
+
+  @override
+  String get attachmentEditDialogTitle => 'Edit Attachment';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'File path';
+
+  @override
+  String get attachmentLabelLabel => 'Label (optional)';
+
+  @override
+  String get attachmentNoteLabel => 'Note (optional)';
+
+  @override
+  String get attachmentUrlInvalid =>
+      'Enter a valid link, e.g. https://example.com';
+
+  @override
+  String get attachmentPathRequired => 'Enter a file path';
+
+  @override
+  String get attachmentOpenTooltip => 'Open';
+
+  @override
+  String get attachmentRemoveTitle => 'Remove Attachment';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return 'Remove \"$label\" from this project? The file itself is not deleted.';
+  }
+
+  @override
+  String get attachmentRemoved => 'Attachment removed';
+
+  @override
+  String get attachmentAdded => 'Attachment added';
+
+  @override
+  String get attachmentOpenFailed => 'Couldn\'t open that attachment';
+
+  @override
+  String get attachmentPickFileTitle => 'Choose a file to attach';
+
+  @override
+  String get attachmentAlreadyAdded =>
+      'That is already attached to this project';
+
+  @override
+  String get attachmentExport => 'Export';
+
+  @override
+  String get attachmentExportTooltip => 'Save the attached files and links';
+
+  @override
+  String get attachmentExportSaveTitle => 'Save attachments';
+
+  @override
+  String get attachmentExportNothing => 'Nothing to export';
+
+  @override
+  String get attachmentExporting => 'Exporting attachments...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return 'Saved to: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '$count missing file$plural skipped';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return 'Failed to export attachments: $error';
+  }
 }

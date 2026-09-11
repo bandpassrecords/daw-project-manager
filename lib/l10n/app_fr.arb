@@ -3102,5 +3102,64 @@
     }
   },
 
-  "suggestedColorsLabel": "Couleurs Suggérées"
+  "suggestedColorsLabel": "Couleurs Suggérées",
+
+  "projectAttachments": "Pièces jointes",
+  "attachmentAddFile": "Ajouter un fichier",
+  "attachmentAddLink": "Ajouter un lien",
+  "attachmentsEmptyTitle": "Rien de joint pour l'instant",
+  "attachmentsEmptyDescription": "Gardez la piste de référence, le lien de livraison des stems, le texte et le contrat avec le morceau plutôt que dans une conversation.",
+  "attachmentEditDialogTitle": "Modifier la pièce jointe",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "Chemin du fichier",
+  "attachmentLabelLabel": "Libellé (facultatif)",
+  "attachmentNoteLabel": "Note (facultative)",
+  "attachmentUrlInvalid": "Saisissez un lien valide, p. ex. https://exemple.com",
+  "attachmentPathRequired": "Saisissez le chemin du fichier",
+  "attachmentOpenTooltip": "Ouvrir",
+  "attachmentRemoveTitle": "Retirer la pièce jointe",
+  "attachmentRemoveMessage": "Retirer \"{label}\" de ce projet ? Le fichier lui-même n'est pas supprimé.",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "attachmentRemoved": "Pièce jointe retirée",
+  "attachmentAdded": "Pièce jointe ajoutée",
+  "attachmentOpenFailed": "Impossible d'ouvrir cette pièce jointe",
+  "attachmentPickFileTitle": "Choisissez un fichier à joindre",
+  "attachmentAlreadyAdded": "C'est déjà joint à ce projet",
+
+  "attachmentExport": "Exporter",
+  "attachmentExportTooltip": "Enregistrer les fichiers et liens joints",
+  "attachmentExportSaveTitle": "Enregistrer les pièces jointes",
+  "attachmentExportNothing": "Rien à exporter",
+  "attachmentExporting": "Exportation des pièces jointes...",
+  "attachmentExportSaved": "Enregistré dans : {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "{count} fichier{plural} introuvable{plural} ignoré{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "Échec de l'exportation des pièces jointes : {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3102,5 +3102,64 @@
     }
   },
 
-  "suggestedColorsLabel": "Предлагаемые цвета"
+  "suggestedColorsLabel": "Предлагаемые цвета",
+
+  "projectAttachments": "Вложения",
+  "attachmentAddFile": "Добавить файл",
+  "attachmentAddLink": "Добавить ссылку",
+  "attachmentsEmptyTitle": "Пока ничего не прикреплено",
+  "attachmentsEmptyDescription": "Держите референс, ссылку на стемы, текст песни и договор рядом с треком, а не в переписке.",
+  "attachmentEditDialogTitle": "Изменить вложение",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "Путь к файлу",
+  "attachmentLabelLabel": "Название (необязательно)",
+  "attachmentNoteLabel": "Заметка (необязательно)",
+  "attachmentUrlInvalid": "Введите корректную ссылку, например https://example.com",
+  "attachmentPathRequired": "Укажите путь к файлу",
+  "attachmentOpenTooltip": "Открыть",
+  "attachmentRemoveTitle": "Удалить вложение",
+  "attachmentRemoveMessage": "Убрать \"{label}\" из этого проекта? Сам файл не будет удалён.",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "attachmentRemoved": "Вложение удалено",
+  "attachmentAdded": "Вложение добавлено",
+  "attachmentOpenFailed": "Не удалось открыть это вложение",
+  "attachmentPickFileTitle": "Выберите файл для вложения",
+  "attachmentAlreadyAdded": "Это уже прикреплено к проекту",
+
+  "attachmentExport": "Экспорт",
+  "attachmentExportTooltip": "Сохранить прикреплённые файлы и ссылки",
+  "attachmentExportSaveTitle": "Сохранить вложения",
+  "attachmentExportNothing": "Нечего экспортировать",
+  "attachmentExporting": "Экспорт вложений...",
+  "attachmentExportSaved": "Сохранено: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "Пропущено отсутствующих файлов: {count}{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "Не удалось экспортировать вложения: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

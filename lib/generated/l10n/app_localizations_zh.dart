@@ -4808,4 +4808,97 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => '推荐颜色';
+
+  @override
+  String get projectAttachments => '附件';
+
+  @override
+  String get attachmentAddFile => '添加文件';
+
+  @override
+  String get attachmentAddLink => '添加链接';
+
+  @override
+  String get attachmentsEmptyTitle => '还没有附件';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      '把参考曲、分轨交付链接、歌词和合同放在歌曲旁边，而不是散落在聊天记录里。';
+
+  @override
+  String get attachmentEditDialogTitle => '编辑附件';
+
+  @override
+  String get attachmentUrlLabel => '网址';
+
+  @override
+  String get attachmentPathLabel => '文件路径';
+
+  @override
+  String get attachmentLabelLabel => '标签（可选）';
+
+  @override
+  String get attachmentNoteLabel => '备注（可选）';
+
+  @override
+  String get attachmentUrlInvalid => '请输入有效链接，例如 https://example.com';
+
+  @override
+  String get attachmentPathRequired => '请输入文件路径';
+
+  @override
+  String get attachmentOpenTooltip => '打开';
+
+  @override
+  String get attachmentRemoveTitle => '移除附件';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return '要从此项目中移除“$label”吗？文件本身不会被删除。';
+  }
+
+  @override
+  String get attachmentRemoved => '已移除附件';
+
+  @override
+  String get attachmentAdded => '已添加附件';
+
+  @override
+  String get attachmentOpenFailed => '无法打开该附件';
+
+  @override
+  String get attachmentPickFileTitle => '选择要附加的文件';
+
+  @override
+  String get attachmentAlreadyAdded => '该内容已附加到此项目';
+
+  @override
+  String get attachmentExport => '导出';
+
+  @override
+  String get attachmentExportTooltip => '保存附加的文件和链接';
+
+  @override
+  String get attachmentExportSaveTitle => '保存附件';
+
+  @override
+  String get attachmentExportNothing => '没有可导出的内容';
+
+  @override
+  String get attachmentExporting => '正在导出附件...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return '已保存到：$path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '已跳过 $count 个丢失的文件$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return '导出附件失败：$error';
+  }
 }

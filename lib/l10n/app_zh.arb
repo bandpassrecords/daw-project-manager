@@ -3102,5 +3102,64 @@
     }
   },
 
-  "suggestedColorsLabel": "推荐颜色"
+  "suggestedColorsLabel": "推荐颜色",
+
+  "projectAttachments": "附件",
+  "attachmentAddFile": "添加文件",
+  "attachmentAddLink": "添加链接",
+  "attachmentsEmptyTitle": "还没有附件",
+  "attachmentsEmptyDescription": "把参考曲、分轨交付链接、歌词和合同放在歌曲旁边，而不是散落在聊天记录里。",
+  "attachmentEditDialogTitle": "编辑附件",
+  "attachmentUrlLabel": "网址",
+  "attachmentPathLabel": "文件路径",
+  "attachmentLabelLabel": "标签（可选）",
+  "attachmentNoteLabel": "备注（可选）",
+  "attachmentUrlInvalid": "请输入有效链接，例如 https://example.com",
+  "attachmentPathRequired": "请输入文件路径",
+  "attachmentOpenTooltip": "打开",
+  "attachmentRemoveTitle": "移除附件",
+  "attachmentRemoveMessage": "要从此项目中移除“{label}”吗？文件本身不会被删除。",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "attachmentRemoved": "已移除附件",
+  "attachmentAdded": "已添加附件",
+  "attachmentOpenFailed": "无法打开该附件",
+  "attachmentPickFileTitle": "选择要附加的文件",
+  "attachmentAlreadyAdded": "该内容已附加到此项目",
+
+  "attachmentExport": "导出",
+  "attachmentExportTooltip": "保存附加的文件和链接",
+  "attachmentExportSaveTitle": "保存附件",
+  "attachmentExportNothing": "没有可导出的内容",
+  "attachmentExporting": "正在导出附件...",
+  "attachmentExportSaved": "已保存到：{path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "已跳过 {count} 个丢失的文件{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "导出附件失败：{error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
