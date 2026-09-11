@@ -3115,9 +3115,9 @@
   "failedToRemoveCoverArt": "No se pudo quitar la portada: {error}",
   "projectAccentColor": "Color de acento",
   "projectIcon": "Icono",
-  "appearanceAutomatic": "Automático",
-  "appearanceAutomaticHint": "Los colores e iconos automáticos provienen del propio proyecto, así cada proyecto se ve distinto sin ninguna configuración.",
-  "resetAppearanceToAutomatic": "Restablecer a automático",
+  "appearanceNone": "Ninguno",
+  "appearanceNoneHint": "Los proyectos no muestran color ni icono hasta que elijas uno. Toca de nuevo el icono seleccionado para quitarlo.",
+  "clearColorAndIcon": "Quitar color e icono",
   "dropCoverArtHere": "Suelta una imagen para definir la portada",
   "uploadingProjectCoverArt": "Subiendo portadas de proyectos...",
   "downloadingProjectCoverArt": "Descargando portadas de proyectos..."

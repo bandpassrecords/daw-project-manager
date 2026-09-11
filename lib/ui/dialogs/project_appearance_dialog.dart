@@ -196,7 +196,9 @@ class _ProjectAppearanceDialogState
     final chosen = await showAppColorPicker(
       context,
       title: l10n.projectAccentColor,
-      current: resolveProjectAccentColor(project),
+      // Nothing chosen yet: open on the first swatch rather than on a
+      // fabricated "current" colour the project does not actually have.
+      current: projectAccentColor(project) ?? kProjectAccentPalette.first,
       palette: kProjectAccentPalette,
     );
     if (chosen == null || !mounted) return;
@@ -206,16 +208,23 @@ class _ProjectAppearanceDialogState
     );
   }
 
-  Future<void> _setIconKey(MusicProject project, String? key) async {
+  /// Tapping the selected icon again clears it — the only way back to "no
+  /// icon" short of clearing the colour too.
+  Future<void> _toggleIconKey(MusicProject project, String key) async {
     final repo = await ref.read(repositoryProvider.future);
     await repo.updateProject(
-      key == null
+      project.iconKey == key
           ? project.copyWith(clearIconKey: true)
           : project.copyWith(iconKey: key),
     );
   }
 
-  Future<void> _resetToAutomatic(MusicProject project) async {
+  Future<void> _clearAccentColor(MusicProject project) async {
+    final repo = await ref.read(repositoryProvider.future);
+    await repo.updateProject(project.copyWith(clearAccentColor: true));
+  }
+
+  Future<void> _clearColorAndIcon(MusicProject project) async {
     final repo = await ref.read(repositoryProvider.future);
     await repo.updateProject(
       project.copyWith(clearAccentColor: true, clearIconKey: true),
@@ -245,10 +254,18 @@ class _ProjectAppearanceDialogState
     }
 
     final hasCover = projectHasCoverArt(project);
-    final isAutomatic = project.accentColor == null && project.iconKey == null;
-    final accent = resolveProjectAccentColor(project);
+    final accent = projectAccentColor(project);
+    final hasColorOrIcon = accent != null || project.iconKey != null;
+    // What the swatch and the icon grid tint themselves with while the project
+    // has no colour of its own. Never written anywhere — picking a colour is
+    // what stores one.
+    final tint = accent ?? theme.colorScheme.primary;
 
-    Widget preview = ProjectCoverAvatar(project: project, size: 120);
+    Widget preview = ProjectCoverAvatar(
+      project: project,
+      size: 120,
+      showEmptyPlaceholder: true,
+    );
     if (!MobileUtils.isMobile()) {
       preview = DropTarget(
         onDragEntered: (_) => setState(() => _dragging = true),
@@ -332,17 +349,32 @@ class _ProjectAppearanceDialogState
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: theme.dividerColor),
                       ),
+                      child: accent != null
+                          ? null
+                          : Icon(
+                              Icons.add,
+                              size: 18,
+                              color: theme.textTheme.bodySmall?.color,
+                            ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      project.accentColor == null
-                          ? l10n.appearanceAutomatic
+                      accent == null
+                          ? l10n.appearanceNone
                           : '#${accent.toARGB32().toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}',
                       style: theme.textTheme.bodyMedium,
                     ),
                   ),
+                  if (accent != null)
+                    IconButton(
+                      onPressed: () => _clearAccentColor(project),
+                      icon: const Icon(Icons.close, size: 18),
+                      // Just the colour — the dialog's footer action is the
+                      // one that clears both.
+                      tooltip: l10n.remove,
+                    ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -355,26 +387,23 @@ class _ProjectAppearanceDialogState
                   for (final entry in kProjectIconChoices.entries)
                     _IconChoice(
                       icon: entry.value,
-                      color: accent,
+                      color: tint,
                       selected: project.iconKey == entry.key,
-                      onTap: () => _setIconKey(project, entry.key),
+                      onTap: () => _toggleIconKey(project, entry.key),
                     ),
                 ],
               ),
               const SizedBox(height: 16),
-              Text(
-                l10n.appearanceAutomaticHint,
-                style: theme.textTheme.bodySmall,
-              ),
+              Text(l10n.appearanceNoneHint, style: theme.textTheme.bodySmall),
             ],
           ),
         ),
       ),
       actions: [
-        if (!isAutomatic)
+        if (hasColorOrIcon)
           TextButton(
-            onPressed: () => _resetToAutomatic(project),
-            child: Text(l10n.resetAppearanceToAutomatic),
+            onPressed: () => _clearColorAndIcon(project),
+            child: Text(l10n.clearColorAndIcon),
           ),
         TextButton(
           onPressed: () => Navigator.pop(context),

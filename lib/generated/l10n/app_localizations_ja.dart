@@ -4898,14 +4898,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get projectIcon => 'アイコン';
 
   @override
-  String get appearanceAutomatic => '自動';
+  String get appearanceNone => 'なし';
 
   @override
-  String get appearanceAutomaticHint =>
-      '自動の色とアイコンはプロジェクト自体から決まるため、設定なしでもすべてのプロジェクトが見分けられます。';
+  String get appearanceNoneHint =>
+      '色とアイコンは選ぶまで表示されません。選択中のアイコンをもう一度タップすると解除できます。';
 
   @override
-  String get resetAppearanceToAutomatic => '自動に戻す';
+  String get clearColorAndIcon => '色とアイコンを解除';
 
   @override
   String get dropCoverArtHere => '画像をドロップしてカバーアートに設定';

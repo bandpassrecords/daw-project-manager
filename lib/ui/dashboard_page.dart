@@ -63,6 +63,7 @@ import 'widgets/language_switcher.dart';
 import 'widgets/theme_switcher.dart';
 import 'widgets/mobile_mini_player.dart';
 import 'widgets/project_cover_avatar.dart';
+import '../utils/project_visuals.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'session_actions.dart';
 import 'dialogs/create_project_dialog.dart';
@@ -91,6 +92,31 @@ const String appVersion = String.fromEnvironment(
   'APP_VERSION',
   defaultValue: '0.0.0',
 );
+
+/// Horizontal inset the projects grid's Name cell applies itself.
+///
+/// Matches TrinaGrid's own `defaultCellPadding`, which the column opts out of
+/// so cover art can reach the cell's left border (#110).
+const double _kNameCellInsetX = 10;
+const EdgeInsets _kNameCellInset =
+    EdgeInsets.symmetric(horizontal: _kNameCellInsetX);
+
+/// Row height of the projects grid, which the cover-art bleed matches so the
+/// artwork spans the row from top border to bottom.
+const double _kNameCellBleedHeight = 48;
+
+/// Total width the bleeding cover art occupies: a square at full strength,
+/// then an equally wide tail fading to nothing under the start of the name.
+const double _kNameCellBleedWidth = _kNameCellBleedHeight * 2;
+
+/// Leading space the name gives up on a row that has cover art, so it starts
+/// clear of the artwork's solid half and only ever sits over the faded tail.
+/// Offsets [_kNameCellInset], which the artwork does not observe.
+const double _kNameCellBleedTextOffset =
+    _kNameCellBleedHeight - _kNameCellInsetX;
+
+/// Width of the tree connector drawn for a row nested inside a folder group.
+const double _kNameCellTreeConnectorWidth = 20;
 
 /// Returns true when any text input (TextField / EditableText) currently has
 /// focus. Used by keyboard handlers to avoid stealing Space / arrow keys while
@@ -7266,14 +7292,21 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         width: 600,
         minWidth: 200,
         frozen: TrinaColumnFrozen.start,
+        // Zeroed so cover art can sit flush against the cell's left border and
+        // run the full row height; everything else in the cell re-applies the
+        // grid's usual horizontal inset itself.
+        cellPadding: EdgeInsets.zero,
         renderer: (rendererContext) {
           final project =
               rendererContext.row.cells['data']?.value as MusicProject?;
           if (project == null) {
-            return _FolderNameCell(
-              row: rendererContext.row,
-              stateManager: rendererContext.stateManager,
-              folderName: rendererContext.cell.value.toString(),
+            return Padding(
+              padding: _kNameCellInset,
+              child: _FolderNameCell(
+                row: rendererContext.row,
+                stateManager: rendererContext.stateManager,
+                folderName: rendererContext.cell.value.toString(),
+              ),
             );
           }
 
@@ -7308,11 +7341,21 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
               parent.type.group.children.isEmpty ||
               parent.type.group.children.last == rendererContext.row;
 
-          return Row(
+          // Cover art (#110) bleeds off the cell's left border at full row
+          // height and fades out to the right, so the artwork reads larger
+          // than the square it occupies and the row's text can start over its
+          // tail. Undecorated projects get nothing — no placeholder, no
+          // auto-assigned colour — so the list stays as quiet as it was.
+          final hasBleed = projectHasCoverArt(project);
+          // Nested rows keep their tree connector clear of the artwork —
+          // a guide line drawn across a cover reads as damage, not structure.
+          final bleedLeft = depth > 0 ? _kNameCellTreeConnectorWidth : 0.0;
+
+          final content = Row(
             children: [
               if (depth > 0)
                 SizedBox(
-                  width: 20,
+                  width: _kNameCellTreeConnectorWidth,
                   height: double.infinity,
                   child: CustomPaint(
                     painter: _TreeConnectorPainter(
@@ -7323,11 +7366,16 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                     ),
                   ),
                 ),
-              // Cover art if the project has one, otherwise its accent
-              // colour + icon (#110) — the point is that no two rows look
-              // alike, so this is never omitted.
-              ProjectCoverAvatar(project: project, size: 22),
-              const SizedBox(width: 8),
+              // Cover art is drawn behind this row, so only the accent badge
+              // sits inline — and that is nothing at all unless the user chose
+              // a colour or an icon. Either way the name clears the artwork's
+              // solid half.
+              if (hasBleed)
+                const SizedBox(width: _kNameCellBleedTextOffset)
+              else if (projectHasVisualIdentity(project)) ...[
+                ProjectCoverAvatar(project: project, size: 22),
+                const SizedBox(width: 8),
+              ],
               Expanded(child: Text(rendererContext.cell.value.toString())),
               // Version count, so a stacked song is distinguishable from an
               // ordinary project at a glance rather than only once opened.
@@ -7419,6 +7467,31 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                     color: Colors.orange.shade400,
                   ),
                 ),
+            ],
+          );
+
+          if (!hasBleed) {
+            return Padding(padding: _kNameCellInset, child: content);
+          }
+
+          // The artwork is painted first and the text over it: the fade has
+          // already taken it to near-nothing by the time the two overlap.
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              Positioned(
+                left: bleedLeft,
+                top: 0,
+                bottom: 0,
+                child: ProjectCoverBleed(
+                  project: project,
+                  height: _kNameCellBleedHeight,
+                  width: _kNameCellBleedWidth,
+                  solidFraction:
+                      _kNameCellBleedHeight / _kNameCellBleedWidth,
+                ),
+              ),
+              Padding(padding: _kNameCellInset, child: content),
             ],
           );
         },
@@ -8221,7 +8294,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
             color: activeTheme.textTheme.bodyMedium?.color,
           ),
           columnHeight: 44,
-          rowHeight: 48,
+          rowHeight: _kNameCellBleedHeight,
           // Transparent so rowColorCallback controls all row backgrounds
           // (session green/yellow, playing, and click-selection) with no
           // per-cell border/fill on click.
@@ -11046,7 +11119,12 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                             onChanged: (_) =>
                                 _toggleProjectSelection(project.id),
                           )
-                        : ProjectCoverAvatar(project: project, size: 40),
+                        // Only when the user gave this project a look of its
+                        // own — an undecorated song keeps the tile it has
+                        // always had, with no leading gutter (#110).
+                        : projectHasVisualIdentity(project)
+                        ? ProjectCoverAvatar(project: project, size: 40)
+                        : null,
                     title: Row(
                       children: [
                         Expanded(

@@ -3115,9 +3115,9 @@
   "failedToRemoveCoverArt": "Не удалось удалить обложку: {error}",
   "projectAccentColor": "Акцентный цвет",
   "projectIcon": "Значок",
-  "appearanceAutomatic": "Автоматически",
-  "appearanceAutomaticHint": "Автоматические цвета и значки берутся из самого проекта, поэтому каждый проект выглядит по-своему без настройки.",
-  "resetAppearanceToAutomatic": "Вернуть автоматический",
+  "appearanceNone": "Нет",
+  "appearanceNoneHint": "Проекты не показывают цвет и значок, пока вы их не выберете. Нажмите выбранный значок ещё раз, чтобы убрать его.",
+  "clearColorAndIcon": "Убрать цвет и значок",
   "dropCoverArtHere": "Перетащите изображение, чтобы задать обложку",
   "uploadingProjectCoverArt": "Загрузка обложек проектов...",
   "downloadingProjectCoverArt": "Скачивание обложек проектов..."

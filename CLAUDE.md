@@ -89,11 +89,12 @@ Instructions for AI assistants working on this codebase.
 - `Image.asset(getDawLogoPath(dawType), ...)` renders at the source PNG's native size if unconstrained — oversized and breaking the field's layout when used as an `InputDecoration.prefixIcon`.
 - Always pass `width: 16, height: 16, fit: BoxFit.contain`, with an `errorBuilder` falling back to `Icon(Icons.piano, color: color)` for DAWs with no logo asset. See `_buildDawPrefixIcon` in `lib/ui/project_detail_page.dart` for the canonical implementation to mirror.
 
-### A project's visual identity is always drawn by `ProjectCoverAvatar`
-- Cover art, accent color and icon (#110) are never rendered by hand — the dashboard grid, the mobile list and the detail header all use `ProjectCoverAvatar` so the "cover art wins over color/icon" rule and the stale-path fallback live in one place.
-- `accentColor`/`iconKey` on `MusicProject` are **overrides**: null means "derive from the id" (`deterministicAccentColor` / `deterministicIconKey` in `lib/utils/project_visuals.dart`), so every project has a look with nothing stored and no migration. Read them through `resolveProjectAccentColor` / `resolveProjectIcon`, never directly.
-- The palette's and icon map's **order is part of the derivation** — appending is safe, reordering re-rolls every un-overridden project's colour.
-- The derivation uses FNV-1a (`stableProjectHash`), not `String.hashCode`: the latter is only stable within one run of one Dart implementation, so a project's colour would differ between launches and between desktop and mobile.
+### A project's visual identity is always drawn by `ProjectCoverAvatar` / `ProjectCoverBleed`
+- Cover art, accent color and icon (#110) are never rendered by hand — the mobile list and the detail header use `ProjectCoverAvatar`, the projects grid uses `ProjectCoverBleed` — so the "cover art wins over color/icon" rule and the stale-path fallback live in one place.
+- **Nothing is assigned by default.** `thumbnailPath`, `accentColor` and `iconKey` are all opt-in; `projectAccentColor` / `projectIcon` in `lib/utils/project_visuals.dart` return null for a project nobody has decorated, and the widgets then render *zero size*. Never invent a stand-in color, icon or placeholder image for a list row — a generic default on every row is the thing this feature deliberately does not do. `projectHasVisualIdentity` is the check for "is there anything to draw".
+- The one exception is `showEmptyPlaceholder`, for editing surfaces only (detail header, appearance dialog), where the tile is the way into the editor.
+- A stored `iconKey` this build no longer ships reads as "no icon", not as a crash — retiring an icon from `kProjectIconChoices` is safe.
+- The grid's Name column sets `cellPadding: EdgeInsets.zero` so the cover can reach the cell's left border and span the full row height; everything else in that cell re-applies `_kNameCellInset` itself.
 
 ### A grid row's "open full detail page" action uses `Icons.assignment` + `tooltipViewDetails`
 - Every `TrinaGrid` actions column that navigates to a dedicated detail page (not an inline edit dialog) uses `Icon(Icons.assignment)` with `tooltip: l10n.tooltipViewDetails`, matching `dashboard_page.dart`'s project rows. Keep new detail-page entry points (grid action icon, row double-tap) consistent with this rather than inventing a new icon/label per page.
@@ -142,8 +143,9 @@ Instructions for AI assistants working on this codebase.
 | Theme specs, builder and providers | `lib/providers/theme_provider.dart` |
 | Theme spec model (`CustomTheme`) | `lib/models/custom_theme.dart` |
 | Theme-derived values (grid colors, vivid-accent test) | `lib/utils/theme_derivations.dart` |
-| Per-project accent color + icon derivation | `lib/utils/project_visuals.dart` |
-| Project cover art / accent badge widget | `lib/ui/widgets/project_cover_avatar.dart` |
+| Per-project accent color + icon resolution | `lib/utils/project_visuals.dart` |
+| Project cover art tile + grid-row bleed | `lib/ui/widgets/project_cover_avatar.dart` |
+| Project appearance editor (cover, color, icon) | `lib/ui/dialogs/project_appearance_dialog.dart` |
 | Theme editor / color picker dialogs | `lib/ui/dialogs/theme_editor_dialog.dart`, `lib/ui/dialogs/color_picker_dialog.dart` |
 | Theme merge rules shared by backup + Drive sync | `lib/services/custom_theme_merge.dart` |
 | Platform helpers | `lib/utils/mobile_utils.dart` |

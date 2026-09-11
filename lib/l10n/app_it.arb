@@ -3115,9 +3115,9 @@
   "failedToRemoveCoverArt": "Impossibile rimuovere la copertina: {error}",
   "projectAccentColor": "Colore d'accento",
   "projectIcon": "Icona",
-  "appearanceAutomatic": "Automatico",
-  "appearanceAutomaticHint": "I colori e le icone automatiche derivano dal progetto stesso, così ogni progetto è diverso senza alcuna configurazione.",
-  "resetAppearanceToAutomatic": "Ripristina automatico",
+  "appearanceNone": "Nessuno",
+  "appearanceNoneHint": "I progetti non mostrano colore né icona finché non ne scegli uno. Tocca di nuovo l'icona selezionata per rimuoverla.",
+  "clearColorAndIcon": "Rimuovi colore e icona",
   "dropCoverArtHere": "Trascina un'immagine per impostare la copertina",
   "uploadingProjectCoverArt": "Caricamento copertine dei progetti...",
   "downloadingProjectCoverArt": "Scaricamento copertine dei progetti..."

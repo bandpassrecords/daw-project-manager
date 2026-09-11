@@ -5034,14 +5034,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get projectIcon => 'Значок';
 
   @override
-  String get appearanceAutomatic => 'Автоматически';
+  String get appearanceNone => 'Нет';
 
   @override
-  String get appearanceAutomaticHint =>
-      'Автоматические цвета и значки берутся из самого проекта, поэтому каждый проект выглядит по-своему без настройки.';
+  String get appearanceNoneHint =>
+      'Проекты не показывают цвет и значок, пока вы их не выберете. Нажмите выбранный значок ещё раз, чтобы убрать его.';
 
   @override
-  String get resetAppearanceToAutomatic => 'Вернуть автоматический';
+  String get clearColorAndIcon => 'Убрать цвет и значок';
 
   @override
   String get dropCoverArtHere => 'Перетащите изображение, чтобы задать обложку';

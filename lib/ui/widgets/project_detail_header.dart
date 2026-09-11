@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
+import '../../utils/project_visuals.dart';
 import 'project_cover_avatar.dart';
 
 /// Compact header for the project detail page: the project's cover tile on the
@@ -152,14 +153,19 @@ class ProjectDetailHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // The one surface that shows a placeholder for an undecorated
+          // project: here the tile is the way into the appearance editor, so
+          // collapsing it to nothing would hide the feature entirely.
           ProjectCoverAvatar(
             project: project,
             size: 56,
             onTap: onEditAppearance,
             tooltip:
                 onEditAppearance == null ? null : l10n.projectAppearanceTooltip,
+            showEmptyPlaceholder: onEditAppearance != null,
           ),
-          const SizedBox(width: 12),
+          if (onEditAppearance != null || projectHasVisualIdentity(project))
+            const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

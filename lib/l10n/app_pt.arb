@@ -3139,9 +3139,9 @@
   "failedToRemoveCoverArt": "Falha ao remover a capa: {error}",
   "projectAccentColor": "Cor de Destaque",
   "projectIcon": "Ícone",
-  "appearanceAutomatic": "Automático",
-  "appearanceAutomaticHint": "As cores e os ícones automáticos vêm do próprio projeto, então cada projeto fica diferente sem nenhuma configuração.",
-  "resetAppearanceToAutomatic": "Restaurar para Automático",
+  "appearanceNone": "Nenhum",
+  "appearanceNoneHint": "Os projetos não mostram cor nem ícone até você escolher. Toque de novo no ícone selecionado para removê-lo.",
+  "clearColorAndIcon": "Limpar Cor e Ícone",
   "dropCoverArtHere": "Solte uma imagem para definir a capa",
   "uploadingProjectCoverArt": "Enviando capas dos projetos...",
   "downloadingProjectCoverArt": "Baixando capas dos projetos..."

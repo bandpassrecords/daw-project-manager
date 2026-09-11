@@ -5016,14 +5016,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projectIcon => 'Icon';
 
   @override
-  String get appearanceAutomatic => 'Automatic';
+  String get appearanceNone => 'None';
 
   @override
-  String get appearanceAutomaticHint =>
-      'Automatic colors and icons come from the project itself, so every project looks different without any setup.';
+  String get appearanceNoneHint =>
+      'Projects show no colour or icon until you pick one. Tap a selected icon again to remove it.';
 
   @override
-  String get resetAppearanceToAutomatic => 'Reset to Automatic';
+  String get clearColorAndIcon => 'Clear Colour & Icon';
 
   @override
   String get dropCoverArtHere => 'Drop an image to set the cover';

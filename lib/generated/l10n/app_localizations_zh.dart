@@ -4845,13 +4845,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get projectIcon => '图标';
 
   @override
-  String get appearanceAutomatic => '自动';
+  String get appearanceNone => '无';
 
   @override
-  String get appearanceAutomaticHint => '自动的颜色和图标来自项目本身，无需任何设置，每个项目看起来都不一样。';
+  String get appearanceNoneHint => '在你选择之前，项目不会显示颜色或图标。再次点按已选图标可将其移除。';
 
   @override
-  String get resetAppearanceToAutomatic => '恢复为自动';
+  String get clearColorAndIcon => '清除颜色和图标';
 
   @override
   String get dropCoverArtHere => '拖放图片以设置封面';

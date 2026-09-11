@@ -3115,9 +3115,9 @@
   "failedToRemoveCoverArt": "カバーアートの削除に失敗しました: {error}",
   "projectAccentColor": "アクセントカラー",
   "projectIcon": "アイコン",
-  "appearanceAutomatic": "自動",
-  "appearanceAutomaticHint": "自動の色とアイコンはプロジェクト自体から決まるため、設定なしでもすべてのプロジェクトが見分けられます。",
-  "resetAppearanceToAutomatic": "自動に戻す",
+  "appearanceNone": "なし",
+  "appearanceNoneHint": "色とアイコンは選ぶまで表示されません。選択中のアイコンをもう一度タップすると解除できます。",
+  "clearColorAndIcon": "色とアイコンを解除",
   "dropCoverArtHere": "画像をドロップしてカバーアートに設定",
   "uploadingProjectCoverArt": "プロジェクトのカバーアートをアップロード中...",
   "downloadingProjectCoverArt": "プロジェクトのカバーアートをダウンロード中..."

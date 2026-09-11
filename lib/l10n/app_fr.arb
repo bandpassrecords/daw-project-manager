@@ -3115,9 +3115,9 @@
   "failedToRemoveCoverArt": "Échec de la suppression de la pochette : {error}",
   "projectAccentColor": "Couleur d'accent",
   "projectIcon": "Icône",
-  "appearanceAutomatic": "Automatique",
-  "appearanceAutomaticHint": "Les couleurs et icônes automatiques proviennent du projet lui-même : chaque projet est donc différent sans aucun réglage.",
-  "resetAppearanceToAutomatic": "Rétablir en automatique",
+  "appearanceNone": "Aucun",
+  "appearanceNoneHint": "Les projets n'affichent ni couleur ni icône tant que vous n'en choisissez pas. Touchez à nouveau l'icône sélectionnée pour la retirer.",
+  "clearColorAndIcon": "Effacer la couleur et l'icône",
   "dropCoverArtHere": "Déposez une image pour définir la pochette",
   "uploadingProjectCoverArt": "Envoi des pochettes de projets...",
   "downloadingProjectCoverArt": "Téléchargement des pochettes de projets..."

@@ -5,107 +5,52 @@ import 'package:daw_project_manager/utils/project_visuals.dart';
 
 import '../helpers/test_factories.dart';
 
-/// #110 — every project gets an accent colour and an icon with no user effort,
-/// derived from its id. The derivation being *stable* is the whole feature: if
-/// it moved between runs, machines or restores, the visual identity would be
-/// worse than none at all.
+/// #110 — cover art, accent colour and icon are all opt-in. A project nobody
+/// has decorated must resolve to *nothing*: no stand-in colour, no fallback
+/// icon, no placeholder. Anything that quietly invents one puts generic
+/// decoration on every row in the library, which is exactly what this feature
+/// is not supposed to do.
 void main() {
-  group('stableProjectHash', () {
-    test('is stable for the same input', () {
-      expect(stableProjectHash('abc'), stableProjectHash('abc'));
+  group('projectAccentColor', () {
+    test('null when the user has chosen no colour', () {
+      expect(projectAccentColor(TestFactories.makeProject()), isNull);
     });
 
-    test('differs for different inputs', () {
-      expect(stableProjectHash('abc'), isNot(stableProjectHash('abd')));
+    test('is the stored colour once one is chosen', () {
+      final project = TestFactories.makeProject(accentColor: 0xFF123456);
+      expect(projectAccentColor(project), const Color(0xFF123456));
     });
 
-    test('is a fixed value, not a run-dependent one', () {
-      // Pinning the FNV-1a output guards the reason this exists at all: swap
-      // it for String.hashCode and this number changes, taking every user's
-      // automatic colours with it.
-      expect(stableProjectHash(''), 0x811c9dc5);
-      expect(stableProjectHash('a'), 0x2b24d044);
-    });
-
-    test('handles non-ASCII ids without collapsing them', () {
-      expect(stableProjectHash('café'), isNot(stableProjectHash('cafe')));
+    test('round-trips a palette entry through the stored int', () {
+      for (final color in kProjectAccentPalette) {
+        final project =
+            TestFactories.makeProject(accentColor: color.toARGB32());
+        expect(projectAccentColor(project), color);
+      }
     });
   });
 
-  group('deterministic assignment', () {
-    test('the same id always yields the same colour and icon', () {
-      const id = '7f1c0d5a-1111-4222-8333-444455556666';
-      expect(deterministicAccentColor(id), deterministicAccentColor(id));
-      expect(deterministicIconKey(id), deterministicIconKey(id));
+  group('projectIcon', () {
+    test('null when the user has chosen no icon', () {
+      expect(projectIcon(TestFactories.makeProject()), isNull);
     });
 
-    test('the colour always comes from the curated palette', () {
-      for (var i = 0; i < 200; i++) {
-        expect(
-          kProjectAccentPalette,
-          contains(deterministicAccentColor('project-$i')),
-        );
+    test('is the stored icon once one is chosen', () {
+      final project = TestFactories.makeProject(iconKey: 'mic');
+      expect(projectIcon(project), kProjectIconChoices['mic']);
+    });
+
+    test('every offered key resolves', () {
+      for (final key in kProjectIconChoices.keys) {
+        expect(projectIcon(TestFactories.makeProject(iconKey: key)), isNotNull);
       }
     });
 
-    test('the icon key always names a shipped icon', () {
-      for (var i = 0; i < 200; i++) {
-        expect(
-          kProjectIconChoices.keys,
-          contains(deterministicIconKey('project-$i')),
-        );
-      }
-    });
-
-    test('spreads a realistic library across most of the palette', () {
-      // The point of the feature is that neighbouring rows look different, so
-      // a derivation that funnelled everything into two colours would be a
-      // silent failure. Not asserting a perfect distribution — just that it is
-      // not degenerate.
-      final colors = <Color>{};
-      final icons = <String>{};
-      for (var i = 0; i < 120; i++) {
-        final id = 'song-$i-${i * 7}';
-        colors.add(deterministicAccentColor(id));
-        icons.add(deterministicIconKey(id));
-      }
-      expect(colors.length, greaterThanOrEqualTo(kProjectAccentPalette.length - 2));
-      expect(icons.length, greaterThanOrEqualTo(kProjectIconChoices.length - 2));
-    });
-
-    test('colour and icon are seeded independently', () {
-      // Two ids that land on the same colour should not be forced onto the
-      // same icon as well.
-      final pairs = <String, String>{};
-      for (var i = 0; i < 300; i++) {
-        final id = 'p$i';
-        final key =
-            '${deterministicAccentColor(id).toARGB32()}|${deterministicIconKey(id)}';
-        pairs[key] = id;
-      }
-      expect(
-        pairs.length,
-        greaterThan(kProjectAccentPalette.length),
-        reason: 'colour and icon must not move in lockstep',
-      );
-    });
-  });
-
-  group('resolveProjectAccentColor', () {
-    test('falls back to the derived colour when nothing is stored', () {
-      final project = TestFactories.makeProject(id: 'auto-1');
-      expect(
-        resolveProjectAccentColor(project),
-        deterministicAccentColor('auto-1'),
-      );
-    });
-
-    test('a stored override wins', () {
-      final project = TestFactories.makeProject(
-        id: 'auto-1',
-        accentColor: 0xFF123456,
-      );
-      expect(resolveProjectAccentColor(project), const Color(0xFF123456));
+    test('a key this build no longer ships reads as no icon, not a crash', () {
+      // Retiring an icon must degrade to "undecorated", never throw on a
+      // project someone set it on two releases ago.
+      final project = TestFactories.makeProject(iconKey: 'theremin');
+      expect(projectIcon(project), isNull);
     });
   });
 
@@ -131,12 +76,12 @@ void main() {
           ),
         ),
         isTrue,
-        reason: 'an accent override must not suppress the cover',
+        reason: 'a chosen colour must not suppress the cover',
       );
     });
 
     test('stays true for a path that no longer resolves', () {
-      // Deliberate: the avatar decides on stored state and lets the decoder's
+      // Deliberate: the widgets decide on stored state and let the decoder's
       // errorBuilder handle a stale path, rather than stat-ing every row.
       expect(
         projectHasCoverArt(
@@ -147,24 +92,47 @@ void main() {
     });
   });
 
-  group('resolveProjectIconKey', () {
-    test('falls back to the derived key when nothing is stored', () {
-      final project = TestFactories.makeProject(id: 'auto-2');
-      expect(resolveProjectIconKey(project), deterministicIconKey('auto-2'));
+  group('projectHasVisualIdentity', () {
+    test('false for an untouched project — the case that keeps rows quiet', () {
+      expect(
+        projectHasVisualIdentity(TestFactories.makeProject()),
+        isFalse,
+        reason: 'nothing is assigned by default',
+      );
     });
 
-    test('a stored override wins', () {
-      final project = TestFactories.makeProject(id: 'auto-2', iconKey: 'mic');
-      expect(resolveProjectIconKey(project), 'mic');
-      expect(resolveProjectIcon(project), kProjectIconChoices['mic']);
+    test('true on a cover alone', () {
+      expect(
+        projectHasVisualIdentity(
+          TestFactories.makeProject(thumbnailPath: '/covers/x.png'),
+        ),
+        isTrue,
+      );
     });
 
-    test('a key this build no longer ships falls back rather than blanking', () {
-      // Retiring an icon must never leave a project without one.
-      final project =
-          TestFactories.makeProject(id: 'auto-2', iconKey: 'theremin');
-      expect(resolveProjectIconKey(project), deterministicIconKey('auto-2'));
-      expect(resolveProjectIcon(project), isNotNull);
+    test('true on a colour alone', () {
+      expect(
+        projectHasVisualIdentity(
+          TestFactories.makeProject(accentColor: 0xFF112233),
+        ),
+        isTrue,
+      );
+    });
+
+    test('true on an icon alone', () {
+      expect(
+        projectHasVisualIdentity(TestFactories.makeProject(iconKey: 'mic')),
+        isTrue,
+      );
+    });
+
+    test('false again once a retired icon is all that is left', () {
+      expect(
+        projectHasVisualIdentity(
+          TestFactories.makeProject(iconKey: 'theremin'),
+        ),
+        isFalse,
+      );
     });
   });
 }

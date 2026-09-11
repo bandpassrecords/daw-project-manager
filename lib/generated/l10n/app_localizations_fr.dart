@@ -5073,14 +5073,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get projectIcon => 'Icône';
 
   @override
-  String get appearanceAutomatic => 'Automatique';
+  String get appearanceNone => 'Aucun';
 
   @override
-  String get appearanceAutomaticHint =>
-      'Les couleurs et icônes automatiques proviennent du projet lui-même : chaque projet est donc différent sans aucun réglage.';
+  String get appearanceNoneHint =>
+      'Les projets n\'affichent ni couleur ni icône tant que vous n\'en choisissez pas. Touchez à nouveau l\'icône sélectionnée pour la retirer.';
 
   @override
-  String get resetAppearanceToAutomatic => 'Rétablir en automatique';
+  String get clearColorAndIcon => 'Effacer la couleur et l\'icône';
 
   @override
   String get dropCoverArtHere => 'Déposez une image pour définir la pochette';

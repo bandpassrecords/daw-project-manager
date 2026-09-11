@@ -8495,23 +8495,23 @@ abstract class AppLocalizations {
   /// **'Icon'**
   String get projectIcon;
 
-  /// No description provided for @appearanceAutomatic.
+  /// No description provided for @appearanceNone.
   ///
   /// In en, this message translates to:
-  /// **'Automatic'**
-  String get appearanceAutomatic;
+  /// **'None'**
+  String get appearanceNone;
 
-  /// No description provided for @appearanceAutomaticHint.
+  /// No description provided for @appearanceNoneHint.
   ///
   /// In en, this message translates to:
-  /// **'Automatic colors and icons come from the project itself, so every project looks different without any setup.'**
-  String get appearanceAutomaticHint;
+  /// **'Projects show no colour or icon until you pick one. Tap a selected icon again to remove it.'**
+  String get appearanceNoneHint;
 
-  /// No description provided for @resetAppearanceToAutomatic.
+  /// No description provided for @clearColorAndIcon.
   ///
   /// In en, this message translates to:
-  /// **'Reset to Automatic'**
-  String get resetAppearanceToAutomatic;
+  /// **'Clear Colour & Icon'**
+  String get clearColorAndIcon;
 
   /// No description provided for @dropCoverArtHere.
   ///

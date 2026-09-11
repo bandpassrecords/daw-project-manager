@@ -3115,9 +3115,9 @@
   "failedToRemoveCoverArt": "移除封面失败：{error}",
   "projectAccentColor": "强调色",
   "projectIcon": "图标",
-  "appearanceAutomatic": "自动",
-  "appearanceAutomaticHint": "自动的颜色和图标来自项目本身，无需任何设置，每个项目看起来都不一样。",
-  "resetAppearanceToAutomatic": "恢复为自动",
+  "appearanceNone": "无",
+  "appearanceNoneHint": "在你选择之前，项目不会显示颜色或图标。再次点按已选图标可将其移除。",
+  "clearColorAndIcon": "清除颜色和图标",
   "dropCoverArtHere": "拖放图片以设置封面",
   "uploadingProjectCoverArt": "正在上传项目封面...",
   "downloadingProjectCoverArt": "正在下载项目封面..."

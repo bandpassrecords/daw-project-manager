@@ -3115,9 +3115,9 @@
   "failedToRemoveCoverArt": "Cover konnte nicht entfernt werden: {error}",
   "projectAccentColor": "Akzentfarbe",
   "projectIcon": "Symbol",
-  "appearanceAutomatic": "Automatisch",
-  "appearanceAutomaticHint": "Automatische Farben und Symbole stammen aus dem Projekt selbst – so sieht jedes Projekt ohne Einrichtung anders aus.",
-  "resetAppearanceToAutomatic": "Auf automatisch zurücksetzen",
+  "appearanceNone": "Keine",
+  "appearanceNoneHint": "Projekte zeigen weder Farbe noch Symbol, bis du eines auswählst. Tippe das gewählte Symbol erneut an, um es zu entfernen.",
+  "clearColorAndIcon": "Farbe & Symbol entfernen",
   "dropCoverArtHere": "Bild hier ablegen, um das Cover zu setzen",
   "uploadingProjectCoverArt": "Projekt-Cover werden hochgeladen...",
   "downloadingProjectCoverArt": "Projekt-Cover werden heruntergeladen..."
