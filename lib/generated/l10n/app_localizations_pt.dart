@@ -5147,4 +5147,59 @@ class AppLocalizationsPt extends AppLocalizations {
   String attachmentExportFailed(String error) {
     return 'Falha ao exportar anexos: $error';
   }
+
+  @override
+  String get projectAppearance => 'Aparência';
+
+  @override
+  String get projectAppearanceTooltip => 'Alterar capa, cor e ícone';
+
+  @override
+  String get projectCoverArt => 'Capa';
+
+  @override
+  String get chooseCoverArt => 'Escolher Imagem…';
+
+  @override
+  String get replaceCoverArt => 'Substituir Imagem…';
+
+  @override
+  String get removeCoverArt => 'Remover Capa';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Remover a capa deste projeto? A imagem armazenada será excluída.';
+
+  @override
+  String get coverArtRemoved => 'Capa removida';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Falha ao remover a capa: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Cor de Destaque';
+
+  @override
+  String get projectIcon => 'Ícone';
+
+  @override
+  String get appearanceNone => 'Nenhum';
+
+  @override
+  String get appearanceNoneHint =>
+      'Os projetos não mostram cor nem ícone até você escolher. Toque de novo no ícone selecionado para removê-lo.';
+
+  @override
+  String get clearColorAndIcon => 'Limpar Cor e Ícone';
+
+  @override
+  String get dropCoverArtHere => 'Solte uma imagem para definir a capa';
+
+  @override
+  String get uploadingProjectCoverArt => 'Enviando capas dos projetos...';
+
+  @override
+  String get downloadingProjectCoverArt => 'Baixando capas dos projetos...';
 }

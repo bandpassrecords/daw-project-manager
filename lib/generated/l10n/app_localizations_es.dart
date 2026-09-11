@@ -5173,4 +5173,60 @@ class AppLocalizationsEs extends AppLocalizations {
   String attachmentExportFailed(String error) {
     return 'No se pudieron exportar los adjuntos: $error';
   }
+
+  @override
+  String get projectAppearance => 'Apariencia';
+
+  @override
+  String get projectAppearanceTooltip => 'Cambiar portada, color e icono';
+
+  @override
+  String get projectCoverArt => 'Portada';
+
+  @override
+  String get chooseCoverArt => 'Elegir imagen…';
+
+  @override
+  String get replaceCoverArt => 'Reemplazar imagen…';
+
+  @override
+  String get removeCoverArt => 'Quitar portada';
+
+  @override
+  String get removeCoverArtConfirm =>
+      '¿Quitar la portada de este proyecto? Se eliminará la imagen guardada.';
+
+  @override
+  String get coverArtRemoved => 'Portada eliminada';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'No se pudo quitar la portada: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Color de acento';
+
+  @override
+  String get projectIcon => 'Icono';
+
+  @override
+  String get appearanceNone => 'Ninguno';
+
+  @override
+  String get appearanceNoneHint =>
+      'Los proyectos no muestran color ni icono hasta que elijas uno. Toca de nuevo el icono seleccionado para quitarlo.';
+
+  @override
+  String get clearColorAndIcon => 'Quitar color e icono';
+
+  @override
+  String get dropCoverArtHere => 'Suelta una imagen para definir la portada';
+
+  @override
+  String get uploadingProjectCoverArt => 'Subiendo portadas de proyectos...';
+
+  @override
+  String get downloadingProjectCoverArt =>
+      'Descargando portadas de proyectos...';
 }

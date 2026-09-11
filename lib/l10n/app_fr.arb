@@ -3484,5 +3484,22 @@
         "type": "String"
       }
     }
-  }
+  },
+  "projectAppearance": "Apparence",
+  "projectAppearanceTooltip": "Modifier la pochette, la couleur et l'icône",
+  "projectCoverArt": "Pochette",
+  "chooseCoverArt": "Choisir une image…",
+  "replaceCoverArt": "Remplacer l'image…",
+  "removeCoverArt": "Supprimer la pochette",
+  "removeCoverArtConfirm": "Supprimer la pochette de ce projet ? L'image enregistrée sera supprimée.",
+  "coverArtRemoved": "Pochette supprimée",
+  "failedToRemoveCoverArt": "Échec de la suppression de la pochette : {error}",
+  "projectAccentColor": "Couleur d'accent",
+  "projectIcon": "Icône",
+  "appearanceNone": "Aucun",
+  "appearanceNoneHint": "Les projets n'affichent ni couleur ni icône tant que vous n'en choisissez pas. Touchez à nouveau l'icône sélectionnée pour la retirer.",
+  "clearColorAndIcon": "Effacer la couleur et l'icône",
+  "dropCoverArtHere": "Déposez une image pour définir la pochette",
+  "uploadingProjectCoverArt": "Envoi des pochettes de projets...",
+  "downloadingProjectCoverArt": "Téléchargement des pochettes de projets..."
 }

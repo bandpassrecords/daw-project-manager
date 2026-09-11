@@ -5185,4 +5185,61 @@ class AppLocalizationsFr extends AppLocalizations {
   String attachmentExportFailed(String error) {
     return 'Échec de l\'exportation des pièces jointes : $error';
   }
+
+  @override
+  String get projectAppearance => 'Apparence';
+
+  @override
+  String get projectAppearanceTooltip =>
+      'Modifier la pochette, la couleur et l\'icône';
+
+  @override
+  String get projectCoverArt => 'Pochette';
+
+  @override
+  String get chooseCoverArt => 'Choisir une image…';
+
+  @override
+  String get replaceCoverArt => 'Remplacer l\'image…';
+
+  @override
+  String get removeCoverArt => 'Supprimer la pochette';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Supprimer la pochette de ce projet ? L\'image enregistrée sera supprimée.';
+
+  @override
+  String get coverArtRemoved => 'Pochette supprimée';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Échec de la suppression de la pochette : $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Couleur d\'accent';
+
+  @override
+  String get projectIcon => 'Icône';
+
+  @override
+  String get appearanceNone => 'Aucun';
+
+  @override
+  String get appearanceNoneHint =>
+      'Les projets n\'affichent ni couleur ni icône tant que vous n\'en choisissez pas. Touchez à nouveau l\'icône sélectionnée pour la retirer.';
+
+  @override
+  String get clearColorAndIcon => 'Effacer la couleur et l\'icône';
+
+  @override
+  String get dropCoverArtHere => 'Déposez une image pour définir la pochette';
+
+  @override
+  String get uploadingProjectCoverArt => 'Envoi des pochettes de projets...';
+
+  @override
+  String get downloadingProjectCoverArt =>
+      'Téléchargement des pochettes de projets...';
 }

@@ -3484,5 +3484,22 @@
         "type": "String"
       }
     }
-  }
+  },
+  "projectAppearance": "Darstellung",
+  "projectAppearanceTooltip": "Cover, Farbe und Symbol ändern",
+  "projectCoverArt": "Cover",
+  "chooseCoverArt": "Bild auswählen…",
+  "replaceCoverArt": "Bild ersetzen…",
+  "removeCoverArt": "Cover entfernen",
+  "removeCoverArtConfirm": "Cover dieses Projekts entfernen? Das gespeicherte Bild wird gelöscht.",
+  "coverArtRemoved": "Cover entfernt",
+  "failedToRemoveCoverArt": "Cover konnte nicht entfernt werden: {error}",
+  "projectAccentColor": "Akzentfarbe",
+  "projectIcon": "Symbol",
+  "appearanceNone": "Keine",
+  "appearanceNoneHint": "Projekte zeigen weder Farbe noch Symbol, bis du eines auswählst. Tippe das gewählte Symbol erneut an, um es zu entfernen.",
+  "clearColorAndIcon": "Farbe & Symbol entfernen",
+  "dropCoverArtHere": "Bild hier ablegen, um das Cover zu setzen",
+  "uploadingProjectCoverArt": "Projekt-Cover werden hochgeladen...",
+  "downloadingProjectCoverArt": "Projekt-Cover werden heruntergeladen..."
 }

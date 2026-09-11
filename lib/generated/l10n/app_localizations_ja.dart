@@ -5008,4 +5008,58 @@ class AppLocalizationsJa extends AppLocalizations {
   String attachmentExportFailed(String error) {
     return '添付の書き出しに失敗しました: $error';
   }
+
+  @override
+  String get projectAppearance => '外観';
+
+  @override
+  String get projectAppearanceTooltip => 'カバーアート・色・アイコンを変更';
+
+  @override
+  String get projectCoverArt => 'カバーアート';
+
+  @override
+  String get chooseCoverArt => '画像を選択…';
+
+  @override
+  String get replaceCoverArt => '画像を変更…';
+
+  @override
+  String get removeCoverArt => 'カバーアートを削除';
+
+  @override
+  String get removeCoverArtConfirm => 'このプロジェクトのカバーアートを削除しますか？保存された画像は削除されます。';
+
+  @override
+  String get coverArtRemoved => 'カバーアートを削除しました';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'カバーアートの削除に失敗しました: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'アクセントカラー';
+
+  @override
+  String get projectIcon => 'アイコン';
+
+  @override
+  String get appearanceNone => 'なし';
+
+  @override
+  String get appearanceNoneHint =>
+      '色とアイコンは選ぶまで表示されません。選択中のアイコンをもう一度タップすると解除できます。';
+
+  @override
+  String get clearColorAndIcon => '色とアイコンを解除';
+
+  @override
+  String get dropCoverArtHere => '画像をドロップしてカバーアートに設定';
+
+  @override
+  String get uploadingProjectCoverArt => 'プロジェクトのカバーアートをアップロード中...';
+
+  @override
+  String get downloadingProjectCoverArt => 'プロジェクトのカバーアートをダウンロード中...';
 }

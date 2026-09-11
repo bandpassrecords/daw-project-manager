@@ -4955,4 +4955,57 @@ class AppLocalizationsZh extends AppLocalizations {
   String attachmentExportFailed(String error) {
     return '导出附件失败：$error';
   }
+
+  @override
+  String get projectAppearance => '外观';
+
+  @override
+  String get projectAppearanceTooltip => '更改封面、颜色和图标';
+
+  @override
+  String get projectCoverArt => '封面';
+
+  @override
+  String get chooseCoverArt => '选择图片…';
+
+  @override
+  String get replaceCoverArt => '替换图片…';
+
+  @override
+  String get removeCoverArt => '移除封面';
+
+  @override
+  String get removeCoverArtConfirm => '移除此项目的封面？保存的图片将被删除。';
+
+  @override
+  String get coverArtRemoved => '封面已移除';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return '移除封面失败：$error';
+  }
+
+  @override
+  String get projectAccentColor => '强调色';
+
+  @override
+  String get projectIcon => '图标';
+
+  @override
+  String get appearanceNone => '无';
+
+  @override
+  String get appearanceNoneHint => '在你选择之前，项目不会显示颜色或图标。再次点按已选图标可将其移除。';
+
+  @override
+  String get clearColorAndIcon => '清除颜色和图标';
+
+  @override
+  String get dropCoverArtHere => '拖放图片以设置封面';
+
+  @override
+  String get uploadingProjectCoverArt => '正在上传项目封面...';
+
+  @override
+  String get downloadingProjectCoverArt => '正在下载项目封面...';
 }

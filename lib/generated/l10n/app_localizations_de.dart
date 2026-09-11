@@ -5162,4 +5162,60 @@ class AppLocalizationsDe extends AppLocalizations {
   String attachmentExportFailed(String error) {
     return 'Anhänge konnten nicht exportiert werden: $error';
   }
+
+  @override
+  String get projectAppearance => 'Darstellung';
+
+  @override
+  String get projectAppearanceTooltip => 'Cover, Farbe und Symbol ändern';
+
+  @override
+  String get projectCoverArt => 'Cover';
+
+  @override
+  String get chooseCoverArt => 'Bild auswählen…';
+
+  @override
+  String get replaceCoverArt => 'Bild ersetzen…';
+
+  @override
+  String get removeCoverArt => 'Cover entfernen';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Cover dieses Projekts entfernen? Das gespeicherte Bild wird gelöscht.';
+
+  @override
+  String get coverArtRemoved => 'Cover entfernt';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Cover konnte nicht entfernt werden: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Akzentfarbe';
+
+  @override
+  String get projectIcon => 'Symbol';
+
+  @override
+  String get appearanceNone => 'Keine';
+
+  @override
+  String get appearanceNoneHint =>
+      'Projekte zeigen weder Farbe noch Symbol, bis du eines auswählst. Tippe das gewählte Symbol erneut an, um es zu entfernen.';
+
+  @override
+  String get clearColorAndIcon => 'Farbe & Symbol entfernen';
+
+  @override
+  String get dropCoverArtHere => 'Bild hier ablegen, um das Cover zu setzen';
+
+  @override
+  String get uploadingProjectCoverArt => 'Projekt-Cover werden hochgeladen...';
+
+  @override
+  String get downloadingProjectCoverArt =>
+      'Projekt-Cover werden heruntergeladen...';
 }

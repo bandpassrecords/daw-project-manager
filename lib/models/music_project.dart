@@ -259,12 +259,34 @@ class MusicProject {
   @HiveField(37)
   final List<ProjectMarker> markers; // Timeline markers/regions read from the DAW project file (Reaper only so far)
 
+  // Field indices 38+ were assigned independently on four feature branches,
+  // each of which started at 38 because that was the next free index on main.
+  // They are renumbered here into one unique sequence. Safe to renumber
+  // because none of those branches ever shipped, so no box on any user's disk
+  // holds a record written with the old numbering — but that is exactly why a
+  // new field must take the next free index *here*, not on a branch.
+
   @HiveField(38)
   /// Files and links the user has attached to this song (#112) — the reference
   /// track, the stem-delivery link, the lyric sheet, the contract.
   ///
   /// References only, never copies: see [ProjectAttachment].
   final List<ProjectAttachment> attachments;
+
+  // Per-project visual identity (#110). Both are *overrides*: null means "use
+  // the value derived from the project id" — see `lib/utils/project_visuals.dart`.
+  // Deriving rather than storing at scan time is what gives every project
+  // already in the library a distinct look without a migration pass.
+
+  @HiveField(39)
+  /// User-chosen accent color as an ARGB int, or null to use the derived one.
+  final int? accentColor;
+
+  @HiveField(40)
+  /// User-chosen icon, as a key into `kProjectIconChoices`, or null to use the
+  /// derived one. A key that is no longer in the set falls back to derived, so
+  /// retiring an icon can never leave a project without one.
+  final String? iconKey;
 
   const MusicProject({
     required this.id,
@@ -306,6 +328,8 @@ class MusicProject {
     this.stackId,
     this.markers = const [],
     this.attachments = const [],
+    this.accentColor,
+    this.iconKey,
   });
 
   /// Number of version files this stack holds. 0 for a real project.
@@ -554,6 +578,7 @@ class MusicProject {
     String? customDisplayName,
     bool clearCustomDisplayName = false,
     String? thumbnailPath,
+    bool clearThumbnailPath = false,
     String? status,
     String? fileExtension,
     DateTime? createdAt,
@@ -601,6 +626,10 @@ class MusicProject {
     bool clearStackId = false,
     List<ProjectMarker>? markers,
     List<ProjectAttachment>? attachments,
+    int? accentColor,
+    bool clearAccentColor = false,
+    String? iconKey,
+    bool clearIconKey = false,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -609,7 +638,7 @@ class MusicProject {
       fileSizeBytes: fileSizeBytes ?? this.fileSizeBytes,
       lastModifiedAt: lastModifiedAt ?? this.lastModifiedAt,
       customDisplayName: clearCustomDisplayName ? null : (customDisplayName ?? this.customDisplayName),
-      thumbnailPath: thumbnailPath ?? this.thumbnailPath,
+      thumbnailPath: clearThumbnailPath ? null : (thumbnailPath ?? this.thumbnailPath),
       status: status ?? this.status,
       fileExtension: fileExtension ?? this.fileExtension,
       createdAt: createdAt ?? this.createdAt,
@@ -644,6 +673,8 @@ class MusicProject {
       stackId: clearStackId ? null : (stackId ?? this.stackId),
       markers: markers ?? this.markers,
       attachments: attachments ?? this.attachments,
+      accentColor: clearAccentColor ? null : (accentColor ?? this.accentColor),
+      iconKey: clearIconKey ? null : (iconKey ?? this.iconKey),
     );
   }
 
@@ -724,13 +755,21 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
               .map((e) => ProjectAttachment.fromMap(e as Map))
               .toList()
           : const [],
+      // Absent on every box written before #110 — null there means "derive
+      // the accent/icon from the id", which is exactly the intended default.
+      //
+      // Type-tested rather than cast: `read` runs inside repository init, so a
+      // record carrying an unexpected type here would take the whole app down
+      // before the first scan instead of costing one project its override.
+      accentColor: fields[39] is int ? fields[39] as int : null,
+      iconKey: fields[40] is String ? fields[40] as String : null,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(39) // 39 fields (0-38)
+      ..writeByte(41) // 41 fields (0-40)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -808,6 +847,10 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(37)
       ..write(obj.markers.map((m) => m.toMap()).toList())
       ..writeByte(38)
-      ..write(obj.attachments.map((a) => a.toMap()).toList());
+      ..write(obj.attachments.map((a) => a.toMap()).toList())
+      ..writeByte(39)
+      ..write(obj.accentColor)
+      ..writeByte(40)
+      ..write(obj.iconKey);
   }
 }

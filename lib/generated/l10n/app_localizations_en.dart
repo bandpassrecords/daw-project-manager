@@ -5128,4 +5128,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String attachmentExportFailed(String error) {
     return 'Failed to export attachments: $error';
   }
+
+  @override
+  String get projectAppearance => 'Appearance';
+
+  @override
+  String get projectAppearanceTooltip => 'Change cover art, color and icon';
+
+  @override
+  String get projectCoverArt => 'Cover Art';
+
+  @override
+  String get chooseCoverArt => 'Choose Image…';
+
+  @override
+  String get replaceCoverArt => 'Replace Image…';
+
+  @override
+  String get removeCoverArt => 'Remove Cover Art';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Remove this project\'s cover art? The stored image will be deleted.';
+
+  @override
+  String get coverArtRemoved => 'Cover art removed';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Failed to remove cover art: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Accent Color';
+
+  @override
+  String get projectIcon => 'Icon';
+
+  @override
+  String get appearanceNone => 'None';
+
+  @override
+  String get appearanceNoneHint =>
+      'Projects show no colour or icon until you pick one. Tap a selected icon again to remove it.';
+
+  @override
+  String get clearColorAndIcon => 'Clear Colour & Icon';
+
+  @override
+  String get dropCoverArtHere => 'Drop an image to set the cover';
+
+  @override
+  String get uploadingProjectCoverArt => 'Uploading project cover art...';
+
+  @override
+  String get downloadingProjectCoverArt => 'Downloading project cover art...';
 }
