@@ -8836,6 +8836,480 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Downloading project cover art...'**
   String get downloadingProjectCoverArt;
+
+  /// No description provided for @moveProjectButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Move…'**
+  String get moveProjectButtonLabel;
+
+  /// No description provided for @moveProjectDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move Project'**
+  String get moveProjectDialogTitle;
+
+  /// No description provided for @moveProjectDestinationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get moveProjectDestinationLabel;
+
+  /// No description provided for @moveProjectChooseDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose…'**
+  String get moveProjectChooseDestination;
+
+  /// No description provided for @moveProjectNoDestinationChosen.
+  ///
+  /// In en, this message translates to:
+  /// **'No folder chosen yet'**
+  String get moveProjectNoDestinationChosen;
+
+  /// No description provided for @moveProjectIncludeFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the whole \"{folder}\" folder'**
+  String moveProjectIncludeFolder(String folder);
+
+  /// No description provided for @moveProjectIncludeFolderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This folder holds only this project, so its samples and bounces move with it.'**
+  String get moveProjectIncludeFolderDescription;
+
+  /// No description provided for @moveProjectFileOnlyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the project file moves. Samples and bounces beside it stay where they are.'**
+  String get moveProjectFileOnlyDescription;
+
+  /// No description provided for @moveProjectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Move'**
+  String get moveProjectConfirm;
+
+  /// No description provided for @moveProjectInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving…'**
+  String get moveProjectInProgress;
+
+  /// No description provided for @moveProjectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved \"{name}\" to {path}'**
+  String moveProjectSuccess(String name, String path);
+
+  /// No description provided for @moveProjectFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to move: {error}'**
+  String moveProjectFailed(String error);
+
+  /// No description provided for @moveProjectErrorSourceMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'This project\'s file isn\'t on this machine.'**
+  String get moveProjectErrorSourceMissing;
+
+  /// No description provided for @moveProjectErrorDestinationOccupied.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" already exists in that folder.'**
+  String moveProjectErrorDestinationOccupied(String name);
+
+  /// No description provided for @moveProjectErrorDestinationInsideSource.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t move a folder into itself.'**
+  String get moveProjectErrorDestinationInsideSource;
+
+  /// No description provided for @moveProjectErrorSameLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'The project is already in that folder.'**
+  String get moveProjectErrorSameLocation;
+
+  /// No description provided for @moveProjectStackUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'A version stack has no file of its own — move its versions individually.'**
+  String get moveProjectStackUnsupported;
+
+  /// No description provided for @selectMoveDestinationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select destination folder'**
+  String get selectMoveDestinationTitle;
+
+  /// No description provided for @archiveProjectButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive…'**
+  String get archiveProjectButtonLabel;
+
+  /// No description provided for @archiveProjectDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive Project'**
+  String get archiveProjectDialogTitle;
+
+  /// No description provided for @archiveProjectWhatToArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'What to archive'**
+  String get archiveProjectWhatToArchive;
+
+  /// No description provided for @archiveProjectScopeFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole \"{folder}\" folder'**
+  String archiveProjectScopeFolder(String folder);
+
+  /// No description provided for @archiveProjectScopeFileOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Project file only'**
+  String get archiveProjectScopeFileOnly;
+
+  /// No description provided for @archiveScopeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} · {files, plural, =1{1 file} other{{files} files}}'**
+  String archiveScopeSummary(String size, int files);
+
+  /// No description provided for @archiveProjectDeleteOriginals.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete the originals after verifying the archive'**
+  String get archiveProjectDeleteOriginals;
+
+  /// No description provided for @archiveProjectDeleteOriginalsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The archive is re-opened and checked entry by entry first. Nothing is deleted if that check fails.'**
+  String get archiveProjectDeleteOriginalsDescription;
+
+  /// No description provided for @archiveProjectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archiveProjectConfirm;
+
+  /// No description provided for @archiveStageScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the project folder…'**
+  String get archiveStageScanning;
+
+  /// No description provided for @archiveStageCompressing.
+  ///
+  /// In en, this message translates to:
+  /// **'Compressing…'**
+  String get archiveStageCompressing;
+
+  /// No description provided for @archiveStageVerifying.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying the archive…'**
+  String get archiveStageVerifying;
+
+  /// No description provided for @archiveStageDeleting.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing the originals…'**
+  String get archiveStageDeleting;
+
+  /// No description provided for @archiveProjectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived \"{name}\"'**
+  String archiveProjectSuccess(String name);
+
+  /// No description provided for @archiveProjectFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to archive: {error}'**
+  String archiveProjectFailed(String error);
+
+  /// No description provided for @archiveErrorSourceMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'This project\'s files aren\'t on this machine.'**
+  String get archiveErrorSourceMissing;
+
+  /// No description provided for @archiveErrorDestinationInScanRoot.
+  ///
+  /// In en, this message translates to:
+  /// **'Archives can\'t go inside a scanned folder — \"{root}\" would index them straight back in.'**
+  String archiveErrorDestinationInScanRoot(String root);
+
+  /// No description provided for @archiveErrorDestinationOccupied.
+  ///
+  /// In en, this message translates to:
+  /// **'An archive named \"{name}\" is already there.'**
+  String archiveErrorDestinationOccupied(String name);
+
+  /// No description provided for @archiveErrorVerificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The archive is missing files, so nothing was deleted: {entries}'**
+  String archiveErrorVerificationFailed(String entries);
+
+  /// No description provided for @archiveErrorNotArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'This project isn\'t archived.'**
+  String get archiveErrorNotArchived;
+
+  /// No description provided for @archiveWarningsSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unreadable file was skipped} other{{count} unreadable files were skipped}}'**
+  String archiveWarningsSkipped(int count);
+
+  /// No description provided for @archiveLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive location'**
+  String get archiveLocationTitle;
+
+  /// No description provided for @archiveLocationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where \"Archive project\" writes its zip files. Kept on this device.'**
+  String get archiveLocationSubtitle;
+
+  /// No description provided for @archiveLocationNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set — you\'ll be asked when you first archive'**
+  String get archiveLocationNotSet;
+
+  /// No description provided for @selectArchiveLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select archive folder'**
+  String get selectArchiveLocationTitle;
+
+  /// No description provided for @restoreProjectButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore…'**
+  String get restoreProjectButtonLabel;
+
+  /// No description provided for @restoreProjectDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Project'**
+  String get restoreProjectDialogTitle;
+
+  /// No description provided for @restoreProjectDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Extracts the archive to a folder you choose and points the project back at the restored files.'**
+  String get restoreProjectDescription;
+
+  /// No description provided for @restoreProjectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restoreProjectConfirm;
+
+  /// No description provided for @restoreProjectInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring…'**
+  String get restoreProjectInProgress;
+
+  /// No description provided for @restoreProjectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Restored \"{name}\"'**
+  String restoreProjectSuccess(String name);
+
+  /// No description provided for @restoreProjectFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to restore: {error}'**
+  String restoreProjectFailed(String error);
+
+  /// No description provided for @selectRestoreDestinationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a folder to restore into'**
+  String get selectRestoreDestinationTitle;
+
+  /// No description provided for @archivedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get archivedLabel;
+
+  /// No description provided for @archivedOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived {date}'**
+  String archivedOnLabel(String date);
+
+  /// No description provided for @showArchivedProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Show archived'**
+  String get showArchivedProjects;
+
+  /// No description provided for @showOnlyArchivedProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Only archived'**
+  String get showOnlyArchivedProjects;
+
+  /// No description provided for @hideArchivedProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide archived'**
+  String get hideArchivedProjects;
+
+  /// No description provided for @archivedFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get archivedFilterLabel;
+
+  /// No description provided for @archiveProjectStackUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'A version stack has no files of its own — archive its versions individually.'**
+  String get archiveProjectStackUnsupported;
+
+  /// No description provided for @archiveBulkButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive selected'**
+  String get archiveBulkButtonLabel;
+
+  /// No description provided for @archiveBulkConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Archive 1 project?} other{Archive {count} projects?}}'**
+  String archiveBulkConfirmMessage(int count);
+
+  /// No description provided for @archiveBulkSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 project archived} other{{count} projects archived}}'**
+  String archiveBulkSuccess(int count);
+
+  /// No description provided for @openArchiveFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Open archive folder'**
+  String get openArchiveFolder;
+
+  /// No description provided for @archiveBulkProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {total}'**
+  String archiveBulkProgress(int current, int total);
+
+  /// No description provided for @archiveBulkFailures.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 project could not be archived} other{{count} projects could not be archived}}'**
+  String archiveBulkFailures(int count);
+
+  /// No description provided for @archiveBulkScopeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Each project is archived with the scope that fits it — a folder of its own when it has one, the project file alone when it shares a folder.'**
+  String get archiveBulkScopeNote;
+
+  /// No description provided for @archivedWithLocalCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived — the originals are still here'**
+  String get archivedWithLocalCopy;
+
+  /// No description provided for @archivedAwayTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived — the files are in the archive only'**
+  String get archivedAwayTooltip;
+
+  /// No description provided for @archiveUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive undone'**
+  String get archiveUndone;
+
+  /// No description provided for @archiveUndoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t undo the archive: {error}'**
+  String archiveUndoFailed(String error);
+
+  /// No description provided for @moveUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Move undone'**
+  String get moveUndone;
+
+  /// No description provided for @moveUndoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t undo the move: {error}'**
+  String moveUndoFailed(String error);
+
+  /// No description provided for @restoreToOriginalLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to its original location'**
+  String get restoreToOriginalLocation;
+
+  /// No description provided for @restoreToChosenFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Into another folder…'**
+  String get restoreToChosenFolder;
+
+  /// No description provided for @restoreWhereTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Where should it go?'**
+  String get restoreWhereTo;
+
+  /// No description provided for @restoreOriginalLocationOccupied.
+  ///
+  /// In en, this message translates to:
+  /// **'Something is already at the original location'**
+  String get restoreOriginalLocationOccupied;
+
+  /// No description provided for @discardArchiveButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard archive'**
+  String get discardArchiveButtonLabel;
+
+  /// No description provided for @discardArchiveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard archive?'**
+  String get discardArchiveConfirmTitle;
+
+  /// No description provided for @discardArchiveConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes the zip and clears the archived flag. The project\'s own files stay where they are.'**
+  String get discardArchiveConfirmMessage;
+
+  /// No description provided for @discardArchiveDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive discarded'**
+  String get discardArchiveDone;
 }
 
 class _AppLocalizationsDelegate

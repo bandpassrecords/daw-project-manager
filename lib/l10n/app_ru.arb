@@ -3509,5 +3509,240 @@
   "clearColorAndIcon": "Убрать цвет и значок",
   "dropCoverArtHere": "Перетащите изображение, чтобы задать обложку",
   "uploadingProjectCoverArt": "Загрузка обложек проектов...",
-  "downloadingProjectCoverArt": "Скачивание обложек проектов..."
+  "downloadingProjectCoverArt": "Скачивание обложек проектов...",
+  "moveProjectButtonLabel": "Переместить…",
+  "moveProjectDialogTitle": "Переместить проект",
+  "moveProjectDestinationLabel": "Назначение",
+  "moveProjectChooseDestination": "Выбрать…",
+  "moveProjectNoDestinationChosen": "Папка ещё не выбрана",
+  "moveProjectIncludeFolder": "Переместить всю папку «{folder}»",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "В этой папке только этот проект, поэтому его сэмплы и миксдауны переместятся вместе с ним.",
+  "moveProjectFileOnlyDescription": "Переместится только файл проекта. Сэмплы и миксдауны рядом с ним останутся на месте.",
+  "moveProjectConfirm": "Переместить",
+  "moveProjectInProgress": "Перемещение…",
+  "moveProjectSuccess": "«{name}» перемещён в {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectFailed": "Не удалось переместить: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorSourceMissing": "Файл этого проекта отсутствует на этом компьютере.",
+  "moveProjectErrorDestinationOccupied": "«{name}» уже есть в этой папке.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Нельзя переместить папку внутрь неё самой.",
+  "moveProjectErrorSameLocation": "Проект уже находится в этой папке.",
+  "moveProjectStackUnsupported": "У стопки версий нет собственного файла — перемещайте её версии по отдельности.",
+  "selectMoveDestinationTitle": "Выберите папку назначения",
+  "archiveProjectButtonLabel": "Архивировать…",
+  "archiveProjectDialogTitle": "Архивировать проект",
+  "archiveProjectWhatToArchive": "Что архивировать",
+  "archiveProjectScopeFolder": "Всю папку «{folder}»",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectScopeFileOnly": "Только файл проекта",
+  "archiveScopeSummary": "{size} · {files, plural, =1{1 файл} other{{files} файлов}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveProjectDeleteOriginals": "Удалить оригиналы после проверки архива",
+  "archiveProjectDeleteOriginalsDescription": "Сначала архив открывается заново и проверяется запись за записью. Если проверка не пройдена, ничего не удаляется.",
+  "archiveProjectConfirm": "Архивировать",
+  "archiveStageScanning": "Чтение папки проекта…",
+  "archiveStageCompressing": "Сжатие…",
+  "archiveStageVerifying": "Проверка архива…",
+  "archiveStageDeleting": "Удаление оригиналов…",
+  "archiveProjectSuccess": "«{name}» заархивирован",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectFailed": "Не удалось заархивировать: {error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorSourceMissing": "Файлов этого проекта нет на этом компьютере.",
+  "archiveErrorDestinationInScanRoot": "Архивы нельзя класть в сканируемую папку — «{root}» тут же добавит их обратно.",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorDestinationOccupied": "Там уже есть архив с именем «{name}».",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorVerificationFailed": "В архиве не хватает файлов, поэтому ничего не удалено: {entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorNotArchived": "Этот проект не заархивирован.",
+  "archiveWarningsSkipped": "{count, plural, =1{1 нечитаемый файл пропущен} other{Пропущено нечитаемых файлов: {count}}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveLocationTitle": "Расположение архивов",
+  "archiveLocationSubtitle": "Куда «Архивировать проект» записывает zip-файлы. Хранится на этом устройстве.",
+  "archiveLocationNotSet": "Не задано — вас спросят при первом архивировании",
+  "selectArchiveLocationTitle": "Выберите папку для архивов",
+  "restoreProjectButtonLabel": "Восстановить…",
+  "restoreProjectDialogTitle": "Восстановить проект",
+  "restoreProjectDescription": "Распаковывает архив в выбранную вами папку и возвращает проект к восстановленным файлам.",
+  "restoreProjectConfirm": "Восстановить",
+  "restoreProjectInProgress": "Восстановление…",
+  "restoreProjectSuccess": "«{name}» восстановлен",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreProjectFailed": "Не удалось восстановить: {error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectRestoreDestinationTitle": "Выберите папку для восстановления",
+  "archivedLabel": "В архиве",
+  "archivedOnLabel": "В архиве с {date}",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "showArchivedProjects": "Показать архивные",
+  "showOnlyArchivedProjects": "Только архивные",
+  "hideArchivedProjects": "Скрыть архивные",
+  "archivedFilterLabel": "Архив",
+  "archiveProjectStackUnsupported": "У стопки версий нет собственных файлов — архивируйте её версии по отдельности.",
+  "archiveBulkButtonLabel": "Архивировать выбранные",
+  "archiveBulkConfirmMessage": "{count, plural, =1{Архивировать 1 проект?} other{Архивировать проектов: {count}?}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, =1{1 проект заархивирован} other{Заархивировано проектов: {count}}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openArchiveFolder": "Открыть папку архивов",
+  "archiveBulkProgress": "{current} из {total}",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, =1{1 проект не удалось заархивировать} other{Не удалось заархивировать проектов: {count}}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkScopeNote": "Каждый проект архивируется в подходящем ему объёме: вся папка, если она у него своя, и только файл проекта, если папка общая.",
+  "archivedWithLocalCopy": "В архиве — оригиналы всё ещё здесь",
+  "archivedAwayTooltip": "В архиве — файлы остались только в архиве",
+  "archiveUndone": "Архивирование отменено",
+  "archiveUndoFailed": "Не удалось отменить архивирование: {error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUndone": "Перемещение отменено",
+  "moveUndoFailed": "Не удалось отменить перемещение: {error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreToOriginalLocation": "Обратно в исходное место",
+  "restoreToChosenFolder": "В другую папку…",
+  "restoreWhereTo": "Куда его поместить?",
+  "restoreOriginalLocationOccupied": "В исходном месте уже что-то есть",
+  "discardArchiveButtonLabel": "Удалить архив",
+  "discardArchiveConfirmTitle": "Удалить архив?",
+  "discardArchiveConfirmMessage": "Удаляет zip и снимает пометку «в архиве». Файлы самого проекта остаются на месте.",
+  "discardArchiveDone": "Архив удалён"
 }

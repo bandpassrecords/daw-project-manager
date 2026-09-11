@@ -647,6 +647,40 @@ void main() {
       expect(restored.cardInitials, isNull);
     });
 
+    test('preserves the archived state (#116)', () {
+      // An archived project's files are deliberately gone from filePath. Drop
+      // these on restore and it comes back looking merely missing, with no
+      // pointer to the archive holding the work.
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(
+        archivePath: '/Volumes/Archive/Midnight.zip',
+        archivedAt: DateTime(2026, 3, 4, 15, 30),
+        archiveEntryPath: 'Midnight/Midnight.als',
+      );
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.archivePath, '/Volumes/Archive/Midnight.zip');
+      expect(restored.archivedAt, DateTime(2026, 3, 4, 15, 30));
+      expect(restored.archiveEntryPath, 'Midnight/Midnight.als');
+      expect(restored.isArchived, isTrue);
+      expect(restored.isMissingFileCandidate, isFalse);
+    });
+
+    test('a project that was never archived round-trips unarchived', () {
+      final service = GoogleDriveSyncService();
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(TestFactories.makeProject()),
+      );
+
+      expect(restored.isArchived, isFalse);
+      expect(restored.archivedAt, isNull);
+      expect(restored.archiveEntryPath, isNull);
+    });
+
     test('preserves projectNotes', () {
       final service = GoogleDriveSyncService();
       final original = TestFactories.makeProject(

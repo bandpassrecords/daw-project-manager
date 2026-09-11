@@ -69,6 +69,8 @@ import '../utils/project_visuals.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'session_actions.dart';
 import 'dialogs/create_project_dialog.dart';
+import 'dialogs/archive_project_dialog.dart';
+import 'dialogs/move_project_dialog.dart';
 import 'dialogs/stack_metadata_source_dialog.dart';
 import 'dialogs/preview_song_not_found_dialog.dart';
 import 'preview_share.dart';
@@ -4871,6 +4873,60 @@ class _PlutoProjectsTableWithSelectionState
                     ],
                   ),
                 ),
+                // Archived filter (#116). Counted from the unfiltered library
+                // rather than from `widget.projects`, which has already had
+                // archived rows removed by the default mode — counting there
+                // would always give 0 and the control would never appear.
+                Builder(
+                  builder: (context) {
+                    final archivedCount =
+                        ref
+                            .watch(allProjectsStreamProvider)
+                            .value
+                            ?.where((p) => p.isArchived)
+                            .length ??
+                        0;
+                    if (archivedCount == 0) return const SizedBox.shrink();
+                    final mode = ref.watch(showArchivedProjectsProvider);
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      // A three-state axis reads badly as a checkbox, which is
+                      // why this isn't built like the hidden pair beside it.
+                      child: FilterDropdown<int>(
+                        icon: Icons.archive_outlined,
+                        value: mode,
+                        hintText: l10n.archivedFilterLabel,
+                        items: [
+                          DropdownMenuItem<int>(
+                            value: 0,
+                            child: Text(l10n.hideArchivedProjects),
+                          ),
+                          DropdownMenuItem<int>(
+                            value: 1,
+                            child: Text(l10n.showArchivedProjects),
+                          ),
+                          DropdownMenuItem<int>(
+                            value: 2,
+                            child: Text(l10n.showOnlyArchivedProjects),
+                          ),
+                        ],
+                        onChanged: (int? value) {
+                          final notifier = ref.read(
+                            showArchivedProjectsProvider.notifier,
+                          );
+                          switch (value ?? 0) {
+                            case 1:
+                              notifier.setShowAll(true);
+                            case 2:
+                              notifier.setShowOnlyArchived(true);
+                            default:
+                              notifier.setShowAll(false);
+                          }
+                        },
+                      ),
+                    );
+                  },
+                ),
                 const SizedBox(width: 8),
                 FilterDropdown<String>(
                   icon: Icons.filter_list,
@@ -5414,6 +5470,47 @@ class _PlutoProjectsTableWithSelectionState
                                 ),
                                 onPressed: () =>
                                     widget.onStackProjects(stackable),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      // Archiving needs at least one real, not-yet-archived
+                      // project. Hides rather than disables, same reasoning as
+                      // the stack button above.
+                      Builder(
+                        builder: (context) {
+                          final archivable = widget.projects
+                              .where(
+                                (p) =>
+                                    _selectedProjectIds.contains(p.id) &&
+                                    !p.isVirtual &&
+                                    !p.isArchived,
+                              )
+                              .toList();
+                          if (archivable.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(width: 8),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.archive_outlined),
+                                label: Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.archiveBulkButtonLabel,
+                                ),
+                                onPressed: () async {
+                                  final archived =
+                                      await showArchiveProjectsBulkDialog(
+                                    context,
+                                    ref,
+                                    archivable,
+                                  );
+                                  if (archived > 0) _clearSelection();
+                                },
                               ),
                             ],
                           );
@@ -7316,8 +7413,31 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                     ),
                   ),
                 ),
+              // An archived row stays in the list when its originals were
+              // kept, and would otherwise look exactly like any other — the
+              // badge is the only thing saying a zip of it exists. The tooltip
+              // distinguishes the two archived states, since one is still
+              // openable in the DAW and the other is not.
+              if (project.isArchived && !MobileUtils.isMobile())
+                Tooltip(
+                  message: fileExists
+                      ? AppLocalizations.of(context)!.archivedWithLocalCopy
+                      : AppLocalizations.of(context)!.archivedAwayTooltip,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 6),
+                    child: Icon(
+                      Icons.archive_outlined,
+                      size: 14,
+                      color: fileExists
+                          ? Colors.blueGrey.shade300
+                          : Colors.blueGrey.shade200,
+                    ),
+                  ),
+                ),
               // isMissingFileCandidate keeps this off stacks: their path is a
-              // folder, so "no file here" is normal, not a missing file.
+              // folder, so "no file here" is normal, not a missing file. It
+              // keeps it off archived projects too — their files are gone on
+              // purpose, and the archive badge above already says so.
               if (!fileExists &&
                   project.isMissingFileCandidate &&
                   !MobileUtils.isMobile())

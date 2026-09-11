@@ -3509,5 +3509,240 @@
   "clearColorAndIcon": "Rimuovi colore e icona",
   "dropCoverArtHere": "Trascina un'immagine per impostare la copertina",
   "uploadingProjectCoverArt": "Caricamento copertine dei progetti...",
-  "downloadingProjectCoverArt": "Scaricamento copertine dei progetti..."
+  "downloadingProjectCoverArt": "Scaricamento copertine dei progetti...",
+  "moveProjectButtonLabel": "Sposta…",
+  "moveProjectDialogTitle": "Sposta progetto",
+  "moveProjectDestinationLabel": "Destinazione",
+  "moveProjectChooseDestination": "Scegli…",
+  "moveProjectNoDestinationChosen": "Nessuna cartella ancora scelta",
+  "moveProjectIncludeFolder": "Sposta l'intera cartella \"{folder}\"",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "Questa cartella contiene solo questo progetto, quindi i suoi sample e mixdown si spostano con lui.",
+  "moveProjectFileOnlyDescription": "Viene spostato solo il file del progetto. I sample e i mixdown accanto restano dove sono.",
+  "moveProjectConfirm": "Sposta",
+  "moveProjectInProgress": "Spostamento…",
+  "moveProjectSuccess": "\"{name}\" spostato in {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectFailed": "Spostamento non riuscito: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorSourceMissing": "Il file di questo progetto non è su questa macchina.",
+  "moveProjectErrorDestinationOccupied": "\"{name}\" esiste già in quella cartella.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Non puoi spostare una cartella dentro sé stessa.",
+  "moveProjectErrorSameLocation": "Il progetto è già in quella cartella.",
+  "moveProjectStackUnsupported": "Uno stack di versioni non ha un file proprio: sposta le versioni singolarmente.",
+  "selectMoveDestinationTitle": "Seleziona la cartella di destinazione",
+  "archiveProjectButtonLabel": "Archivia…",
+  "archiveProjectDialogTitle": "Archivia progetto",
+  "archiveProjectWhatToArchive": "Cosa archiviare",
+  "archiveProjectScopeFolder": "L'intera cartella \"{folder}\"",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectScopeFileOnly": "Solo il file del progetto",
+  "archiveScopeSummary": "{size} · {files, plural, =1{1 file} other{{files} file}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveProjectDeleteOriginals": "Elimina gli originali dopo aver verificato l'archivio",
+  "archiveProjectDeleteOriginalsDescription": "L'archivio viene prima riaperto e controllato voce per voce. Non viene eliminato nulla se il controllo fallisce.",
+  "archiveProjectConfirm": "Archivia",
+  "archiveStageScanning": "Lettura della cartella del progetto…",
+  "archiveStageCompressing": "Compressione…",
+  "archiveStageVerifying": "Verifica dell'archivio…",
+  "archiveStageDeleting": "Rimozione degli originali…",
+  "archiveProjectSuccess": "\"{name}\" archiviato",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectFailed": "Archiviazione non riuscita: {error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorSourceMissing": "I file di questo progetto non sono su questa macchina.",
+  "archiveErrorDestinationInScanRoot": "Gli archivi non possono stare dentro una cartella scansionata: \"{root}\" li reindicizzerebbe subito.",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorDestinationOccupied": "Lì c'è già un archivio chiamato \"{name}\".",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorVerificationFailed": "Nell'archivio mancano dei file, quindi non è stato eliminato nulla: {entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorNotArchived": "Questo progetto non è archiviato.",
+  "archiveWarningsSkipped": "{count, plural, =1{1 file illeggibile è stato saltato} other{{count} file illeggibili sono stati saltati}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveLocationTitle": "Posizione degli archivi",
+  "archiveLocationSubtitle": "Dove \"Archivia progetto\" scrive i suoi file zip. Resta su questo dispositivo.",
+  "archiveLocationNotSet": "Non impostata: ti verrà chiesta alla prima archiviazione",
+  "selectArchiveLocationTitle": "Seleziona la cartella degli archivi",
+  "restoreProjectButtonLabel": "Ripristina…",
+  "restoreProjectDialogTitle": "Ripristina progetto",
+  "restoreProjectDescription": "Estrae l'archivio in una cartella a tua scelta e riporta il progetto ai file ripristinati.",
+  "restoreProjectConfirm": "Ripristina",
+  "restoreProjectInProgress": "Ripristino…",
+  "restoreProjectSuccess": "\"{name}\" ripristinato",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreProjectFailed": "Ripristino non riuscito: {error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectRestoreDestinationTitle": "Seleziona una cartella in cui ripristinare",
+  "archivedLabel": "Archiviato",
+  "archivedOnLabel": "Archiviato il {date}",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "showArchivedProjects": "Mostra archiviati",
+  "showOnlyArchivedProjects": "Solo archiviati",
+  "hideArchivedProjects": "Nascondi archiviati",
+  "archivedFilterLabel": "Archiviati",
+  "archiveProjectStackUnsupported": "Uno stack di versioni non ha file propri: archivia le versioni singolarmente.",
+  "archiveBulkButtonLabel": "Archivia selezionati",
+  "archiveBulkConfirmMessage": "{count, plural, =1{Archiviare 1 progetto?} other{Archiviare {count} progetti?}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, =1{1 progetto archiviato} other{{count} progetti archiviati}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openArchiveFolder": "Apri la cartella degli archivi",
+  "archiveBulkProgress": "{current} di {total}",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, =1{1 progetto non è stato archiviato} other{{count} progetti non sono stati archiviati}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkScopeNote": "Ogni progetto viene archiviato con l'ambito che gli si addice: l'intera cartella se ne ha una sua, il solo file del progetto se la condivide.",
+  "archivedWithLocalCopy": "Archiviato — gli originali sono ancora qui",
+  "archivedAwayTooltip": "Archiviato — i file sono solo nell'archivio",
+  "archiveUndone": "Archiviazione annullata",
+  "archiveUndoFailed": "Impossibile annullare l'archiviazione: {error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUndone": "Spostamento annullato",
+  "moveUndoFailed": "Impossibile annullare lo spostamento: {error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreToOriginalLocation": "Nella sua posizione originale",
+  "restoreToChosenFolder": "In un'altra cartella…",
+  "restoreWhereTo": "Dove deve andare?",
+  "restoreOriginalLocationOccupied": "C'è già qualcosa nella posizione originale",
+  "discardArchiveButtonLabel": "Elimina archivio",
+  "discardArchiveConfirmTitle": "Eliminare l'archivio?",
+  "discardArchiveConfirmMessage": "Elimina lo zip e toglie il contrassegno di archiviato. I file del progetto restano dove sono.",
+  "discardArchiveDone": "Archivio eliminato"
 }

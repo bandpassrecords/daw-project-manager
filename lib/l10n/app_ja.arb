@@ -3509,5 +3509,240 @@
   "clearColorAndIcon": "色とアイコンを解除",
   "dropCoverArtHere": "画像をドロップしてカバーアートに設定",
   "uploadingProjectCoverArt": "プロジェクトのカバーアートをアップロード中...",
-  "downloadingProjectCoverArt": "プロジェクトのカバーアートをダウンロード中..."
+  "downloadingProjectCoverArt": "プロジェクトのカバーアートをダウンロード中...",
+  "moveProjectButtonLabel": "移動…",
+  "moveProjectDialogTitle": "プロジェクトを移動",
+  "moveProjectDestinationLabel": "移動先",
+  "moveProjectChooseDestination": "選択…",
+  "moveProjectNoDestinationChosen": "フォルダーが未選択です",
+  "moveProjectIncludeFolder": "「{folder}」フォルダー全体を移動",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "このフォルダーにはこのプロジェクトしかないため、サンプルやミックスダウンも一緒に移動します。",
+  "moveProjectFileOnlyDescription": "プロジェクトファイルのみを移動します。隣にあるサンプルやミックスダウンはそのまま残ります。",
+  "moveProjectConfirm": "移動",
+  "moveProjectInProgress": "移動中…",
+  "moveProjectSuccess": "「{name}」を {path} に移動しました",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectFailed": "移動に失敗しました: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorSourceMissing": "このプロジェクトのファイルはこのマシンにありません。",
+  "moveProjectErrorDestinationOccupied": "「{name}」はそのフォルダーに既に存在します。",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "フォルダーを自分自身の中へ移動することはできません。",
+  "moveProjectErrorSameLocation": "プロジェクトは既にそのフォルダーにあります。",
+  "moveProjectStackUnsupported": "バージョンスタックには固有のファイルがありません。各バージョンを個別に移動してください。",
+  "selectMoveDestinationTitle": "移動先フォルダーを選択",
+  "archiveProjectButtonLabel": "アーカイブ…",
+  "archiveProjectDialogTitle": "プロジェクトをアーカイブ",
+  "archiveProjectWhatToArchive": "アーカイブする対象",
+  "archiveProjectScopeFolder": "「{folder}」フォルダー全体",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectScopeFileOnly": "プロジェクトファイルのみ",
+  "archiveScopeSummary": "{size} · {files, plural, other{{files} 個のファイル}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveProjectDeleteOriginals": "アーカイブを検証してから元のファイルを削除する",
+  "archiveProjectDeleteOriginalsDescription": "先にアーカイブを開き直し、項目ごとに確認します。この確認に失敗した場合は何も削除しません。",
+  "archiveProjectConfirm": "アーカイブ",
+  "archiveStageScanning": "プロジェクトフォルダーを読み込み中…",
+  "archiveStageCompressing": "圧縮中…",
+  "archiveStageVerifying": "アーカイブを検証中…",
+  "archiveStageDeleting": "元のファイルを削除中…",
+  "archiveProjectSuccess": "「{name}」をアーカイブしました",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectFailed": "アーカイブに失敗しました: {error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorSourceMissing": "このプロジェクトのファイルはこのマシンにありません。",
+  "archiveErrorDestinationInScanRoot": "アーカイブはスキャン対象フォルダーの中には置けません。「{root}」がすぐに再登録してしまいます。",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorDestinationOccupied": "そこには既に「{name}」というアーカイブがあります。",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorVerificationFailed": "アーカイブにファイルが不足しているため、何も削除していません: {entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorNotArchived": "このプロジェクトはアーカイブされていません。",
+  "archiveWarningsSkipped": "{count, plural, other{読み取れないファイル {count} 個をスキップしました}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveLocationTitle": "アーカイブの保存先",
+  "archiveLocationSubtitle": "「プロジェクトをアーカイブ」が zip を書き出す場所です。この端末に保存されます。",
+  "archiveLocationNotSet": "未設定 — 最初のアーカイブ時に確認します",
+  "selectArchiveLocationTitle": "アーカイブフォルダーを選択",
+  "restoreProjectButtonLabel": "復元…",
+  "restoreProjectDialogTitle": "プロジェクトを復元",
+  "restoreProjectDescription": "選択したフォルダーにアーカイブを展開し、プロジェクトを復元後のファイルに向け直します。",
+  "restoreProjectConfirm": "復元",
+  "restoreProjectInProgress": "復元中…",
+  "restoreProjectSuccess": "「{name}」を復元しました",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreProjectFailed": "復元に失敗しました: {error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectRestoreDestinationTitle": "復元先のフォルダーを選択",
+  "archivedLabel": "アーカイブ済み",
+  "archivedOnLabel": "{date} にアーカイブ",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "showArchivedProjects": "アーカイブ済みを表示",
+  "showOnlyArchivedProjects": "アーカイブ済みのみ",
+  "hideArchivedProjects": "アーカイブ済みを非表示",
+  "archivedFilterLabel": "アーカイブ",
+  "archiveProjectStackUnsupported": "バージョンスタックには固有のファイルがありません。各バージョンを個別にアーカイブしてください。",
+  "archiveBulkButtonLabel": "選択項目をアーカイブ",
+  "archiveBulkConfirmMessage": "{count, plural, other{{count} 件のプロジェクトをアーカイブしますか？}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, other{{count} 件のプロジェクトをアーカイブしました}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openArchiveFolder": "アーカイブフォルダーを開く",
+  "archiveBulkProgress": "{total} 件中 {current} 件",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, other{{count} 件のプロジェクトをアーカイブできませんでした}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkScopeNote": "各プロジェクトはそれぞれに合った範囲でアーカイブされます。専用のフォルダーがあればフォルダー全体、フォルダーを共有している場合はプロジェクトファイルのみです。",
+  "archivedWithLocalCopy": "アーカイブ済み — 元のファイルはまだここにあります",
+  "archivedAwayTooltip": "アーカイブ済み — ファイルはアーカイブ内にのみあります",
+  "archiveUndone": "アーカイブを取り消しました",
+  "archiveUndoFailed": "アーカイブを取り消せませんでした: {error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUndone": "移動を取り消しました",
+  "moveUndoFailed": "移動を取り消せませんでした: {error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreToOriginalLocation": "元の場所に戻す",
+  "restoreToChosenFolder": "別のフォルダーへ…",
+  "restoreWhereTo": "どこに配置しますか？",
+  "restoreOriginalLocationOccupied": "元の場所には既に何かがあります",
+  "discardArchiveButtonLabel": "アーカイブを破棄",
+  "discardArchiveConfirmTitle": "アーカイブを破棄しますか？",
+  "discardArchiveConfirmMessage": "zip を削除し、アーカイブ済みの印を外します。プロジェクト自体のファイルはそのまま残ります。",
+  "discardArchiveDone": "アーカイブを破棄しました"
 }

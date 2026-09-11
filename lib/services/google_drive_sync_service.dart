@@ -5502,6 +5502,13 @@ class GoogleDriveSyncService {
       'iconKey': project.iconKey,
       // User data: someone typed these two letters onto the card.
       'cardInitials': project.cardInitials,
+      // Archiving (#116). User data: skipping these would restore an archived
+      // project as a plain one whose files aren't where filePath says, i.e.
+      // "missing" — losing both the pointer to the archive and the reason the
+      // originals are gone.
+      'archivePath': project.archivePath,
+      'archivedAt': project.archivedAt?.toIso8601String(),
+      'archiveEntryPath': project.archiveEntryPath,
     };
   }
 
@@ -5575,6 +5582,11 @@ class GoogleDriveSyncService {
       accentColor: (data['accentColor'] as num?)?.toInt(),
       iconKey: data['iconKey'] as String?,
       cardInitials: data['cardInitials'] as String?,
+      archivePath: data['archivePath'] as String?,
+      archivedAt: data['archivedAt'] != null
+          ? DateTime.parse(data['archivedAt'] as String)
+          : null,
+      archiveEntryPath: data['archiveEntryPath'] as String?,
     );
   }
 

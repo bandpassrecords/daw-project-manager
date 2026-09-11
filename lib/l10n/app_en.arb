@@ -4919,5 +4919,240 @@
   "downloadingProjectCoverArt": "Downloading project cover art...",
   "@downloadingProjectCoverArt": {
     "description": "Status message when downloading project cover art files"
-  }
+  },
+  "moveProjectButtonLabel": "Move…",
+  "moveProjectDialogTitle": "Move Project",
+  "moveProjectDestinationLabel": "Destination",
+  "moveProjectChooseDestination": "Choose…",
+  "moveProjectNoDestinationChosen": "No folder chosen yet",
+  "moveProjectIncludeFolder": "Move the whole \"{folder}\" folder",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "This folder holds only this project, so its samples and bounces move with it.",
+  "moveProjectFileOnlyDescription": "Only the project file moves. Samples and bounces beside it stay where they are.",
+  "moveProjectConfirm": "Move",
+  "moveProjectInProgress": "Moving…",
+  "moveProjectSuccess": "Moved \"{name}\" to {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectFailed": "Failed to move: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorSourceMissing": "This project's file isn't on this machine.",
+  "moveProjectErrorDestinationOccupied": "\"{name}\" already exists in that folder.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "You can't move a folder into itself.",
+  "moveProjectErrorSameLocation": "The project is already in that folder.",
+  "moveProjectStackUnsupported": "A version stack has no file of its own — move its versions individually.",
+  "selectMoveDestinationTitle": "Select destination folder",
+  "archiveProjectButtonLabel": "Archive…",
+  "archiveProjectDialogTitle": "Archive Project",
+  "archiveProjectWhatToArchive": "What to archive",
+  "archiveProjectScopeFolder": "Whole \"{folder}\" folder",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectScopeFileOnly": "Project file only",
+  "archiveScopeSummary": "{size} · {files, plural, =1{1 file} other{{files} files}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveProjectDeleteOriginals": "Delete the originals after verifying the archive",
+  "archiveProjectDeleteOriginalsDescription": "The archive is re-opened and checked entry by entry first. Nothing is deleted if that check fails.",
+  "archiveProjectConfirm": "Archive",
+  "archiveStageScanning": "Reading the project folder…",
+  "archiveStageCompressing": "Compressing…",
+  "archiveStageVerifying": "Verifying the archive…",
+  "archiveStageDeleting": "Removing the originals…",
+  "archiveProjectSuccess": "Archived \"{name}\"",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectFailed": "Failed to archive: {error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorSourceMissing": "This project's files aren't on this machine.",
+  "archiveErrorDestinationInScanRoot": "Archives can't go inside a scanned folder — \"{root}\" would index them straight back in.",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorDestinationOccupied": "An archive named \"{name}\" is already there.",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorVerificationFailed": "The archive is missing files, so nothing was deleted: {entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorNotArchived": "This project isn't archived.",
+  "archiveWarningsSkipped": "{count, plural, =1{1 unreadable file was skipped} other{{count} unreadable files were skipped}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveLocationTitle": "Archive location",
+  "archiveLocationSubtitle": "Where \"Archive project\" writes its zip files. Kept on this device.",
+  "archiveLocationNotSet": "Not set — you'll be asked when you first archive",
+  "selectArchiveLocationTitle": "Select archive folder",
+  "restoreProjectButtonLabel": "Restore…",
+  "restoreProjectDialogTitle": "Restore Project",
+  "restoreProjectDescription": "Extracts the archive to a folder you choose and points the project back at the restored files.",
+  "restoreProjectConfirm": "Restore",
+  "restoreProjectInProgress": "Restoring…",
+  "restoreProjectSuccess": "Restored \"{name}\"",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreProjectFailed": "Failed to restore: {error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectRestoreDestinationTitle": "Select a folder to restore into",
+  "archivedLabel": "Archived",
+  "archivedOnLabel": "Archived {date}",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "showArchivedProjects": "Show archived",
+  "showOnlyArchivedProjects": "Only archived",
+  "hideArchivedProjects": "Hide archived",
+  "archivedFilterLabel": "Archived",
+  "archiveProjectStackUnsupported": "A version stack has no files of its own — archive its versions individually.",
+  "archiveBulkButtonLabel": "Archive selected",
+  "archiveBulkConfirmMessage": "{count, plural, =1{Archive 1 project?} other{Archive {count} projects?}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, =1{1 project archived} other{{count} projects archived}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openArchiveFolder": "Open archive folder",
+  "archiveBulkProgress": "{current} of {total}",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, =1{1 project could not be archived} other{{count} projects could not be archived}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkScopeNote": "Each project is archived with the scope that fits it — a folder of its own when it has one, the project file alone when it shares a folder.",
+  "archivedWithLocalCopy": "Archived — the originals are still here",
+  "archivedAwayTooltip": "Archived — the files are in the archive only",
+  "archiveUndone": "Archive undone",
+  "archiveUndoFailed": "Couldn't undo the archive: {error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUndone": "Move undone",
+  "moveUndoFailed": "Couldn't undo the move: {error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreToOriginalLocation": "Back to its original location",
+  "restoreToChosenFolder": "Into another folder…",
+  "restoreWhereTo": "Where should it go?",
+  "restoreOriginalLocationOccupied": "Something is already at the original location",
+  "discardArchiveButtonLabel": "Discard archive",
+  "discardArchiveConfirmTitle": "Discard archive?",
+  "discardArchiveConfirmMessage": "Deletes the zip and clears the archived flag. The project's own files stay where they are.",
+  "discardArchiveDone": "Archive discarded"
 }

@@ -957,6 +957,10 @@ class BackupService {
       'iconKey': project.iconKey,
       // User data: someone typed these two letters onto the card.
       'cardInitials': project.cardInitials,
+      // Archiving (#116) — user data, same reasoning as the block above.
+      'archivePath': project.archivePath,
+      'archivedAt': project.archivedAt?.toIso8601String(),
+      'archiveEntryPath': project.archiveEntryPath,
     };
   }
 
@@ -1018,6 +1022,11 @@ class BackupService {
       accentColor: (json['accentColor'] as num?)?.toInt(),
       iconKey: json['iconKey'] as String?,
       cardInitials: json['cardInitials'] as String?,
+      archivePath: json['archivePath'] as String?,
+      archivedAt: json['archivedAt'] != null
+          ? DateTime.parse(json['archivedAt'] as String)
+          : null,
+      archiveEntryPath: json['archiveEntryPath'] as String?,
     );
   }
 

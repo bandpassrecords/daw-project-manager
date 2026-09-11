@@ -5228,4 +5228,330 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get downloadingProjectCoverArt => 'Baixando capas dos projetos...';
+
+  @override
+  String get moveProjectButtonLabel => 'Mover…';
+
+  @override
+  String get moveProjectDialogTitle => 'Mover Projeto';
+
+  @override
+  String get moveProjectDestinationLabel => 'Destino';
+
+  @override
+  String get moveProjectChooseDestination => 'Escolher…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'Nenhuma pasta escolhida ainda';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Mover a pasta \"$folder\" inteira';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'Esta pasta contém apenas este projeto, então os samples e mixagens vão junto.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Somente o arquivo do projeto será movido. Os samples e mixagens ao lado dele continuam onde estão.';
+
+  @override
+  String get moveProjectConfirm => 'Mover';
+
+  @override
+  String get moveProjectInProgress => 'Movendo…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '\"$name\" movido para $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Falha ao mover: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'O arquivo deste projeto não está nesta máquina.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '\"$name\" já existe nessa pasta.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'Você não pode mover uma pasta para dentro dela mesma.';
+
+  @override
+  String get moveProjectErrorSameLocation => 'O projeto já está nessa pasta.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'Uma pilha de versões não tem arquivo próprio — mova as versões individualmente.';
+
+  @override
+  String get selectMoveDestinationTitle => 'Selecionar pasta de destino';
+
+  @override
+  String get archiveProjectButtonLabel => 'Arquivar…';
+
+  @override
+  String get archiveProjectDialogTitle => 'Arquivar Projeto';
+
+  @override
+  String get archiveProjectWhatToArchive => 'O que arquivar';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return 'Pasta \"$folder\" inteira';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => 'Somente o arquivo do projeto';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files arquivos',
+      one: '1 arquivo',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals =>
+      'Excluir os originais depois de verificar o pacote';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      'O pacote é reaberto e conferido item por item antes. Nada é excluído se essa conferência falhar.';
+
+  @override
+  String get archiveProjectConfirm => 'Arquivar';
+
+  @override
+  String get archiveStageScanning => 'Lendo a pasta do projeto…';
+
+  @override
+  String get archiveStageCompressing => 'Compactando…';
+
+  @override
+  String get archiveStageVerifying => 'Verificando o pacote…';
+
+  @override
+  String get archiveStageDeleting => 'Removendo os originais…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return '\"$name\" arquivado';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return 'Falha ao arquivar: $error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing =>
+      'Os arquivos deste projeto não estão nesta máquina.';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return 'Os pacotes não podem ficar dentro de uma pasta escaneada — \"$root\" iria indexá-los de volta na hora.';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return 'Já existe um pacote chamado \"$name\" ali.';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return 'Faltam arquivos no pacote, então nada foi excluído: $entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => 'Este projeto não está arquivado.';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count arquivos ilegíveis foram ignorados',
+      one: '1 arquivo ilegível foi ignorado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => 'Local do arquivamento';
+
+  @override
+  String get archiveLocationSubtitle =>
+      'Onde \"Arquivar projeto\" grava os pacotes zip. Fica guardado neste dispositivo.';
+
+  @override
+  String get archiveLocationNotSet =>
+      'Não definido — você será perguntado no primeiro arquivamento';
+
+  @override
+  String get selectArchiveLocationTitle => 'Selecionar pasta de arquivamento';
+
+  @override
+  String get restoreProjectButtonLabel => 'Restaurar…';
+
+  @override
+  String get restoreProjectDialogTitle => 'Restaurar Projeto';
+
+  @override
+  String get restoreProjectDescription =>
+      'Extrai o pacote para uma pasta que você escolher e aponta o projeto de volta para os arquivos restaurados.';
+
+  @override
+  String get restoreProjectConfirm => 'Restaurar';
+
+  @override
+  String get restoreProjectInProgress => 'Restaurando…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return '\"$name\" restaurado';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return 'Falha ao restaurar: $error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle =>
+      'Selecionar a pasta para restaurar';
+
+  @override
+  String get archivedLabel => 'Arquivado';
+
+  @override
+  String archivedOnLabel(String date) {
+    return 'Arquivado em $date';
+  }
+
+  @override
+  String get showArchivedProjects => 'Mostrar arquivados';
+
+  @override
+  String get showOnlyArchivedProjects => 'Somente arquivados';
+
+  @override
+  String get hideArchivedProjects => 'Ocultar arquivados';
+
+  @override
+  String get archivedFilterLabel => 'Arquivados';
+
+  @override
+  String get archiveProjectStackUnsupported =>
+      'Uma pilha de versões não tem arquivos próprios — arquive as versões individualmente.';
+
+  @override
+  String get archiveBulkButtonLabel => 'Arquivar selecionados';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Arquivar $count projetos?',
+      one: 'Arquivar 1 projeto?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projetos arquivados',
+      one: '1 projeto arquivado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => 'Abrir pasta de arquivamento';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '$current de $total';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projetos não puderam ser arquivados',
+      one: '1 projeto não pôde ser arquivado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      'Cada projeto é arquivado com o escopo que faz sentido para ele — a pasta inteira quando ele tem uma só para si, somente o arquivo do projeto quando divide a pasta.';
+
+  @override
+  String get archivedWithLocalCopy => 'Arquivado — os originais continuam aqui';
+
+  @override
+  String get archivedAwayTooltip =>
+      'Arquivado — os arquivos estão somente no pacote';
+
+  @override
+  String get archiveUndone => 'Arquivamento desfeito';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return 'Não foi possível desfazer o arquivamento: $error';
+  }
+
+  @override
+  String get moveUndone => 'Movimentação desfeita';
+
+  @override
+  String moveUndoFailed(String error) {
+    return 'Não foi possível desfazer a movimentação: $error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => 'De volta ao local original';
+
+  @override
+  String get restoreToChosenFolder => 'Para outra pasta…';
+
+  @override
+  String get restoreWhereTo => 'Para onde deve ir?';
+
+  @override
+  String get restoreOriginalLocationOccupied =>
+      'Já existe algo no local original';
+
+  @override
+  String get discardArchiveButtonLabel => 'Descartar pacote';
+
+  @override
+  String get discardArchiveConfirmTitle => 'Descartar o pacote?';
+
+  @override
+  String get discardArchiveConfirmMessage =>
+      'Exclui o zip e limpa a marcação de arquivado. Os arquivos do projeto continuam onde estão.';
+
+  @override
+  String get discardArchiveDone => 'Pacote descartado';
 }

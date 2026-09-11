@@ -503,6 +503,65 @@ void main() {
     });
   });
 
+  group('MusicProjectAdapter field numbering', () {
+    // Four feature branches independently claimed @HiveField(38) because it
+    // was the next free index on main, and git merged all four without a
+    // murmur. A duplicated index is silent data corruption — the second write
+    // overwrites the first, and read() hands back whichever type it finds —
+    // so this reads the source and asserts the numbering is sane. Source
+    // inspection rather than reflection because the annotations are erased at
+    // runtime and the adapter is hand-written.
+    final source = File('lib/models/music_project.dart').readAsStringSync();
+
+    test('no @HiveField index is used twice', () {
+      final indices = RegExp(r'@HiveField\((\d+)\)')
+          .allMatches(source)
+          .map((m) => int.parse(m.group(1)!))
+          .toList();
+      final duplicates = <int>{
+        for (final i in indices)
+          if (indices.where((o) => o == i).length > 1) i,
+      };
+
+      expect(indices, isNotEmpty, reason: 'the regex should find the fields');
+      expect(duplicates, isEmpty,
+          reason: 'duplicated @HiveField index/indices: $duplicates');
+    });
+
+    test('writeByte(n) field count matches the highest index + 1', () {
+      // write() opens with the number of fields it is about to emit. If that
+      // disagrees with reality, read() stops early and every field past the
+      // cut-off silently comes back as its default.
+      final highest = RegExp(r'@HiveField\((\d+)\)')
+          .allMatches(source)
+          .map((m) => int.parse(m.group(1)!))
+          .reduce((a, b) => a > b ? a : b);
+      final declared = int.parse(
+        RegExp(r'\.\.writeByte\((\d+)\) // \d+ fields')
+            .firstMatch(source)!
+            .group(1)!,
+      );
+
+      expect(declared, highest + 1);
+    });
+
+    test('every declared field index is both written and read', () {
+      final indices = RegExp(r'@HiveField\((\d+)\)')
+          .allMatches(source)
+          .map((m) => int.parse(m.group(1)!))
+          .toSet();
+      // The count byte is the first writeByte and is excluded by the comment
+      // it carries; every other one is a field tag.
+      final written = RegExp(r'\.\.writeByte\((\d+)\)\n')
+          .allMatches(source)
+          .map((m) => int.parse(m.group(1)!))
+          .toSet();
+
+      expect(indices.difference(written), isEmpty,
+          reason: 'declared but never written by the adapter');
+    });
+  });
+
   group('MusicProjectAdapter (Hive round-trip)', () {
     test('preserves all fields after write and read', () async {
       final todo = TestFactories.makeTodo();
@@ -575,6 +634,26 @@ void main() {
       expect(restored.notes, isNull);
       expect(restored.todos, isEmpty);
       expect(restored.sourceTemplateId, isNull);
+    });
+
+    test('preserves the archive fields (#116)', () async {
+      // The adapter is hand-written, so a new field is only persisted if
+      // read/write were both updated and writeByte's field count bumped.
+      final original = TestFactories.makeProject(
+        id: 'archive-hive-round-trip',
+        archivePath: '/Volumes/Archive/Midnight.zip',
+        archivedAt: DateTime(2026, 3, 4, 15, 30),
+        archiveEntryPath: 'Midnight/Midnight.als',
+      );
+
+      final box = await Hive.openBox<MusicProject>('archive_round_trip_test');
+      await box.put(original.id, original);
+      final restored = box.get(original.id)!;
+
+      expect(restored.archivePath, '/Volumes/Archive/Midnight.zip');
+      expect(restored.archivedAt, DateTime(2026, 3, 4, 15, 30));
+      expect(restored.archiveEntryPath, 'Midnight/Midnight.als');
+      expect(restored.isArchived, isTrue);
     });
   });
 
@@ -736,6 +815,60 @@ void main() {
       expect(p.uploadedPreviewSongHash, isNull);
       expect(p.sessions, isEmpty);
       expect(p.metadataScanned, isFalse);
+    });
+  });
+
+  group('MusicProject archiving (#116)', () {
+    test('isArchived follows archivePath', () {
+      expect(TestFactories.makeProject().isArchived, isFalse);
+      expect(
+        TestFactories.makeProject(
+          archivePath: '/Volumes/Archive/Midnight.zip',
+        ).isArchived,
+        isTrue,
+      );
+    });
+
+    test('an archived project is never a missing-file candidate', () {
+      // The regression this guards: an archived project's filePath still names
+      // the emptied original location, so without this gate "Delete Missing"
+      // would offer to throw away the one row pointing at the archive.
+      final archived = TestFactories.makeProject(
+        archivePath: '/Volumes/Archive/Midnight.zip',
+        archiveEntryPath: 'Midnight/Midnight.als',
+      );
+
+      expect(archived.isMissingFileCandidate, isFalse);
+    });
+
+    test('an ordinary project is still a missing-file candidate', () {
+      expect(TestFactories.makeProject().isMissingFileCandidate, isTrue);
+    });
+
+    test('a stack stays excluded regardless of archive state', () {
+      expect(
+        TestFactories.makeProject(isVirtual: true).isMissingFileCandidate,
+        isFalse,
+      );
+    });
+
+    test('clearing the archive fields un-archives via copyWith', () {
+      final archived = TestFactories.makeProject(
+        archivePath: '/Volumes/Archive/Midnight.zip',
+        archivedAt: DateTime(2026, 3, 4),
+        archiveEntryPath: 'Midnight/Midnight.als',
+      );
+
+      final restored = archived.copyWith(
+        clearArchivePath: true,
+        clearArchivedAt: true,
+        clearArchiveEntryPath: true,
+      );
+
+      expect(restored.isArchived, isFalse);
+      expect(restored.archivedAt, isNull);
+      expect(restored.archiveEntryPath, isNull);
+      expect(restored.isMissingFileCandidate, isTrue);
     });
   });
 }

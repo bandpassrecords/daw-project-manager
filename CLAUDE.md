@@ -66,6 +66,16 @@ Instructions for AI assistants working on this codebase.
 
 ## UI conventions
 
+### An archived project is not a missing one
+- Archiving (#116) zips a project out of the working library and sets `archivePath` / `archivedAt` / `archiveEntryPath`. `filePath` deliberately keeps naming the **original location** — it is what `fileExtension`, DAW launching and the containing-folder helpers read, and leaving it alone is what makes "restore to where it came from" free.
+- So `isMissingFileCandidate` is `!isVirtual && !isArchived`. Anything new that reads a non-resolving path as "the file was deleted" must gate on it, exactly as version stacks already require. Getting this wrong offers to delete the one row pointing at the archive holding the work.
+- `ArchiveScope` is resolved by `defaultScopeFor` in `lib/services/project_archive_service.dart`: a bundle (`.logicx`/`.luna`/`.band`) archives alone, a file with a folder to itself takes the folder, a file sharing its folder takes only itself. The shared "does anything else live here?" test is `folderIsDedicatedTo` in `lib/utils/project_folder_utils.dart`, used by moving too.
+- Never let an archive land in a scan root, inside one, or above one — the next scan would re-index every zip straight back in. `conflictingScanRoot` is the guard, and it runs both at destination-pick time and again inside `archiveProject`.
+- Originals are deleted only when the user asked *and* the written zip has been reopened and verified entry by entry (`verifyArchive`). Zips are written to a `.zip.part` and renamed on success, so a cancelled or crashed run never leaves something that looks finished.
+- Archived state is **user data** (all three fields sync and back up); the archive *destination folder* (`archiveFolderProvider`) is a **device-local preference** and is in neither. Same split as themes.
+- Archived visibility is its own 0/1/2 axis (`showArchivedProjectsProvider`), not `hidden`. Session-only, for the same reason as the hidden one.
+- Archiving and moving are both refused for a **stack** — it owns no files, so doing either coherently means doing it to every member and re-pointing the stack. Members are archived and moved individually.
+
 ### A version stack is a *virtual* project — never assume a row has a file
 - Version stacking (#94) makes a stack a real row in the projects box with `isVirtual: true`, whose `filePath` is the **folder** its versions live in, not a file. Anything that treats a non-resolving path as "the file was deleted" must gate on `MusicProject.isMissingFileCandidate` — `missingProjectIds` and the grid's `cloud_off` indicator already do. Getting this wrong offers to delete the one row holding a song's shared notes, todos, deadline and work time.
 - A stack owns the shared metadata; its members keep their own fields **untouched but dormant**, which is what makes `unstack` lossless. Stacking promotes exactly one member's metadata (`stackProjects(metadataSourceId:)`) — nothing is ever merged, so two versions' details cannot be mangled together. The dashboard asks which member to promote only when two or more of them satisfy `MusicProject.hasUserMetadata`.
@@ -145,6 +155,9 @@ Instructions for AI assistants working on this codebase.
 | Metadata extractor (BPM, key, DAW version) | `lib/services/metadata_extractor.dart` |
 | Google Drive sync (not available inside Flatpak) | `lib/services/google_drive_sync_service.dart` |
 | Local backup/restore (Flatpak's only backup path) | `lib/services/backup_service.dart` |
+| Archive a project to a verified zip, and restore it | `lib/services/project_archive_service.dart` |
+| Move one project's files, rewriting its stored paths | `lib/services/project_move_service.dart` |
+| "Does another project share this folder?" (archive scope + move) | `lib/utils/project_folder_utils.dart` |
 | Version stack list (project detail) | `lib/ui/widgets/project_versions_section.dart` |
 | Settings hub — single scrollable page, left nav jumps to section | `lib/ui/settings_page.dart` |
 | Main dashboard | `lib/ui/dashboard_page.dart` |

@@ -3533,5 +3533,240 @@
   "clearColorAndIcon": "Limpar Cor e Ícone",
   "dropCoverArtHere": "Solte uma imagem para definir a capa",
   "uploadingProjectCoverArt": "Enviando capas dos projetos...",
-  "downloadingProjectCoverArt": "Baixando capas dos projetos..."
+  "downloadingProjectCoverArt": "Baixando capas dos projetos...",
+  "moveProjectButtonLabel": "Mover…",
+  "moveProjectDialogTitle": "Mover Projeto",
+  "moveProjectDestinationLabel": "Destino",
+  "moveProjectChooseDestination": "Escolher…",
+  "moveProjectNoDestinationChosen": "Nenhuma pasta escolhida ainda",
+  "moveProjectIncludeFolder": "Mover a pasta \"{folder}\" inteira",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "Esta pasta contém apenas este projeto, então os samples e mixagens vão junto.",
+  "moveProjectFileOnlyDescription": "Somente o arquivo do projeto será movido. Os samples e mixagens ao lado dele continuam onde estão.",
+  "moveProjectConfirm": "Mover",
+  "moveProjectInProgress": "Movendo…",
+  "moveProjectSuccess": "\"{name}\" movido para {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectFailed": "Falha ao mover: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorSourceMissing": "O arquivo deste projeto não está nesta máquina.",
+  "moveProjectErrorDestinationOccupied": "\"{name}\" já existe nessa pasta.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Você não pode mover uma pasta para dentro dela mesma.",
+  "moveProjectErrorSameLocation": "O projeto já está nessa pasta.",
+  "moveProjectStackUnsupported": "Uma pilha de versões não tem arquivo próprio — mova as versões individualmente.",
+  "selectMoveDestinationTitle": "Selecionar pasta de destino",
+  "archiveProjectButtonLabel": "Arquivar…",
+  "archiveProjectDialogTitle": "Arquivar Projeto",
+  "archiveProjectWhatToArchive": "O que arquivar",
+  "archiveProjectScopeFolder": "Pasta \"{folder}\" inteira",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectScopeFileOnly": "Somente o arquivo do projeto",
+  "archiveScopeSummary": "{size} · {files, plural, =1{1 arquivo} other{{files} arquivos}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveProjectDeleteOriginals": "Excluir os originais depois de verificar o pacote",
+  "archiveProjectDeleteOriginalsDescription": "O pacote é reaberto e conferido item por item antes. Nada é excluído se essa conferência falhar.",
+  "archiveProjectConfirm": "Arquivar",
+  "archiveStageScanning": "Lendo a pasta do projeto…",
+  "archiveStageCompressing": "Compactando…",
+  "archiveStageVerifying": "Verificando o pacote…",
+  "archiveStageDeleting": "Removendo os originais…",
+  "archiveProjectSuccess": "\"{name}\" arquivado",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectFailed": "Falha ao arquivar: {error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorSourceMissing": "Os arquivos deste projeto não estão nesta máquina.",
+  "archiveErrorDestinationInScanRoot": "Os pacotes não podem ficar dentro de uma pasta escaneada — \"{root}\" iria indexá-los de volta na hora.",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorDestinationOccupied": "Já existe um pacote chamado \"{name}\" ali.",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorVerificationFailed": "Faltam arquivos no pacote, então nada foi excluído: {entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorNotArchived": "Este projeto não está arquivado.",
+  "archiveWarningsSkipped": "{count, plural, =1{1 arquivo ilegível foi ignorado} other{{count} arquivos ilegíveis foram ignorados}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveLocationTitle": "Local do arquivamento",
+  "archiveLocationSubtitle": "Onde \"Arquivar projeto\" grava os pacotes zip. Fica guardado neste dispositivo.",
+  "archiveLocationNotSet": "Não definido — você será perguntado no primeiro arquivamento",
+  "selectArchiveLocationTitle": "Selecionar pasta de arquivamento",
+  "restoreProjectButtonLabel": "Restaurar…",
+  "restoreProjectDialogTitle": "Restaurar Projeto",
+  "restoreProjectDescription": "Extrai o pacote para uma pasta que você escolher e aponta o projeto de volta para os arquivos restaurados.",
+  "restoreProjectConfirm": "Restaurar",
+  "restoreProjectInProgress": "Restaurando…",
+  "restoreProjectSuccess": "\"{name}\" restaurado",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreProjectFailed": "Falha ao restaurar: {error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectRestoreDestinationTitle": "Selecionar a pasta para restaurar",
+  "archivedLabel": "Arquivado",
+  "archivedOnLabel": "Arquivado em {date}",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "showArchivedProjects": "Mostrar arquivados",
+  "showOnlyArchivedProjects": "Somente arquivados",
+  "hideArchivedProjects": "Ocultar arquivados",
+  "archivedFilterLabel": "Arquivados",
+  "archiveProjectStackUnsupported": "Uma pilha de versões não tem arquivos próprios — arquive as versões individualmente.",
+  "archiveBulkButtonLabel": "Arquivar selecionados",
+  "archiveBulkConfirmMessage": "{count, plural, =1{Arquivar 1 projeto?} other{Arquivar {count} projetos?}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, =1{1 projeto arquivado} other{{count} projetos arquivados}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openArchiveFolder": "Abrir pasta de arquivamento",
+  "archiveBulkProgress": "{current} de {total}",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, =1{1 projeto não pôde ser arquivado} other{{count} projetos não puderam ser arquivados}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkScopeNote": "Cada projeto é arquivado com o escopo que faz sentido para ele — a pasta inteira quando ele tem uma só para si, somente o arquivo do projeto quando divide a pasta.",
+  "archivedWithLocalCopy": "Arquivado — os originais continuam aqui",
+  "archivedAwayTooltip": "Arquivado — os arquivos estão somente no pacote",
+  "archiveUndone": "Arquivamento desfeito",
+  "archiveUndoFailed": "Não foi possível desfazer o arquivamento: {error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUndone": "Movimentação desfeita",
+  "moveUndoFailed": "Não foi possível desfazer a movimentação: {error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreToOriginalLocation": "De volta ao local original",
+  "restoreToChosenFolder": "Para outra pasta…",
+  "restoreWhereTo": "Para onde deve ir?",
+  "restoreOriginalLocationOccupied": "Já existe algo no local original",
+  "discardArchiveButtonLabel": "Descartar pacote",
+  "discardArchiveConfirmTitle": "Descartar o pacote?",
+  "discardArchiveConfirmMessage": "Exclui o zip e limpa a marcação de arquivado. Os arquivos do projeto continuam onde estão.",
+  "discardArchiveDone": "Pacote descartado"
 }

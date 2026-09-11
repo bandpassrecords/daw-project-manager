@@ -10,7 +10,10 @@ import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
 import '../services/scanner_service.dart';
 import '../utils/file_launcher.dart';
+import '../utils/project_file_status.dart';
+import 'dialogs/archive_project_dialog.dart';
 import 'dialogs/card_initials_dialog.dart';
+import 'dialogs/move_project_dialog.dart';
 import 'preview_share.dart';
 import 'project_detail_page.dart';
 import 'session_actions.dart';
@@ -180,6 +183,57 @@ Future<void> showProjectContextMenu({
           ],
         ),
       ),
+      // Moving and archiving (#88, #116). A stack has no files of its own —
+      // its versions do — so both are offered only on a real project, and its
+      // versions are moved or archived from their own rows.
+      if (!project.isVirtual) ...[
+        PopupMenuItem<String>(
+          value: 'move',
+          child: Row(
+            children: [
+              const Icon(Icons.drive_file_move_outline, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.moveProjectButtonLabel),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: project.isArchived ? 'restore' : 'archive',
+          child: Row(
+            children: [
+              Icon(
+                project.isArchived
+                    ? Icons.unarchive_outlined
+                    : Icons.archive_outlined,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                project.isArchived
+                    ? l10n.restoreProjectButtonLabel
+                    : l10n.archiveProjectButtonLabel,
+              ),
+            ],
+          ),
+        ),
+        // Only worth offering while the files are still here: with nothing to
+        // bring back, throwing the zip away would strand the project.
+        if (project.isArchived && projectFileExists(project))
+          PopupMenuItem<String>(
+            value: 'discardArchive',
+            child: Row(
+              children: [
+                Icon(
+                  Icons.delete_sweep_outlined,
+                  size: 20,
+                  color: Colors.red.shade300,
+                ),
+                const SizedBox(width: 8),
+                Text(l10n.discardArchiveButtonLabel),
+              ],
+            ),
+          ),
+      ],
       PopupMenuItem<String>(
         value: project.hidden ? 'unhide' : 'hide',
         child: Row(
@@ -271,6 +325,18 @@ Future<void> showProjectContextMenu({
         break;
       case 'openFolder':
         await openProjectFolder(context, project);
+        break;
+      case 'move':
+        await showMoveProjectDialog(context, ref, project);
+        break;
+      case 'archive':
+        await showArchiveProjectDialog(context, ref, project);
+        break;
+      case 'restore':
+        await showRestoreProjectDialog(context, ref, project);
+        break;
+      case 'discardArchive':
+        await showDiscardArchiveDialog(context, ref, project);
         break;
       case 'hide':
         final confirm = await showDialog<bool>(

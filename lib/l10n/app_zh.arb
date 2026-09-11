@@ -3509,5 +3509,240 @@
   "clearColorAndIcon": "清除颜色和图标",
   "dropCoverArtHere": "拖放图片以设置封面",
   "uploadingProjectCoverArt": "正在上传项目封面...",
-  "downloadingProjectCoverArt": "正在下载项目封面..."
+  "downloadingProjectCoverArt": "正在下载项目封面...",
+  "moveProjectButtonLabel": "移动…",
+  "moveProjectDialogTitle": "移动项目",
+  "moveProjectDestinationLabel": "目标位置",
+  "moveProjectChooseDestination": "选择…",
+  "moveProjectNoDestinationChosen": "尚未选择文件夹",
+  "moveProjectIncludeFolder": "移动整个“{folder}”文件夹",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "此文件夹中只有这个项目，因此它的采样和缩混会一并移动。",
+  "moveProjectFileOnlyDescription": "仅移动项目文件。旁边的采样和缩混将留在原处。",
+  "moveProjectConfirm": "移动",
+  "moveProjectInProgress": "正在移动…",
+  "moveProjectSuccess": "“{name}” 已移动到 {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectFailed": "移动失败：{error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorSourceMissing": "此项目的文件不在这台电脑上。",
+  "moveProjectErrorDestinationOccupied": "“{name}” 在该文件夹中已存在。",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "无法将文件夹移动到其自身内部。",
+  "moveProjectErrorSameLocation": "项目已在该文件夹中。",
+  "moveProjectStackUnsupported": "版本堆栈没有自己的文件——请单独移动各个版本。",
+  "selectMoveDestinationTitle": "选择目标文件夹",
+  "archiveProjectButtonLabel": "归档…",
+  "archiveProjectDialogTitle": "归档项目",
+  "archiveProjectWhatToArchive": "归档内容",
+  "archiveProjectScopeFolder": "整个“{folder}”文件夹",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectScopeFileOnly": "仅项目文件",
+  "archiveScopeSummary": "{size} · {files, plural, other{{files} 个文件}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveProjectDeleteOriginals": "校验归档后删除原始文件",
+  "archiveProjectDeleteOriginalsDescription": "会先重新打开归档并逐项校验。校验失败则不会删除任何内容。",
+  "archiveProjectConfirm": "归档",
+  "archiveStageScanning": "正在读取项目文件夹…",
+  "archiveStageCompressing": "正在压缩…",
+  "archiveStageVerifying": "正在校验归档…",
+  "archiveStageDeleting": "正在删除原始文件…",
+  "archiveProjectSuccess": "已归档“{name}”",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectFailed": "归档失败：{error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorSourceMissing": "此项目的文件不在这台电脑上。",
+  "archiveErrorDestinationInScanRoot": "归档不能放在被扫描的文件夹里——“{root}”会立刻把它们重新索引进来。",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorDestinationOccupied": "那里已经有一个名为“{name}”的归档。",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorVerificationFailed": "归档中缺少文件，因此未删除任何内容：{entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorNotArchived": "此项目未归档。",
+  "archiveWarningsSkipped": "{count, plural, other{已跳过 {count} 个无法读取的文件}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveLocationTitle": "归档位置",
+  "archiveLocationSubtitle": "“归档项目”写入 zip 文件的位置。保存在本设备上。",
+  "archiveLocationNotSet": "未设置——首次归档时会询问你",
+  "selectArchiveLocationTitle": "选择归档文件夹",
+  "restoreProjectButtonLabel": "恢复…",
+  "restoreProjectDialogTitle": "恢复项目",
+  "restoreProjectDescription": "将归档解压到你选择的文件夹，并把项目重新指向恢复后的文件。",
+  "restoreProjectConfirm": "恢复",
+  "restoreProjectInProgress": "正在恢复…",
+  "restoreProjectSuccess": "已恢复“{name}”",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreProjectFailed": "恢复失败：{error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectRestoreDestinationTitle": "选择要恢复到的文件夹",
+  "archivedLabel": "已归档",
+  "archivedOnLabel": "于 {date} 归档",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "showArchivedProjects": "显示已归档",
+  "showOnlyArchivedProjects": "仅已归档",
+  "hideArchivedProjects": "隐藏已归档",
+  "archivedFilterLabel": "归档",
+  "archiveProjectStackUnsupported": "版本堆栈没有自己的文件——请单独归档各个版本。",
+  "archiveBulkButtonLabel": "归档所选",
+  "archiveBulkConfirmMessage": "{count, plural, other{归档 {count} 个项目？}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, other{已归档 {count} 个项目}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openArchiveFolder": "打开归档文件夹",
+  "archiveBulkProgress": "第 {current} 个，共 {total} 个",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, other{{count} 个项目无法归档}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkScopeNote": "每个项目都按适合它的范围归档——有独立文件夹时归档整个文件夹，与其他项目共用文件夹时仅归档项目文件。",
+  "archivedWithLocalCopy": "已归档——原始文件仍在这里",
+  "archivedAwayTooltip": "已归档——文件仅存在于归档中",
+  "archiveUndone": "已撤销归档",
+  "archiveUndoFailed": "无法撤销归档：{error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUndone": "已撤销移动",
+  "moveUndoFailed": "无法撤销移动：{error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreToOriginalLocation": "回到原来的位置",
+  "restoreToChosenFolder": "到其他文件夹…",
+  "restoreWhereTo": "要放到哪里？",
+  "restoreOriginalLocationOccupied": "原来的位置已经有内容了",
+  "discardArchiveButtonLabel": "丢弃归档",
+  "discardArchiveConfirmTitle": "要丢弃归档吗？",
+  "discardArchiveConfirmMessage": "删除 zip 并清除归档标记。项目自身的文件会留在原处。",
+  "discardArchiveDone": "已丢弃归档"
 }

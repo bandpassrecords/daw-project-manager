@@ -5086,4 +5086,318 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get downloadingProjectCoverArt => 'プロジェクトのカバーアートをダウンロード中...';
+
+  @override
+  String get moveProjectButtonLabel => '移動…';
+
+  @override
+  String get moveProjectDialogTitle => 'プロジェクトを移動';
+
+  @override
+  String get moveProjectDestinationLabel => '移動先';
+
+  @override
+  String get moveProjectChooseDestination => '選択…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'フォルダーが未選択です';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return '「$folder」フォルダー全体を移動';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'このフォルダーにはこのプロジェクトしかないため、サンプルやミックスダウンも一緒に移動します。';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'プロジェクトファイルのみを移動します。隣にあるサンプルやミックスダウンはそのまま残ります。';
+
+  @override
+  String get moveProjectConfirm => '移動';
+
+  @override
+  String get moveProjectInProgress => '移動中…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '「$name」を $path に移動しました';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return '移動に失敗しました: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing => 'このプロジェクトのファイルはこのマシンにありません。';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '「$name」はそのフォルダーに既に存在します。';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'フォルダーを自分自身の中へ移動することはできません。';
+
+  @override
+  String get moveProjectErrorSameLocation => 'プロジェクトは既にそのフォルダーにあります。';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'バージョンスタックには固有のファイルがありません。各バージョンを個別に移動してください。';
+
+  @override
+  String get selectMoveDestinationTitle => '移動先フォルダーを選択';
+
+  @override
+  String get archiveProjectButtonLabel => 'アーカイブ…';
+
+  @override
+  String get archiveProjectDialogTitle => 'プロジェクトをアーカイブ';
+
+  @override
+  String get archiveProjectWhatToArchive => 'アーカイブする対象';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return '「$folder」フォルダー全体';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => 'プロジェクトファイルのみ';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files 個のファイル',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals => 'アーカイブを検証してから元のファイルを削除する';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      '先にアーカイブを開き直し、項目ごとに確認します。この確認に失敗した場合は何も削除しません。';
+
+  @override
+  String get archiveProjectConfirm => 'アーカイブ';
+
+  @override
+  String get archiveStageScanning => 'プロジェクトフォルダーを読み込み中…';
+
+  @override
+  String get archiveStageCompressing => '圧縮中…';
+
+  @override
+  String get archiveStageVerifying => 'アーカイブを検証中…';
+
+  @override
+  String get archiveStageDeleting => '元のファイルを削除中…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return '「$name」をアーカイブしました';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return 'アーカイブに失敗しました: $error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing => 'このプロジェクトのファイルはこのマシンにありません。';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return 'アーカイブはスキャン対象フォルダーの中には置けません。「$root」がすぐに再登録してしまいます。';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return 'そこには既に「$name」というアーカイブがあります。';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return 'アーカイブにファイルが不足しているため、何も削除していません: $entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => 'このプロジェクトはアーカイブされていません。';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '読み取れないファイル $count 個をスキップしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => 'アーカイブの保存先';
+
+  @override
+  String get archiveLocationSubtitle =>
+      '「プロジェクトをアーカイブ」が zip を書き出す場所です。この端末に保存されます。';
+
+  @override
+  String get archiveLocationNotSet => '未設定 — 最初のアーカイブ時に確認します';
+
+  @override
+  String get selectArchiveLocationTitle => 'アーカイブフォルダーを選択';
+
+  @override
+  String get restoreProjectButtonLabel => '復元…';
+
+  @override
+  String get restoreProjectDialogTitle => 'プロジェクトを復元';
+
+  @override
+  String get restoreProjectDescription =>
+      '選択したフォルダーにアーカイブを展開し、プロジェクトを復元後のファイルに向け直します。';
+
+  @override
+  String get restoreProjectConfirm => '復元';
+
+  @override
+  String get restoreProjectInProgress => '復元中…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return '「$name」を復元しました';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return '復元に失敗しました: $error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle => '復元先のフォルダーを選択';
+
+  @override
+  String get archivedLabel => 'アーカイブ済み';
+
+  @override
+  String archivedOnLabel(String date) {
+    return '$date にアーカイブ';
+  }
+
+  @override
+  String get showArchivedProjects => 'アーカイブ済みを表示';
+
+  @override
+  String get showOnlyArchivedProjects => 'アーカイブ済みのみ';
+
+  @override
+  String get hideArchivedProjects => 'アーカイブ済みを非表示';
+
+  @override
+  String get archivedFilterLabel => 'アーカイブ';
+
+  @override
+  String get archiveProjectStackUnsupported =>
+      'バージョンスタックには固有のファイルがありません。各バージョンを個別にアーカイブしてください。';
+
+  @override
+  String get archiveBulkButtonLabel => '選択項目をアーカイブ';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のプロジェクトをアーカイブしますか？',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のプロジェクトをアーカイブしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => 'アーカイブフォルダーを開く';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '$total 件中 $current 件';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のプロジェクトをアーカイブできませんでした',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      '各プロジェクトはそれぞれに合った範囲でアーカイブされます。専用のフォルダーがあればフォルダー全体、フォルダーを共有している場合はプロジェクトファイルのみです。';
+
+  @override
+  String get archivedWithLocalCopy => 'アーカイブ済み — 元のファイルはまだここにあります';
+
+  @override
+  String get archivedAwayTooltip => 'アーカイブ済み — ファイルはアーカイブ内にのみあります';
+
+  @override
+  String get archiveUndone => 'アーカイブを取り消しました';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return 'アーカイブを取り消せませんでした: $error';
+  }
+
+  @override
+  String get moveUndone => '移動を取り消しました';
+
+  @override
+  String moveUndoFailed(String error) {
+    return '移動を取り消せませんでした: $error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => '元の場所に戻す';
+
+  @override
+  String get restoreToChosenFolder => '別のフォルダーへ…';
+
+  @override
+  String get restoreWhereTo => 'どこに配置しますか？';
+
+  @override
+  String get restoreOriginalLocationOccupied => '元の場所には既に何かがあります';
+
+  @override
+  String get discardArchiveButtonLabel => 'アーカイブを破棄';
+
+  @override
+  String get discardArchiveConfirmTitle => 'アーカイブを破棄しますか？';
+
+  @override
+  String get discardArchiveConfirmMessage =>
+      'zip を削除し、アーカイブ済みの印を外します。プロジェクト自体のファイルはそのまま残ります。';
+
+  @override
+  String get discardArchiveDone => 'アーカイブを破棄しました';
 }

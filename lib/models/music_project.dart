@@ -297,6 +297,28 @@ class MusicProject {
   /// backup like the notes and the deadline do.
   final String? cardInitials;
 
+  // Archiving (#116).
+
+  @HiveField(42)
+  /// Absolute path of the `.zip` this project was archived into, or null when
+  /// it isn't archived.
+  ///
+  /// [filePath] is deliberately *not* repointed here and keeps naming the
+  /// original location: it is what [fileExtension], DAW launching and the
+  /// containing-folder helpers all read, and leaving it alone is also what
+  /// makes "restore to where it came from" free.
+  final String? archivePath;
+
+  @HiveField(43)
+  final DateTime? archivedAt;
+
+  @HiveField(44)
+  /// Path of the project's own file *inside* the archive, relative to the zip
+  /// root. Restoring extracts to a chosen folder and joins this onto it, so
+  /// the project file is found exactly rather than guessed at by basename —
+  /// which matters when a folder-scoped archive holds several `.als` files.
+  final String? archiveEntryPath;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -340,7 +362,13 @@ class MusicProject {
     this.accentColor,
     this.iconKey,
     this.cardInitials,
+    this.archivePath,
+    this.archivedAt,
+    this.archiveEntryPath,
   });
+
+  /// Whether this project's files have been zipped out to an archive (#116).
+  bool get isArchived => archivePath != null;
 
   /// Number of version files this stack holds. 0 for a real project.
   int get versionCount => isVirtual ? memberProjectIds.length : 0;
@@ -378,7 +406,13 @@ class MusicProject {
   /// represent and may never resolve to a file. Without this, "Delete Missing"
   /// would offer to delete the one row holding a stack's metadata — deleting
   /// the shared notes, todos and accumulated work time for every version in it.
-  bool get isMissingFileCandidate => !isVirtual;
+  ///
+  /// False for archived projects too (#116): their files are in a zip on
+  /// purpose, and [filePath] still names the emptied original location. An
+  /// archived project is the opposite of a lost one, so offering to delete it
+  /// as "missing" would throw away the metadata the archive exists to keep
+  /// attached to the work.
+  bool get isMissingFileCandidate => !isVirtual && !isArchived;
 
   /// Whether [displayName] hides date stamps DAWs bake into file names (see
   /// `lib/utils/name_date_parser.dart`). Off by default; mirrored here from
@@ -642,6 +676,12 @@ class MusicProject {
     bool clearIconKey = false,
     String? cardInitials,
     bool clearCardInitials = false,
+    String? archivePath,
+    bool clearArchivePath = false,
+    DateTime? archivedAt,
+    bool clearArchivedAt = false,
+    String? archiveEntryPath,
+    bool clearArchiveEntryPath = false,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -690,6 +730,11 @@ class MusicProject {
       cardInitials: clearCardInitials
           ? null
           : (cardInitials ?? this.cardInitials),
+      archivePath: clearArchivePath ? null : (archivePath ?? this.archivePath),
+      archivedAt: clearArchivedAt ? null : (archivedAt ?? this.archivedAt),
+      archiveEntryPath: clearArchiveEntryPath
+          ? null
+          : (archiveEntryPath ?? this.archiveEntryPath),
     );
   }
 
@@ -779,13 +824,16 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       accentColor: fields[39] is int ? fields[39] as int : null,
       iconKey: fields[40] is String ? fields[40] as String : null,
       cardInitials: fields.containsKey(41) ? fields[41] as String? : null,
+      archivePath: fields.containsKey(42) ? fields[42] as String? : null,
+      archivedAt: fields.containsKey(43) ? fields[43] as DateTime? : null,
+      archiveEntryPath: fields.containsKey(44) ? fields[44] as String? : null,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(42) // 42 fields (0-41)
+      ..writeByte(45) // 45 fields (0-44)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -869,6 +917,12 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(40)
       ..write(obj.iconKey)
       ..writeByte(41)
-      ..write(obj.cardInitials);
+      ..write(obj.cardInitials)
+      ..writeByte(42)
+      ..write(obj.archivePath)
+      ..writeByte(43)
+      ..write(obj.archivedAt)
+      ..writeByte(44)
+      ..write(obj.archiveEntryPath);
   }
 }

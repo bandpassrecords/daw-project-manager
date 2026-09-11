@@ -35,6 +35,8 @@ import 'marker_navigation.dart';
 import 'session_actions.dart';
 import 'settings_page.dart' show SettingsPage, SettingsSection;
 import 'preview_share.dart';
+import 'dialogs/archive_project_dialog.dart';
+import 'dialogs/move_project_dialog.dart';
 import 'dialogs/preview_song_not_found_dialog.dart';
 import '../services/attachment_export_service.dart';
 import 'dialogs/project_appearance_dialog.dart';
@@ -1086,6 +1088,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                   sourceFileExists: sourceFileExists,
                   onOpenFolder: () => _openProjectFolder(updatedProject.filePath),
                   onRename: () => _renameProjectFile(updatedProject),
+                  onMove: () => showMoveProjectDialog(context, ref, updatedProject),
+                  onArchive: () => showArchiveProjectDialog(context, ref, updatedProject),
+                  onRestore: () => showRestoreProjectDialog(context, ref, updatedProject),
                   onOpenInDaw: () => launchProjectInDaw(context, ref, updatedProject),
                   onStats: () => Navigator.push(
                     context,
@@ -1106,7 +1111,46 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                       // Page-level, so it stays above whichever section is
                       // showing rather than belonging to one of them.
                       final banner = <Widget>[
-                    if (!sourceFileExists && !MobileUtils.isMobile())
+                    // An archived project's files are gone on purpose, so it
+                    // gets its own banner rather than the alarming "source
+                    // file not found" one.
+                    if (updatedProject.isArchived && !MobileUtils.isMobile())
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey.withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.4)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.archive_outlined, size: 16, color: Colors.blueGrey.shade300),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                updatedProject.archivedAt != null
+                                    ? l10n.archivedOnLabel(
+                                        dateFormat.format(updatedProject.archivedAt!))
+                                    : l10n.archivedLabel,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                updatedProject.archivePath ?? '',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(context).textTheme.bodySmall?.color,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else if (!sourceFileExists && !MobileUtils.isMobile())
                       Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -2090,6 +2134,9 @@ class _ProjectDetailActionBar extends ConsumerWidget {
   final bool sourceFileExists;
   final VoidCallback onOpenFolder;
   final VoidCallback onRename;
+  final VoidCallback onMove;
+  final VoidCallback onArchive;
+  final VoidCallback onRestore;
   final VoidCallback onOpenInDaw;
   final VoidCallback onStats;
   final VoidCallback onExport;
@@ -2101,6 +2148,9 @@ class _ProjectDetailActionBar extends ConsumerWidget {
     required this.sourceFileExists,
     required this.onOpenFolder,
     required this.onRename,
+    required this.onMove,
+    required this.onArchive,
+    required this.onRestore,
     required this.onOpenInDaw,
     required this.onStats,
     required this.onExport,
@@ -2120,11 +2170,15 @@ class _ProjectDetailActionBar extends ConsumerWidget {
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+      // Wrap, not Row: this bar holds seven buttons on desktop and a Row would
+      // hard-overflow on a narrow window rather than reflowing.
+      child: Wrap(
+        alignment: WrapAlignment.end,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8,
+        runSpacing: 6,
         children: [
           if (!isMobile) ...[
-            const SizedBox(width: 8),
             if (sessionMode) ...[
               OutlinedButton.icon(
                 onPressed: () => isSubscribed
@@ -2140,7 +2194,6 @@ class _ProjectDetailActionBar extends ConsumerWidget {
               // Once this project's session is active, still let the user
               // launch the DAW from here instead of needing the dashboard.
               if (isSubscribed) ...[
-                const SizedBox(width: 8),
                 Tooltip(
                   message: sourceFileExists ? '' : notFoundMsg,
                   child: OutlinedButton.icon(
@@ -2161,7 +2214,6 @@ class _ProjectDetailActionBar extends ConsumerWidget {
               ),
           ],
           if (!isMobile) ...[
-            const SizedBox(width: 8),
             Tooltip(
               message: sourceFileExists ? '' : notFoundMsg,
               child: OutlinedButton.icon(
@@ -2172,7 +2224,6 @@ class _ProjectDetailActionBar extends ConsumerWidget {
             ),
           ],
           if (!isMobile) ...[
-            const SizedBox(width: 8),
             Tooltip(
               message: sourceFileExists ? '' : notFoundMsg,
               child: OutlinedButton.icon(
@@ -2181,19 +2232,43 @@ class _ProjectDetailActionBar extends ConsumerWidget {
                 label: Text(l10n.renameFileButtonLabel),
               ),
             ),
-            const SizedBox(width: 8),
+            // A stack owns no file of its own, so there is nothing to move or
+            // archive — its versions are handled from their own pages.
+            if (!project.isVirtual) ...[
+              Tooltip(
+                message: sourceFileExists ? '' : notFoundMsg,
+                child: OutlinedButton.icon(
+                  onPressed: sourceFileExists ? onMove : null,
+                  icon: const Icon(Icons.drive_file_move_outline, size: 16),
+                  label: Text(l10n.moveProjectButtonLabel),
+                ),
+              ),
+              if (project.isArchived)
+                OutlinedButton.icon(
+                  onPressed: onRestore,
+                  icon: const Icon(Icons.unarchive_outlined, size: 16),
+                  label: Text(l10n.restoreProjectButtonLabel),
+                )
+              else
+                Tooltip(
+                  message: sourceFileExists ? '' : notFoundMsg,
+                  child: OutlinedButton.icon(
+                    onPressed: sourceFileExists ? onArchive : null,
+                    icon: const Icon(Icons.archive_outlined, size: 16),
+                    label: Text(l10n.archiveProjectButtonLabel),
+                  ),
+                ),
+            ],
             OutlinedButton.icon(
               onPressed: onStats,
               icon: const Icon(Icons.bar_chart, size: 16),
               label: Text(l10n.statsSingleProjectActivity),
             ),
-            const SizedBox(width: 8),
             OutlinedButton.icon(
               onPressed: onExport,
               icon: const Icon(Icons.description_outlined, size: 16),
               label: Text(l10n.exportProjectInfo),
             ),
-            const SizedBox(width: 8),
             OutlinedButton.icon(
               onPressed: onSaveAsTemplate,
               icon: const Icon(Icons.bookmark_add_outlined, size: 16),

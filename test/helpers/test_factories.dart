@@ -50,6 +50,9 @@ class TestFactories {
     int? accentColor,
     String? iconKey,
     String? cardInitials,
+    String? archivePath,
+    DateTime? archivedAt,
+    String? archiveEntryPath,
   }) {
     return MusicProject(
       id: id,
@@ -94,6 +97,9 @@ class TestFactories {
       accentColor: accentColor,
       iconKey: iconKey,
       cardInitials: cardInitials,
+      archivePath: archivePath,
+      archivedAt: archivedAt,
+      archiveEntryPath: archiveEntryPath,
     );
   }
 
