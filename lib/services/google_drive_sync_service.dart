@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/custom_theme.dart';
 import '../models/profile.dart';
 import '../models/music_project.dart';
+import '../models/project_attachment.dart';
 import '../models/project_marker.dart';
 import '../models/release.dart';
 import '../models/release_file.dart';
@@ -3643,6 +3644,7 @@ class GoogleDriveSyncService {
     return remote.notes != local.notes ||
         !_todosEqual(remote.todos, local.todos) ||
         !_listEquals(remote.parts, local.parts) ||
+        !_listEquals(remote.attachments, local.attachments) ||
         remote.bpm != local.bpm ||
         remote.musicalKey != local.musicalKey ||
         remote.status != local.status ||
@@ -4167,6 +4169,7 @@ class GoogleDriveSyncService {
                     notes: remoteProject.notes,
                     todos: remoteProject.todos,
                     parts: remoteProject.parts,
+                    attachments: remoteProject.attachments,
                     bpm: remoteProject.bpm,
                     musicalKey: remoteProject.musicalKey,
                     status: remoteProject.status,
@@ -5083,6 +5086,10 @@ class GoogleDriveSyncService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      // Attachments (#112) are user data — the reference track, the
+      // stem-delivery link, the contract. Only the path/URL travels, never the
+      // file itself, exactly as with `filePath` and `previewSongPath`.
+      'attachments': project.attachments.map((a) => a.toMap()).toList(),
     };
   }
 
@@ -5147,6 +5154,10 @@ class GoogleDriveSyncService {
       stackId: data['stackId'] as String?,
       markers: (data['markers'] as List?)
               ?.map((e) => ProjectMarker.fromMap(e as Map))
+              .toList() ??
+          const [],
+      attachments: (data['attachments'] as List?)
+              ?.map((e) => ProjectAttachment.fromMap(e as Map))
               .toList() ??
           const [],
     );
@@ -5429,6 +5440,7 @@ class GoogleDriveSyncService {
         notes: remoteProject.notes,
         todos: remoteProject.todos,
         parts: remoteProject.parts,
+        attachments: remoteProject.attachments,
         bpm: remoteProject.bpm,
         musicalKey: remoteProject.musicalKey,
         status: remoteProject.status,

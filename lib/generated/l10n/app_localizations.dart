@@ -8518,6 +8518,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No tasks match this due filter'**
   String get queueNoTasksForDueFilter;
+
+  /// No description provided for @projectAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get projectAttachments;
+
+  /// No description provided for @attachmentAddFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Add File'**
+  String get attachmentAddFile;
+
+  /// No description provided for @attachmentAddLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Link'**
+  String get attachmentAddLink;
+
+  /// No description provided for @attachmentsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing attached yet'**
+  String get attachmentsEmptyTitle;
+
+  /// No description provided for @attachmentsEmptyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the reference track, the stem-delivery link, the lyric sheet and the contract with the song, instead of in a chat thread.'**
+  String get attachmentsEmptyDescription;
+
+  /// No description provided for @attachmentEditDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Attachment'**
+  String get attachmentEditDialogTitle;
+
+  /// No description provided for @attachmentUrlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get attachmentUrlLabel;
+
+  /// No description provided for @attachmentPathLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'File path'**
+  String get attachmentPathLabel;
+
+  /// No description provided for @attachmentLabelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Label (optional)'**
+  String get attachmentLabelLabel;
+
+  /// No description provided for @attachmentNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get attachmentNoteLabel;
+
+  /// No description provided for @attachmentUrlInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid link, e.g. https://example.com'**
+  String get attachmentUrlInvalid;
+
+  /// No description provided for @attachmentPathRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a file path'**
+  String get attachmentPathRequired;
+
+  /// No description provided for @attachmentOpenTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get attachmentOpenTooltip;
+
+  /// No description provided for @attachmentRemoveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Attachment'**
+  String get attachmentRemoveTitle;
+
+  /// No description provided for @attachmentRemoveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{label}\" from this project? The file itself is not deleted.'**
+  String attachmentRemoveMessage(String label);
+
+  /// No description provided for @attachmentRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment removed'**
+  String get attachmentRemoved;
+
+  /// No description provided for @attachmentAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment added'**
+  String get attachmentAdded;
+
+  /// No description provided for @attachmentOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open that attachment'**
+  String get attachmentOpenFailed;
+
+  /// No description provided for @attachmentPickFileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a file to attach'**
+  String get attachmentPickFileTitle;
+
+  /// No description provided for @attachmentAlreadyAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'That is already attached to this project'**
+  String get attachmentAlreadyAdded;
+
+  /// No description provided for @attachmentExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get attachmentExport;
+
+  /// No description provided for @attachmentExportTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the attached files and links'**
+  String get attachmentExportTooltip;
+
+  /// No description provided for @attachmentExportSaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save attachments'**
+  String get attachmentExportSaveTitle;
+
+  /// No description provided for @attachmentExportNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to export'**
+  String get attachmentExportNothing;
+
+  /// No description provided for @attachmentExporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting attachments...'**
+  String get attachmentExporting;
+
+  /// No description provided for @attachmentExportSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to: {path}'**
+  String attachmentExportSaved(String path);
+
+  /// No description provided for @attachmentExportSkippedMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} missing file{plural} skipped'**
+  String attachmentExportSkippedMissing(int count, String plural);
+
+  /// No description provided for @attachmentExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export attachments: {error}'**
+  String attachmentExportFailed(String error);
 }
 
 class _AppLocalizationsDelegate

@@ -533,20 +533,32 @@
   "releasesDeleted": "{count}件のリリース{plural}を削除しました",
   "@releasesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@deleteSelectedReleasesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@releasesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "selectTracks": "トラックを選択",
@@ -802,7 +814,9 @@
   "removeTemplateFolderConfirm": "登録済みのテンプレートフォルダから「{path}」を削除しますか？すでにインポート済みのテンプレートは削除されません。",
   "@removeTemplateFolderConfirm": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "noTemplateFoldersRegistered": "登録されたテンプレートフォルダがありません",
@@ -810,35 +824,51 @@
   "lastRefreshed": "最終更新: {date}",
   "@lastRefreshed": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "templatesRefreshedSummary": "{count}件の新しいテンプレートを追加しました",
   "@templatesRefreshedSummary": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "templatesSelected": "{count}件のテンプレート{plural}を選択しました",
   "@templatesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "deleteSelectedTemplates": "選択項目を削除",
   "deleteSelectedTemplatesConfirm": "{count}件のテンプレート{plural}を削除してもよろしいですか?",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templatesDeleted": "{count}件のテンプレート{plural}を削除しました",
   "@templatesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templateDetailTitle": "Template",
@@ -855,7 +885,9 @@
   "projectsFromThisTemplate": "このテンプレートから作成されたプロジェクト（{count}件）",
   "@projectsFromThisTemplate": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noProjectsFromThisTemplate": "このテンプレートから作成されたプロジェクトはまだありません",
@@ -1983,15 +2015,21 @@
   "errorHandlingDroppedFiles": "ドロップされたファイルの処理エラー: {error}",
   "@errorHandlingDroppedFiles": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "resetOnboardingConfirm": "セットアップウィザードが再起動されます。続行しますか？",
   "couldNotLaunchDaw": "{daw} を起動できませんでした: {error}",
   "@couldNotLaunchDaw": {
     "placeholders": {
-      "daw": { "type": "String" },
-      "error": { "type": "String" }
+      "daw": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
     }
   },
   "couldNotOpenLink": "リンクを開けませんでした。",
@@ -2294,7 +2332,9 @@
   "autoBackupNextBackup": "次回バックアップ：{time}",
   "@autoBackupNextBackup": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "autoBackupNextSoon": "まもなく",
@@ -2302,7 +2342,9 @@
   "autoBackupNextInMinutes": "あと{count}分",
   "@autoBackupNextInMinutes": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneHour": "あと1時間",
@@ -2310,7 +2352,9 @@
   "autoBackupNextInHours": "あと{count}時間",
   "@autoBackupNextInHours": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneDay": "あと1日",
@@ -2318,7 +2362,9 @@
   "autoBackupNextInDays": "あと{count}日",
   "@autoBackupNextInDays": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerTitle": "ミュージックプレイヤー",
@@ -2346,7 +2392,9 @@
   "playerCompletedTasks": "{count}件完了",
   "@playerCompletedTasks": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerPreviousTrack": "前のトラック",
@@ -2365,23 +2413,43 @@
   "@volumeUnmute": {},
   "totalWorkTime": "総作業時間: {time}",
   "@totalWorkTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionTime": "セッション: {time}",
   "@sessionTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "headerAgeOld": "作成から{age}",
   "@headerAgeOld": {
-    "placeholders": { "age": { "type": "String" } }
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
   },
   "headerEdited": "{when}に編集",
   "@headerEdited": {
-    "placeholders": { "when": { "type": "String" } }
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
   },
   "headerWorked": "作業時間 {time}",
   "@headerWorked": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionHistory": "セッション履歴",
   "@sessionHistory": {},
@@ -2406,7 +2474,9 @@
   "sessionCount": "{count, plural, other{{count}セッション}}",
   "@sessionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "sessionByPhase": "フェーズ別作業",
@@ -2418,7 +2488,13 @@
   "tabPositionLeft": "左",
   "@tabPositionLeft": {},
   "updateAvailableMessage": "バージョン {version} が利用可能です",
-  "@updateAvailableMessage": { "placeholders": { "version": { "type": "String" } } },
+  "@updateAvailableMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "dismiss": "閉じる",
   "@dismiss": {},
   "checkForUpdates": "アップデートを確認",
@@ -2430,7 +2506,9 @@
   "updateAvailable": "アップデートあり: v{version}",
   "@updateAvailable": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "upToDate": "アプリは最新です",
@@ -2440,13 +2518,17 @@
   "updateAvailableVersion": "バージョン {version} が利用可能です。",
   "@updateAvailableVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "updateCurrentVersion": "現在 v{version} を使用中です。",
   "@updateCurrentVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "viewUpdateDetails": "詳細を見る",
@@ -2472,7 +2554,9 @@
   "appImageUpdateDownloadingProgress": "更新をダウンロード中… {percent}%",
   "@appImageUpdateDownloadingProgress": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "appImageUpdateVerifying": "検証してインストールしています…",
@@ -2482,7 +2566,9 @@
   "appImageUpdateReadyMessage": "v{version} に更新しました。完了するには今すぐ再起動してください。",
   "@appImageUpdateReadyMessage": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "appImageUpdateRestartNow": "今すぐ再起動",
@@ -2571,7 +2657,11 @@
   "@minutes": {},
   "workTimerNotifBody": "{time}間作業しています",
   "@workTimerNotifBody": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "general": "一般",
   "@general": {},
@@ -2600,12 +2690,24 @@
   "switchSessionBody": "現在のセッションを終了して新しいセッションを開始しますか？",
   "@switchSessionBody": {},
   "switchSessionCurrent": "現在: {project}",
-  "@switchSessionCurrent": {"placeholders": {"project": {"type": "String"}}},
+  "@switchSessionCurrent": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
   "switchSessionNew": "新規: {project}",
-  "@switchSessionNew": {"placeholders": {"project": {"type": "String"}}},
+  "@switchSessionNew": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
   "sessionDuration": "セッション時間",
   "@sessionDuration": {},
-    "scanModeLabel": "スキャンモード:",
+  "scanModeLabel": "スキャンモード:",
   "@scanModeLabel": {},
   "scanModeSectionTitle": "スキャンモード",
   "@scanModeSectionTitle": {},
@@ -2740,8 +2842,12 @@
   "pendingFolderSessionBody": "「{projectName}」で{duration}作業しました。",
   "@pendingFolderSessionBody": {
     "placeholders": {
-      "projectName": { "type": "String" },
-      "duration": { "type": "String" }
+      "projectName": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "pendingFolderSessionContinue": "セッションを続ける",
@@ -2753,8 +2859,12 @@
   "activeSessionSwitchBody": "「{current}」のセッションが実行中です。「{next}」に切り替えて現在のセッションを保存しますか？",
   "@activeSessionSwitchBody": {
     "placeholders": {
-      "current": { "type": "String" },
-      "next": { "type": "String" }
+      "current": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
     }
   },
   "activeSessionSwitch": "切り替える",
@@ -2768,7 +2878,9 @@
   "pendingProjectDeleteBody": "「{folderName}」とその内容を削除しますか？",
   "@pendingProjectDeleteBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectDismiss": "このフォルダの追跡を停止",
@@ -2784,7 +2896,9 @@
   "pendingProjectDeleteNotEmptyBody": "「{folderName}」にはファイルが含まれています。すべて完全に削除しますか？",
   "@pendingProjectDeleteNotEmptyBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectRefresh": "プロジェクトファイルを確認",
@@ -2823,41 +2937,75 @@
   "camelotGuideTransitionsTitle": "互換性のある転換",
   "camelotGuideTransitionsBody": "8A → 8B  （同じ番号、リングを切り替え）\n  平行長調/短調 — ほぼシームレス。\n\n8A → 7A または 9A  （±1、同じリング）\n  隣接キー — スムーズで細腐な変化。\n\n8A → 1A または 3A  （±7、同じリング）\n  エネルギーブーストまたはドロップ — より劧的な変化。",
   "playerMixSuggestions": "ミックス候補",
-  "@playerMixSuggestions": {}
-,
+  "@playerMixSuggestions": {},
   "nowPlaying": "再生中",
   "noPreviewSongsAvailable": "利用可能なプレビュー曲がありません",
   "upNext": "次の曲",
-  "@upNext": { "description": "Queue panel title - tracks coming up next" },
+  "@upNext": {
+    "description": "Queue panel title - tracks coming up next"
+  },
   "playbackModeNormal": "通常",
-  "@playbackModeNormal": { "description": "Playback mode: play queue once in order" },
+  "@playbackModeNormal": {
+    "description": "Playback mode: play queue once in order"
+  },
   "playbackModeRepeat": "リピート",
-  "@playbackModeRepeat": { "description": "Playback mode: loop the entire queue" },
+  "@playbackModeRepeat": {
+    "description": "Playback mode: loop the entire queue"
+  },
   "playbackModeShuffle": "シャッフル",
-  "@playbackModeShuffle": { "description": "Playback mode: random order" },
+  "@playbackModeShuffle": {
+    "description": "Playback mode: random order"
+  },
   "hideDatesInNames": "プロジェクト名の日付を非表示",
-  "@hideDatesInNames": { "description": "Appearance setting: strip date stamps from displayed project names" },
+  "@hideDatesInNames": {
+    "description": "Appearance setting: strip date stamps from displayed project names"
+  },
   "hideDatesInNamesDescription": "一部のDAWはプロジェクトファイル名の先頭に作成日を付けます（例:「2026-08-02 - My Track」）。これを非表示にしてタイトルだけを表示します。ファイル自体の名前は変更されません。",
-  "@hideDatesInNamesDescription": { "description": "Explanation of the hide-dates-in-names appearance setting" },
+  "@hideDatesInNamesDescription": {
+    "description": "Explanation of the hide-dates-in-names appearance setting"
+  },
   "findPreviewAutomatically": "自動的に探す",
-  "@findPreviewAutomatically": { "description": "Button in the missing preview song dialog: clear the dead reference and re-run mixdown detection" },
+  "@findPreviewAutomatically": {
+    "description": "Button in the missing preview song dialog: clear the dead reference and re-run mixdown detection"
+  },
   "noPreviewSongFoundAutomatically": "このプロジェクトのミックスダウンフォルダにプレビュー曲が見つかりませんでした。",
-  "@noPreviewSongFoundAutomatically": { "description": "Snackbar shown when automatic preview detection finds nothing" },
+  "@noPreviewSongFoundAutomatically": {
+    "description": "Snackbar shown when automatic preview detection finds nothing"
+  },
   "selectProjects": "選択",
-  "@selectProjects": { "description": "Mobile long-press action sheet entry: enter multi-select mode" },
+  "@selectProjects": {
+    "description": "Mobile long-press action sheet entry: enter multi-select mode"
+  },
   "sharePreviewSongText": "プレビュー曲: {name}",
   "@sharePreviewSongText": {
     "description": "Message body accompanying a shared preview song file",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "sharePreviewSongZipText": "プレビュー曲 (ZIP): {name}",
   "@sharePreviewSongZipText": {
     "description": "Message body accompanying a shared preview song zipped for transport",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "songParts": "楽器とパート",
   "partsProgress": "{total} 件中 {done} 件が最終テイク",
-  "@partsProgress": {"placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
+  "@partsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsYet": "パートはまだ登録されていません",
   "noPartsYetHint": "曲に必要な楽器、担当者、各テイクの進み具合を記録しましょう。",
   "addPart": "パートを追加",
@@ -2886,7 +3034,13 @@
   "editPartTemplate": "パートテンプレートを編集",
   "deletePartTemplate": "パートテンプレートを削除",
   "deletePartTemplateConfirm": "パートテンプレート「{name}」を削除しますか？",
-  "@deletePartTemplateConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "@deletePartTemplateConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "partTemplateCreated": "パートテンプレートを作成しました",
   "partTemplateUpdated": "パートテンプレートを更新しました",
   "partTemplateDeleted": "パートテンプレートを削除しました",
@@ -2896,16 +3050,37 @@
   "partTemplateItemsRequired": "パートを1つ以上追加してください",
   "partTemplateNameAndItemsRequired": "名前とパートが1つ以上必要です",
   "partTemplateItemCount": "{count} パート",
-  "@partTemplateItemCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partTemplateItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partTemplateImported": "パートテンプレート「{name}」を読み込みました（{count} パート）",
-  "@partTemplateImported": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
+  "@partTemplateImported": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "errorLoadingPartTemplates": "パートテンプレートの読み込みに失敗しました",
   "exportPartsCsv": "パートをCSVで書き出す",
   "exportAllPartsCsv": "すべての曲のパートをCSVで書き出す",
   "exportAllPartsCsvSubtitle": "全プロジェクトのパートを1行ずつ表計算形式で書き出し、進捗を共有できます",
   "noPartsToExport": "書き出すパートがありません",
   "partsCsvExported": "{count} 件のパートを書き出しました",
-  "@partsCsvExported": {"placeholders": {"count": {"type": "int"}}},
+  "@partsCsvExported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "projectExportPartsLabel": "パート:",
   "csvHeaderProject": "プロジェクト",
   "csvHeaderPart": "パート",
@@ -2918,80 +3093,148 @@
   "importPartsFromSpreadsheet": "スプレッドシートからパートを読み込む",
   "partsImportPickerTitle": "CSVまたはExcelファイルを選択",
   "partsImported": "{added} 件を追加、{updated} 件を更新しました",
-  "@partsImported": {"placeholders": {"added": {"type": "int"}, "updated": {"type": "int"}}},
+  "@partsImported": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "updated": {
+        "type": "int"
+      }
+    }
+  },
   "partsImportNothingFound": "そのファイルにパートが見つかりませんでした",
   "partsImportFailed": "そのスプレッドシートを読み込めませんでした: {error}",
-  "@partsImportFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@partsImportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "partsMoreActions": "パートのその他の操作",
   "partsPageTitle": "{name} — パート",
-  "@partsPageTitle": {"placeholders": {"name": {"type": "String"}}},
+  "@partsPageTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "manageParts": "パートを管理",
   "partsMoreCount": "他 {count} 件",
-  "@partsMoreCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partsMoreCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "searchParts": "パートを検索",
   "allStatuses": "すべての状態",
   "allPerformers": "すべての担当者",
   "partsSelectedCount": "{count} 件を選択中",
-  "@partsSelectedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partsSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "setPartStatus": "状態を設定",
   "assignPartPerformer": "担当者を割り当て",
   "deleteSelectedParts": "選択を削除",
   "deleteSelectedPartsConfirm": "この曲から {count} 件のパートを削除しますか？",
-  "@deleteSelectedPartsConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteSelectedPartsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partsDeleted": "{count} 件のパートを削除しました",
-  "@partsDeleted": {"placeholders": {"count": {"type": "int"}}},
+  "@partsDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsMatchFilters": "この条件に合うパートはありません",
   "reorderNeedsUnfilteredList": "検索・絞り込み・並べ替えを解除するとパートをドラッグで並べ替えられます",
-"projectMarkers": "マーカー",
-"@projectMarkers": {
-      "description": "Section heading for the timeline markers and regions read out of a DAW project file"
+  "projectMarkers": "マーカー",
+  "@projectMarkers": {
+    "description": "Section heading for the timeline markers and regions read out of a DAW project file"
   },
-"projectMarkerUnnamed": "マーカー {index}",
-"@projectMarkerUnnamed": {
-      "description": "Fallback label for a marker the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectMarkerUnnamed": "マーカー {index}",
+  "@projectMarkerUnnamed": {
+    "description": "Fallback label for a marker the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectRegionUnnamed": "リージョン {index}",
-"@projectRegionUnnamed": {
-      "description": "Fallback label for a region the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectRegionUnnamed": "リージョン {index}",
+  "@projectRegionUnnamed": {
+    "description": "Fallback label for a region the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectMarkerJumpTooltip": "プレビュー曲のこの位置にジャンプ",
-"@projectMarkerJumpTooltip": {
-      "description": "Tooltip on a marker row that will seek the preview player"
+  "projectMarkerJumpTooltip": "プレビュー曲のこの位置にジャンプ",
+  "@projectMarkerJumpTooltip": {
+    "description": "Tooltip on a marker row that will seek the preview player"
   },
-"projectMarkerNoPreviewSong": "マーカーにジャンプするにはプレビュー曲を追加してください",
-"@projectMarkerNoPreviewSong": {
-      "description": "Tooltip on marker rows when the project has no preview song to seek in"
+  "projectMarkerNoPreviewSong": "マーカーにジャンプするにはプレビュー曲を追加してください",
+  "@projectMarkerNoPreviewSong": {
+    "description": "Tooltip on marker rows when the project has no preview song to seek in"
   },
   "projectDetailLayout": "プロジェクト詳細のレイアウト",
-  "@projectDetailLayout": {"description": "Appearance setting: how the project detail page is arranged"},
+  "@projectDetailLayout": {
+    "description": "Appearance setting: how the project detail page is arranged"
+  },
   "projectDetailLayoutSettingDescription": "プロジェクト詳細ページの構成方法。",
-  "@projectDetailLayoutSettingDescription": {"description": "Subtitle under the Project Detail Layout setting"},
+  "@projectDetailLayoutSettingDescription": {
+    "description": "Subtitle under the Project Detail Layout setting"
+  },
   "projectDetailLayoutClassic": "クラシック",
-  "@projectDetailLayoutClassic": {"description": "Layout option: everything in one scroll"},
+  "@projectDetailLayoutClassic": {
+    "description": "Layout option: everything in one scroll"
+  },
   "projectDetailLayoutClassicDescription": "すべてを1つのスクロールで表示。",
-  "@projectDetailLayoutClassicDescription": {"description": "Description of the classic project detail layout"},
+  "@projectDetailLayoutClassicDescription": {
+    "description": "Description of the classic project detail layout"
+  },
   "projectDetailLayoutSectioned": "セクション",
-  "@projectDetailLayoutSectioned": {"description": "Layout option: a nav rail picks one section at a time"},
+  "@projectDetailLayoutSectioned": {
+    "description": "Layout option: a nav rail picks one section at a time"
+  },
   "projectDetailLayoutSectionedDescription": "左のバーでセクションを1つずつ選択。",
-  "@projectDetailLayoutSectionedDescription": {"description": "Description of the sectioned project detail layout"},
-
+  "@projectDetailLayoutSectionedDescription": {
+    "description": "Description of the sectioned project detail layout"
+  },
   "stackAsVersions": "バージョンとしてまとめる",
   "stackNeedsTwoVersions": "1つのメインプロジェクトのバージョンとしてまとめるには、プロジェクトを2つ以上選択してください。",
   "stackCreatedMessage": "{count} 個のバージョンを1つのメインプロジェクトにまとめました。",
-  "@stackCreatedMessage": {"placeholders": {"count": {"type": "int"}}},
+  "@stackCreatedMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackVersionsTitle": "バージョン",
   "stackVersionCount": "{count} バージョン",
-  "@stackVersionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@stackVersionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersion": "バージョンを追加",
   "stackAddVersionTitle": "バージョンを追加",
   "stackAddVersionEmpty": "追加できる未スタックのプロジェクトがありません。",
@@ -3010,13 +3253,25 @@
   "scanModeVersionStack": "バージョンスタック",
   "scanModeVersionStackDescription": "フォルダー内のすべてのプロジェクトファイルが1つのメインプロジェクトになり、メタデータ・タスク・作業時間を共有します。新しく見つかったファイルは自動的に追加されます。",
   "stackTooltipStacked": "{count} 個のバージョンを1つのメインプロジェクトにまとめています",
-  "@stackTooltipStacked": {"placeholders": {"count": {"type": "int"}}},
+  "@stackTooltipStacked": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataSourceTitle": "どのプロジェクトをメインプロジェクトにしますか？",
   "stackMetadataSourceBody": "複数のプロジェクトにすでに独自の詳細があります。選んだものがメインプロジェクトになり、その名前・BPM・キー・ノート・タスク・期限がスタックで使われます。統合も消失もありません。他のプロジェクトは自分の詳細を保持し、スタックを解除すれば元に戻ります。",
   "stackMetadataSourceOldestHint": "最も古い — 推奨",
   "stackMetadataNoneLabel": "詳細なし",
   "stackMetadataTodosLabel": "{count, plural, other{{count} 件のタスク}}",
-  "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataTodosLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataNotesLabel": "ノート",
   "stackNotStackedYet": "まだスタックされていません",
   "stackStartFromHere": "他のプロジェクトファイルを追加すると、1つのメインプロジェクトのバージョンになり、メタデータ・タスク・作業時間を共有します。",
@@ -3025,31 +3280,75 @@
   "stackStartedMessage": "1つのメインプロジェクトにまとめました。",
   "stackDefaultVersionTooltip": "DAW を起動すると、このバージョンがデフォルトで開きます。",
   "stackAddVersionsConfirm": "{count} 件を追加",
-  "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@stackAddVersionsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersionMultiTitle": "バージョンを追加",
   "stackSelectAll": "すべて選択",
   "stackClearSelection": "クリア",
   "stackMetadataPartsLabel": "{count, plural, other{{count} 件のパート}}",
-  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataPartsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataDeadlineLabel": "期限",
   "stackMetadataRenamedLabel": "カスタム名",
   "stackMetadataWorkHours": "{hours} 時間記録",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "@stackMetadataWorkHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
   "stackUnstackReleaseTitle": "どのバージョンをリリースに残しますか？",
   "stackUnstackReleaseBody": "このプロジェクトは {releases} の収録曲です。スタックを解除すると、まとめられたエントリーがなくなるため、いずれかのバージョンがその位置を引き継ぐ必要があります。リリースが参照するバージョンを選んでください。",
-  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "@stackUnstackReleaseBody": {
+    "placeholders": {
+      "releases": {
+        "type": "String"
+      }
+    }
+  },
   "stackAutoConfirmTitle": "これらのバージョンをまとめますか？",
   "stackAutoConfirmBody": "バージョンスタックは {folders} 個のフォルダーにある {projects} 件のプロジェクトをまとめます。各フォルダーが1つのメインプロジェクトになり、メタデータ・タスク・作業時間を共有します。削除は行われず、後からスタックを解除できます。",
-  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "@stackAutoConfirmBody": {
+    "placeholders": {
+      "projects": {
+        "type": "int"
+      },
+      "folders": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoConfirmApply": "まとめる",
   "stackAutoFolderEntry": "{folder} — {count} バージョン",
-  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "@stackAutoFolderEntry": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoJoinsExisting": "既存のメインプロジェクトに追加",
   "untitledTheme": "名称未設定のテーマ",
   "switchToTheme": "{themeName} に切り替え",
   "@switchToTheme": {
     "placeholders": {
-      "themeName": { "type": "String" }
+      "themeName": {
+        "type": "String"
+      }
     }
   },
   "newTheme": "新しいテーマ",
@@ -3059,7 +3358,9 @@
   "deleteThemeMessage": "「{name}」を削除します。元に戻せません。",
   "@deleteThemeMessage": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeNameLabel": "テーマ名",
@@ -3074,7 +3375,9 @@
   "themeLowContrastWarning": "コントラストが低いです（{ratio}:1）。文字が読みにくい可能性があります。",
   "@themeLowContrastWarning": {
     "placeholders": {
-      "ratio": { "type": "String" }
+      "ratio": {
+        "type": "String"
+      }
     }
   },
   "exportTheme": "テーマを書き出す",
@@ -3082,13 +3385,17 @@
   "themeExported": "テーマを {path} に書き出しました",
   "@themeExported": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "themeImported": "「{name}」を読み込みました",
   "@themeImported": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeImportFailed": "このファイルは有効なテーマではありません。",
@@ -3098,10 +3405,11 @@
   "themeCopyName": "{name} のコピー",
   "@themeCopyName": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-
   "suggestedColorsLabel": "おすすめの色",
   "todoDueDate": "期限",
   "todoSetDueDate": "期限を設定",
@@ -3117,5 +3425,64 @@
   "queueDueFilterToday": "今日が期限",
   "queueDueFilterThisWeek": "今週が期限",
   "queueDueFilterNoDate": "期限なし",
-  "queueNoTasksForDueFilter": "この期限フィルターに一致するタスクはありません"
+  "queueNoTasksForDueFilter": "この期限フィルターに一致するタスクはありません",
+  "projectAttachments": "添付",
+  "attachmentAddFile": "ファイルを追加",
+  "attachmentAddLink": "リンクを追加",
+  "attachmentsEmptyTitle": "まだ何も添付されていません",
+  "attachmentsEmptyDescription": "リファレンス曲、ステム納品リンク、歌詞、契約書をチャットではなく曲と一緒に保管できます。",
+  "attachmentEditDialogTitle": "添付を編集",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "ファイルパス",
+  "attachmentLabelLabel": "ラベル（任意）",
+  "attachmentNoteLabel": "メモ（任意）",
+  "attachmentUrlInvalid": "有効なリンクを入力してください（例: https://example.com）",
+  "attachmentPathRequired": "ファイルパスを入力してください",
+  "attachmentOpenTooltip": "開く",
+  "attachmentRemoveTitle": "添付を削除",
+  "attachmentRemoveMessage": "このプロジェクトから「{label}」を削除しますか？ファイル自体は削除されません。",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentRemoved": "添付を削除しました",
+  "attachmentAdded": "添付を追加しました",
+  "attachmentOpenFailed": "この添付を開けませんでした",
+  "attachmentPickFileTitle": "添付するファイルを選択",
+  "attachmentAlreadyAdded": "すでにこのプロジェクトに添付されています",
+  "attachmentExport": "書き出し",
+  "attachmentExportTooltip": "添付ファイルとリンクを保存",
+  "attachmentExportSaveTitle": "添付を保存",
+  "attachmentExportNothing": "書き出すものがありません",
+  "attachmentExporting": "添付を書き出しています...",
+  "attachmentExportSaved": "保存先: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "見つからないファイル {count} 件をスキップしました{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "添付の書き出しに失敗しました: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

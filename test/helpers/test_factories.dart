@@ -1,4 +1,5 @@
 import 'package:daw_project_manager/models/music_project.dart';
+import 'package:daw_project_manager/models/project_attachment.dart';
 import 'package:daw_project_manager/models/project_marker.dart';
 import 'package:daw_project_manager/models/project_part.dart';
 import 'package:daw_project_manager/models/project_template.dart';
@@ -45,6 +46,7 @@ class TestFactories {
     String? defaultLaunchMemberId,
     String? stackId,
     List<ProjectMarker>? markers,
+    List<ProjectAttachment>? attachments,
   }) {
     return MusicProject(
       id: id,
@@ -85,6 +87,7 @@ class TestFactories {
       defaultLaunchMemberId: defaultLaunchMemberId,
       stackId: stackId,
       markers: markers ?? const [],
+      attachments: attachments ?? const [],
     );
   }
 
@@ -117,6 +120,24 @@ class TestFactories {
       performer: performer,
       status: status,
       notes: notes,
+    );
+  }
+
+  static ProjectAttachment makeAttachment({
+    String id = 'attachment-1',
+    ProjectAttachmentKind kind = ProjectAttachmentKind.file,
+    String target = '/Users/artist/Refs/reference.wav',
+    String label = 'Reference track',
+    DateTime? addedAt,
+    String? note,
+  }) {
+    return ProjectAttachment(
+      id: id,
+      kind: kind,
+      target: target,
+      label: label,
+      addedAt: addedAt ?? DateTime(2025, 2, 3, 14, 5),
+      note: note,
     );
   }
 

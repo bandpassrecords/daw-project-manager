@@ -11,7 +11,9 @@
   "cancel": "Cancel",
   "confirm": "Confirm",
   "undo": "Undo",
-  "@undo": { "description": "Snackbar action to reverse the action just performed (e.g. hiding projects)" },
+  "@undo": {
+    "description": "Snackbar action to reverse the action just performed (e.g. hiding projects)"
+  },
   "customInterval": "Custom",
   "close": "Close",
   "launch": "Launch",
@@ -41,20 +43,16 @@
     "placeholders": {
       "projectName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToLaunchProject": "Failed to launch {projectName}",
   "@failedToLaunchProject": {
     "placeholders": {
       "projectName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "clearLibrary": "Clear Library",
   "clearLibraryMessage": "This will remove all saved projects and source folders. Continue?",
@@ -72,10 +70,8 @@
     "placeholders": {
       "date": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "excludedFoldersSectionTitle": "Excluded folders",
   "excludedFoldersSectionSubtitle": "These folders will be skipped during scanning, even if they are inside a project folder.",
@@ -89,10 +85,8 @@
     "placeholders": {
       "path": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "removeExcludedFolderMessageNoPath": "This folder will no longer be excluded.",
   "desktopOnlyPathsSettings": "This page is available only on the desktop app.",
@@ -104,10 +98,8 @@
     "placeholders": {
       "path": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "projects": "Projects",
   "hidden": "hidden",
@@ -142,10 +134,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "saved": "Saved",
   "failedToLaunchDaw": "Failed to launch DAW",
@@ -159,10 +149,8 @@
     "placeholders": {
       "profileName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "editProfile": "Edit Profile",
   "changePhoto": "Change Photo",
@@ -173,10 +161,8 @@
     "placeholders": {
       "trackName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "saveName": "Save Name",
   "profilePhotoUpdated": "Profile photo updated.",
@@ -186,30 +172,24 @@
     "placeholders": {
       "newName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "profileCreated": "Profile \"{name}\" created successfully",
   "@profileCreated": {
     "placeholders": {
       "name": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "profileDeleted": "Profile \"{name}\" deleted",
   "@profileDeleted": {
     "placeholders": {
       "name": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "pleaseEnterProfileName": "Please enter a profile name",
   "failedToCreateProfile": "Failed to create profile: {error}",
@@ -217,10 +197,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "noProfilesFound": "No profiles found. Create one above.",
   "clearLibraryTooltip": "Clear Library (projects & project folders)",
@@ -229,10 +207,8 @@
     "placeholders": {
       "date": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "name": "Name",
   "status": "Status",
@@ -279,30 +255,24 @@
     "placeholders": {
       "path": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "rootsCount": "Project Folders: {count}",
   "@rootsCount": {
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "projectsCount": "Projects: {count}",
   "@projectsCount": {
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "hiddenOnly": "(hidden only)",
   "hiddenCount": "({count} hidden)",
@@ -310,10 +280,8 @@
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "projectsHidden": "{count} project{plural} hidden.",
   "@projectsHidden": {
@@ -323,10 +291,8 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "projectsUnhidden": "{count} project{plural} unhidden.",
   "@projectsUnhidden": {
@@ -336,30 +302,24 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToHideProjects": "Failed to hide projects: {error}",
   "@failedToHideProjects": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToUnhideProjects": "Failed to unhide projects: {error}",
   "@failedToUnhideProjects": {
     "placeholders": {
       "error": {
         "type": "String"
-
-}
-
-}
+      }
+    }
   },
   "deleteMissingProjects": "Delete Missing",
   "deleteMissingProjectsTitle": "Delete missing projects?",
@@ -368,14 +328,11 @@
     "placeholders": {
       "count": {
         "type": "int"
-
-},
+      },
       "plural": {
         "type": "String"
-
-}
-
-}
+      }
+    }
   },
   "deleteMissingProjectsConfirmButton": "Delete Permanently",
   "missingProjectsDeleted": "{count} missing project{plural} deleted.",
@@ -383,14 +340,11 @@
     "placeholders": {
       "count": {
         "type": "int"
-
-},
+      },
       "plural": {
         "type": "String"
-
-}
-
-}
+      }
+    }
   },
   "deleteMissingProjectsAlsoDeleteReleaseTracked": "Also delete {count} project{plural} that are part of a release (removes them from that release too)",
   "@deleteMissingProjectsAlsoDeleteReleaseTracked": {
@@ -409,40 +363,32 @@
     "placeholders": {
       "projectName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "releaseCreated": "Release \"{title}\" created successfully.",
   "@releaseCreated": {
     "placeholders": {
       "title": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToCreateRelease": "Failed to create release: {error}",
   "@failedToCreateRelease": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "errorAddingFolder": "Error adding folder: {error}",
   "@errorAddingFolder": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "folderAlreadyAdded": "This folder has already been added.",
   "noProjectsFoundInRoots": "No projects found in selected project folders.",
@@ -461,50 +407,40 @@
       },
       "failures": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "extractionFailures": "{count} failed.",
   "@extractionFailures": {
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToWriteBpmFile": "Failed to write BPM file: {error}",
   "@failedToWriteBpmFile": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToWriteKeyFile": "Failed to write key file: {error}",
   "@failedToWriteKeyFile": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToLaunch": "Failed to launch: {error}",
   "@failedToLaunch": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "libraryCleared": "Library cleared.",
   "scanType": "{type} scan",
@@ -512,10 +448,8 @@
     "placeholders": {
       "type": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "scanComplete": "{type} complete: {count} project{plural} added/updated.",
   "@scanComplete": {
@@ -528,10 +462,8 @@
       },
       "plural": {
         "type": "String"
-
-}
-
-}
+      }
+    }
   },
   "scanCancelled": "Scan cancelled.",
   "scanFailuresSnackbar": "{count} project{plural} failed to load.",
@@ -559,30 +491,24 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "openingFolder": "Opening folder for {projectName}…",
   "@openingFolder": {
     "placeholders": {
       "projectName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToOpenFolder": "Failed to open folder: {error}",
   "@failedToOpenFolder": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "osNotSupportedForOpeningFolder": "OS not supported for opening folder.",
   "noProjectsAvailable": "No projects available. Please add projects first.",
@@ -593,20 +519,16 @@
     "placeholders": {
       "title": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "releaseDeleted": "Release \"{title}\" deleted.",
   "@releaseDeleted": {
     "placeholders": {
       "title": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "releasesSelected": "{count} release{plural} selected",
   "deleteSelectedReleases": "Delete Selected",
@@ -614,20 +536,32 @@
   "releasesDeleted": "{count} release{plural} deleted",
   "@releasesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@deleteSelectedReleasesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@releasesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "selectTracks": "Select Tracks",
@@ -639,30 +573,24 @@
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "errorLoadingReleases": "Error loading releases: {error}",
   "@errorLoadingReleases": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "tracksCount": "Tracks ({count})",
   "@tracksCount": {
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "addTracks": "Add Tracks",
   "allProjectsAlreadyInRelease": "All projects are already in this release.",
@@ -674,20 +602,16 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "releaseFilesCount": "Release Files ({count})",
   "@releaseFilesCount": {
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "addFiles": "Add Files",
   "addedFilesToRelease": "Added {count} file{plural} to release.",
@@ -698,20 +622,16 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToAddFiles": "Failed to add files: {error}",
   "@failedToAddFiles": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "noFilesToDownload": "No files to download.",
   "zipFileSaved": "ZIP file saved to: {path}",
@@ -719,10 +639,8 @@
     "placeholders": {
       "path": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "creatingZipFile": "Creating ZIP file...",
   "failedToCreateZip": "Failed to create ZIP: {error}",
@@ -730,10 +648,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "selectedFileDoesNotExist": "Selected file does not exist.",
   "imageSavedSuccessfully": "Image saved successfully!",
@@ -742,20 +658,16 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "errorLoadingRelease": "Error loading release: {error}",
   "@errorLoadingRelease": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "errorLoadingProjects": "Error loading projects",
   "@errorLoadingProjects": {
@@ -768,10 +680,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "releaseDateSaved": "Release date saved.",
   "releaseDateCleared": "Release date cleared.",
@@ -785,10 +695,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "renameFile": "Rename File",
   "selectTracksToAdd": "Select Tracks to Add",
@@ -798,10 +706,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "deleteFile": "Delete File",
   "deleteFileMessage": "Are you sure you want to delete \"{fileName}\"?",
@@ -809,40 +715,32 @@
     "placeholders": {
       "fileName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "fileDeleted": "File \"{fileName}\" deleted.",
   "@fileDeleted": {
     "placeholders": {
       "fileName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToDeleteFile": "Failed to delete file: {error}",
   "@failedToDeleteFile": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "couldNotOpenFolder": "Could not open folder: {error}",
   "@couldNotOpenFolder": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "artwork": "Artwork",
   "title": "Title",
@@ -853,10 +751,8 @@
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "searchTracks": "Search tracks",
   "searchTracksHint": "Search by name or DAW type",
@@ -874,20 +770,16 @@
     "placeholders": {
       "timestamp": {
         "type": "String"
-
-}
-
-}
+      }
+    }
   },
   "todoAddedAtTimestamp": "Added todo at {timestamp}",
   "@todoAddedAtTimestamp": {
     "placeholders": {
       "timestamp": {
         "type": "String"
-
-}
-
-}
+      }
+    }
   },
   "todoList": "TODO List",
   "todoTemplates": "TODO Templates",
@@ -899,10 +791,8 @@
     "placeholders": {
       "name": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "templateName": "Template Name",
   "templateNameHint": "e.g., Mixing Checklist",
@@ -920,10 +810,8 @@
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "selectTemplate": "Select Template",
   "importFromTemplate": "Import from Template",
@@ -937,10 +825,8 @@
       },
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "errorLoadingTemplates": "Error loading templates",
   "createProjectStartFrom": "How do you want to start?",
@@ -965,7 +851,9 @@
   "removeTemplateFolderConfirm": "Remove \"{path}\" from your registered template folders? Templates already imported from it will not be deleted.",
   "@removeTemplateFolderConfirm": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "noTemplateFoldersRegistered": "No template folders registered",
@@ -973,35 +861,51 @@
   "lastRefreshed": "Last refreshed {date}",
   "@lastRefreshed": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "templatesRefreshedSummary": "{count} new template(s) added",
   "@templatesRefreshedSummary": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "templatesSelected": "{count} template{plural} selected",
   "@templatesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "deleteSelectedTemplates": "Delete Selected",
   "deleteSelectedTemplatesConfirm": "Are you sure you want to delete {count} template{plural}?",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templatesDeleted": "{count} template{plural} deleted",
   "@templatesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templateDetailTitle": "Template",
@@ -1018,7 +922,9 @@
   "projectsFromThisTemplate": "Projects Created From This Template ({count})",
   "@projectsFromThisTemplate": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noProjectsFromThisTemplate": "No projects created from this template yet",
@@ -1029,20 +935,16 @@
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "errorImportingTodos": "Error importing todos: {error}",
   "@errorImportingTodos": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "addToRelease": "Add to Release",
   "createNew": "Create New",
@@ -1056,50 +958,40 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToRemoveProfilePhoto": "Failed to remove profile photo: {error}",
   "@failedToRemoveProfilePhoto": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToRenameProfile": "Failed to rename profile: {error}",
   "@failedToRenameProfile": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToDeleteProfile": "Failed to delete profile: {error}",
   "@failedToDeleteProfile": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "errorLoadingProfiles": "Error loading profiles: {error}",
   "@errorLoadingProfiles": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "projectPhaseIdea": "Idea",
   "projectPhaseArranging": "Arranging",
@@ -1120,10 +1012,8 @@
       },
       "status": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "statusChangedForProjectsWithErrors": "Phase changed to \"{status}\" for {successCount} project{successPlural}, {failCount} failed{failPlural}",
   "@statusChangedForProjectsWithErrors": {
@@ -1143,10 +1033,8 @@
       },
       "status": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToChangeStatus": "Failed to change phase: {error}",
   "@failedToChangeStatus": {
@@ -1154,10 +1042,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "tooltipEditProfileName": "Edit profile name",
   "tooltipAddTodo": "Add todo",
@@ -1397,10 +1283,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "backupImportedSuccessfully": "Backup imported successfully: {projectsCount} projects, {rootsCount} project folders, {releasesCount} releases",
   "@backupImportedSuccessfully": {
@@ -1414,10 +1298,8 @@
       },
       "releasesCount": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToImportBackup": "Failed to import backup: {error}",
   "@failedToImportBackup": {
@@ -1425,10 +1307,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "importBackupMessage": "Choose how to import the backup:",
   "mergeWithCurrentProfile": "Merge with current active profile",
@@ -1449,10 +1329,8 @@
       },
       "releasesCount": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "noProfileSelected": "No profile selected",
   "exportBackupDialogTitle": "Export Backup",
@@ -1479,10 +1357,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "removePreviewSong": "Remove preview song",
   "removePreviewSongConfirm": "Are you sure you want to remove the preview song? This action cannot be undone.",
@@ -1495,40 +1371,32 @@
     "placeholders": {
       "age": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "createdDate": "created {date}",
   "@createdDate": {
     "placeholders": {
       "date": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "completedIn": "Completed in: {duration}",
   "@completedIn": {
     "placeholders": {
       "duration": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "finishedDate": "finished {date}",
   "@finishedDate": {
     "placeholders": {
       "date": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "dateToday": "today",
   "dateYesterday": "yesterday",
@@ -1537,30 +1405,24 @@
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "dateWeeksAgo": "{count, plural, =1{1 week ago} other{{count} weeks ago}}",
   "@dateWeeksAgo": {
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "dateMonthsAgo": "{count, plural, =1{1 month ago} other{{count} months ago}}",
   "@dateMonthsAgo": {
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "dateYearsAgo": "{count, plural, =1{1 year ago} other{{count} years ago}}",
   "@dateYearsAgo": {
@@ -1570,10 +1432,8 @@
       },
       "plural": {
         "type": "Object"
-      
-}
-    
-}
+      }
+    }
   },
   "ageYearsMonths": "{years} year{yearPlural}, {months} month{monthPlural}",
   "@ageYearsMonths": {
@@ -1589,10 +1449,8 @@
       },
       "monthPlural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "ageYears": "{years} year{plural}",
   "@ageYears": {
@@ -1602,10 +1460,8 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "ageMonthsDays": "{months} month{monthPlural}, {days} day{dayPlural}",
   "@ageMonthsDays": {
@@ -1621,10 +1477,8 @@
       },
       "dayPlural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "ageMonths": "{months} month{plural}",
   "@ageMonths": {
@@ -1634,10 +1488,8 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "ageDays": "{days} day{plural}",
   "@ageDays": {
@@ -1647,10 +1499,8 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "ageHours": "{hours} hour{plural}",
   "@ageHours": {
@@ -1660,10 +1510,8 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "ageJustNow": "Just now",
   "ageLessThanHour": "Less than an hour",
@@ -1808,10 +1656,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "unknownError": "Unknown error",
   "@unknownError": {
@@ -1838,10 +1684,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "syncing": "Syncing...",
   "@syncing": {
@@ -1865,20 +1709,16 @@
       },
       "releasesUpdated": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "errorSyncing": "Error syncing: {error}",
   "@errorSyncing": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "uploadingBackup": "Uploading backup...",
   "@uploadingBackup": {
@@ -1897,10 +1737,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "downloadingBackup": "Downloading backup...",
   "@downloadingBackup": {
@@ -1919,10 +1757,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "download": "Download",
   "@download": {
@@ -1962,10 +1798,8 @@
       },
       "releasesUpdated": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "backupDownloadedDetailed": "Backup downloaded!\n\nProjects:\n  • {projectsAdded} added\n  • {projectsUpdated} updated\n\nReleases:\n  • {releasesAdded} added\n  • {releasesUpdated} updated\n\nPreview Songs:\n  • {previewSongsDownloaded} downloaded\n  • {previewSongsUpdated} updated",
   "@backupDownloadedDetailed": {
@@ -1987,20 +1821,16 @@
       },
       "previewSongsUpdated": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "errorDownloadingBackup": "Error downloading backup: {error}",
   "@errorDownloadingBackup": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "notSignedInYet": "Not signed in",
   "never": "Never",
@@ -2009,50 +1839,40 @@
     "placeholders": {
       "email": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "lastSync": "Last sync: {date}",
   "@lastSync": {
     "placeholders": {
       "date": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "remoteBackupTime": "Remote backup: {date}",
   "@remoteBackupTime": {
     "placeholders": {
       "date": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "lastUploadTime": "Last upload: {date}",
   "@lastUploadTime": {
     "placeholders": {
       "date": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "lastDownloadTime": "Last download: {date}",
   "@lastDownloadTime": {
     "placeholders": {
       "date": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "checkForBackup": "Check for Backup",
   "@checkForBackup": {
@@ -2136,10 +1956,8 @@
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "settings": "Settings",
   "searchSettings": "Search settings",
@@ -2156,27 +1974,45 @@
   "languageSettingDescription": "The language used throughout the app.",
   "themeSettingDescription": "The app's color theme.",
   "waveformStyle": "Waveform Style",
-  "@waveformStyle": { "description": "Appearance setting: which waveform rendering the audio preview uses" },
+  "@waveformStyle": {
+    "description": "Appearance setting: which waveform rendering the audio preview uses"
+  },
   "waveformStyleSettingDescription": "How the audio preview waveform is drawn.",
-  "@waveformStyleSettingDescription": { "description": "Subtitle under the Waveform Style setting" },
+  "@waveformStyleSettingDescription": {
+    "description": "Subtitle under the Waveform Style setting"
+  },
   "waveformStyleDetailed": "Detailed",
-  "@waveformStyleDetailed": { "description": "Waveform style option: the per-pixel bar rendering with an RMS body" },
+  "@waveformStyleDetailed": {
+    "description": "Waveform style option: the per-pixel bar rendering with an RMS body"
+  },
   "waveformStyleDetailedDescription": "Per-pixel bars with a shaded body, like a DAW.",
   "waveformStyleClassic": "Classic",
-  "@waveformStyleClassic": { "description": "Waveform style option: the original filled envelope rendering" },
+  "@waveformStyleClassic": {
+    "description": "Waveform style option: the original filled envelope rendering"
+  },
   "waveformStyleClassicDescription": "A single filled outline.",
   "waveformChannels": "Channels",
-  "@waveformChannels": { "description": "Appearance setting and waveform context menu: single vs dual channel lanes" },
+  "@waveformChannels": {
+    "description": "Appearance setting and waveform context menu: single vs dual channel lanes"
+  },
   "waveformChannelsSettingDescription": "Whether the waveform splits stereo into two lanes.",
-  "@waveformChannelsSettingDescription": { "description": "Subtitle under the Channels setting" },
+  "@waveformChannelsSettingDescription": {
+    "description": "Subtitle under the Channels setting"
+  },
   "waveformChannelsSingle": "Single",
-  "@waveformChannelsSingle": { "description": "Channel option: one lane showing the stereo mixdown" },
+  "@waveformChannelsSingle": {
+    "description": "Channel option: one lane showing the stereo mixdown"
+  },
   "waveformChannelsDual": "Dual",
-  "@waveformChannelsDual": { "description": "Channel option: left and right drawn as separate stacked lanes" },
+  "@waveformChannelsDual": {
+    "description": "Channel option: left and right drawn as separate stacked lanes"
+  },
   "waveformChannelsSingleDescription": "One lane showing the stereo mixdown.",
   "waveformChannelsDualDescription": "Left and right stacked as separate lanes.",
   "waveformChannelsUnavailable": "This file has only one channel",
-  "@waveformChannelsUnavailable": { "description": "Shown in the waveform context menu when the file is mono" },
+  "@waveformChannelsUnavailable": {
+    "description": "Shown in the waveform context menu when the file is mono"
+  },
   "support": "Support",
   "shareDiagnosticLog": "Share Diagnostic Log",
   "shareDiagnosticLogEmpty": "No diagnostic log yet",
@@ -2193,20 +2029,16 @@
     "placeholders": {
       "url": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "errorOpeningBrowser": "Error opening browser: {error}",
   "@errorOpeningBrowser": {
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "generateTestingDatabase": "Generate Testing Database",
   "generateTestingDatabaseMessage": "This will create (or refresh) a dedicated \"Demo — Screenshots\" profile filled with a large variety of sample projects, releases, and playlists across every supported DAW, and switch you to it. Your other profiles are left untouched. Continue?",
@@ -2216,10 +2048,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-
-}
-
-}
+      }
+    }
   },
   "removeTestingDatabase": "Remove Testing Database",
   "removeTestingDatabaseMessage": "This will permanently delete the \"Demo — Screenshots\" profile and all of its sample projects, releases, playlists, and preview audio files. Continue?",
@@ -2255,10 +2085,8 @@
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "createPlaylist": "Create Playlist",
   "@createPlaylist": {
@@ -2298,10 +2126,8 @@
     "placeholders": {
       "name": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "playlistDeleted": "Playlist deleted",
   "@playlistDeleted": {
@@ -2324,10 +2150,8 @@
       },
       "total": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "noPreviewSongsInPlaylist": "No preview songs available in this playlist",
   "@noPreviewSongsInPlaylist": {
@@ -2427,10 +2251,8 @@
     "placeholders": {
       "days": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "daysLeft": "{days}d left",
   "@daysLeft": {
@@ -2438,10 +2260,8 @@
     "placeholders": {
       "days": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "hideFinished": "Hide Finished",
   "@hideFinished": {
@@ -2596,10 +2416,8 @@
     "placeholders": {
       "path": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "@shareZip": {
     "description": "Label for the share as ZIP button"
@@ -2610,10 +2428,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToSharePreviewSongAsZip": "Failed to share preview song as ZIP: {error}",
   "@failedToSharePreviewSongAsZip": {
@@ -2621,10 +2437,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "biographySaved": "Biography saved",
   "@biographySaved": {
@@ -2636,10 +2450,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "fileSavedTo": "File saved to {filename}",
   "@fileSavedTo": {
@@ -2647,10 +2459,8 @@
     "placeholders": {
       "filename": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToDownloadFile": "Failed to download file: {error}",
   "@failedToDownloadFile": {
@@ -2658,10 +2468,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "allFilesSavedTo": "All files saved to {filename}",
   "@allFilesSavedTo": {
@@ -2669,10 +2477,8 @@
     "placeholders": {
       "filename": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "artworkAdded": "Artwork added",
   "@artworkAdded": {
@@ -2684,10 +2490,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "artworkRemoved": "Artwork removed",
   "@artworkRemoved": {
@@ -2699,10 +2503,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "pressKitFileAdded": "Press kit file added",
   "@pressKitFileAdded": {
@@ -2714,10 +2516,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "pressKitFileRemoved": "Press kit file removed",
   "@pressKitFileRemoved": {
@@ -2729,10 +2529,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "selectFilesToDownload": "Select Files to Download",
   "@selectFilesToDownload": {
@@ -2767,10 +2565,8 @@
       },
       "plural": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "nFilesSavedTo": "{count} file{plural} saved to {filename}",
   "@nFilesSavedTo": {
@@ -2784,10 +2580,8 @@
       },
       "filename": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "addAsset": "Add Asset",
   "@addAsset": {
@@ -2807,10 +2601,8 @@
     "placeholders": {
       "assetName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToAddAsset": "Failed to add asset: {error}",
   "@failedToAddAsset": {
@@ -2818,10 +2610,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "assetRemoved": "{assetName} removed",
   "@assetRemoved": {
@@ -2829,10 +2619,8 @@
     "placeholders": {
       "assetName": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "failedToRemoveAsset": "Failed to remove asset: {error}",
   "@failedToRemoveAsset": {
@@ -2840,10 +2628,8 @@
     "placeholders": {
       "error": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "profileNotFound": "Profile not found",
   "@profileNotFound": {
@@ -2921,20 +2707,34 @@
   "closeToTray": "Close to tray",
   "closeToTrayDescription": "Keep running in the background (tray icon) when you close the window, so auto-backup and notifications keep working",
   "autoStart": "Launch at startup",
-  "@autoStart": { "description": "Settings switch: start the app automatically when the user signs in to their computer" },
+  "@autoStart": {
+    "description": "Settings switch: start the app automatically when the user signs in to their computer"
+  },
   "autoStartDescription": "Open DAW Project Manager automatically when you sign in to your computer",
   "startMinimized": "Start minimized to tray",
-  "@startMinimized": { "description": "Settings switch: on an auto-start launch, open hidden in the tray" },
+  "@startMinimized": {
+    "description": "Settings switch: on an auto-start launch, open hidden in the tray"
+  },
   "startMinimizedDescription": "When the app starts with your computer, open it hidden in the tray instead of showing the window",
-  "@startMinimizedDescription": { "description": "Explanation under the start-minimized switch" },
+  "@startMinimizedDescription": {
+    "description": "Explanation under the start-minimized switch"
+  },
   "onboardingStartMinimized": "Start minimized",
-  "@onboardingStartMinimized": { "description": "Compact label for the start-minimized option in the onboarding wizard" },
+  "@onboardingStartMinimized": {
+    "description": "Compact label for the start-minimized option in the onboarding wizard"
+  },
   "autoStartFailed": "Could not change the startup setting. Your system may not allow it.",
-  "@autoStartFailed": { "description": "Snackbar shown when registering the app to launch at startup fails" },
+  "@autoStartFailed": {
+    "description": "Snackbar shown when registering the app to launch at startup fails"
+  },
   "onboardingStartupTitle": "Launch at Startup",
-  "@onboardingStartupTitle": { "description": "Onboarding wizard step title for the launch-at-startup option" },
+  "@onboardingStartupTitle": {
+    "description": "Onboarding wizard step title for the launch-at-startup option"
+  },
   "onboardingStartupBody": "Have DAW Project Manager open automatically when you sign in, so background backups and deadline reminders keep running.",
-  "@onboardingStartupBody": { "description": "Onboarding wizard step subtitle for the launch-at-startup option" },
+  "@onboardingStartupBody": {
+    "description": "Onboarding wizard step subtitle for the launch-at-startup option"
+  },
   "@menuQuit": {
     "description": "macOS menu item to quit the app"
   },
@@ -3024,10 +2824,8 @@
     "placeholders": {
       "days": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "statsLastActivityToday": "Active today",
   "statsNoEvents": "No events recorded yet",
@@ -3039,30 +2837,24 @@
       },
       "to": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "statsEventMetadataUpdated": "Updated: {fields}",
   "@statsEventMetadataUpdated": {
     "placeholders": {
       "fields": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "statsEventTodoCompleted": "Completed: {text}",
   "@statsEventTodoCompleted": {
     "placeholders": {
       "text": {
         "type": "String"
-      
-}
-    
-}
+      }
+    }
   },
   "statsEventFileModified": "File modified on disk",
   "statsClearHistory": "Clear history",
@@ -3087,19 +2879,15 @@
     "placeholders": {
       "days": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "@statsEventCount": {
     "placeholders": {
       "count": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "statsNoProjectsFound": "No projects found",
   "statsNotTouchedDays": "Not touched in {days} days",
@@ -3107,10 +2895,8 @@
     "placeholders": {
       "days": {
         "type": "int"
-      
-}
-    
-}
+      }
+    }
   },
   "sortByLastModified": "Last modified",
   "sortByName": "Name",
@@ -3131,15 +2917,21 @@
   "errorHandlingDroppedFiles": "Error handling dropped files: {error}",
   "@errorHandlingDroppedFiles": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "resetOnboardingConfirm": "This will restart the setup wizard. Continue?",
   "couldNotLaunchDaw": "Could not launch {daw}: {error}",
   "@couldNotLaunchDaw": {
     "placeholders": {
-      "daw": { "type": "String" },
-      "error": { "type": "String" }
+      "daw": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
     }
   },
   "couldNotOpenLink": "Could not open link.",
@@ -3151,10 +2943,10 @@
   "monoSwitchFailed": "Mono switch failed: {error}",
   "@monoSwitchFailed": {
     "placeholders": {
-      "error": { "type": "String" 
-}
-    
-}
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "analyzeLabel": "Analyze",
   "reAnalyzeLabel": "Re-analyze",
@@ -3172,50 +2964,61 @@
   "queuePendingSummary": "{tasks} pending tasks in {projects} projects",
   "@queuePendingSummary": {
     "placeholders": {
-      "tasks": { "type": "int" },
-      "projects": { "type": "int" }
+      "tasks": {
+        "type": "int"
+      },
+      "projects": {
+        "type": "int"
+      }
     }
   },
-
   "appTitleWithVersion": "DAW Project Manager {version}",
   "@appTitleWithVersion": {
     "placeholders": {
-      "version": { "type": "String" }
+      "version": {
+        "type": "String"
+      }
     }
   },
   "versionLabel": "Version {version}",
   "@versionLabel": {
     "placeholders": {
-      "version": { "type": "String" }
+      "version": {
+        "type": "String"
+      }
     }
   },
-
   "renameProjectFileTitle": "Rename Project File",
   "renameFileButtonLabel": "Rename File",
   "newFileNameLabel": "New file name (without extension)",
   "renameAlreadyExists": "A file named \"{name}\" already exists.",
   "@renameAlreadyExists": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "renameSuccess": "Renamed to \"{name}\"",
   "@renameSuccess": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "renameFailed": "Failed to rename: {error}",
   "@renameFailed": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "nameCannotBeEmpty": "Name cannot be empty",
   "nameInvalidCharacters": "Name cannot contain / \\ :",
   "alsoRenameContainingFolder": "Also rename containing folder",
   "renameButton": "Rename",
-
   "previewMixdownFolderTitle": "Preview Mixdown Folders",
   "previewMixdownFolderSubtitle": "Subfolder names inside each project folder to check first, in order, when auto-detecting preview songs. Leave empty to use DAW defaults.",
   "previewMixdownFolderHint": "e.g. Mixdowns",
@@ -3230,7 +3033,6 @@
   "mixdownFoldersSectionDescription": "Controls which folder the app looks in for a project's exported/bounced audio, used as its preview song when none is set manually. Expand a DAW below to see the folder names it already checks by default, and add your own on top of them if your setup uses a different name.",
   "mixdownFoldersDefaultsLabel": "Default folders checked:",
   "mixdownFoldersCustomLabel": "Your additions for this DAW:",
-
   "dawLaunchCommandsTabLabel": "DAW Locations",
   "dawLaunchCommandsSectionDescription": "\"Launch in DAW\" normally hands the project to the system's default application. When that doesn't work, point it here at the exact DAW program to run — an executable on Windows and Linux (or an AppImage), or the .app on macOS — and the app will open projects of that type with it directly. On Linux this is usually required; on Windows and macOS it's a fallback for when the standard launch fails. You can add more than one location per DAW (e.g. two versions); the app asks which to use when you launch.",
   "dawLaunchCommandNotConfigured": "Not configured",
@@ -3298,34 +3100,39 @@
   "dawLaunchCommandDialogSaveAndLaunchButton": "Save & Launch",
   "dawLaunchCommandDialogInvalidPath": "This file doesn't exist",
   "dawLaunchCommandsEmptyState": "DAWs will appear here once you scan projects for them.",
-
   "dawInfoLabel": "DAW: {daw}",
   "@dawInfoLabel": {
     "placeholders": {
-      "daw": { "type": "String" }
+      "daw": {
+        "type": "String"
+      }
     }
   },
   "bpmInfoLabel": "BPM: {bpm}",
   "@bpmInfoLabel": {
     "placeholders": {
-      "bpm": { "type": "String" }
+      "bpm": {
+        "type": "String"
+      }
     }
   },
   "keyInfoLabel": "Key: {key}",
   "@keyInfoLabel": {
     "placeholders": {
-      "key": { "type": "String" }
+      "key": {
+        "type": "String"
+      }
     }
   },
-
   "audioFileNotFound": "Audio file not found",
   "errorPlayingAudio": "Error playing audio: {error}",
   "@errorPlayingAudio": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
-
   "notificationTestTitle": "Test notifications to verify timezone and scheduling:",
   "notificationSendNow": "Send Now",
   "notificationSchedule30s": "Schedule +30s",
@@ -3336,11 +3143,12 @@
   "notificationTestError": "❌ Error: {error}",
   "@notificationTestError": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "notificationDebugTitle": "🐛 Debug Information",
-  "close": "Close",
   "autoDetected": "Auto-detected",
   "matchedInDescription": "Matched in description",
   "matchedInProjectNotes": "Matched in DAW project notes",
@@ -3348,7 +3156,9 @@
   "relocateFolderSuccess": "{count, plural, =1{1 project path updated} other{{count} project paths updated}}",
   "@relocateFolderSuccess": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "customizeTabs": "Customize Tabs",
@@ -3403,7 +3213,9 @@
   "newerExportFoundMessage": "A newer file was found in the same folder:\n{filename}\n\nReplace the preview song?",
   "@newerExportFoundMessage": {
     "placeholders": {
-      "filename": { "type": "String" }
+      "filename": {
+        "type": "String"
+      }
     }
   },
   "replaceAndPlay": "Replace & Play",
@@ -3419,7 +3231,9 @@
   "autoBackupNextBackup": "Next backup: {time}",
   "@autoBackupNextBackup": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "autoBackupNextSoon": "soon",
@@ -3427,7 +3241,9 @@
   "autoBackupNextInMinutes": "in {count} min",
   "@autoBackupNextInMinutes": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneHour": "in 1 hour",
@@ -3435,7 +3251,9 @@
   "autoBackupNextInHours": "in {count} hours",
   "@autoBackupNextInHours": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneDay": "in 1 day",
@@ -3443,7 +3261,9 @@
   "autoBackupNextInDays": "in {count} days",
   "@autoBackupNextInDays": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerTitle": "Music Player",
@@ -3455,14 +3275,20 @@
   "playerTrackCount": "{count} tracks",
   "@playerTrackCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerTrackCountFiltered": "{filtered}/{total}",
   "@playerTrackCountFiltered": {
     "placeholders": {
-      "filtered": { "type": "int" },
-      "total": { "type": "int" }
+      "filtered": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "playerNoPreviewSongs": "No preview songs found.\nOpen a project and set a preview song.",
@@ -3470,7 +3296,9 @@
   "playerNoTracksMatch": "No tracks match\n\"{query}\"",
   "@playerNoTracksMatch": {
     "placeholders": {
-      "query": { "type": "String" }
+      "query": {
+        "type": "String"
+      }
     }
   },
   "playerDoubleClickToPlay": "Double-click a track to start playing",
@@ -3506,7 +3334,9 @@
   "playerCompletedTasks": "{count} completed",
   "@playerCompletedTasks": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerPreviousTrack": "Previous track",
@@ -3525,26 +3355,46 @@
   "@volumeUnmute": {},
   "totalWorkTime": "Total work: {time}",
   "@totalWorkTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionTime": "Session: {time}",
   "@sessionTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "headerAgeOld": "{age} old",
   "@headerAgeOld": {
     "description": "Project age segment of the detail header meta line, e.g. '3 months old'",
-    "placeholders": { "age": { "type": "String" } }
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
   },
   "headerEdited": "edited {when}",
   "@headerEdited": {
     "description": "Last-edited segment of the detail header meta line; {when} is a relative date like '2 days ago'",
-    "placeholders": { "when": { "type": "String" } }
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
   },
   "headerWorked": "{time} worked",
   "@headerWorked": {
     "description": "Total work time segment of the detail header meta line, e.g. '5h 32m worked'",
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionHistory": "Session History",
   "@sessionHistory": {},
@@ -3569,7 +3419,9 @@
   "sessionCount": "{count, plural, =1{1 session} other{{count} sessions}}",
   "@sessionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "sessionByPhase": "Work by Phase",
@@ -3582,7 +3434,11 @@
   "@tabPositionLeft": {},
   "updateAvailableMessage": "Version {version} is available",
   "@updateAvailableMessage": {
-    "placeholders": { "version": { "type": "String" } }
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
   },
   "dismiss": "Dismiss",
   "@dismiss": {},
@@ -3595,7 +3451,9 @@
   "updateAvailable": "Update available: v{version}",
   "@updateAvailable": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "upToDate": "App is up to date",
@@ -3605,13 +3463,17 @@
   "updateAvailableVersion": "A new version {version} is ready.",
   "@updateAvailableVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "updateCurrentVersion": "You are running v{version}.",
   "@updateCurrentVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "viewUpdateDetails": "View Details",
@@ -3637,7 +3499,9 @@
   "appImageUpdateDownloadingProgress": "Downloading update… {percent}%",
   "@appImageUpdateDownloadingProgress": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "appImageUpdateVerifying": "Verifying and installing…",
@@ -3647,7 +3511,9 @@
   "appImageUpdateReadyMessage": "Updated to v{version}. Restart now to finish.",
   "@appImageUpdateReadyMessage": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "appImageUpdateRestartNow": "Restart Now",
@@ -3730,7 +3596,11 @@
   "@minutes": {},
   "workTimerNotifBody": "You have been working for {time}",
   "@workTimerNotifBody": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sendTestNotification": "Send Test Notification",
   "@sendTestNotification": {
@@ -3773,13 +3643,17 @@
   "switchSessionCurrent": "Current: {project}",
   "@switchSessionCurrent": {
     "placeholders": {
-      "project": {"type": "String"}
+      "project": {
+        "type": "String"
+      }
     }
   },
   "switchSessionNew": "New: {project}",
   "@switchSessionNew": {
     "placeholders": {
-      "project": {"type": "String"}
+      "project": {
+        "type": "String"
+      }
     }
   },
   "sessionDuration": "Session time",
@@ -3921,8 +3795,12 @@
   "pendingFolderSessionBody": "You've worked on \"{projectName}\" for {duration}.",
   "@pendingFolderSessionBody": {
     "placeholders": {
-      "projectName": { "type": "String" },
-      "duration": { "type": "String" }
+      "projectName": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "pendingFolderSessionContinue": "Continue Session",
@@ -3934,8 +3812,12 @@
   "activeSessionSwitchBody": "A session is running for \"{current}\". Switch to \"{next}\" and save the current session?",
   "@activeSessionSwitchBody": {
     "placeholders": {
-      "current": { "type": "String" },
-      "next": { "type": "String" }
+      "current": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
     }
   },
   "activeSessionSwitch": "Switch",
@@ -3949,7 +3831,9 @@
   "pendingProjectDeleteBody": "Delete \"{folderName}\" and its contents?",
   "@pendingProjectDeleteBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectDismiss": "Stop tracking this folder",
@@ -3965,7 +3849,9 @@
   "pendingProjectDeleteNotEmptyBody": "\"{folderName}\" contains files. Delete everything permanently?",
   "@pendingProjectDeleteNotEmptyBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectRefresh": "Check for project file",
@@ -3988,7 +3874,9 @@
   "deletePhaseWarning": "{count, plural, =1{1 project uses this phase} other{{count} projects use this phase}}",
   "@deletePhaseWarning": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectPhaseColor": "Select color",
@@ -3998,7 +3886,9 @@
   "resetPhasesWarning": "{count, plural, =1{1 project uses a phase that will no longer exist.} other{{count} projects use phases that will no longer exist.}}",
   "@resetPhasesWarning": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "resetPhasesWarningNote": "Those projects will keep their current status but won't appear in phase filters. You can always re-add those phases later.",
@@ -4011,15 +3901,33 @@
   "camelotDialogDescription": "Orders your tracks by harmonic key compatibility using the Camelot wheel. BPM proximity is used as a tiebreaker within compatible keys.",
   "@camelotDialogDescription": {},
   "camelotEligibleTracks": "{count} tracks eligible (key set)",
-  "@camelotEligibleTracks": {"placeholders": {"count": {"type": "int"}}},
+  "@camelotEligibleTracks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "camelotSkippedTracks": "{count} will be skipped (no key set)",
-  "@camelotSkippedTracks": {"placeholders": {"count": {"type": "int"}}},
+  "@camelotSkippedTracks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "camelotNoEligibleTracks": "No tracks have a musical key set. Open a project and set its key to use this feature.",
   "@camelotNoEligibleTracks": {},
   "camelotGenerate": "Generate",
   "@camelotGenerate": {},
   "camelotQueueGenerated": "Queue filled with {count} harmonically ordered tracks",
-  "@camelotQueueGenerated": {"placeholders": {"count": {"type": "int"}}},
+  "@camelotQueueGenerated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "camelotWheelGuideTooltip": "Camelot wheel guide",
   "@camelotWheelGuideTooltip": {},
   "camelotWheelGuideTitle": "Camelot Wheel Guide",
@@ -4041,339 +3949,742 @@
   "camelotGuideTransitionsBody": "8A → 8B  (same number, switch ring)\n  Relative major / minor — virtually seamless.\n\n8A → 7A or 9A  (±1, same ring)\n  Adjacent key — smooth, subtle change.\n\n8A → 1A or 3A  (±7, same ring)\n  Energy boost or drop — more dramatic shift.",
   "@camelotGuideTransitionsBody": {},
   "playerMixSuggestions": "MIX SUGGESTIONS",
-  "@playerMixSuggestions": {}
-,
+  "@playerMixSuggestions": {},
   "nowPlaying": "Now Playing",
   "@nowPlaying": {
     "description": "Title for the mobile player page"
   },
   "noPreviewSongsAvailable": "No preview songs available",
   "upNext": "Up Next",
-  "@upNext": { "description": "Queue panel title - tracks coming up next" },
+  "@upNext": {
+    "description": "Queue panel title - tracks coming up next"
+  },
   "playbackModeNormal": "Normal",
-  "@playbackModeNormal": { "description": "Playback mode: play queue once in order" },
+  "@playbackModeNormal": {
+    "description": "Playback mode: play queue once in order"
+  },
   "playbackModeRepeat": "Repeat",
-  "@playbackModeRepeat": { "description": "Playback mode: loop the entire queue" },
+  "@playbackModeRepeat": {
+    "description": "Playback mode: loop the entire queue"
+  },
   "playbackModeShuffle": "Shuffle",
-  "@playbackModeShuffle": { "description": "Playback mode: random order" },
+  "@playbackModeShuffle": {
+    "description": "Playback mode: random order"
+  },
   "hideDatesInNames": "Hide dates in project names",
-  "@hideDatesInNames": { "description": "Appearance setting: strip date stamps from displayed project names" },
+  "@hideDatesInNames": {
+    "description": "Appearance setting: strip date stamps from displayed project names"
+  },
   "hideDatesInNamesDescription": "Some DAWs prefix project files with the date they were created (for example \"2026-08-02 - My Track\"). Hide it so only the title is shown. The files themselves are never renamed.",
-  "@hideDatesInNamesDescription": { "description": "Explanation of the hide-dates-in-names appearance setting" },
+  "@hideDatesInNamesDescription": {
+    "description": "Explanation of the hide-dates-in-names appearance setting"
+  },
   "findPreviewAutomatically": "Auto-Find",
-  "@findPreviewAutomatically": { "description": "Button that scans the project's mixdown folders for a preview song: in the missing-preview dialog and in the project-detail player" },
+  "@findPreviewAutomatically": {
+    "description": "Button that scans the project's mixdown folders for a preview song: in the missing-preview dialog and in the project-detail player"
+  },
   "noPreviewSongFoundAutomatically": "No preview song found in this project's mixdown folders.",
-  "@noPreviewSongFoundAutomatically": { "description": "Snackbar shown when automatic preview detection finds nothing" },
+  "@noPreviewSongFoundAutomatically": {
+    "description": "Snackbar shown when automatic preview detection finds nothing"
+  },
   "selectProjects": "Select",
-  "@selectProjects": { "description": "Mobile long-press action sheet entry: enter multi-select mode" },
+  "@selectProjects": {
+    "description": "Mobile long-press action sheet entry: enter multi-select mode"
+  },
   "sharePreviewSongText": "Preview song: {name}",
   "@sharePreviewSongText": {
     "description": "Message body accompanying a shared preview song file",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "sharePreviewSongZipText": "Preview song (ZIP): {name}",
   "@sharePreviewSongZipText": {
     "description": "Message body accompanying a shared preview song zipped for transport",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "songParts": "Instruments & Parts",
-  "@songParts": {"description": "Section title on the project detail page for the song's instruments/parts"},
+  "@songParts": {
+    "description": "Section title on the project detail page for the song's instruments/parts"
+  },
   "partsProgress": "{done} of {total} final takes",
-  "@partsProgress": {"description": "Progress summary for a song's parts: how many are on their final take", "placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
+  "@partsProgress": {
+    "description": "Progress summary for a song's parts: how many are on their final take",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsYet": "No parts tracked yet",
-  "@noPartsYet": {"description": "Empty state for the parts section"},
+  "@noPartsYet": {
+    "description": "Empty state for the parts section"
+  },
   "noPartsYetHint": "List the instruments this song needs, who plays them, and how far each take has got.",
-  "@noPartsYetHint": {"description": "Explanation shown under the parts empty state"},
+  "@noPartsYetHint": {
+    "description": "Explanation shown under the parts empty state"
+  },
   "addPart": "Add part",
-  "@addPart": {"description": "Label of the field/button that adds a part to a song"},
+  "@addPart": {
+    "description": "Label of the field/button that adds a part to a song"
+  },
   "addPartHint": "e.g. Drums, Lead Vocals, Bass",
-  "@addPartHint": {"description": "Hint text for the add-part field"},
+  "@addPartHint": {
+    "description": "Hint text for the add-part field"
+  },
   "partNameLabel": "Part",
-  "@partNameLabel": {"description": "Field label for an instrument/role name"},
+  "@partNameLabel": {
+    "description": "Field label for an instrument/role name"
+  },
   "partNameRequired": "A part name is required",
-  "@partNameRequired": {"description": "Validation message when a part is saved without a name"},
+  "@partNameRequired": {
+    "description": "Validation message when a part is saved without a name"
+  },
   "partPerformerLabel": "Performer",
-  "@partPerformerLabel": {"description": "Field label for who plays a part"},
+  "@partPerformerLabel": {
+    "description": "Field label for who plays a part"
+  },
   "partPerformerHint": "Who plays it",
-  "@partPerformerHint": {"description": "Hint text for the performer field"},
+  "@partPerformerHint": {
+    "description": "Hint text for the performer field"
+  },
   "partNotesLabel": "Part notes",
-  "@partNotesLabel": {"description": "Field label for notes about a single part"},
+  "@partNotesLabel": {
+    "description": "Field label for notes about a single part"
+  },
   "partStatusLabel": "Take status",
-  "@partStatusLabel": {"description": "Field label for the take status of a part"},
+  "@partStatusLabel": {
+    "description": "Field label for the take status of a part"
+  },
   "partStatusNeeded": "Needed",
-  "@partStatusNeeded": {"description": "Take status: the part is needed but nothing is recorded"},
+  "@partStatusNeeded": {
+    "description": "Take status: the part is needed but nothing is recorded"
+  },
   "partStatusRecording": "Recording",
-  "@partStatusRecording": {"description": "Take status: the part is currently being tracked"},
+  "@partStatusRecording": {
+    "description": "Take status: the part is currently being tracked"
+  },
   "partStatusEarlyTake": "Early take",
-  "@partStatusEarlyTake": {"description": "Take status: a scratch/reference take exists"},
+  "@partStatusEarlyTake": {
+    "description": "Take status: a scratch/reference take exists"
+  },
   "partStatusFinalTake": "Final take",
-  "@partStatusFinalTake": {"description": "Take status: the keeper take is recorded"},
+  "@partStatusFinalTake": {
+    "description": "Take status: the keeper take is recorded"
+  },
   "editPart": "Edit part",
-  "@editPart": {"description": "Dialog title / tooltip for editing a part"},
+  "@editPart": {
+    "description": "Dialog title / tooltip for editing a part"
+  },
   "deletePart": "Delete part",
-  "@deletePart": {"description": "Tooltip for deleting a part"},
+  "@deletePart": {
+    "description": "Tooltip for deleting a part"
+  },
   "partsUnassignedPerformer": "Unassigned",
-  "@partsUnassignedPerformer": {"description": "Shown in place of a performer name when nobody is assigned to a part"},
+  "@partsUnassignedPerformer": {
+    "description": "Shown in place of a performer name when nobody is assigned to a part"
+  },
   "partTemplates": "Part Templates",
-  "@partTemplates": {"description": "Title of the part templates page"},
+  "@partTemplates": {
+    "description": "Title of the part templates page"
+  },
   "importPartsFromTemplate": "Import parts from template",
-  "@importPartsFromTemplate": {"description": "Tooltip for importing a saved lineup into a song"},
+  "@importPartsFromTemplate": {
+    "description": "Tooltip for importing a saved lineup into a song"
+  },
   "managePartTemplates": "Manage part templates",
-  "@managePartTemplates": {"description": "Tooltip that opens the part templates page"},
+  "@managePartTemplates": {
+    "description": "Tooltip that opens the part templates page"
+  },
   "selectPartTemplate": "Select a part template",
-  "@selectPartTemplate": {"description": "Title of the dialog listing part templates to import from"},
+  "@selectPartTemplate": {
+    "description": "Title of the dialog listing part templates to import from"
+  },
   "noPartTemplatesAvailable": "No part templates available",
-  "@noPartTemplatesAvailable": {"description": "Snackbar shown when importing parts with no templates saved"},
+  "@noPartTemplatesAvailable": {
+    "description": "Snackbar shown when importing parts with no templates saved"
+  },
   "noPartTemplatesYet": "No part templates yet",
-  "@noPartTemplatesYet": {"description": "Empty state on the part templates page"},
+  "@noPartTemplatesYet": {
+    "description": "Empty state on the part templates page"
+  },
   "createFirstPartTemplate": "Create one to reuse the same lineup across songs",
-  "@createFirstPartTemplate": {"description": "Hint under the part templates empty state"},
+  "@createFirstPartTemplate": {
+    "description": "Hint under the part templates empty state"
+  },
   "createPartTemplate": "Create part template",
-  "@createPartTemplate": {"description": "Dialog title for creating a part template"},
+  "@createPartTemplate": {
+    "description": "Dialog title for creating a part template"
+  },
   "editPartTemplate": "Edit part template",
-  "@editPartTemplate": {"description": "Dialog title for editing a part template"},
+  "@editPartTemplate": {
+    "description": "Dialog title for editing a part template"
+  },
   "deletePartTemplate": "Delete part template",
-  "@deletePartTemplate": {"description": "Dialog title for deleting a part template"},
+  "@deletePartTemplate": {
+    "description": "Dialog title for deleting a part template"
+  },
   "deletePartTemplateConfirm": "Are you sure you want to delete the part template \"{name}\"?",
-  "@deletePartTemplateConfirm": {"description": "Confirmation body when deleting a part template", "placeholders": {"name": {"type": "String"}}},
+  "@deletePartTemplateConfirm": {
+    "description": "Confirmation body when deleting a part template",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "partTemplateCreated": "Part template created",
-  "@partTemplateCreated": {"description": "Snackbar after creating a part template"},
+  "@partTemplateCreated": {
+    "description": "Snackbar after creating a part template"
+  },
   "partTemplateUpdated": "Part template updated",
-  "@partTemplateUpdated": {"description": "Snackbar after updating a part template"},
+  "@partTemplateUpdated": {
+    "description": "Snackbar after updating a part template"
+  },
   "partTemplateDeleted": "Part template deleted",
-  "@partTemplateDeleted": {"description": "Snackbar after deleting a part template"},
+  "@partTemplateDeleted": {
+    "description": "Snackbar after deleting a part template"
+  },
   "partTemplateItems": "Parts (one per line)",
-  "@partTemplateItems": {"description": "Field label for the multi-line list of parts in a template"},
+  "@partTemplateItems": {
+    "description": "Field label for the multi-line list of parts in a template"
+  },
   "partTemplateItemsHint": "Drums — Alex\nBass — Sam\nLead Vocals",
-  "@partTemplateItemsHint": {"description": "Example content for the part template items field"},
+  "@partTemplateItemsHint": {
+    "description": "Example content for the part template items field"
+  },
   "partTemplateItemsHelp": "One part per line. Name a performer after a dash: Drums — Alex",
-  "@partTemplateItemsHelp": {"description": "Helper text explaining the 'Part - Performer' line format"},
+  "@partTemplateItemsHelp": {
+    "description": "Helper text explaining the 'Part - Performer' line format"
+  },
   "partTemplateItemsRequired": "Add at least one part",
-  "@partTemplateItemsRequired": {"description": "Validation message when a part template has no items"},
+  "@partTemplateItemsRequired": {
+    "description": "Validation message when a part template has no items"
+  },
   "partTemplateNameAndItemsRequired": "A name and at least one part are required",
-  "@partTemplateNameAndItemsRequired": {"description": "Validation message when a part template is missing a name or items"},
+  "@partTemplateNameAndItemsRequired": {
+    "description": "Validation message when a part template is missing a name or items"
+  },
   "partTemplateItemCount": "{count} part(s)",
-  "@partTemplateItemCount": {"description": "Subtitle showing how many parts a template contains", "placeholders": {"count": {"type": "int"}}},
+  "@partTemplateItemCount": {
+    "description": "Subtitle showing how many parts a template contains",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partTemplateImported": "Part template \"{name}\" imported ({count} parts)",
-  "@partTemplateImported": {"description": "Snackbar after importing a part template into a song", "placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
+  "@partTemplateImported": {
+    "description": "Snackbar after importing a part template into a song",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "errorLoadingPartTemplates": "Error loading part templates",
-  "@errorLoadingPartTemplates": {"description": "Error state on the part templates page"},
+  "@errorLoadingPartTemplates": {
+    "description": "Error state on the part templates page"
+  },
   "exportPartsCsv": "Export parts as CSV",
-  "@exportPartsCsv": {"description": "Tooltip for exporting one song's parts to a CSV file"},
+  "@exportPartsCsv": {
+    "description": "Tooltip for exporting one song's parts to a CSV file"
+  },
   "exportAllPartsCsv": "Export all song parts as CSV",
-  "@exportAllPartsCsv": {"description": "Settings entry exporting every project's parts to one CSV file"},
+  "@exportAllPartsCsv": {
+    "description": "Settings entry exporting every project's parts to one CSV file"
+  },
   "exportAllPartsCsvSubtitle": "One spreadsheet row per part, across every project — for sharing progress with collaborators",
-  "@exportAllPartsCsvSubtitle": {"description": "Subtitle of the export-all-parts settings entry"},
+  "@exportAllPartsCsvSubtitle": {
+    "description": "Subtitle of the export-all-parts settings entry"
+  },
   "noPartsToExport": "No parts to export",
-  "@noPartsToExport": {"description": "Snackbar when a parts CSV export has nothing to write"},
+  "@noPartsToExport": {
+    "description": "Snackbar when a parts CSV export has nothing to write"
+  },
   "partsCsvExported": "Exported {count} parts",
-  "@partsCsvExported": {"description": "Snackbar reporting how many parts were written to the CSV", "placeholders": {"count": {"type": "int"}}},
+  "@partsCsvExported": {
+    "description": "Snackbar reporting how many parts were written to the CSV",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "projectExportPartsLabel": "Parts:",
-  "@projectExportPartsLabel": {"description": "Heading of the parts block in the plain text project export"},
+  "@projectExportPartsLabel": {
+    "description": "Heading of the parts block in the plain text project export"
+  },
   "csvHeaderProject": "Project",
-  "@csvHeaderProject": {"description": "CSV column header: project name"},
+  "@csvHeaderProject": {
+    "description": "CSV column header: project name"
+  },
   "csvHeaderPart": "Part",
-  "@csvHeaderPart": {"description": "CSV column header: instrument/part name"},
+  "@csvHeaderPart": {
+    "description": "CSV column header: instrument/part name"
+  },
   "csvHeaderPerformer": "Performer",
-  "@csvHeaderPerformer": {"description": "CSV column header: who plays the part"},
+  "@csvHeaderPerformer": {
+    "description": "CSV column header: who plays the part"
+  },
   "csvHeaderStatus": "Status",
-  "@csvHeaderStatus": {"description": "CSV column header: take status"},
+  "@csvHeaderStatus": {
+    "description": "CSV column header: take status"
+  },
   "csvHeaderNotes": "Notes",
-  "@csvHeaderNotes": {"description": "CSV column header: notes"},
+  "@csvHeaderNotes": {
+    "description": "CSV column header: notes"
+  },
   "exportPartsXlsx": "Export parts as Excel (.xlsx)",
-  "@exportPartsXlsx": {"description": "Menu entry exporting one song's parts to an .xlsx workbook"},
+  "@exportPartsXlsx": {
+    "description": "Menu entry exporting one song's parts to an .xlsx workbook"
+  },
   "exportAllPartsXlsx": "Export all song parts as Excel (.xlsx)",
-  "@exportAllPartsXlsx": {"description": "Settings entry exporting every project's parts to one .xlsx workbook"},
+  "@exportAllPartsXlsx": {
+    "description": "Settings entry exporting every project's parts to one .xlsx workbook"
+  },
   "exportAllPartsXlsxSubtitle": "The same sheet as the CSV, with a frozen header row, column filters and colour-coded take statuses",
-  "@exportAllPartsXlsxSubtitle": {"description": "Subtitle of the export-all-parts-to-Excel settings entry"},
+  "@exportAllPartsXlsxSubtitle": {
+    "description": "Subtitle of the export-all-parts-to-Excel settings entry"
+  },
   "importPartsFromSpreadsheet": "Import parts from a spreadsheet",
-  "@importPartsFromSpreadsheet": {"description": "Menu entry that reads a parts list back in from a CSV or Excel file"},
+  "@importPartsFromSpreadsheet": {
+    "description": "Menu entry that reads a parts list back in from a CSV or Excel file"
+  },
   "partsImportPickerTitle": "Select a CSV or Excel file",
-  "@partsImportPickerTitle": {"description": "Title of the file picker for importing parts"},
+  "@partsImportPickerTitle": {
+    "description": "Title of the file picker for importing parts"
+  },
   "partsImported": "{added} parts added, {updated} updated",
-  "@partsImported": {"description": "Snackbar summarising how many parts an import added and updated", "placeholders": {"added": {"type": "int"}, "updated": {"type": "int"}}},
+  "@partsImported": {
+    "description": "Snackbar summarising how many parts an import added and updated",
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "updated": {
+        "type": "int"
+      }
+    }
+  },
   "partsImportNothingFound": "No parts found in that file",
-  "@partsImportNothingFound": {"description": "Snackbar shown when an imported spreadsheet contained no usable parts"},
+  "@partsImportNothingFound": {
+    "description": "Snackbar shown when an imported spreadsheet contained no usable parts"
+  },
   "partsImportFailed": "Couldn't read that spreadsheet: {error}",
-  "@partsImportFailed": {"description": "Snackbar shown when a spreadsheet could not be read", "placeholders": {"error": {"type": "String"}}},
+  "@partsImportFailed": {
+    "description": "Snackbar shown when a spreadsheet could not be read",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "partsMoreActions": "More part actions",
-  "@partsMoreActions": {"description": "Tooltip of the overflow menu in the parts section header"},
+  "@partsMoreActions": {
+    "description": "Tooltip of the overflow menu in the parts section header"
+  },
   "partsPageTitle": "{name} — Parts",
-  "@partsPageTitle": {"description": "Title bar of the full-page parts workspace for one project", "placeholders": {"name": {"type": "String"}}},
+  "@partsPageTitle": {
+    "description": "Title bar of the full-page parts workspace for one project",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "manageParts": "Manage parts",
-  "@manageParts": {"description": "Button on the project detail summary card that opens the parts workspace"},
+  "@manageParts": {
+    "description": "Button on the project detail summary card that opens the parts workspace"
+  },
   "partsMoreCount": "+{count} more",
-  "@partsMoreCount": {"description": "Shown on the summary card when it lists only the first few parts", "placeholders": {"count": {"type": "int"}}},
+  "@partsMoreCount": {
+    "description": "Shown on the summary card when it lists only the first few parts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "searchParts": "Search parts",
-  "@searchParts": {"description": "Placeholder of the parts workspace search field"},
+  "@searchParts": {
+    "description": "Placeholder of the parts workspace search field"
+  },
   "allStatuses": "All statuses",
-  "@allStatuses": {"description": "Take-status filter entry that applies no filtering"},
+  "@allStatuses": {
+    "description": "Take-status filter entry that applies no filtering"
+  },
   "allPerformers": "All performers",
-  "@allPerformers": {"description": "Performer filter entry that applies no filtering"},
+  "@allPerformers": {
+    "description": "Performer filter entry that applies no filtering"
+  },
   "partsSelectedCount": "{count} selected",
-  "@partsSelectedCount": {"description": "How many parts are currently multi-selected", "placeholders": {"count": {"type": "int"}}},
+  "@partsSelectedCount": {
+    "description": "How many parts are currently multi-selected",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "setPartStatus": "Set status",
-  "@setPartStatus": {"description": "Bulk action: set the take status of every selected part"},
+  "@setPartStatus": {
+    "description": "Bulk action: set the take status of every selected part"
+  },
   "assignPartPerformer": "Assign performer",
-  "@assignPartPerformer": {"description": "Bulk action: assign one performer to every selected part"},
+  "@assignPartPerformer": {
+    "description": "Bulk action: assign one performer to every selected part"
+  },
   "deleteSelectedParts": "Delete selected",
-  "@deleteSelectedParts": {"description": "Bulk action: delete every selected part"},
+  "@deleteSelectedParts": {
+    "description": "Bulk action: delete every selected part"
+  },
   "deleteSelectedPartsConfirm": "Delete {count} parts from this song?",
-  "@deleteSelectedPartsConfirm": {"description": "Confirmation body before deleting the selected parts", "placeholders": {"count": {"type": "int"}}},
+  "@deleteSelectedPartsConfirm": {
+    "description": "Confirmation body before deleting the selected parts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partsDeleted": "{count} parts deleted",
-  "@partsDeleted": {"description": "Snackbar reporting how many parts were deleted", "placeholders": {"count": {"type": "int"}}},
+  "@partsDeleted": {
+    "description": "Snackbar reporting how many parts were deleted",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsMatchFilters": "No parts match these filters",
-  "@noPartsMatchFilters": {"description": "Empty state when search or filters hide every part"},
+  "@noPartsMatchFilters": {
+    "description": "Empty state when search or filters hide every part"
+  },
   "reorderNeedsUnfilteredList": "Clear the search, filters and sorting to drag parts into order",
-  "@reorderNeedsUnfilteredList": {"description": "Explains that drag-reordering needs the unfiltered, unsorted list"},
-"projectMarkers": "Markers",
-"@projectMarkers": {
-      "description": "Section heading for the timeline markers and regions read out of a DAW project file"
+  "@reorderNeedsUnfilteredList": {
+    "description": "Explains that drag-reordering needs the unfiltered, unsorted list"
   },
-"projectMarkerUnnamed": "Marker {index}",
-"@projectMarkerUnnamed": {
-      "description": "Fallback label for a marker the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectMarkers": "Markers",
+  "@projectMarkers": {
+    "description": "Section heading for the timeline markers and regions read out of a DAW project file"
+  },
+  "projectMarkerUnnamed": "Marker {index}",
+  "@projectMarkerUnnamed": {
+    "description": "Fallback label for a marker the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectRegionUnnamed": "Region {index}",
-"@projectRegionUnnamed": {
-      "description": "Fallback label for a region the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectRegionUnnamed": "Region {index}",
+  "@projectRegionUnnamed": {
+    "description": "Fallback label for a region the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectMarkerJumpTooltip": "Jump to this point in the preview song",
-"@projectMarkerJumpTooltip": {
-      "description": "Tooltip on a marker row that will seek the preview player"
+  "projectMarkerJumpTooltip": "Jump to this point in the preview song",
+  "@projectMarkerJumpTooltip": {
+    "description": "Tooltip on a marker row that will seek the preview player"
   },
-"projectMarkerNoPreviewSong": "Add a preview song to jump to markers",
-"@projectMarkerNoPreviewSong": {
-      "description": "Tooltip on marker rows when the project has no preview song to seek in"
+  "projectMarkerNoPreviewSong": "Add a preview song to jump to markers",
+  "@projectMarkerNoPreviewSong": {
+    "description": "Tooltip on marker rows when the project has no preview song to seek in"
   },
   "projectDetailLayout": "Project Detail Layout",
-  "@projectDetailLayout": {"description": "Appearance setting: how the project detail page is arranged"},
+  "@projectDetailLayout": {
+    "description": "Appearance setting: how the project detail page is arranged"
+  },
   "projectDetailLayoutSettingDescription": "How the project detail page is arranged.",
-  "@projectDetailLayoutSettingDescription": {"description": "Subtitle under the Project Detail Layout setting"},
+  "@projectDetailLayoutSettingDescription": {
+    "description": "Subtitle under the Project Detail Layout setting"
+  },
   "projectDetailLayoutClassic": "Classic",
-  "@projectDetailLayoutClassic": {"description": "Layout option: everything in one scroll"},
+  "@projectDetailLayoutClassic": {
+    "description": "Layout option: everything in one scroll"
+  },
   "projectDetailLayoutClassicDescription": "Everything in one scroll.",
-  "@projectDetailLayoutClassicDescription": {"description": "Description of the classic project detail layout"},
+  "@projectDetailLayoutClassicDescription": {
+    "description": "Description of the classic project detail layout"
+  },
   "projectDetailLayoutSectioned": "Sections",
-  "@projectDetailLayoutSectioned": {"description": "Layout option: a nav rail picks one section at a time"},
+  "@projectDetailLayoutSectioned": {
+    "description": "Layout option: a nav rail picks one section at a time"
+  },
   "projectDetailLayoutSectionedDescription": "A rail on the left picks one section at a time.",
-  "@projectDetailLayoutSectionedDescription": {"description": "Description of the sectioned project detail layout"},
-
+  "@projectDetailLayoutSectionedDescription": {
+    "description": "Description of the sectioned project detail layout"
+  },
   "stackAsVersions": "Stack as Versions",
-  "@stackAsVersions": {"description": "Bulk action: combine the selected projects into one song"},
+  "@stackAsVersions": {
+    "description": "Bulk action: combine the selected projects into one song"
+  },
   "stackNeedsTwoVersions": "Select at least two projects to stack them as versions of one main project.",
-  "@stackNeedsTwoVersions": {"description": "Error shown when fewer than two projects are selected for stacking"},
+  "@stackNeedsTwoVersions": {
+    "description": "Error shown when fewer than two projects are selected for stacking"
+  },
   "stackCreatedMessage": "Stacked {count} versions into one main project.",
-  "@stackCreatedMessage": {"placeholders": {"count": {"type": "int"}}},
+  "@stackCreatedMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackVersionsTitle": "Versions",
-  "@stackVersionsTitle": {"description": "Project detail section heading listing a stack's version files"},
+  "@stackVersionsTitle": {
+    "description": "Project detail section heading listing a stack's version files"
+  },
   "stackVersionCount": "{count} versions",
-  "@stackVersionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@stackVersionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersion": "Add Version",
-  "@stackAddVersion": {"description": "Button: attach another project file to this stack"},
+  "@stackAddVersion": {
+    "description": "Button: attach another project file to this stack"
+  },
   "stackAddVersionTitle": "Add a version",
-  "@stackAddVersionTitle": {"description": "Dialog title for picking a project to add to a stack"},
+  "@stackAddVersionTitle": {
+    "description": "Dialog title for picking a project to add to a stack"
+  },
   "stackAddVersionEmpty": "No unstacked projects available to add.",
-  "@stackAddVersionEmpty": {"description": "Shown when every project already belongs to a stack"},
+  "@stackAddVersionEmpty": {
+    "description": "Shown when every project already belongs to a stack"
+  },
   "stackRemoveVersion": "Remove from stack",
-  "@stackRemoveVersion": {"description": "Tooltip: detach this version from the stack"},
+  "@stackRemoveVersion": {
+    "description": "Tooltip: detach this version from the stack"
+  },
   "stackRemoveVersionMessage": "The project file stays on disk and returns to the list as its own project.",
-  "@stackRemoveVersionMessage": {"description": "Reassures the user that removing a version keeps the file"},
+  "@stackRemoveVersionMessage": {
+    "description": "Reassures the user that removing a version keeps the file"
+  },
   "stackUnstack": "Unstack",
-  "@stackUnstack": {"description": "Button: dissolve the stack back into separate projects"},
+  "@stackUnstack": {
+    "description": "Button: dissolve the stack back into separate projects"
+  },
   "stackUnstackTitle": "Unstack this main project?",
-  "@stackUnstackTitle": {"description": "Confirmation dialog title for dissolving a stack"},
+  "@stackUnstackTitle": {
+    "description": "Confirmation dialog title for dissolving a stack"
+  },
   "stackUnstackMessage": "Every version becomes its own project again with the metadata it had before stacking. The shared notes, tasks and deadline kept on the main project are deleted.",
-  "@stackUnstackMessage": {"description": "Explains what is lost when a stack is dissolved"},
+  "@stackUnstackMessage": {
+    "description": "Explains what is lost when a stack is dissolved"
+  },
   "stackDefaultVersion": "Opens by default",
-  "@stackDefaultVersion": {"description": "Label marking the version that opens by default"},
+  "@stackDefaultVersion": {
+    "description": "Label marking the version that opens by default"
+  },
   "stackSetDefaultVersion": "Open this version by default",
-  "@stackSetDefaultVersion": {"description": "Tooltip: make this the version the DAW launch button opens"},
+  "@stackSetDefaultVersion": {
+    "description": "Tooltip: make this the version the DAW launch button opens"
+  },
   "stackChooseVersionToOpen": "Which version do you want to open?",
-  "@stackChooseVersionToOpen": {"description": "Dialog title when a stack has no nominated default version"},
+  "@stackChooseVersionToOpen": {
+    "description": "Dialog title when a stack has no nominated default version"
+  },
   "stackMemberOf": "Version of",
-  "@stackMemberOf": {"description": "Shown on a version's own detail page, naming the song it belongs to"},
+  "@stackMemberOf": {
+    "description": "Shown on a version's own detail page, naming the song it belongs to"
+  },
   "stackMemberNotice": "This file is one version of a stacked project. Shared metadata, tasks and work time live on the main project, not here.",
-  "@stackMemberNotice": {"description": "Explains that a version defers to its stack for shared metadata"},
+  "@stackMemberNotice": {
+    "description": "Explains that a version defers to its stack for shared metadata"
+  },
   "stackOpenMainProject": "Open main project",
-  "@stackOpenMainProject": {"description": "Button on a version's page that navigates to the stack"},
+  "@stackOpenMainProject": {
+    "description": "Button on a version's page that navigates to the stack"
+  },
   "stackWorkTimeAcrossVersions": "Total across all versions",
-  "@stackWorkTimeAcrossVersions": {"description": "Label for work time summed over every version in a stack"},
+  "@stackWorkTimeAcrossVersions": {
+    "description": "Label for work time summed over every version in a stack"
+  },
   "scanModeVersionStack": "Version Stack",
-  "@scanModeVersionStack": {"description": "Scan mode option: auto-stack every folder's files as one song"},
+  "@scanModeVersionStack": {
+    "description": "Scan mode option: auto-stack every folder's files as one song"
+  },
   "scanModeVersionStackDescription": "Every project file in a folder becomes one main project sharing metadata, tasks and work time. Newly found files join it automatically.",
-  "@scanModeVersionStackDescription": {"description": "Description of the version stack scan mode"},
+  "@scanModeVersionStackDescription": {
+    "description": "Description of the version stack scan mode"
+  },
   "stackTooltipStacked": "{count} versions stacked into one main project",
-  "@stackTooltipStacked": {"placeholders": {"count": {"type": "int"}}},
+  "@stackTooltipStacked": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataSourceTitle": "Which project should become the main project?",
-  "@stackMetadataSourceTitle": {"description": "Dialog title asking which project's metadata the new stack should inherit"},
+  "@stackMetadataSourceTitle": {
+    "description": "Dialog title asking which project's metadata the new stack should inherit"
+  },
   "stackMetadataSourceBody": "More than one of these already has details of its own. The one you pick becomes the main project: its name, BPM, key, notes, tasks and deadline are the ones the stack uses. Nothing is merged and nothing is lost — the others keep their own details, and unstacking gives them back.",
-  "@stackMetadataSourceBody": {"description": "Explains that only the chosen project's metadata is promoted and the rest is kept"},
+  "@stackMetadataSourceBody": {
+    "description": "Explains that only the chosen project's metadata is promoted and the rest is kept"
+  },
   "stackMetadataSourceOldestHint": "Oldest — suggested",
-  "@stackMetadataSourceOldestHint": {"description": "Marks the version pre-selected as the default metadata source"},
+  "@stackMetadataSourceOldestHint": {
+    "description": "Marks the version pre-selected as the default metadata source"
+  },
   "stackMetadataNoneLabel": "No details yet",
-  "@stackMetadataNoneLabel": {"description": "Shown for a version that has no user-entered metadata"},
+  "@stackMetadataNoneLabel": {
+    "description": "Shown for a version that has no user-entered metadata"
+  },
   "stackMetadataTodosLabel": "{count, plural, =1{1 task} other{{count} tasks}}",
-  "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataTodosLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataNotesLabel": "notes",
-  "@stackMetadataNotesLabel": {"description": "Chip shown when a version has notes written on it"},
+  "@stackMetadataNotesLabel": {
+    "description": "Chip shown when a version has notes written on it"
+  },
   "stackNotStackedYet": "Not stacked yet",
-  "@stackNotStackedYet": {"description": "Empty state heading in the Versions section of an unstacked project"},
+  "@stackNotStackedYet": {
+    "description": "Empty state heading in the Versions section of an unstacked project"
+  },
   "stackStartFromHere": "Add other project files and they become versions of one main project, sharing metadata, tasks and work time.",
-  "@stackStartFromHere": {"description": "Explains how to start a stack from a project's own detail page"},
+  "@stackStartFromHere": {
+    "description": "Explains how to start a stack from a project's own detail page"
+  },
   "stackSearchProjects": "Search projects",
-  "@stackSearchProjects": {"description": "Search field placeholder in the add-a-version picker"},
+  "@stackSearchProjects": {
+    "description": "Search field placeholder in the add-a-version picker"
+  },
   "stackSearchNoMatches": "No projects match your search.",
-  "@stackSearchNoMatches": {"description": "Shown when a search in the add-a-version picker matches nothing"},
+  "@stackSearchNoMatches": {
+    "description": "Shown when a search in the add-a-version picker matches nothing"
+  },
   "stackStartedMessage": "Stacked into one main project.",
-  "@stackStartedMessage": {"description": "Confirmation after starting a stack from a project's own page"},
+  "@stackStartedMessage": {
+    "description": "Confirmation after starting a stack from a project's own page"
+  },
   "stackDefaultVersionTooltip": "This version opens by default when you launch the DAW.",
-  "@stackDefaultVersionTooltip": {"description": "Tooltip on the filled star marking the version that opens by default"},
+  "@stackDefaultVersionTooltip": {
+    "description": "Tooltip on the filled star marking the version that opens by default"
+  },
   "stackAddVersionsConfirm": "Add {count}",
-  "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@stackAddVersionsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersionMultiTitle": "Add versions",
-  "@stackAddVersionMultiTitle": {"description": "Dialog title when several projects can be added to a stack at once"},
+  "@stackAddVersionMultiTitle": {
+    "description": "Dialog title when several projects can be added to a stack at once"
+  },
   "stackSelectAll": "Select all",
-  "@stackSelectAll": {"description": "Selects every project currently listed in the add-versions picker"},
+  "@stackSelectAll": {
+    "description": "Selects every project currently listed in the add-versions picker"
+  },
   "stackClearSelection": "Clear",
-  "@stackClearSelection": {"description": "Clears the current selection in the add-versions picker"},
+  "@stackClearSelection": {
+    "description": "Clears the current selection in the add-versions picker"
+  },
   "stackMetadataPartsLabel": "{count, plural, =1{1 part} other{{count} parts}}",
-  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataPartsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataDeadlineLabel": "deadline",
-  "@stackMetadataDeadlineLabel": {"description": "Chip shown when a project has a deadline set"},
+  "@stackMetadataDeadlineLabel": {
+    "description": "Chip shown when a project has a deadline set"
+  },
   "stackMetadataRenamedLabel": "custom name",
-  "@stackMetadataRenamedLabel": {"description": "Chip shown when a project has a custom name"},
+  "@stackMetadataRenamedLabel": {
+    "description": "Chip shown when a project has a custom name"
+  },
   "stackMetadataWorkHours": "{hours}h logged",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "@stackMetadataWorkHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
   "stackUnstackReleaseTitle": "Which version stays on the release?",
-  "@stackUnstackReleaseTitle": {"description": "Dialog title asking which version keeps the release slot when a stacked project is unstacked"},
+  "@stackUnstackReleaseTitle": {
+    "description": "Dialog title asking which version keeps the release slot when a stacked project is unstacked"
+  },
   "stackUnstackReleaseBody": "This project is a track on {releases}. Unstacking removes the stacked entry, so one of its versions has to take that place — pick the one the release should point to.",
-  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "@stackUnstackReleaseBody": {
+    "placeholders": {
+      "releases": {
+        "type": "String"
+      }
+    }
+  },
   "stackAutoConfirmTitle": "Stack these versions?",
-  "@stackAutoConfirmTitle": {"description": "Confirmation dialog title before switching a scan root to Version Stack mode"},
+  "@stackAutoConfirmTitle": {
+    "description": "Confirmation dialog title before switching a scan root to Version Stack mode"
+  },
   "stackAutoConfirmBody": "Version Stack will group {projects} projects in {folders} folders. Each folder becomes one main project sharing metadata, tasks and work time. Nothing is deleted, and you can unstack any of them later.",
-  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "@stackAutoConfirmBody": {
+    "placeholders": {
+      "projects": {
+        "type": "int"
+      },
+      "folders": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoConfirmApply": "Stack them",
-  "@stackAutoConfirmApply": {"description": "Confirm button on the auto-stack confirmation dialog"},
+  "@stackAutoConfirmApply": {
+    "description": "Confirm button on the auto-stack confirmation dialog"
+  },
   "stackAutoFolderEntry": "{folder} — {count} versions",
-  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "@stackAutoFolderEntry": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoJoinsExisting": "joins the existing main project",
-  "@stackAutoJoinsExisting": {"description": "Note on a folder row that already has a main project"},
+  "@stackAutoJoinsExisting": {
+    "description": "Note on a folder row that already has a main project"
+  },
   "untitledTheme": "Untitled theme",
   "switchToTheme": "Switch to {themeName}",
   "@switchToTheme": {
     "placeholders": {
-      "themeName": { "type": "String" }
+      "themeName": {
+        "type": "String"
+      }
     }
   },
   "newTheme": "New theme",
@@ -4383,7 +4694,9 @@
   "deleteThemeMessage": "\"{name}\" will be removed. This cannot be undone.",
   "@deleteThemeMessage": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeNameLabel": "Theme name",
@@ -4398,7 +4711,9 @@
   "themeLowContrastWarning": "Low contrast ({ratio}:1). Text may be hard to read.",
   "@themeLowContrastWarning": {
     "placeholders": {
-      "ratio": { "type": "String" }
+      "ratio": {
+        "type": "String"
+      }
     }
   },
   "exportTheme": "Export theme",
@@ -4406,13 +4721,17 @@
   "themeExported": "Theme exported to {path}",
   "@themeExported": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "themeImported": "Imported \"{name}\"",
   "@themeImported": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeImportFailed": "That file isn't a valid theme.",
@@ -4422,10 +4741,11 @@
   "themeCopyName": "{name} copy",
   "@themeCopyName": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-
   "suggestedColorsLabel": "Suggested Colors",
   "todoDueDate": "Due date",
   "@todoDueDate": {
@@ -4496,5 +4816,64 @@
   "queueNoTasksForDueFilter": "No tasks match this due filter",
   "@queueNoTasksForDueFilter": {
     "description": "Task Queue empty state when the due filter excludes everything"
+  },
+  "projectAttachments": "Attachments",
+  "attachmentAddFile": "Add File",
+  "attachmentAddLink": "Add Link",
+  "attachmentsEmptyTitle": "Nothing attached yet",
+  "attachmentsEmptyDescription": "Keep the reference track, the stem-delivery link, the lyric sheet and the contract with the song, instead of in a chat thread.",
+  "attachmentEditDialogTitle": "Edit Attachment",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "File path",
+  "attachmentLabelLabel": "Label (optional)",
+  "attachmentNoteLabel": "Note (optional)",
+  "attachmentUrlInvalid": "Enter a valid link, e.g. https://example.com",
+  "attachmentPathRequired": "Enter a file path",
+  "attachmentOpenTooltip": "Open",
+  "attachmentRemoveTitle": "Remove Attachment",
+  "attachmentRemoveMessage": "Remove \"{label}\" from this project? The file itself is not deleted.",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentRemoved": "Attachment removed",
+  "attachmentAdded": "Attachment added",
+  "attachmentOpenFailed": "Couldn't open that attachment",
+  "attachmentPickFileTitle": "Choose a file to attach",
+  "attachmentAlreadyAdded": "That is already attached to this project",
+  "attachmentExport": "Export",
+  "attachmentExportTooltip": "Save the attached files and links",
+  "attachmentExportSaveTitle": "Save attachments",
+  "attachmentExportNothing": "Nothing to export",
+  "attachmentExporting": "Exporting attachments...",
+  "attachmentExportSaved": "Saved to: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "{count} missing file{plural} skipped",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "Failed to export attachments: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   }
 }

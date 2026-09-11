@@ -4915,4 +4915,97 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get queueNoTasksForDueFilter => 'この期限フィルターに一致するタスクはありません';
+
+  @override
+  String get projectAttachments => '添付';
+
+  @override
+  String get attachmentAddFile => 'ファイルを追加';
+
+  @override
+  String get attachmentAddLink => 'リンクを追加';
+
+  @override
+  String get attachmentsEmptyTitle => 'まだ何も添付されていません';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'リファレンス曲、ステム納品リンク、歌詞、契約書をチャットではなく曲と一緒に保管できます。';
+
+  @override
+  String get attachmentEditDialogTitle => '添付を編集';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'ファイルパス';
+
+  @override
+  String get attachmentLabelLabel => 'ラベル（任意）';
+
+  @override
+  String get attachmentNoteLabel => 'メモ（任意）';
+
+  @override
+  String get attachmentUrlInvalid => '有効なリンクを入力してください（例: https://example.com）';
+
+  @override
+  String get attachmentPathRequired => 'ファイルパスを入力してください';
+
+  @override
+  String get attachmentOpenTooltip => '開く';
+
+  @override
+  String get attachmentRemoveTitle => '添付を削除';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return 'このプロジェクトから「$label」を削除しますか？ファイル自体は削除されません。';
+  }
+
+  @override
+  String get attachmentRemoved => '添付を削除しました';
+
+  @override
+  String get attachmentAdded => '添付を追加しました';
+
+  @override
+  String get attachmentOpenFailed => 'この添付を開けませんでした';
+
+  @override
+  String get attachmentPickFileTitle => '添付するファイルを選択';
+
+  @override
+  String get attachmentAlreadyAdded => 'すでにこのプロジェクトに添付されています';
+
+  @override
+  String get attachmentExport => '書き出し';
+
+  @override
+  String get attachmentExportTooltip => '添付ファイルとリンクを保存';
+
+  @override
+  String get attachmentExportSaveTitle => '添付を保存';
+
+  @override
+  String get attachmentExportNothing => '書き出すものがありません';
+
+  @override
+  String get attachmentExporting => '添付を書き出しています...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return '保存先: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '見つからないファイル $count 件をスキップしました$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return '添付の書き出しに失敗しました: $error';
+  }
 }

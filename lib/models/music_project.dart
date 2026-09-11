@@ -1,6 +1,7 @@
 import 'package:hive_ce/hive.dart';
 import 'package:path/path.dart' as p;
 import '../utils/name_date_parser.dart';
+import 'project_attachment.dart';
 import 'project_marker.dart';
 import 'project_part.dart';
 import 'todo_item.dart';
@@ -258,6 +259,13 @@ class MusicProject {
   @HiveField(37)
   final List<ProjectMarker> markers; // Timeline markers/regions read from the DAW project file (Reaper only so far)
 
+  @HiveField(38)
+  /// Files and links the user has attached to this song (#112) — the reference
+  /// track, the stem-delivery link, the lyric sheet, the contract.
+  ///
+  /// References only, never copies: see [ProjectAttachment].
+  final List<ProjectAttachment> attachments;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -297,6 +305,7 @@ class MusicProject {
     this.defaultLaunchMemberId,
     this.stackId,
     this.markers = const [],
+    this.attachments = const [],
   });
 
   /// Number of version files this stack holds. 0 for a real project.
@@ -325,6 +334,7 @@ class MusicProject {
       deadline != null ||
       todos.isNotEmpty ||
       parts.isNotEmpty ||
+      attachments.isNotEmpty ||
       totalWorkSeconds > 0;
 
   /// Whether a non-resolving [filePath] on this project means "the file was
@@ -590,6 +600,7 @@ class MusicProject {
     String? stackId,
     bool clearStackId = false,
     List<ProjectMarker>? markers,
+    List<ProjectAttachment>? attachments,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -632,6 +643,7 @@ class MusicProject {
           : (defaultLaunchMemberId ?? this.defaultLaunchMemberId),
       stackId: clearStackId ? null : (stackId ?? this.stackId),
       markers: markers ?? this.markers,
+      attachments: attachments ?? this.attachments,
     );
   }
 
@@ -707,13 +719,18 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
               .map((e) => ProjectMarker.fromMap(e as Map))
               .toList()
           : const [],
+      attachments: fields.containsKey(38)
+          ? ((fields[38] as List?) ?? const [])
+              .map((e) => ProjectAttachment.fromMap(e as Map))
+              .toList()
+          : const [],
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(38) // 38 fields (0-37)
+      ..writeByte(39) // 39 fields (0-38)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -789,6 +806,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(36)
       ..write(obj.stackId)
       ..writeByte(37)
-      ..write(obj.markers.map((m) => m.toMap()).toList());
+      ..write(obj.markers.map((m) => m.toMap()).toList())
+      ..writeByte(38)
+      ..write(obj.attachments.map((a) => a.toMap()).toList());
   }
 }

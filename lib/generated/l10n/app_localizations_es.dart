@@ -5078,4 +5078,99 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get queueNoTasksForDueFilter =>
       'Ninguna tarea coincide con este filtro de vencimiento';
+
+  @override
+  String get projectAttachments => 'Adjuntos';
+
+  @override
+  String get attachmentAddFile => 'Añadir archivo';
+
+  @override
+  String get attachmentAddLink => 'Añadir enlace';
+
+  @override
+  String get attachmentsEmptyTitle => 'Todavía no hay nada adjunto';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'Guarda la pista de referencia, el enlace de entrega de pistas, la letra y el contrato junto a la canción, en lugar de en un chat.';
+
+  @override
+  String get attachmentEditDialogTitle => 'Editar adjunto';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'Ruta del archivo';
+
+  @override
+  String get attachmentLabelLabel => 'Etiqueta (opcional)';
+
+  @override
+  String get attachmentNoteLabel => 'Nota (opcional)';
+
+  @override
+  String get attachmentUrlInvalid =>
+      'Introduce un enlace válido, p. ej. https://ejemplo.com';
+
+  @override
+  String get attachmentPathRequired => 'Introduce la ruta del archivo';
+
+  @override
+  String get attachmentOpenTooltip => 'Abrir';
+
+  @override
+  String get attachmentRemoveTitle => 'Quitar adjunto';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return '¿Quitar \"$label\" de este proyecto? El archivo en sí no se elimina.';
+  }
+
+  @override
+  String get attachmentRemoved => 'Adjunto eliminado';
+
+  @override
+  String get attachmentAdded => 'Adjunto añadido';
+
+  @override
+  String get attachmentOpenFailed => 'No se pudo abrir ese adjunto';
+
+  @override
+  String get attachmentPickFileTitle => 'Elige un archivo para adjuntar';
+
+  @override
+  String get attachmentAlreadyAdded => 'Eso ya está adjunto a este proyecto';
+
+  @override
+  String get attachmentExport => 'Exportar';
+
+  @override
+  String get attachmentExportTooltip =>
+      'Guardar los archivos y enlaces adjuntos';
+
+  @override
+  String get attachmentExportSaveTitle => 'Guardar adjuntos';
+
+  @override
+  String get attachmentExportNothing => 'No hay nada que exportar';
+
+  @override
+  String get attachmentExporting => 'Exportando adjuntos...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return 'Guardado en: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '$count archivo$plural no encontrado$plural omitido$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return 'No se pudieron exportar los adjuntos: $error';
+  }
 }

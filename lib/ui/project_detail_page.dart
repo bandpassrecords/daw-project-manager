@@ -19,10 +19,12 @@ import 'package:archive/archive_io.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/music_project.dart';
+import '../models/project_attachment.dart';
 import '../models/project_detail_layout.dart';
 import '../models/project_event.dart';
 import '../providers/providers.dart';
 import '../repository/project_repository.dart';
+import '../utils/attachment_launcher.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/file_launcher.dart';
@@ -34,16 +36,19 @@ import 'session_actions.dart';
 import 'settings_page.dart' show SettingsPage, SettingsSection;
 import 'preview_share.dart';
 import 'dialogs/preview_song_not_found_dialog.dart';
+import '../services/attachment_export_service.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/metadata_sidecar_service.dart';
 import '../services/mixdown_detector_service.dart';
 import '../services/project_text_export_service.dart';
 import '../services/scanner_service.dart';
+import 'dialogs/attachment_edit_dialog.dart';
 import 'dialogs/save_as_template_dialog.dart';
 import 'dialogs/stack_version_picker_dialog.dart';
 import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
+import 'widgets/project_attachments_section.dart';
 import 'widgets/project_detail_header.dart';
 import 'widgets/project_markers_section.dart';
 import 'widgets/project_versions_section.dart';
@@ -140,6 +145,253 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     }
   }
 
+
+  // --- Attachments (#112) -------------------------------------------------
+  //
+  // References, never copies: the app stores a path or a URL, the way it
+  // already does for the DAW file and the preview song. Attaching a 2 GB stem
+  // folder therefore costs nothing, and nothing here ever touches the file on
+  // disk — including removal, which only drops the pointer.
+
+  Future<void> _saveAttachments(
+    ProjectRepository repo,
+    MusicProject project,
+    List<ProjectAttachment> attachments,
+  ) async {
+    await repo.updateProject(
+      project.copyWith(attachments: attachments, updatedAt: DateTime.now()),
+    );
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
+
+  Future<void> _addAttachmentFile(
+    ProjectRepository repo,
+    MusicProject project,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await FilePicker.pickFiles(
+      dialogTitle: l10n.attachmentPickFileTitle,
+      allowMultiple: true,
+    );
+    final picked = result?.files
+            .map((f) => f.path)
+            .whereType<String>()
+            .toList() ??
+        const <String>[];
+    if (picked.isEmpty) return;
+
+    final existingTargets =
+        project.attachments.map((a) => a.target).toSet();
+    final added = <ProjectAttachment>[];
+    for (final path in picked) {
+      if (existingTargets.contains(path)) continue;
+      existingTargets.add(path);
+      added.add(ProjectAttachment(
+        id: _uuid.v4(),
+        kind: ProjectAttachmentKind.file,
+        target: path,
+        addedAt: DateTime.now(),
+      ));
+    }
+
+    if (added.isEmpty) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.attachmentAlreadyAdded)),
+      );
+      return;
+    }
+
+    await _saveAttachments(repo, project, [...project.attachments, ...added]);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.attachmentAdded)));
+  }
+
+  Future<void> _addAttachmentLink(
+    ProjectRepository repo,
+    MusicProject project,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final attachment = await showAttachmentEditDialog(context);
+    if (attachment == null) return;
+
+    if (project.attachments.any((a) => a.target == attachment.target)) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.attachmentAlreadyAdded)),
+      );
+      return;
+    }
+
+    await _saveAttachments(
+      repo,
+      project,
+      [...project.attachments, attachment],
+    );
+    messenger.showSnackBar(SnackBar(content: Text(l10n.attachmentAdded)));
+  }
+
+  Future<void> _editAttachment(
+    ProjectRepository repo,
+    MusicProject project,
+    ProjectAttachment attachment,
+  ) async {
+    final updated =
+        await showAttachmentEditDialog(context, existing: attachment);
+    if (updated == null) return;
+    await _saveAttachments(
+      repo,
+      project,
+      project.attachments
+          .map((a) => a.id == updated.id ? updated : a)
+          .toList(),
+    );
+  }
+
+  Future<void> _removeAttachment(
+    ProjectRepository repo,
+    MusicProject project,
+    ProjectAttachment attachment,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).cardColor,
+        title: Text(l10n.attachmentRemoveTitle),
+        content: Text(
+          l10n.attachmentRemoveMessage(attachment.displayLabel),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade300,
+              foregroundColor: Colors.black,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.remove),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await _saveAttachments(
+      repo,
+      project,
+      project.attachments.where((a) => a.id != attachment.id).toList(),
+    );
+    messenger.showSnackBar(SnackBar(content: Text(l10n.attachmentRemoved)));
+  }
+
+  /// Saves the attachments somewhere the user can hand on.
+  ///
+  /// What comes out depends on what is attached (see [planAttachmentExport]):
+  /// a lone file is copied as itself, links alone become one text file, and
+  /// anything more becomes a ZIP with the links inside it as that same text
+  /// file. Files that have moved are left out and reported rather than
+  /// silently shortening the export.
+  Future<void> _exportAttachments(MusicProject project) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final plan = planAttachmentExport(attachments: project.attachments);
+
+    if (plan.isEmpty) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.attachmentExportNothing)),
+      );
+      return;
+    }
+
+    final savePath = await FilePicker.saveFile(
+      dialogTitle: l10n.attachmentExportSaveTitle,
+      fileName: plan.suggestedFileName(project.displayName),
+      type: FileType.any,
+    );
+    if (savePath == null || !mounted) return;
+
+    final navigator = Navigator.of(context);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Center(
+        child: Card(
+          color: Theme.of(ctx).cardColor,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                Text(l10n.attachmentExporting),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    try {
+      final written = await AttachmentExportService.write(
+        plan: plan,
+        destinationPath: savePath,
+        linksHeader: project.displayName,
+      );
+      if (!mounted) return;
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.attachmentExportSaved(written.path)),
+          action: SnackBarAction(
+            label: l10n.openFolder,
+            onPressed: () => FileLauncher.openFolder(p.dirname(written.path)),
+          ),
+        ),
+      );
+      if (plan.missingFiles.isNotEmpty) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(l10n.attachmentExportSkippedMissing(
+              plan.missingFiles.length,
+              plan.missingFiles.length == 1 ? '' : 's',
+            )),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.attachmentExportFailed(e.toString()))),
+      );
+    }
+  }
+
+  Future<void> _openAttachment(ProjectAttachment attachment) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await openProjectAttachment(attachment);
+    if (!mounted) return;
+    switch (result.action) {
+      case AttachmentOpenAction.missingFile:
+        messenger.showSnackBar(SnackBar(content: Text(l10n.fileNotFound)));
+      case AttachmentOpenAction.invalid:
+        messenger
+            .showSnackBar(SnackBar(content: Text(l10n.attachmentOpenFailed)));
+      case AttachmentOpenAction.openUrl:
+      case AttachmentOpenAction.openFile:
+        if (!result.launched) {
+          messenger.showSnackBar(
+            SnackBar(content: Text(l10n.attachmentOpenFailed)),
+          );
+        }
+    }
+  }
 
   // --- Version stacking (#94) ---------------------------------------------
   //
@@ -1493,6 +1745,65 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                               },
                             ),
 
+                            const SizedBox(height: 24),
+                          ],
+                        ),
+                        _DetailSection(
+                          icon: Icons.attach_file_outlined,
+                          label: l10n.projectAttachments,
+                          children: [
+                            Builder(builder: (context) {
+                              final attachments = updatedProject.attachments;
+                              // Stat-ed here, once per build, rather than
+                              // inside the row widget: it keeps the section a
+                              // pure view (testable without a file system)
+                              // and flags a moved file in place instead of
+                              // waiting for the click to fail.
+                              final missing = {
+                                for (final a in attachments)
+                                  if (!a.isLink &&
+                                      !FileLauncher.targetExists(
+                                        a.target.trim(),
+                                      ))
+                                    a.id,
+                              };
+                              return ProjectAttachmentsSection(
+                                attachments: attachments,
+                                missingTargets: missing,
+                                addFileLabel: l10n.attachmentAddFile,
+                                addLinkLabel: l10n.attachmentAddLink,
+                                exportLabel: l10n.attachmentExport,
+                                exportTooltip: l10n.attachmentExportTooltip,
+                                emptyTitle: l10n.attachmentsEmptyTitle,
+                                emptyDescription:
+                                    l10n.attachmentsEmptyDescription,
+                                missingLabel: l10n.fileNotFound,
+                                openTooltip: l10n.attachmentOpenTooltip,
+                                editTooltip: l10n.edit,
+                                removeTooltip: l10n.remove,
+                                onAddFile: () => _addAttachmentFile(
+                                  repo,
+                                  updatedProject,
+                                ),
+                                onAddLink: () => _addAttachmentLink(
+                                  repo,
+                                  updatedProject,
+                                ),
+                                onExport: () =>
+                                    _exportAttachments(updatedProject),
+                                onOpen: _openAttachment,
+                                onEdit: (a) => _editAttachment(
+                                  repo,
+                                  updatedProject,
+                                  a,
+                                ),
+                                onRemove: (a) => _removeAttachment(
+                                  repo,
+                                  updatedProject,
+                                  a,
+                                ),
+                              );
+                            }),
                             const SizedBox(height: 24),
                           ],
                         ),
