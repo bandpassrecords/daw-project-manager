@@ -25,6 +25,7 @@ void main() {
     DateTime? lastScanAt,
     int scanDepth = 0,
     String? displayName,
+    bool enabled = true,
   }) {
     return ScanRoot(
       id: id,
@@ -33,6 +34,7 @@ void main() {
       lastScanAt: lastScanAt,
       scanDepth: scanDepth,
       displayName: displayName,
+      enabled: enabled,
     );
   }
 
@@ -104,6 +106,66 @@ void main() {
       await box.close();
 
       expect(restored.displayName, isNull);
+    });
+
+    test('preserves a disabled root across write and read', () async {
+      final original = makeRoot(id: 'root-3', enabled: false);
+
+      final box = await Hive.openBox<ScanRoot>('scan_root_round_trip_test_3');
+      await box.put(original.id, original);
+      final restored = box.get(original.id)!;
+      await box.close();
+
+      expect(restored.enabled, isFalse);
+    });
+
+    test('defaults enabled to true for a root written before the field existed',
+        () {
+      // Simulates a box whose stored record has only fields 0..6 — the exact
+      // shape written by the adapter before `enabled` was added. Without the
+      // `?? true` fallback in read(), every pre-existing root would come back
+      // disabled and the user's whole library would vanish on upgrade.
+      final legacyFields = <int, dynamic>{
+        0: 'legacy-root',
+        1: '/home/artist/Music',
+        2: DateTime(2025, 1, 1),
+        3: null,
+        4: 0,
+        5: 'Music',
+        6: false,
+      };
+      final restored = ScanRoot(
+        id: legacyFields[0] as String,
+        path: legacyFields[1] as String,
+        addedAt: legacyFields[2] as DateTime,
+        lastScanAt: legacyFields[3] as DateTime?,
+        scanDepth: legacyFields[4] as int,
+        displayName: legacyFields[5] as String?,
+        autoStackVersions: legacyFields[6] as bool,
+        enabled: legacyFields[7] as bool? ?? true,
+      );
+
+      expect(restored.enabled, isTrue);
+    });
+  });
+
+  group('ScanRoot.enabled', () {
+    test('defaults to true', () {
+      expect(makeRoot().enabled, isTrue);
+    });
+
+    test('copyWith can switch it off and back on', () {
+      final root = makeRoot();
+      expect(root.copyWith(enabled: false).enabled, isFalse);
+      expect(
+        root.copyWith(enabled: false).copyWith(enabled: true).enabled,
+        isTrue,
+      );
+    });
+
+    test('copyWith leaves it alone when not passed', () {
+      final disabled = makeRoot(enabled: false);
+      expect(disabled.copyWith(displayName: 'Renamed').enabled, isFalse);
     });
   });
 }

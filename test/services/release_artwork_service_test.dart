@@ -1,0 +1,159 @@
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:daw_project_manager/services/release_artwork_service.dart';
+import 'package:daw_project_manager/utils/project_artwork.dart';
+
+import '../helpers/test_factories.dart';
+
+void main() {
+  /// Every path "exists" unless listed in [missing] — lets these tests state
+  /// which thumbnails are on disk without creating any files.
+  ImageExistsCheck existsExcept(Set<String> missing) =>
+      (path) => !missing.contains(path);
+
+  group('resolveProjectThumbnail', () {
+    test('returns the path when the file is there', () {
+      final project = TestFactories.makeProject(thumbnailPath: '/art/a.png');
+      expect(
+        resolveProjectThumbnail(project, imageExists: existsExcept(const {})),
+        '/art/a.png',
+      );
+    });
+
+    test('returns null when the project has no thumbnail', () {
+      final project = TestFactories.makeProject(thumbnailPath: null);
+      expect(
+        resolveProjectThumbnail(project, imageExists: existsExcept(const {})),
+        isNull,
+      );
+    });
+
+    test('returns null for a blank thumbnail path', () {
+      final project = TestFactories.makeProject(thumbnailPath: '   ');
+      expect(
+        resolveProjectThumbnail(project, imageExists: existsExcept(const {})),
+        isNull,
+      );
+    });
+
+    test('returns null when the stored file has since been deleted', () {
+      final project = TestFactories.makeProject(thumbnailPath: '/art/gone.png');
+      expect(
+        resolveProjectThumbnail(
+          project,
+          imageExists: existsExcept({'/art/gone.png'}),
+        ),
+        isNull,
+      );
+    });
+  });
+
+  group('releaseArtworkCandidates', () {
+    test('offers one candidate per project with a thumbnail', () {
+      final candidates = releaseArtworkCandidates(
+        [
+          TestFactories.makeProject(
+            id: 'p1',
+            customDisplayName: 'First',
+            thumbnailPath: '/art/a.png',
+          ),
+          TestFactories.makeProject(
+            id: 'p2',
+            customDisplayName: 'Second',
+            thumbnailPath: '/art/b.png',
+          ),
+        ],
+        imageExists: existsExcept(const {}),
+      );
+
+      expect(candidates, hasLength(2));
+      expect(candidates.first.projectId, 'p1');
+      expect(candidates.first.projectName, 'First');
+      expect(candidates.first.imagePath, '/art/a.png');
+    });
+
+    test('keeps the order the projects were given', () {
+      final candidates = releaseArtworkCandidates(
+        [
+          TestFactories.makeProject(id: 'p1', thumbnailPath: '/art/a.png'),
+          TestFactories.makeProject(id: 'p2', thumbnailPath: '/art/b.png'),
+          TestFactories.makeProject(id: 'p3', thumbnailPath: '/art/c.png'),
+        ],
+        imageExists: existsExcept(const {}),
+      );
+
+      expect(
+        candidates.map((c) => c.imagePath).toList(),
+        ['/art/a.png', '/art/b.png', '/art/c.png'],
+      );
+    });
+
+    test('skips projects with no thumbnail', () {
+      final candidates = releaseArtworkCandidates(
+        [
+          TestFactories.makeProject(id: 'p1', thumbnailPath: null),
+          TestFactories.makeProject(id: 'p2', thumbnailPath: '/art/b.png'),
+        ],
+        imageExists: existsExcept(const {}),
+      );
+
+      expect(candidates.map((c) => c.projectId).toList(), ['p2']);
+    });
+
+    test('skips a thumbnail whose file is gone', () {
+      // A broken-image tile is worse than one fewer choice.
+      final candidates = releaseArtworkCandidates(
+        [
+          TestFactories.makeProject(id: 'p1', thumbnailPath: '/art/gone.png'),
+          TestFactories.makeProject(id: 'p2', thumbnailPath: '/art/b.png'),
+        ],
+        imageExists: existsExcept({'/art/gone.png'}),
+      );
+
+      expect(candidates.map((c) => c.projectId).toList(), ['p2']);
+    });
+
+    test('collapses duplicate paths to a single entry', () {
+      // Several versions of one song commonly share a cover — offering the
+      // same picture three times is just noise.
+      final candidates = releaseArtworkCandidates(
+        [
+          TestFactories.makeProject(id: 'p1', thumbnailPath: '/art/same.png'),
+          TestFactories.makeProject(id: 'p2', thumbnailPath: '/art/same.png'),
+          TestFactories.makeProject(id: 'p3', thumbnailPath: '/art/other.png'),
+        ],
+        imageExists: existsExcept(const {}),
+      );
+
+      expect(
+        candidates.map((c) => c.imagePath).toList(),
+        ['/art/same.png', '/art/other.png'],
+      );
+    });
+
+    test('returns empty for an empty selection', () {
+      expect(
+        releaseArtworkCandidates(const [],
+            imageExists: existsExcept(const {})),
+        isEmpty,
+      );
+    });
+  });
+
+  group('shouldOfferArtworkCarryOver', () {
+    test('does not interrupt when there is nothing to carry over', () {
+      expect(shouldOfferArtworkCarryOver(const []), isFalse);
+    });
+
+    test('asks even for a single candidate', () {
+      // A track's thumbnail is not automatically the release's cover — a
+      // release created with artwork the user never chose is harder to notice
+      // than one created without any.
+      final candidates = releaseArtworkCandidates(
+        [TestFactories.makeProject(thumbnailPath: '/art/a.png')],
+        imageExists: existsExcept(const {}),
+      );
+      expect(shouldOfferArtworkCarryOver(candidates), isTrue);
+    });
+  });
+}

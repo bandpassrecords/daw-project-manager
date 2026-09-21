@@ -3744,5 +3744,26 @@
   "discardArchiveButtonLabel": "Archiv verwerfen",
   "discardArchiveConfirmTitle": "Archiv verwerfen?",
   "discardArchiveConfirmMessage": "Löscht die ZIP-Datei und entfernt die Archiv-Markierung. Die Projektdateien selbst bleiben, wo sie sind.",
-  "discardArchiveDone": "Archiv verworfen"
+  "discardArchiveDone": "Archiv verworfen",
+
+  "whatsNewTitle": "Neuigkeiten",
+  "whatsNewTitleWithVersion": "Neuigkeiten in Version {version}",
+  "whatsNewIntro": "Das hat sich seit Ihrer letzten Version geändert.",
+  "whatsNewGotIt": "Verstanden",
+  "changelogFullButton": "Vollständiges Changelog",
+  "changelogPageTitle": "Changelog",
+  "changelogEmpty": "Für diesen Build ist kein Changelog verfügbar.",
+  "changelogCurrentVersionBadge": "Installiert",
+  "disableProjectFolderTooltip": "Diesen Ordner deaktivieren (Projekte bleiben erhalten)",
+  "enableProjectFolderTooltip": "Diesen Ordner aktivieren",
+  "projectFolderDisabledBadge": "Deaktiviert",
+  "projectFolderDisabledExplanation": "Wird nicht gescannt, und die Projekte sind ausgeblendet. Es wurde nichts gelöscht — aktivieren Sie ihn, um sie zurückzuholen.",
+  "projectFolderEnabled": "„{name}“ wird wieder gescannt",
+  "projectFolderDisabled": "„{name}“ ist deaktiviert — die Projekte sind ausgeblendet, nicht gelöscht",
+  "releaseArtworkCarryOverTitle": "Vorschaubild einer Spur als Cover verwenden?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{Eine der ausgewählten Spuren hat ein Vorschaubild. Als Cover dieses Releases übernehmen?} other{{count} der ausgewählten Spuren haben ein Vorschaubild. Wählen Sie eines als Cover dieses Releases.}}",
+  "releaseArtworkCarryOverUse": "Als Cover verwenden",
+  "releaseArtworkCarryOverSkip": "Kein Cover",
+  "tracksViewList": "Listenansicht",
+  "tracksViewTable": "Tabellenansicht"
 }

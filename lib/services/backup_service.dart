@@ -324,10 +324,10 @@ class BackupService {
         if (importMode == ImportMode.merge) {
           final existingRoots = targetRepo.getRoots();
           if (!existingRoots.any((r) => r.path == root.path)) {
-            await targetRepo.addRoot(root.path);
+            await targetRepo.addRoot(root.path, enabled: root.enabled);
           }
         } else {
-          await targetRepo.addRoot(root.path);
+          await targetRepo.addRoot(root.path, enabled: root.enabled);
         }
       }
 
@@ -1036,6 +1036,9 @@ class BackupService {
       'path': root.path,
       'addedAt': root.addedAt.toIso8601String(),
       'lastScanAt': root.lastScanAt?.toIso8601String(),
+      // User data: "I switched this folder off" is a decision about the
+      // library, not a device preference, so it survives export/import.
+      'enabled': root.enabled,
     };
   }
 
@@ -1053,6 +1056,9 @@ class BackupService {
       path: json['path'] as String,
       addedAt: DateTime.parse(json['addedAt'] as String),
       lastScanAt: json['lastScanAt'] != null ? DateTime.parse(json['lastScanAt'] as String) : null,
+      // Absent in backups written before the field existed — those roots
+      // were all being scanned.
+      enabled: json['enabled'] as bool? ?? true,
     );
   }
 

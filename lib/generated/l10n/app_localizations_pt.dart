@@ -5554,4 +5554,83 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'Pacote descartado';
+
+  @override
+  String get whatsNewTitle => 'Novidades';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'Novidades na versão $version';
+  }
+
+  @override
+  String get whatsNewIntro => 'Veja o que mudou desde a sua versão anterior.';
+
+  @override
+  String get whatsNewGotIt => 'Entendi';
+
+  @override
+  String get changelogFullButton => 'Changelog completo';
+
+  @override
+  String get changelogPageTitle => 'Changelog';
+
+  @override
+  String get changelogEmpty => 'Nenhum changelog disponível para esta versão.';
+
+  @override
+  String get changelogCurrentVersionBadge => 'Instalada';
+
+  @override
+  String get disableProjectFolderTooltip =>
+      'Desativar esta pasta (mantém os projetos)';
+
+  @override
+  String get enableProjectFolderTooltip => 'Ativar esta pasta';
+
+  @override
+  String get projectFolderDisabledBadge => 'Desativada';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'Não é escaneada, e seus projetos ficam ocultos. Nada foi apagado — ative-a para trazê-los de volta.';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '\"$name\" voltou a ser escaneada';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '\"$name\" foi desativada — seus projetos foram ocultados, não apagados';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle =>
+      'Usar a miniatura de uma faixa como capa?';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count das faixas selecionadas têm miniatura. Escolha uma para usar como capa deste lançamento.',
+      one:
+          'Uma das faixas selecionadas tem miniatura. Deseja usá-la como capa deste lançamento?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'Usar como capa';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'Sem capa';
+
+  @override
+  String get tracksViewList => 'Visualização em lista';
+
+  @override
+  String get tracksViewTable => 'Visualização em tabela';
 }

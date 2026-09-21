@@ -469,12 +469,16 @@ class ProjectRepository {
   /// Registers [path] as a scan root and returns the created [ScanRoot] so
   /// callers can immediately scan just that folder (see
   /// [importProjectsFromRoot]) without re-looking it up by path.
-  Future<ScanRoot> addRoot(String path) async {
+  Future<ScanRoot> addRoot(String path, {bool enabled = true}) async {
     final id = _uuid.v4();
     final root = ScanRoot(
       id: id,
       path: path,
       addedAt: DateTime.now(),
+      // Carried through so a restore can put a root back the way it was
+      // stored — a folder the user had switched off should not come back
+      // scanning (see BackupService / GoogleDriveSyncService).
+      enabled: enabled,
       // Auto-derived friendly label — see ScanRoot.displayName's doc for
       // why this is needed on Linux/Flatpak (the stored path itself may
       // be a sandboxed document-portal path, not the real location).
@@ -600,6 +604,30 @@ class ProjectRepository {
   }
 
   List<ScanRoot> getRoots() => rootsBox.values.toList(growable: false);
+
+  /// The roots a scan should actually walk — [getRoots] minus the disabled
+  /// ones (see [ScanRoot.enabled]).
+  ///
+  /// Every scan entry point and the folder watcher go through this rather
+  /// than [getRoots]; Settings deliberately keeps using [getRoots], since a
+  /// disabled root still has to be listed for the user to turn it back on.
+  List<ScanRoot> getActiveRoots() => [
+    for (final root in rootsBox.values)
+      if (root.enabled) root,
+  ];
+
+  /// Turns scanning for root [id] on or off. No-op if the root doesn't exist.
+  ///
+  /// Nothing is deleted either way — this is the non-destructive counterpart
+  /// to [removeRoot]. The projects under a disabled root stay in the box and
+  /// are merely filtered out of the lists (see `projectsProvider`), so the
+  /// switch is fully reversible.
+  Future<void> setRootEnabled(String id, bool enabled) async {
+    final root = rootsBox.get(id);
+    if (root == null) return;
+    if (root.enabled == enabled) return;
+    await rootsBox.put(id, root.copyWith(enabled: enabled));
+  }
 
   /// Updates the stored path for a scan root and rewrites the `filePath`,
   /// `previewSongPath`, and `previewSongAutoPath` of every project whose path
@@ -1315,7 +1343,7 @@ class ProjectRepository {
   Future<int> autoStackFolders() async {
     final stackRoots = [
       for (final root in rootsBox.values)
-        if (root.scanMode == ScanMode.versionStack) root.path,
+        if (root.enabled && root.scanMode == ScanMode.versionStack) root.path,
     ];
     if (stackRoots.isEmpty) return 0;
     return applyAutoStackPlan(planAutoStack(stackRoots));

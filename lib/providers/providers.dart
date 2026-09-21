@@ -22,6 +22,8 @@ import '../utils/mobile_utils.dart';
 import '../utils/version_stacks.dart';
 import '../utils/phase_colors.dart';
 import '../utils/todo_due_utils.dart';
+import '../utils/project_artwork.dart';
+import '../utils/scan_root_filters.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
@@ -481,6 +483,17 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
         // is where it is actually stored.
         projects = collapseVersionStacks(projects);
 
+        // --- Filter out projects under a disabled scan root ---
+        // Disabling a root silences a folder without deleting it (see
+        // ScanRoot.enabled), so its projects stay in the box and are dropped
+        // here instead. Skipped on mobile for the same reason the block below
+        // is: there is no local filesystem to relate a project to a root.
+        if (!MobileUtils.isMobile() && scanRoots.any((r) => !r.enabled)) {
+          projects = projects
+              .where((project) => !isHiddenByDisabledRoot(project.filePath, scanRoots))
+              .toList();
+        }
+
         // --- Filter out stale preserved projects ---
         // A "preserved" project is one attached to a release. We hide it only when its
         // source file DOES exist locally but falls outside every active scan root (the
@@ -493,12 +506,14 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
             protectedProjectIds.addAll(release.trackIds);
           }
 
-          final activeRootPaths = scanRoots.map((root) {
-            final normalized = p.normalize(root.path);
-            return normalized.endsWith(p.separator)
-                ? normalized
-                : normalized + p.separator;
-          }).toList();
+          // Only enabled roots count as "active" here — a project preserved
+          // by a release whose root is switched off has already been dropped
+          // above, and treating a disabled root as active would contradict
+          // that.
+          final activeRootPaths = [
+            for (final root in scanRoots)
+              if (root.enabled) normalizedRootPrefix(root.path),
+          ];
 
           projects = projects.where((project) {
             // Projects not attached to any release are always shown.
@@ -3395,13 +3410,17 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
   }
 
   ja.AudioSource _toAudioSource(MusicProject project, String trackPath) {
+    // The project's own thumbnail becomes the lock-screen / notification
+    // artwork when it has one; the bundled app icon (_artUri) is the fallback
+    // for everything else.
+    final thumbnail = resolveProjectThumbnail(project);
     return ja.AudioSource.uri(
       Uri.file(trackPath),
       tag: MediaItem(
         id: trackPath,
         title: project.displayName,
         artist: '',
-        artUri: _artUri,
+        artUri: thumbnail != null ? Uri.file(thumbnail) : _artUri,
       ),
     );
   }

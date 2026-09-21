@@ -21,6 +21,8 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../services/scanner_service.dart';
+import '../services/changelog_service.dart';
+import '../services/release_artwork_service.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
@@ -57,6 +59,10 @@ import 'statistics_page.dart';
 import 'queue_page.dart';
 import 'notification_settings_page.dart';
 import 'widgets/conversion_progress_dialog.dart';
+import 'dialogs/release_artwork_carryover_dialog.dart';
+import 'widgets/ctrl_wheel_volume.dart';
+import 'widgets/whats_new_dialog.dart';
+import 'changelog_page.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_card_grid.dart';
 import 'widgets/drag_to_share_button.dart';
@@ -226,6 +232,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   bool _pinnedWarningShown = false;
   PinnedLibraryWarning? _pinnedWarning;
 
+  // "What's New" after an update. The pending changelog is read once in
+  // initState — reading it also marks this version seen, so the dialog can
+  // never appear twice for one update even if the user quits before
+  // dismissing it. Empty on a fresh install and on every launch that isn't
+  // the first after an update.
+  List<ChangelogRelease> _pendingChangelog = const [];
+  bool _changelogShown = false;
+
   // Ordered list of currently visible tabs (derived from provider, updated via ref.listen)
   List<AppTab> _currentVisibleTabs = [
     AppTab.projects,
@@ -320,6 +334,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         if (mounted) setState(() => _hideStartupDialog = v);
       });
     }
+
+    // Shown on every platform: an Android user who updates through the Play
+    // Store has as much reason to see what changed as a desktop one.
+    ChangelogService.takePendingChangelog(appVersion).then((releases) {
+      if (mounted && releases.isNotEmpty) {
+        setState(() => _pendingChangelog = releases);
+      }
+    });
 
     // Not gated on desktop: CI hands testers a pinned debug APK too
     // (build_android), and it is isolated from their installed app in exactly
@@ -772,7 +794,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       // so the progress overlay can show an accurate "X of Y" total before
       // the slow part — per-file metadata extraction — begins below.
       final entitiesByRoot = <ScanRoot, List<FileSystemEntity>>{};
-      for (final root in repo.getRoots()) {
+      for (final root in repo.getActiveRoots()) {
         if (_scanCancelRequested) break;
         if (kDebugMode) debugPrint('[_scanAll] enumerating root ${root.path}...');
         final entities = <FileSystemEntity>[];
@@ -1176,8 +1198,24 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       releaseTitle = ''; // Empty title, user will fill it in the release page
     }
 
+    // Offer the selected tracks' own thumbnails as the release artwork (see
+    // release_artwork_service.dart). Asked here, before the release exists,
+    // so the cover is part of creating it rather than a follow-up edit.
+    if (!context.mounted) return;
+    final artwork = await showReleaseArtworkCarryOverDialog(
+      context,
+      releaseArtworkCandidates(selectedProjects),
+    );
+    if (!context.mounted) return;
+
     final selectedProjectIds = selectedProjects.map((p) => p.id).toList();
-    await _createRelease(context, ref, selectedProjectIds, releaseTitle);
+    await _createRelease(
+      context,
+      ref,
+      selectedProjectIds,
+      releaseTitle,
+      artworkImagePath: artwork.imagePath,
+    );
 
     // Clear selection after creating release
     ref.read(selectedProjectsProvider.notifier).clear();
@@ -1556,8 +1594,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     BuildContext context,
     WidgetRef ref,
     List<String> selectedProjectIds,
-    String releaseTitle,
-  ) async {
+    String releaseTitle, {
+    String? artworkImagePath,
+  }) async {
     try {
       final repo = await ref.read(repositoryProvider.future);
       final newRelease = Release(
@@ -1565,6 +1604,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         title: releaseTitle,
         trackIds: selectedProjectIds,
         releaseDate: DateTime.now(),
+        artworkImagePath: artworkImagePath,
       );
       await repo.addRelease(newRelease);
 
@@ -1634,6 +1674,29 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         await showPinnedLibraryWarningDialog(context, warning);
         // Releases the startup dialog below, and rebuilds so it can run.
         if (mounted) setState(() => _pinnedWarningPending = false);
+      });
+    }
+
+    // "What's New" after an update. Queued behind the pinned-library warning
+    // so the two never stack; it cannot collide with the first-launch dialog
+    // below, which only ever shows on a blank profile — exactly the case
+    // where there is no changelog to show.
+    if (_pendingChangelog.isNotEmpty &&
+        !_changelogShown &&
+        !_pinnedWarningPending) {
+      _changelogShown = true;
+      final releases = _pendingChangelog;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showWhatsNewDialog(
+          context,
+          releases,
+          onViewFullChangelog: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const ChangelogPage(currentVersion: appVersion),
+            ),
+          ),
+        );
       });
     }
 
@@ -8548,6 +8611,14 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
       ? widget.project.previewSongPath
       : (_autoDetectedPath ?? widget.project.previewSongAutoPath);
 
+  /// The one way volume changes in this dialog — both sliders and the
+  /// ctrl+wheel handler call it, so the displayed level and the player can't
+  /// drift apart.
+  void _setVolume(double value) {
+    setState(() => _volume = value);
+    unawaited(_audioPlayer.setVolume(value));
+  }
+
   void _attachListeners(AudioPlayer player, int gen) {
     player.onPlayerStateChanged.listen((state) {
       if (gen != _playerGen || !mounted) return;
@@ -9013,12 +9084,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                 value: _volume,
                 min: 0.0,
                 max: 1.0,
-                onChanged: (value) async {
-                  setState(() {
-                    _volume = value;
-                  });
-                  await _audioPlayer.setVolume(value);
-                },
+                onChanged: _setVolume,
               ),
             ),
             const SizedBox(width: 8),
@@ -9167,12 +9233,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                 value: _volume,
                 min: 0.0,
                 max: 1.0,
-                onChanged: (value) async {
-                  setState(() {
-                    _volume = value;
-                  });
-                  await _audioPlayer.setVolume(value);
-                },
+                onChanged: _setVolume,
               ),
             ),
           ],
@@ -9660,9 +9721,16 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
         ),
         content: SizedBox(
           width: MobileUtils.isMobile() ? double.infinity : 600,
-          child: MobileUtils.isMobile()
-              ? _buildAndroidPlayerLayout(context)
-              : _buildDesktopPlayerLayout(context),
+          // Ctrl+wheel anywhere over the player moves the volume, so the user
+          // doesn't have to hit the slider itself.
+          child: CtrlWheelVolume(
+            volume: _volume,
+            onVolumeChanged: _setVolume,
+            enabled: !MobileUtils.isMobile(),
+            child: MobileUtils.isMobile()
+                ? _buildAndroidPlayerLayout(context)
+                : _buildDesktopPlayerLayout(context),
+          ),
         ),
       ),
     );
@@ -9716,6 +9784,18 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   String get _activePath => _isMono && _monoFilePath != null
       ? _monoFilePath!
       : widget.request.resolvedPath;
+
+  /// The one way volume changes in this bar — slider, mute button and the
+  /// ctrl+wheel handler all call it, so the icon, the slider position and the
+  /// player never disagree.
+  ///
+  /// Any non-zero level is remembered as the level unmute restores, which is
+  /// why the wheel can be used to come back up from a muted player.
+  void _setVolume(double value) {
+    setState(() => _volume = value);
+    if (value > 0) _preMuteVolume = value;
+    _player.setVolume(value);
+  }
 
   bool _supportsMonoMix() {
     final ext = widget.request.resolvedPath.toLowerCase().split('.').last;
@@ -10147,7 +10227,13 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
 
     return Focus(
       focusNode: _focusNode,
-      child: GestureDetector(
+      // Ctrl+wheel anywhere over the bar rides the volume — this player has
+      // no window of its own, so reaching the slider means crossing the whole
+      // bar first.
+      child: CtrlWheelVolume(
+        volume: _volume,
+        onVolumeChanged: _setVolume,
+        child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapDown: (_) => _focusNode.requestFocus(),
         child: Material(
@@ -10269,19 +10355,16 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                         color: cs.onSurface.withValues(alpha: 0.6),
                         padding: iconPad,
                         constraints: iconConstraints,
-                        tooltip: _volume == 0 ? 'Unmute' : 'Mute',
+                        tooltip: _volume == 0
+                            ? l10n.volumeUnmute
+                            : l10n.volumeMute,
                         onPressed: () {
                           if (_volume > 0) {
                             _preMuteVolume = _volume;
-                            setState(() => _volume = 0);
+                            _setVolume(0);
                           } else {
-                            setState(
-                              () => _volume = _preMuteVolume > 0
-                                  ? _preMuteVolume
-                                  : 1.0,
-                            );
+                            _setVolume(_preMuteVolume > 0 ? _preMuteVolume : 1.0);
                           }
-                          _player.setVolume(_volume);
                         },
                       ),
                       SizedBox(
@@ -10290,11 +10373,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                           value: _volume,
                           min: 0,
                           max: 1,
-                          onChanged: (v) {
-                            setState(() => _volume = v);
-                            if (v > 0) _preMuteVolume = v;
-                            _player.setVolume(v);
-                          },
+                          onChanged: _setVolume,
                         ),
                       ),
                       // Centered track name + filename
@@ -10508,6 +10587,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

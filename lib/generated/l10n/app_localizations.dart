@@ -9310,6 +9310,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Archive discarded'**
   String get discardArchiveDone;
+
+  /// No description provided for @whatsNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s New'**
+  String get whatsNewTitle;
+
+  /// Title of the one-time post-update dialog, e.g. What's New in 2.9.0
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s New in {version}'**
+  String whatsNewTitleWithVersion(String version);
+
+  /// No description provided for @whatsNewIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s what changed since your last version.'**
+  String get whatsNewIntro;
+
+  /// No description provided for @whatsNewGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get whatsNewGotIt;
+
+  /// No description provided for @changelogFullButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Full changelog'**
+  String get changelogFullButton;
+
+  /// No description provided for @changelogPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Changelog'**
+  String get changelogPageTitle;
+
+  /// No description provided for @changelogEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No changelog is available for this build.'**
+  String get changelogEmpty;
+
+  /// No description provided for @changelogCurrentVersionBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed'**
+  String get changelogCurrentVersionBadge;
+
+  /// No description provided for @disableProjectFolderTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable this folder (keeps its projects)'**
+  String get disableProjectFolderTooltip;
+
+  /// No description provided for @enableProjectFolderTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable this folder'**
+  String get enableProjectFolderTooltip;
+
+  /// No description provided for @projectFolderDisabledBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get projectFolderDisabledBadge;
+
+  /// No description provided for @projectFolderDisabledExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Not scanned, and its projects are hidden. Nothing was deleted — enable it to bring them back.'**
+  String get projectFolderDisabledExplanation;
+
+  /// Snackbar after switching a scan root back on
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" is now being scanned again'**
+  String projectFolderEnabled(String name);
+
+  /// Snackbar after switching a scan root off
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" is disabled — its projects are hidden, not deleted'**
+  String projectFolderDisabled(String name);
+
+  /// No description provided for @releaseArtworkCarryOverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a track thumbnail as artwork?'**
+  String get releaseArtworkCarryOverTitle;
+
+  /// Body of the dialog offering a selected track thumbnail as release artwork
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One of the selected tracks has a thumbnail. Carry it over as this release’s artwork?} other{{count} of the selected tracks have thumbnails. Pick one to carry over as this release’s artwork.}}'**
+  String releaseArtworkCarryOverBody(int count);
+
+  /// No description provided for @releaseArtworkCarryOverUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Use as artwork'**
+  String get releaseArtworkCarryOverUse;
+
+  /// No description provided for @releaseArtworkCarryOverSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'No artwork'**
+  String get releaseArtworkCarryOverSkip;
+
+  /// No description provided for @tracksViewList.
+  ///
+  /// In en, this message translates to:
+  /// **'List view'**
+  String get tracksViewList;
+
+  /// No description provided for @tracksViewTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Table view'**
+  String get tracksViewTable;
 }
 
 class _AppLocalizationsDelegate

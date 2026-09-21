@@ -52,6 +52,7 @@ import 'widgets/language_switcher.dart' show LanguageSwitcher;
 import 'widgets/license_dialog.dart';
 import 'widgets/shortcuts_help_dialog.dart';
 import 'widgets/update_available_dialog.dart';
+import 'changelog_page.dart';
 
 /// A Flatpak document-portal path, e.g.
 /// `/run/user/1000/doc/98127/projects` — the portal never exposes the real
@@ -649,6 +650,36 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final repo = await ref.read(repositoryProvider.future);
     await repo.setRootDisplayName(folderId, newName);
     ref.invalidate(scanRootsProvider);
+  }
+
+  /// Flips a root's [ScanRoot.enabled] switch — the non-destructive
+  /// counterpart to [_removeProjectFolder], which deletes the projects under
+  /// the folder. No confirmation: nothing is lost either way, and the switch
+  /// is right there to put back.
+  Future<void> _setProjectFolderEnabled(ScanRoot root, bool enabled) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      await repo.setRootEnabled(root.id, enabled);
+      ref.invalidate(rootsWatchProvider);
+      ref.invalidate(scanRootsProvider);
+      ref.invalidate(allProjectsStreamProvider);
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              enabled
+                  ? l10n.projectFolderEnabled(root.effectiveDisplayName)
+                  : l10n.projectFolderDisabled(root.effectiveDisplayName),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _removeProjectFolder(String folderId) async {
@@ -1638,10 +1669,37 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 else
                   ...projectFolders.map((f) {
                     final isPortalPath = looksLikeFlatpakPortalPath(f.path);
+                    // A disabled root stays listed — it is the only way back
+                    // on — but reads as switched off rather than as a folder
+                    // that is quietly not working.
+                    final disabledTone = Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.color
+                        ?.withValues(alpha: 0.45);
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.folder),
-                      title: Text(f.effectiveDisplayName),
+                      leading: Icon(
+                        f.enabled ? Icons.folder : Icons.folder_off_outlined,
+                        color: f.enabled ? null : disabledTone,
+                      ),
+                      title: Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              f.effectiveDisplayName,
+                              overflow: TextOverflow.ellipsis,
+                              style: f.enabled
+                                  ? null
+                                  : TextStyle(color: disabledTone),
+                            ),
+                          ),
+                          if (!f.enabled) ...[
+                            const SizedBox(width: 8),
+                            _DisabledFolderBadge(label: l10n.projectFolderDisabledBadge),
+                          ],
+                        ],
+                      ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1655,6 +1713,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 ? l10n.notScannedYet
                                 : l10n.lastScan(dateFormat.format(f.lastScanAt!)),
                           ),
+                          if (!f.enabled)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                l10n.projectFolderDisabledExplanation,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(fontStyle: FontStyle.italic),
+                              ),
+                            ),
                           if (isPortalPath)
                             Padding(
                               padding: const EdgeInsets.only(top: 4),
@@ -1696,7 +1763,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     visualDensity: VisualDensity.compact,
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
-                                  onSelectionChanged: _busy
+                                  onSelectionChanged: (_busy || !f.enabled)
                                       ? null
                                       : (selection) => _updateScanMode(f, selection.first),
                                 ),
@@ -1708,6 +1775,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // Sits before Remove on purpose: switching a folder
+                          // off is the reversible thing to reach for first.
+                          Tooltip(
+                            message: f.enabled
+                                ? l10n.disableProjectFolderTooltip
+                                : l10n.enableProjectFolderTooltip,
+                            child: Switch(
+                              value: f.enabled,
+                              onChanged: _busy
+                                  ? null
+                                  : (value) => _setProjectFolderEnabled(f, value),
+                            ),
+                          ),
                           IconButton(
                             tooltip: l10n.renameButton,
                             onPressed: _busy ? null : () => _renameProjectFolder(f.id, f.effectiveDisplayName),
@@ -2713,6 +2793,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       icon: const Icon(Icons.menu_book_outlined, size: 16),
                       label: Text(l10n.menuDocumentation),
                     ),
+                    // The whole accumulated history. The startup dialog marks
+                    // itself seen, so without this there'd be no way back to
+                    // what it showed — or to anything older.
+                    OutlinedButton.icon(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const ChangelogPage(currentVersion: appVersion),
+                        ),
+                      ),
+                      icon: const Icon(Icons.auto_awesome, size: 16),
+                      label: Text(l10n.changelogPageTitle),
+                    ),
                     OutlinedButton.icon(
                       onPressed: () => showLicenseDialog(context),
                       icon: const Icon(Icons.gavel_outlined, size: 16),
@@ -3454,6 +3547,34 @@ class _SearchEntry {
   final String? subtitle;
 
   const _SearchEntry(this.section, this.icon, this.title, this.subtitle);
+}
+
+/// Small "Disabled" pill next to a switched-off scan root's name, so the
+/// state reads at a glance without hunting for the switch on the far right.
+class _DisabledFolderBadge extends StatelessWidget {
+  const _DisabledFolderBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.4,
+        ),
+      ),
+    );
+  }
 }
 
 class _EmptyState extends StatelessWidget {

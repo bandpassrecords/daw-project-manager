@@ -3744,5 +3744,26 @@
   "discardArchiveButtonLabel": "Удалить архив",
   "discardArchiveConfirmTitle": "Удалить архив?",
   "discardArchiveConfirmMessage": "Удаляет zip и снимает пометку «в архиве». Файлы самого проекта остаются на месте.",
-  "discardArchiveDone": "Архив удалён"
+  "discardArchiveDone": "Архив удалён",
+
+  "whatsNewTitle": "Что нового",
+  "whatsNewTitleWithVersion": "Что нового в версии {version}",
+  "whatsNewIntro": "Вот что изменилось с момента вашей предыдущей версии.",
+  "whatsNewGotIt": "Понятно",
+  "changelogFullButton": "Полный список изменений",
+  "changelogPageTitle": "Список изменений",
+  "changelogEmpty": "Для этой сборки список изменений недоступен.",
+  "changelogCurrentVersionBadge": "Установлена",
+  "disableProjectFolderTooltip": "Отключить эту папку (проекты сохраняются)",
+  "enableProjectFolderTooltip": "Включить эту папку",
+  "projectFolderDisabledBadge": "Отключена",
+  "projectFolderDisabledExplanation": "Не сканируется, её проекты скрыты. Ничего не удалено — включите её, чтобы вернуть их.",
+  "projectFolderEnabled": "«{name}» снова сканируется",
+  "projectFolderDisabled": "«{name}» отключена — её проекты скрыты, а не удалены",
+  "releaseArtworkCarryOverTitle": "Использовать миниатюру трека как обложку?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{У одного из выбранных треков есть миниатюра. Использовать её как обложку этого релиза?} other{Миниатюры есть у {count} выбранных треков. Выберите одну для обложки этого релиза.}}",
+  "releaseArtworkCarryOverUse": "Использовать как обложку",
+  "releaseArtworkCarryOverSkip": "Без обложки",
+  "tracksViewList": "Списком",
+  "tracksViewTable": "Таблицей"
 }

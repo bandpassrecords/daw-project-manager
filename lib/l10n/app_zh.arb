@@ -3744,5 +3744,26 @@
   "discardArchiveButtonLabel": "丢弃归档",
   "discardArchiveConfirmTitle": "要丢弃归档吗？",
   "discardArchiveConfirmMessage": "删除 zip 并清除归档标记。项目自身的文件会留在原处。",
-  "discardArchiveDone": "已丢弃归档"
+  "discardArchiveDone": "已丢弃归档",
+
+  "whatsNewTitle": "新增功能",
+  "whatsNewTitleWithVersion": "{version} 版本的新增功能",
+  "whatsNewIntro": "以下是自上一个版本以来的变化。",
+  "whatsNewGotIt": "知道了",
+  "changelogFullButton": "完整更新日志",
+  "changelogPageTitle": "更新日志",
+  "changelogEmpty": "此版本没有可用的更新日志。",
+  "changelogCurrentVersionBadge": "已安装",
+  "disableProjectFolderTooltip": "停用此文件夹（保留其项目）",
+  "enableProjectFolderTooltip": "启用此文件夹",
+  "projectFolderDisabledBadge": "已停用",
+  "projectFolderDisabledExplanation": "不会被扫描，其项目会被隐藏。没有删除任何内容——重新启用即可恢复。",
+  "projectFolderEnabled": "已重新开始扫描“{name}”",
+  "projectFolderDisabled": "已停用“{name}”——其项目被隐藏，而非删除",
+  "releaseArtworkCarryOverTitle": "使用曲目缩略图作为封面吗？",
+  "releaseArtworkCarryOverBody": "{count, plural, other{所选曲目中有 {count} 个带有缩略图。请选择一个作为此发行的封面。}}",
+  "releaseArtworkCarryOverUse": "用作封面",
+  "releaseArtworkCarryOverSkip": "不使用封面",
+  "tracksViewList": "列表视图",
+  "tracksViewTable": "表格视图"
 }

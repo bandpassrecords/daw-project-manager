@@ -5554,4 +5554,84 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'Архив удалён';
+
+  @override
+  String get whatsNewTitle => 'Что нового';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'Что нового в версии $version';
+  }
+
+  @override
+  String get whatsNewIntro =>
+      'Вот что изменилось с момента вашей предыдущей версии.';
+
+  @override
+  String get whatsNewGotIt => 'Понятно';
+
+  @override
+  String get changelogFullButton => 'Полный список изменений';
+
+  @override
+  String get changelogPageTitle => 'Список изменений';
+
+  @override
+  String get changelogEmpty => 'Для этой сборки список изменений недоступен.';
+
+  @override
+  String get changelogCurrentVersionBadge => 'Установлена';
+
+  @override
+  String get disableProjectFolderTooltip =>
+      'Отключить эту папку (проекты сохраняются)';
+
+  @override
+  String get enableProjectFolderTooltip => 'Включить эту папку';
+
+  @override
+  String get projectFolderDisabledBadge => 'Отключена';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'Не сканируется, её проекты скрыты. Ничего не удалено — включите её, чтобы вернуть их.';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '«$name» снова сканируется';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '«$name» отключена — её проекты скрыты, а не удалены';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle =>
+      'Использовать миниатюру трека как обложку?';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Миниатюры есть у $count выбранных треков. Выберите одну для обложки этого релиза.',
+      one:
+          'У одного из выбранных треков есть миниатюра. Использовать её как обложку этого релиза?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'Использовать как обложку';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'Без обложки';
+
+  @override
+  String get tracksViewList => 'Списком';
+
+  @override
+  String get tracksViewTable => 'Таблицей';
 }

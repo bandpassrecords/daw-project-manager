@@ -5400,4 +5400,78 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'アーカイブを破棄しました';
+
+  @override
+  String get whatsNewTitle => '新着情報';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'バージョン $version の新着情報';
+  }
+
+  @override
+  String get whatsNewIntro => '前のバージョンからの変更点です。';
+
+  @override
+  String get whatsNewGotIt => 'OK';
+
+  @override
+  String get changelogFullButton => '全変更履歴';
+
+  @override
+  String get changelogPageTitle => '変更履歴';
+
+  @override
+  String get changelogEmpty => 'このビルドの変更履歴はありません。';
+
+  @override
+  String get changelogCurrentVersionBadge => 'インストール済み';
+
+  @override
+  String get disableProjectFolderTooltip => 'このフォルダーを無効にする（プロジェクトは保持）';
+
+  @override
+  String get enableProjectFolderTooltip => 'このフォルダーを有効にする';
+
+  @override
+  String get projectFolderDisabledBadge => '無効';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'スキャンされず、プロジェクトは非表示になります。削除はされていません。有効にすると元に戻ります。';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '「$name」のスキャンを再開しました';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '「$name」を無効にしました。プロジェクトは非表示になるだけで削除されません';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle => 'トラックのサムネイルをアートワークに使いますか？';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '選択したトラックのうち $count 件にサムネイルがあります。このリリースのアートワークに使うものを選んでください。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'アートワークに使う';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'アートワークなし';
+
+  @override
+  String get tracksViewList => 'リスト表示';
+
+  @override
+  String get tracksViewTable => 'テーブル表示';
 }

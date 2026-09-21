@@ -5684,6 +5684,8 @@ class GoogleDriveSyncService {
       'path': root.path,
       'addedAt': root.addedAt.toIso8601String(),
       'lastScanAt': root.lastScanAt?.toIso8601String(),
+      // User data: a folder the user switched off should come back off.
+      'enabled': root.enabled,
     };
   }
 
@@ -5695,6 +5697,8 @@ class GoogleDriveSyncService {
       lastScanAt: data['lastScanAt'] != null
           ? DateTime.parse(data['lastScanAt'] as String)
           : null,
+      // Absent in snapshots written before the field existed.
+      enabled: data['enabled'] as bool? ?? true,
     );
   }
 

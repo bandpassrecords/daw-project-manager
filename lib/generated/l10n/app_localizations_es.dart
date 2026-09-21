@@ -5583,4 +5583,85 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'Comprimido descartado';
+
+  @override
+  String get whatsNewTitle => 'Novedades';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'Novedades en la versión $version';
+  }
+
+  @override
+  String get whatsNewIntro =>
+      'Esto es lo que cambió desde tu versión anterior.';
+
+  @override
+  String get whatsNewGotIt => 'Entendido';
+
+  @override
+  String get changelogFullButton => 'Changelog completo';
+
+  @override
+  String get changelogPageTitle => 'Changelog';
+
+  @override
+  String get changelogEmpty =>
+      'No hay changelog disponible para esta compilación.';
+
+  @override
+  String get changelogCurrentVersionBadge => 'Instalada';
+
+  @override
+  String get disableProjectFolderTooltip =>
+      'Desactivar esta carpeta (conserva sus proyectos)';
+
+  @override
+  String get enableProjectFolderTooltip => 'Activar esta carpeta';
+
+  @override
+  String get projectFolderDisabledBadge => 'Desactivada';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'No se escanea y sus proyectos están ocultos. No se borró nada: actívala para recuperarlos.';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '\"$name\" vuelve a escanearse';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '\"$name\" está desactivada: sus proyectos se ocultan, no se eliminan';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle =>
+      '¿Usar la miniatura de una pista como portada?';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count de las pistas seleccionadas tienen miniatura. Elige una para usarla como portada de este lanzamiento.',
+      one:
+          'Una de las pistas seleccionadas tiene miniatura. ¿Usarla como portada de este lanzamiento?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'Usar como portada';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'Sin portada';
+
+  @override
+  String get tracksViewList => 'Vista de lista';
+
+  @override
+  String get tracksViewTable => 'Vista de tabla';
 }

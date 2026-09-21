@@ -3744,5 +3744,26 @@
   "discardArchiveButtonLabel": "Elimina archivio",
   "discardArchiveConfirmTitle": "Eliminare l'archivio?",
   "discardArchiveConfirmMessage": "Elimina lo zip e toglie il contrassegno di archiviato. I file del progetto restano dove sono.",
-  "discardArchiveDone": "Archivio eliminato"
+  "discardArchiveDone": "Archivio eliminato",
+
+  "whatsNewTitle": "Novità",
+  "whatsNewTitleWithVersion": "Novità nella versione {version}",
+  "whatsNewIntro": "Ecco cosa è cambiato dalla tua versione precedente.",
+  "whatsNewGotIt": "Ho capito",
+  "changelogFullButton": "Changelog completo",
+  "changelogPageTitle": "Changelog",
+  "changelogEmpty": "Nessun changelog disponibile per questa build.",
+  "changelogCurrentVersionBadge": "Installata",
+  "disableProjectFolderTooltip": "Disattiva questa cartella (mantiene i progetti)",
+  "enableProjectFolderTooltip": "Attiva questa cartella",
+  "projectFolderDisabledBadge": "Disattivata",
+  "projectFolderDisabledExplanation": "Non viene scansionata e i suoi progetti sono nascosti. Non è stato eliminato nulla: riattivala per recuperarli.",
+  "projectFolderEnabled": "\"{name}\" viene nuovamente scansionata",
+  "projectFolderDisabled": "\"{name}\" è disattivata: i suoi progetti sono nascosti, non eliminati",
+  "releaseArtworkCarryOverTitle": "Usare la miniatura di una traccia come copertina?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{Una delle tracce selezionate ha una miniatura. Usarla come copertina di questa pubblicazione?} other{{count} delle tracce selezionate hanno una miniatura. Scegline una come copertina di questa pubblicazione.}}",
+  "releaseArtworkCarryOverUse": "Usa come copertina",
+  "releaseArtworkCarryOverSkip": "Nessuna copertina",
+  "tracksViewList": "Vista elenco",
+  "tracksViewTable": "Vista tabella"
 }

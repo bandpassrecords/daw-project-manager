@@ -29,6 +29,7 @@ import 'project_detail_page.dart';
 import 'session_actions.dart';
 import 'widgets/resizable_text_field.dart';
 import 'widgets/todo_list_widget.dart';
+import 'widgets/release_tracks_table.dart';
 import 'widgets/waveform_widget.dart';
 
 class ReleaseDetailPage extends ConsumerStatefulWidget {
@@ -48,6 +49,14 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
   bool _isDraggingArtwork = false;
   bool _isDraggingFiles = false;
   Timer? _autoSaveTimer;
+
+  /// Table view for the tracklist instead of the ordered list.
+  ///
+  /// Per-page and not persisted on purpose: the list is the one that can be
+  /// dragged into running order, so it stays the default every time the page
+  /// opens. The table is for reading — sorting it never rewrites the
+  /// tracklist, which is exactly why it isn't the resting state.
+  bool _tracksAsTable = false;
 
   @override
   void initState() {
@@ -1501,6 +1510,35 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                         AppLocalizations.of(context)!.tracksCount(releaseProjects.length),
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
+                      const Spacer(),
+                      // List ↔ table. Desktop only: the table's seven columns
+                      // have nowhere to go on a phone, where the list is
+                      // already the right shape.
+                      if (releaseProjects.isNotEmpty) ...[
+                        SegmentedButton<bool>(
+                          segments: [
+                            ButtonSegment(
+                              value: false,
+                              icon: const Icon(Icons.view_list, size: 18),
+                              tooltip: AppLocalizations.of(context)!.tracksViewList,
+                            ),
+                            ButtonSegment(
+                              value: true,
+                              icon: const Icon(Icons.table_rows, size: 18),
+                              tooltip: AppLocalizations.of(context)!.tracksViewTable,
+                            ),
+                          ],
+                          selected: {_tracksAsTable},
+                          showSelectedIcon: false,
+                          style: const ButtonStyle(
+                            visualDensity: VisualDensity.compact,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onSelectionChanged: (selection) =>
+                              setState(() => _tracksAsTable = selection.first),
+                        ),
+                        const SizedBox(width: 12),
+                      ],
                       ElevatedButton.icon(
                         icon: const Icon(Icons.add),
                         label: Text(AppLocalizations.of(context)!.addTracks),
@@ -1554,6 +1592,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                         ),
                       ),
                     )
+                  : (!isMobile && _tracksAsTable)
+                  ? _buildTracksTable(context, release, releaseProjects)
                   : ReorderableListView.builder(
                       shrinkWrap: true,
                       physics: const AlwaysScrollableScrollPhysics(),
@@ -1702,36 +1742,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                                           icon: const Icon(Icons.remove_circle_outline),
                                           color: Colors.red.shade300,
                                           tooltip: AppLocalizations.of(context)!.tooltipRemoveFromRelease,
-                                          onPressed: () async {
-                                            final confirm = await showDialog<bool>(
-                                              context: context,
-                                              builder: (ctx) => AlertDialog(
-                                                backgroundColor: Theme.of(context).cardColor,
-                                                title: Text(AppLocalizations.of(context)!.tooltipRemoveFromRelease),
-                                                content: Text(AppLocalizations.of(context)!.removeTrackFromReleaseMessage(project.displayName)),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () => Navigator.pop(ctx, false),
-                                                    child: Text(AppLocalizations.of(context)!.cancel),
-                                                  ),
-                                                  ElevatedButton(
-                                                    onPressed: () => Navigator.pop(ctx, true),
-                                                    style: ElevatedButton.styleFrom(
-                                                      backgroundColor: Colors.red.shade300,
-                                                      foregroundColor: Colors.black,
-                                                    ),
-                                                    child: Text(AppLocalizations.of(context)!.remove),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                            if (confirm == true && mounted) {
-                                              final repo = await ref.read(repositoryProvider.future);
-                                              final updatedTrackIds = release.trackIds.where((id) => id != project.id).toList();
-                                              final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
-                                              await repo.updateRelease(updatedRelease);
-                                            }
-                                          },
+                                          // Shared with the table view so the
+                                          // wording and the write are identical
+                                          // whichever view the user is in.
+                                          onPressed: () =>
+                                              _confirmRemoveTrackFromRelease(
+                                                  release, project),
                                         ),
                                       ],
                                     ),
@@ -1743,6 +1759,76 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// The tracklist as a dashboard-style grid. Desktop only — see the toggle
+  /// in [_buildTracksSection].
+  ///
+  /// The row actions are the same three the list offers, routed back through
+  /// this page so there is one implementation of each, and the phase label and
+  /// colour are handed over rather than re-derived so the two views can't
+  /// disagree about what "Mixing" looks like.
+  Widget _buildTracksTable(
+    BuildContext context,
+    Release release,
+    List<MusicProject> releaseProjects,
+  ) {
+    final locale = ref.watch(localeProvider).toString();
+    return ReleaseTracksTable(
+      projects: releaseProjects,
+      dateFormat: DateFormat.yMMMd(locale),
+      translateStatus: (status) => _translateStatus(context, status),
+      statusColor: _getStatusColor,
+      onViewDetails: (project) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ProjectDetailPage(projectId: project.id),
+        ),
+      ),
+      // Always goes through launchProjectInDaw, never FileLauncher directly —
+      // that helper owns the DAW executable-override system and its
+      // remediation prompts.
+      onLaunch: (project) => launchProjectInDaw(context, ref, project),
+      onRemoveFromRelease: (project) =>
+          _confirmRemoveTrackFromRelease(release, project),
+    );
+  }
+
+  /// Removes [project] from [release] after one confirmation. Shared by the
+  /// list and the table so the wording and the write are identical.
+  Future<void> _confirmRemoveTrackFromRelease(
+    Release release,
+    MusicProject project,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text(l10n.tooltipRemoveFromRelease),
+        content: Text(l10n.removeTrackFromReleaseMessage(project.displayName)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade300,
+              foregroundColor: Colors.black,
+            ),
+            child: Text(l10n.remove),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+    final repo = await ref.read(repositoryProvider.future);
+    await repo.updateRelease(
+      release.copyWith(
+        trackIds: release.trackIds.where((id) => id != project.id).toList(),
       ),
     );
   }

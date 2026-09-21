@@ -310,9 +310,11 @@ void _startFolderWatcher(ProviderContainer container) {
     if (identical(repo, _folderWatcherActiveRepo)) return;
     _folderWatcherActiveRepo = repo;
     _folderWatcherRootsSub?.cancel();
-    watcher.syncRoots(repo.getRoots());
+    watcher.syncRoots(repo.getActiveRoots());
     _folderWatcherRootsSub = repo.watchRoots().listen((_) {
-      watcher.syncRoots(repo.getRoots());
+      // Re-read through getActiveRoots so flipping a root's enabled switch
+      // adds or drops its watcher right away, without a restart.
+      watcher.syncRoots(repo.getActiveRoots());
     });
   }
 
@@ -513,7 +515,7 @@ Future<int> _runInitialScan(
     // initial population, not a "new since last time" discovery.
     final knownPaths = repo.getAllProjects().map((p) => p.filePath).toSet();
     final newlyDiscoveredIds = <String>[];
-    for (final root in repo.getRoots()) {
+    for (final root in repo.getActiveRoots()) {
       final entities = <FileSystemEntity>[];
       await for (final entity in scanner.scanDirectory(
         root.path,

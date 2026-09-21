@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'dart:io';
+
+import '../../models/music_project.dart';
 import '../../providers/providers.dart';
+import '../../utils/project_artwork.dart';
 import '../mobile_player_page.dart';
 
 /// Barra estilo SoundCloud que aparece acima do NavigationBar quando há
@@ -94,20 +98,9 @@ class _MobileMiniPlayerState extends ConsumerState<MobileMiniPlayer>
                 padding: const EdgeInsets.fromLTRB(12, 10, 8, 6),
                 child: Row(
                   children: [
-                    // Music note icon
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.music_note_rounded,
-                        size: 22,
-                        color: colorScheme.primary,
-                      ),
-                    ),
+                    // Thumbnail of the playing track, or the note icon when
+                    // it has none — same image the full player shows.
+                    _MiniArtwork(project: state.currentProject),
                     const SizedBox(width: 10),
 
                     // Track name — slides during drag, AnimatedSwitcher on track change
@@ -178,4 +171,48 @@ class _MiniPlayPauseButton extends ConsumerWidget {
       constraints: const BoxConstraints(),
     );
   }
+}
+
+/// The mini player's 38 px cover: the track's thumbnail when it has one,
+/// otherwise the tinted note tile this bar has always shown.
+class _MiniArtwork extends StatelessWidget {
+  const _MiniArtwork({required this.project});
+
+  final MusicProject? project;
+
+  static const double _size = 38;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final thumbnail =
+        project == null ? null : resolveProjectThumbnail(project!);
+
+    if (thumbnail == null) return _fallback(colorScheme);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.file(
+        File(thumbnail),
+        width: _size,
+        height: _size,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _fallback(colorScheme),
+      ),
+    );
+  }
+
+  Widget _fallback(ColorScheme colorScheme) => Container(
+    width: _size,
+    height: _size,
+    decoration: BoxDecoration(
+      color: colorScheme.primary.withValues(alpha: 0.15),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Icon(
+      Icons.music_note_rounded,
+      size: 22,
+      color: colorScheme.primary,
+    ),
+  );
 }

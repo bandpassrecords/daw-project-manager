@@ -5571,4 +5571,84 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'Archiv verworfen';
+
+  @override
+  String get whatsNewTitle => 'Neuigkeiten';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'Neuigkeiten in Version $version';
+  }
+
+  @override
+  String get whatsNewIntro =>
+      'Das hat sich seit Ihrer letzten Version geändert.';
+
+  @override
+  String get whatsNewGotIt => 'Verstanden';
+
+  @override
+  String get changelogFullButton => 'Vollständiges Changelog';
+
+  @override
+  String get changelogPageTitle => 'Changelog';
+
+  @override
+  String get changelogEmpty => 'Für diesen Build ist kein Changelog verfügbar.';
+
+  @override
+  String get changelogCurrentVersionBadge => 'Installiert';
+
+  @override
+  String get disableProjectFolderTooltip =>
+      'Diesen Ordner deaktivieren (Projekte bleiben erhalten)';
+
+  @override
+  String get enableProjectFolderTooltip => 'Diesen Ordner aktivieren';
+
+  @override
+  String get projectFolderDisabledBadge => 'Deaktiviert';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'Wird nicht gescannt, und die Projekte sind ausgeblendet. Es wurde nichts gelöscht — aktivieren Sie ihn, um sie zurückzuholen.';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '„$name“ wird wieder gescannt';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '„$name“ ist deaktiviert — die Projekte sind ausgeblendet, nicht gelöscht';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle =>
+      'Vorschaubild einer Spur als Cover verwenden?';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count der ausgewählten Spuren haben ein Vorschaubild. Wählen Sie eines als Cover dieses Releases.',
+      one:
+          'Eine der ausgewählten Spuren hat ein Vorschaubild. Als Cover dieses Releases übernehmen?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'Als Cover verwenden';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'Kein Cover';
+
+  @override
+  String get tracksViewList => 'Listenansicht';
+
+  @override
+  String get tracksViewTable => 'Tabellenansicht';
 }

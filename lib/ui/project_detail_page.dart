@@ -49,6 +49,7 @@ import '../services/scanner_service.dart';
 import 'dialogs/attachment_edit_dialog.dart';
 import 'dialogs/save_as_template_dialog.dart';
 import 'dialogs/stack_version_picker_dialog.dart';
+import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_attachments_section.dart';
@@ -2864,6 +2865,15 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     await _seekTo(seekTarget(_position, seconds, _duration));
   }
 
+  /// The one way volume changes on this page — slider, mute button and the
+  /// ctrl+wheel handler all call it, so the icon, the slider and the player
+  /// stay in step.
+  void _setVolume(double value) {
+    setState(() => _volume = value);
+    if (value > 0) _preMuteVolume = value;
+    unawaited(_applyVolume(value));
+  }
+
   /// Applies [value] to whichever player owns playback. The desktop bar owns
   /// its own volume control, so there it stays a local-only setting.
   Future<void> _applyVolume(double value) async {
@@ -3429,7 +3439,12 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
           _isDraggingOver = false;
         });
       },
-      child: Card(
+      // Ctrl+wheel anywhere over the player card rides the volume.
+      child: CtrlWheelVolume(
+        volume: _volume,
+        onVolumeChanged: _setVolume,
+        enabled: !MobileUtils.isMobile(),
+        child: Card(
         color: _isDraggingOver
             ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3)
             : null,
@@ -3608,14 +3623,12 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                     _volume == 0 ? Icons.volume_off : (_volume < 0.5 ? Icons.volume_down : Icons.volume_up),
                                     size: 20,
                                   ),
-                                  onPressed: () async {
+                                  onPressed: () {
                                     if (_volume > 0) {
-                                      setState(() { _preMuteVolume = _volume; _volume = 0; });
-                                      await _applyVolume(0);
+                                      _preMuteVolume = _volume;
+                                      _setVolume(0);
                                     } else {
-                                      final restore = _preMuteVolume > 0 ? _preMuteVolume : 1.0;
-                                      setState(() { _volume = restore; });
-                                      await _applyVolume(restore);
+                                      _setVolume(_preMuteVolume > 0 ? _preMuteVolume : 1.0);
                                     }
                                   },
                                   tooltip: _volume == 0 ? AppLocalizations.of(context)!.volumeUnmute : AppLocalizations.of(context)!.volumeMute,
@@ -3628,10 +3641,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                       value: _volume,
                                       min: 0.0,
                                       max: 1.0,
-                                      onChanged: (value) async {
-                                        setState(() { _volume = value; });
-                                        await _applyVolume(value);
-                                      },
+                                      onChanged: _setVolume,
                                     ),
                                   ),
                                 ),
@@ -3843,6 +3853,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
               ],
             ),
           ),
+        ),
         ),
       ),
     );

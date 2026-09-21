@@ -3744,5 +3744,26 @@
   "discardArchiveButtonLabel": "Supprimer l'archive",
   "discardArchiveConfirmTitle": "Supprimer l'archive ?",
   "discardArchiveConfirmMessage": "Supprime le zip et retire l'indicateur d'archivage. Les fichiers du projet restent en place.",
-  "discardArchiveDone": "Archive supprimée"
+  "discardArchiveDone": "Archive supprimée",
+
+  "whatsNewTitle": "Nouveautés",
+  "whatsNewTitleWithVersion": "Nouveautés de la version {version}",
+  "whatsNewIntro": "Voici ce qui a changé depuis votre version précédente.",
+  "whatsNewGotIt": "J'ai compris",
+  "changelogFullButton": "Journal complet",
+  "changelogPageTitle": "Journal des modifications",
+  "changelogEmpty": "Aucun journal des modifications disponible pour cette version.",
+  "changelogCurrentVersionBadge": "Installée",
+  "disableProjectFolderTooltip": "Désactiver ce dossier (conserve ses projets)",
+  "enableProjectFolderTooltip": "Activer ce dossier",
+  "projectFolderDisabledBadge": "Désactivé",
+  "projectFolderDisabledExplanation": "Non analysé, et ses projets sont masqués. Rien n’a été supprimé — réactivez-le pour les retrouver.",
+  "projectFolderEnabled": "« {name} » est de nouveau analysé",
+  "projectFolderDisabled": "« {name} » est désactivé — ses projets sont masqués, pas supprimés",
+  "releaseArtworkCarryOverTitle": "Utiliser la vignette d’une piste comme pochette ?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{Une des pistes sélectionnées a une vignette. L’utiliser comme pochette de cette sortie ?} other{{count} des pistes sélectionnées ont une vignette. Choisissez-en une comme pochette de cette sortie.}}",
+  "releaseArtworkCarryOverUse": "Utiliser comme pochette",
+  "releaseArtworkCarryOverSkip": "Aucune pochette",
+  "tracksViewList": "Vue liste",
+  "tracksViewTable": "Vue tableau"
 }

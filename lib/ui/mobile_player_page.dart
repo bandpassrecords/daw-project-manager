@@ -13,6 +13,7 @@ import '../generated/l10n/app_localizations.dart';
 import '../services/audio_analysis_service.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/playback_seek.dart';
+import '../utils/project_artwork.dart';
 import '../utils/project_freshness.dart';
 import 'preview_share.dart';
 import 'project_detail_page.dart';
@@ -758,15 +759,7 @@ class _TrackCard extends StatelessWidget {
             // Icon + DAW badge row
             Row(
               children: [
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: cs.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(Icons.music_note_rounded, size: 28, color: cs.primary),
-                ),
+                _TrackArtwork(project: project),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -889,6 +882,59 @@ class _TrackCard extends StatelessWidget {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The project's own thumbnail while it plays, falling back to the generic
+/// note icon when it has none.
+///
+/// Same image the desktop grid and the release artwork picker use — a cover
+/// the user attached to a track should follow it into the player rather than
+/// being a desktop-only detail.
+class _TrackArtwork extends StatelessWidget {
+  const _TrackArtwork({required this.project});
+
+  final MusicProject project;
+
+  static const double _size = 52;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final thumbnail = resolveProjectThumbnail(project);
+
+    if (thumbnail == null) {
+      return Container(
+        width: _size,
+        height: _size,
+        decoration: BoxDecoration(
+          color: cs.primary.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Icon(Icons.music_note_rounded, size: 28, color: cs.primary),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Image.file(
+        File(thumbnail),
+        width: _size,
+        height: _size,
+        fit: BoxFit.cover,
+        // The path resolved, but the file can still turn out not to be a
+        // decodable image — fall back to the same tile as "no thumbnail".
+        errorBuilder: (context, error, stackTrace) => Container(
+          width: _size,
+          height: _size,
+          decoration: BoxDecoration(
+            color: cs.primary.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(Icons.music_note_rounded, size: 28, color: cs.primary),
         ),
       ),
     );

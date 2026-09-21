@@ -5339,4 +5339,78 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get discardArchiveDone => '已丢弃归档';
+
+  @override
+  String get whatsNewTitle => '新增功能';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return '$version 版本的新增功能';
+  }
+
+  @override
+  String get whatsNewIntro => '以下是自上一个版本以来的变化。';
+
+  @override
+  String get whatsNewGotIt => '知道了';
+
+  @override
+  String get changelogFullButton => '完整更新日志';
+
+  @override
+  String get changelogPageTitle => '更新日志';
+
+  @override
+  String get changelogEmpty => '此版本没有可用的更新日志。';
+
+  @override
+  String get changelogCurrentVersionBadge => '已安装';
+
+  @override
+  String get disableProjectFolderTooltip => '停用此文件夹（保留其项目）';
+
+  @override
+  String get enableProjectFolderTooltip => '启用此文件夹';
+
+  @override
+  String get projectFolderDisabledBadge => '已停用';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      '不会被扫描，其项目会被隐藏。没有删除任何内容——重新启用即可恢复。';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '已重新开始扫描“$name”';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '已停用“$name”——其项目被隐藏，而非删除';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle => '使用曲目缩略图作为封面吗？';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '所选曲目中有 $count 个带有缩略图。请选择一个作为此发行的封面。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => '用作封面';
+
+  @override
+  String get releaseArtworkCarryOverSkip => '不使用封面';
+
+  @override
+  String get tracksViewList => '列表视图';
+
+  @override
+  String get tracksViewTable => '表格视图';
 }

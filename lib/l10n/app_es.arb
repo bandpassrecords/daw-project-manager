@@ -3744,5 +3744,26 @@
   "discardArchiveButtonLabel": "Descartar comprimido",
   "discardArchiveConfirmTitle": "¿Descartar el comprimido?",
   "discardArchiveConfirmMessage": "Elimina el zip y quita la marca de archivado. Los archivos del proyecto se quedan donde están.",
-  "discardArchiveDone": "Comprimido descartado"
+  "discardArchiveDone": "Comprimido descartado",
+
+  "whatsNewTitle": "Novedades",
+  "whatsNewTitleWithVersion": "Novedades en la versión {version}",
+  "whatsNewIntro": "Esto es lo que cambió desde tu versión anterior.",
+  "whatsNewGotIt": "Entendido",
+  "changelogFullButton": "Changelog completo",
+  "changelogPageTitle": "Changelog",
+  "changelogEmpty": "No hay changelog disponible para esta compilación.",
+  "changelogCurrentVersionBadge": "Instalada",
+  "disableProjectFolderTooltip": "Desactivar esta carpeta (conserva sus proyectos)",
+  "enableProjectFolderTooltip": "Activar esta carpeta",
+  "projectFolderDisabledBadge": "Desactivada",
+  "projectFolderDisabledExplanation": "No se escanea y sus proyectos están ocultos. No se borró nada: actívala para recuperarlos.",
+  "projectFolderEnabled": "\"{name}\" vuelve a escanearse",
+  "projectFolderDisabled": "\"{name}\" está desactivada: sus proyectos se ocultan, no se eliminan",
+  "releaseArtworkCarryOverTitle": "¿Usar la miniatura de una pista como portada?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{Una de las pistas seleccionadas tiene miniatura. ¿Usarla como portada de este lanzamiento?} other{{count} de las pistas seleccionadas tienen miniatura. Elige una para usarla como portada de este lanzamiento.}}",
+  "releaseArtworkCarryOverUse": "Usar como portada",
+  "releaseArtworkCarryOverSkip": "Sin portada",
+  "tracksViewList": "Vista de lista",
+  "tracksViewTable": "Vista de tabla"
 }

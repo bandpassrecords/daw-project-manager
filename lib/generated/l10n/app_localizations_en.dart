@@ -5535,4 +5535,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'Archive discarded';
+
+  @override
+  String get whatsNewTitle => 'What\'s New';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'What\'s New in $version';
+  }
+
+  @override
+  String get whatsNewIntro => 'Here\'s what changed since your last version.';
+
+  @override
+  String get whatsNewGotIt => 'Got it';
+
+  @override
+  String get changelogFullButton => 'Full changelog';
+
+  @override
+  String get changelogPageTitle => 'Changelog';
+
+  @override
+  String get changelogEmpty => 'No changelog is available for this build.';
+
+  @override
+  String get changelogCurrentVersionBadge => 'Installed';
+
+  @override
+  String get disableProjectFolderTooltip =>
+      'Disable this folder (keeps its projects)';
+
+  @override
+  String get enableProjectFolderTooltip => 'Enable this folder';
+
+  @override
+  String get projectFolderDisabledBadge => 'Disabled';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'Not scanned, and its projects are hidden. Nothing was deleted — enable it to bring them back.';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '\"$name\" is now being scanned again';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '\"$name\" is disabled — its projects are hidden, not deleted';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle =>
+      'Use a track thumbnail as artwork?';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count of the selected tracks have thumbnails. Pick one to carry over as this release’s artwork.',
+      one:
+          'One of the selected tracks has a thumbnail. Carry it over as this release’s artwork?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'Use as artwork';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'No artwork';
+
+  @override
+  String get tracksViewList => 'List view';
+
+  @override
+  String get tracksViewTable => 'Table view';
 }

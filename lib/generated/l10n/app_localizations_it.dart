@@ -5572,4 +5572,84 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'Archivio eliminato';
+
+  @override
+  String get whatsNewTitle => 'Novità';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'Novità nella versione $version';
+  }
+
+  @override
+  String get whatsNewIntro =>
+      'Ecco cosa è cambiato dalla tua versione precedente.';
+
+  @override
+  String get whatsNewGotIt => 'Ho capito';
+
+  @override
+  String get changelogFullButton => 'Changelog completo';
+
+  @override
+  String get changelogPageTitle => 'Changelog';
+
+  @override
+  String get changelogEmpty => 'Nessun changelog disponibile per questa build.';
+
+  @override
+  String get changelogCurrentVersionBadge => 'Installata';
+
+  @override
+  String get disableProjectFolderTooltip =>
+      'Disattiva questa cartella (mantiene i progetti)';
+
+  @override
+  String get enableProjectFolderTooltip => 'Attiva questa cartella';
+
+  @override
+  String get projectFolderDisabledBadge => 'Disattivata';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'Non viene scansionata e i suoi progetti sono nascosti. Non è stato eliminato nulla: riattivala per recuperarli.';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '\"$name\" viene nuovamente scansionata';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '\"$name\" è disattivata: i suoi progetti sono nascosti, non eliminati';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle =>
+      'Usare la miniatura di una traccia come copertina?';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count delle tracce selezionate hanno una miniatura. Scegline una come copertina di questa pubblicazione.',
+      one:
+          'Una delle tracce selezionate ha una miniatura. Usarla come copertina di questa pubblicazione?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'Usa come copertina';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'Nessuna copertina';
+
+  @override
+  String get tracksViewList => 'Vista elenco';
+
+  @override
+  String get tracksViewTable => 'Vista tabella';
 }

@@ -166,6 +166,10 @@ flutter:
     - app_icon.ico
     - LICENSE
     - resources/daw/logos/
+    # The in-app changelog. Shipped as an asset rather than fetched from the
+    # GitHub release API so "What's New" works offline and inside Flatpak,
+    # whose manifest deliberately drops --share=network.
+    - assets/changelog/changelog.json
     # resources/tools/ffmpeg.exe is deliberately NOT listed here. Flutter's
     # asset list has no per-platform filter, so declaring it shipped a 97 MB
     # Windows binary inside the Android APK, the macOS .app and the Linux

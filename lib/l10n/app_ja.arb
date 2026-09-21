@@ -3744,5 +3744,26 @@
   "discardArchiveButtonLabel": "アーカイブを破棄",
   "discardArchiveConfirmTitle": "アーカイブを破棄しますか？",
   "discardArchiveConfirmMessage": "zip を削除し、アーカイブ済みの印を外します。プロジェクト自体のファイルはそのまま残ります。",
-  "discardArchiveDone": "アーカイブを破棄しました"
+  "discardArchiveDone": "アーカイブを破棄しました",
+
+  "whatsNewTitle": "新着情報",
+  "whatsNewTitleWithVersion": "バージョン {version} の新着情報",
+  "whatsNewIntro": "前のバージョンからの変更点です。",
+  "whatsNewGotIt": "OK",
+  "changelogFullButton": "全変更履歴",
+  "changelogPageTitle": "変更履歴",
+  "changelogEmpty": "このビルドの変更履歴はありません。",
+  "changelogCurrentVersionBadge": "インストール済み",
+  "disableProjectFolderTooltip": "このフォルダーを無効にする（プロジェクトは保持）",
+  "enableProjectFolderTooltip": "このフォルダーを有効にする",
+  "projectFolderDisabledBadge": "無効",
+  "projectFolderDisabledExplanation": "スキャンされず、プロジェクトは非表示になります。削除はされていません。有効にすると元に戻ります。",
+  "projectFolderEnabled": "「{name}」のスキャンを再開しました",
+  "projectFolderDisabled": "「{name}」を無効にしました。プロジェクトは非表示になるだけで削除されません",
+  "releaseArtworkCarryOverTitle": "トラックのサムネイルをアートワークに使いますか？",
+  "releaseArtworkCarryOverBody": "{count, plural, other{選択したトラックのうち {count} 件にサムネイルがあります。このリリースのアートワークに使うものを選んでください。}}",
+  "releaseArtworkCarryOverUse": "アートワークに使う",
+  "releaseArtworkCarryOverSkip": "アートワークなし",
+  "tracksViewList": "リスト表示",
+  "tracksViewTable": "テーブル表示"
 }

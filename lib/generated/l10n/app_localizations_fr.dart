@@ -5599,4 +5599,85 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'Archive supprimée';
+
+  @override
+  String get whatsNewTitle => 'Nouveautés';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'Nouveautés de la version $version';
+  }
+
+  @override
+  String get whatsNewIntro =>
+      'Voici ce qui a changé depuis votre version précédente.';
+
+  @override
+  String get whatsNewGotIt => 'J\'ai compris';
+
+  @override
+  String get changelogFullButton => 'Journal complet';
+
+  @override
+  String get changelogPageTitle => 'Journal des modifications';
+
+  @override
+  String get changelogEmpty =>
+      'Aucun journal des modifications disponible pour cette version.';
+
+  @override
+  String get changelogCurrentVersionBadge => 'Installée';
+
+  @override
+  String get disableProjectFolderTooltip =>
+      'Désactiver ce dossier (conserve ses projets)';
+
+  @override
+  String get enableProjectFolderTooltip => 'Activer ce dossier';
+
+  @override
+  String get projectFolderDisabledBadge => 'Désactivé';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'Non analysé, et ses projets sont masqués. Rien n’a été supprimé — réactivez-le pour les retrouver.';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '« $name » est de nouveau analysé';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '« $name » est désactivé — ses projets sont masqués, pas supprimés';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle =>
+      'Utiliser la vignette d’une piste comme pochette ?';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count des pistes sélectionnées ont une vignette. Choisissez-en une comme pochette de cette sortie.',
+      one:
+          'Une des pistes sélectionnées a une vignette. L’utiliser comme pochette de cette sortie ?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'Utiliser comme pochette';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'Aucune pochette';
+
+  @override
+  String get tracksViewList => 'Vue liste';
+
+  @override
+  String get tracksViewTable => 'Vue tableau';
 }

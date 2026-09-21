@@ -19,6 +19,8 @@ import '../utils/theme_derivations.dart';
 import 'widgets/trina_grid_menu_delegate.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../providers/theme_provider.dart';
+import '../services/release_artwork_service.dart';
+import 'dialogs/release_artwork_carryover_dialog.dart';
 import 'release_detail_page.dart';
 
 class ReleasesTabPage extends ConsumerStatefulWidget {
@@ -154,12 +156,22 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
       shouldNavigateToRelease = true;
     }
 
+    // Offer the selected tracks' own thumbnails as the release artwork —
+    // otherwise a release made from projects that already have covers starts
+    // blank and the user has to go find the same image again.
+    if (!mounted) return;
+    final artwork = await showReleaseArtworkCarryOverDialog(
+      context,
+      releaseArtworkCandidates(selectedProjects),
+    );
+
     final repo = await ref.read(repositoryProvider.future);
     final newRelease = Release(
       id: const Uuid().v4(),
       title: releaseTitle,
       trackIds: selectedProjectIds,
       releaseDate: DateTime.now(),
+      artworkImagePath: artwork.imagePath,
     );
     await repo.addRelease(newRelease);
 
