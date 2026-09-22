@@ -183,29 +183,70 @@ void main() {
   });
 
   group('ProjectCoverBleed', () {
-    testWidgets('draws nothing for a project without cover art',
-        (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: ProjectCoverBleed(
-                project: TestFactories.makeProject(
-                  id: 'no-cover',
-                  // A colour is deliberately not enough: a bare colour block
-                  // bleeding into the row would be a stripe down the list.
-                  accentColor: 0xFF123456,
-                  iconKey: 'mic',
+    Future<void> pumpBleed(WidgetTester tester, MusicProject project) =>
+        tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: ProjectCoverBleed(
+                  project: project,
+                  height: 48,
+                  width: 96,
+                  side: CoverBleedSide.right,
                 ),
-                height: 48,
-                width: 96,
               ),
             ),
           ),
+        );
+
+    testWidgets('draws nothing for a project nobody decorated',
+        (tester) async {
+      // Still #110's rule: no placeholder, no invented colour.
+      await pumpBleed(tester, TestFactories.makeProject(id: 'plain'));
+
+      expect(tester.getSize(find.byType(ProjectCoverBleed)), Size.zero);
+    });
+
+    testWidgets('bleeds a chosen accent colour like cover art',
+        (tester) async {
+      // Previously left out on purpose; asked for so a coloured row reads
+      // like a covered one.
+      await pumpBleed(
+        tester,
+        TestFactories.makeProject(id: 'coloured', accentColor: 0xFF3366CC),
+      );
+
+      expect(
+        tester.getSize(find.byType(ProjectCoverBleed)),
+        const Size(96, 48),
+      );
+      final box = tester.widget<ColoredBox>(find.descendant(
+        of: find.byType(ProjectCoverBleed),
+        matching: find.byType(ColoredBox),
+      ));
+      expect(box.color.toARGB32() & 0x00FFFFFF, 0x3366CC,
+          reason: 'the colour the user chose, not a stand-in');
+      expect(box.color.a, closeTo(kAccentBleedOpacity, 0.01));
+    });
+
+    testWidgets('carries the chosen icon in the solid square',
+        (tester) async {
+      await pumpBleed(
+        tester,
+        TestFactories.makeProject(
+          id: 'decorated',
+          accentColor: 0xFF3366CC,
+          iconKey: 'mic',
         ),
       );
 
-      expect(tester.getSize(find.byType(ProjectCoverBleed)), Size.zero);
+      expect(
+        find.descendant(
+          of: find.byType(ProjectCoverBleed),
+          matching: find.byType(Icon),
+        ),
+        findsOneWidget,
+      );
     });
 
     test('defaults to the left edge, as it always has', () {

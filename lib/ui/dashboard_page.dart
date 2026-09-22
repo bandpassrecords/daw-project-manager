@@ -7384,7 +7384,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           // than the square it occupies and the row's text can start over its
           // tail. Undecorated projects get nothing — no placeholder, no
           // auto-assigned colour — so the list stays as quiet as it was.
-          final hasBleed = projectHasCoverArt(project);
+          // Cover art, or failing that a chosen colour/icon, bleeds into the
+          // cell (see ProjectCoverBleed). Undecorated rows get nothing.
+          final hasBleed = projectHasVisualIdentity(project);
           // Nested rows keep their tree connector clear of the artwork —
           // a guide line drawn across a cover reads as damage, not structure.
           final bleedLeft = depth > 0 ? _kNameCellTreeConnectorWidth : 0.0;
@@ -7405,16 +7407,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                     ),
                   ),
                 ),
-              // Cover art is drawn behind this row, so only the accent badge
-              // sits inline — and that is nothing at all unless the user chose
-              // a colour or an icon. Either way the name clears the artwork's
-              // solid half.
+              // Cover art or accent colour is drawn behind this row, never
+              // inline; the name only needs to clear the bleed's solid half.
               if (hasBleed && bleedOnLeft)
-                const SizedBox(width: _kNameCellBleedTextOffset)
-              else if (!hasBleed && projectHasVisualIdentity(project)) ...[
-                ProjectCoverAvatar(project: project, size: 22),
-                const SizedBox(width: 8),
-              ],
+                const SizedBox(width: _kNameCellBleedTextOffset),
               Expanded(child: Text(rendererContext.cell.value.toString())),
               // Version count, so a stacked song is distinguishable from an
               // ordinary project at a glance rather than only once opened.

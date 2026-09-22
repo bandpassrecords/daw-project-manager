@@ -141,17 +141,6 @@ class ProjectCoverAvatar extends StatelessWidget {
   }
 }
 
-/// A project's cover art bled into the left edge of a grid row: full row
-/// height, flush against the cell's left border, fading out to the right so it
-/// dissolves into the row instead of ending on a hard edge.
-///
-/// Wider than it is tall on purpose — the fade tail runs on past the square,
-/// under the start of the row's text, which is what makes the artwork read as
-/// larger than the strip a thumbnail would occupy.
-///
-/// Draws nothing for a project without cover art. The accent colour and icon
-/// are deliberately *not* drawn at this size: a bare colour block bleeding into
-/// every decorated row would be a stripe down the list rather than a cover.
 /// Which edge of a cell a [ProjectCoverBleed] is anchored to. The artwork is
 /// solid against that edge and fades away towards the other one.
 enum CoverBleedSide { left, right }
@@ -173,6 +162,20 @@ LinearGradient coverBleedGradient({
   );
 }
 
+/// A project's visual identity bled into one edge of a grid row: full row
+/// height, flush against the cell's border on [side], fading out towards the
+/// other side so it dissolves into the row instead of ending on a hard edge.
+///
+/// Wider than it is tall on purpose — the fade tail runs on past the square,
+/// under the row's text, which is what makes the artwork read as larger than
+/// the strip a thumbnail would occupy.
+///
+/// Cover art wins. Without it, a chosen accent colour (and icon, if any) is
+/// bled the same way at [kAccentBleedOpacity], so a decorated row reads alike
+/// whichever the user picked. This used to be deliberately left out, on the
+/// worry that colour blocks would stripe the list; it was asked for, and the
+/// fade plus reduced opacity keep it a tint rather than a stripe. A project
+/// nobody decorated still draws nothing at all.
 class ProjectCoverBleed extends StatelessWidget {
   final MusicProject project;
 
@@ -200,7 +203,42 @@ class ProjectCoverBleed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!projectHasCoverArt(project)) return const SizedBox.shrink();
+    final Widget fill;
+    if (projectHasCoverArt(project)) {
+      fill = _coverImage(context);
+    } else if (projectHasVisualIdentity(project)) {
+      // No cover, but a chosen colour and/or icon: bleed those the same way,
+      // so a decorated row reads alike whichever the user picked. Cover art
+      // still wins when both exist. An icon with no colour rides the theme's
+      // accent, exactly as the badge does.
+      final tint = projectAccentColor(project) ??
+          Theme.of(context).colorScheme.primary;
+      final icon = projectIcon(project);
+      fill = ColoredBox(
+        color: tint.withValues(alpha: kAccentBleedOpacity),
+        child: icon == null
+            ? null
+            : Align(
+                // The icon sits in the solid square at the anchored edge,
+                // where the fade has not yet touched it.
+                alignment: side == CoverBleedSide.left
+                    ? Alignment.centerLeft
+                    : Alignment.centerRight,
+                child: SizedBox(
+                  width: height,
+                  height: height,
+                  child: Icon(
+                    icon,
+                    size: height * 0.5,
+                    color: _iconColorOn(tint),
+                  ),
+                ),
+              ),
+      );
+    } else {
+      // Nobody decorated this project: nothing at all, not a placeholder.
+      return const SizedBox.shrink();
+    }
 
     return IgnorePointer(
       child: SizedBox(
@@ -212,7 +250,14 @@ class ProjectCoverBleed extends StatelessWidget {
             side: side,
             solidFraction: solidFraction,
           ).createShader(bounds),
-          child: Image.file(
+          child: fill,
+        ),
+      ),
+    );
+  }
+
+  Widget _coverImage(BuildContext context) {
+    return Image.file(
             File(project.thumbnailPath!),
             width: width,
             height: height,
@@ -223,9 +268,21 @@ class ProjectCoverBleed extends StatelessWidget {
                 (width * MediaQuery.devicePixelRatioOf(context)).round(),
             errorBuilder: (context, error, stackTrace) =>
                 const SizedBox.shrink(),
-          ),
-        ),
-      ),
+          );
+  }
+
+  /// White or black, whichever reads on the tinted block — a dark icon on a
+  /// dark accent disappears.
+  static Color _iconColorOn(Color tint) {
+    final shown = Color.alphaBlend(
+      tint.withValues(alpha: kAccentBleedOpacity),
+      const Color(0xFF1E1E1E),
     );
+    return shown.computeLuminance() > 0.4 ? Colors.black87 : Colors.white;
   }
 }
+
+/// How strongly a chosen accent colour is painted in the bleed. Below full
+/// strength so the name reads over the faded part, and so a list full of
+/// coloured rows is tinted rather than striped.
+const double kAccentBleedOpacity = 0.55;
