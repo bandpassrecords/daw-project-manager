@@ -34,12 +34,11 @@ import 'session_actions.dart';
 import 'widgets/resizable_text_field.dart';
 import 'widgets/todo_list_widget.dart';
 import '../services/track_duration_probe_service.dart';
-import '../utils/project_summary_text.dart';
 import '../utils/text_input_focus.dart';
 import '../utils/player_shortcuts.dart';
 import '../utils/track_duration.dart';
 import 'widgets/ctrl_wheel_volume.dart';
-import 'widgets/release_track_parts_chip.dart';
+import 'widgets/release_track_details.dart';
 import 'widgets/scroll_more_hint.dart';
 import 'widgets/release_total_length_footer.dart';
 import 'widgets/release_tracks_table.dart';
@@ -1081,74 +1080,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
     );
   }
 
-  /// Everything shown under a track's name: DAW, BPM, key, length, phase,
-  /// the parts chip, and the project's note on a line of its own.
-  ///
-  /// One builder for both layouts. The desktop and mobile tracklists are
-  /// separate widgets, and extending only one of them is how the desktop list
-  /// went without lengths, notes and parts while the mobile one had them.
-  Widget _buildTrackDetails(BuildContext context, MusicProject project) {
-    final bullet = Text(
-      '•',
-      style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
-    );
-    final note = projectNoteExcerpt(project);
-    final length = effectiveTrackDuration(project);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Wrap(
-          spacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            if (project.dawType != null && project.dawType!.isNotEmpty) ...[
-              Text(
-                project.dawVersion != null && project.dawVersion!.isNotEmpty
-                    ? '${project.dawType!} ${project.dawVersion!}'
-                    : project.dawType!,
-              ),
-              bullet,
-            ],
-            if (project.bpm != null) ...[
-              Text('${project.bpm!.toStringAsFixed(0)} ${AppLocalizations.of(context)!.bpm}'),
-              bullet,
-            ],
-            if (project.musicalKey != null && project.musicalKey!.isNotEmpty) ...[
-              Text(project.musicalKey!),
-              bullet,
-            ],
-            if (length != null) ...[
-              Text(formatTrackDuration(length)),
-              bullet,
-            ],
-            Text(
-              _translateStatus(context, project.status),
-              style: TextStyle(
-                color: _getStatusColor(project.status),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            // Draws nothing for a song with no parts listed.
-            ReleaseTrackPartsChip(project: project, compact: true),
-          ],
-        ),
-        if (note != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Text(
-              note,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
   Widget _buildDesktopTrackTile(BuildContext context, Release release, MusicProject project, int index) {
     // Use the shared helper so a package-bundle project (.logicx/.luna/.band,
     // a directory on disk) resolves to its *parent* folder — opening the bundle
@@ -1178,8 +1109,10 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
             child: Icon(Icons.drag_indicator, color: Theme.of(context).textTheme.bodyMedium?.color),
           ),
           title: Text(project.displayName),
-          isThreeLine: projectNoteExcerpt(project) != null,
-          subtitle: _buildTrackDetails(context, project),
+          isThreeLine: ReleaseTrackDetails.isTwoLines(project),
+          subtitle: ReleaseTrackDetails.hasContent(project)
+              ? ReleaseTrackDetails(project: project)
+              : null,
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1792,38 +1725,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                       project.displayName,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 4),
-                    Wrap(
-                      spacing: 8,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        if (project.dawType != null && project.dawType!.isNotEmpty)
-                          Text(
-                            project.dawVersion != null && project.dawVersion!.isNotEmpty
-                                ? '${project.dawType!} ${project.dawVersion!}'
-                                : project.dawType!,
-                            style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color),
-                          ),
-                        if (project.bpm != null)
-                          Text(
-                            '${project.bpm!.toStringAsFixed(0)} ${AppLocalizations.of(context)!.bpm}',
-                            style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color),
-                          ),
-                        if (project.musicalKey != null && project.musicalKey!.isNotEmpty)
-                          Text(
-                            project.musicalKey!,
-                            style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color),
-                          ),
-                        Text(
-                          _translateStatus(context, project.status),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _getStatusColor(project.status),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Length, parts and note — the same details, from the
+                    // same widget, as the desktop tracklist.
+                    if (ReleaseTrackDetails.hasContent(project)) ...[
+                      const SizedBox(height: 4),
+                      ReleaseTrackDetails(project: project),
+                    ],
                   ],
                 ),
               ),
