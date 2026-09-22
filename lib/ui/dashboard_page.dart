@@ -125,9 +125,19 @@ const double _kNameCellBleedHeight = 48;
 /// then an equally wide tail fading to nothing under the start of the name.
 const double _kNameCellBleedWidth = _kNameCellBleedHeight * 2;
 
-/// Leading space the name gives up on a row that has cover art, so it starts
-/// clear of the artwork's solid half and only ever sits over the faded tail.
-/// Offsets [_kNameCellInset], which the artwork does not observe.
+/// Which edge of the Name cell the cover art is anchored to.
+///
+/// Right-anchored is being tried out: the artwork sits at the end of the name,
+/// solid against the column's right border and fading leftwards under the
+/// text, so the name starts at the same position on every row whether or not
+/// it has a cover. Set back to [CoverBleedSide.left] to restore the original
+/// look — nothing else needs to change.
+const CoverBleedSide _kNameCellBleedSide = CoverBleedSide.right;
+
+/// Space the name gives up on a row that has cover art, so it stays clear
+/// of the artwork's solid half and only ever sits over the faded tail — at the
+/// start of the row or the end, per [_kNameCellBleedSide]. Offsets
+/// [_kNameCellInset], which the artwork does not observe.
 const double _kNameCellBleedTextOffset =
     _kNameCellBleedHeight - _kNameCellInsetX;
 
@@ -7378,6 +7388,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           // Nested rows keep their tree connector clear of the artwork —
           // a guide line drawn across a cover reads as damage, not structure.
           final bleedLeft = depth > 0 ? _kNameCellTreeConnectorWidth : 0.0;
+          final bleedOnLeft = _kNameCellBleedSide == CoverBleedSide.left;
 
           final content = Row(
             children: [
@@ -7398,9 +7409,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
               // sits inline — and that is nothing at all unless the user chose
               // a colour or an icon. Either way the name clears the artwork's
               // solid half.
-              if (hasBleed)
+              if (hasBleed && bleedOnLeft)
                 const SizedBox(width: _kNameCellBleedTextOffset)
-              else if (projectHasVisualIdentity(project)) ...[
+              else if (!hasBleed && projectHasVisualIdentity(project)) ...[
                 ProjectCoverAvatar(project: project, size: 22),
                 const SizedBox(width: 8),
               ],
@@ -7518,6 +7529,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                     color: Colors.orange.shade400,
                   ),
                 ),
+              // Right-anchored art: the name and its badges end before the
+              // artwork's solid half, sitting only over the faded part.
+              if (hasBleed && !bleedOnLeft)
+                const SizedBox(width: _kNameCellBleedTextOffset),
             ],
           );
 
@@ -7531,7 +7546,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
             fit: StackFit.expand,
             children: [
               Positioned(
-                left: bleedLeft,
+                left: bleedOnLeft ? bleedLeft : null,
+                right: bleedOnLeft ? null : 0,
                 top: 0,
                 bottom: 0,
                 child: ProjectCoverBleed(
@@ -7540,6 +7556,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   width: _kNameCellBleedWidth,
                   solidFraction:
                       _kNameCellBleedHeight / _kNameCellBleedWidth,
+                  side: _kNameCellBleedSide,
                 ),
               ),
               Padding(padding: _kNameCellInset, child: content),

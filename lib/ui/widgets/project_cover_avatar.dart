@@ -152,6 +152,27 @@ class ProjectCoverAvatar extends StatelessWidget {
 /// Draws nothing for a project without cover art. The accent colour and icon
 /// are deliberately *not* drawn at this size: a bare colour block bleeding into
 /// every decorated row would be a stripe down the list rather than a cover.
+/// Which edge of a cell a [ProjectCoverBleed] is anchored to. The artwork is
+/// solid against that edge and fades away towards the other one.
+enum CoverBleedSide { left, right }
+
+/// The fade a [ProjectCoverBleed] masks its artwork with: opaque from the
+/// anchored edge for [solidFraction] of the width, then down to nothing.
+///
+/// Pure, so the direction can be asserted without rendering a shader.
+LinearGradient coverBleedGradient({
+  required CoverBleedSide side,
+  required double solidFraction,
+}) {
+  final fromLeft = side == CoverBleedSide.left;
+  return LinearGradient(
+    begin: fromLeft ? Alignment.centerLeft : Alignment.centerRight,
+    end: fromLeft ? Alignment.centerRight : Alignment.centerLeft,
+    colors: const [Colors.white, Colors.white, Colors.transparent],
+    stops: [0.0, solidFraction, 1.0],
+  );
+}
+
 class ProjectCoverBleed extends StatelessWidget {
   final MusicProject project;
 
@@ -165,12 +186,16 @@ class ProjectCoverBleed extends StatelessWidget {
   /// begins: the square at the left edge, in practice.
   final double solidFraction;
 
+  /// Edge the artwork is anchored to; it fades towards the opposite one.
+  final CoverBleedSide side;
+
   const ProjectCoverBleed({
     super.key,
     required this.project,
     required this.height,
     required this.width,
     this.solidFraction = 0.5,
+    this.side = CoverBleedSide.left,
   });
 
   @override
@@ -183,11 +208,9 @@ class ProjectCoverBleed extends StatelessWidget {
         height: height,
         child: ShaderMask(
           blendMode: BlendMode.dstIn,
-          shaderCallback: (bounds) => LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: const [Colors.white, Colors.white, Colors.transparent],
-            stops: [0.0, solidFraction, 1.0],
+          shaderCallback: (bounds) => coverBleedGradient(
+            side: side,
+            solidFraction: solidFraction,
           ).createShader(bounds),
           child: Image.file(
             File(project.thumbnailPath!),

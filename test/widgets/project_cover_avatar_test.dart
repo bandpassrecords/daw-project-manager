@@ -207,5 +207,44 @@ void main() {
 
       expect(tester.getSize(find.byType(ProjectCoverBleed)), Size.zero);
     });
+
+    test('defaults to the left edge, as it always has', () {
+      final bleed = ProjectCoverBleed(
+        project: TestFactories.makeProject(),
+        height: 48,
+        width: 96,
+      );
+      expect(bleed.side, CoverBleedSide.left);
+    });
+  });
+
+  group('coverBleedGradient', () {
+    test('left-anchored art is solid on the left and fades rightwards', () {
+      final g = coverBleedGradient(
+        side: CoverBleedSide.left,
+        solidFraction: 0.5,
+      );
+      expect(g.begin, Alignment.centerLeft);
+      expect(g.end, Alignment.centerRight);
+    });
+
+    test('right-anchored art is solid on the right and fades leftwards', () {
+      final g = coverBleedGradient(
+        side: CoverBleedSide.right,
+        solidFraction: 0.5,
+      );
+      expect(g.begin, Alignment.centerRight);
+      expect(g.end, Alignment.centerLeft);
+    });
+
+    test('holds full strength for the solid fraction, then fades out', () {
+      for (final side in CoverBleedSide.values) {
+        final g = coverBleedGradient(side: side, solidFraction: 0.5);
+        expect(g.stops, [0.0, 0.5, 1.0]);
+        expect(g.colors.first.a, 1.0, reason: '$side starts opaque');
+        expect(g.colors[1].a, 1.0, reason: '$side stays opaque to the stop');
+        expect(g.colors.last.a, 0.0, reason: '$side ends transparent');
+      }
+    });
   });
 }
