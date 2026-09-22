@@ -5509,6 +5509,11 @@ class GoogleDriveSyncService {
       'archivePath': project.archivePath,
       'archivedAt': project.archivedAt?.toIso8601String(),
       'archiveEntryPath': project.archiveEntryPath,
+      // Song length (#157). Both halves travel: the typed one is user
+      // data outright, and the measured one has to survive onto a machine
+      // that holds the metadata but not the audio file.
+      'durationMs': project.durationMs,
+      'autoDurationMs': project.autoDurationMs,
     };
   }
 
@@ -5587,6 +5592,8 @@ class GoogleDriveSyncService {
           ? DateTime.parse(data['archivedAt'] as String)
           : null,
       archiveEntryPath: data['archiveEntryPath'] as String?,
+      durationMs: (data['durationMs'] as num?)?.toInt(),
+      autoDurationMs: (data['autoDurationMs'] as num?)?.toInt(),
     );
   }
 

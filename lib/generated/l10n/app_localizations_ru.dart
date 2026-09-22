@@ -5633,4 +5633,53 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get tracksViewTable => 'Таблицей';
+
+  @override
+  String get partsColumn => 'Партии';
+
+  @override
+  String partsNeededCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ещё нужно партий: $count',
+      one: 'ещё нужна 1 партия',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get songLength => 'Длительность';
+
+  @override
+  String get songLengthColumn => 'Длительность';
+
+  @override
+  String get songLengthHint => '3:45';
+
+  @override
+  String get songLengthManual =>
+      'Введено вручную — очистите, чтобы использовать длительность превью';
+
+  @override
+  String get songLengthFromPreview => 'Измерено по превью';
+
+  @override
+  String releaseLengthAtLeast(String total) {
+    return '$total+';
+  }
+
+  @override
+  String get releaseLengthComplete => 'Общая длительность';
+
+  @override
+  String releaseLengthPartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Промежуточный итог — треков без длительности: $count',
+      one: 'Промежуточный итог — у 1 трека ещё нет длительности',
+    );
+    return '$_temp0';
+  }
 }

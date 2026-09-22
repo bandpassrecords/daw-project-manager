@@ -552,7 +552,12 @@ void main() {
           .toSet();
       // The count byte is the first writeByte and is excluded by the comment
       // it carries; every other one is a field tag.
-      final written = RegExp(r'\.\.writeByte\((\d+)\)\n')
+      //
+      // The optional CR in the pattern matters: this file is checked out with
+      // CRLF endings on Windows, so anchoring on a bare newline matched
+      // nothing there and the test reported every field as unwritten instead
+      // of guarding anything.
+      final written = RegExp(r'\.\.writeByte\((\d+)\)\r?\n')
           .allMatches(source)
           .map((m) => int.parse(m.group(1)!))
           .toSet();

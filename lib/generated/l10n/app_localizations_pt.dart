@@ -5632,4 +5632,53 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get tracksViewTable => 'Visualização em tabela';
+
+  @override
+  String get partsColumn => 'Partes';
+
+  @override
+  String partsNeededCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partes ainda necessárias',
+      one: '1 parte ainda necessária',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get songLength => 'Duração';
+
+  @override
+  String get songLengthColumn => 'Duração';
+
+  @override
+  String get songLengthHint => '3:45';
+
+  @override
+  String get songLengthManual =>
+      'Digitada manualmente — apague para usar a duração da prévia';
+
+  @override
+  String get songLengthFromPreview => 'Medida a partir da prévia';
+
+  @override
+  String releaseLengthAtLeast(String total) {
+    return '$total+';
+  }
+
+  @override
+  String get releaseLengthComplete => 'Duração total';
+
+  @override
+  String releaseLengthPartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Total parcial — $count faixas ainda sem duração',
+      one: 'Total parcial — 1 faixa ainda sem duração',
+    );
+    return '$_temp0';
+  }
 }

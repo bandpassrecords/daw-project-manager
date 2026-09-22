@@ -5474,4 +5474,50 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get tracksViewTable => 'テーブル表示';
+
+  @override
+  String get partsColumn => 'パート';
+
+  @override
+  String partsNeededCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未録音のパートが $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get songLength => '長さ';
+
+  @override
+  String get songLengthColumn => '長さ';
+
+  @override
+  String get songLengthHint => '3:45';
+
+  @override
+  String get songLengthManual => '手入力です。空にするとプレビュー曲の長さを使います';
+
+  @override
+  String get songLengthFromPreview => 'プレビュー曲から計測しました';
+
+  @override
+  String releaseLengthAtLeast(String total) {
+    return '$total+';
+  }
+
+  @override
+  String get releaseLengthComplete => '合計時間';
+
+  @override
+  String releaseLengthPartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '暫定の合計 — 長さ未設定のトラックが $count 件',
+    );
+    return '$_temp0';
+  }
 }

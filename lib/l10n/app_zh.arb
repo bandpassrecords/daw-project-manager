@@ -3765,5 +3765,17 @@
   "releaseArtworkCarryOverUse": "用作封面",
   "releaseArtworkCarryOverSkip": "不使用封面",
   "tracksViewList": "列表视图",
-  "tracksViewTable": "表格视图"
+  "tracksViewTable": "表格视图",
+
+  "partsColumn": "声部",
+  "partsNeededCount": "{count, plural, other{仍需 {count} 个声部}}",
+
+  "songLength": "时长",
+  "songLengthColumn": "时长",
+  "songLengthHint": "3:45",
+  "songLengthManual": "手动输入——清空后将使用预览歌曲的时长",
+  "songLengthFromPreview": "根据预览歌曲测得",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "总时长",
+  "releaseLengthPartial": "{count, plural, other{当前合计——仍有 {count} 首曲目没有时长}}"
 }

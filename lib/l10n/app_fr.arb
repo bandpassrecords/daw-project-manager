@@ -3765,5 +3765,17 @@
   "releaseArtworkCarryOverUse": "Utiliser comme pochette",
   "releaseArtworkCarryOverSkip": "Aucune pochette",
   "tracksViewList": "Vue liste",
-  "tracksViewTable": "Vue tableau"
+  "tracksViewTable": "Vue tableau",
+
+  "partsColumn": "Parties",
+  "partsNeededCount": "{count, plural, =1{1 partie encore nécessaire} other{{count} parties encore nécessaires}}",
+
+  "songLength": "Durée",
+  "songLengthColumn": "Durée",
+  "songLengthHint": "3:45",
+  "songLengthManual": "Saisie à la main — videz le champ pour utiliser la durée de l’aperçu",
+  "songLengthFromPreview": "Mesurée depuis l’aperçu",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "Durée totale",
+  "releaseLengthPartial": "{count, plural, =1{Total partiel — 1 piste n’a pas encore de durée} other{Total partiel — {count} pistes n’ont pas encore de durée}}"
 }

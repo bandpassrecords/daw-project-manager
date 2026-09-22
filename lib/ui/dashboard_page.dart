@@ -37,6 +37,7 @@ import 'widgets/tab_customization_dialog.dart';
 import '../services/dock_menu_service.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/track_duration.dart';
 import '../utils/phase_colors.dart';
 import '../utils/project_file_status.dart';
 import '../utils/project_sort.dart';
@@ -9785,6 +9786,22 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       ? _monoFilePath!
       : widget.request.resolvedPath;
 
+  /// Stores the length the player just measured off this track, when it
+  /// differs from what is already saved. Silent and best-effort: a failure
+  /// here must not interrupt playback.
+  Future<void> _captureMeasuredDuration(Duration measured) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final current = ref.read(allProjectsStreamProvider).value
+          ?.where((p) => p.id == widget.request.project.id)
+          .firstOrNull;
+      if (current == null) return;
+      await recordMeasuredDuration(current, measured, repo.updateProject);
+    } catch (_) {
+      // Best-effort by design — see above.
+    }
+  }
+
   /// The one way volume changes in this bar — slider, mute button and the
   /// ctrl+wheel handler all call it, so the icon, the slider position and the
   /// player never disagree.
@@ -9873,6 +9890,9 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       if (!mounted) return;
       setState(() => _duration = d);
       _durationNotifier.set(d);
+      // Playing a track from the dashboard is enough for it to learn its own
+      // length (#157) — the same capture the detail page's player does.
+      _captureMeasuredDuration(d);
     });
     _player.onPositionChanged.listen((p) {
       if (!mounted) return;

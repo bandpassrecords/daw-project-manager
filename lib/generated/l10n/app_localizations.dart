@@ -9430,6 +9430,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Table view'**
   String get tracksViewTable;
+
+  /// No description provided for @partsColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Parts'**
+  String get partsColumn;
+
+  /// Tooltip on the release tracklist parts chip, counting parts still to record
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 part still needed} other{{count} parts still needed}}'**
+  String partsNeededCount(int count);
+
+  /// No description provided for @songLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get songLength;
+
+  /// No description provided for @songLengthColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get songLengthColumn;
+
+  /// No description provided for @songLengthHint.
+  ///
+  /// In en, this message translates to:
+  /// **'3:45'**
+  String get songLengthHint;
+
+  /// No description provided for @songLengthManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Entered by hand — clear to use the preview song’s length'**
+  String get songLengthManual;
+
+  /// No description provided for @songLengthFromPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Measured from the preview song'**
+  String get songLengthFromPreview;
+
+  /// Release running time when some tracks have no length yet; total is a floor
+  ///
+  /// In en, this message translates to:
+  /// **'{total}+'**
+  String releaseLengthAtLeast(String total);
+
+  /// No description provided for @releaseLengthComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Total running time'**
+  String get releaseLengthComplete;
+
+  /// Tooltip explaining that a release total excludes untimed tracks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Total so far — 1 track has no length yet} other{Total so far — {count} tracks have no length yet}}'**
+  String releaseLengthPartial(int count);
 }
 
 class _AppLocalizationsDelegate

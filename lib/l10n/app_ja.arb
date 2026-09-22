@@ -3765,5 +3765,17 @@
   "releaseArtworkCarryOverUse": "アートワークに使う",
   "releaseArtworkCarryOverSkip": "アートワークなし",
   "tracksViewList": "リスト表示",
-  "tracksViewTable": "テーブル表示"
+  "tracksViewTable": "テーブル表示",
+
+  "partsColumn": "パート",
+  "partsNeededCount": "{count, plural, other{未録音のパートが {count} 件}}",
+
+  "songLength": "長さ",
+  "songLengthColumn": "長さ",
+  "songLengthHint": "3:45",
+  "songLengthManual": "手入力です。空にするとプレビュー曲の長さを使います",
+  "songLengthFromPreview": "プレビュー曲から計測しました",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "合計時間",
+  "releaseLengthPartial": "{count, plural, other{暫定の合計 — 長さ未設定のトラックが {count} 件}}"
 }

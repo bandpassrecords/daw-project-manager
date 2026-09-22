@@ -968,6 +968,10 @@ class BackupService {
       'archivePath': project.archivePath,
       'archivedAt': project.archivedAt?.toIso8601String(),
       'archiveEntryPath': project.archiveEntryPath,
+      // Song length (#157) — see the Drive serializer for why both halves
+      // are carried.
+      'durationMs': project.durationMs,
+      'autoDurationMs': project.autoDurationMs,
     };
   }
 
@@ -1034,6 +1038,8 @@ class BackupService {
           ? DateTime.parse(json['archivedAt'] as String)
           : null,
       archiveEntryPath: json['archiveEntryPath'] as String?,
+      durationMs: (json['durationMs'] as num?)?.toInt(),
+      autoDurationMs: (json['autoDurationMs'] as num?)?.toInt(),
     );
   }
 

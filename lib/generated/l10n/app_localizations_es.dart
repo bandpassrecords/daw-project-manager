@@ -5663,4 +5663,53 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tracksViewTable => 'Vista de tabla';
+
+  @override
+  String get partsColumn => 'Partes';
+
+  @override
+  String partsNeededCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partes aún necesarias',
+      one: '1 parte aún necesaria',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get songLength => 'Duración';
+
+  @override
+  String get songLengthColumn => 'Duración';
+
+  @override
+  String get songLengthHint => '3:45';
+
+  @override
+  String get songLengthManual =>
+      'Introducida a mano: bórrala para usar la duración de la vista previa';
+
+  @override
+  String get songLengthFromPreview => 'Medida a partir de la vista previa';
+
+  @override
+  String releaseLengthAtLeast(String total) {
+    return '$total+';
+  }
+
+  @override
+  String get releaseLengthComplete => 'Duración total';
+
+  @override
+  String releaseLengthPartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Total parcial: $count pistas aún sin duración',
+      one: 'Total parcial: 1 pista aún sin duración',
+    );
+    return '$_temp0';
+  }
 }

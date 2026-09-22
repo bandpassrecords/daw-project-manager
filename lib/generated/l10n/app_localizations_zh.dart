@@ -5413,4 +5413,50 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tracksViewTable => '表格视图';
+
+  @override
+  String get partsColumn => '声部';
+
+  @override
+  String partsNeededCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '仍需 $count 个声部',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get songLength => '时长';
+
+  @override
+  String get songLengthColumn => '时长';
+
+  @override
+  String get songLengthHint => '3:45';
+
+  @override
+  String get songLengthManual => '手动输入——清空后将使用预览歌曲的时长';
+
+  @override
+  String get songLengthFromPreview => '根据预览歌曲测得';
+
+  @override
+  String releaseLengthAtLeast(String total) {
+    return '$total+';
+  }
+
+  @override
+  String get releaseLengthComplete => '总时长';
+
+  @override
+  String releaseLengthPartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '当前合计——仍有 $count 首曲目没有时长',
+    );
+    return '$_temp0';
+  }
 }

@@ -3765,5 +3765,17 @@
   "releaseArtworkCarryOverUse": "Использовать как обложку",
   "releaseArtworkCarryOverSkip": "Без обложки",
   "tracksViewList": "Списком",
-  "tracksViewTable": "Таблицей"
+  "tracksViewTable": "Таблицей",
+
+  "partsColumn": "Партии",
+  "partsNeededCount": "{count, plural, =1{ещё нужна 1 партия} other{ещё нужно партий: {count}}}",
+
+  "songLength": "Длительность",
+  "songLengthColumn": "Длительность",
+  "songLengthHint": "3:45",
+  "songLengthManual": "Введено вручную — очистите, чтобы использовать длительность превью",
+  "songLengthFromPreview": "Измерено по превью",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "Общая длительность",
+  "releaseLengthPartial": "{count, plural, =1{Промежуточный итог — у 1 трека ещё нет длительности} other{Промежуточный итог — треков без длительности: {count}}}"
 }

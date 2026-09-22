@@ -3765,5 +3765,17 @@
   "releaseArtworkCarryOverUse": "Als Cover verwenden",
   "releaseArtworkCarryOverSkip": "Kein Cover",
   "tracksViewList": "Listenansicht",
-  "tracksViewTable": "Tabellenansicht"
+  "tracksViewTable": "Tabellenansicht",
+
+  "partsColumn": "Parts",
+  "partsNeededCount": "{count, plural, =1{1 Part fehlt noch} other{{count} Parts fehlen noch}}",
+
+  "songLength": "Länge",
+  "songLengthColumn": "Länge",
+  "songLengthHint": "3:45",
+  "songLengthManual": "Von Hand eingegeben — leeren, um die Länge des Vorschausongs zu verwenden",
+  "songLengthFromPreview": "Aus dem Vorschausong gemessen",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "Gesamtlaufzeit",
+  "releaseLengthPartial": "{count, plural, =1{Zwischensumme — 1 Titel hat noch keine Länge} other{Zwischensumme — {count} Titel haben noch keine Länge}}"
 }

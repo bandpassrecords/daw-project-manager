@@ -26,9 +26,12 @@ import '../utils/mobile_utils.dart';
 import '../utils/file_launcher.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'project_detail_page.dart';
+import 'project_parts_page.dart';
 import 'session_actions.dart';
 import 'widgets/resizable_text_field.dart';
 import 'widgets/todo_list_widget.dart';
+import '../utils/track_duration.dart';
+import 'widgets/release_track_parts_chip.dart';
 import 'widgets/release_tracks_table.dart';
 import 'widgets/waveform_widget.dart';
 
@@ -1462,6 +1465,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                         AppLocalizations.of(context)!.tracksCount(releaseProjects.length),
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
+                      const SizedBox(height: 4),
+                      _ReleaseTotalLength(projects: releaseProjects),
                       const SizedBox(height: 8),
                       SizedBox(
                         width: double.infinity,
@@ -1510,6 +1515,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                         AppLocalizations.of(context)!.tracksCount(releaseProjects.length),
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
+                      const SizedBox(width: 12),
+                      _ReleaseTotalLength(projects: releaseProjects),
                       const Spacer(),
                       // List ↔ table. Desktop only: the table's seven columns
                       // have nowhere to go on a phone, where the list is
@@ -1663,6 +1670,10 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                                           Text(project.musicalKey!),
                                           Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
                                         ],
+                                        if (effectiveTrackDuration(project) case final length?) ...[
+                                          Text(formatTrackDuration(length)),
+                                          Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
+                                        ],
                                         Text(
                                           _translateStatus(context, project.status),
                                           style: TextStyle(
@@ -1670,6 +1681,11 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
+                                        // Same indicator the table's Parts
+                                        // column shows, so the two views of
+                                        // the tracklist agree; draws nothing
+                                        // for a song with no parts listed.
+                                        ReleaseTrackPartsChip(project: project, compact: true),
                                       ],
                                     ),
                                     trailing: Row(
@@ -1792,6 +1808,11 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
       onLaunch: (project) => launchProjectInDaw(context, ref, project),
       onRemoveFromRelease: (project) =>
           _confirmRemoveTrackFromRelease(release, project),
+      onOpenParts: (project) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ProjectPartsPage(projectId: project.id),
+        ),
+      ),
     );
   }
 
@@ -2822,6 +2843,53 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
           child: Text(AppLocalizations.of(context)!.addTracks),
         ),
       ],
+    );
+  }
+}
+
+/// Combined running time of a release, next to its track count.
+///
+/// Draws nothing until at least one track has a length, so a release nobody
+/// has timed yet shows no figure rather than a misleading 0:00. When only
+/// some tracks are timed it says so — the total is a floor, not a fact, and
+/// presenting it as exact would be wrong on a half-filled-in release.
+class _ReleaseTotalLength extends StatelessWidget {
+  const _ReleaseTotalLength({required this.projects});
+
+  final List<MusicProject> projects;
+
+  @override
+  Widget build(BuildContext context) {
+    final total = releaseTotalDuration(projects);
+    if (total == Duration.zero) return const SizedBox.shrink();
+
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final missing = tracksMissingDuration(projects);
+
+    return Tooltip(
+      message: missing > 0
+          ? l10n.releaseLengthPartial(missing)
+          : l10n.releaseLengthComplete,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.timer_outlined,
+            size: 15,
+            color: theme.textTheme.bodySmall?.color,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            missing > 0
+                ? l10n.releaseLengthAtLeast(formatTrackDuration(total))
+                : formatTrackDuration(total),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.textTheme.bodySmall?.color,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -8,8 +8,11 @@ import 'package:trina_grid/trina_grid.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
 import '../../providers/theme_provider.dart';
+import '../../utils/project_summary_text.dart';
+import '../../utils/track_duration.dart';
 import '../../utils/theme_derivations.dart';
 import '../../utils/trina_grid_locale.dart';
+import 'release_track_parts_chip.dart';
 import 'trina_grid_menu_delegate.dart';
 
 /// A release's tracks as a sortable table, mirroring the main dashboard's
@@ -31,6 +34,7 @@ class ReleaseTracksTable extends ConsumerStatefulWidget {
     required this.onViewDetails,
     required this.onLaunch,
     required this.onRemoveFromRelease,
+    required this.onOpenParts,
     required this.translateStatus,
     required this.statusColor,
   });
@@ -45,6 +49,11 @@ class ReleaseTracksTable extends ConsumerStatefulWidget {
   final void Function(MusicProject project)? onLaunch;
 
   final void Function(MusicProject project) onRemoveFromRelease;
+
+  /// Opens the project's parts workspace. The parts cell is the only way into
+  /// it from here, which is the point: a release is where you notice a song
+  /// still needs a bass take.
+  final void Function(MusicProject project) onOpenParts;
 
   /// Phase name → localized label, and → the colour the rest of the release
   /// page paints it. Injected rather than re-derived here so this table can't
@@ -80,7 +89,18 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
             // as "100" < "90"; the renderer formats it.
             'bpm': TrinaCell(value: projects[i].bpm ?? 0),
             'key': TrinaCell(value: projects[i].musicalKey ?? ''),
+            // Milliseconds so the column sorts by real length rather than by
+            // the "3:45" string; the renderer formats it.
+            'length': TrinaCell(
+              value: effectiveTrackDuration(projects[i])?.inMilliseconds ?? 0,
+            ),
             'status': TrinaCell(value: projects[i].status),
+            'notes': TrinaCell(value: projectNoteExcerpt(projects[i]) ?? ''),
+            // Sorted by how many parts are still *needed*, not by progress:
+            // "what does this release still owe me" is the question a
+            // tracklist gets read for. A project with no parts listed sorts
+            // alongside a finished one, both being zero.
+            'parts': TrinaCell(value: ReleaseTrackPartsChip.neededCount(projects[i])),
             'modified': TrinaCell(value: projects[i].lastModifiedAt),
             'actions': TrinaCell(value: ''),
             'data': TrinaCell(value: projects[i]),
@@ -205,6 +225,21 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
         minWidth: 70,
       ),
       TrinaColumn(
+        title: l10n.songLengthColumn,
+        field: 'length',
+        type: TrinaColumnType.number(),
+        enableEditingMode: false,
+        width: 90,
+        minWidth: 70,
+        renderer: (ctx) {
+          final ms = (ctx.cell.value as num?)?.toInt() ?? 0;
+          // 0 is the "no length yet" sentinel the cell value uses so the
+          // column can sort numerically — never shown as a time.
+          if (ms <= 0) return const SizedBox.shrink();
+          return Text(formatTrackDuration(Duration(milliseconds: ms)));
+        },
+      ),
+      TrinaColumn(
         title: l10n.phase,
         field: 'status',
         type: TrinaColumnType.text(),
@@ -219,6 +254,53 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
             style: TextStyle(
               color: widget.statusColor(status),
               fontWeight: FontWeight.w500,
+            ),
+          );
+        },
+      ),
+      TrinaColumn(
+        title: l10n.notes,
+        field: 'notes',
+        type: TrinaColumnType.text(),
+        enableEditingMode: false,
+        width: 260,
+        minWidth: 140,
+        renderer: (ctx) {
+          final text = '${ctx.cell.value}';
+          if (text.isEmpty) return const SizedBox.shrink();
+          final project = _projectOf(ctx);
+          // The excerpt is already one line and already capped; the tooltip
+          // carries the rest so a long note is readable without leaving the
+          // table.
+          final full = project == null ? text : (projectNoteFullText(project) ?? text);
+          return Tooltip(
+            message: full,
+            waitDuration: const Duration(milliseconds: 400),
+            child: Text(
+              text,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall,
+            ),
+          );
+        },
+      ),
+      TrinaColumn(
+        title: l10n.partsColumn,
+        field: 'parts',
+        type: TrinaColumnType.number(),
+        enableEditingMode: false,
+        width: 120,
+        minWidth: 100,
+        renderer: (ctx) {
+          final project = _projectOf(ctx);
+          if (project == null) return const SizedBox.shrink();
+          // Same widget the tracklist's subtitle uses, so the two views of a
+          // release can't disagree about a song's instrumentation.
+          return Align(
+            alignment: Alignment.centerLeft,
+            child: ReleaseTrackPartsChip(
+              project: project,
+              onTap: () => widget.onOpenParts(project),
             ),
           );
         },

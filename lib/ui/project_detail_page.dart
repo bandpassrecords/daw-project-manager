@@ -27,6 +27,7 @@ import '../repository/project_repository.dart';
 import '../utils/attachment_launcher.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/track_duration.dart';
 import '../utils/file_launcher.dart';
 import '../utils/playback_seek.dart';
 import '../utils/route_observer.dart';
@@ -96,15 +97,18 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   late TextEditingController _nameCtrl;
   late TextEditingController _bpmCtrl;
   late TextEditingController _keyCtrl;
+  late TextEditingController _durationCtrl;
   late TextEditingController _notesCtrl; // NOVO CONTROLLER
   late TextEditingController _projectNotesCtrl;
   late FocusNode _nameFocusNode;
   late FocusNode _bpmFocusNode;
   late FocusNode _keyFocusNode;
+  late FocusNode _durationFocusNode;
   late FocusNode _notesFocusNode;
   String? _lastSavedName;
   String? _lastSavedBpm;
   String? _lastSavedKey;
+  String? _lastSavedDuration;
   String? _lastSavedNotes;
   String? _selectedPhase;
 
@@ -592,11 +596,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     _nameCtrl = TextEditingController();
     _bpmCtrl = TextEditingController();
     _keyCtrl = TextEditingController();
+    _durationCtrl = TextEditingController();
     _notesCtrl = TextEditingController(); // INICIALIZA
     _projectNotesCtrl = TextEditingController();
     _nameFocusNode = FocusNode();
     _bpmFocusNode = FocusNode();
     _keyFocusNode = FocusNode();
+    _durationFocusNode = FocusNode();
     _notesFocusNode = FocusNode();
 
     // Defer the badge dismissal until after the first frame has finished building.
@@ -613,6 +619,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     _nameCtrl.dispose();
     _bpmCtrl.dispose();
     _keyCtrl.dispose();
+    _durationCtrl.dispose();
     _notesCtrl.dispose();
     _projectNotesCtrl.dispose();
     _nameFocusNode.dispose();
@@ -647,6 +654,12 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     final statusChanged = project.status != newStatus;
     final bpmText = _bpmCtrl.text.trim();
     final keyText = _keyCtrl.text.trim();
+    // An unparseable length is left alone rather than wiping the stored one:
+    // autosave fires on every keystroke, so "3:" on the way to "3:45" must
+    // not clear the field (see parseTrackDuration).
+    final durationText = _durationCtrl.text.trim();
+    final typedDuration = parseTrackDuration(durationText);
+    final clearDuration = durationText.isEmpty;
 
     final updated = project.copyWith(
       customDisplayName: newCustomDisplayName,
@@ -659,6 +672,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
       clearNotes: newNotes == null,
       status: newStatus,
       statusChangedAt: statusChanged ? DateTime.now() : null,
+      durationMs: typedDuration?.inMilliseconds,
+      clearDurationMs: clearDuration,
     );
 
     await repo.updateProject(updated);
@@ -672,6 +687,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     _lastSavedName = newCustomDisplayName ?? project.fileName;
     _lastSavedBpm = bpmText;
     _lastSavedKey = keyText;
+    _lastSavedDuration = durationText;
     _lastSavedNotes = newNotes ?? '';
   }
 
@@ -1033,6 +1049,23 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
               _lastSavedKey ??= currentKey;
             }
           }
+
+          // Song length (#157). Shows whichever value is in effect — typed or
+          // measured — so playing the preview song fills the field in.
+          if (!_durationFocusNode.hasFocus) {
+            final effective = effectiveTrackDuration(updatedProject);
+            final currentDuration =
+                effective == null ? '' : formatTrackDuration(effective);
+            if (_lastSavedDuration == null ||
+                _durationCtrl.text == _lastSavedDuration) {
+              if (_durationCtrl.text != currentDuration) {
+                _durationCtrl.text = currentDuration;
+                _lastSavedDuration = currentDuration;
+              }
+            } else {
+              _lastSavedDuration ??= currentDuration;
+            }
+          }
           
           // NOVO: Sincroniza Notas - só atualiza se não estiver com foco E se o texto não foi modificado
           if (!_notesFocusNode.hasFocus) {
@@ -1272,6 +1305,22 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                           _scheduleAutoSave();
                                         },
                                       ),
+                                      const SizedBox(height: 12),
+                                      TextFormField(
+                                        controller: _durationCtrl,
+                                        focusNode: _durationFocusNode,
+                                        decoration: InputDecoration(
+                                          labelText: AppLocalizations.of(context)!.songLength,
+                                          hintText: AppLocalizations.of(context)!.songLengthHint,
+                                          helperText: hasManualTrackDuration(updatedProject)
+                                              ? AppLocalizations.of(context)!.songLengthManual
+                                              : (updatedProject.autoDurationMs != null
+                                                  ? AppLocalizations.of(context)!.songLengthFromPreview
+                                                  : null),
+                                          prefixIcon: const Icon(Icons.timer_outlined, size: 18),
+                                        ),
+                                        onChanged: (_) => _scheduleAutoSave(),
+                                      ),
                                       // Camelot code field (only shown when key is set)
                                       if (updatedProject.camelotCode != null) ...[
                                         const SizedBox(height: 12),
@@ -1368,6 +1417,24 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                             _scheduleAutoSave();
                                           },
                                         ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: TextFormField(
+                                            controller: _durationCtrl,
+                                            focusNode: _durationFocusNode,
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(context)!.songLength,
+                                              hintText: AppLocalizations.of(context)!.songLengthHint,
+                                              helperText: hasManualTrackDuration(updatedProject)
+                                                  ? AppLocalizations.of(context)!.songLengthManual
+                                                  : (updatedProject.autoDurationMs != null
+                                                      ? AppLocalizations.of(context)!.songLengthFromPreview
+                                                      : null),
+                                              prefixIcon: const Icon(Icons.timer_outlined, size: 18),
+                                            ),
+                                            onChanged: (_) => _scheduleAutoSave(),
+                                          )
                                       ),
                                       // Camelot code field on desktop (next to key field)
                                       if (updatedProject.camelotCode != null) ...[
@@ -2416,6 +2483,9 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     player.onDurationChanged.listen((d) {
       if (gen != _playerGen || !mounted) return;
       setState(() => _duration = d);
+      // Loading the preview song is how a project learns its own length
+      // (#157) — no extra decode, just the figure the player already has.
+      _captureMeasuredDuration(d);
     });
     player.onPositionChanged.listen((p) {
       if (gen != _playerGen || !mounted) return;
@@ -2872,6 +2942,24 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     setState(() => _volume = value);
     if (value > 0) _preMuteVolume = value;
     unawaited(_applyVolume(value));
+  }
+
+  /// Stores the length the player just measured off the preview song, when
+  /// it differs from what is already saved.
+  ///
+  /// Silent and best-effort: this is a side effect of pressing play, so a
+  /// failure here must not interrupt playback or surface an error.
+  Future<void> _captureMeasuredDuration(Duration measured) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final current = ref.read(allProjectsStreamProvider).value
+          ?.where((p) => p.id == widget.project.id)
+          .firstOrNull;
+      if (current == null) return;
+      await recordMeasuredDuration(current, measured, repo.updateProject);
+    } catch (_) {
+      // Best-effort by design — see above.
+    }
   }
 
   /// Applies [value] to whichever player owns playback. The desktop bar owns

@@ -5207,5 +5207,41 @@
   "releaseArtworkCarryOverUse": "Use as artwork",
   "releaseArtworkCarryOverSkip": "No artwork",
   "tracksViewList": "List view",
-  "tracksViewTable": "Table view"
+  "tracksViewTable": "Table view",
+
+  "partsColumn": "Parts",
+  "partsNeededCount": "{count, plural, =1{1 part still needed} other{{count} parts still needed}}",
+  "@partsNeededCount": {
+    "description": "Tooltip on the release tracklist parts chip, counting parts still to record",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "songLength": "Length",
+  "songLengthColumn": "Length",
+  "songLengthHint": "3:45",
+  "songLengthManual": "Entered by hand — clear to use the preview song’s length",
+  "songLengthFromPreview": "Measured from the preview song",
+  "releaseLengthAtLeast": "{total}+",
+  "@releaseLengthAtLeast": {
+    "description": "Release running time when some tracks have no length yet; total is a floor",
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseLengthComplete": "Total running time",
+  "releaseLengthPartial": "{count, plural, =1{Total so far — 1 track has no length yet} other{Total so far — {count} tracks have no length yet}}",
+  "@releaseLengthPartial": {
+    "description": "Tooltip explaining that a release total excludes untimed tracks",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
