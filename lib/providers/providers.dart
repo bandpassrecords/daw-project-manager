@@ -23,7 +23,7 @@ import '../utils/version_stacks.dart';
 import '../utils/phase_colors.dart';
 import '../utils/todo_due_utils.dart';
 import '../utils/project_visuals.dart';
-import '../utils/scan_root_filters.dart';
+import '../utils/library_projects.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
@@ -458,6 +458,24 @@ final allProjectsStreamProvider = StreamProvider<List<MusicProject>>((
   yield* repo.watchAllProjects();
 });
 
+/// Every project in the library, before display filters — see
+/// [buildLibraryProjects] for exactly what that means.
+///
+/// [projectsProvider] applies hidden/archived/phase/search on top of this, and
+/// the dashboard counts it directly, so the list and the numbers above it come
+/// from one definition instead of two copies that drift.
+final libraryProjectsProvider = Provider<List<MusicProject>>((ref) {
+  final allProjects = ref.watch(allProjectsStreamProvider).value ?? const [];
+  final fileExistence = ref.watch(fileExistenceCacheProvider);
+  return buildLibraryProjects(
+    allProjects: allProjects,
+    releases: ref.watch(releasesProvider).value ?? const [],
+    scanRoots: ref.watch(scanRootsProvider),
+    isMobile: MobileUtils.isMobile(),
+    fileExistsLocally: fileExistence.exists,
+  );
+});
+
 // PROVIDER CORRIGIDO: Agora observa o allProjectsStreamProvider e o Notifier
 final projectsProvider = Provider<List<MusicProject>>((ref) {
   // 1. Observa o stream de todos os projetos (retorna um AsyncValue)
@@ -466,90 +484,19 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
   // 2. Observa o estado ATUAL (QueryParams) do nosso novo Notifier
   final params = ref.watch(queryParamsNotifierProvider);
 
-  // 3. Observa releases e scan roots para filter preserved projects
-  final releasesAsync = ref.watch(releasesProvider);
-  final scanRoots = ref.watch(scanRootsProvider);
+  // For the archived filter below (whether an archived project's files are
+  // still here). The library rules have their own watch on it.
   final fileExistenceCache = ref.watch(fileExistenceCacheProvider);
+
 
   // 4. Usa .whenData para acessar a lista quando estiver pronta e aplicar o filtro/ordenação
   return allProjectsAsync
-      .whenData((allProjects) {
-        var projects = allProjects;
-
-        // --- Collapse version stacks (#94) ---
-        // A stacked file is represented in the list by its stack, which owns
-        // the shared metadata. Showing both would list the same project twice
-        // and double-count it in every total derived from this list. The
-        // helper also rolls each stack's work time up from its members, which
-        // is where it is actually stored.
-        projects = collapseVersionStacks(projects);
-
-        // --- Filter out projects under a disabled scan root ---
-        // Disabling a root silences a folder without deleting it (see
-        // ScanRoot.enabled), so its projects stay in the box and are dropped
-        // here instead. Skipped on mobile for the same reason the block below
-        // is: there is no local filesystem to relate a project to a root.
-        if (!MobileUtils.isMobile() && scanRoots.any((r) => !r.enabled)) {
-          projects = projects
-              .where((project) => !isHiddenByDisabledRoot(project.filePath, scanRoots))
-              .toList();
-        }
-
-        // --- Filter out stale preserved projects ---
-        // A "preserved" project is one attached to a release. We hide it only when its
-        // source file DOES exist locally but falls outside every active scan root (the
-        // user removed the root). Projects whose files are NOT present locally are always
-        // shown — they are metadata-only entries restored from a backup on another machine.
-        if (!MobileUtils.isMobile()) {
-          final releases = releasesAsync.value ?? [];
-          final protectedProjectIds = <String>{};
-          for (final release in releases) {
-            protectedProjectIds.addAll(release.trackIds);
-          }
-
-          // Only enabled roots count as "active" here — a project preserved
-          // by a release whose root is switched off has already been dropped
-          // above, and treating a disabled root as active would contradict
-          // that.
-          final activeRootPaths = [
-            for (final root in scanRoots)
-              if (root.enabled) normalizedRootPrefix(root.path),
-          ];
-
-          projects = projects.where((project) {
-            // Projects not attached to any release are always shown.
-            if (!protectedProjectIds.contains(project.id)) return true;
-
-            // A stack has no scanned file: its path is the folder its versions
-            // sit in, which can be the scan root itself when a version lives
-            // directly in the root. That folder exists but is not *inside* any
-            // root by the prefix test below, so a stack on a release would be
-            // dropped from the list entirely — along with its versions, which
-            // are already collapsed into it. Judged by its members, never by a
-            // path it only synthesized.
-            if (!project.isMissingFileCandidate) return true;
-
-            // File not present locally → metadata-only from backup / different machine.
-            // Always show so the user can inspect / edit metadata.
-            final fileExistsLocally = fileExistenceCache.exists(
-              project.filePath,
-            );
-            if (!fileExistsLocally) return true;
-
-            // File exists locally: only show if it's under an active scan root.
-            final projectPath = p.normalize(project.filePath);
-            return activeRootPaths.any(
-              (rootPath) => projectPath.startsWith(rootPath),
-            );
-          }).toList();
-        } else {
-          // Android: show all projects (metadata-only mode, no file system checks).
-          if (kDebugMode) {
-            print(
-              'projectsProvider (Android): Showing all ${projects.length} projects (metadata-only mode)',
-            );
-          }
-        }
+      .whenData((_) {
+        // What is in the library at all — stacks collapsed, disabled folders
+        // and stale release-preserved projects dropped. Shared with the
+        // dashboard's project counts so the two can never disagree; see
+        // buildLibraryProjects.
+        var projects = ref.watch(libraryProjectsProvider);
 
         // --- Filter hidden projects ---
         final hiddenMode = ref.watch(showHiddenProjectsProvider);

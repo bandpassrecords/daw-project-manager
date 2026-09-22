@@ -36,6 +36,7 @@ import 'widgets/startup_dialog.dart';
 import 'widgets/tab_customization_dialog.dart';
 import '../services/dock_menu_service.dart';
 import '../utils/daw_logo.dart';
+import '../utils/library_projects.dart';
 import '../utils/mobile_utils.dart';
 import '../services/player_volume_store.dart';
 import '../utils/text_input_focus.dart';
@@ -1788,58 +1789,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       );
     }
 
-    // Get all projects and filter out preserved projects (same logic as projectsProvider)
-    final allProjectsAsync = ref.watch(allProjectsStreamProvider);
-    final allProjects = allProjectsAsync.value ?? [];
-    final releasesAsync = ref.watch(releasesProvider);
-    final scanRoots = ref.watch(scanRootsProvider);
-
-    // Filter out preserved projects (in releases but not in any active scan root)
-    // On mobile, we're only syncing metadata, so show ALL projects (both in releases and not)
-    // On desktop, filter preserved projects that aren't in active scan roots
-    final List<MusicProject> filteredProjects;
-    if (MobileUtils.isMobile()) {
-      // Mobile: show all projects (metadata-only mode, no file system checks)
-      filteredProjects = allProjects;
-    } else {
-      // Desktop: filter preserved projects that aren't in active scan roots
-      final releases = releasesAsync.value ?? [];
-      final protectedProjectIds = <String>{};
-      for (final release in releases) {
-        protectedProjectIds.addAll(release.trackIds);
-      }
-
-      // Get all active scan root paths (normalized for comparison)
-      final activeRootPaths = scanRoots.map((root) {
-        final normalized = path.normalize(root.path);
-        // Ensure root path ends with separator for proper prefix matching
-        return normalized.endsWith(path.separator)
-            ? normalized
-            : normalized + path.separator;
-      }).toList();
-
-      // Filter out preserved projects before counting
-      filteredProjects = allProjects.where((project) {
-        // If project is not in any release, always include it
-        if (!protectedProjectIds.contains(project.id)) {
-          return true;
-        }
-
-        // If project is in a release, check if it's in any active scan root
-        final projectPath = path.normalize(project.filePath);
-        final isInActiveRoot = activeRootPaths.any((rootPath) {
-          // Check if project path starts with the root path
-          return projectPath.startsWith(rootPath);
-        });
-
-        // Only include if it's in an active root (preserved projects not in active roots are excluded)
-        return isInActiveRoot;
-      }).toList();
-    }
-
-    // Count visible and hidden from filtered projects only
-    final visibleCount = filteredProjects.where((p) => !p.hidden).length;
-    final hiddenCount = filteredProjects.where((p) => p.hidden).length;
+    // Counted from the same library the list is built on (stacks collapsed,
+    // disabled folders and stale release-preserved projects dropped). This
+    // used to be its own hand-copied filter, which never learned about
+    // disabled folders and counted a stack and each of its versions
+    // separately, so the numbers disagreed with the list under them.
+    final (visible: visibleCount, hidden: hiddenCount) =
+        libraryProjectCounts(ref.watch(libraryProjectsProvider));
 
     // RawKeyboardListener is now the primary handler for Ctrl+F and Ctrl+R
     // This ensures it works even when other widgets (like PlutoGrid) have focus
