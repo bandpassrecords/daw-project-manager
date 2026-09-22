@@ -30,6 +30,7 @@ import 'project_parts_page.dart';
 import 'session_actions.dart';
 import 'widgets/resizable_text_field.dart';
 import 'widgets/todo_list_widget.dart';
+import '../services/track_duration_probe_service.dart';
 import '../utils/track_duration.dart';
 import 'widgets/release_track_parts_chip.dart';
 import 'widgets/release_tracks_table.dart';
@@ -61,6 +62,9 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
   /// tracklist, which is exactly why it isn't the resting state.
   bool _tracksAsTable = false;
 
+  /// Guards the one-shot duration fill below against a rebuild re-running it.
+  bool _durationFillStarted = false;
+
   @override
   void initState() {
     super.initState();
@@ -80,7 +84,51 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
       }
       _titleController.addListener(_scheduleTitleDescSave);
       _descriptionController.addListener(_scheduleTitleDescSave);
+      unawaited(_fillMissingTrackDurations());
     });
+  }
+
+  /// Fills in the length of any track that has a preview song but no length
+  /// yet, by reading the file rather than waiting for someone to play it.
+  ///
+  /// Runs once when the page opens, one track at a time so a long release
+  /// cannot spin up a decoder per track at once. Entirely best-effort: a
+  /// track whose file will not decode simply keeps its blank length.
+  Future<void> _fillMissingTrackDurations() async {
+    if (_durationFillStarted) return;
+    _durationFillStarted = true;
+    try {
+      final release = ref.read(releasesProvider).asData?.value
+          .where((r) => r.id == widget.releaseId)
+          .firstOrNull;
+      if (release == null) return;
+      final all = ref.read(allProjectsStreamProvider).value ?? const [];
+      final tracks =
+          all.where((p) => release.trackIds.contains(p.id)).toList();
+
+      final pending = projectsNeedingDurationProbe(
+        tracks,
+        hasPlayablePreview: isPlayablePreview,
+      );
+      if (pending.isEmpty) return;
+
+      final repo = await ref.read(repositoryProvider.future);
+      for (final project in pending) {
+        if (!mounted) return;
+        final measured =
+            await TrackDurationProbeService.probe(resolvedPreviewPath(project));
+        if (measured == null) continue;
+        // Re-read before writing: the probe is slow enough that the project
+        // may have been edited (or played, which stores a length) meanwhile.
+        final current = ref.read(allProjectsStreamProvider).value
+            ?.where((p) => p.id == project.id)
+            .firstOrNull;
+        if (current == null) continue;
+        await recordMeasuredDuration(current, measured, repo.updateProject);
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('[ReleaseDetail] duration fill failed: $e');
+    }
   }
 
   void _scheduleTitleDescSave() {
@@ -2292,6 +2340,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     player.onPlayerComplete.listen((_) {
       if (gen != _playerGen || !mounted) return;
       setState(() { _isPlaying = false; _position = Duration.zero; _playbackEnded = true; });
+      ref.read(playingReleaseAudioProvider.notifier).releaseFloor(widget.file.id);
     });
   }
 
@@ -2459,13 +2508,24 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
 
   @override
   void dispose() {
+    // Leaving the page mid-playback must not leave the floor claimed by a
+    // widget that no longer exists — the next item to play would see a stale
+    // owner and pause itself.
+    ref.read(playingReleaseAudioProvider.notifier).releaseFloor(widget.file.id);
     _warmPlayer?.dispose();
     _audioPlayer.dispose();
     super.dispose();
   }
 
   Future<void> _togglePlayPause() async {
-    if (!_isPlaying) ref.read(desktopPlayerProvider.notifier).close();
+    if (!_isPlaying) {
+      ref.read(desktopPlayerProvider.notifier).close();
+      // Take the floor before starting, so any sibling already playing has
+      // paused by the time this one makes a sound.
+      ref.read(playingReleaseAudioProvider.notifier).claim(widget.file.id);
+    } else {
+      ref.read(playingReleaseAudioProvider.notifier).releaseFloor(widget.file.id);
+    }
     try {
       if (_isPlaying) {
         await _audioPlayer.pause();
@@ -2492,6 +2552,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
 
   Future<void> _stop() async {
     await _audioPlayer.stop();
+    ref.read(playingReleaseAudioProvider.notifier).releaseFloor(widget.file.id);
     setState(() {
       _position = Duration.zero;
       _playbackEnded = false;
@@ -2563,6 +2624,14 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
   Widget build(BuildContext context) {
     ref.listen(desktopPlayerProvider, (prev, next) {
       if (next != null && _isPlaying) _audioPlayer.pause();
+    });
+    // Only one release audio item plays at a time: when another one claims
+    // the floor, this one pauses itself rather than playing over it.
+    ref.listen(playingReleaseAudioProvider, (prev, next) {
+      if (!_isPlaying) return;
+      if (shouldYieldReleaseAudio(fileId: widget.file.id, owner: next)) {
+        _audioPlayer.pause();
+      }
     });
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

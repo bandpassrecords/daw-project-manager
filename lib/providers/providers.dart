@@ -2623,6 +2623,50 @@ final desktopPlayerProvider =
       DesktopPlayerNotifier.new,
     );
 
+/// Which audio item on the release page currently owns playback, by file id,
+/// or null when nothing is playing.
+///
+/// Every audio file attached to a release builds its own player widget, so
+/// without a single owner two mixdowns play over each other the moment you
+/// start a second one. This is the one place that says who has the floor;
+/// each item watches it and pauses itself when someone else claims it.
+///
+/// Deliberately a *claim*, not a broadcast stop: the item that starts playing
+/// names itself, and every other item reacts. That keeps the rule in one
+/// place and means an item can never be asked to stop by a sibling that has
+/// since been disposed.
+class PlayingReleaseAudioNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  /// [fileId] takes the floor. Every other item stops.
+  void claim(String fileId) => state = fileId;
+
+  /// Gives the floor up, but only if [fileId] still holds it.
+  ///
+  /// The guard matters: a paused item's stop handler can fire *after* another
+  /// item has already claimed the floor, and an unguarded clear would then
+  /// silence the one that just started.
+  void releaseFloor(String fileId) {
+    if (state == fileId) state = null;
+  }
+
+  /// Nothing is playing — used when the page itself goes away.
+  void clear() => state = null;
+}
+
+final playingReleaseAudioProvider =
+    NotifierProvider<PlayingReleaseAudioNotifier, String?>(
+      PlayingReleaseAudioNotifier.new,
+    );
+
+/// Whether an item holding [fileId] should pause because [owner] has the
+/// floor. Pure — the rule the release page's audio items share.
+bool shouldYieldReleaseAudio({
+  required String fileId,
+  required String? owner,
+}) => owner != null && owner != fileId;
+
 /// True while the desktop player is actively playing (false when paused/stopped).
 class DesktopIsPlayingNotifier extends Notifier<bool> {
   @override
