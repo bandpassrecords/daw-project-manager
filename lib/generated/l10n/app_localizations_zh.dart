@@ -5459,4 +5459,12 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get breadcrumbHome => '主页';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return '前往$label';
+  }
 }

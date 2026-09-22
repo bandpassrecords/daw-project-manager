@@ -5729,4 +5729,12 @@ class AppLocalizationsFr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get breadcrumbHome => 'Accueil';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return 'Aller à $label';
+  }
 }

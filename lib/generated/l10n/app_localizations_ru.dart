@@ -5682,4 +5682,12 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get breadcrumbHome => 'Главная';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return 'Перейти к $label';
+  }
 }

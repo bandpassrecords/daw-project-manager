@@ -5520,4 +5520,12 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get breadcrumbHome => 'ホーム';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return '$label へ移動';
+  }
 }

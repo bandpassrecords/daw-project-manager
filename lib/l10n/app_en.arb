@@ -5243,5 +5243,16 @@
         "type": "int"
       }
     }
+  },
+
+  "breadcrumbHome": "Home",
+  "breadcrumbGoTo": "Go to {label}",
+  "@breadcrumbGoTo": {
+    "description": "Tooltip on a clickable breadcrumb in the desktop title bar",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
   }
 }

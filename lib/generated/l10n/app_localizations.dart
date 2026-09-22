@@ -9490,6 +9490,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{Total so far — 1 track has no length yet} other{Total so far — {count} tracks have no length yet}}'**
   String releaseLengthPartial(int count);
+
+  /// No description provided for @breadcrumbHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get breadcrumbHome;
+
+  /// Tooltip on a clickable breadcrumb in the desktop title bar
+  ///
+  /// In en, this message translates to:
+  /// **'Go to {label}'**
+  String breadcrumbGoTo(String label);
 }
 
 class _AppLocalizationsDelegate

@@ -3777,5 +3777,8 @@
   "songLengthFromPreview": "Misurata dall’anteprima",
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Durata totale",
-  "releaseLengthPartial": "{count, plural, =1{Totale parziale: 1 traccia non ha ancora una durata} other{Totale parziale: {count} tracce non hanno ancora una durata}}"
+  "releaseLengthPartial": "{count, plural, =1{Totale parziale: 1 traccia non ha ancora una durata} other{Totale parziale: {count} tracce non hanno ancora una durata}}",
+
+  "breadcrumbHome": "Home",
+  "breadcrumbGoTo": "Vai a {label}"
 }

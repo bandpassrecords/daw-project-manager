@@ -3777,5 +3777,8 @@
   "songLengthFromPreview": "Измерено по превью",
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Общая длительность",
-  "releaseLengthPartial": "{count, plural, =1{Промежуточный итог — у 1 трека ещё нет длительности} other{Промежуточный итог — треков без длительности: {count}}}"
+  "releaseLengthPartial": "{count, plural, =1{Промежуточный итог — у 1 трека ещё нет длительности} other{Промежуточный итог — треков без длительности: {count}}}",
+
+  "breadcrumbHome": "Главная",
+  "breadcrumbGoTo": "Перейти к {label}"
 }

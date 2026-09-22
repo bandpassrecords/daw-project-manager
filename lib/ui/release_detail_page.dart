@@ -31,6 +31,7 @@ import 'session_actions.dart';
 import 'widgets/resizable_text_field.dart';
 import 'widgets/todo_list_widget.dart';
 import '../services/track_duration_probe_service.dart';
+import '../utils/project_summary_text.dart';
 import '../utils/track_duration.dart';
 import 'widgets/release_track_parts_chip.dart';
 import 'widgets/release_tracks_table.dart';
@@ -84,30 +85,37 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
       }
       _titleController.addListener(_scheduleTitleDescSave);
       _descriptionController.addListener(_scheduleTitleDescSave);
-      unawaited(_fillMissingTrackDurations());
+    });
+  }
+
+  /// Kicks off the length fill once the tracklist has actually loaded.
+  ///
+  /// Called from the tracks section's build rather than from initState: at
+  /// initState time `allProjectsStreamProvider` is usually still loading, so
+  /// the first attempt saw an empty tracklist, found nothing to do, and — with
+  /// the guard already latched — never ran again. Every track's length stayed
+  /// blank, which looked like the feature was missing. The guard is therefore
+  /// only set once there is a real list to work from.
+  void _scheduleDurationFill(List<MusicProject> releaseProjects) {
+    if (_durationFillStarted || releaseProjects.isEmpty) return;
+    _durationFillStarted = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_fillMissingTrackDurations(releaseProjects));
     });
   }
 
   /// Fills in the length of any track that has a preview song but no length
   /// yet, by reading the file rather than waiting for someone to play it.
   ///
-  /// Runs once when the page opens, one track at a time so a long release
-  /// cannot spin up a decoder per track at once. Entirely best-effort: a
-  /// track whose file will not decode simply keeps its blank length.
-  Future<void> _fillMissingTrackDurations() async {
-    if (_durationFillStarted) return;
-    _durationFillStarted = true;
+  /// One track at a time, so a long release cannot spin up a decoder per
+  /// track at once. Entirely best-effort: a track whose file will not decode
+  /// simply keeps its blank length.
+  Future<void> _fillMissingTrackDurations(
+    List<MusicProject> releaseProjects,
+  ) async {
     try {
-      final release = ref.read(releasesProvider).asData?.value
-          .where((r) => r.id == widget.releaseId)
-          .firstOrNull;
-      if (release == null) return;
-      final all = ref.read(allProjectsStreamProvider).value ?? const [];
-      final tracks =
-          all.where((p) => release.trackIds.contains(p.id)).toList();
-
       final pending = projectsNeedingDurationProbe(
-        tracks,
+        releaseProjects,
         hasPlayablePreview: isPlayablePreview,
       );
       if (pending.isEmpty) return;
@@ -1498,6 +1506,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
 
   Widget _buildTracksSection(BuildContext context, Release release, List<MusicProject> releaseProjects) {
     final isMobile = MobileUtils.isMobile();
+    // Safe to call on every build — it latches after the first real list.
+    _scheduleDurationFill(releaseProjects);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -1698,10 +1708,18 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                                       child: Icon(Icons.drag_indicator, color: Theme.of(context).textTheme.bodyMedium?.color),
                                     ),
                                     title: Text(project.displayName),
-                                    subtitle: Wrap(
-                                      spacing: 8,
-                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                    isThreeLine:
+                                        projectNoteExcerpt(project) != null,
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        Wrap(
+                                          spacing: 8,
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          children: [
                                         if (project.dawType != null && project.dawType!.isNotEmpty) ...[
                                           Text(
                                             project.dawVersion != null && project.dawVersion!.isNotEmpty
@@ -1733,7 +1751,30 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                                         // column shows, so the two views of
                                         // the tracklist agree; draws nothing
                                         // for a song with no parts listed.
-                                        ReleaseTrackPartsChip(project: project, compact: true),
+                                            ReleaseTrackPartsChip(project: project, compact: true),
+                                          ],
+                                        ),
+                                        // The project's own note, one line, so
+                                        // the default view carries the same
+                                        // detail the table's Notes column does
+                                        // — the table is behind a toggle and
+                                        // easy to miss.
+                                        if (projectNoteExcerpt(project)
+                                            case final note?)
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 2),
+                                            child: Text(
+                                              note,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.copyWith(
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                     trailing: Row(
@@ -2409,6 +2450,16 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     final filePath = widget.file.filePath;
     AudioAnalysisService.getFileInfo(filePath).then((info) {
       if (mounted && info != null) setState(() => _fileInfo = info);
+    });
+    // Read the running time up front instead of leaving 0:00 / 0:00 until
+    // the file is played: the player only reports a duration once it has
+    // loaded a source, and this row is worth reading without starting it.
+    TrackDurationProbeService.probe(filePath).then((measured) {
+      if (!mounted || measured == null) return;
+      // Never clobber a duration the player has since reported for real —
+      // the probe can land after playback has started.
+      if (_duration > Duration.zero) return;
+      setState(() => _duration = measured);
     });
     ref.read(waveformCacheProvider.notifier).getOrExtract(
       filePath,

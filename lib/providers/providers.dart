@@ -2626,7 +2626,11 @@ final desktopPlayerProvider =
 /// One step in the navigation trail shown in the desktop title bar.
 @immutable
 class Breadcrumb {
-  const Breadcrumb({required this.id, required this.label});
+  const Breadcrumb({
+    required this.id,
+    required this.label,
+    this.isRoot = false,
+  });
 
   /// Identifies the title bar that registered this crumb, so it can remove
   /// exactly its own entry on the way out rather than popping whatever is
@@ -2635,12 +2639,23 @@ class Breadcrumb {
 
   final String label;
 
-  @override
-  bool operator ==(Object other) =>
-      other is Breadcrumb && other.id == id && other.label == label;
+  /// Whether this is the page the app opens on — the one title bar with no
+  /// back button.
+  ///
+  /// Its own [label] is the app name and version, which reads as a product
+  /// banner rather than a place. As the head of a trail it is rendered as
+  /// "Home" instead; alone, it stays the banner it was.
+  final bool isRoot;
 
   @override
-  int get hashCode => Object.hash(id, label);
+  bool operator ==(Object other) =>
+      other is Breadcrumb &&
+      other.id == id &&
+      other.label == label &&
+      other.isRoot == isRoot;
+
+  @override
+  int get hashCode => Object.hash(id, label, isRoot);
 }
 
 /// The trail of pages between the dashboard and wherever the user is now.

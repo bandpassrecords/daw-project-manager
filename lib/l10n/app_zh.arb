@@ -3777,5 +3777,8 @@
   "songLengthFromPreview": "根据预览歌曲测得",
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "总时长",
-  "releaseLengthPartial": "{count, plural, other{当前合计——仍有 {count} 首曲目没有时长}}"
+  "releaseLengthPartial": "{count, plural, other{当前合计——仍有 {count} 首曲目没有时长}}",
+
+  "breadcrumbHome": "主页",
+  "breadcrumbGoTo": "前往{label}"
 }

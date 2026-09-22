@@ -5662,4 +5662,12 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get breadcrumbHome => 'Home';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return 'Go to $label';
+  }
 }

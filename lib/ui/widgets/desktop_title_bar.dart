@@ -116,7 +116,12 @@ class _DesktopTitleBarState extends ConsumerState<DesktopTitleBar>
   /// Puts this page's title into the trail. Deferred for the same reason the
   /// removal is: initState runs while the route above is still building.
   void _registerCrumb() {
-    final crumb = Breadcrumb(id: _crumbId, label: widget.title);
+    final crumb = Breadcrumb(
+      id: _crumbId,
+      label: widget.title,
+      // The one bar with no back button is the page the app opens on.
+      isRoot: !widget.showBack,
+    );
     final trail = _trail;
     if (trail == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -355,6 +360,7 @@ class _TitleOrTrail extends ConsumerWidget {
     if (trail.length < 2) return plain;
     if (trail.last.label != title) return plain;
 
+
     final muted = color?.withValues(alpha: 0.6);
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -372,24 +378,109 @@ class _TitleOrTrail extends ConsumerWidget {
               ),
             if (i == trail.length - 1)
               Text(
-                trail[i].label,
+                _crumbLabel(context, trail[i]),
                 style: TextStyle(color: color, fontSize: fontSize),
               )
             else
-              InkWell(
+              _CrumbLink(
+                label: _crumbLabel(context, trail[i]),
+                fontSize: fontSize,
+                restingColor: muted,
+                hoverColor: color,
                 onTap: () => onCrumbTap(i, trail.length),
-                borderRadius: BorderRadius.circular(4),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  child: Text(
-                    trail[i].label,
-                    style: TextStyle(color: muted, fontSize: fontSize),
-                  ),
-                ),
               ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// What a crumb reads as in the trail.
+///
+/// The root page's own title is the app name and version — a product banner,
+/// fine as the only thing in the bar and wrong as the head of a path. Every
+/// other crumb shows the title its page set.
+String _crumbLabel(BuildContext context, Breadcrumb crumb) => crumb.isRoot
+    ? AppLocalizations.of(context)!.breadcrumbHome
+    : crumb.label;
+
+/// A crumb you can click, which says so on hover.
+///
+/// The pointer alone is a weak signal in a title bar — the whole strip is
+/// draggable, so a cursor change there does not read as "this is a link".
+/// Hovering therefore also brightens the label, underlines it, and reveals a
+/// link glyph, none of which the resting state spends space on.
+class _CrumbLink extends StatefulWidget {
+  const _CrumbLink({
+    required this.label,
+    required this.fontSize,
+    required this.restingColor,
+    required this.hoverColor,
+    required this.onTap,
+  });
+
+  final String label;
+  final double fontSize;
+  final Color? restingColor;
+  final Color? hoverColor;
+  final VoidCallback onTap;
+
+  @override
+  State<_CrumbLink> createState() => _CrumbLinkState();
+}
+
+class _CrumbLinkState extends State<_CrumbLink> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _hovered ? widget.hoverColor : widget.restingColor;
+    return Tooltip(
+      message: AppLocalizations.of(context)!.breadcrumbGoTo(widget.label),
+      waitDuration: const Duration(milliseconds: 500),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          // Opaque so the whole padded box is clickable, and so the title
+          // bar's own pan-to-drag recognizer does not swallow the tap.
+          behavior: HitTestBehavior.opaque,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: _hovered
+                  ? (widget.hoverColor?.withValues(alpha: 0.10) ??
+                      Colors.transparent)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Only on hover: a glyph on every crumb at rest would make
+                // the bar busier than the path it is describing.
+                if (_hovered) ...[
+                  Icon(Icons.link, size: widget.fontSize - 2, color: color),
+                  const SizedBox(width: 4),
+                ],
+                Text(
+                  widget.label,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: widget.fontSize,
+                    decoration:
+                        _hovered ? TextDecoration.underline : null,
+                    decorationColor: color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

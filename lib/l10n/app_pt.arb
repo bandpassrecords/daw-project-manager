@@ -3801,5 +3801,8 @@
   "songLengthFromPreview": "Medida a partir da prévia",
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Duração total",
-  "releaseLengthPartial": "{count, plural, =1{Total parcial — 1 faixa ainda sem duração} other{Total parcial — {count} faixas ainda sem duração}}"
+  "releaseLengthPartial": "{count, plural, =1{Total parcial — 1 faixa ainda sem duração} other{Total parcial — {count} faixas ainda sem duração}}",
+
+  "breadcrumbHome": "Início",
+  "breadcrumbGoTo": "Ir para {label}"
 }

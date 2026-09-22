@@ -3777,5 +3777,8 @@
   "songLengthFromPreview": "Aus dem Vorschausong gemessen",
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Gesamtlaufzeit",
-  "releaseLengthPartial": "{count, plural, =1{Zwischensumme — 1 Titel hat noch keine Länge} other{Zwischensumme — {count} Titel haben noch keine Länge}}"
+  "releaseLengthPartial": "{count, plural, =1{Zwischensumme — 1 Titel hat noch keine Länge} other{Zwischensumme — {count} Titel haben noch keine Länge}}",
+
+  "breadcrumbHome": "Start",
+  "breadcrumbGoTo": "Zu {label}"
 }

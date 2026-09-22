@@ -155,8 +155,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(labels(), ['Home', 'Summer EP', 'Parts']);
 
-    // "Home" appears as a crumb on the topmost bar; tapping it should unwind
-    // both pushes in one go.
+    // The root crumb renders as "Home" whatever the root page's own title is;
+    // tapping it should unwind both pushes in one go.
     await tester.tap(find.text('Home').last);
     await tester.pumpAndSettle();
 

@@ -5699,4 +5699,12 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get breadcrumbHome => 'Start';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return 'Zu $label';
+  }
 }
