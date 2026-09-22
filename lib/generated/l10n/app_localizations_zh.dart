@@ -5467,4 +5467,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String breadcrumbGoTo(String label) {
     return '前往$label';
   }
+
+  @override
+  String get scrollForMore => '滚动查看更多';
 }

@@ -3780,5 +3780,7 @@
   "releaseLengthPartial": "{count, plural, other{暫定の合計 — 長さ未設定のトラックが {count} 件}}",
 
   "breadcrumbHome": "ホーム",
-  "breadcrumbGoTo": "{label} へ移動"
+  "breadcrumbGoTo": "{label} へ移動",
+
+  "scrollForMore": "スクロールするとさらに表示"
 }

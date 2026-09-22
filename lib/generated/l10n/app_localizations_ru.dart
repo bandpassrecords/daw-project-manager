@@ -5690,4 +5690,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String breadcrumbGoTo(String label) {
     return 'Перейти к $label';
   }
+
+  @override
+  String get scrollForMore => 'Прокрутите, чтобы увидеть больше';
 }

@@ -37,6 +37,7 @@ import 'widgets/tab_customization_dialog.dart';
 import '../services/dock_menu_service.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/text_input_focus.dart';
 import '../utils/track_duration.dart';
 import '../utils/phase_colors.dart';
 import '../utils/project_file_status.dart';
@@ -131,18 +132,9 @@ const double _kNameCellBleedTextOffset =
 /// Width of the tree connector drawn for a row nested inside a folder group.
 const double _kNameCellTreeConnectorWidth = 20;
 
-/// Returns true when any text input (TextField / EditableText) currently has
-/// focus. Used by keyboard handlers to avoid stealing Space / arrow keys while
-/// the user is typing.
-///
-/// Reliable approach: the inner [Focus] widget created by [EditableText] is a
-/// widget-tree descendant of [EditableText], so walking ancestors from its
-/// BuildContext will find [EditableText] as a parent.
-bool _isTextInputFocused() {
-  final context = FocusManager.instance.primaryFocus?.context;
-  if (context == null) return false;
-  return context.findAncestorWidgetOfExactType<EditableText>() != null;
-}
+/// Shared with the release page's audio rows, which bind the same keys — see
+/// `utils/text_input_focus.dart`.
+bool _isTextInputFocused() => isTextInputFocused();
 
 // Intent classes for keyboard shortcuts
 class _SearchIntent extends Intent {

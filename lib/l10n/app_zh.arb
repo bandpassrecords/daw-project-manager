@@ -3780,5 +3780,7 @@
   "releaseLengthPartial": "{count, plural, other{当前合计——仍有 {count} 首曲目没有时长}}",
 
   "breadcrumbHome": "主页",
-  "breadcrumbGoTo": "前往{label}"
+  "breadcrumbGoTo": "前往{label}",
+
+  "scrollForMore": "滚动查看更多"
 }

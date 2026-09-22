@@ -3780,5 +3780,7 @@
   "releaseLengthPartial": "{count, plural, =1{Промежуточный итог — у 1 трека ещё нет длительности} other{Промежуточный итог — треков без длительности: {count}}}",
 
   "breadcrumbHome": "Главная",
-  "breadcrumbGoTo": "Перейти к {label}"
+  "breadcrumbGoTo": "Перейти к {label}",
+
+  "scrollForMore": "Прокрутите, чтобы увидеть больше"
 }

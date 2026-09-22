@@ -9502,6 +9502,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go to {label}'**
   String breadcrumbGoTo(String label);
+
+  /// No description provided for @scrollForMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll for more'**
+  String get scrollForMore;
 }
 
 class _AppLocalizationsDelegate

@@ -3804,5 +3804,7 @@
   "releaseLengthPartial": "{count, plural, =1{Total parcial — 1 faixa ainda sem duração} other{Total parcial — {count} faixas ainda sem duração}}",
 
   "breadcrumbHome": "Início",
-  "breadcrumbGoTo": "Ir para {label}"
+  "breadcrumbGoTo": "Ir para {label}",
+
+  "scrollForMore": "Role para ver mais"
 }

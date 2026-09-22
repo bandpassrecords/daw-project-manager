@@ -5254,5 +5254,7 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "scrollForMore": "Scroll for more"
 }

@@ -5,6 +5,7 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -21,6 +22,7 @@ import '../models/release_file.dart';
 import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../utils/app_paths.dart';
+import '../utils/playback_seek.dart';
 import '../utils/route_observer.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/file_launcher.dart';
@@ -32,8 +34,11 @@ import 'widgets/resizable_text_field.dart';
 import 'widgets/todo_list_widget.dart';
 import '../services/track_duration_probe_service.dart';
 import '../utils/project_summary_text.dart';
+import '../utils/text_input_focus.dart';
 import '../utils/track_duration.dart';
+import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/release_track_parts_chip.dart';
+import 'widgets/scroll_more_hint.dart';
 import 'widgets/release_tracks_table.dart';
 import 'widgets/waveform_widget.dart';
 
@@ -1218,7 +1223,16 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                                 style: TextStyle(color: dimColor),
                               ),
                             )
-                          : _FilesSection(files: release.files, release: release),
+                          // The box is height-capped, so a file sitting just
+                          // past the fold otherwise looks like the end of the
+                          // list — see ScrollMoreHint.
+                          : ScrollMoreHint(
+                              builder: (context, controller) => _FilesSection(
+                                files: release.files,
+                                release: release,
+                                controller: controller,
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -2073,9 +2087,15 @@ class _FilesSection extends ConsumerStatefulWidget {
   final List<ReleaseFile> files;
   final Release release;
 
+  /// Owned by the [ScrollMoreHint] wrapping this section — the scroll-position
+  /// hints are driven from it, so the list must attach it rather than make
+  /// its own.
+  final ScrollController? controller;
+
   const _FilesSection({
     required this.files,
     required this.release,
+    this.controller,
   });
 
   @override
@@ -2207,6 +2227,7 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
     final otherFiles = widget.files.where((f) => f.fileType != 'audio').toList();
 
     return ListView(
+      controller: widget.controller,
       children: [
         // Audio Files Section
         if (audioFiles.isNotEmpty) ...[
@@ -2442,8 +2463,55 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
   @override
   void initState() {
     super.initState();
+    HardwareKeyboard.instance.addHandler(_handleKeyboard);
     _attachListeners(_audioPlayer, _playerGen);
     _startBackgroundPrep();
+  }
+
+  /// The one way volume changes on this row — the slider and the ctrl+wheel
+  /// handler both call it, so the icon, the slider and the player agree.
+  void _setVolume(double value) {
+    setState(() => _volume = value);
+    unawaited(_audioPlayer.setVolume(value));
+  }
+
+  /// Nudges playback by [seconds], clamped to the track.
+  Future<void> _seek(int seconds) async {
+    if (_duration <= Duration.zero) return;
+    final target = seekTarget(_position, seconds, _duration);
+    setState(() => _position = target);
+    await _audioPlayer.seek(target);
+  }
+
+  /// Space / arrows for the row that currently owns playback.
+  ///
+  /// Keyed on holding the playback floor rather than on focus: a release can
+  /// show a dozen audio rows, and "the arrows move whatever I am listening
+  /// to" is the only rule that does not need the user to have clicked the
+  /// right one first. Exactly one row holds the floor, so exactly one row
+  /// answers.
+  bool _handleKeyboard(KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) return false;
+    if (!mounted) return false;
+    if (isTextInputFocused()) return false;
+    if (ref.read(playingReleaseAudioProvider) != widget.file.id) return false;
+
+    final modified = HardwareKeyboard.instance.isControlPressed ||
+        HardwareKeyboard.instance.isMetaPressed;
+
+    if (event.logicalKey == LogicalKeyboardKey.space) {
+      unawaited(_togglePlayPause());
+      return true;
+    }
+    if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      unawaited(_seek(modified ? -30 : -5));
+      return true;
+    }
+    if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      unawaited(_seek(modified ? 30 : 5));
+      return true;
+    }
+    return false;
   }
 
   void _startBackgroundPrep() {
@@ -2559,6 +2627,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
 
   @override
   void dispose() {
+    HardwareKeyboard.instance.removeHandler(_handleKeyboard);
     // Leaving the page mid-playback must not leave the floor claimed by a
     // widget that no longer exists — the next item to play would see a stale
     // owner and pause itself.
@@ -2684,7 +2753,11 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
         _audioPlayer.pause();
       }
     });
-    return Card(
+    return CtrlWheelVolume(
+      volume: _volume,
+      onVolumeChanged: _setVolume,
+      enabled: !MobileUtils.isMobile(),
+      child: Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       color: Theme.of(context).cardColor,
       child: Padding(
@@ -2790,12 +2863,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                     value: _volume,
                     min: 0.0,
                     max: 1.0,
-                    onChanged: (value) async {
-                      setState(() {
-                        _volume = value;
-                      });
-                      await _audioPlayer.setVolume(value);
-                    },
+                    onChanged: _setVolume,
                   ),
                 ),
               ],
@@ -2834,6 +2902,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
             ],
           ],
         ),
+      ),
       ),
     );
   }

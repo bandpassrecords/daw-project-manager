@@ -5689,4 +5689,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String breadcrumbGoTo(String label) {
     return 'Ir para $label';
   }
+
+  @override
+  String get scrollForMore => 'Role para ver mais';
 }
