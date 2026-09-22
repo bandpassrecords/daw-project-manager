@@ -20,72 +20,72 @@
       "highlights": {
         "en": [
           "A \"What's New\" summary now appears once after each update, and the full changelog lives in Settings > About.",
-          "Creating a release offers to reuse a selected track's thumbnail as the release artwork.",
-          "Track thumbnails now show in the mobile player, the mini player and the lock-screen notification.",
+          "Creating a release offers to reuse a selected track's cover art as the release artwork.",
+          "Track cover art now shows in the mobile player, the mini player and the lock-screen notification.",
           "A release's tracks can be viewed in a sortable table, like the main dashboard.",
           "Project folders can be switched off instead of removed — nothing is deleted, and turning one back on restores it.",
           "Ctrl+scroll (⌘+scroll on macOS) anywhere over a player changes the volume."
         ],
         "pt": [
           "Um resumo de \"Novidades\" aparece uma vez após cada atualização, e o changelog completo fica em Configurações > Sobre.",
-          "Ao criar um lançamento, o app oferece reaproveitar a miniatura de uma faixa selecionada como capa.",
-          "As miniaturas das faixas agora aparecem no player mobile, no mini player e na notificação da tela de bloqueio.",
+          "Ao criar um lançamento, o app oferece reaproveitar a capa de uma faixa selecionada.",
+          "As capas das faixas agora aparecem no player mobile, no mini player e na notificação da tela de bloqueio.",
           "As faixas de um lançamento podem ser vistas em uma tabela ordenável, igual ao painel principal.",
           "Pastas de projetos podem ser desativadas em vez de removidas — nada é apagado, e reativar restaura tudo.",
           "Ctrl+rolagem (⌘+rolagem no macOS) sobre qualquer player altera o volume."
         ],
         "es": [
           "Ahora aparece un resumen de \"Novedades\" una vez tras cada actualización, y el changelog completo está en Ajustes > Acerca de.",
-          "Al crear un lanzamiento, se ofrece reutilizar la miniatura de una pista seleccionada como portada.",
-          "Las miniaturas de las pistas se muestran en el reproductor móvil, el minirreproductor y la notificación de pantalla de bloqueo.",
+          "Al crear un lanzamiento, se ofrece reutilizar la portada de una pista seleccionada.",
+          "Las portadas de las pistas se muestran en el reproductor móvil, el minirreproductor y la notificación de pantalla de bloqueo.",
           "Las pistas de un lanzamiento pueden verse en una tabla ordenable, como en el panel principal.",
           "Las carpetas de proyectos pueden desactivarse en lugar de eliminarse — no se borra nada y reactivarlas lo restaura todo.",
           "Ctrl+rueda (⌘+rueda en macOS) sobre cualquier reproductor cambia el volumen."
         ],
         "fr": [
           "Un résumé « Nouveautés » s'affiche une fois après chaque mise à jour, et le changelog complet se trouve dans Paramètres > À propos.",
-          "À la création d'une sortie, l'app propose de réutiliser la vignette d'une piste sélectionnée comme pochette.",
-          "Les vignettes des pistes apparaissent maintenant dans le lecteur mobile, le mini-lecteur et la notification de l'écran de verrouillage.",
+          "À la création d'une sortie, l'app propose de réutiliser la pochette d'une piste sélectionnée.",
+          "Les pochettes des pistes apparaissent maintenant dans le lecteur mobile, le mini-lecteur et la notification de l'écran de verrouillage.",
           "Les pistes d'une sortie peuvent s'afficher dans un tableau triable, comme le tableau de bord principal.",
           "Les dossiers de projets peuvent être désactivés plutôt que supprimés — rien n'est effacé, et les réactiver restaure tout.",
           "Ctrl+molette (⌘+molette sur macOS) au-dessus d'un lecteur règle le volume."
         ],
         "de": [
           "Nach jedem Update erscheint einmalig eine „Neuigkeiten“-Übersicht; das vollständige Changelog steht unter Einstellungen > Über.",
-          "Beim Erstellen eines Releases wird angeboten, das Vorschaubild einer ausgewählten Spur als Cover zu übernehmen.",
-          "Spur-Vorschaubilder erscheinen jetzt im Mobil-Player, im Mini-Player und in der Sperrbildschirm-Benachrichtigung.",
+          "Beim Erstellen eines Releases wird angeboten, das Cover einer ausgewählten Spur zu übernehmen.",
+          "Spur-Cover erscheinen jetzt im Mobil-Player, im Mini-Player und in der Sperrbildschirm-Benachrichtigung.",
           "Die Titel eines Releases lassen sich in einer sortierbaren Tabelle anzeigen, wie im Haupt-Dashboard.",
           "Projektordner können abgeschaltet statt entfernt werden — nichts wird gelöscht, und Wiedereinschalten stellt alles her.",
           "Strg+Mausrad (⌘+Mausrad unter macOS) über einem Player ändert die Lautstärke."
         ],
         "it": [
           "Dopo ogni aggiornamento compare una volta un riepilogo \"Novità\"; il changelog completo è in Impostazioni > Informazioni.",
-          "Creando una pubblicazione, l'app propone di riusare la miniatura di una traccia selezionata come copertina.",
-          "Le miniature delle tracce ora compaiono nel player mobile, nel mini player e nella notifica della schermata di blocco.",
+          "Creando una pubblicazione, l'app propone di riusare la copertina di una traccia selezionata.",
+          "Le copertine delle tracce ora compaiono nel player mobile, nel mini player e nella notifica della schermata di blocco.",
           "Le tracce di una pubblicazione si possono vedere in una tabella ordinabile, come nella dashboard principale.",
           "Le cartelle dei progetti possono essere disattivate invece che rimosse — non viene eliminato nulla e riattivarle ripristina tutto.",
           "Ctrl+rotellina (⌘+rotellina su macOS) sopra un player regola il volume."
         ],
         "ru": [
           "После каждого обновления один раз показывается сводка «Что нового», а полный список изменений — в «Настройки > О программе».",
-          "При создании релиза предлагается использовать миниатюру выбранного трека в качестве обложки.",
-          "Миниатюры треков теперь видны в мобильном плеере, мини-плеере и уведомлении на экране блокировки.",
+          "При создании релиза предлагается использовать обложку выбранного трека.",
+          "Обложки треков теперь видны в мобильном плеере, мини-плеере и уведомлении на экране блокировки.",
           "Треки релиза можно просматривать в сортируемой таблице, как на главной панели.",
           "Папки проектов можно отключить вместо удаления — ничего не стирается, а повторное включение всё возвращает.",
           "Ctrl+колесо (⌘+колесо на macOS) над плеером меняет громкость."
         ],
         "ja": [
           "アップデート後に「新着情報」の概要が一度だけ表示され、全変更履歴は「設定 > アプリについて」で確認できます。",
-          "リリース作成時に、選択したトラックのサムネイルをリリースのアートワークとして使うか尋ねます。",
-          "トラックのサムネイルがモバイルプレーヤー、ミニプレーヤー、ロック画面の通知に表示されるようになりました。",
+          "リリース作成時に、選択したトラックのカバーアートをリリースのアートワークに使うか尋ねます。",
+          "トラックのカバーアートがモバイルプレーヤー、ミニプレーヤー、ロック画面の通知に表示されるようになりました。",
           "リリースのトラックを、メインダッシュボードと同じ並べ替え可能なテーブルで表示できます。",
           "プロジェクトフォルダーを削除せずに無効化できます。データは消えず、再度有効にすれば元に戻ります。",
           "プレーヤー上で Ctrl+ホイール（macOS では ⌘+ホイール）を使うと音量を変更できます。"
         ],
         "zh": [
           "每次更新后会显示一次“新增功能”摘要，完整更新日志位于“设置 > 关于”。",
-          "创建发行时，可选择沿用所选曲目的缩略图作为发行封面。",
-          "曲目缩略图现在会显示在移动播放器、迷你播放器和锁屏通知中。",
+          "创建发行时，可选择沿用所选曲目的封面作为发行封面。",
+          "曲目封面现在会显示在移动播放器、迷你播放器和锁屏通知中。",
           "发行中的曲目可以用可排序的表格查看，与主面板一致。",
           "项目文件夹可以停用而不必移除——不会删除任何内容，重新启用即可恢复。",
           "在播放器上方按住 Ctrl 滚动滚轮（macOS 为 ⌘+滚轮）即可调整音量。"

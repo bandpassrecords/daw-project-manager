@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'dart:io';
-
 import '../../models/music_project.dart';
 import '../../providers/providers.dart';
-import '../../utils/project_artwork.dart';
+import '../../utils/project_visuals.dart';
 import '../mobile_player_page.dart';
+import 'project_cover_avatar.dart';
 
 /// Barra estilo SoundCloud que aparece acima do NavigationBar quando há
 /// uma faixa tocando no mobile. Toque abre o [MobilePlayerPage] completo.
@@ -173,8 +172,12 @@ class _MiniPlayPauseButton extends ConsumerWidget {
   }
 }
 
-/// The mini player's 38 px cover: the track's thumbnail when it has one,
-/// otherwise the tinted note tile this bar has always shown.
+/// The mini player's 38 px tile: the playing project's cover art or accent
+/// badge (#110), falling back to the tinted note this bar has always shown.
+///
+/// Composes [ProjectCoverAvatar] so the bar, the full player and the
+/// dashboard row all draw the same thing; the note fallback is this widget's
+/// own, since the avatar collapses to nothing for an undecorated project.
 class _MiniArtwork extends StatelessWidget {
   const _MiniArtwork({required this.project});
 
@@ -184,35 +187,24 @@ class _MiniArtwork extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = project;
+    if (p != null && projectHasVisualIdentity(p)) {
+      return ProjectCoverAvatar(project: p, size: _size);
+    }
+
     final colorScheme = Theme.of(context).colorScheme;
-    final thumbnail =
-        project == null ? null : resolveProjectThumbnail(project!);
-
-    if (thumbnail == null) return _fallback(colorScheme);
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image.file(
-        File(thumbnail),
-        width: _size,
-        height: _size,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => _fallback(colorScheme),
+    return Container(
+      width: _size,
+      height: _size,
+      decoration: BoxDecoration(
+        color: colorScheme.primary.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(
+        Icons.music_note_rounded,
+        size: 22,
+        color: colorScheme.primary,
       ),
     );
   }
-
-  Widget _fallback(ColorScheme colorScheme) => Container(
-    width: _size,
-    height: _size,
-    decoration: BoxDecoration(
-      color: colorScheme.primary.withValues(alpha: 0.15),
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Icon(
-      Icons.music_note_rounded,
-      size: 22,
-      color: colorScheme.primary,
-    ),
-  );
 }

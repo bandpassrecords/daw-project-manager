@@ -13,11 +13,12 @@ import '../generated/l10n/app_localizations.dart';
 import '../services/audio_analysis_service.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/playback_seek.dart';
-import '../utils/project_artwork.dart';
+import '../utils/project_visuals.dart';
 import '../utils/project_freshness.dart';
 import 'preview_share.dart';
 import 'project_detail_page.dart';
 import 'widgets/conversion_progress_dialog.dart';
+import 'widgets/project_cover_avatar.dart';
 import 'widgets/project_notes_section.dart';
 import 'widgets/waveform_widget.dart';
 
@@ -894,6 +895,14 @@ class _TrackCard extends StatelessWidget {
 /// Same image the desktop grid and the release artwork picker use — a cover
 /// the user attached to a track should follow it into the player rather than
 /// being a desktop-only detail.
+/// The playing project's visual identity (#110) — its cover art, or the
+/// accent badge it was given — falling back to a music note.
+///
+/// Composes [ProjectCoverAvatar] rather than loading the image again here,
+/// so the player shows exactly what the dashboard row shows, with the same
+/// broken-file handling. The fallback is this widget's own: the avatar
+/// deliberately collapses to nothing for an undecorated project, which is
+/// right for a list row and wrong for the one tile in a player.
 class _TrackArtwork extends StatelessWidget {
   const _TrackArtwork({required this.project});
 
@@ -903,40 +912,19 @@ class _TrackArtwork extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final thumbnail = resolveProjectThumbnail(project);
-
-    if (thumbnail == null) {
-      return Container(
-        width: _size,
-        height: _size,
-        decoration: BoxDecoration(
-          color: cs.primary.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Icon(Icons.music_note_rounded, size: 28, color: cs.primary),
-      );
+    if (projectHasVisualIdentity(project)) {
+      return ProjectCoverAvatar(project: project, size: _size);
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
-      child: Image.file(
-        File(thumbnail),
-        width: _size,
-        height: _size,
-        fit: BoxFit.cover,
-        // The path resolved, but the file can still turn out not to be a
-        // decodable image — fall back to the same tile as "no thumbnail".
-        errorBuilder: (context, error, stackTrace) => Container(
-          width: _size,
-          height: _size,
-          decoration: BoxDecoration(
-            color: cs.primary.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Icon(Icons.music_note_rounded, size: 28, color: cs.primary),
-        ),
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      width: _size,
+      height: _size,
+      decoration: BoxDecoration(
+        color: cs.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
       ),
+      child: Icon(Icons.music_note_rounded, size: 28, color: cs.primary),
     );
   }
 }

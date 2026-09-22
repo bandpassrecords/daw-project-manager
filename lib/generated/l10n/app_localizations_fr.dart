@@ -5654,7 +5654,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get releaseArtworkCarryOverTitle =>
-      'Utiliser la vignette d’une piste comme pochette ?';
+      'Utiliser la pochette d’une piste ?';
 
   @override
   String releaseArtworkCarryOverBody(int count) {
@@ -5662,9 +5662,9 @@ class AppLocalizationsFr extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          '$count des pistes sélectionnées ont une vignette. Choisissez-en une comme pochette de cette sortie.',
+          '$count des pistes sélectionnées ont une pochette. Choisissez-en une comme pochette de cette sortie.',
       one:
-          'Une des pistes sélectionnées a une vignette. L’utiliser comme pochette de cette sortie ?',
+          'Une des pistes sélectionnées a une pochette. L’utiliser comme pochette de cette sortie ?',
     );
     return '$_temp0';
   }

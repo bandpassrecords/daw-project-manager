@@ -1,5 +1,5 @@
 import '../models/music_project.dart';
-import '../utils/project_artwork.dart';
+import '../utils/project_visuals.dart';
 
 /// One project's thumbnail, offered as artwork for a release being created.
 class ReleaseArtworkCandidate {
@@ -42,7 +42,7 @@ List<ReleaseArtworkCandidate> releaseArtworkCandidates(
   final seenPaths = <String>{};
   final candidates = <ReleaseArtworkCandidate>[];
   for (final project in projects) {
-    final path = resolveProjectThumbnail(project, imageExists: imageExists);
+    final path = existingCoverArtPath(project, imageExists: imageExists);
     if (path == null) continue;
     if (!seenPaths.add(path)) continue;
     candidates.add(

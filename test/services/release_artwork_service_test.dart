@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/services/release_artwork_service.dart';
-import 'package:daw_project_manager/utils/project_artwork.dart';
+import 'package:daw_project_manager/utils/project_visuals.dart';
 
 import '../helpers/test_factories.dart';
 
@@ -11,35 +11,36 @@ void main() {
   ImageExistsCheck existsExcept(Set<String> missing) =>
       (path) => !missing.contains(path);
 
-  group('resolveProjectThumbnail', () {
-    test('returns the path when the file is there', () {
+  group('existingCoverArtPath', () {
+    test('returns the cover art path when the file is there', () {
       final project = TestFactories.makeProject(thumbnailPath: '/art/a.png');
       expect(
-        resolveProjectThumbnail(project, imageExists: existsExcept(const {})),
+        existingCoverArtPath(project, imageExists: existsExcept(const {})),
         '/art/a.png',
       );
     });
 
-    test('returns null when the project has no thumbnail', () {
+    test('returns null when the project has no cover art', () {
       final project = TestFactories.makeProject(thumbnailPath: null);
       expect(
-        resolveProjectThumbnail(project, imageExists: existsExcept(const {})),
+        existingCoverArtPath(project, imageExists: existsExcept(const {})),
         isNull,
       );
     });
 
-    test('returns null for a blank thumbnail path', () {
+    test('returns null for a whitespace-only cover art path', () {
+      // Deliberately checked against the real filesystem rather than the fake:
+      // projectHasCoverArt (main's rule, which this defers to) treats a blank
+      // string as "has cover", so it is the existence check that has to reject
+      // it — and it does, because no such file is there.
       final project = TestFactories.makeProject(thumbnailPath: '   ');
-      expect(
-        resolveProjectThumbnail(project, imageExists: existsExcept(const {})),
-        isNull,
-      );
+      expect(existingCoverArtPath(project), isNull);
     });
 
     test('returns null when the stored file has since been deleted', () {
       final project = TestFactories.makeProject(thumbnailPath: '/art/gone.png');
       expect(
-        resolveProjectThumbnail(
+        existingCoverArtPath(
           project,
           imageExists: existsExcept({'/art/gone.png'}),
         ),

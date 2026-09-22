@@ -5626,7 +5626,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get releaseArtworkCarryOverTitle =>
-      'Usare la miniatura di una traccia come copertina?';
+      'Usare la copertina di una traccia?';
 
   @override
   String releaseArtworkCarryOverBody(int count) {
@@ -5634,9 +5634,9 @@ class AppLocalizationsIt extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          '$count delle tracce selezionate hanno una miniatura. Scegline una come copertina di questa pubblicazione.',
+          '$count delle tracce selezionate hanno una copertina. Scegline una come copertina di questa pubblicazione.',
       one:
-          'Una delle tracce selezionate ha una miniatura. Usarla come copertina di questa pubblicazione?',
+          'Una delle tracce selezionate ha una copertina. Usarla come copertina di questa pubblicazione?',
     );
     return '$_temp0';
   }

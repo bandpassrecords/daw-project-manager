@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../models/music_project.dart';
@@ -92,6 +94,37 @@ IconData? projectIcon(MusicProject project) =>
 /// every row rebuild would cost more than the fallback does.
 bool projectHasCoverArt(MusicProject project) =>
     project.thumbnailPath != null && project.thumbnailPath!.isNotEmpty;
+
+/// [project]'s cover art path, but only when the file is still on disk —
+/// null otherwise.
+///
+/// The counterpart to [projectHasCoverArt], which asks about stored state
+/// alone and deliberately does not stat the file: it is called once per
+/// visible row, where the decoder's `errorBuilder` is the cheaper fallback.
+/// This one is for the handful of callers that cannot use an errorBuilder
+/// because nothing of theirs is being decoded by Flutter:
+///
+/// - the media-notification artwork, which hands Android a `file://` URI and
+///   would show a blank tile for a path that no longer resolves;
+/// - the release-artwork picker, which offers covers to choose between, where
+///   a broken tile is worse than one fewer option.
+///
+/// Both are one-off calls, not per-row, so the stat is affordable there.
+/// Anything drawing a list should use [projectHasCoverArt] instead.
+String? existingCoverArtPath(
+  MusicProject project, {
+  ImageExistsCheck imageExists = defaultImageExists,
+}) {
+  if (!projectHasCoverArt(project)) return null;
+  final path = project.thumbnailPath!;
+  return imageExists(path) ? path : null;
+}
+
+/// Whether an image path is usable. Injected so the callers above can be
+/// tested without touching the filesystem.
+typedef ImageExistsCheck = bool Function(String path);
+
+bool defaultImageExists(String path) => File(path).existsSync();
 
 /// Whether [project] has anything to draw at all.
 ///

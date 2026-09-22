@@ -5194,8 +5194,8 @@
       }
     }
   },
-  "releaseArtworkCarryOverTitle": "Use a track thumbnail as artwork?",
-  "releaseArtworkCarryOverBody": "{count, plural, =1{One of the selected tracks has a thumbnail. Carry it over as this release’s artwork?} other{{count} of the selected tracks have thumbnails. Pick one to carry over as this release’s artwork.}}",
+  "releaseArtworkCarryOverTitle": "Use a track's cover art?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{One of the selected tracks has cover art. Carry it over as this release’s artwork?} other{{count} of the selected tracks have cover art. Pick one to carry over as this release’s artwork.}}",
   "@releaseArtworkCarryOverBody": {
     "description": "Body of the dialog offering a selected track thumbnail as release artwork",
     "placeholders": {

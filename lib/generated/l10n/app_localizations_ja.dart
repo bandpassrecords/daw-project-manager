@@ -5451,14 +5451,14 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get releaseArtworkCarryOverTitle => 'トラックのサムネイルをアートワークに使いますか？';
+  String get releaseArtworkCarryOverTitle => 'トラックのカバーアートを使いますか？';
 
   @override
   String releaseArtworkCarryOverBody(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '選択したトラックのうち $count 件にサムネイルがあります。このリリースのアートワークに使うものを選んでください。',
+      other: '選択したトラックのうち $count 件にカバーアートがあります。このリリースのアートワークに使うものを選んでください。',
     );
     return '$_temp0';
   }

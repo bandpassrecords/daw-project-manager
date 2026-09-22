@@ -9398,13 +9398,13 @@ abstract class AppLocalizations {
   /// No description provided for @releaseArtworkCarryOverTitle.
   ///
   /// In en, this message translates to:
-  /// **'Use a track thumbnail as artwork?'**
+  /// **'Use a track\'s cover art?'**
   String get releaseArtworkCarryOverTitle;
 
   /// Body of the dialog offering a selected track thumbnail as release artwork
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{One of the selected tracks has a thumbnail. Carry it over as this release’s artwork?} other{{count} of the selected tracks have thumbnails. Pick one to carry over as this release’s artwork.}}'**
+  /// **'{count, plural, =1{One of the selected tracks has cover art. Carry it over as this release’s artwork?} other{{count} of the selected tracks have cover art. Pick one to carry over as this release’s artwork.}}'**
   String releaseArtworkCarryOverBody(int count);
 
   /// No description provided for @releaseArtworkCarryOverUse.

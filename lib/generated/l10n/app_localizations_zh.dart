@@ -5390,14 +5390,14 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get releaseArtworkCarryOverTitle => '使用曲目缩略图作为封面吗？';
+  String get releaseArtworkCarryOverTitle => '使用曲目的封面吗？';
 
   @override
   String releaseArtworkCarryOverBody(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '所选曲目中有 $count 个带有缩略图。请选择一个作为此发行的封面。',
+      other: '所选曲目中有 $count 个带有封面。请选择一个作为此发行的封面。',
     );
     return '$_temp0';
   }

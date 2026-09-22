@@ -5637,8 +5637,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get releaseArtworkCarryOverTitle =>
-      '¿Usar la miniatura de una pista como portada?';
+  String get releaseArtworkCarryOverTitle => '¿Usar la portada de una pista?';
 
   @override
   String releaseArtworkCarryOverBody(int count) {
@@ -5646,9 +5645,9 @@ class AppLocalizationsEs extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          '$count de las pistas seleccionadas tienen miniatura. Elige una para usarla como portada de este lanzamiento.',
+          '$count de las pistas seleccionadas tienen portada. Elige una para usarla como portada de este lanzamiento.',
       one:
-          'Una de las pistas seleccionadas tiene miniatura. ¿Usarla como portada de este lanzamiento?',
+          'Una de las pistas seleccionadas tiene portada. ¿Usarla como portada de este lanzamiento?',
     );
     return '$_temp0';
   }

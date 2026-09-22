@@ -5607,8 +5607,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get releaseArtworkCarryOverTitle =>
-      'Использовать миниатюру трека как обложку?';
+  String get releaseArtworkCarryOverTitle => 'Использовать обложку трека?';
 
   @override
   String releaseArtworkCarryOverBody(int count) {
@@ -5616,9 +5615,9 @@ class AppLocalizationsRu extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          'Миниатюры есть у $count выбранных треков. Выберите одну для обложки этого релиза.',
+          'Обложки есть у $count выбранных треков. Выберите одну для обложки этого релиза.',
       one:
-          'У одного из выбранных треков есть миниатюра. Использовать её как обложку этого релиза?',
+          'У одного из выбранных треков есть обложка. Использовать её как обложку этого релиза?',
     );
     return '$_temp0';
   }

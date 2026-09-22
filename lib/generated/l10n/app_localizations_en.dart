@@ -5587,8 +5587,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get releaseArtworkCarryOverTitle =>
-      'Use a track thumbnail as artwork?';
+  String get releaseArtworkCarryOverTitle => 'Use a track\'s cover art?';
 
   @override
   String releaseArtworkCarryOverBody(int count) {
@@ -5596,9 +5595,9 @@ class AppLocalizationsEn extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          '$count of the selected tracks have thumbnails. Pick one to carry over as this release’s artwork.',
+          '$count of the selected tracks have cover art. Pick one to carry over as this release’s artwork.',
       one:
-          'One of the selected tracks has a thumbnail. Carry it over as this release’s artwork?',
+          'One of the selected tracks has cover art. Carry it over as this release’s artwork?',
     );
     return '$_temp0';
   }

@@ -5606,8 +5606,7 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get releaseArtworkCarryOverTitle =>
-      'Usar a miniatura de uma faixa como capa?';
+  String get releaseArtworkCarryOverTitle => 'Usar a capa de uma faixa?';
 
   @override
   String releaseArtworkCarryOverBody(int count) {
@@ -5615,9 +5614,9 @@ class AppLocalizationsPt extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          '$count das faixas selecionadas têm miniatura. Escolha uma para usar como capa deste lançamento.',
+          '$count das faixas selecionadas têm capa. Escolha uma para usar como capa deste lançamento.',
       one:
-          'Uma das faixas selecionadas tem miniatura. Deseja usá-la como capa deste lançamento?',
+          'Uma das faixas selecionadas tem capa. Deseja usá-la como capa deste lançamento?',
     );
     return '$_temp0';
   }

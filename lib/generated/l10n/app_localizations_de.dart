@@ -5624,8 +5624,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get releaseArtworkCarryOverTitle =>
-      'Vorschaubild einer Spur als Cover verwenden?';
+  String get releaseArtworkCarryOverTitle => 'Cover einer Spur verwenden?';
 
   @override
   String releaseArtworkCarryOverBody(int count) {
@@ -5633,9 +5632,9 @@ class AppLocalizationsDe extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          '$count der ausgewählten Spuren haben ein Vorschaubild. Wählen Sie eines als Cover dieses Releases.',
+          '$count der ausgewählten Spuren haben ein Cover. Wählen Sie eines als Cover dieses Releases.',
       one:
-          'Eine der ausgewählten Spuren hat ein Vorschaubild. Als Cover dieses Releases übernehmen?',
+          'Eine der ausgewählten Spuren hat ein Cover. Als Cover dieses Releases übernehmen?',
     );
     return '$_temp0';
   }

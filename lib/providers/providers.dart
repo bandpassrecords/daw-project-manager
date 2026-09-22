@@ -22,7 +22,7 @@ import '../utils/mobile_utils.dart';
 import '../utils/version_stacks.dart';
 import '../utils/phase_colors.dart';
 import '../utils/todo_due_utils.dart';
-import '../utils/project_artwork.dart';
+import '../utils/project_visuals.dart';
 import '../utils/scan_root_filters.dart';
 
 import '../generated/l10n/app_localizations.dart';
@@ -3410,17 +3410,20 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
   }
 
   ja.AudioSource _toAudioSource(MusicProject project, String trackPath) {
-    // The project's own thumbnail becomes the lock-screen / notification
-    // artwork when it has one; the bundled app icon (_artUri) is the fallback
-    // for everything else.
-    final thumbnail = resolveProjectThumbnail(project);
+    // The project's own cover art (#110) becomes the lock-screen /
+    // notification artwork when it has one; the bundled app icon (_artUri)
+    // is the fallback for everything else. Checked against the filesystem
+    // rather than stored state alone: Android is handed a file:// URI
+    // directly, and a path that no longer resolves shows a blank tile
+    // instead of falling back.
+    final cover = existingCoverArtPath(project);
     return ja.AudioSource.uri(
       Uri.file(trackPath),
       tag: MediaItem(
         id: trackPath,
         title: project.displayName,
         artist: '',
-        artUri: thumbnail != null ? Uri.file(thumbnail) : _artUri,
+        artUri: cover != null ? Uri.file(cover) : _artUri,
       ),
     );
   }
