@@ -5609,6 +5609,14 @@ class GoogleDriveSyncService {
   Release deserializeReleaseForTest(Map<String, dynamic> data) =>
       _deserializeRelease(data);
 
+  @visibleForTesting
+  Map<String, dynamic> serializeRootForTest(ScanRoot root) =>
+      _serializeRoot(root);
+
+  @visibleForTesting
+  ScanRoot deserializeRootForTest(Map<String, dynamic> data) =>
+      _deserializeRoot(data);
+
   /// Test-only accessor for [_autoPreviewAlreadyMatches] — the merge-time check
   /// that stops a locally auto-detected preview from being re-downloaded (and
   /// promoted into [MusicProject.previewSongPath]) when it's already the same
@@ -5678,17 +5686,31 @@ class GoogleDriveSyncService {
     );
   }
 
+  /// Every field of [root] — see [_deserializeRoot] for why the list has to
+  /// stay complete.
   Map<String, dynamic> _serializeRoot(ScanRoot root) {
     return {
       'id': root.id,
       'path': root.path,
       'addedAt': root.addedAt.toIso8601String(),
       'lastScanAt': root.lastScanAt?.toIso8601String(),
-      // User data: a folder the user switched off should come back off.
+      // The four below were silently dropped until #155: a root came back
+      // from Drive renamed to its folder name, in Flat mode, and scanning —
+      // whatever the user had set. Each is user data, not a device
+      // preference, so each belongs here.
+      'displayName': root.displayName,
+      'scanDepth': root.scanDepth,
+      'autoStackVersions': root.autoStackVersions,
       'enabled': root.enabled,
     };
   }
 
+  /// Rebuilds a [ScanRoot] from [_serializeRoot]'s output.
+  ///
+  /// Every field a root carries is read here, and anything absent falls back
+  /// to the value a root written before that field existed effectively had.
+  /// A field missing from this pair is not "left alone" on restore — the root
+  /// is replaced wholesale, so it silently reverts to a default.
   ScanRoot _deserializeRoot(Map<String, dynamic> data) {
     return ScanRoot(
       id: data['id'] as String,
@@ -5697,7 +5719,13 @@ class GoogleDriveSyncService {
       lastScanAt: data['lastScanAt'] != null
           ? DateTime.parse(data['lastScanAt'] as String)
           : null,
-      // Absent in snapshots written before the field existed.
+      // Null in an older snapshot, which ScanRoot already reads as "fall back
+      // to the folder's own name" (see effectiveDisplayName).
+      displayName: data['displayName'] as String?,
+      // Absent in snapshots written before these fields were included: depth
+      // 0 is Flat and no auto-stacking, which is what a root defaulted to.
+      scanDepth: (data['scanDepth'] as num?)?.toInt() ?? 0,
+      autoStackVersions: data['autoStackVersions'] as bool? ?? false,
       enabled: data['enabled'] as bool? ?? true,
     );
   }

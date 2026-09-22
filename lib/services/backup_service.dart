@@ -320,14 +320,16 @@ class BackupService {
         await targetRepo.restoreProject(project);
       }
       for (final root in importedRoots) {
-        // Check if root already exists (only in merge mode)
+        // restoreRoot, not addRoot: addRoot builds a *new* root from a path
+        // alone, which threw away the label, scan mode and enabled flag that
+        // were just read out of the backup.
         if (importMode == ImportMode.merge) {
           final existingRoots = targetRepo.getRoots();
           if (!existingRoots.any((r) => r.path == root.path)) {
-            await targetRepo.addRoot(root.path, enabled: root.enabled);
+            await targetRepo.restoreRoot(root);
           }
         } else {
-          await targetRepo.addRoot(root.path, enabled: root.enabled);
+          await targetRepo.restoreRoot(root);
         }
       }
 
@@ -838,6 +840,11 @@ class BackupService {
   static TemplateRoot templateRootFromJson(Map<String, dynamic> json) => _templateRootFromJson(json);
 
   @visibleForTesting
+  static Map<String, dynamic> scanRootToJson(ScanRoot root) => _rootToJson(root);
+  @visibleForTesting
+  static ScanRoot scanRootFromJson(Map<String, dynamic> json) => _rootFromJson(json);
+
+  @visibleForTesting
   static MusicProject projectFromJson(Map<String, dynamic> json) =>
       _projectFromJson(json);
 
@@ -1030,14 +1037,23 @@ class BackupService {
     );
   }
 
+  /// Every field of [root] — see [_rootFromJson] for why the list has to stay
+  /// complete.
   static Map<String, dynamic> _rootToJson(ScanRoot root) {
     return {
       'id': root.id,
       'path': root.path,
       'addedAt': root.addedAt.toIso8601String(),
       'lastScanAt': root.lastScanAt?.toIso8601String(),
-      // User data: "I switched this folder off" is a decision about the
-      // library, not a device preference, so it survives export/import.
+      // The four below were silently dropped until #155: a folder came back
+      // from a backup renamed to its folder name, in Flat mode, and
+      // scanning — whatever the user had set. Each is a decision about the
+      // library rather than a device preference, so each survives
+      // export/import. This is Flatpak's only backup path, so a field left
+      // out here is one those users can never back up at all.
+      'displayName': root.displayName,
+      'scanDepth': root.scanDepth,
+      'autoStackVersions': root.autoStackVersions,
       'enabled': root.enabled,
     };
   }
@@ -1050,14 +1066,20 @@ class BackupService {
     };
   }
 
+  /// Rebuilds a [ScanRoot] from [_rootToJson]'s output.
+  ///
+  /// Every field a root carries is read here, and anything absent falls back
+  /// to the value a root written before that field existed effectively had:
+  /// no explicit label, Flat mode, no auto-stacking, and being scanned.
   static ScanRoot _rootFromJson(Map<String, dynamic> json) {
     return ScanRoot(
       id: json['id'] as String,
       path: json['path'] as String,
       addedAt: DateTime.parse(json['addedAt'] as String),
       lastScanAt: json['lastScanAt'] != null ? DateTime.parse(json['lastScanAt'] as String) : null,
-      // Absent in backups written before the field existed — those roots
-      // were all being scanned.
+      displayName: json['displayName'] as String?,
+      scanDepth: (json['scanDepth'] as num?)?.toInt() ?? 0,
+      autoStackVersions: json['autoStackVersions'] as bool? ?? false,
       enabled: json['enabled'] as bool? ?? true,
     );
   }

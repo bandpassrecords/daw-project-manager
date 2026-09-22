@@ -11,6 +11,8 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:daw_project_manager/models/part_template.dart';
 import 'package:daw_project_manager/models/profile.dart';
+import 'package:daw_project_manager/models/scan_mode.dart';
+import 'package:daw_project_manager/models/scan_root.dart';
 import 'package:daw_project_manager/models/project_part.dart';
 import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/todo_template.dart';
@@ -679,6 +681,77 @@ void main() {
       expect(restored.isArchived, isFalse);
       expect(restored.archivedAt, isNull);
       expect(restored.archiveEntryPath, isNull);
+    });
+
+    // Regression (#155): _serializeRoot used to carry only id/path/addedAt/
+    // lastScanAt. The Drive restore path replaces a root wholesale
+    // (profileRootsBox.put), so every other field silently reverted to its
+    // default — a folder came back from Drive renamed to its own folder name,
+    // in Flat mode, and scanning, whatever the user had set.
+    test('preserves every ScanRoot field, not just id/path/dates', () {
+      final service = GoogleDriveSyncService();
+      final original = ScanRoot(
+        id: 'scan-root-1',
+        path: '/Users/artist/Music/Projects',
+        addedAt: DateTime(2023, 1, 1),
+        lastScanAt: DateTime(2023, 2, 1),
+        scanDepth: 1,
+        displayName: 'My LMMS Projects',
+        autoStackVersions: true,
+        enabled: false,
+      );
+
+      final restored = service.deserializeRootForTest(
+        service.serializeRootForTest(original),
+      );
+
+      expect(restored.id, original.id);
+      expect(restored.path, original.path);
+      expect(restored.addedAt, original.addedAt);
+      expect(restored.lastScanAt, original.lastScanAt);
+      expect(restored.displayName, original.displayName);
+      expect(restored.scanDepth, original.scanDepth);
+      expect(restored.autoStackVersions, original.autoStackVersions);
+      expect(restored.enabled, original.enabled);
+    });
+
+    test("preserves a scan root's mode through a Drive round-trip", () {
+      // scanMode is derived from two fields at once; asserting on it directly
+      // is what a user would notice.
+      final service = GoogleDriveSyncService();
+      for (final mode in ScanMode.values) {
+        final original = ScanRoot(
+          id: 'scan-root-${mode.name}',
+          path: '/Projects/${mode.name}',
+          addedAt: DateTime(2023, 1, 1),
+          scanDepth: mode == ScanMode.smartFolder ? 1 : 0,
+          autoStackVersions: mode == ScanMode.versionStack,
+        );
+
+        final restored = service.deserializeRootForTest(
+          service.serializeRootForTest(original),
+        );
+
+        expect(restored.scanMode, mode, reason: 'mode ${mode.name}');
+      }
+    });
+
+    test('reads a ScanRoot from a snapshot written before these fields', () {
+      // An older Drive snapshot carries only these four keys. Reading one must
+      // not throw, and must land on what such a root effectively was.
+      final service = GoogleDriveSyncService();
+
+      final restored = service.deserializeRootForTest({
+        'id': 'legacy-root',
+        'path': '/Users/artist/Music',
+        'addedAt': DateTime(2023, 1, 1).toIso8601String(),
+        'lastScanAt': null,
+      });
+
+      expect(restored.displayName, isNull);
+      expect(restored.effectiveDisplayName, 'Music');
+      expect(restored.scanMode, ScanMode.flat);
+      expect(restored.enabled, isTrue);
     });
 
     test('preserves projectNotes', () {

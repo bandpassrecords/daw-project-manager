@@ -469,16 +469,12 @@ class ProjectRepository {
   /// Registers [path] as a scan root and returns the created [ScanRoot] so
   /// callers can immediately scan just that folder (see
   /// [importProjectsFromRoot]) without re-looking it up by path.
-  Future<ScanRoot> addRoot(String path, {bool enabled = true}) async {
+  Future<ScanRoot> addRoot(String path) async {
     final id = _uuid.v4();
     final root = ScanRoot(
       id: id,
       path: path,
       addedAt: DateTime.now(),
-      // Carried through so a restore can put a root back the way it was
-      // stored — a folder the user had switched off should not come back
-      // scanning (see BackupService / GoogleDriveSyncService).
-      enabled: enabled,
       // Auto-derived friendly label — see ScanRoot.displayName's doc for
       // why this is needed on Linux/Flatpak (the stored path itself may
       // be a sandboxed document-portal path, not the real location).
@@ -615,6 +611,14 @@ class ProjectRepository {
     for (final root in rootsBox.values)
       if (root.enabled) root,
   ];
+
+  /// Saves a root exactly as-is, preserving its id, label, scan mode and
+  /// enabled flag. Use this for backup/sync restore, NOT for adding a folder
+  /// the user just picked — [addRoot] is that, and it deliberately builds a
+  /// fresh root from the path alone.
+  Future<void> restoreRoot(ScanRoot root) async {
+    await rootsBox.put(root.id, root);
+  }
 
   /// Turns scanning for root [id] on or off. No-op if the root doesn't exist.
   ///
