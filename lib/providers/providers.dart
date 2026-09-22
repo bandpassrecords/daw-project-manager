@@ -2623,6 +2623,83 @@ final desktopPlayerProvider =
       DesktopPlayerNotifier.new,
     );
 
+/// One step in the navigation trail shown in the desktop title bar.
+@immutable
+class Breadcrumb {
+  const Breadcrumb({required this.id, required this.label});
+
+  /// Identifies the title bar that registered this crumb, so it can remove
+  /// exactly its own entry on the way out rather than popping whatever is
+  /// last — which would be the wrong entry if two pages ever overlap.
+  final String id;
+
+  final String label;
+
+  @override
+  bool operator ==(Object other) =>
+      other is Breadcrumb && other.id == id && other.label == label;
+
+  @override
+  int get hashCode => Object.hash(id, label);
+}
+
+/// The trail of pages between the dashboard and wherever the user is now.
+///
+/// Built from the [DesktopTitleBar]s that are actually mounted, not from a
+/// fixed hierarchy. That distinction is the whole point: Flutter's Navigator
+/// holds a *history*, and the same page is reachable by several routes — the
+/// parts workspace can be opened from the dashboard, from a project, or from
+/// a release's tracklist. A trail drawn from a declared tree would confidently
+/// state a path the user did not take.
+class BreadcrumbTrailNotifier extends Notifier<List<Breadcrumb>> {
+  @override
+  List<Breadcrumb> build() => const [];
+
+  /// Adds [crumb] to the end of the trail, replacing an entry with the same
+  /// id (a page whose title changed while open — a release being renamed, for
+  /// instance).
+  void push(Breadcrumb crumb) {
+    final existing = state.indexWhere((c) => c.id == crumb.id);
+    if (existing >= 0) {
+      if (state[existing] == crumb) return;
+      final next = [...state];
+      next[existing] = crumb;
+      state = next;
+      return;
+    }
+    state = [...state, crumb];
+  }
+
+  /// Removes the crumb with [id] **and everything after it**.
+  ///
+  /// Dropping the tail matters: title bars are disposed as routes pop, and a
+  /// page removed from the middle means every page beyond it is gone too.
+  /// Removing only its own entry would leave orphans pointing at pages that
+  /// no longer exist.
+  void remove(String id) {
+    final index = state.indexWhere((c) => c.id == id);
+    if (index < 0) return;
+    state = state.sublist(0, index);
+  }
+
+  void clear() => state = const [];
+}
+
+final breadcrumbTrailProvider =
+    NotifierProvider<BreadcrumbTrailNotifier, List<Breadcrumb>>(
+      BreadcrumbTrailNotifier.new,
+    );
+
+/// How many routes to pop to reach the crumb at [index] in a trail of
+/// [length] crumbs.
+///
+/// Zero for the crumb the user is already on, so tapping it does nothing
+/// rather than popping the page out from under them.
+int breadcrumbPopCount({required int index, required int length}) {
+  if (index < 0 || index >= length) return 0;
+  return length - 1 - index;
+}
+
 /// Which audio item on the release page currently owns playback, by file id,
 /// or null when nothing is playing.
 ///
