@@ -226,6 +226,9 @@
   "extractMetadata": "Извлечь Метаданные",
   "createRelease": "Создать Релиз",
   "clearSelection": "Очистить Выбор",
+  "viewModeTable": "Таблица",
+  "viewModeCards": "Карточки",
+  "selectProject": "Выбрать проект",
   "selectAllProjects": "Выбрать все проекты",
   "switchingProfiles": "Переключение профилей...",
   "scanningProjects": "Сканирование проектов...",
@@ -533,20 +536,32 @@
   "releasesDeleted": "Удалено релизов: {count}{plural}",
   "@releasesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@deleteSelectedReleasesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@releasesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "selectTracks": "Выбрать Треки",
@@ -802,7 +817,9 @@
   "removeTemplateFolderConfirm": "Удалить \"{path}\" из зарегистрированных папок шаблонов? Уже импортированные шаблоны не будут удалены.",
   "@removeTemplateFolderConfirm": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "noTemplateFoldersRegistered": "Нет зарегистрированных папок шаблонов",
@@ -810,35 +827,51 @@
   "lastRefreshed": "Последнее обновление {date}",
   "@lastRefreshed": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "templatesRefreshedSummary": "Добавлено новых шаблонов: {count}",
   "@templatesRefreshedSummary": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "templatesSelected": "Выбрано шаблонов: {count}{plural}",
   "@templatesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "deleteSelectedTemplates": "Удалить выбранное",
   "deleteSelectedTemplatesConfirm": "Удалить выбранные шаблоны ({count}{plural})?",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templatesDeleted": "Удалено шаблонов: {count}{plural}",
   "@templatesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templateDetailTitle": "Template",
@@ -855,7 +888,9 @@
   "projectsFromThisTemplate": "Проекты, Созданные из Этого Шаблона ({count})",
   "@projectsFromThisTemplate": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noProjectsFromThisTemplate": "Пока нет проектов, созданных из этого шаблона",
@@ -1964,6 +1999,11 @@
   },
   "statsNoProjectsFound": "Проекты не найдены",
   "statsNotTouchedDays": "Не изменялся {days} дн.",
+  "sortByDeadline": "Срок",
+  "sortByLabel": "Сортировать по",
+  "cardInitialsTitle": "Инициалы карточки",
+  "cardInitialsDescription": "Буквы на карточке этого проекта, когда у него нет обложки.",
+  "cardInitialsEmptyHint": "Оставьте пустым, чтобы использовать инициалы названия.",
   "sortByLastModified": "Дата изменения",
   "sortByName": "Имя",
   "sortByPhase": "Фаза",
@@ -1983,15 +2023,21 @@
   "errorHandlingDroppedFiles": "Ошибка обработки перетащенных файлов: {error}",
   "@errorHandlingDroppedFiles": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "resetOnboardingConfirm": "Это перезапустит мастер настройки. Продолжить?",
   "couldNotLaunchDaw": "Не удалось запустить {daw}: {error}",
   "@couldNotLaunchDaw": {
     "placeholders": {
-      "daw": { "type": "String" },
-      "error": { "type": "String" }
+      "daw": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
     }
   },
   "couldNotOpenLink": "Не удалось открыть ссылку.",
@@ -2294,7 +2340,9 @@
   "autoBackupNextBackup": "Следующий бэкап: {time}",
   "@autoBackupNextBackup": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "autoBackupNextSoon": "скоро",
@@ -2302,7 +2350,9 @@
   "autoBackupNextInMinutes": "через {count} мин",
   "@autoBackupNextInMinutes": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneHour": "через 1 час",
@@ -2310,7 +2360,9 @@
   "autoBackupNextInHours": "через {count} ч",
   "@autoBackupNextInHours": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneDay": "через 1 день",
@@ -2318,7 +2370,9 @@
   "autoBackupNextInDays": "через {count} дн.",
   "@autoBackupNextInDays": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerTitle": "Музыкальный плеер",
@@ -2346,7 +2400,9 @@
   "playerCompletedTasks": "{count} выполнено",
   "@playerCompletedTasks": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerPreviousTrack": "Предыдущий трек",
@@ -2365,23 +2421,43 @@
   "@volumeUnmute": {},
   "totalWorkTime": "Всего работы: {time}",
   "@totalWorkTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionTime": "Сессия: {time}",
   "@sessionTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "headerAgeOld": "возраст: {age}",
   "@headerAgeOld": {
-    "placeholders": { "age": { "type": "String" } }
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
   },
   "headerEdited": "изменено {when}",
   "@headerEdited": {
-    "placeholders": { "when": { "type": "String" } }
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
   },
   "headerWorked": "отработано {time}",
   "@headerWorked": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionHistory": "История сессий",
   "@sessionHistory": {},
@@ -2406,7 +2482,9 @@
   "sessionCount": "{count, plural, one{{count} сессия} few{{count} сессии} other{{count} сессий}}",
   "@sessionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "sessionByPhase": "Работа по фазам",
@@ -2418,7 +2496,13 @@
   "tabPositionLeft": "Слева",
   "@tabPositionLeft": {},
   "updateAvailableMessage": "Доступна версия {version}",
-  "@updateAvailableMessage": { "placeholders": { "version": { "type": "String" } } },
+  "@updateAvailableMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "dismiss": "Закрыть",
   "@dismiss": {},
   "checkForUpdates": "Проверять обновления",
@@ -2430,7 +2514,9 @@
   "updateAvailable": "Доступно обновление: v{version}",
   "@updateAvailable": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "upToDate": "Приложение актуально",
@@ -2440,13 +2526,17 @@
   "updateAvailableVersion": "Версия {version} готова.",
   "@updateAvailableVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "updateCurrentVersion": "Вы используете v{version}.",
   "@updateCurrentVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "viewUpdateDetails": "Подробнее",
@@ -2472,7 +2562,9 @@
   "appImageUpdateDownloadingProgress": "Загрузка обновления… {percent}%",
   "@appImageUpdateDownloadingProgress": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "appImageUpdateVerifying": "Проверка и установка…",
@@ -2482,7 +2574,9 @@
   "appImageUpdateReadyMessage": "Обновлено до версии {version}. Перезапустите сейчас, чтобы завершить.",
   "@appImageUpdateReadyMessage": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "appImageUpdateRestartNow": "Перезапустить сейчас",
@@ -2571,7 +2665,11 @@
   "@minutes": {},
   "workTimerNotifBody": "Вы работаете уже {time}",
   "@workTimerNotifBody": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "general": "Общие",
   "@general": {},
@@ -2600,12 +2698,24 @@
   "switchSessionBody": "Завершить текущую сессию и начать новую?",
   "@switchSessionBody": {},
   "switchSessionCurrent": "Текущий: {project}",
-  "@switchSessionCurrent": {"placeholders": {"project": {"type": "String"}}},
+  "@switchSessionCurrent": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
   "switchSessionNew": "Новый: {project}",
-  "@switchSessionNew": {"placeholders": {"project": {"type": "String"}}},
+  "@switchSessionNew": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
   "sessionDuration": "Время сессии",
   "@sessionDuration": {},
-    "scanModeLabel": "Режим сканирования:",
+  "scanModeLabel": "Режим сканирования:",
   "@scanModeLabel": {},
   "scanModeSectionTitle": "Режим сканирования",
   "@scanModeSectionTitle": {},
@@ -2740,8 +2850,12 @@
   "pendingFolderSessionBody": "Вы работали над \"{projectName}\" в течение {duration}.",
   "@pendingFolderSessionBody": {
     "placeholders": {
-      "projectName": { "type": "String" },
-      "duration": { "type": "String" }
+      "projectName": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "pendingFolderSessionContinue": "Продолжить сеанс",
@@ -2753,8 +2867,12 @@
   "activeSessionSwitchBody": "Запущена сессия для «{current}». Переключиться на «{next}» и сохранить текущую сессию?",
   "@activeSessionSwitchBody": {
     "placeholders": {
-      "current": { "type": "String" },
-      "next": { "type": "String" }
+      "current": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
     }
   },
   "activeSessionSwitch": "Переключить",
@@ -2768,7 +2886,9 @@
   "pendingProjectDeleteBody": "Удалить «{folderName}» и её содержимое?",
   "@pendingProjectDeleteBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectDismiss": "Прекратить отслеживание папки",
@@ -2784,7 +2904,9 @@
   "pendingProjectDeleteNotEmptyBody": "Папка «{folderName}» содержит файлы. Удалить всё безвозвратно?",
   "@pendingProjectDeleteNotEmptyBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectRefresh": "Проверить файл проекта",
@@ -2823,41 +2945,75 @@
   "camelotGuideTransitionsTitle": "Совместимые переходы",
   "camelotGuideTransitionsBody": "8A → 8B  (тот же номер, смена кольца)\n  Параллельный мажор/минор — практически незаметно.\n\n8A → 7A или 9A  (±1, то же кольцо)\n  Соседняя тональность — плавное, тонкое изменение.\n\n8A → 1A или 3A  (±7, то же кольцо)\n  Подъём или падение энергии — более резкий переход.",
   "playerMixSuggestions": "ПРЕДЛОЖЕНИЯ МИКСА",
-  "@playerMixSuggestions": {}
-,
+  "@playerMixSuggestions": {},
   "nowPlaying": "Сейчас играет",
   "noPreviewSongsAvailable": "Нет доступных песен для предпросмотра",
   "upNext": "Далее",
-  "@upNext": { "description": "Queue panel title - tracks coming up next" },
+  "@upNext": {
+    "description": "Queue panel title - tracks coming up next"
+  },
   "playbackModeNormal": "Обычный",
-  "@playbackModeNormal": { "description": "Playback mode: play queue once in order" },
+  "@playbackModeNormal": {
+    "description": "Playback mode: play queue once in order"
+  },
   "playbackModeRepeat": "Повтор",
-  "@playbackModeRepeat": { "description": "Playback mode: loop the entire queue" },
+  "@playbackModeRepeat": {
+    "description": "Playback mode: loop the entire queue"
+  },
   "playbackModeShuffle": "Перемешать",
-  "@playbackModeShuffle": { "description": "Playback mode: random order" },
+  "@playbackModeShuffle": {
+    "description": "Playback mode: random order"
+  },
   "hideDatesInNames": "Скрывать даты в названиях проектов",
-  "@hideDatesInNames": { "description": "Appearance setting: strip date stamps from displayed project names" },
+  "@hideDatesInNames": {
+    "description": "Appearance setting: strip date stamps from displayed project names"
+  },
   "hideDatesInNamesDescription": "Некоторые DAW добавляют дату создания в начало имени файла проекта (например, «2026-08-02 - Мой трек»). Скройте её, чтобы отображался только заголовок. Сами файлы не переименовываются.",
-  "@hideDatesInNamesDescription": { "description": "Explanation of the hide-dates-in-names appearance setting" },
+  "@hideDatesInNamesDescription": {
+    "description": "Explanation of the hide-dates-in-names appearance setting"
+  },
   "findPreviewAutomatically": "Найти автоматически",
-  "@findPreviewAutomatically": { "description": "Button in the missing preview song dialog: clear the dead reference and re-run mixdown detection" },
+  "@findPreviewAutomatically": {
+    "description": "Button in the missing preview song dialog: clear the dead reference and re-run mixdown detection"
+  },
   "noPreviewSongFoundAutomatically": "В папках сведения этого проекта не найдено превью.",
-  "@noPreviewSongFoundAutomatically": { "description": "Snackbar shown when automatic preview detection finds nothing" },
+  "@noPreviewSongFoundAutomatically": {
+    "description": "Snackbar shown when automatic preview detection finds nothing"
+  },
   "selectProjects": "Выбрать",
-  "@selectProjects": { "description": "Mobile long-press action sheet entry: enter multi-select mode" },
+  "@selectProjects": {
+    "description": "Mobile long-press action sheet entry: enter multi-select mode"
+  },
   "sharePreviewSongText": "Превью: {name}",
   "@sharePreviewSongText": {
     "description": "Message body accompanying a shared preview song file",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "sharePreviewSongZipText": "Превью (ZIP): {name}",
   "@sharePreviewSongZipText": {
     "description": "Message body accompanying a shared preview song zipped for transport",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "songParts": "Инструменты и партии",
   "partsProgress": "{done} из {total} финальных дублей",
-  "@partsProgress": {"placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
+  "@partsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsYet": "Партии пока не добавлены",
   "noPartsYetHint": "Перечислите инструменты, которые нужны треку, кто их играет и на какой стадии каждый дубль.",
   "addPart": "Добавить партию",
@@ -2886,7 +3042,13 @@
   "editPartTemplate": "Изменить шаблон партий",
   "deletePartTemplate": "Удалить шаблон партий",
   "deletePartTemplateConfirm": "Удалить шаблон партий «{name}»?",
-  "@deletePartTemplateConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "@deletePartTemplateConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "partTemplateCreated": "Шаблон партий создан",
   "partTemplateUpdated": "Шаблон партий обновлён",
   "partTemplateDeleted": "Шаблон партий удалён",
@@ -2896,16 +3058,37 @@
   "partTemplateItemsRequired": "Добавьте хотя бы одну партию",
   "partTemplateNameAndItemsRequired": "Нужны название и хотя бы одна партия",
   "partTemplateItemCount": "Партий: {count}",
-  "@partTemplateItemCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partTemplateItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partTemplateImported": "Шаблон партий «{name}» импортирован ({count} партий)",
-  "@partTemplateImported": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
+  "@partTemplateImported": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "errorLoadingPartTemplates": "Ошибка загрузки шаблонов партий",
   "exportPartsCsv": "Экспортировать партии в CSV",
   "exportAllPartsCsv": "Экспортировать партии всех треков в CSV",
   "exportAllPartsCsvSubtitle": "Одна строка таблицы на каждую партию по всем проектам — чтобы делиться прогрессом с соавторами",
   "noPartsToExport": "Нет партий для экспорта",
   "partsCsvExported": "Экспортировано партий: {count}",
-  "@partsCsvExported": {"placeholders": {"count": {"type": "int"}}},
+  "@partsCsvExported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "projectExportPartsLabel": "Партии:",
   "csvHeaderProject": "Проект",
   "csvHeaderPart": "Партия",
@@ -2918,80 +3101,148 @@
   "importPartsFromSpreadsheet": "Импортировать партии из таблицы",
   "partsImportPickerTitle": "Выберите файл CSV или Excel",
   "partsImported": "Добавлено партий: {added}, обновлено: {updated}",
-  "@partsImported": {"placeholders": {"added": {"type": "int"}, "updated": {"type": "int"}}},
+  "@partsImported": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "updated": {
+        "type": "int"
+      }
+    }
+  },
   "partsImportNothingFound": "В этом файле не найдено партий",
   "partsImportFailed": "Не удалось прочитать эту таблицу: {error}",
-  "@partsImportFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@partsImportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "partsMoreActions": "Другие действия с партиями",
   "partsPageTitle": "{name} — партии",
-  "@partsPageTitle": {"placeholders": {"name": {"type": "String"}}},
+  "@partsPageTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "manageParts": "Управление партиями",
   "partsMoreCount": "ещё {count}",
-  "@partsMoreCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partsMoreCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "searchParts": "Поиск по партиям",
   "allStatuses": "Все статусы",
   "allPerformers": "Все исполнители",
   "partsSelectedCount": "Выбрано: {count}",
-  "@partsSelectedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partsSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "setPartStatus": "Задать статус",
   "assignPartPerformer": "Назначить исполнителя",
   "deleteSelectedParts": "Удалить выбранные",
   "deleteSelectedPartsConfirm": "Удалить партий из этого трека: {count}?",
-  "@deleteSelectedPartsConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteSelectedPartsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partsDeleted": "Удалено партий: {count}",
-  "@partsDeleted": {"placeholders": {"count": {"type": "int"}}},
+  "@partsDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsMatchFilters": "Нет партий, подходящих под эти фильтры",
   "reorderNeedsUnfilteredList": "Сбросьте поиск, фильтры и сортировку, чтобы менять порядок партий",
-"projectMarkers": "Маркеры",
-"@projectMarkers": {
-      "description": "Section heading for the timeline markers and regions read out of a DAW project file"
+  "projectMarkers": "Маркеры",
+  "@projectMarkers": {
+    "description": "Section heading for the timeline markers and regions read out of a DAW project file"
   },
-"projectMarkerUnnamed": "Маркер {index}",
-"@projectMarkerUnnamed": {
-      "description": "Fallback label for a marker the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectMarkerUnnamed": "Маркер {index}",
+  "@projectMarkerUnnamed": {
+    "description": "Fallback label for a marker the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectRegionUnnamed": "Регион {index}",
-"@projectRegionUnnamed": {
-      "description": "Fallback label for a region the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectRegionUnnamed": "Регион {index}",
+  "@projectRegionUnnamed": {
+    "description": "Fallback label for a region the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectMarkerJumpTooltip": "Перейти к этому месту в превью трека",
-"@projectMarkerJumpTooltip": {
-      "description": "Tooltip on a marker row that will seek the preview player"
+  "projectMarkerJumpTooltip": "Перейти к этому месту в превью трека",
+  "@projectMarkerJumpTooltip": {
+    "description": "Tooltip on a marker row that will seek the preview player"
   },
-"projectMarkerNoPreviewSong": "Добавьте превью трека, чтобы переходить к маркерам",
-"@projectMarkerNoPreviewSong": {
-      "description": "Tooltip on marker rows when the project has no preview song to seek in"
+  "projectMarkerNoPreviewSong": "Добавьте превью трека, чтобы переходить к маркерам",
+  "@projectMarkerNoPreviewSong": {
+    "description": "Tooltip on marker rows when the project has no preview song to seek in"
   },
   "projectDetailLayout": "Макет Деталей Проекта",
-  "@projectDetailLayout": {"description": "Appearance setting: how the project detail page is arranged"},
+  "@projectDetailLayout": {
+    "description": "Appearance setting: how the project detail page is arranged"
+  },
   "projectDetailLayoutSettingDescription": "Как устроена страница деталей проекта.",
-  "@projectDetailLayoutSettingDescription": {"description": "Subtitle under the Project Detail Layout setting"},
+  "@projectDetailLayoutSettingDescription": {
+    "description": "Subtitle under the Project Detail Layout setting"
+  },
   "projectDetailLayoutClassic": "Классический",
-  "@projectDetailLayoutClassic": {"description": "Layout option: everything in one scroll"},
+  "@projectDetailLayoutClassic": {
+    "description": "Layout option: everything in one scroll"
+  },
   "projectDetailLayoutClassicDescription": "Всё в одной прокрутке.",
-  "@projectDetailLayoutClassicDescription": {"description": "Description of the classic project detail layout"},
+  "@projectDetailLayoutClassicDescription": {
+    "description": "Description of the classic project detail layout"
+  },
   "projectDetailLayoutSectioned": "Разделы",
-  "@projectDetailLayoutSectioned": {"description": "Layout option: a nav rail picks one section at a time"},
+  "@projectDetailLayoutSectioned": {
+    "description": "Layout option: a nav rail picks one section at a time"
+  },
   "projectDetailLayoutSectionedDescription": "Панель слева выбирает по одному разделу.",
-  "@projectDetailLayoutSectionedDescription": {"description": "Description of the sectioned project detail layout"},
-
+  "@projectDetailLayoutSectionedDescription": {
+    "description": "Description of the sectioned project detail layout"
+  },
   "stackAsVersions": "Объединить как версии",
   "stackNeedsTwoVersions": "Выберите не менее двух проектов, чтобы объединить их как версии одного основного проекта.",
   "stackCreatedMessage": "{count} версий объединены в один основной проект.",
-  "@stackCreatedMessage": {"placeholders": {"count": {"type": "int"}}},
+  "@stackCreatedMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackVersionsTitle": "Версии",
   "stackVersionCount": "Версий: {count}",
-  "@stackVersionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@stackVersionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersion": "Добавить версию",
   "stackAddVersionTitle": "Добавить версию",
   "stackAddVersionEmpty": "Нет проектов вне стеков, которые можно добавить.",
@@ -3010,13 +3261,25 @@
   "scanModeVersionStack": "Стек версий",
   "scanModeVersionStackDescription": "Все файлы проектов в папке становятся одним основным проектом с общими метаданными, задачами и рабочим временем. Новые файлы добавляются автоматически.",
   "stackTooltipStacked": "{count} версий объединены в один основной проект",
-  "@stackTooltipStacked": {"placeholders": {"count": {"type": "int"}}},
+  "@stackTooltipStacked": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataSourceTitle": "Какой проект сделать основным?",
   "stackMetadataSourceBody": "У нескольких из них уже есть собственные данные. Выбранный станет основным проектом: его имя, BPM, тональность, заметки, задачи и срок будут использоваться стеком. Ничего не объединяется и не теряется — остальные сохраняют свои данные, и разъединение их вернёт.",
   "stackMetadataSourceOldestHint": "Самая старая — рекомендуется",
   "stackMetadataNoneLabel": "Пока нет данных",
   "stackMetadataTodosLabel": "{count, plural, =1{1 задача} few{{count} задачи} other{{count} задач}}",
-  "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataTodosLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataNotesLabel": "заметки",
   "stackNotStackedYet": "Пока не объединено",
   "stackStartFromHere": "Добавьте другие файлы проектов, и они станут версиями одного основного проекта с общими метаданными, задачами и рабочим временем.",
@@ -3025,31 +3288,75 @@
   "stackStartedMessage": "Объединено в один основной проект.",
   "stackDefaultVersionTooltip": "Эта версия открывается по умолчанию при запуске DAW.",
   "stackAddVersionsConfirm": "Добавить: {count}",
-  "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@stackAddVersionsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersionMultiTitle": "Добавить версии",
   "stackSelectAll": "Выбрать все",
   "stackClearSelection": "Очистить",
   "stackMetadataPartsLabel": "{count, plural, =1{1 партия} few{{count} партии} other{{count} партий}}",
-  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataPartsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataDeadlineLabel": "срок",
   "stackMetadataRenamedLabel": "своё название",
   "stackMetadataWorkHours": "записано {hours} ч",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "@stackMetadataWorkHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
   "stackUnstackReleaseTitle": "Какая версия останется в релизе?",
   "stackUnstackReleaseBody": "Этот проект — трек в {releases}. При разъединении объединённая запись исчезает, поэтому её место должна занять одна из версий — выберите, на какую будет ссылаться релиз.",
-  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "@stackUnstackReleaseBody": {
+    "placeholders": {
+      "releases": {
+        "type": "String"
+      }
+    }
+  },
   "stackAutoConfirmTitle": "Объединить эти версии?",
   "stackAutoConfirmBody": "Стек версий сгруппирует {projects} проектов в {folders} папках. Каждая папка станет основным проектом с общими метаданными, задачами и рабочим временем. Ничего не удаляется, и позже их можно разъединить.",
-  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "@stackAutoConfirmBody": {
+    "placeholders": {
+      "projects": {
+        "type": "int"
+      },
+      "folders": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoConfirmApply": "Объединить",
   "stackAutoFolderEntry": "{folder} — версий: {count}",
-  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "@stackAutoFolderEntry": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoJoinsExisting": "добавится к существующему основному проекту",
   "untitledTheme": "Тема без названия",
   "switchToTheme": "Переключиться на {themeName}",
   "@switchToTheme": {
     "placeholders": {
-      "themeName": { "type": "String" }
+      "themeName": {
+        "type": "String"
+      }
     }
   },
   "newTheme": "Новая тема",
@@ -3059,7 +3366,9 @@
   "deleteThemeMessage": "«{name}» будет удалена. Это действие необратимо.",
   "@deleteThemeMessage": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeNameLabel": "Название темы",
@@ -3074,7 +3383,9 @@
   "themeLowContrastWarning": "Низкий контраст ({ratio}:1). Текст может быть трудно читать.",
   "@themeLowContrastWarning": {
     "placeholders": {
-      "ratio": { "type": "String" }
+      "ratio": {
+        "type": "String"
+      }
     }
   },
   "exportTheme": "Экспорт темы",
@@ -3082,13 +3393,17 @@
   "themeExported": "Тема экспортирована в {path}",
   "@themeExported": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "themeImported": "«{name}» импортирована",
   "@themeImported": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeImportFailed": "Этот файл не является допустимой темой.",
@@ -3098,9 +3413,336 @@
   "themeCopyName": "{name} — копия",
   "@themeCopyName": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-
-  "suggestedColorsLabel": "Предлагаемые цвета"
+  "suggestedColorsLabel": "Предлагаемые цвета",
+  "todoDueDate": "Срок",
+  "todoSetDueDate": "Задать срок",
+  "todoClearDueDate": "Убрать срок",
+  "todoNoDueDate": "Без срока",
+  "todoDueToday": "Срок сегодня",
+  "todoDueTomorrow": "Срок завтра",
+  "todoDueOn": "Срок: {date}",
+  "todoOverdueByDays": "{days, plural, =1{просрочено на 1 день} other{просрочено на {days} дн.}}",
+  "queueDueFilterLabel": "Срок",
+  "queueDueFilterAll": "Все задачи",
+  "queueDueFilterOverdue": "Просроченные",
+  "queueDueFilterToday": "Срок сегодня",
+  "queueDueFilterThisWeek": "Срок на этой неделе",
+  "queueDueFilterNoDate": "Без срока",
+  "queueNoTasksForDueFilter": "Нет задач, подходящих под этот фильтр срока",
+  "projectAttachments": "Вложения",
+  "attachmentAddFile": "Добавить файл",
+  "attachmentAddLink": "Добавить ссылку",
+  "attachmentsEmptyTitle": "Пока ничего не прикреплено",
+  "attachmentsEmptyDescription": "Держите референс, ссылку на стемы, текст песни и договор рядом с треком, а не в переписке.",
+  "attachmentEditDialogTitle": "Изменить вложение",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "Путь к файлу",
+  "attachmentLabelLabel": "Название (необязательно)",
+  "attachmentNoteLabel": "Заметка (необязательно)",
+  "attachmentUrlInvalid": "Введите корректную ссылку, например https://example.com",
+  "attachmentPathRequired": "Укажите путь к файлу",
+  "attachmentOpenTooltip": "Открыть",
+  "attachmentRemoveTitle": "Удалить вложение",
+  "attachmentRemoveMessage": "Убрать \"{label}\" из этого проекта? Сам файл не будет удалён.",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentRemoved": "Вложение удалено",
+  "attachmentAdded": "Вложение добавлено",
+  "attachmentOpenFailed": "Не удалось открыть это вложение",
+  "attachmentPickFileTitle": "Выберите файл для вложения",
+  "attachmentAlreadyAdded": "Это уже прикреплено к проекту",
+  "attachmentExport": "Экспорт",
+  "attachmentExportTooltip": "Сохранить прикреплённые файлы и ссылки",
+  "attachmentExportSaveTitle": "Сохранить вложения",
+  "attachmentExportNothing": "Нечего экспортировать",
+  "attachmentExporting": "Экспорт вложений...",
+  "attachmentExportSaved": "Сохранено: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "Пропущено отсутствующих файлов: {count}{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "Не удалось экспортировать вложения: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectAppearance": "Оформление",
+  "projectAppearanceTooltip": "Изменить обложку, цвет и значок",
+  "projectCoverArt": "Обложка",
+  "chooseCoverArt": "Выбрать изображение…",
+  "replaceCoverArt": "Заменить изображение…",
+  "removeCoverArt": "Удалить обложку",
+  "removeCoverArtConfirm": "Удалить обложку этого проекта? Сохранённое изображение будет удалено.",
+  "coverArtRemoved": "Обложка удалена",
+  "failedToRemoveCoverArt": "Не удалось удалить обложку: {error}",
+  "projectAccentColor": "Акцентный цвет",
+  "projectIcon": "Значок",
+  "appearanceNone": "Нет",
+  "appearanceNoneHint": "Проекты не показывают цвет и значок, пока вы их не выберете. Нажмите выбранный значок ещё раз, чтобы убрать его.",
+  "clearColorAndIcon": "Убрать цвет и значок",
+  "dropCoverArtHere": "Перетащите изображение, чтобы задать обложку",
+  "uploadingProjectCoverArt": "Загрузка обложек проектов...",
+  "downloadingProjectCoverArt": "Скачивание обложек проектов...",
+  "moveProjectButtonLabel": "Переместить…",
+  "moveProjectDialogTitle": "Переместить проект",
+  "moveProjectDestinationLabel": "Назначение",
+  "moveProjectChooseDestination": "Выбрать…",
+  "moveProjectNoDestinationChosen": "Папка ещё не выбрана",
+  "moveProjectIncludeFolder": "Переместить всю папку «{folder}»",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "В этой папке только этот проект, поэтому его сэмплы и миксдауны переместятся вместе с ним.",
+  "moveProjectFileOnlyDescription": "Переместится только файл проекта. Сэмплы и миксдауны рядом с ним останутся на месте.",
+  "moveProjectConfirm": "Переместить",
+  "moveProjectInProgress": "Перемещение…",
+  "moveProjectSuccess": "«{name}» перемещён в {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectFailed": "Не удалось переместить: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorSourceMissing": "Файл этого проекта отсутствует на этом компьютере.",
+  "moveProjectErrorDestinationOccupied": "«{name}» уже есть в этой папке.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Нельзя переместить папку внутрь неё самой.",
+  "moveProjectErrorSameLocation": "Проект уже находится в этой папке.",
+  "moveProjectStackUnsupported": "У стопки версий нет собственного файла — перемещайте её версии по отдельности.",
+  "selectMoveDestinationTitle": "Выберите папку назначения",
+  "archiveProjectButtonLabel": "Архивировать…",
+  "archiveProjectDialogTitle": "Архивировать проект",
+  "archiveProjectWhatToArchive": "Что архивировать",
+  "archiveProjectScopeFolder": "Всю папку «{folder}»",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectScopeFileOnly": "Только файл проекта",
+  "archiveScopeSummary": "{size} · {files, plural, =1{1 файл} other{{files} файлов}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveProjectDeleteOriginals": "Удалить оригиналы после проверки архива",
+  "archiveProjectDeleteOriginalsDescription": "Сначала архив открывается заново и проверяется запись за записью. Если проверка не пройдена, ничего не удаляется.",
+  "archiveProjectConfirm": "Архивировать",
+  "archiveStageScanning": "Чтение папки проекта…",
+  "archiveStageCompressing": "Сжатие…",
+  "archiveStageVerifying": "Проверка архива…",
+  "archiveStageDeleting": "Удаление оригиналов…",
+  "archiveProjectSuccess": "«{name}» заархивирован",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectFailed": "Не удалось заархивировать: {error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorSourceMissing": "Файлов этого проекта нет на этом компьютере.",
+  "archiveErrorDestinationInScanRoot": "Архивы нельзя класть в сканируемую папку — «{root}» тут же добавит их обратно.",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorDestinationOccupied": "Там уже есть архив с именем «{name}».",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorVerificationFailed": "В архиве не хватает файлов, поэтому ничего не удалено: {entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorNotArchived": "Этот проект не заархивирован.",
+  "archiveWarningsSkipped": "{count, plural, =1{1 нечитаемый файл пропущен} other{Пропущено нечитаемых файлов: {count}}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveLocationTitle": "Расположение архивов",
+  "archiveLocationSubtitle": "Куда «Архивировать проект» записывает zip-файлы. Хранится на этом устройстве.",
+  "archiveLocationNotSet": "Не задано — вас спросят при первом архивировании",
+  "selectArchiveLocationTitle": "Выберите папку для архивов",
+  "restoreProjectButtonLabel": "Восстановить…",
+  "restoreProjectDialogTitle": "Восстановить проект",
+  "restoreProjectDescription": "Распаковывает архив в выбранную вами папку и возвращает проект к восстановленным файлам.",
+  "restoreProjectConfirm": "Восстановить",
+  "restoreProjectInProgress": "Восстановление…",
+  "restoreProjectSuccess": "«{name}» восстановлен",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreProjectFailed": "Не удалось восстановить: {error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectRestoreDestinationTitle": "Выберите папку для восстановления",
+  "archivedLabel": "В архиве",
+  "archivedOnLabel": "В архиве с {date}",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "showArchivedProjects": "Показать архивные",
+  "showOnlyArchivedProjects": "Только архивные",
+  "hideArchivedProjects": "Скрыть архивные",
+  "archivedFilterLabel": "Архив",
+  "archiveProjectStackUnsupported": "У стопки версий нет собственных файлов — архивируйте её версии по отдельности.",
+  "archiveBulkButtonLabel": "Архивировать выбранные",
+  "archiveBulkConfirmMessage": "{count, plural, =1{Архивировать 1 проект?} other{Архивировать проектов: {count}?}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, =1{1 проект заархивирован} other{Заархивировано проектов: {count}}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openArchiveFolder": "Открыть папку архивов",
+  "archiveBulkProgress": "{current} из {total}",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, =1{1 проект не удалось заархивировать} other{Не удалось заархивировать проектов: {count}}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkScopeNote": "Каждый проект архивируется в подходящем ему объёме: вся папка, если она у него своя, и только файл проекта, если папка общая.",
+  "archivedWithLocalCopy": "В архиве — оригиналы всё ещё здесь",
+  "archivedAwayTooltip": "В архиве — файлы остались только в архиве",
+  "archiveUndone": "Архивирование отменено",
+  "archiveUndoFailed": "Не удалось отменить архивирование: {error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUndone": "Перемещение отменено",
+  "moveUndoFailed": "Не удалось отменить перемещение: {error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreToOriginalLocation": "Обратно в исходное место",
+  "restoreToChosenFolder": "В другую папку…",
+  "restoreWhereTo": "Куда его поместить?",
+  "restoreOriginalLocationOccupied": "В исходном месте уже что-то есть",
+  "discardArchiveButtonLabel": "Удалить архив",
+  "discardArchiveConfirmTitle": "Удалить архив?",
+  "discardArchiveConfirmMessage": "Удаляет zip и снимает пометку «в архиве». Файлы самого проекта остаются на месте.",
+  "discardArchiveDone": "Архив удалён"
 }

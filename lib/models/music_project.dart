@@ -1,6 +1,7 @@
 import 'package:hive_ce/hive.dart';
 import 'package:path/path.dart' as p;
 import '../utils/name_date_parser.dart';
+import 'project_attachment.dart';
 import 'project_marker.dart';
 import 'project_part.dart';
 import 'todo_item.dart';
@@ -258,6 +259,66 @@ class MusicProject {
   @HiveField(37)
   final List<ProjectMarker> markers; // Timeline markers/regions read from the DAW project file (Reaper only so far)
 
+  // Field indices 38+ were assigned independently on four feature branches,
+  // each of which started at 38 because that was the next free index on main.
+  // They are renumbered here into one unique sequence. Safe to renumber
+  // because none of those branches ever shipped, so no box on any user's disk
+  // holds a record written with the old numbering — but that is exactly why a
+  // new field must take the next free index *here*, not on a branch.
+
+  @HiveField(38)
+  /// Files and links the user has attached to this song (#112) — the reference
+  /// track, the stem-delivery link, the lyric sheet, the contract.
+  ///
+  /// References only, never copies: see [ProjectAttachment].
+  final List<ProjectAttachment> attachments;
+
+  // Per-project visual identity (#110). Both are *overrides*: null means "use
+  // the value derived from the project id" — see `lib/utils/project_visuals.dart`.
+  // Deriving rather than storing at scan time is what gives every project
+  // already in the library a distinct look without a migration pass.
+
+  @HiveField(39)
+  /// User-chosen accent color as an ARGB int, or null to use the derived one.
+  final int? accentColor;
+
+  @HiveField(40)
+  /// User-chosen icon, as a key into `kProjectIconChoices`, or null to use the
+  /// derived one. A key that is no longer in the set falls back to derived, so
+  /// retiring an icon can never leave a project without one.
+  final String? iconKey;
+
+  @HiveField(41)
+  /// The short label drawn on the dashboard card when the project has no
+  /// cover art. Null means "derive it from the name" (see `projectInitials`),
+  /// which is what every project starts as.
+  ///
+  /// User data: someone typed it, so it syncs to Drive and goes into a
+  /// backup like the notes and the deadline do.
+  final String? cardInitials;
+
+  // Archiving (#116).
+
+  @HiveField(42)
+  /// Absolute path of the `.zip` this project was archived into, or null when
+  /// it isn't archived.
+  ///
+  /// [filePath] is deliberately *not* repointed here and keeps naming the
+  /// original location: it is what [fileExtension], DAW launching and the
+  /// containing-folder helpers all read, and leaving it alone is also what
+  /// makes "restore to where it came from" free.
+  final String? archivePath;
+
+  @HiveField(43)
+  final DateTime? archivedAt;
+
+  @HiveField(44)
+  /// Path of the project's own file *inside* the archive, relative to the zip
+  /// root. Restoring extracts to a chosen folder and joins this onto it, so
+  /// the project file is found exactly rather than guessed at by basename —
+  /// which matters when a folder-scoped archive holds several `.als` files.
+  final String? archiveEntryPath;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -297,7 +358,17 @@ class MusicProject {
     this.defaultLaunchMemberId,
     this.stackId,
     this.markers = const [],
+    this.attachments = const [],
+    this.accentColor,
+    this.iconKey,
+    this.cardInitials,
+    this.archivePath,
+    this.archivedAt,
+    this.archiveEntryPath,
   });
+
+  /// Whether this project's files have been zipped out to an archive (#116).
+  bool get isArchived => archivePath != null;
 
   /// Number of version files this stack holds. 0 for a real project.
   int get versionCount => isVirtual ? memberProjectIds.length : 0;
@@ -325,6 +396,7 @@ class MusicProject {
       deadline != null ||
       todos.isNotEmpty ||
       parts.isNotEmpty ||
+      attachments.isNotEmpty ||
       totalWorkSeconds > 0;
 
   /// Whether a non-resolving [filePath] on this project means "the file was
@@ -334,7 +406,13 @@ class MusicProject {
   /// represent and may never resolve to a file. Without this, "Delete Missing"
   /// would offer to delete the one row holding a stack's metadata — deleting
   /// the shared notes, todos and accumulated work time for every version in it.
-  bool get isMissingFileCandidate => !isVirtual;
+  ///
+  /// False for archived projects too (#116): their files are in a zip on
+  /// purpose, and [filePath] still names the emptied original location. An
+  /// archived project is the opposite of a lost one, so offering to delete it
+  /// as "missing" would throw away the metadata the archive exists to keep
+  /// attached to the work.
+  bool get isMissingFileCandidate => !isVirtual && !isArchived;
 
   /// Whether [displayName] hides date stamps DAWs bake into file names (see
   /// `lib/utils/name_date_parser.dart`). Off by default; mirrored here from
@@ -544,6 +622,7 @@ class MusicProject {
     String? customDisplayName,
     bool clearCustomDisplayName = false,
     String? thumbnailPath,
+    bool clearThumbnailPath = false,
     String? status,
     String? fileExtension,
     DateTime? createdAt,
@@ -590,6 +669,19 @@ class MusicProject {
     String? stackId,
     bool clearStackId = false,
     List<ProjectMarker>? markers,
+    List<ProjectAttachment>? attachments,
+    int? accentColor,
+    bool clearAccentColor = false,
+    String? iconKey,
+    bool clearIconKey = false,
+    String? cardInitials,
+    bool clearCardInitials = false,
+    String? archivePath,
+    bool clearArchivePath = false,
+    DateTime? archivedAt,
+    bool clearArchivedAt = false,
+    String? archiveEntryPath,
+    bool clearArchiveEntryPath = false,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -598,7 +690,7 @@ class MusicProject {
       fileSizeBytes: fileSizeBytes ?? this.fileSizeBytes,
       lastModifiedAt: lastModifiedAt ?? this.lastModifiedAt,
       customDisplayName: clearCustomDisplayName ? null : (customDisplayName ?? this.customDisplayName),
-      thumbnailPath: thumbnailPath ?? this.thumbnailPath,
+      thumbnailPath: clearThumbnailPath ? null : (thumbnailPath ?? this.thumbnailPath),
       status: status ?? this.status,
       fileExtension: fileExtension ?? this.fileExtension,
       createdAt: createdAt ?? this.createdAt,
@@ -632,6 +724,17 @@ class MusicProject {
           : (defaultLaunchMemberId ?? this.defaultLaunchMemberId),
       stackId: clearStackId ? null : (stackId ?? this.stackId),
       markers: markers ?? this.markers,
+      attachments: attachments ?? this.attachments,
+      accentColor: clearAccentColor ? null : (accentColor ?? this.accentColor),
+      iconKey: clearIconKey ? null : (iconKey ?? this.iconKey),
+      cardInitials: clearCardInitials
+          ? null
+          : (cardInitials ?? this.cardInitials),
+      archivePath: clearArchivePath ? null : (archivePath ?? this.archivePath),
+      archivedAt: clearArchivedAt ? null : (archivedAt ?? this.archivedAt),
+      archiveEntryPath: clearArchiveEntryPath
+          ? null
+          : (archiveEntryPath ?? this.archiveEntryPath),
     );
   }
 
@@ -707,13 +810,30 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
               .map((e) => ProjectMarker.fromMap(e as Map))
               .toList()
           : const [],
+      attachments: fields.containsKey(38)
+          ? ((fields[38] as List?) ?? const [])
+              .map((e) => ProjectAttachment.fromMap(e as Map))
+              .toList()
+          : const [],
+      // Absent on every box written before #110 — null there means "derive
+      // the accent/icon from the id", which is exactly the intended default.
+      //
+      // Type-tested rather than cast: `read` runs inside repository init, so a
+      // record carrying an unexpected type here would take the whole app down
+      // before the first scan instead of costing one project its override.
+      accentColor: fields[39] is int ? fields[39] as int : null,
+      iconKey: fields[40] is String ? fields[40] as String : null,
+      cardInitials: fields.containsKey(41) ? fields[41] as String? : null,
+      archivePath: fields.containsKey(42) ? fields[42] as String? : null,
+      archivedAt: fields.containsKey(43) ? fields[43] as DateTime? : null,
+      archiveEntryPath: fields.containsKey(44) ? fields[44] as String? : null,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(38) // 38 fields (0-37)
+      ..writeByte(45) // 45 fields (0-44)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -789,6 +909,20 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(36)
       ..write(obj.stackId)
       ..writeByte(37)
-      ..write(obj.markers.map((m) => m.toMap()).toList());
+      ..write(obj.markers.map((m) => m.toMap()).toList())
+      ..writeByte(38)
+      ..write(obj.attachments.map((a) => a.toMap()).toList())
+      ..writeByte(39)
+      ..write(obj.accentColor)
+      ..writeByte(40)
+      ..write(obj.iconKey)
+      ..writeByte(41)
+      ..write(obj.cardInitials)
+      ..writeByte(42)
+      ..write(obj.archivePath)
+      ..writeByte(43)
+      ..write(obj.archivedAt)
+      ..writeByte(44)
+      ..write(obj.archiveEntryPath);
   }
 }

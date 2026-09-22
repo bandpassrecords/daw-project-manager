@@ -898,6 +898,24 @@ abstract class AppLocalizations {
   /// **'Clear Selection'**
   String get clearSelection;
 
+  /// No description provided for @viewModeTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Table view'**
+  String get viewModeTable;
+
+  /// No description provided for @viewModeCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Card view'**
+  String get viewModeCards;
+
+  /// No description provided for @selectProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Select project'**
+  String get selectProject;
+
   /// No description provided for @selectAllProjects.
   ///
   /// In en, this message translates to:
@@ -4847,6 +4865,36 @@ abstract class AppLocalizations {
   /// **'Not touched in {days} days'**
   String statsNotTouchedDays(int days);
 
+  /// No description provided for @sortByDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get sortByDeadline;
+
+  /// No description provided for @sortByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortByLabel;
+
+  /// No description provided for @cardInitialsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Card initials'**
+  String get cardInitialsTitle;
+
+  /// No description provided for @cardInitialsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The letters shown on this project\'s card when it has no cover art.'**
+  String get cardInitialsDescription;
+
+  /// No description provided for @cardInitialsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use the initials of the name.'**
+  String get cardInitialsEmptyHint;
+
   /// No description provided for @sortByLastModified.
   ///
   /// In en, this message translates to:
@@ -8428,6 +8476,840 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Suggested Colors'**
   String get suggestedColorsLabel;
+
+  /// Label for a todo item's optional due date
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get todoDueDate;
+
+  /// Tooltip on the button that picks a due date for a todo
+  ///
+  /// In en, this message translates to:
+  /// **'Set due date'**
+  String get todoSetDueDate;
+
+  /// Tooltip on the button that clears a todo's due date
+  ///
+  /// In en, this message translates to:
+  /// **'Clear due date'**
+  String get todoClearDueDate;
+
+  /// Shown when a todo has no due date set
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get todoNoDueDate;
+
+  /// Due-date chip for a todo due today
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get todoDueToday;
+
+  /// Due-date chip for a todo due tomorrow
+  ///
+  /// In en, this message translates to:
+  /// **'Due tomorrow'**
+  String get todoDueTomorrow;
+
+  /// Due-date chip for a todo due on a specific date
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}'**
+  String todoDueOn(String date);
+
+  /// Due-date chip for a todo whose due date has passed
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{1 day overdue} other{{days} days overdue}}'**
+  String todoOverdueByDays(int days);
+
+  /// Label of the Task Queue due-date filter
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get queueDueFilterLabel;
+
+  /// Task Queue due filter: show every pending task
+  ///
+  /// In en, this message translates to:
+  /// **'All tasks'**
+  String get queueDueFilterAll;
+
+  /// Task Queue due filter: only overdue tasks
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get queueDueFilterOverdue;
+
+  /// Task Queue due filter: only tasks due today
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get queueDueFilterToday;
+
+  /// Task Queue due filter: overdue plus tasks due within a week
+  ///
+  /// In en, this message translates to:
+  /// **'Due this week'**
+  String get queueDueFilterThisWeek;
+
+  /// Task Queue due filter: only tasks with no due date
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get queueDueFilterNoDate;
+
+  /// Task Queue empty state when the due filter excludes everything
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks match this due filter'**
+  String get queueNoTasksForDueFilter;
+
+  /// No description provided for @projectAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get projectAttachments;
+
+  /// No description provided for @attachmentAddFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Add File'**
+  String get attachmentAddFile;
+
+  /// No description provided for @attachmentAddLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Link'**
+  String get attachmentAddLink;
+
+  /// No description provided for @attachmentsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing attached yet'**
+  String get attachmentsEmptyTitle;
+
+  /// No description provided for @attachmentsEmptyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the reference track, the stem-delivery link, the lyric sheet and the contract with the song, instead of in a chat thread.'**
+  String get attachmentsEmptyDescription;
+
+  /// No description provided for @attachmentEditDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Attachment'**
+  String get attachmentEditDialogTitle;
+
+  /// No description provided for @attachmentUrlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get attachmentUrlLabel;
+
+  /// No description provided for @attachmentPathLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'File path'**
+  String get attachmentPathLabel;
+
+  /// No description provided for @attachmentLabelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Label (optional)'**
+  String get attachmentLabelLabel;
+
+  /// No description provided for @attachmentNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get attachmentNoteLabel;
+
+  /// No description provided for @attachmentUrlInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid link, e.g. https://example.com'**
+  String get attachmentUrlInvalid;
+
+  /// No description provided for @attachmentPathRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a file path'**
+  String get attachmentPathRequired;
+
+  /// No description provided for @attachmentOpenTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get attachmentOpenTooltip;
+
+  /// No description provided for @attachmentRemoveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Attachment'**
+  String get attachmentRemoveTitle;
+
+  /// No description provided for @attachmentRemoveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{label}\" from this project? The file itself is not deleted.'**
+  String attachmentRemoveMessage(String label);
+
+  /// No description provided for @attachmentRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment removed'**
+  String get attachmentRemoved;
+
+  /// No description provided for @attachmentAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment added'**
+  String get attachmentAdded;
+
+  /// No description provided for @attachmentOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open that attachment'**
+  String get attachmentOpenFailed;
+
+  /// No description provided for @attachmentPickFileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a file to attach'**
+  String get attachmentPickFileTitle;
+
+  /// No description provided for @attachmentAlreadyAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'That is already attached to this project'**
+  String get attachmentAlreadyAdded;
+
+  /// No description provided for @attachmentExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get attachmentExport;
+
+  /// No description provided for @attachmentExportTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the attached files and links'**
+  String get attachmentExportTooltip;
+
+  /// No description provided for @attachmentExportSaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save attachments'**
+  String get attachmentExportSaveTitle;
+
+  /// No description provided for @attachmentExportNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to export'**
+  String get attachmentExportNothing;
+
+  /// No description provided for @attachmentExporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting attachments...'**
+  String get attachmentExporting;
+
+  /// No description provided for @attachmentExportSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to: {path}'**
+  String attachmentExportSaved(String path);
+
+  /// No description provided for @attachmentExportSkippedMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} missing file{plural} skipped'**
+  String attachmentExportSkippedMissing(int count, String plural);
+
+  /// No description provided for @attachmentExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export attachments: {error}'**
+  String attachmentExportFailed(String error);
+
+  /// Section/dialog title for a project's cover art, accent color and icon (#110)
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get projectAppearance;
+
+  /// Tooltip on the project detail header's cover tile
+  ///
+  /// In en, this message translates to:
+  /// **'Change cover art, color and icon'**
+  String get projectAppearanceTooltip;
+
+  /// No description provided for @projectCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover Art'**
+  String get projectCoverArt;
+
+  /// No description provided for @chooseCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Image…'**
+  String get chooseCoverArt;
+
+  /// No description provided for @replaceCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace Image…'**
+  String get replaceCoverArt;
+
+  /// No description provided for @removeCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Cover Art'**
+  String get removeCoverArt;
+
+  /// No description provided for @removeCoverArtConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this project\'s cover art? The stored image will be deleted.'**
+  String get removeCoverArtConfirm;
+
+  /// No description provided for @coverArtRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover art removed'**
+  String get coverArtRemoved;
+
+  /// No description provided for @failedToRemoveCoverArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove cover art: {error}'**
+  String failedToRemoveCoverArt(String error);
+
+  /// No description provided for @projectAccentColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent Color'**
+  String get projectAccentColor;
+
+  /// No description provided for @projectIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get projectIcon;
+
+  /// No description provided for @appearanceNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get appearanceNone;
+
+  /// No description provided for @appearanceNoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Projects show no colour or icon until you pick one. Tap a selected icon again to remove it.'**
+  String get appearanceNoneHint;
+
+  /// No description provided for @clearColorAndIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Colour & Icon'**
+  String get clearColorAndIcon;
+
+  /// No description provided for @dropCoverArtHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop an image to set the cover'**
+  String get dropCoverArtHere;
+
+  /// Status message when uploading project cover art files
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading project cover art...'**
+  String get uploadingProjectCoverArt;
+
+  /// Status message when downloading project cover art files
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading project cover art...'**
+  String get downloadingProjectCoverArt;
+
+  /// No description provided for @moveProjectButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Move…'**
+  String get moveProjectButtonLabel;
+
+  /// No description provided for @moveProjectDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move Project'**
+  String get moveProjectDialogTitle;
+
+  /// No description provided for @moveProjectDestinationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get moveProjectDestinationLabel;
+
+  /// No description provided for @moveProjectChooseDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose…'**
+  String get moveProjectChooseDestination;
+
+  /// No description provided for @moveProjectNoDestinationChosen.
+  ///
+  /// In en, this message translates to:
+  /// **'No folder chosen yet'**
+  String get moveProjectNoDestinationChosen;
+
+  /// No description provided for @moveProjectIncludeFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the whole \"{folder}\" folder'**
+  String moveProjectIncludeFolder(String folder);
+
+  /// No description provided for @moveProjectIncludeFolderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This folder holds only this project, so its samples and bounces move with it.'**
+  String get moveProjectIncludeFolderDescription;
+
+  /// No description provided for @moveProjectFileOnlyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the project file moves. Samples and bounces beside it stay where they are.'**
+  String get moveProjectFileOnlyDescription;
+
+  /// No description provided for @moveProjectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Move'**
+  String get moveProjectConfirm;
+
+  /// No description provided for @moveProjectInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving…'**
+  String get moveProjectInProgress;
+
+  /// No description provided for @moveProjectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved \"{name}\" to {path}'**
+  String moveProjectSuccess(String name, String path);
+
+  /// No description provided for @moveProjectFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to move: {error}'**
+  String moveProjectFailed(String error);
+
+  /// No description provided for @moveProjectErrorSourceMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'This project\'s file isn\'t on this machine.'**
+  String get moveProjectErrorSourceMissing;
+
+  /// No description provided for @moveProjectErrorDestinationOccupied.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" already exists in that folder.'**
+  String moveProjectErrorDestinationOccupied(String name);
+
+  /// No description provided for @moveProjectErrorDestinationInsideSource.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t move a folder into itself.'**
+  String get moveProjectErrorDestinationInsideSource;
+
+  /// No description provided for @moveProjectErrorSameLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'The project is already in that folder.'**
+  String get moveProjectErrorSameLocation;
+
+  /// No description provided for @moveProjectStackUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'A version stack has no file of its own — move its versions individually.'**
+  String get moveProjectStackUnsupported;
+
+  /// No description provided for @selectMoveDestinationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select destination folder'**
+  String get selectMoveDestinationTitle;
+
+  /// No description provided for @archiveProjectButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive…'**
+  String get archiveProjectButtonLabel;
+
+  /// No description provided for @archiveProjectDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive Project'**
+  String get archiveProjectDialogTitle;
+
+  /// No description provided for @archiveProjectWhatToArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'What to archive'**
+  String get archiveProjectWhatToArchive;
+
+  /// No description provided for @archiveProjectScopeFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole \"{folder}\" folder'**
+  String archiveProjectScopeFolder(String folder);
+
+  /// No description provided for @archiveProjectScopeFileOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Project file only'**
+  String get archiveProjectScopeFileOnly;
+
+  /// No description provided for @archiveScopeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} · {files, plural, =1{1 file} other{{files} files}}'**
+  String archiveScopeSummary(String size, int files);
+
+  /// No description provided for @archiveProjectDeleteOriginals.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete the originals after verifying the archive'**
+  String get archiveProjectDeleteOriginals;
+
+  /// No description provided for @archiveProjectDeleteOriginalsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The archive is re-opened and checked entry by entry first. Nothing is deleted if that check fails.'**
+  String get archiveProjectDeleteOriginalsDescription;
+
+  /// No description provided for @archiveProjectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archiveProjectConfirm;
+
+  /// No description provided for @archiveStageScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the project folder…'**
+  String get archiveStageScanning;
+
+  /// No description provided for @archiveStageCompressing.
+  ///
+  /// In en, this message translates to:
+  /// **'Compressing…'**
+  String get archiveStageCompressing;
+
+  /// No description provided for @archiveStageVerifying.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying the archive…'**
+  String get archiveStageVerifying;
+
+  /// No description provided for @archiveStageDeleting.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing the originals…'**
+  String get archiveStageDeleting;
+
+  /// No description provided for @archiveProjectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived \"{name}\"'**
+  String archiveProjectSuccess(String name);
+
+  /// No description provided for @archiveProjectFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to archive: {error}'**
+  String archiveProjectFailed(String error);
+
+  /// No description provided for @archiveErrorSourceMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'This project\'s files aren\'t on this machine.'**
+  String get archiveErrorSourceMissing;
+
+  /// No description provided for @archiveErrorDestinationInScanRoot.
+  ///
+  /// In en, this message translates to:
+  /// **'Archives can\'t go inside a scanned folder — \"{root}\" would index them straight back in.'**
+  String archiveErrorDestinationInScanRoot(String root);
+
+  /// No description provided for @archiveErrorDestinationOccupied.
+  ///
+  /// In en, this message translates to:
+  /// **'An archive named \"{name}\" is already there.'**
+  String archiveErrorDestinationOccupied(String name);
+
+  /// No description provided for @archiveErrorVerificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The archive is missing files, so nothing was deleted: {entries}'**
+  String archiveErrorVerificationFailed(String entries);
+
+  /// No description provided for @archiveErrorNotArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'This project isn\'t archived.'**
+  String get archiveErrorNotArchived;
+
+  /// No description provided for @archiveWarningsSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unreadable file was skipped} other{{count} unreadable files were skipped}}'**
+  String archiveWarningsSkipped(int count);
+
+  /// No description provided for @archiveLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive location'**
+  String get archiveLocationTitle;
+
+  /// No description provided for @archiveLocationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where \"Archive project\" writes its zip files. Kept on this device.'**
+  String get archiveLocationSubtitle;
+
+  /// No description provided for @archiveLocationNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set — you\'ll be asked when you first archive'**
+  String get archiveLocationNotSet;
+
+  /// No description provided for @selectArchiveLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select archive folder'**
+  String get selectArchiveLocationTitle;
+
+  /// No description provided for @restoreProjectButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore…'**
+  String get restoreProjectButtonLabel;
+
+  /// No description provided for @restoreProjectDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Project'**
+  String get restoreProjectDialogTitle;
+
+  /// No description provided for @restoreProjectDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Extracts the archive to a folder you choose and points the project back at the restored files.'**
+  String get restoreProjectDescription;
+
+  /// No description provided for @restoreProjectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restoreProjectConfirm;
+
+  /// No description provided for @restoreProjectInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring…'**
+  String get restoreProjectInProgress;
+
+  /// No description provided for @restoreProjectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Restored \"{name}\"'**
+  String restoreProjectSuccess(String name);
+
+  /// No description provided for @restoreProjectFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to restore: {error}'**
+  String restoreProjectFailed(String error);
+
+  /// No description provided for @selectRestoreDestinationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a folder to restore into'**
+  String get selectRestoreDestinationTitle;
+
+  /// No description provided for @archivedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get archivedLabel;
+
+  /// No description provided for @archivedOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived {date}'**
+  String archivedOnLabel(String date);
+
+  /// No description provided for @showArchivedProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Show archived'**
+  String get showArchivedProjects;
+
+  /// No description provided for @showOnlyArchivedProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Only archived'**
+  String get showOnlyArchivedProjects;
+
+  /// No description provided for @hideArchivedProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide archived'**
+  String get hideArchivedProjects;
+
+  /// No description provided for @archivedFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get archivedFilterLabel;
+
+  /// No description provided for @archiveProjectStackUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'A version stack has no files of its own — archive its versions individually.'**
+  String get archiveProjectStackUnsupported;
+
+  /// No description provided for @archiveBulkButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive selected'**
+  String get archiveBulkButtonLabel;
+
+  /// No description provided for @archiveBulkConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Archive 1 project?} other{Archive {count} projects?}}'**
+  String archiveBulkConfirmMessage(int count);
+
+  /// No description provided for @archiveBulkSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 project archived} other{{count} projects archived}}'**
+  String archiveBulkSuccess(int count);
+
+  /// No description provided for @openArchiveFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Open archive folder'**
+  String get openArchiveFolder;
+
+  /// No description provided for @archiveBulkProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {total}'**
+  String archiveBulkProgress(int current, int total);
+
+  /// No description provided for @archiveBulkFailures.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 project could not be archived} other{{count} projects could not be archived}}'**
+  String archiveBulkFailures(int count);
+
+  /// No description provided for @archiveBulkScopeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Each project is archived with the scope that fits it — a folder of its own when it has one, the project file alone when it shares a folder.'**
+  String get archiveBulkScopeNote;
+
+  /// No description provided for @archivedWithLocalCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived — the originals are still here'**
+  String get archivedWithLocalCopy;
+
+  /// No description provided for @archivedAwayTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived — the files are in the archive only'**
+  String get archivedAwayTooltip;
+
+  /// No description provided for @archiveUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive undone'**
+  String get archiveUndone;
+
+  /// No description provided for @archiveUndoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t undo the archive: {error}'**
+  String archiveUndoFailed(String error);
+
+  /// No description provided for @moveUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Move undone'**
+  String get moveUndone;
+
+  /// No description provided for @moveUndoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t undo the move: {error}'**
+  String moveUndoFailed(String error);
+
+  /// No description provided for @restoreToOriginalLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to its original location'**
+  String get restoreToOriginalLocation;
+
+  /// No description provided for @restoreToChosenFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Into another folder…'**
+  String get restoreToChosenFolder;
+
+  /// No description provided for @restoreWhereTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Where should it go?'**
+  String get restoreWhereTo;
+
+  /// No description provided for @restoreOriginalLocationOccupied.
+  ///
+  /// In en, this message translates to:
+  /// **'Something is already at the original location'**
+  String get restoreOriginalLocationOccupied;
+
+  /// No description provided for @discardArchiveButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard archive'**
+  String get discardArchiveButtonLabel;
+
+  /// No description provided for @discardArchiveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard archive?'**
+  String get discardArchiveConfirmTitle;
+
+  /// No description provided for @discardArchiveConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes the zip and clears the archived flag. The project\'s own files stay where they are.'**
+  String get discardArchiveConfirmMessage;
+
+  /// No description provided for @discardArchiveDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive discarded'**
+  String get discardArchiveDone;
 }
 
 class _AppLocalizationsDelegate

@@ -441,6 +441,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearSelection => 'Clear Selection';
 
   @override
+  String get viewModeTable => 'Table view';
+
+  @override
+  String get viewModeCards => 'Card view';
+
+  @override
+  String get selectProject => 'Select project';
+
+  @override
   String get selectAllProjects => 'Select all projects';
 
   @override
@@ -2875,6 +2884,23 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => 'Deadline';
+
+  @override
+  String get sortByLabel => 'Sort by';
+
+  @override
+  String get cardInitialsTitle => 'Card initials';
+
+  @override
+  String get cardInitialsDescription =>
+      'The letters shown on this project\'s card when it has no cover art.';
+
+  @override
+  String get cardInitialsEmptyHint =>
+      'Leave empty to use the initials of the name.';
+
+  @override
   String get sortByLastModified => 'Last modified';
 
   @override
@@ -4978,4 +5004,535 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => 'Suggested Colors';
+
+  @override
+  String get todoDueDate => 'Due date';
+
+  @override
+  String get todoSetDueDate => 'Set due date';
+
+  @override
+  String get todoClearDueDate => 'Clear due date';
+
+  @override
+  String get todoNoDueDate => 'No due date';
+
+  @override
+  String get todoDueToday => 'Due today';
+
+  @override
+  String get todoDueTomorrow => 'Due tomorrow';
+
+  @override
+  String todoDueOn(String date) {
+    return 'Due $date';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days overdue',
+      one: '1 day overdue',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => 'Due';
+
+  @override
+  String get queueDueFilterAll => 'All tasks';
+
+  @override
+  String get queueDueFilterOverdue => 'Overdue';
+
+  @override
+  String get queueDueFilterToday => 'Due today';
+
+  @override
+  String get queueDueFilterThisWeek => 'Due this week';
+
+  @override
+  String get queueDueFilterNoDate => 'No due date';
+
+  @override
+  String get queueNoTasksForDueFilter => 'No tasks match this due filter';
+
+  @override
+  String get projectAttachments => 'Attachments';
+
+  @override
+  String get attachmentAddFile => 'Add File';
+
+  @override
+  String get attachmentAddLink => 'Add Link';
+
+  @override
+  String get attachmentsEmptyTitle => 'Nothing attached yet';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      'Keep the reference track, the stem-delivery link, the lyric sheet and the contract with the song, instead of in a chat thread.';
+
+  @override
+  String get attachmentEditDialogTitle => 'Edit Attachment';
+
+  @override
+  String get attachmentUrlLabel => 'URL';
+
+  @override
+  String get attachmentPathLabel => 'File path';
+
+  @override
+  String get attachmentLabelLabel => 'Label (optional)';
+
+  @override
+  String get attachmentNoteLabel => 'Note (optional)';
+
+  @override
+  String get attachmentUrlInvalid =>
+      'Enter a valid link, e.g. https://example.com';
+
+  @override
+  String get attachmentPathRequired => 'Enter a file path';
+
+  @override
+  String get attachmentOpenTooltip => 'Open';
+
+  @override
+  String get attachmentRemoveTitle => 'Remove Attachment';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return 'Remove \"$label\" from this project? The file itself is not deleted.';
+  }
+
+  @override
+  String get attachmentRemoved => 'Attachment removed';
+
+  @override
+  String get attachmentAdded => 'Attachment added';
+
+  @override
+  String get attachmentOpenFailed => 'Couldn\'t open that attachment';
+
+  @override
+  String get attachmentPickFileTitle => 'Choose a file to attach';
+
+  @override
+  String get attachmentAlreadyAdded =>
+      'That is already attached to this project';
+
+  @override
+  String get attachmentExport => 'Export';
+
+  @override
+  String get attachmentExportTooltip => 'Save the attached files and links';
+
+  @override
+  String get attachmentExportSaveTitle => 'Save attachments';
+
+  @override
+  String get attachmentExportNothing => 'Nothing to export';
+
+  @override
+  String get attachmentExporting => 'Exporting attachments...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return 'Saved to: $path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '$count missing file$plural skipped';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return 'Failed to export attachments: $error';
+  }
+
+  @override
+  String get projectAppearance => 'Appearance';
+
+  @override
+  String get projectAppearanceTooltip => 'Change cover art, color and icon';
+
+  @override
+  String get projectCoverArt => 'Cover Art';
+
+  @override
+  String get chooseCoverArt => 'Choose Image…';
+
+  @override
+  String get replaceCoverArt => 'Replace Image…';
+
+  @override
+  String get removeCoverArt => 'Remove Cover Art';
+
+  @override
+  String get removeCoverArtConfirm =>
+      'Remove this project\'s cover art? The stored image will be deleted.';
+
+  @override
+  String get coverArtRemoved => 'Cover art removed';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return 'Failed to remove cover art: $error';
+  }
+
+  @override
+  String get projectAccentColor => 'Accent Color';
+
+  @override
+  String get projectIcon => 'Icon';
+
+  @override
+  String get appearanceNone => 'None';
+
+  @override
+  String get appearanceNoneHint =>
+      'Projects show no colour or icon until you pick one. Tap a selected icon again to remove it.';
+
+  @override
+  String get clearColorAndIcon => 'Clear Colour & Icon';
+
+  @override
+  String get dropCoverArtHere => 'Drop an image to set the cover';
+
+  @override
+  String get uploadingProjectCoverArt => 'Uploading project cover art...';
+
+  @override
+  String get downloadingProjectCoverArt => 'Downloading project cover art...';
+
+  @override
+  String get moveProjectButtonLabel => 'Move…';
+
+  @override
+  String get moveProjectDialogTitle => 'Move Project';
+
+  @override
+  String get moveProjectDestinationLabel => 'Destination';
+
+  @override
+  String get moveProjectChooseDestination => 'Choose…';
+
+  @override
+  String get moveProjectNoDestinationChosen => 'No folder chosen yet';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return 'Move the whole \"$folder\" folder';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      'This folder holds only this project, so its samples and bounces move with it.';
+
+  @override
+  String get moveProjectFileOnlyDescription =>
+      'Only the project file moves. Samples and bounces beside it stay where they are.';
+
+  @override
+  String get moveProjectConfirm => 'Move';
+
+  @override
+  String get moveProjectInProgress => 'Moving…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return 'Moved \"$name\" to $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return 'Failed to move: $error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing =>
+      'This project\'s file isn\'t on this machine.';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '\"$name\" already exists in that folder.';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource =>
+      'You can\'t move a folder into itself.';
+
+  @override
+  String get moveProjectErrorSameLocation =>
+      'The project is already in that folder.';
+
+  @override
+  String get moveProjectStackUnsupported =>
+      'A version stack has no file of its own — move its versions individually.';
+
+  @override
+  String get selectMoveDestinationTitle => 'Select destination folder';
+
+  @override
+  String get archiveProjectButtonLabel => 'Archive…';
+
+  @override
+  String get archiveProjectDialogTitle => 'Archive Project';
+
+  @override
+  String get archiveProjectWhatToArchive => 'What to archive';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return 'Whole \"$folder\" folder';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => 'Project file only';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files files',
+      one: '1 file',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals =>
+      'Delete the originals after verifying the archive';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      'The archive is re-opened and checked entry by entry first. Nothing is deleted if that check fails.';
+
+  @override
+  String get archiveProjectConfirm => 'Archive';
+
+  @override
+  String get archiveStageScanning => 'Reading the project folder…';
+
+  @override
+  String get archiveStageCompressing => 'Compressing…';
+
+  @override
+  String get archiveStageVerifying => 'Verifying the archive…';
+
+  @override
+  String get archiveStageDeleting => 'Removing the originals…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return 'Archived \"$name\"';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return 'Failed to archive: $error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing =>
+      'This project\'s files aren\'t on this machine.';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return 'Archives can\'t go inside a scanned folder — \"$root\" would index them straight back in.';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return 'An archive named \"$name\" is already there.';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return 'The archive is missing files, so nothing was deleted: $entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => 'This project isn\'t archived.';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unreadable files were skipped',
+      one: '1 unreadable file was skipped',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => 'Archive location';
+
+  @override
+  String get archiveLocationSubtitle =>
+      'Where \"Archive project\" writes its zip files. Kept on this device.';
+
+  @override
+  String get archiveLocationNotSet =>
+      'Not set — you\'ll be asked when you first archive';
+
+  @override
+  String get selectArchiveLocationTitle => 'Select archive folder';
+
+  @override
+  String get restoreProjectButtonLabel => 'Restore…';
+
+  @override
+  String get restoreProjectDialogTitle => 'Restore Project';
+
+  @override
+  String get restoreProjectDescription =>
+      'Extracts the archive to a folder you choose and points the project back at the restored files.';
+
+  @override
+  String get restoreProjectConfirm => 'Restore';
+
+  @override
+  String get restoreProjectInProgress => 'Restoring…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return 'Restored \"$name\"';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return 'Failed to restore: $error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle => 'Select a folder to restore into';
+
+  @override
+  String get archivedLabel => 'Archived';
+
+  @override
+  String archivedOnLabel(String date) {
+    return 'Archived $date';
+  }
+
+  @override
+  String get showArchivedProjects => 'Show archived';
+
+  @override
+  String get showOnlyArchivedProjects => 'Only archived';
+
+  @override
+  String get hideArchivedProjects => 'Hide archived';
+
+  @override
+  String get archivedFilterLabel => 'Archived';
+
+  @override
+  String get archiveProjectStackUnsupported =>
+      'A version stack has no files of its own — archive its versions individually.';
+
+  @override
+  String get archiveBulkButtonLabel => 'Archive selected';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Archive $count projects?',
+      one: 'Archive 1 project?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects archived',
+      one: '1 project archived',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => 'Open archive folder';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '$current of $total';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects could not be archived',
+      one: '1 project could not be archived',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      'Each project is archived with the scope that fits it — a folder of its own when it has one, the project file alone when it shares a folder.';
+
+  @override
+  String get archivedWithLocalCopy => 'Archived — the originals are still here';
+
+  @override
+  String get archivedAwayTooltip =>
+      'Archived — the files are in the archive only';
+
+  @override
+  String get archiveUndone => 'Archive undone';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return 'Couldn\'t undo the archive: $error';
+  }
+
+  @override
+  String get moveUndone => 'Move undone';
+
+  @override
+  String moveUndoFailed(String error) {
+    return 'Couldn\'t undo the move: $error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => 'Back to its original location';
+
+  @override
+  String get restoreToChosenFolder => 'Into another folder…';
+
+  @override
+  String get restoreWhereTo => 'Where should it go?';
+
+  @override
+  String get restoreOriginalLocationOccupied =>
+      'Something is already at the original location';
+
+  @override
+  String get discardArchiveButtonLabel => 'Discard archive';
+
+  @override
+  String get discardArchiveConfirmTitle => 'Discard archive?';
+
+  @override
+  String get discardArchiveConfirmMessage =>
+      'Deletes the zip and clears the archived flag. The project\'s own files stay where they are.';
+
+  @override
+  String get discardArchiveDone => 'Archive discarded';
 }

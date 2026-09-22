@@ -226,6 +226,9 @@
   "extractMetadata": "Extrair Metadados",
   "createRelease": "Criar Lançamento",
   "clearSelection": "Limpar Seleção",
+  "viewModeTable": "Visualização em tabela",
+  "viewModeCards": "Visualização em cartões",
+  "selectProject": "Selecionar projeto",
   "selectAllProjects": "Selecionar todos os projetos",
   "switchingProfiles": "Alternando perfis...",
   "scanningProjects": "Escaneando projetos...",
@@ -533,20 +536,32 @@
   "releasesDeleted": "{count} lançamento{plural} excluído{plural}",
   "@releasesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@deleteSelectedReleasesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@releasesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "selectTracks": "Selecionar Faixas",
@@ -802,7 +817,9 @@
   "removeTemplateFolderConfirm": "Remover \"{path}\" das suas pastas de templates registradas? Templates já importados não serão excluídos.",
   "@removeTemplateFolderConfirm": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "noTemplateFoldersRegistered": "Nenhuma pasta de template registrada",
@@ -810,35 +827,51 @@
   "lastRefreshed": "Última atualização {date}",
   "@lastRefreshed": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "templatesRefreshedSummary": "{count} novo(s) template(s) adicionado(s)",
   "@templatesRefreshedSummary": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "templatesSelected": "{count} template{plural} selecionado{plural}",
   "@templatesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "deleteSelectedTemplates": "Excluir selecionados",
   "deleteSelectedTemplatesConfirm": "Tem certeza de que deseja excluir {count} template{plural}?",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templatesDeleted": "{count} template{plural} excluído{plural}",
   "@templatesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templateDetailTitle": "Template",
@@ -855,7 +888,9 @@
   "projectsFromThisTemplate": "Projetos Criados a Partir Deste Template ({count})",
   "@projectsFromThisTemplate": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noProjectsFromThisTemplate": "Nenhum projeto criado a partir deste template ainda",
@@ -1988,6 +2023,11 @@
   },
   "statsNoProjectsFound": "Nenhum projeto encontrado",
   "statsNotTouchedDays": "Sem alterações há {days} dias",
+  "sortByDeadline": "Prazo",
+  "sortByLabel": "Ordenar por",
+  "cardInitialsTitle": "Iniciais do cartão",
+  "cardInitialsDescription": "As letras exibidas no cartão deste projeto quando ele não tem capa.",
+  "cardInitialsEmptyHint": "Deixe vazio para usar as iniciais do nome.",
   "sortByLastModified": "Última modificação",
   "sortByName": "Nome",
   "sortByPhase": "Fase",
@@ -2007,15 +2047,21 @@
   "errorHandlingDroppedFiles": "Erro ao processar os arquivos soltos: {error}",
   "@errorHandlingDroppedFiles": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "resetOnboardingConfirm": "Isto irá reiniciar o assistente de configuração. Continuar?",
   "couldNotLaunchDaw": "Não foi possível iniciar {daw}: {error}",
   "@couldNotLaunchDaw": {
     "placeholders": {
-      "daw": { "type": "String" },
-      "error": { "type": "String" }
+      "daw": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
     }
   },
   "couldNotOpenLink": "Não foi possível abrir o link.",
@@ -2318,7 +2364,9 @@
   "autoBackupNextBackup": "Próximo backup: {time}",
   "@autoBackupNextBackup": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "autoBackupNextSoon": "em breve",
@@ -2326,7 +2374,9 @@
   "autoBackupNextInMinutes": "em {count} min",
   "@autoBackupNextInMinutes": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneHour": "em 1 hora",
@@ -2334,7 +2384,9 @@
   "autoBackupNextInHours": "em {count} horas",
   "@autoBackupNextInHours": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneDay": "em 1 dia",
@@ -2342,7 +2394,9 @@
   "autoBackupNextInDays": "em {count} dias",
   "@autoBackupNextInDays": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerTitle": "Reprodutor de Música",
@@ -2370,7 +2424,9 @@
   "playerCompletedTasks": "{count} concluída(s)",
   "@playerCompletedTasks": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerPreviousTrack": "Faixa anterior",
@@ -2389,23 +2445,43 @@
   "@volumeUnmute": {},
   "totalWorkTime": "Trabalho total: {time}",
   "@totalWorkTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionTime": "Sessão: {time}",
   "@sessionTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "headerAgeOld": "{age} de vida",
   "@headerAgeOld": {
-    "placeholders": { "age": { "type": "String" } }
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
   },
   "headerEdited": "editado {when}",
   "@headerEdited": {
-    "placeholders": { "when": { "type": "String" } }
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
   },
   "headerWorked": "{time} trabalhado",
   "@headerWorked": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionHistory": "Histórico de sessões",
   "@sessionHistory": {},
@@ -2430,7 +2506,9 @@
   "sessionCount": "{count, plural, =1{1 sessão} other{{count} sessões}}",
   "@sessionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "sessionByPhase": "Trabalho por fase",
@@ -2442,7 +2520,13 @@
   "tabPositionLeft": "Esquerda",
   "@tabPositionLeft": {},
   "updateAvailableMessage": "Versão {version} disponível",
-  "@updateAvailableMessage": { "placeholders": { "version": { "type": "String" } } },
+  "@updateAvailableMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "dismiss": "Dispensar",
   "@dismiss": {},
   "checkForUpdates": "Verificar atualizações",
@@ -2454,7 +2538,9 @@
   "updateAvailable": "Atualização disponível: v{version}",
   "@updateAvailable": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "upToDate": "O app está atualizado",
@@ -2464,13 +2550,17 @@
   "updateAvailableVersion": "A versão {version} está pronta.",
   "@updateAvailableVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "updateCurrentVersion": "Você está usando v{version}.",
   "@updateCurrentVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "viewUpdateDetails": "Ver detalhes",
@@ -2496,7 +2586,9 @@
   "appImageUpdateDownloadingProgress": "Baixando atualização… {percent}%",
   "@appImageUpdateDownloadingProgress": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "appImageUpdateVerifying": "Verificando e instalando…",
@@ -2506,7 +2598,9 @@
   "appImageUpdateReadyMessage": "Atualizado para a versão {version}. Reinicie agora para concluir.",
   "@appImageUpdateReadyMessage": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "appImageUpdateRestartNow": "Reiniciar agora",
@@ -2595,7 +2689,11 @@
   "@minutes": {},
   "workTimerNotifBody": "Você está trabalhando há {time}",
   "@workTimerNotifBody": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "general": "Geral",
   "@general": {},
@@ -2624,12 +2722,24 @@
   "switchSessionBody": "Encerrar a sessão atual e iniciar uma nova?",
   "@switchSessionBody": {},
   "switchSessionCurrent": "Atual: {project}",
-  "@switchSessionCurrent": {"placeholders": {"project": {"type": "String"}}},
+  "@switchSessionCurrent": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
   "switchSessionNew": "Nova: {project}",
-  "@switchSessionNew": {"placeholders": {"project": {"type": "String"}}},
+  "@switchSessionNew": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
   "sessionDuration": "Tempo de sessão",
   "@sessionDuration": {},
-    "scanModeLabel": "Modo de varredura:",
+  "scanModeLabel": "Modo de varredura:",
   "@scanModeLabel": {},
   "scanModeSectionTitle": "Modo de varredura",
   "@scanModeSectionTitle": {},
@@ -2764,8 +2874,12 @@
   "pendingFolderSessionBody": "Você trabalhou em \"{projectName}\" por {duration}.",
   "@pendingFolderSessionBody": {
     "placeholders": {
-      "projectName": { "type": "String" },
-      "duration": { "type": "String" }
+      "projectName": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "pendingFolderSessionContinue": "Continuar sessão",
@@ -2777,8 +2891,12 @@
   "activeSessionSwitchBody": "Uma sessão está ativa para \"{current}\". Mudar para \"{next}\" e salvar a sessão atual?",
   "@activeSessionSwitchBody": {
     "placeholders": {
-      "current": { "type": "String" },
-      "next": { "type": "String" }
+      "current": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
     }
   },
   "activeSessionSwitch": "Mudar",
@@ -2792,7 +2910,9 @@
   "pendingProjectDeleteBody": "Excluir \"{folderName}\" e seu conteúdo?",
   "@pendingProjectDeleteBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectDismiss": "Parar de rastrear esta pasta",
@@ -2808,7 +2928,9 @@
   "pendingProjectDeleteNotEmptyBody": "\"{folderName}\" contém arquivos. Excluir tudo permanentemente?",
   "@pendingProjectDeleteNotEmptyBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectRefresh": "Verificar arquivo de projeto",
@@ -2847,41 +2969,75 @@
   "camelotGuideTransitionsTitle": "Transições Compatíveis",
   "camelotGuideTransitionsBody": "8A → 8B  (mesmo número, trocar anel)\n  Maior/menor relativo — praticamente sem emenda.\n\n8A → 7A ou 9A  (±1, mesmo anel)\n  Tom adjacente — mudança suave e sutil.\n\n8A → 1A ou 3A  (±7, mesmo anel)\n  Impulso ou queda de energia — mudança mais dramática.",
   "playerMixSuggestions": "SUGESTÕES DE MIX",
-  "@playerMixSuggestions": {}
-,
+  "@playerMixSuggestions": {},
   "nowPlaying": "Tocando agora",
   "noPreviewSongsAvailable": "Nenhuma música de prévia disponível",
   "upNext": "A seguir",
-  "@upNext": { "description": "Queue panel title - tracks coming up next" },
+  "@upNext": {
+    "description": "Queue panel title - tracks coming up next"
+  },
   "playbackModeNormal": "Normal",
-  "@playbackModeNormal": { "description": "Playback mode: play queue once in order" },
+  "@playbackModeNormal": {
+    "description": "Playback mode: play queue once in order"
+  },
   "playbackModeRepeat": "Repetir",
-  "@playbackModeRepeat": { "description": "Playback mode: loop the entire queue" },
+  "@playbackModeRepeat": {
+    "description": "Playback mode: loop the entire queue"
+  },
   "playbackModeShuffle": "Aleatório",
-  "@playbackModeShuffle": { "description": "Playback mode: random order" },
+  "@playbackModeShuffle": {
+    "description": "Playback mode: random order"
+  },
   "hideDatesInNames": "Ocultar datas nos nomes dos projetos",
-  "@hideDatesInNames": { "description": "Appearance setting: strip date stamps from displayed project names" },
+  "@hideDatesInNames": {
+    "description": "Appearance setting: strip date stamps from displayed project names"
+  },
   "hideDatesInNamesDescription": "Algumas DAWs colocam a data de criação no início do nome do arquivo do projeto (por exemplo \"2026-08-02 - Minha Faixa\"). Oculte-a para mostrar apenas o título. Os arquivos nunca são renomeados.",
-  "@hideDatesInNamesDescription": { "description": "Explanation of the hide-dates-in-names appearance setting" },
+  "@hideDatesInNamesDescription": {
+    "description": "Explanation of the hide-dates-in-names appearance setting"
+  },
   "findPreviewAutomatically": "Localizar automaticamente",
-  "@findPreviewAutomatically": { "description": "Button in the missing preview song dialog: clear the dead reference and re-run mixdown detection" },
+  "@findPreviewAutomatically": {
+    "description": "Button in the missing preview song dialog: clear the dead reference and re-run mixdown detection"
+  },
   "noPreviewSongFoundAutomatically": "Nenhuma música de prévia encontrada nas pastas de mixagem deste projeto.",
-  "@noPreviewSongFoundAutomatically": { "description": "Snackbar shown when automatic preview detection finds nothing" },
+  "@noPreviewSongFoundAutomatically": {
+    "description": "Snackbar shown when automatic preview detection finds nothing"
+  },
   "selectProjects": "Selecionar",
-  "@selectProjects": { "description": "Mobile long-press action sheet entry: enter multi-select mode" },
+  "@selectProjects": {
+    "description": "Mobile long-press action sheet entry: enter multi-select mode"
+  },
   "sharePreviewSongText": "Música de prévia: {name}",
   "@sharePreviewSongText": {
     "description": "Message body accompanying a shared preview song file",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "sharePreviewSongZipText": "Música de prévia (ZIP): {name}",
   "@sharePreviewSongZipText": {
     "description": "Message body accompanying a shared preview song zipped for transport",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "songParts": "Instrumentos e Partes",
   "partsProgress": "{done} de {total} takes finais",
-  "@partsProgress": {"placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
+  "@partsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsYet": "Nenhuma parte registrada ainda",
   "noPartsYetHint": "Liste os instrumentos que a música precisa, quem toca cada um e em que ponto está cada take.",
   "addPart": "Adicionar parte",
@@ -2910,7 +3066,13 @@
   "editPartTemplate": "Editar template de partes",
   "deletePartTemplate": "Excluir template de partes",
   "deletePartTemplateConfirm": "Tem certeza de que deseja excluir o template de partes \"{name}\"?",
-  "@deletePartTemplateConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "@deletePartTemplateConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "partTemplateCreated": "Template de partes criado",
   "partTemplateUpdated": "Template de partes atualizado",
   "partTemplateDeleted": "Template de partes excluído",
@@ -2920,16 +3082,37 @@
   "partTemplateItemsRequired": "Adicione pelo menos uma parte",
   "partTemplateNameAndItemsRequired": "É necessário um nome e pelo menos uma parte",
   "partTemplateItemCount": "{count} parte(s)",
-  "@partTemplateItemCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partTemplateItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partTemplateImported": "Template de partes \"{name}\" importado ({count} partes)",
-  "@partTemplateImported": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
+  "@partTemplateImported": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "errorLoadingPartTemplates": "Erro ao carregar os templates de partes",
   "exportPartsCsv": "Exportar partes como CSV",
   "exportAllPartsCsv": "Exportar as partes de todas as músicas como CSV",
   "exportAllPartsCsvSubtitle": "Uma linha de planilha por parte, de todos os projetos — para compartilhar o progresso com colaboradores",
   "noPartsToExport": "Nenhuma parte para exportar",
   "partsCsvExported": "{count} partes exportadas",
-  "@partsCsvExported": {"placeholders": {"count": {"type": "int"}}},
+  "@partsCsvExported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "projectExportPartsLabel": "Partes:",
   "csvHeaderProject": "Projeto",
   "csvHeaderPart": "Parte",
@@ -2942,80 +3125,148 @@
   "importPartsFromSpreadsheet": "Importar partes de uma planilha",
   "partsImportPickerTitle": "Selecione um arquivo CSV ou Excel",
   "partsImported": "{added} partes adicionadas, {updated} atualizadas",
-  "@partsImported": {"placeholders": {"added": {"type": "int"}, "updated": {"type": "int"}}},
+  "@partsImported": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "updated": {
+        "type": "int"
+      }
+    }
+  },
   "partsImportNothingFound": "Nenhuma parte encontrada nesse arquivo",
   "partsImportFailed": "Não foi possível ler essa planilha: {error}",
-  "@partsImportFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@partsImportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "partsMoreActions": "Mais ações de partes",
   "partsPageTitle": "{name} — Partes",
-  "@partsPageTitle": {"placeholders": {"name": {"type": "String"}}},
+  "@partsPageTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "manageParts": "Gerenciar partes",
   "partsMoreCount": "+{count} a mais",
-  "@partsMoreCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partsMoreCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "searchParts": "Buscar partes",
   "allStatuses": "Todos os status",
   "allPerformers": "Todos os músicos",
   "partsSelectedCount": "{count} selecionadas",
-  "@partsSelectedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partsSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "setPartStatus": "Definir status",
   "assignPartPerformer": "Atribuir músico",
   "deleteSelectedParts": "Excluir selecionadas",
   "deleteSelectedPartsConfirm": "Excluir {count} partes desta música?",
-  "@deleteSelectedPartsConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteSelectedPartsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partsDeleted": "{count} partes excluídas",
-  "@partsDeleted": {"placeholders": {"count": {"type": "int"}}},
+  "@partsDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsMatchFilters": "Nenhuma parte corresponde a esses filtros",
   "reorderNeedsUnfilteredList": "Limpe a busca, os filtros e a ordenação para arrastar as partes",
-"projectMarkers": "Marcadores",
-"@projectMarkers": {
-      "description": "Section heading for the timeline markers and regions read out of a DAW project file"
+  "projectMarkers": "Marcadores",
+  "@projectMarkers": {
+    "description": "Section heading for the timeline markers and regions read out of a DAW project file"
   },
-"projectMarkerUnnamed": "Marcador {index}",
-"@projectMarkerUnnamed": {
-      "description": "Fallback label for a marker the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectMarkerUnnamed": "Marcador {index}",
+  "@projectMarkerUnnamed": {
+    "description": "Fallback label for a marker the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectRegionUnnamed": "Região {index}",
-"@projectRegionUnnamed": {
-      "description": "Fallback label for a region the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectRegionUnnamed": "Região {index}",
+  "@projectRegionUnnamed": {
+    "description": "Fallback label for a region the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectMarkerJumpTooltip": "Ir para este ponto na música de prévia",
-"@projectMarkerJumpTooltip": {
-      "description": "Tooltip on a marker row that will seek the preview player"
+  "projectMarkerJumpTooltip": "Ir para este ponto na música de prévia",
+  "@projectMarkerJumpTooltip": {
+    "description": "Tooltip on a marker row that will seek the preview player"
   },
-"projectMarkerNoPreviewSong": "Adicione uma música de prévia para pular para os marcadores",
-"@projectMarkerNoPreviewSong": {
-      "description": "Tooltip on marker rows when the project has no preview song to seek in"
+  "projectMarkerNoPreviewSong": "Adicione uma música de prévia para pular para os marcadores",
+  "@projectMarkerNoPreviewSong": {
+    "description": "Tooltip on marker rows when the project has no preview song to seek in"
   },
   "projectDetailLayout": "Layout dos Detalhes do Projeto",
-  "@projectDetailLayout": {"description": "Appearance setting: how the project detail page is arranged"},
+  "@projectDetailLayout": {
+    "description": "Appearance setting: how the project detail page is arranged"
+  },
   "projectDetailLayoutSettingDescription": "Como a página de detalhes do projeto é organizada.",
-  "@projectDetailLayoutSettingDescription": {"description": "Subtitle under the Project Detail Layout setting"},
+  "@projectDetailLayoutSettingDescription": {
+    "description": "Subtitle under the Project Detail Layout setting"
+  },
   "projectDetailLayoutClassic": "Clássico",
-  "@projectDetailLayoutClassic": {"description": "Layout option: everything in one scroll"},
+  "@projectDetailLayoutClassic": {
+    "description": "Layout option: everything in one scroll"
+  },
   "projectDetailLayoutClassicDescription": "Tudo em uma única rolagem.",
-  "@projectDetailLayoutClassicDescription": {"description": "Description of the classic project detail layout"},
+  "@projectDetailLayoutClassicDescription": {
+    "description": "Description of the classic project detail layout"
+  },
   "projectDetailLayoutSectioned": "Seções",
-  "@projectDetailLayoutSectioned": {"description": "Layout option: a nav rail picks one section at a time"},
+  "@projectDetailLayoutSectioned": {
+    "description": "Layout option: a nav rail picks one section at a time"
+  },
   "projectDetailLayoutSectionedDescription": "Uma barra à esquerda escolhe uma seção por vez.",
-  "@projectDetailLayoutSectionedDescription": {"description": "Description of the sectioned project detail layout"},
-
+  "@projectDetailLayoutSectionedDescription": {
+    "description": "Description of the sectioned project detail layout"
+  },
   "stackAsVersions": "Empilhar como versões",
   "stackNeedsTwoVersions": "Selecione pelo menos dois projetos para empilhá-los como versões de um projeto principal.",
   "stackCreatedMessage": "{count} versões empilhadas em um projeto principal.",
-  "@stackCreatedMessage": {"placeholders": {"count": {"type": "int"}}},
+  "@stackCreatedMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackVersionsTitle": "Versões",
   "stackVersionCount": "{count} versões",
-  "@stackVersionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@stackVersionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersion": "Adicionar versão",
   "stackAddVersionTitle": "Adicionar uma versão",
   "stackAddVersionEmpty": "Nenhum projeto fora de uma pilha disponível para adicionar.",
@@ -3034,13 +3285,25 @@
   "scanModeVersionStack": "Pilha de versões",
   "scanModeVersionStackDescription": "Todos os arquivos de projeto em uma pasta viram um projeto principal, compartilhando metadados, tarefas e tempo de trabalho. Arquivos novos entram nele automaticamente.",
   "stackTooltipStacked": "{count} versões empilhadas em um projeto principal",
-  "@stackTooltipStacked": {"placeholders": {"count": {"type": "int"}}},
+  "@stackTooltipStacked": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataSourceTitle": "Qual projeto deve se tornar o projeto principal?",
   "stackMetadataSourceBody": "Mais de um deles já tem detalhes próprios. O que você escolher se torna o projeto principal: o nome, BPM, tom, notas, tarefas e prazo dele serão usados pela pilha. Nada é mesclado e nada é perdido — os outros mantêm seus detalhes, e desempilhar os devolve.",
   "stackMetadataSourceOldestHint": "Mais antiga — sugerida",
   "stackMetadataNoneLabel": "Ainda sem detalhes",
   "stackMetadataTodosLabel": "{count, plural, =1{1 tarefa} other{{count} tarefas}}",
-  "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataTodosLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataNotesLabel": "notas",
   "stackNotStackedYet": "Ainda não empilhado",
   "stackStartFromHere": "Adicione outros arquivos de projeto e eles viram versões de um projeto principal, compartilhando metadados, tarefas e tempo de trabalho.",
@@ -3049,31 +3312,75 @@
   "stackStartedMessage": "Empilhado em um projeto principal.",
   "stackDefaultVersionTooltip": "Esta versão é aberta por padrão ao iniciar a DAW.",
   "stackAddVersionsConfirm": "Adicionar {count}",
-  "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@stackAddVersionsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersionMultiTitle": "Adicionar versões",
   "stackSelectAll": "Selecionar tudo",
   "stackClearSelection": "Limpar",
   "stackMetadataPartsLabel": "{count, plural, =1{1 parte} other{{count} partes}}",
-  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataPartsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataDeadlineLabel": "prazo",
   "stackMetadataRenamedLabel": "nome personalizado",
   "stackMetadataWorkHours": "{hours}h registradas",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "@stackMetadataWorkHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
   "stackUnstackReleaseTitle": "Qual versão permanece no lançamento?",
   "stackUnstackReleaseBody": "Este projeto é uma faixa em {releases}. Desempilhar remove a entrada empilhada, então uma de suas versões precisa ocupar esse lugar — escolha para qual o lançamento deve apontar.",
-  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "@stackUnstackReleaseBody": {
+    "placeholders": {
+      "releases": {
+        "type": "String"
+      }
+    }
+  },
   "stackAutoConfirmTitle": "Empilhar estas versões?",
   "stackAutoConfirmBody": "A Pilha de versões vai agrupar {projects} projetos em {folders} pastas. Cada pasta vira um projeto principal, compartilhando metadados, tarefas e tempo de trabalho. Nada é excluído, e você pode desempilhar qualquer um depois.",
-  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "@stackAutoConfirmBody": {
+    "placeholders": {
+      "projects": {
+        "type": "int"
+      },
+      "folders": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoConfirmApply": "Empilhar",
   "stackAutoFolderEntry": "{folder} — {count} versões",
-  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "@stackAutoFolderEntry": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoJoinsExisting": "entra no projeto principal existente",
   "untitledTheme": "Tema sem nome",
   "switchToTheme": "Mudar para {themeName}",
   "@switchToTheme": {
     "placeholders": {
-      "themeName": { "type": "String" }
+      "themeName": {
+        "type": "String"
+      }
     }
   },
   "newTheme": "Novo tema",
@@ -3083,7 +3390,9 @@
   "deleteThemeMessage": "\"{name}\" será removido. Isso não pode ser desfeito.",
   "@deleteThemeMessage": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeNameLabel": "Nome do tema",
@@ -3098,7 +3407,9 @@
   "themeLowContrastWarning": "Contraste baixo ({ratio}:1). O texto pode ficar difícil de ler.",
   "@themeLowContrastWarning": {
     "placeholders": {
-      "ratio": { "type": "String" }
+      "ratio": {
+        "type": "String"
+      }
     }
   },
   "exportTheme": "Exportar tema",
@@ -3106,13 +3417,17 @@
   "themeExported": "Tema exportado para {path}",
   "@themeExported": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "themeImported": "\"{name}\" importado",
   "@themeImported": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeImportFailed": "Esse arquivo não é um tema válido.",
@@ -3122,9 +3437,336 @@
   "themeCopyName": "{name} cópia",
   "@themeCopyName": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-
-  "suggestedColorsLabel": "Cores Sugeridas"
+  "suggestedColorsLabel": "Cores Sugeridas",
+  "todoDueDate": "Prazo",
+  "todoSetDueDate": "Definir prazo",
+  "todoClearDueDate": "Remover prazo",
+  "todoNoDueDate": "Sem prazo",
+  "todoDueToday": "Vence hoje",
+  "todoDueTomorrow": "Vence amanhã",
+  "todoDueOn": "Vence em {date}",
+  "todoOverdueByDays": "{days, plural, =1{1 dia de atraso} other{{days} dias de atraso}}",
+  "queueDueFilterLabel": "Prazo",
+  "queueDueFilterAll": "Todas as tarefas",
+  "queueDueFilterOverdue": "Atrasadas",
+  "queueDueFilterToday": "Vencem hoje",
+  "queueDueFilterThisWeek": "Vencem esta semana",
+  "queueDueFilterNoDate": "Sem prazo",
+  "queueNoTasksForDueFilter": "Nenhuma tarefa corresponde a este filtro de prazo",
+  "projectAttachments": "Anexos",
+  "attachmentAddFile": "Adicionar Arquivo",
+  "attachmentAddLink": "Adicionar Link",
+  "attachmentsEmptyTitle": "Nada anexado ainda",
+  "attachmentsEmptyDescription": "Mantenha a faixa de referência, o link de entrega das stems, a letra e o contrato junto da música, em vez de espalhados em conversas.",
+  "attachmentEditDialogTitle": "Editar Anexo",
+  "attachmentUrlLabel": "URL",
+  "attachmentPathLabel": "Caminho do arquivo",
+  "attachmentLabelLabel": "Rótulo (opcional)",
+  "attachmentNoteLabel": "Observação (opcional)",
+  "attachmentUrlInvalid": "Informe um link válido, ex.: https://exemplo.com",
+  "attachmentPathRequired": "Informe o caminho do arquivo",
+  "attachmentOpenTooltip": "Abrir",
+  "attachmentRemoveTitle": "Remover Anexo",
+  "attachmentRemoveMessage": "Remover \"{label}\" deste projeto? O arquivo em si não é excluído.",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentRemoved": "Anexo removido",
+  "attachmentAdded": "Anexo adicionado",
+  "attachmentOpenFailed": "Não foi possível abrir esse anexo",
+  "attachmentPickFileTitle": "Escolha um arquivo para anexar",
+  "attachmentAlreadyAdded": "Isso já está anexado a este projeto",
+  "attachmentExport": "Exportar",
+  "attachmentExportTooltip": "Salvar os arquivos e links anexados",
+  "attachmentExportSaveTitle": "Salvar anexos",
+  "attachmentExportNothing": "Nada para exportar",
+  "attachmentExporting": "Exportando anexos...",
+  "attachmentExportSaved": "Salvo em: {path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "{count} arquivo{plural} ausente{plural} ignorado{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "Falha ao exportar anexos: {error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectAppearance": "Aparência",
+  "projectAppearanceTooltip": "Alterar capa, cor e ícone",
+  "projectCoverArt": "Capa",
+  "chooseCoverArt": "Escolher Imagem…",
+  "replaceCoverArt": "Substituir Imagem…",
+  "removeCoverArt": "Remover Capa",
+  "removeCoverArtConfirm": "Remover a capa deste projeto? A imagem armazenada será excluída.",
+  "coverArtRemoved": "Capa removida",
+  "failedToRemoveCoverArt": "Falha ao remover a capa: {error}",
+  "projectAccentColor": "Cor de Destaque",
+  "projectIcon": "Ícone",
+  "appearanceNone": "Nenhum",
+  "appearanceNoneHint": "Os projetos não mostram cor nem ícone até você escolher. Toque de novo no ícone selecionado para removê-lo.",
+  "clearColorAndIcon": "Limpar Cor e Ícone",
+  "dropCoverArtHere": "Solte uma imagem para definir a capa",
+  "uploadingProjectCoverArt": "Enviando capas dos projetos...",
+  "downloadingProjectCoverArt": "Baixando capas dos projetos...",
+  "moveProjectButtonLabel": "Mover…",
+  "moveProjectDialogTitle": "Mover Projeto",
+  "moveProjectDestinationLabel": "Destino",
+  "moveProjectChooseDestination": "Escolher…",
+  "moveProjectNoDestinationChosen": "Nenhuma pasta escolhida ainda",
+  "moveProjectIncludeFolder": "Mover a pasta \"{folder}\" inteira",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "Esta pasta contém apenas este projeto, então os samples e mixagens vão junto.",
+  "moveProjectFileOnlyDescription": "Somente o arquivo do projeto será movido. Os samples e mixagens ao lado dele continuam onde estão.",
+  "moveProjectConfirm": "Mover",
+  "moveProjectInProgress": "Movendo…",
+  "moveProjectSuccess": "\"{name}\" movido para {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectFailed": "Falha ao mover: {error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorSourceMissing": "O arquivo deste projeto não está nesta máquina.",
+  "moveProjectErrorDestinationOccupied": "\"{name}\" já existe nessa pasta.",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "Você não pode mover uma pasta para dentro dela mesma.",
+  "moveProjectErrorSameLocation": "O projeto já está nessa pasta.",
+  "moveProjectStackUnsupported": "Uma pilha de versões não tem arquivo próprio — mova as versões individualmente.",
+  "selectMoveDestinationTitle": "Selecionar pasta de destino",
+  "archiveProjectButtonLabel": "Arquivar…",
+  "archiveProjectDialogTitle": "Arquivar Projeto",
+  "archiveProjectWhatToArchive": "O que arquivar",
+  "archiveProjectScopeFolder": "Pasta \"{folder}\" inteira",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectScopeFileOnly": "Somente o arquivo do projeto",
+  "archiveScopeSummary": "{size} · {files, plural, =1{1 arquivo} other{{files} arquivos}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveProjectDeleteOriginals": "Excluir os originais depois de verificar o pacote",
+  "archiveProjectDeleteOriginalsDescription": "O pacote é reaberto e conferido item por item antes. Nada é excluído se essa conferência falhar.",
+  "archiveProjectConfirm": "Arquivar",
+  "archiveStageScanning": "Lendo a pasta do projeto…",
+  "archiveStageCompressing": "Compactando…",
+  "archiveStageVerifying": "Verificando o pacote…",
+  "archiveStageDeleting": "Removendo os originais…",
+  "archiveProjectSuccess": "\"{name}\" arquivado",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectFailed": "Falha ao arquivar: {error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorSourceMissing": "Os arquivos deste projeto não estão nesta máquina.",
+  "archiveErrorDestinationInScanRoot": "Os pacotes não podem ficar dentro de uma pasta escaneada — \"{root}\" iria indexá-los de volta na hora.",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorDestinationOccupied": "Já existe um pacote chamado \"{name}\" ali.",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorVerificationFailed": "Faltam arquivos no pacote, então nada foi excluído: {entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorNotArchived": "Este projeto não está arquivado.",
+  "archiveWarningsSkipped": "{count, plural, =1{1 arquivo ilegível foi ignorado} other{{count} arquivos ilegíveis foram ignorados}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveLocationTitle": "Local do arquivamento",
+  "archiveLocationSubtitle": "Onde \"Arquivar projeto\" grava os pacotes zip. Fica guardado neste dispositivo.",
+  "archiveLocationNotSet": "Não definido — você será perguntado no primeiro arquivamento",
+  "selectArchiveLocationTitle": "Selecionar pasta de arquivamento",
+  "restoreProjectButtonLabel": "Restaurar…",
+  "restoreProjectDialogTitle": "Restaurar Projeto",
+  "restoreProjectDescription": "Extrai o pacote para uma pasta que você escolher e aponta o projeto de volta para os arquivos restaurados.",
+  "restoreProjectConfirm": "Restaurar",
+  "restoreProjectInProgress": "Restaurando…",
+  "restoreProjectSuccess": "\"{name}\" restaurado",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreProjectFailed": "Falha ao restaurar: {error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectRestoreDestinationTitle": "Selecionar a pasta para restaurar",
+  "archivedLabel": "Arquivado",
+  "archivedOnLabel": "Arquivado em {date}",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "showArchivedProjects": "Mostrar arquivados",
+  "showOnlyArchivedProjects": "Somente arquivados",
+  "hideArchivedProjects": "Ocultar arquivados",
+  "archivedFilterLabel": "Arquivados",
+  "archiveProjectStackUnsupported": "Uma pilha de versões não tem arquivos próprios — arquive as versões individualmente.",
+  "archiveBulkButtonLabel": "Arquivar selecionados",
+  "archiveBulkConfirmMessage": "{count, plural, =1{Arquivar 1 projeto?} other{Arquivar {count} projetos?}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, =1{1 projeto arquivado} other{{count} projetos arquivados}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openArchiveFolder": "Abrir pasta de arquivamento",
+  "archiveBulkProgress": "{current} de {total}",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, =1{1 projeto não pôde ser arquivado} other{{count} projetos não puderam ser arquivados}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkScopeNote": "Cada projeto é arquivado com o escopo que faz sentido para ele — a pasta inteira quando ele tem uma só para si, somente o arquivo do projeto quando divide a pasta.",
+  "archivedWithLocalCopy": "Arquivado — os originais continuam aqui",
+  "archivedAwayTooltip": "Arquivado — os arquivos estão somente no pacote",
+  "archiveUndone": "Arquivamento desfeito",
+  "archiveUndoFailed": "Não foi possível desfazer o arquivamento: {error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUndone": "Movimentação desfeita",
+  "moveUndoFailed": "Não foi possível desfazer a movimentação: {error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreToOriginalLocation": "De volta ao local original",
+  "restoreToChosenFolder": "Para outra pasta…",
+  "restoreWhereTo": "Para onde deve ir?",
+  "restoreOriginalLocationOccupied": "Já existe algo no local original",
+  "discardArchiveButtonLabel": "Descartar pacote",
+  "discardArchiveConfirmTitle": "Descartar o pacote?",
+  "discardArchiveConfirmMessage": "Exclui o zip e limpa a marcação de arquivado. Os arquivos do projeto continuam onde estão.",
+  "discardArchiveDone": "Pacote descartado"
 }

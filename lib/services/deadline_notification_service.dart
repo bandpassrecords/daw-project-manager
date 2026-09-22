@@ -6,7 +6,9 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../models/notification_preferences.dart';
 import '../models/music_project.dart';
+import '../models/release.dart';
 import '../utils/app_paths.dart';
+import 'deadline_notification_plan.dart';
 import 'linux_portal_notifier.dart';
 
 /// Service for managing deadline notifications
@@ -435,13 +437,20 @@ class DeadlineNotificationService {
     }
   }
 
-  /// Schedule all deadline notifications
-  Future<void> scheduleAllDeadlineNotifications({List<MusicProject>? projects}) async {
+  /// Schedule all deadline notifications — project deadlines and per-todo due
+  /// dates alike, both driven by the one set of notification preferences.
+  ///
+  /// What gets scheduled is decided by the pure [planDeadlineNotifications];
+  /// this method only turns that plan into platform calls.
+  Future<void> scheduleAllDeadlineNotifications({
+    List<MusicProject>? projects,
+    List<Release>? releases,
+  }) async {
     if (!Platform.isAndroid || !_isInitialized) return;
 
     try {
       if (kDebugMode) print('[DeadlineNotification] Scheduling deadline notifications...');
-      
+
       final preferences = await getPreferences();
       if (!preferences.enabled) {
         await _notifications.cancelAll();
@@ -452,7 +461,8 @@ class DeadlineNotificationService {
       // Cancel existing notifications first
       await _notifications.cancelAll();
 
-      if (projects == null || projects.isEmpty) {
+      if ((projects == null || projects.isEmpty) &&
+          (releases == null || releases.isEmpty)) {
         if (kDebugMode) print('[DeadlineNotification] No projects provided');
         return;
       }
@@ -460,7 +470,7 @@ class DeadlineNotificationService {
       // Get current time in local timezone
       final systemNow = DateTime.now();
       final now = tz.TZDateTime.now(tz.local);
-      
+
       if (kDebugMode) {
         print('[DeadlineNotification] System time: $systemNow (offset: ${systemNow.timeZoneOffset})');
         print('[DeadlineNotification] Local timezone time: $now');
@@ -470,67 +480,32 @@ class DeadlineNotificationService {
         print('[DeadlineNotification] Local timezone offset: $localOffset seconds ($localOffsetHours hours)');
       }
 
+      final occurrences = planDeadlineNotifications(
+        preferences: preferences,
+        now: systemNow,
+        projects: projects ?? const [],
+        releases: releases ?? const [],
+      );
+
       int scheduledCount = 0;
 
-      for (final project in projects) {
-        if (project.deadline == null) continue;
-        
-        // Skip finished projects
-        if (project.status.toLowerCase() == 'finished' || 
-            project.status.toLowerCase() == 'finalizado') {
-          continue;
-        }
+      for (final occurrence in occurrences) {
+        // The plan is wall-clock; anchor it in the local zone here.
+        final scheduledDate = tz.TZDateTime(
+          tz.local,
+          occurrence.scheduledDate.year,
+          occurrence.scheduledDate.month,
+          occurrence.scheduledDate.day,
+          occurrence.scheduledDate.hour,
+          occurrence.scheduledDate.minute,
+        );
+        if (!scheduledDate.isAfter(now)) continue;
 
-        final deadline = project.deadline!;
-        
-        // Skip if deadline is in the past
-        if (deadline.isBefore(systemNow)) continue;
-
-        // Schedule notifications for each reminder day
-        for (final reminderDays in preferences.reminderDays) {
-          final notificationDate = deadline.subtract(Duration(days: reminderDays));
-          
-          // Create scheduled date with configured time
-          final scheduledDate = tz.TZDateTime(
-            tz.local,
-            notificationDate.year,
-            notificationDate.month,
-            notificationDate.day,
-            preferences.notificationHour,
-            preferences.notificationMinute,
-          );
-          
-          // Only schedule if in the future
-          if (scheduledDate.isAfter(now)) {
-            await _scheduleNotificationForProject(
-              project: project,
-              scheduledDate: scheduledDate,
-              daysRemaining: reminderDays,
-            );
-            scheduledCount++;
-          }
-        }
-
-        // Schedule deadline day notification if enabled
-        if (preferences.notifyOnDeadlineDay) {
-          final scheduledDate = tz.TZDateTime(
-            tz.local,
-            deadline.year,
-            deadline.month,
-            deadline.day,
-            preferences.notificationHour,
-            preferences.notificationMinute,
-          );
-          
-          if (scheduledDate.isAfter(now)) {
-            await _scheduleNotificationForProject(
-              project: project,
-              scheduledDate: scheduledDate,
-              daysRemaining: 0,
-            );
-            scheduledCount++;
-          }
-        }
+        await _scheduleOccurrence(
+          occurrence: occurrence,
+          scheduledDate: scheduledDate,
+        );
+        scheduledCount++;
       }
 
       // Verify pending notifications after scheduling
@@ -553,33 +528,18 @@ class DeadlineNotificationService {
     }
   }
 
-  /// Schedule a single notification for a project
-  Future<void> _scheduleNotificationForProject({
-    required MusicProject project,
+  /// Schedule one planned occurrence — a project deadline or a todo due date.
+  Future<void> _scheduleOccurrence({
+    required DeadlineNotificationOccurrence occurrence,
     required tz.TZDateTime scheduledDate,
-    required int daysRemaining,
   }) async {
     try {
-      // Create unique notification ID
-      final notificationId = '${project.id}_$daysRemaining'.hashCode;
-
-      // Build notification message
-      final String title;
-      final String body;
-      
-      if (daysRemaining == 0) {
-        title = 'Deadline Today!';
-        body = 'Today is the deadline for "${project.displayName}"';
-      } else if (daysRemaining == 1) {
-        title = 'Deadline Tomorrow!';
-        body = '1 day left for "${project.displayName}"';
-      } else {
-        title = 'Upcoming Deadline';
-        body = '$daysRemaining days left for "${project.displayName}"';
-      }
+      final notificationId = occurrence.notificationId;
+      final title = notificationTitleFor(occurrence);
+      final body = notificationBodyFor(occurrence);
 
       if (kDebugMode) {
-        print('[DeadlineNotification] Scheduling notification for ${project.displayName}: $scheduledDate (day offset: $daysRemaining)');
+        print('[DeadlineNotification] Scheduling notification for ${occurrence.ownerName}: $scheduledDate (day offset: ${occurrence.daysRemaining})');
       }
 
       // Android notification details
@@ -605,11 +565,11 @@ class DeadlineNotificationService {
         scheduledDate: scheduledDate,
         notificationDetails: details,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        payload: project.id,
+        payload: occurrence.ownerId,
       );
-      
+
       if (kDebugMode) {
-        print('[DeadlineNotification] Notification scheduled successfully for day $daysRemaining');
+        print('[DeadlineNotification] Notification scheduled successfully for day ${occurrence.daysRemaining}');
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {

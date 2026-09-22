@@ -17,9 +17,11 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../utils/app_paths.dart';
+import '../utils/project_file_status.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/version_stacks.dart';
 import '../utils/phase_colors.dart';
+import '../utils/todo_due_utils.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
@@ -27,6 +29,8 @@ import '../services/audio_analysis_service.dart';
 import '../services/thumbnail_toolbar_service.dart';
 import '../services/waveform_disk_cache.dart';
 import '../models/project_detail_layout.dart';
+import '../models/dashboard_view_mode.dart';
+import '../utils/project_sort.dart';
 import '../models/waveform_style.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
@@ -326,6 +330,84 @@ final showHiddenProjectsProvider =
       return ShowHiddenProjectsNotifier();
     });
 
+// Show archived projects state provider (#116)
+// 0 = hide archived (default)
+// 1 = show all (working + archived)
+// 2 = show only archived
+//
+// Its own axis rather than reusing `hidden`: the two answer different
+// questions. Hidden is "I don't want to look at this"; archived is "the files
+// are in a zip on another drive". Folding archiving into `hidden` would make
+// "show me what I archived" unaskable, and un-hiding a project would put it
+// back in the list while its files were still zipped away.
+//
+// Session-only, not persisted, for the same reason spelled out on
+// [ShowHiddenProjectsNotifier]: a forgotten "only archived" from a previous
+// launch would empty the library on startup with no visible cause.
+class ShowArchivedProjectsNotifier extends Notifier<int> {
+  @override
+  int build() => 0; // Always starts with archived projects out of the way.
+
+  void setShowAll(bool show) {
+    state = show ? 1 : 0;
+  }
+
+  void setShowOnlyArchived(bool show) {
+    state = show ? 2 : 0;
+  }
+
+  bool get isShowingAll => state == 1;
+  bool get isShowingOnlyArchived => state == 2;
+  bool get isHidingArchived => state == 0;
+}
+
+final showArchivedProjectsProvider =
+    NotifierProvider<ShowArchivedProjectsNotifier, int>(() {
+      return ShowArchivedProjectsNotifier();
+    });
+
+/// Where "Archive project" writes its zips (#116).
+///
+/// Device-local on purpose: this names a folder on *this* machine (often an
+/// external drive), so it is deliberately in neither Drive sync nor local
+/// backup — the archived *state* on a project is user data and syncs, the
+/// destination folder is a preference. Null until the user picks one.
+class ArchiveFolderNotifier extends Notifier<String?> {
+  static const _key = 'archiveFolderPath';
+
+  @override
+  String? build() {
+    try {
+      // Safe synchronously: main() opens the 'settings' box before runApp().
+      return Hive.box<String>('settings').get(_key);
+    } catch (e) {
+      if (kDebugMode) print('Failed to load archiveFolderPath: $e');
+      return null;
+    }
+  }
+
+  Future<void> set(String? value) async {
+    state = value;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      if (value == null) {
+        await box.delete(_key);
+      } else {
+        await box.put(_key, value);
+      }
+    } catch (e) {
+      if (kDebugMode) print('Failed to save archiveFolderPath: $e');
+    }
+  }
+}
+
+final archiveFolderProvider =
+    NotifierProvider<ArchiveFolderNotifier, String?>(() {
+      return ArchiveFolderNotifier();
+    });
+
 // REMOVEMOS: projectsWatchProvider (substituído pela reatividade do stream abaixo)
 
 // Caches File(...).existsSync() / Directory(...).existsSync() results by
@@ -463,6 +545,32 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
           projects = projects.where((p) => p.hidden).toList();
         }
         // If hiddenMode == 1, show all (both visible and hidden)
+
+        // --- Filter archived projects (#116) ---
+        // Independent of the hidden axis above: a project can be archived and
+        // hidden, and "show only archived" must not be blocked by the hidden
+        // filter's default.
+        //
+        // The default mode hides only projects archived *away* — archived and
+        // no longer on disk. A project archived with "delete the originals"
+        // left unticked still has all its files and is still workable, so the
+        // zip beside it is a backup; dropping it from the list would make a
+        // project disappear as a reward for backing it up. "Only archived"
+        // still shows both kinds, since both are things the user archived.
+        final archivedMode = ref.watch(showArchivedProjectsProvider);
+        if (archivedMode == 0) {
+          projects = projects
+              .where(
+                (p) => !isArchivedAway(
+                  p,
+                  filesExistLocally: fileExistenceCache.exists(p.filePath),
+                ),
+              )
+              .toList();
+        } else if (archivedMode == 2) {
+          projects = projects.where((p) => p.isArchived).toList();
+        }
+        // If archivedMode == 1, show all (both working and archived)
 
         // --- Filter by phase ---
         final phaseFilter = ref.watch(phaseFilterProvider);
@@ -609,6 +717,17 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
 final dateFormatProvider = Provider<DateFormat>((ref) {
   final locale = ref.watch(localeProvider);
   return DateFormat.yMMMd(locale.toString()).add_jm();
+});
+
+/// A date with no time and no month name — "15/01/2025" rather than
+/// "Jan 15, 2025 10:30 AM".
+///
+/// For places with a card's worth of room instead of a table column's: the
+/// full format wraps or ellipsizes there, which reads as broken rather than
+/// as detail.
+final compactDateFormatProvider = Provider<DateFormat>((ref) {
+  final locale = ref.watch(localeProvider);
+  return DateFormat.yMd(locale.toString());
 });
 
 // Releases Provider
@@ -2418,6 +2537,20 @@ final queueSearchProvider = NotifierProvider<QueueSearchNotifier, String>(
   QueueSearchNotifier.new,
 );
 
+/// Which due dates the Task Queue is currently narrowed to. Session state, on
+/// purpose — like the tab's search text, it isn't worth persisting.
+class QueueDueFilterNotifier extends Notifier<QueueDueFilter> {
+  @override
+  QueueDueFilter build() => QueueDueFilter.all;
+  void set(QueueDueFilter filter) => state = filter;
+  void clear() => state = QueueDueFilter.all;
+}
+
+final queueDueFilterProvider =
+    NotifierProvider<QueueDueFilterNotifier, QueueDueFilter>(
+  QueueDueFilterNotifier.new,
+);
+
 // ─── Desktop embedded player ──────────────────────────────────────────────────
 
 /// Carries the project and fully-resolved file path to play in the bottom bar.
@@ -2788,6 +2921,138 @@ class ProjectDetailLayoutNotifier extends Notifier<ProjectDetailLayout> {
 final projectDetailLayoutProvider =
     NotifierProvider<ProjectDetailLayoutNotifier, ProjectDetailLayout>(
       ProjectDetailLayoutNotifier.new,
+    );
+
+// ─── Dashboard view mode ──────────────────────────────────────────────────────
+
+/// Whether the desktop dashboard draws the projects table or the card grid.
+///
+/// Device-local, in the same `settings` box as the theme, the waveform style
+/// and the detail-page layout: which shape this screen is comfortable showing
+/// a library in is a property of the machine, not of the library, so it is
+/// deliberately not synced or backed up.
+class DashboardViewModeNotifier extends Notifier<DashboardViewMode> {
+  static const _boxKey = 'dashboardViewMode';
+
+  @override
+  DashboardViewMode build() {
+    SchedulerBinding.instance.addPostFrameCallback((_) => _load());
+    return DashboardViewMode.table;
+  }
+
+  Future<void> _load() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      final saved = box.get(_boxKey);
+      if (saved == null || saved.isEmpty) return;
+      state = DashboardViewMode.values.firstWhere(
+        (e) => e.name == saved,
+        orElse: () => DashboardViewMode.table,
+      );
+    } catch (_) {
+      // Keep the default if the box cannot be read.
+    }
+  }
+
+  Future<void> set(DashboardViewMode mode) async {
+    state = mode;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.put(_boxKey, mode.name);
+    } catch (e) {
+      debugPrint('[DashboardViewMode] failed to save: $e');
+    }
+  }
+}
+
+final dashboardViewModeProvider =
+    NotifierProvider<DashboardViewModeNotifier, DashboardViewMode>(
+      DashboardViewModeNotifier.new,
+    );
+
+/// How the card grid orders the list it is given.
+///
+/// The table sorts by clicking a column header; the cards have no headers, so
+/// the order needs its own control. Device-local like the view mode itself —
+/// and card-only: `projectsProvider` still decides *which* projects both views
+/// show, this only reorders the cards.
+class DashboardCardSort {
+  const DashboardCardSort(this.field, this.descending);
+
+  final ProjectSortField field;
+  final bool descending;
+
+  /// Newest work first, which is the order the dashboard has always opened in.
+  static const initial = DashboardCardSort(ProjectSortField.lastModified, true);
+
+  String encode() => '${field.name}:${descending ? 'desc' : 'asc'}';
+
+  static DashboardCardSort? decode(String? stored) {
+    if (stored == null || stored.isEmpty) return null;
+    final parts = stored.split(':');
+    if (parts.length != 2) return null;
+    final field = ProjectSortField.values
+        .where((f) => f.name == parts[0])
+        .firstOrNull;
+    if (field == null) return null;
+    return DashboardCardSort(field, parts[1] == 'desc');
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is DashboardCardSort &&
+      other.field == field &&
+      other.descending == descending;
+
+  @override
+  int get hashCode => Object.hash(field, descending);
+}
+
+class DashboardCardSortNotifier extends Notifier<DashboardCardSort> {
+  static const _boxKey = 'dashboardCardSort';
+
+  @override
+  DashboardCardSort build() {
+    SchedulerBinding.instance.addPostFrameCallback((_) => _load());
+    return DashboardCardSort.initial;
+  }
+
+  Future<void> _load() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      final decoded = DashboardCardSort.decode(box.get(_boxKey));
+      if (decoded != null) state = decoded;
+    } catch (_) {
+      // Keep the default if the box cannot be read.
+    }
+  }
+
+  Future<void> set(DashboardCardSort sort) async {
+    state = sort;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.put(_boxKey, sort.encode());
+    } catch (e) {
+      debugPrint('[DashboardCardSort] failed to save: $e');
+    }
+  }
+
+  /// Picking a new field starts it in the direction that field reads best in;
+  /// picking the field it is already on flips the arrow instead.
+  Future<void> selectField(ProjectSortField field) => set(
+    field == state.field
+        ? DashboardCardSort(field, !state.descending)
+        : DashboardCardSort(field, defaultDescendingFor(field)),
+  );
+}
+
+final dashboardCardSortProvider =
+    NotifierProvider<DashboardCardSortNotifier, DashboardCardSort>(
+      DashboardCardSortNotifier.new,
     );
 
 /// Whether the waveform draws left and right as separate lanes.

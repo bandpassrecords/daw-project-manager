@@ -4,10 +4,12 @@ import '../models/music_project.dart';
 import '../models/release.dart';
 import '../models/todo_item.dart';
 import '../providers/providers.dart';
-import '../utils/search_utils.dart';
+import '../utils/queue_sections.dart';
+import '../utils/todo_due_utils.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'project_detail_page.dart';
 import 'release_detail_page.dart';
+import 'widgets/todo_due_chip.dart';
 
 Color _phaseColor(String status) {
   switch (status) {
@@ -35,6 +37,8 @@ class QueuePage extends ConsumerWidget {
     final projectsAsync = ref.watch(allProjectsStreamProvider);
     final releasesAsync = ref.watch(releasesProvider);
     final searchText = ref.watch(queueSearchProvider).toLowerCase().trim();
+    final dueFilter = ref.watch(queueDueFilterProvider);
+    final now = DateTime.now();
 
     final releases = releasesAsync.value ?? [];
 
@@ -42,138 +46,187 @@ class QueuePage extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, _) => Center(child: Text(l10n.errorLoadingProjects)),
       data: (allProjects) {
-        // Build list of (project, pendingTodos) pairs, filtering by search
-        final projectEntries = <MapEntry<MusicProject, List<TodoItem>>>[];
-        for (final project in allProjects) {
-          if (searchText.isEmpty) {
-            final pending = project.todos.where((t) => !t.completed).toList();
-            if (pending.isNotEmpty) projectEntries.add(MapEntry(project, pending));
-          } else {
-            final matchProject = fuzzyMatchAll(project.displayName, searchText);
-            final matchingTodos = project.todos
-                .where((t) =>
-                    !t.completed &&
-                    (matchProject || fuzzyMatchAll(t.text, searchText)))
-                .toList();
-            if (matchingTodos.isNotEmpty) {
-              projectEntries.add(MapEntry(project, matchingTodos));
-            }
-          }
-        }
+        // What to show, and in what order, is decided by the pure
+        // buildQueueSections — this page only renders it.
+        final sections = buildQueueSections(
+          projects: allProjects,
+          releases: releases,
+          searchText: searchText,
+          dueFilter: dueFilter,
+          now: now,
+        );
 
-        // Build list of (release, pendingTodos) pairs, filtering by search
-        final releaseEntries = <MapEntry<Release, List<TodoItem>>>[];
-        for (final release in releases) {
-          if (searchText.isEmpty) {
-            final pending = release.todos.where((t) => !t.completed).toList();
-            if (pending.isNotEmpty) releaseEntries.add(MapEntry(release, pending));
-          } else {
-            final matchRelease = fuzzyMatchAll(release.title, searchText);
-            final matchingTodos = release.todos
-                .where((t) =>
-                    !t.completed &&
-                    (matchRelease || fuzzyMatchAll(t.text, searchText)))
-                .toList();
-            if (matchingTodos.isNotEmpty) {
-              releaseEntries.add(MapEntry(release, matchingTodos));
-            }
-          }
-        }
+        final totalPending = queuePendingCount(sections);
 
-        // Sort each group by pending count descending, then by name
-        projectEntries.sort((a, b) {
-          final cmp = b.value.length.compareTo(a.value.length);
-          if (cmp != 0) return cmp;
-          return a.key.displayName.toLowerCase().compareTo(b.key.displayName.toLowerCase());
-        });
-        releaseEntries.sort((a, b) {
-          final cmp = b.value.length.compareTo(a.value.length);
-          if (cmp != 0) return cmp;
-          return a.key.title.toLowerCase().compareTo(b.key.title.toLowerCase());
-        });
-
-        final totalPending = projectEntries.fold<int>(0, (sum, e) => sum + e.value.length)
-            + releaseEntries.fold<int>(0, (sum, e) => sum + e.value.length);
-        final totalSections = projectEntries.length + releaseEntries.length;
-
-        if (totalSections == 0) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  searchText.isEmpty
-                      ? Icons.check_circle_outline
-                      : Icons.search_off,
-                  size: 64,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  searchText.isEmpty
-                      ? l10n.queueNoPendingTasks
-                      : l10n.queueNoMatchingTasks,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                if (searchText.isEmpty)
-                  Text(
-                    l10n.queueNoPendingTasksHint,
-                    style: Theme.of(context).textTheme.bodySmall,
-                    textAlign: TextAlign.center,
+        if (sections.isEmpty) {
+          final filtered = dueFilter != QueueDueFilter.all;
+          return Column(
+            children: [
+              _QueueFilterBar(
+                summary: null,
+                dueFilter: dueFilter,
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        searchText.isEmpty && !filtered
+                            ? Icons.check_circle_outline
+                            : Icons.search_off,
+                        size: 64,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.5),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        searchText.isNotEmpty
+                            ? l10n.queueNoMatchingTasks
+                            : filtered
+                                ? l10n.queueNoTasksForDueFilter
+                                : l10n.queueNoPendingTasks,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      if (searchText.isEmpty && !filtered)
+                        Text(
+                          l10n.queueNoPendingTasksHint,
+                          style: Theme.of(context).textTheme.bodySmall,
+                          textAlign: TextAlign.center,
+                        ),
+                    ],
                   ),
-              ],
-            ),
+                ),
+              ),
+            ],
           );
-        }
-
-        // Interleave project and release sections sorted by pending count
-        final items = <Widget>[];
-        int pi = 0, ri = 0;
-        while (pi < projectEntries.length || ri < releaseEntries.length) {
-          final pCount = pi < projectEntries.length ? projectEntries[pi].value.length : -1;
-          final rCount = ri < releaseEntries.length ? releaseEntries[ri].value.length : -1;
-          if (pCount >= rCount) {
-            final e = projectEntries[pi++];
-            items.add(_ProjectTodoSection(project: e.key, pendingTodos: e.value));
-          } else {
-            final e = releaseEntries[ri++];
-            items.add(_ReleaseTodoSection(release: e.key, pendingTodos: e.value));
-          }
         }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Summary bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
-                children: [
-                  Icon(Icons.checklist,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.primary),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.queuePendingSummary(totalPending, totalSections),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
+            _QueueFilterBar(
+              summary: l10n.queuePendingSummary(totalPending, sections.length),
+              dueFilter: dueFilter,
             ),
             const Divider(height: 1),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                children: items,
+                children: [
+                  for (final section in sections)
+                    switch (section.kind) {
+                      QueueOwnerKind.project => _ProjectTodoSection(
+                          project: section.project,
+                          pendingTodos: section.todos,
+                        ),
+                      QueueOwnerKind.release => _ReleaseTodoSection(
+                          release: section.release,
+                          pendingTodos: section.todos,
+                        ),
+                    },
+                ],
               ),
             ),
           ],
         );
       },
+    );
+  }
+}
+
+/// Summary line plus the due-date filter, above the queue list.
+class _QueueFilterBar extends ConsumerWidget {
+  /// Null while the queue is empty — the filter stays reachable so a filter
+  /// that hides everything can be undone.
+  final String? summary;
+  final QueueDueFilter dueFilter;
+
+  const _QueueFilterBar({required this.summary, required this.dueFilter});
+
+  String _labelFor(AppLocalizations l10n, QueueDueFilter filter) {
+    switch (filter) {
+      case QueueDueFilter.all:
+        return l10n.queueDueFilterAll;
+      case QueueDueFilter.overdue:
+        return l10n.queueDueFilterOverdue;
+      case QueueDueFilter.dueToday:
+        return l10n.queueDueFilterToday;
+      case QueueDueFilter.dueThisWeek:
+        return l10n.queueDueFilterThisWeek;
+      case QueueDueFilter.noDueDate:
+        return l10n.queueDueFilterNoDate;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final isFiltered = dueFilter != QueueDueFilter.all;
+    final accent = Theme.of(context).colorScheme.primary;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          Icon(Icons.checklist, size: 16, color: accent),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              summary ?? '',
+              style: Theme.of(context).textTheme.bodySmall,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8),
+          PopupMenuButton<QueueDueFilter>(
+            tooltip: l10n.queueDueFilterLabel,
+            initialValue: dueFilter,
+            onSelected: (filter) =>
+                ref.read(queueDueFilterProvider.notifier).set(filter),
+            itemBuilder: (_) => [
+              for (final filter in QueueDueFilter.values)
+                PopupMenuItem(
+                  value: filter,
+                  child: Text(_labelFor(l10n, filter)),
+                ),
+            ],
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: isFiltered
+                    ? accent.withValues(alpha: 0.15)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: accent.withValues(alpha: isFiltered ? 0.6 : 0.3),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.event, size: 14, color: accent),
+                  const SizedBox(width: 6),
+                  Text(
+                    _labelFor(l10n, dueFilter),
+                    style: TextStyle(
+                      color: accent,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Icon(Icons.arrow_drop_down, size: 16, color: accent),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -200,6 +253,7 @@ class _ProjectTodoSectionState extends ConsumerState<_ProjectTodoSection> {
     final project = widget.project;
     final pendingTodos = widget.pendingTodos;
     final phaseColor = _phaseColor(project.status);
+    final earliestDue = earliestDueDate(pendingTodos);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -244,6 +298,12 @@ class _ProjectTodoSectionState extends ConsumerState<_ProjectTodoSection> {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  // Soonest due date in this section — the thing the queue is
+                  // ordered by, so it belongs on the header, not just the rows.
+                  if (earliestDue != null) ...[
+                    TodoDueChip(dueAt: earliestDue),
+                    const SizedBox(width: 6),
+                  ],
                   // Phase badge
                   _Badge(
                     label: project.status,
@@ -337,6 +397,28 @@ class _TodoCheckItem extends ConsumerWidget {
         todo.text,
         style: Theme.of(context).textTheme.bodyMedium,
       ),
+      subtitle: todo.dueAt == null
+          ? null
+          : Align(
+              alignment: Alignment.centerLeft,
+              child: TodoDueChip(dueAt: todo.dueAt!),
+            ),
+      // Due dates are settable from the queue itself — planning them
+      // shouldn't mean opening every project in turn.
+      secondary: TodoDueButton(
+        todo: todo,
+        onDueDateChanged: (dueAt) async {
+          final repo = await ref.read(repositoryProvider.future);
+          final updated = dueAt == null
+              ? todo.copyWith(clearDueAt: true)
+              : todo.copyWith(dueAt: dueAt);
+          final updatedTodos = project.todos
+              .map((t) => t.id == todo.id ? updated : t)
+              .toList();
+          await repo.updateProject(project.copyWith(todos: updatedTodos));
+          ref.invalidate(allProjectsStreamProvider);
+        },
+      ),
       onChanged: (_) async {
         final repo = await ref.read(repositoryProvider.future);
         final updatedTodos = project.todos
@@ -348,6 +430,7 @@ class _TodoCheckItem extends ConsumerWidget {
     );
   }
 }
+
 
 // ─── Release sections ────────────────────────────────────────────────────────
 
@@ -373,6 +456,7 @@ class _ReleaseTodoSectionState extends ConsumerState<_ReleaseTodoSection> {
   Widget build(BuildContext context) {
     final release = widget.release;
     final pendingTodos = widget.pendingTodos;
+    final earliestDue = earliestDueDate(pendingTodos);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -406,6 +490,10 @@ class _ReleaseTodoSectionState extends ConsumerState<_ReleaseTodoSection> {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  if (earliestDue != null) ...[
+                    TodoDueChip(dueAt: earliestDue),
+                    const SizedBox(width: 6),
+                  ],
                   _Badge(
                     label: 'Release',
                     color: _accentColor.shade300,
@@ -461,6 +549,26 @@ class _ReleaseTodoCheckItem extends ConsumerWidget {
       title: Text(
         todo.text,
         style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      subtitle: todo.dueAt == null
+          ? null
+          : Align(
+              alignment: Alignment.centerLeft,
+              child: TodoDueChip(dueAt: todo.dueAt!),
+            ),
+      secondary: TodoDueButton(
+        todo: todo,
+        onDueDateChanged: (dueAt) async {
+          final repo = await ref.read(repositoryProvider.future);
+          final updated = dueAt == null
+              ? todo.copyWith(clearDueAt: true)
+              : todo.copyWith(dueAt: dueAt);
+          final updatedTodos = release.todos
+              .map((t) => t.id == todo.id ? updated : t)
+              .toList();
+          await repo.updateRelease(release.copyWith(todos: updatedTodos));
+          ref.invalidate(releasesProvider);
+        },
       ),
       onChanged: (_) async {
         final repo = await ref.read(repositoryProvider.future);

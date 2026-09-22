@@ -226,6 +226,9 @@
   "extractMetadata": "提取元数据",
   "createRelease": "创建发布",
   "clearSelection": "清除选择",
+  "viewModeTable": "表格视图",
+  "viewModeCards": "卡片视图",
+  "selectProject": "选择项目",
   "selectAllProjects": "选择所有项目",
   "switchingProfiles": "切换配置文件中...",
   "scanningProjects": "扫描项目中...",
@@ -533,20 +536,32 @@
   "releasesDeleted": "已删除{count}个发布{plural}",
   "@releasesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@deleteSelectedReleasesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "@releasesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "selectTracks": "选择曲目",
@@ -802,7 +817,9 @@
   "removeTemplateFolderConfirm": "从已注册的模板文件夹中移除“{path}”？已导入的模板不会被删除。",
   "@removeTemplateFolderConfirm": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "noTemplateFoldersRegistered": "没有已注册的模板文件夹",
@@ -810,35 +827,51 @@
   "lastRefreshed": "最后刷新时间 {date}",
   "@lastRefreshed": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "templatesRefreshedSummary": "已添加{count}个新模板",
   "@templatesRefreshedSummary": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "templatesSelected": "已选择{count}个模板{plural}",
   "@templatesSelected": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "deleteSelectedTemplates": "删除所选",
   "deleteSelectedTemplatesConfirm": "确定要删除{count}个模板{plural}吗?",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templatesDeleted": "已删除{count}个模板{plural}",
   "@templatesDeleted": {
     "placeholders": {
-      "count": { "type": "int" },
-      "plural": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
     }
   },
   "templateDetailTitle": "Template",
@@ -855,7 +888,9 @@
   "projectsFromThisTemplate": "从此模板创建的项目（{count}个）",
   "@projectsFromThisTemplate": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noProjectsFromThisTemplate": "尚未从此模板创建任何项目",
@@ -1964,6 +1999,11 @@
   },
   "statsNoProjectsFound": "未找到项目",
   "statsNotTouchedDays": "{days}天未修改",
+  "sortByDeadline": "截止日期",
+  "sortByLabel": "排序方式",
+  "cardInitialsTitle": "卡片字母",
+  "cardInitialsDescription": "此项目没有封面时，卡片上显示的字母。",
+  "cardInitialsEmptyHint": "留空则使用名称的首字母。",
   "sortByLastModified": "最后修改",
   "sortByName": "名称",
   "sortByPhase": "阶段",
@@ -1983,15 +2023,21 @@
   "errorHandlingDroppedFiles": "处理拖放文件时出错：{error}",
   "@errorHandlingDroppedFiles": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "resetOnboardingConfirm": "这将重新启动设置向导。是否继续？",
   "couldNotLaunchDaw": "无法启动 {daw}：{error}",
   "@couldNotLaunchDaw": {
     "placeholders": {
-      "daw": { "type": "String" },
-      "error": { "type": "String" }
+      "daw": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
     }
   },
   "couldNotOpenLink": "无法打开链接。",
@@ -2294,7 +2340,9 @@
   "autoBackupNextBackup": "下次备份：{time}",
   "@autoBackupNextBackup": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "autoBackupNextSoon": "很快",
@@ -2302,7 +2350,9 @@
   "autoBackupNextInMinutes": "{count}分钟后",
   "@autoBackupNextInMinutes": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneHour": "1小时后",
@@ -2310,7 +2360,9 @@
   "autoBackupNextInHours": "{count}小时后",
   "@autoBackupNextInHours": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoBackupNextInOneDay": "1天后",
@@ -2318,7 +2370,9 @@
   "autoBackupNextInDays": "{count}天后",
   "@autoBackupNextInDays": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerTitle": "音乐播放器",
@@ -2346,7 +2400,9 @@
   "playerCompletedTasks": "已完成 {count} 项",
   "@playerCompletedTasks": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "playerPreviousTrack": "上一曲",
@@ -2365,23 +2421,43 @@
   "@volumeUnmute": {},
   "totalWorkTime": "总工作时间: {time}",
   "@totalWorkTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionTime": "会话: {time}",
   "@sessionTime": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "headerAgeOld": "已创建 {age}",
   "@headerAgeOld": {
-    "placeholders": { "age": { "type": "String" } }
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
   },
   "headerEdited": "{when}编辑",
   "@headerEdited": {
-    "placeholders": { "when": { "type": "String" } }
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
   },
   "headerWorked": "已投入 {time}",
   "@headerWorked": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "sessionHistory": "会话历史",
   "@sessionHistory": {},
@@ -2406,7 +2482,9 @@
   "sessionCount": "{count, plural, other{{count}个会话}}",
   "@sessionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "sessionByPhase": "按阶段工作",
@@ -2418,7 +2496,13 @@
   "tabPositionLeft": "左侧",
   "@tabPositionLeft": {},
   "updateAvailableMessage": "版本 {version} 已可用",
-  "@updateAvailableMessage": { "placeholders": { "version": { "type": "String" } } },
+  "@updateAvailableMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "dismiss": "关闭",
   "@dismiss": {},
   "checkForUpdates": "检查更新",
@@ -2430,7 +2514,9 @@
   "updateAvailable": "有可用更新：v{version}",
   "@updateAvailable": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "upToDate": "应用已是最新版本",
@@ -2440,13 +2526,17 @@
   "updateAvailableVersion": "版本 {version} 已就绪。",
   "@updateAvailableVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "updateCurrentVersion": "您当前使用的是 v{version}。",
   "@updateCurrentVersion": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "viewUpdateDetails": "查看详情",
@@ -2472,7 +2562,9 @@
   "appImageUpdateDownloadingProgress": "正在下载更新… {percent}%",
   "@appImageUpdateDownloadingProgress": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "appImageUpdateVerifying": "正在验证并安装…",
@@ -2482,7 +2574,9 @@
   "appImageUpdateReadyMessage": "已更新到 v{version}。请立即重启以完成更新。",
   "@appImageUpdateReadyMessage": {
     "placeholders": {
-      "version": {"type": "String"}
+      "version": {
+        "type": "String"
+      }
     }
   },
   "appImageUpdateRestartNow": "立即重启",
@@ -2571,7 +2665,11 @@
   "@minutes": {},
   "workTimerNotifBody": "您已工作 {time}",
   "@workTimerNotifBody": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "general": "常规",
   "@general": {},
@@ -2600,12 +2698,24 @@
   "switchSessionBody": "停止当前会话并开始新会话？",
   "@switchSessionBody": {},
   "switchSessionCurrent": "当前：{project}",
-  "@switchSessionCurrent": {"placeholders": {"project": {"type": "String"}}},
+  "@switchSessionCurrent": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
   "switchSessionNew": "新建：{project}",
-  "@switchSessionNew": {"placeholders": {"project": {"type": "String"}}},
+  "@switchSessionNew": {
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
   "sessionDuration": "会话时长",
   "@sessionDuration": {},
-    "scanModeLabel": "扫描模式：",
+  "scanModeLabel": "扫描模式：",
   "@scanModeLabel": {},
   "scanModeSectionTitle": "扫描模式",
   "@scanModeSectionTitle": {},
@@ -2740,8 +2850,12 @@
   "pendingFolderSessionBody": "您已在\"{projectName}\"上工作了{duration}。",
   "@pendingFolderSessionBody": {
     "placeholders": {
-      "projectName": { "type": "String" },
-      "duration": { "type": "String" }
+      "projectName": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "pendingFolderSessionContinue": "继续会话",
@@ -2753,8 +2867,12 @@
   "activeSessionSwitchBody": "「{current}」的会话正在运行。切换到「{next}」并保存当前会话？",
   "@activeSessionSwitchBody": {
     "placeholders": {
-      "current": { "type": "String" },
-      "next": { "type": "String" }
+      "current": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
     }
   },
   "activeSessionSwitch": "切换",
@@ -2768,7 +2886,9 @@
   "pendingProjectDeleteBody": "删除\"{folderName}\"及其内容？",
   "@pendingProjectDeleteBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectDismiss": "停止跟踪此文件夹",
@@ -2784,7 +2904,9 @@
   "pendingProjectDeleteNotEmptyBody": "\"{folderName}\" 包含文件。永久删除所有内容？",
   "@pendingProjectDeleteNotEmptyBody": {
     "placeholders": {
-      "folderName": { "type": "String" }
+      "folderName": {
+        "type": "String"
+      }
     }
   },
   "pendingProjectRefresh": "检查项目文件",
@@ -2823,41 +2945,75 @@
   "camelotGuideTransitionsTitle": "兼容的过渡",
   "camelotGuideTransitionsBody": "8A → 8B  （相同数字，切换环）\n  关系大调/小调 — 几乎无缝衔接。\n\n8A → 7A 或 9A  （±1，相同环）\n  相邻调性 — 平滑、细腻的变化。\n\n8A → 1A 或 3A  （±7，相同环）\n  能量提升或下降 — 更显著的转变。",
   "playerMixSuggestions": "混音建议",
-  "@playerMixSuggestions": {}
-,
+  "@playerMixSuggestions": {},
   "nowPlaying": "正在播放",
   "noPreviewSongsAvailable": "没有可用的预览曲目",
   "upNext": "接下来",
-  "@upNext": { "description": "Queue panel title - tracks coming up next" },
+  "@upNext": {
+    "description": "Queue panel title - tracks coming up next"
+  },
   "playbackModeNormal": "正常",
-  "@playbackModeNormal": { "description": "Playback mode: play queue once in order" },
+  "@playbackModeNormal": {
+    "description": "Playback mode: play queue once in order"
+  },
   "playbackModeRepeat": "循环",
-  "@playbackModeRepeat": { "description": "Playback mode: loop the entire queue" },
+  "@playbackModeRepeat": {
+    "description": "Playback mode: loop the entire queue"
+  },
   "playbackModeShuffle": "随机播放",
-  "@playbackModeShuffle": { "description": "Playback mode: random order" },
+  "@playbackModeShuffle": {
+    "description": "Playback mode: random order"
+  },
   "hideDatesInNames": "隐藏项目名称中的日期",
-  "@hideDatesInNames": { "description": "Appearance setting: strip date stamps from displayed project names" },
+  "@hideDatesInNames": {
+    "description": "Appearance setting: strip date stamps from displayed project names"
+  },
   "hideDatesInNamesDescription": "某些 DAW 会在项目文件名前加上创建日期（例如“2026-08-02 - My Track”）。隐藏它即可只显示标题。文件本身不会被重命名。",
-  "@hideDatesInNamesDescription": { "description": "Explanation of the hide-dates-in-names appearance setting" },
+  "@hideDatesInNamesDescription": {
+    "description": "Explanation of the hide-dates-in-names appearance setting"
+  },
   "findPreviewAutomatically": "自动查找",
-  "@findPreviewAutomatically": { "description": "Button in the missing preview song dialog: clear the dead reference and re-run mixdown detection" },
+  "@findPreviewAutomatically": {
+    "description": "Button in the missing preview song dialog: clear the dead reference and re-run mixdown detection"
+  },
   "noPreviewSongFoundAutomatically": "在此项目的混音文件夹中未找到预览歌曲。",
-  "@noPreviewSongFoundAutomatically": { "description": "Snackbar shown when automatic preview detection finds nothing" },
+  "@noPreviewSongFoundAutomatically": {
+    "description": "Snackbar shown when automatic preview detection finds nothing"
+  },
   "selectProjects": "选择",
-  "@selectProjects": { "description": "Mobile long-press action sheet entry: enter multi-select mode" },
+  "@selectProjects": {
+    "description": "Mobile long-press action sheet entry: enter multi-select mode"
+  },
   "sharePreviewSongText": "预览歌曲：{name}",
   "@sharePreviewSongText": {
     "description": "Message body accompanying a shared preview song file",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "sharePreviewSongZipText": "预览歌曲（ZIP）：{name}",
   "@sharePreviewSongZipText": {
     "description": "Message body accompanying a shared preview song zipped for transport",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "songParts": "乐器与声部",
   "partsProgress": "{total} 个中有 {done} 个已完成终版",
-  "@partsProgress": {"placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
+  "@partsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsYet": "尚未记录任何声部",
   "noPartsYetHint": "列出这首歌需要的乐器、由谁演奏，以及每条录音的进度。",
   "addPart": "添加声部",
@@ -2886,7 +3042,13 @@
   "editPartTemplate": "编辑声部模板",
   "deletePartTemplate": "删除声部模板",
   "deletePartTemplateConfirm": "确定要删除声部模板“{name}”吗？",
-  "@deletePartTemplateConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "@deletePartTemplateConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "partTemplateCreated": "已创建声部模板",
   "partTemplateUpdated": "已更新声部模板",
   "partTemplateDeleted": "已删除声部模板",
@@ -2896,16 +3058,37 @@
   "partTemplateItemsRequired": "请至少添加一个声部",
   "partTemplateNameAndItemsRequired": "需要填写名称并至少添加一个声部",
   "partTemplateItemCount": "{count} 个声部",
-  "@partTemplateItemCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partTemplateItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partTemplateImported": "已导入声部模板“{name}”（{count} 个声部）",
-  "@partTemplateImported": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
+  "@partTemplateImported": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "errorLoadingPartTemplates": "加载声部模板出错",
   "exportPartsCsv": "将声部导出为 CSV",
   "exportAllPartsCsv": "将所有歌曲的声部导出为 CSV",
   "exportAllPartsCsvSubtitle": "所有项目的每个声部各占一行，便于与合作者分享进度",
   "noPartsToExport": "没有可导出的声部",
   "partsCsvExported": "已导出 {count} 个声部",
-  "@partsCsvExported": {"placeholders": {"count": {"type": "int"}}},
+  "@partsCsvExported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "projectExportPartsLabel": "声部：",
   "csvHeaderProject": "项目",
   "csvHeaderPart": "声部",
@@ -2918,80 +3101,148 @@
   "importPartsFromSpreadsheet": "从电子表格导入声部",
   "partsImportPickerTitle": "选择 CSV 或 Excel 文件",
   "partsImported": "新增 {added} 个声部，更新 {updated} 个",
-  "@partsImported": {"placeholders": {"added": {"type": "int"}, "updated": {"type": "int"}}},
+  "@partsImported": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "updated": {
+        "type": "int"
+      }
+    }
+  },
   "partsImportNothingFound": "该文件中没有找到声部",
   "partsImportFailed": "无法读取该电子表格：{error}",
-  "@partsImportFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@partsImportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "partsMoreActions": "更多声部操作",
   "partsPageTitle": "{name} — 声部",
-  "@partsPageTitle": {"placeholders": {"name": {"type": "String"}}},
+  "@partsPageTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "manageParts": "管理声部",
   "partsMoreCount": "还有 {count} 个",
-  "@partsMoreCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partsMoreCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "searchParts": "搜索声部",
   "allStatuses": "所有状态",
   "allPerformers": "所有演奏者",
   "partsSelectedCount": "已选 {count} 个",
-  "@partsSelectedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@partsSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "setPartStatus": "设置状态",
   "assignPartPerformer": "指派演奏者",
   "deleteSelectedParts": "删除所选",
   "deleteSelectedPartsConfirm": "要从这首歌中删除 {count} 个声部吗？",
-  "@deleteSelectedPartsConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteSelectedPartsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "partsDeleted": "已删除 {count} 个声部",
-  "@partsDeleted": {"placeholders": {"count": {"type": "int"}}},
+  "@partsDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "noPartsMatchFilters": "没有声部符合这些筛选条件",
   "reorderNeedsUnfilteredList": "清除搜索、筛选和排序后即可拖动调整声部顺序",
-"projectMarkers": "标记",
-"@projectMarkers": {
-      "description": "Section heading for the timeline markers and regions read out of a DAW project file"
+  "projectMarkers": "标记",
+  "@projectMarkers": {
+    "description": "Section heading for the timeline markers and regions read out of a DAW project file"
   },
-"projectMarkerUnnamed": "标记 {index}",
-"@projectMarkerUnnamed": {
-      "description": "Fallback label for a marker the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectMarkerUnnamed": "标记 {index}",
+  "@projectMarkerUnnamed": {
+    "description": "Fallback label for a marker the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectRegionUnnamed": "区域 {index}",
-"@projectRegionUnnamed": {
-      "description": "Fallback label for a region the user never named",
-      "placeholders": {
-          "index": {
-              "type": "int"
-          }
+  "projectRegionUnnamed": "区域 {index}",
+  "@projectRegionUnnamed": {
+    "description": "Fallback label for a region the user never named",
+    "placeholders": {
+      "index": {
+        "type": "int"
       }
+    }
   },
-"projectMarkerJumpTooltip": "跳转到预览歌曲的此位置",
-"@projectMarkerJumpTooltip": {
-      "description": "Tooltip on a marker row that will seek the preview player"
+  "projectMarkerJumpTooltip": "跳转到预览歌曲的此位置",
+  "@projectMarkerJumpTooltip": {
+    "description": "Tooltip on a marker row that will seek the preview player"
   },
-"projectMarkerNoPreviewSong": "添加预览歌曲以跳转到标记",
-"@projectMarkerNoPreviewSong": {
-      "description": "Tooltip on marker rows when the project has no preview song to seek in"
+  "projectMarkerNoPreviewSong": "添加预览歌曲以跳转到标记",
+  "@projectMarkerNoPreviewSong": {
+    "description": "Tooltip on marker rows when the project has no preview song to seek in"
   },
   "projectDetailLayout": "项目详情布局",
-  "@projectDetailLayout": {"description": "Appearance setting: how the project detail page is arranged"},
+  "@projectDetailLayout": {
+    "description": "Appearance setting: how the project detail page is arranged"
+  },
   "projectDetailLayoutSettingDescription": "项目详情页面的排列方式。",
-  "@projectDetailLayoutSettingDescription": {"description": "Subtitle under the Project Detail Layout setting"},
+  "@projectDetailLayoutSettingDescription": {
+    "description": "Subtitle under the Project Detail Layout setting"
+  },
   "projectDetailLayoutClassic": "经典",
-  "@projectDetailLayoutClassic": {"description": "Layout option: everything in one scroll"},
+  "@projectDetailLayoutClassic": {
+    "description": "Layout option: everything in one scroll"
+  },
   "projectDetailLayoutClassicDescription": "所有内容在一个滚动页面中。",
-  "@projectDetailLayoutClassicDescription": {"description": "Description of the classic project detail layout"},
+  "@projectDetailLayoutClassicDescription": {
+    "description": "Description of the classic project detail layout"
+  },
   "projectDetailLayoutSectioned": "分区",
-  "@projectDetailLayoutSectioned": {"description": "Layout option: a nav rail picks one section at a time"},
+  "@projectDetailLayoutSectioned": {
+    "description": "Layout option: a nav rail picks one section at a time"
+  },
   "projectDetailLayoutSectionedDescription": "左侧栏每次选择一个分区。",
-  "@projectDetailLayoutSectionedDescription": {"description": "Description of the sectioned project detail layout"},
-
+  "@projectDetailLayoutSectionedDescription": {
+    "description": "Description of the sectioned project detail layout"
+  },
   "stackAsVersions": "堆叠为版本",
   "stackNeedsTwoVersions": "请至少选择两个项目，才能将它们堆叠为同一个主项目的版本。",
   "stackCreatedMessage": "已将 {count} 个版本堆叠为一个主项目。",
-  "@stackCreatedMessage": {"placeholders": {"count": {"type": "int"}}},
+  "@stackCreatedMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackVersionsTitle": "版本",
   "stackVersionCount": "{count} 个版本",
-  "@stackVersionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@stackVersionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersion": "添加版本",
   "stackAddVersionTitle": "添加版本",
   "stackAddVersionEmpty": "没有可添加的未堆叠项目。",
@@ -3010,13 +3261,25 @@
   "scanModeVersionStack": "版本堆叠",
   "scanModeVersionStackDescription": "文件夹中的所有项目文件将合并为一个主项目，共享元数据、任务和工作时间。新发现的文件会自动加入。",
   "stackTooltipStacked": "{count} 个版本堆叠为一个主项目",
-  "@stackTooltipStacked": {"placeholders": {"count": {"type": "int"}}},
+  "@stackTooltipStacked": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataSourceTitle": "哪个项目应成为主项目？",
   "stackMetadataSourceBody": "其中有多个已经有自己的详细信息。你选择的那个将成为主项目：它的名称、BPM、调性、笔记、任务和截止日期将被堆叠使用。不会合并也不会丢失——其他项目保留各自的详细信息，取消堆叠后即可恢复。",
   "stackMetadataSourceOldestHint": "最早的 — 建议",
   "stackMetadataNoneLabel": "暂无详细信息",
   "stackMetadataTodosLabel": "{count, plural, other{{count} 个任务}}",
-  "@stackMetadataTodosLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataTodosLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataNotesLabel": "笔记",
   "stackNotStackedYet": "尚未堆叠",
   "stackStartFromHere": "添加其他项目文件，它们将成为同一个主项目的版本，共享元数据、任务和工作时间。",
@@ -3025,31 +3288,75 @@
   "stackStartedMessage": "已堆叠为一个主项目。",
   "stackDefaultVersionTooltip": "启动 DAW 时默认打开此版本。",
   "stackAddVersionsConfirm": "添加 {count} 个",
-  "@stackAddVersionsConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@stackAddVersionsConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAddVersionMultiTitle": "添加版本",
   "stackSelectAll": "全选",
   "stackClearSelection": "清除",
   "stackMetadataPartsLabel": "{count, plural, other{{count} 个声部}}",
-  "@stackMetadataPartsLabel": {"placeholders": {"count": {"type": "int"}}},
+  "@stackMetadataPartsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackMetadataDeadlineLabel": "截止日期",
   "stackMetadataRenamedLabel": "自定义名称",
   "stackMetadataWorkHours": "已记录 {hours} 小时",
-  "@stackMetadataWorkHours": {"placeholders": {"hours": {"type": "String"}}},
+  "@stackMetadataWorkHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
   "stackUnstackReleaseTitle": "哪个版本保留在发行中？",
   "stackUnstackReleaseBody": "此项目是 {releases} 中的一首曲目。取消堆叠会移除堆叠条目，因此需要由其中一个版本接替该位置——请选择发行应指向的版本。",
-  "@stackUnstackReleaseBody": {"placeholders": {"releases": {"type": "String"}}},
+  "@stackUnstackReleaseBody": {
+    "placeholders": {
+      "releases": {
+        "type": "String"
+      }
+    }
+  },
   "stackAutoConfirmTitle": "要堆叠这些版本吗？",
   "stackAutoConfirmBody": "版本堆叠会将 {folders} 个文件夹中的 {projects} 个项目分组。每个文件夹将成为一个主项目，共享元数据、任务和工作时间。不会删除任何内容，之后也可以取消堆叠。",
-  "@stackAutoConfirmBody": {"placeholders": {"projects": {"type": "int"}, "folders": {"type": "int"}}},
+  "@stackAutoConfirmBody": {
+    "placeholders": {
+      "projects": {
+        "type": "int"
+      },
+      "folders": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoConfirmApply": "堆叠",
   "stackAutoFolderEntry": "{folder} — {count} 个版本",
-  "@stackAutoFolderEntry": {"placeholders": {"folder": {"type": "String"}, "count": {"type": "int"}}},
+  "@stackAutoFolderEntry": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "stackAutoJoinsExisting": "加入现有的主项目",
   "untitledTheme": "未命名主题",
   "switchToTheme": "切换到 {themeName}",
   "@switchToTheme": {
     "placeholders": {
-      "themeName": { "type": "String" }
+      "themeName": {
+        "type": "String"
+      }
     }
   },
   "newTheme": "新建主题",
@@ -3059,7 +3366,9 @@
   "deleteThemeMessage": "将删除“{name}”。此操作无法撤销。",
   "@deleteThemeMessage": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeNameLabel": "主题名称",
@@ -3074,7 +3383,9 @@
   "themeLowContrastWarning": "对比度偏低（{ratio}:1），文字可能不易阅读。",
   "@themeLowContrastWarning": {
     "placeholders": {
-      "ratio": { "type": "String" }
+      "ratio": {
+        "type": "String"
+      }
     }
   },
   "exportTheme": "导出主题",
@@ -3082,13 +3393,17 @@
   "themeExported": "主题已导出到 {path}",
   "@themeExported": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "themeImported": "已导入“{name}”",
   "@themeImported": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "themeImportFailed": "该文件不是有效的主题。",
@@ -3098,9 +3413,336 @@
   "themeCopyName": "{name} 副本",
   "@themeCopyName": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-
-  "suggestedColorsLabel": "推荐颜色"
+  "suggestedColorsLabel": "推荐颜色",
+  "todoDueDate": "截止日期",
+  "todoSetDueDate": "设置截止日期",
+  "todoClearDueDate": "清除截止日期",
+  "todoNoDueDate": "无截止日期",
+  "todoDueToday": "今天到期",
+  "todoDueTomorrow": "明天到期",
+  "todoDueOn": "{date} 到期",
+  "todoOverdueByDays": "{days, plural, other{已逾期 {days} 天}}",
+  "queueDueFilterLabel": "截止",
+  "queueDueFilterAll": "全部任务",
+  "queueDueFilterOverdue": "已逾期",
+  "queueDueFilterToday": "今天到期",
+  "queueDueFilterThisWeek": "本周到期",
+  "queueDueFilterNoDate": "无截止日期",
+  "queueNoTasksForDueFilter": "没有任务符合此截止筛选条件",
+  "projectAttachments": "附件",
+  "attachmentAddFile": "添加文件",
+  "attachmentAddLink": "添加链接",
+  "attachmentsEmptyTitle": "还没有附件",
+  "attachmentsEmptyDescription": "把参考曲、分轨交付链接、歌词和合同放在歌曲旁边，而不是散落在聊天记录里。",
+  "attachmentEditDialogTitle": "编辑附件",
+  "attachmentUrlLabel": "网址",
+  "attachmentPathLabel": "文件路径",
+  "attachmentLabelLabel": "标签（可选）",
+  "attachmentNoteLabel": "备注（可选）",
+  "attachmentUrlInvalid": "请输入有效链接，例如 https://example.com",
+  "attachmentPathRequired": "请输入文件路径",
+  "attachmentOpenTooltip": "打开",
+  "attachmentRemoveTitle": "移除附件",
+  "attachmentRemoveMessage": "要从此项目中移除“{label}”吗？文件本身不会被删除。",
+  "@attachmentRemoveMessage": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentRemoved": "已移除附件",
+  "attachmentAdded": "已添加附件",
+  "attachmentOpenFailed": "无法打开该附件",
+  "attachmentPickFileTitle": "选择要附加的文件",
+  "attachmentAlreadyAdded": "该内容已附加到此项目",
+  "attachmentExport": "导出",
+  "attachmentExportTooltip": "保存附加的文件和链接",
+  "attachmentExportSaveTitle": "保存附件",
+  "attachmentExportNothing": "没有可导出的内容",
+  "attachmentExporting": "正在导出附件...",
+  "attachmentExportSaved": "已保存到：{path}",
+  "@attachmentExportSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportSkippedMissing": "已跳过 {count} 个丢失的文件{plural}",
+  "@attachmentExportSkippedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "attachmentExportFailed": "导出附件失败：{error}",
+  "@attachmentExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "projectAppearance": "外观",
+  "projectAppearanceTooltip": "更改封面、颜色和图标",
+  "projectCoverArt": "封面",
+  "chooseCoverArt": "选择图片…",
+  "replaceCoverArt": "替换图片…",
+  "removeCoverArt": "移除封面",
+  "removeCoverArtConfirm": "移除此项目的封面？保存的图片将被删除。",
+  "coverArtRemoved": "封面已移除",
+  "failedToRemoveCoverArt": "移除封面失败：{error}",
+  "projectAccentColor": "强调色",
+  "projectIcon": "图标",
+  "appearanceNone": "无",
+  "appearanceNoneHint": "在你选择之前，项目不会显示颜色或图标。再次点按已选图标可将其移除。",
+  "clearColorAndIcon": "清除颜色和图标",
+  "dropCoverArtHere": "拖放图片以设置封面",
+  "uploadingProjectCoverArt": "正在上传项目封面...",
+  "downloadingProjectCoverArt": "正在下载项目封面...",
+  "moveProjectButtonLabel": "移动…",
+  "moveProjectDialogTitle": "移动项目",
+  "moveProjectDestinationLabel": "目标位置",
+  "moveProjectChooseDestination": "选择…",
+  "moveProjectNoDestinationChosen": "尚未选择文件夹",
+  "moveProjectIncludeFolder": "移动整个“{folder}”文件夹",
+  "@moveProjectIncludeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectIncludeFolderDescription": "此文件夹中只有这个项目，因此它的采样和缩混会一并移动。",
+  "moveProjectFileOnlyDescription": "仅移动项目文件。旁边的采样和缩混将留在原处。",
+  "moveProjectConfirm": "移动",
+  "moveProjectInProgress": "正在移动…",
+  "moveProjectSuccess": "“{name}” 已移动到 {path}",
+  "@moveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectFailed": "移动失败：{error}",
+  "@moveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorSourceMissing": "此项目的文件不在这台电脑上。",
+  "moveProjectErrorDestinationOccupied": "“{name}” 在该文件夹中已存在。",
+  "@moveProjectErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveProjectErrorDestinationInsideSource": "无法将文件夹移动到其自身内部。",
+  "moveProjectErrorSameLocation": "项目已在该文件夹中。",
+  "moveProjectStackUnsupported": "版本堆栈没有自己的文件——请单独移动各个版本。",
+  "selectMoveDestinationTitle": "选择目标文件夹",
+  "archiveProjectButtonLabel": "归档…",
+  "archiveProjectDialogTitle": "归档项目",
+  "archiveProjectWhatToArchive": "归档内容",
+  "archiveProjectScopeFolder": "整个“{folder}”文件夹",
+  "@archiveProjectScopeFolder": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectScopeFileOnly": "仅项目文件",
+  "archiveScopeSummary": "{size} · {files, plural, other{{files} 个文件}}",
+  "@archiveScopeSummary": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveProjectDeleteOriginals": "校验归档后删除原始文件",
+  "archiveProjectDeleteOriginalsDescription": "会先重新打开归档并逐项校验。校验失败则不会删除任何内容。",
+  "archiveProjectConfirm": "归档",
+  "archiveStageScanning": "正在读取项目文件夹…",
+  "archiveStageCompressing": "正在压缩…",
+  "archiveStageVerifying": "正在校验归档…",
+  "archiveStageDeleting": "正在删除原始文件…",
+  "archiveProjectSuccess": "已归档“{name}”",
+  "@archiveProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveProjectFailed": "归档失败：{error}",
+  "@archiveProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorSourceMissing": "此项目的文件不在这台电脑上。",
+  "archiveErrorDestinationInScanRoot": "归档不能放在被扫描的文件夹里——“{root}”会立刻把它们重新索引进来。",
+  "@archiveErrorDestinationInScanRoot": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorDestinationOccupied": "那里已经有一个名为“{name}”的归档。",
+  "@archiveErrorDestinationOccupied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorVerificationFailed": "归档中缺少文件，因此未删除任何内容：{entries}",
+  "@archiveErrorVerificationFailed": {
+    "placeholders": {
+      "entries": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveErrorNotArchived": "此项目未归档。",
+  "archiveWarningsSkipped": "{count, plural, other{已跳过 {count} 个无法读取的文件}}",
+  "@archiveWarningsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveLocationTitle": "归档位置",
+  "archiveLocationSubtitle": "“归档项目”写入 zip 文件的位置。保存在本设备上。",
+  "archiveLocationNotSet": "未设置——首次归档时会询问你",
+  "selectArchiveLocationTitle": "选择归档文件夹",
+  "restoreProjectButtonLabel": "恢复…",
+  "restoreProjectDialogTitle": "恢复项目",
+  "restoreProjectDescription": "将归档解压到你选择的文件夹，并把项目重新指向恢复后的文件。",
+  "restoreProjectConfirm": "恢复",
+  "restoreProjectInProgress": "正在恢复…",
+  "restoreProjectSuccess": "已恢复“{name}”",
+  "@restoreProjectSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreProjectFailed": "恢复失败：{error}",
+  "@restoreProjectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectRestoreDestinationTitle": "选择要恢复到的文件夹",
+  "archivedLabel": "已归档",
+  "archivedOnLabel": "于 {date} 归档",
+  "@archivedOnLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "showArchivedProjects": "显示已归档",
+  "showOnlyArchivedProjects": "仅已归档",
+  "hideArchivedProjects": "隐藏已归档",
+  "archivedFilterLabel": "归档",
+  "archiveProjectStackUnsupported": "版本堆栈没有自己的文件——请单独归档各个版本。",
+  "archiveBulkButtonLabel": "归档所选",
+  "archiveBulkConfirmMessage": "{count, plural, other{归档 {count} 个项目？}}",
+  "@archiveBulkConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkSuccess": "{count, plural, other{已归档 {count} 个项目}}",
+  "@archiveBulkSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openArchiveFolder": "打开归档文件夹",
+  "archiveBulkProgress": "第 {current} 个，共 {total} 个",
+  "@archiveBulkProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkFailures": "{count, plural, other{{count} 个项目无法归档}}",
+  "@archiveBulkFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBulkScopeNote": "每个项目都按适合它的范围归档——有独立文件夹时归档整个文件夹，与其他项目共用文件夹时仅归档项目文件。",
+  "archivedWithLocalCopy": "已归档——原始文件仍在这里",
+  "archivedAwayTooltip": "已归档——文件仅存在于归档中",
+  "archiveUndone": "已撤销归档",
+  "archiveUndoFailed": "无法撤销归档：{error}",
+  "@archiveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUndone": "已撤销移动",
+  "moveUndoFailed": "无法撤销移动：{error}",
+  "@moveUndoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreToOriginalLocation": "回到原来的位置",
+  "restoreToChosenFolder": "到其他文件夹…",
+  "restoreWhereTo": "要放到哪里？",
+  "restoreOriginalLocationOccupied": "原来的位置已经有内容了",
+  "discardArchiveButtonLabel": "丢弃归档",
+  "discardArchiveConfirmTitle": "要丢弃归档吗？",
+  "discardArchiveConfirmMessage": "删除 zip 并清除归档标记。项目自身的文件会留在原处。",
+  "discardArchiveDone": "已丢弃归档"
 }

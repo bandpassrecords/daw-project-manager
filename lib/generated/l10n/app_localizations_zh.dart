@@ -432,6 +432,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearSelection => '清除选择';
 
   @override
+  String get viewModeTable => '表格视图';
+
+  @override
+  String get viewModeCards => '卡片视图';
+
+  @override
+  String get selectProject => '选择项目';
+
+  @override
   String get selectAllProjects => '选择所有项目';
 
   @override
@@ -2790,6 +2799,21 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get sortByDeadline => '截止日期';
+
+  @override
+  String get sortByLabel => '排序方式';
+
+  @override
+  String get cardInitialsTitle => '卡片字母';
+
+  @override
+  String get cardInitialsDescription => '此项目没有封面时，卡片上显示的字母。';
+
+  @override
+  String get cardInitialsEmptyHint => '留空则使用名称的首字母。';
+
+  @override
   String get sortByLastModified => '最后修改';
 
   @override
@@ -4808,4 +4832,511 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get suggestedColorsLabel => '推荐颜色';
+
+  @override
+  String get todoDueDate => '截止日期';
+
+  @override
+  String get todoSetDueDate => '设置截止日期';
+
+  @override
+  String get todoClearDueDate => '清除截止日期';
+
+  @override
+  String get todoNoDueDate => '无截止日期';
+
+  @override
+  String get todoDueToday => '今天到期';
+
+  @override
+  String get todoDueTomorrow => '明天到期';
+
+  @override
+  String todoDueOn(String date) {
+    return '$date 到期';
+  }
+
+  @override
+  String todoOverdueByDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '已逾期 $days 天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get queueDueFilterLabel => '截止';
+
+  @override
+  String get queueDueFilterAll => '全部任务';
+
+  @override
+  String get queueDueFilterOverdue => '已逾期';
+
+  @override
+  String get queueDueFilterToday => '今天到期';
+
+  @override
+  String get queueDueFilterThisWeek => '本周到期';
+
+  @override
+  String get queueDueFilterNoDate => '无截止日期';
+
+  @override
+  String get queueNoTasksForDueFilter => '没有任务符合此截止筛选条件';
+
+  @override
+  String get projectAttachments => '附件';
+
+  @override
+  String get attachmentAddFile => '添加文件';
+
+  @override
+  String get attachmentAddLink => '添加链接';
+
+  @override
+  String get attachmentsEmptyTitle => '还没有附件';
+
+  @override
+  String get attachmentsEmptyDescription =>
+      '把参考曲、分轨交付链接、歌词和合同放在歌曲旁边，而不是散落在聊天记录里。';
+
+  @override
+  String get attachmentEditDialogTitle => '编辑附件';
+
+  @override
+  String get attachmentUrlLabel => '网址';
+
+  @override
+  String get attachmentPathLabel => '文件路径';
+
+  @override
+  String get attachmentLabelLabel => '标签（可选）';
+
+  @override
+  String get attachmentNoteLabel => '备注（可选）';
+
+  @override
+  String get attachmentUrlInvalid => '请输入有效链接，例如 https://example.com';
+
+  @override
+  String get attachmentPathRequired => '请输入文件路径';
+
+  @override
+  String get attachmentOpenTooltip => '打开';
+
+  @override
+  String get attachmentRemoveTitle => '移除附件';
+
+  @override
+  String attachmentRemoveMessage(String label) {
+    return '要从此项目中移除“$label”吗？文件本身不会被删除。';
+  }
+
+  @override
+  String get attachmentRemoved => '已移除附件';
+
+  @override
+  String get attachmentAdded => '已添加附件';
+
+  @override
+  String get attachmentOpenFailed => '无法打开该附件';
+
+  @override
+  String get attachmentPickFileTitle => '选择要附加的文件';
+
+  @override
+  String get attachmentAlreadyAdded => '该内容已附加到此项目';
+
+  @override
+  String get attachmentExport => '导出';
+
+  @override
+  String get attachmentExportTooltip => '保存附加的文件和链接';
+
+  @override
+  String get attachmentExportSaveTitle => '保存附件';
+
+  @override
+  String get attachmentExportNothing => '没有可导出的内容';
+
+  @override
+  String get attachmentExporting => '正在导出附件...';
+
+  @override
+  String attachmentExportSaved(String path) {
+    return '已保存到：$path';
+  }
+
+  @override
+  String attachmentExportSkippedMissing(int count, String plural) {
+    return '已跳过 $count 个丢失的文件$plural';
+  }
+
+  @override
+  String attachmentExportFailed(String error) {
+    return '导出附件失败：$error';
+  }
+
+  @override
+  String get projectAppearance => '外观';
+
+  @override
+  String get projectAppearanceTooltip => '更改封面、颜色和图标';
+
+  @override
+  String get projectCoverArt => '封面';
+
+  @override
+  String get chooseCoverArt => '选择图片…';
+
+  @override
+  String get replaceCoverArt => '替换图片…';
+
+  @override
+  String get removeCoverArt => '移除封面';
+
+  @override
+  String get removeCoverArtConfirm => '移除此项目的封面？保存的图片将被删除。';
+
+  @override
+  String get coverArtRemoved => '封面已移除';
+
+  @override
+  String failedToRemoveCoverArt(String error) {
+    return '移除封面失败：$error';
+  }
+
+  @override
+  String get projectAccentColor => '强调色';
+
+  @override
+  String get projectIcon => '图标';
+
+  @override
+  String get appearanceNone => '无';
+
+  @override
+  String get appearanceNoneHint => '在你选择之前，项目不会显示颜色或图标。再次点按已选图标可将其移除。';
+
+  @override
+  String get clearColorAndIcon => '清除颜色和图标';
+
+  @override
+  String get dropCoverArtHere => '拖放图片以设置封面';
+
+  @override
+  String get uploadingProjectCoverArt => '正在上传项目封面...';
+
+  @override
+  String get downloadingProjectCoverArt => '正在下载项目封面...';
+
+  @override
+  String get moveProjectButtonLabel => '移动…';
+
+  @override
+  String get moveProjectDialogTitle => '移动项目';
+
+  @override
+  String get moveProjectDestinationLabel => '目标位置';
+
+  @override
+  String get moveProjectChooseDestination => '选择…';
+
+  @override
+  String get moveProjectNoDestinationChosen => '尚未选择文件夹';
+
+  @override
+  String moveProjectIncludeFolder(String folder) {
+    return '移动整个“$folder”文件夹';
+  }
+
+  @override
+  String get moveProjectIncludeFolderDescription =>
+      '此文件夹中只有这个项目，因此它的采样和缩混会一并移动。';
+
+  @override
+  String get moveProjectFileOnlyDescription => '仅移动项目文件。旁边的采样和缩混将留在原处。';
+
+  @override
+  String get moveProjectConfirm => '移动';
+
+  @override
+  String get moveProjectInProgress => '正在移动…';
+
+  @override
+  String moveProjectSuccess(String name, String path) {
+    return '“$name” 已移动到 $path';
+  }
+
+  @override
+  String moveProjectFailed(String error) {
+    return '移动失败：$error';
+  }
+
+  @override
+  String get moveProjectErrorSourceMissing => '此项目的文件不在这台电脑上。';
+
+  @override
+  String moveProjectErrorDestinationOccupied(String name) {
+    return '“$name” 在该文件夹中已存在。';
+  }
+
+  @override
+  String get moveProjectErrorDestinationInsideSource => '无法将文件夹移动到其自身内部。';
+
+  @override
+  String get moveProjectErrorSameLocation => '项目已在该文件夹中。';
+
+  @override
+  String get moveProjectStackUnsupported => '版本堆栈没有自己的文件——请单独移动各个版本。';
+
+  @override
+  String get selectMoveDestinationTitle => '选择目标文件夹';
+
+  @override
+  String get archiveProjectButtonLabel => '归档…';
+
+  @override
+  String get archiveProjectDialogTitle => '归档项目';
+
+  @override
+  String get archiveProjectWhatToArchive => '归档内容';
+
+  @override
+  String archiveProjectScopeFolder(String folder) {
+    return '整个“$folder”文件夹';
+  }
+
+  @override
+  String get archiveProjectScopeFileOnly => '仅项目文件';
+
+  @override
+  String archiveScopeSummary(String size, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files 个文件',
+    );
+    return '$size · $_temp0';
+  }
+
+  @override
+  String get archiveProjectDeleteOriginals => '校验归档后删除原始文件';
+
+  @override
+  String get archiveProjectDeleteOriginalsDescription =>
+      '会先重新打开归档并逐项校验。校验失败则不会删除任何内容。';
+
+  @override
+  String get archiveProjectConfirm => '归档';
+
+  @override
+  String get archiveStageScanning => '正在读取项目文件夹…';
+
+  @override
+  String get archiveStageCompressing => '正在压缩…';
+
+  @override
+  String get archiveStageVerifying => '正在校验归档…';
+
+  @override
+  String get archiveStageDeleting => '正在删除原始文件…';
+
+  @override
+  String archiveProjectSuccess(String name) {
+    return '已归档“$name”';
+  }
+
+  @override
+  String archiveProjectFailed(String error) {
+    return '归档失败：$error';
+  }
+
+  @override
+  String get archiveErrorSourceMissing => '此项目的文件不在这台电脑上。';
+
+  @override
+  String archiveErrorDestinationInScanRoot(String root) {
+    return '归档不能放在被扫描的文件夹里——“$root”会立刻把它们重新索引进来。';
+  }
+
+  @override
+  String archiveErrorDestinationOccupied(String name) {
+    return '那里已经有一个名为“$name”的归档。';
+  }
+
+  @override
+  String archiveErrorVerificationFailed(String entries) {
+    return '归档中缺少文件，因此未删除任何内容：$entries';
+  }
+
+  @override
+  String get archiveErrorNotArchived => '此项目未归档。';
+
+  @override
+  String archiveWarningsSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已跳过 $count 个无法读取的文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveLocationTitle => '归档位置';
+
+  @override
+  String get archiveLocationSubtitle => '“归档项目”写入 zip 文件的位置。保存在本设备上。';
+
+  @override
+  String get archiveLocationNotSet => '未设置——首次归档时会询问你';
+
+  @override
+  String get selectArchiveLocationTitle => '选择归档文件夹';
+
+  @override
+  String get restoreProjectButtonLabel => '恢复…';
+
+  @override
+  String get restoreProjectDialogTitle => '恢复项目';
+
+  @override
+  String get restoreProjectDescription => '将归档解压到你选择的文件夹，并把项目重新指向恢复后的文件。';
+
+  @override
+  String get restoreProjectConfirm => '恢复';
+
+  @override
+  String get restoreProjectInProgress => '正在恢复…';
+
+  @override
+  String restoreProjectSuccess(String name) {
+    return '已恢复“$name”';
+  }
+
+  @override
+  String restoreProjectFailed(String error) {
+    return '恢复失败：$error';
+  }
+
+  @override
+  String get selectRestoreDestinationTitle => '选择要恢复到的文件夹';
+
+  @override
+  String get archivedLabel => '已归档';
+
+  @override
+  String archivedOnLabel(String date) {
+    return '于 $date 归档';
+  }
+
+  @override
+  String get showArchivedProjects => '显示已归档';
+
+  @override
+  String get showOnlyArchivedProjects => '仅已归档';
+
+  @override
+  String get hideArchivedProjects => '隐藏已归档';
+
+  @override
+  String get archivedFilterLabel => '归档';
+
+  @override
+  String get archiveProjectStackUnsupported => '版本堆栈没有自己的文件——请单独归档各个版本。';
+
+  @override
+  String get archiveBulkButtonLabel => '归档所选';
+
+  @override
+  String archiveBulkConfirmMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '归档 $count 个项目？',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String archiveBulkSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已归档 $count 个项目',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openArchiveFolder => '打开归档文件夹';
+
+  @override
+  String archiveBulkProgress(int current, int total) {
+    return '第 $current 个，共 $total 个';
+  }
+
+  @override
+  String archiveBulkFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个项目无法归档',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get archiveBulkScopeNote =>
+      '每个项目都按适合它的范围归档——有独立文件夹时归档整个文件夹，与其他项目共用文件夹时仅归档项目文件。';
+
+  @override
+  String get archivedWithLocalCopy => '已归档——原始文件仍在这里';
+
+  @override
+  String get archivedAwayTooltip => '已归档——文件仅存在于归档中';
+
+  @override
+  String get archiveUndone => '已撤销归档';
+
+  @override
+  String archiveUndoFailed(String error) {
+    return '无法撤销归档：$error';
+  }
+
+  @override
+  String get moveUndone => '已撤销移动';
+
+  @override
+  String moveUndoFailed(String error) {
+    return '无法撤销移动：$error';
+  }
+
+  @override
+  String get restoreToOriginalLocation => '回到原来的位置';
+
+  @override
+  String get restoreToChosenFolder => '到其他文件夹…';
+
+  @override
+  String get restoreWhereTo => '要放到哪里？';
+
+  @override
+  String get restoreOriginalLocationOccupied => '原来的位置已经有内容了';
+
+  @override
+  String get discardArchiveButtonLabel => '丢弃归档';
+
+  @override
+  String get discardArchiveConfirmTitle => '要丢弃归档吗？';
+
+  @override
+  String get discardArchiveConfirmMessage => '删除 zip 并清除归档标记。项目自身的文件会留在原处。';
+
+  @override
+  String get discardArchiveDone => '已丢弃归档';
 }

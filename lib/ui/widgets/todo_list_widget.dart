@@ -6,8 +6,10 @@ import 'package:file_picker/file_picker.dart';
 import '../../models/todo_item.dart';
 import '../../models/todo_template.dart';
 import '../../providers/providers.dart';
+import '../../utils/todo_due_utils.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../todo_templates_page.dart';
+import 'todo_due_chip.dart';
 
 class TodoListWidget extends ConsumerStatefulWidget {
   final List<TodoItem> todos;
@@ -58,9 +60,10 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
   bool _todosEqual(List<TodoItem> a, List<TodoItem> b) {
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
-      if (a[i].id != b[i].id || 
-          a[i].text != b[i].text || 
-          a[i].completed != b[i].completed) {
+      if (a[i].id != b[i].id ||
+          a[i].text != b[i].text ||
+          a[i].completed != b[i].completed ||
+          a[i].dueAt != b[i].dueAt) {
         return false;
       }
     }
@@ -264,6 +267,22 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
     }
   }
 
+  void _setDueDate(TodoItem todo, DateTime dueAt) {
+    widget.onTodosChanged(
+      _currentTodos
+          .map((t) => t.id == todo.id ? t.copyWith(dueAt: dueAt) : t)
+          .toList(),
+    );
+  }
+
+  void _clearDueDate(TodoItem todo) {
+    widget.onTodosChanged(
+      _currentTodos
+          .map((t) => t.id == todo.id ? t.copyWith(clearDueAt: true) : t)
+          .toList(),
+    );
+  }
+
   void _deleteTodo(String id) {
     final updatedTodos = _currentTodos.where((todo) => todo.id != id).toList();
     widget.onTodosChanged(updatedTodos);
@@ -395,8 +414,11 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
             // Separate active and done todos
             Builder(
               builder: (context) {
-                // Use _currentTodos instead of widget.todos to ensure we show the latest data
-                final activeTodos = _currentTodos.where((t) => !t.completed).toList();
+                // Use _currentTodos instead of widget.todos to ensure we show the latest data.
+                // Active todos are ordered by what is due next; undated ones
+                // sit behind the dated ones, oldest first.
+                final activeTodos =
+                    sortTodosByDue(_currentTodos.where((t) => !t.completed));
                 // Sort done todos by createdAt descending (most recently completed first)
                 final doneTodos = _currentTodos
                     .where((t) => t.completed)
@@ -465,6 +487,8 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
   }
 
   Widget _buildTodoItem(TodoItem todo) {
+    final l10n = AppLocalizations.of(context)!;
+
     return ListTile(
       dense: true,
       leading: Checkbox(
@@ -482,14 +506,28 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
               : Theme.of(context).textTheme.bodyMedium?.color,
         ),
       ),
+      subtitle: todo.dueAt == null
+          ? null
+          : Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: TodoDueChip(dueAt: todo.dueAt!, muted: todo.completed),
+              ),
+            ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          TodoDueButton(
+            todo: todo,
+            onDueDateChanged: (dueAt) =>
+                dueAt == null ? _clearDueDate(todo) : _setDueDate(todo, dueAt),
+          ),
           IconButton(
             icon: const Icon(Icons.edit_outlined, size: 18),
             color: Theme.of(context).textTheme.bodyMedium?.color,
             onPressed: () => _editTodo(todo),
-            tooltip: AppLocalizations.of(context)!.edit,
+            tooltip: l10n.edit,
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline, size: 18),

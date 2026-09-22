@@ -66,6 +66,24 @@ Instructions for AI assistants working on this codebase.
 
 ## UI conventions
 
+### Where these features meet each other
+- **A new `@HiveField` index must be chosen against `main`, not against your branch.** Four branches independently claimed 38 because it was next-free on each of them, and git merged all four silently — a duplicated index is data corruption, not a conflict. `test/models/music_project_test.dart` now asserts indices are unique, that `writeByte(n)`'s count matches the highest index + 1, and that every declared field is actually written.
+- **Two accent colours, on purpose.** `projectAccentColor(MusicProject)` in `project_visuals.dart` is the user's override and is *nullable* — a list row with nothing chosen draws nothing, which is #110's whole point. `derivedAccentColor(String id)` in `project_accent_color.dart` always returns one. `resolvedAccentColor` layers them and is what a **card** uses, because a card is mostly artwork and cannot be left blank. Don't use the resolver for rows or badges; don't use the nullable one where something must be painted.
+- **A card honours the full visual stack**: cover art → chosen icon → chosen/derived colour with initials. Anything added to `ProjectCardGrid`'s cover has to keep that order, or the appearance editor's choices stop showing up.
+- **Archiving gathers out-of-folder attachments** (`attachmentsToGather`) into `_attachments/<id>/<basename>` in the zip, keyed by id so two `notes.pdf` can't collide. Links have no bytes; attachments already inside the folder are picked up by the walk. `deleteOriginals` still only ever deletes the project's own files — an attachment in `~/Downloads` is not ours to delete. `repathRestoredAttachments` repoints a gathered attachment on restore **only** when its original has since gone away.
+- **Moving repaths attachments** under the moved prefix (`repathProject`). The lyric sheet beside the project file is the common case and a move that ignored it would break every one.
+- Cover art lives in the app-managed `project_cover_art` folder (`app_paths.dart`), so it is untouched by moves and archives and rides along in Drive sync / local backup instead.
+
+### An archived project is not a missing one
+- Archiving (#116) zips a project out of the working library and sets `archivePath` / `archivedAt` / `archiveEntryPath`. `filePath` deliberately keeps naming the **original location** — it is what `fileExtension`, DAW launching and the containing-folder helpers read, and leaving it alone is what makes "restore to where it came from" free.
+- So `isMissingFileCandidate` is `!isVirtual && !isArchived`. Anything new that reads a non-resolving path as "the file was deleted" must gate on it, exactly as version stacks already require. Getting this wrong offers to delete the one row pointing at the archive holding the work.
+- `ArchiveScope` is resolved by `defaultScopeFor` in `lib/services/project_archive_service.dart`: a bundle (`.logicx`/`.luna`/`.band`) archives alone, a file with a folder to itself takes the folder, a file sharing its folder takes only itself. The shared "does anything else live here?" test is `folderIsDedicatedTo` in `lib/utils/project_folder_utils.dart`, used by moving too.
+- Never let an archive land in a scan root, inside one, or above one — the next scan would re-index every zip straight back in. `conflictingScanRoot` is the guard, and it runs both at destination-pick time and again inside `archiveProject`.
+- Originals are deleted only when the user asked *and* the written zip has been reopened and verified entry by entry (`verifyArchive`). Zips are written to a `.zip.part` and renamed on success, so a cancelled or crashed run never leaves something that looks finished.
+- Archived state is **user data** (all three fields sync and back up); the archive *destination folder* (`archiveFolderProvider`) is a **device-local preference** and is in neither. Same split as themes.
+- Archived visibility is its own 0/1/2 axis (`showArchivedProjectsProvider`), not `hidden`. Session-only, for the same reason as the hidden one.
+- Archiving and moving are both refused for a **stack** — it owns no files, so doing either coherently means doing it to every member and re-pointing the stack. Members are archived and moved individually.
+
 ### A version stack is a *virtual* project — never assume a row has a file
 - Version stacking (#94) makes a stack a real row in the projects box with `isVirtual: true`, whose `filePath` is the **folder** its versions live in, not a file. Anything that treats a non-resolving path as "the file was deleted" must gate on `MusicProject.isMissingFileCandidate` — `missingProjectIds` and the grid's `cloud_off` indicator already do. Getting this wrong offers to delete the one row holding a song's shared notes, todos, deadline and work time.
 - A stack owns the shared metadata; its members keep their own fields **untouched but dormant**, which is what makes `unstack` lossless. Stacking promotes exactly one member's metadata (`stackProjects(metadataSourceId:)`) — nothing is ever merged, so two versions' details cannot be mangled together. The dashboard asks which member to promote only when two or more of them satisfy `MusicProject.hasUserMetadata`.
@@ -88,6 +106,23 @@ Instructions for AI assistants working on this codebase.
 ### A DAW logo shown as a field's `prefixIcon` needs explicit sizing
 - `Image.asset(getDawLogoPath(dawType), ...)` renders at the source PNG's native size if unconstrained — oversized and breaking the field's layout when used as an `InputDecoration.prefixIcon`.
 - Always pass `width: 16, height: 16, fit: BoxFit.contain`, with an `errorBuilder` falling back to `Icon(Icons.piano, color: color)` for DAWs with no logo asset. See `_buildDawPrefixIcon` in `lib/ui/project_detail_page.dart` for the canonical implementation to mirror.
+
+### A project's visual identity is always drawn by `ProjectCoverAvatar` / `ProjectCoverBleed`
+- Cover art, accent color and icon (#110) are never rendered by hand — the mobile list and the detail header use `ProjectCoverAvatar`, the projects grid uses `ProjectCoverBleed` — so the "cover art wins over color/icon" rule and the stale-path fallback live in one place.
+- **Nothing is assigned by default.** `thumbnailPath`, `accentColor` and `iconKey` are all opt-in; `projectAccentColor` / `projectIcon` in `lib/utils/project_visuals.dart` return null for a project nobody has decorated, and the widgets then render *zero size*. Never invent a stand-in color, icon or placeholder image for a list row — a generic default on every row is the thing this feature deliberately does not do. `projectHasVisualIdentity` is the check for "is there anything to draw".
+- The one exception is `showEmptyPlaceholder`, for editing surfaces only (detail header, appearance dialog), where the tile is the way into the editor.
+- A stored `iconKey` this build no longer ships reads as "no icon", not as a crash — retiring an icon from `kProjectIconChoices` is safe.
+- The grid's Name column sets `cellPadding: EdgeInsets.zero` so the cover can reach the cell's left border and span the full row height; everything else in that cell re-applies `_kNameCellInset` itself.
+
+### The dashboard has two views and exactly one filtered list
+- The desktop projects tab draws either the `TrinaGrid` table or `ProjectCardGrid` (`lib/ui/widgets/project_card_grid.dart`, #111). Both are handed the **same** `projectsProvider` output — the toggle in the filter bar chooses how that list is drawn, never what is in it. Never filter, search or re-sort inside a view; that belongs in `projectsProvider` so both views can't disagree.
+- `dashboardViewModeProvider` is a device-local preference in the `settings` box, like the theme and the detail-page layout — deliberately not Drive-synced and not backed up.
+- `ProjectCardGrid` takes plain values, label strings and callbacks — no `Ref`, no Hive, no `AppLocalizations` — which is what makes it widget-testable. Resolve strings in the page and pass a `ProjectCardLabels`.
+- A project with no cover art still needs a visual identity: `projectAccentColor`/`projectInitials` in `lib/utils/project_accent_color.dart` derive one from the project id, so it is identical on every machine with nothing stored. Cover art (`thumbnailPath`) wins over the generated colour, and a user-typed `MusicProject.cardInitials` wins over the derived letters (`projectCardInitials` resolves that order; blank means "go back to derived", never a blank card).
+- Every card is the same size regardless of its name: the name block is a fixed two lines tall and the cover above it absorbs the difference. Anything else added to the footer has to keep that property, or one long title makes one card taller than the row.
+- The card's launch / open-folder / play icons sit on the cover, not in the footer, for the same reason. The first one follows session mode — bookmark instead of launch — exactly as the grid row and the context menu do.
+- Cards are ordered by `sortProjects` (`lib/utils/project_sort.dart`), shared with the mobile list's sort dropdown, driven by the device-local `dashboardCardSortProvider`. This is the *only* thing a view is allowed to do to the shared list.
+- The right-click menu on a project lives in `lib/ui/project_context_menu.dart` and is shared by the grid row and the card. Add new entries there — a second copy is how the two views drift apart.
 
 ### A grid row's "open full detail page" action uses `Icons.assignment` + `tooltipViewDetails`
 - Every `TrinaGrid` actions column that navigates to a dedicated detail page (not an inline edit dialog) uses `Icon(Icons.assignment)` with `tooltip: l10n.tooltipViewDetails`, matching `dashboard_page.dart`'s project rows. Keep new detail-page entry points (grid action icon, row double-tap) consistent with this rather than inventing a new icon/label per page.
@@ -128,14 +163,23 @@ Instructions for AI assistants working on this codebase.
 | Metadata extractor (BPM, key, DAW version) | `lib/services/metadata_extractor.dart` |
 | Google Drive sync (not available inside Flatpak) | `lib/services/google_drive_sync_service.dart` |
 | Local backup/restore (Flatpak's only backup path) | `lib/services/backup_service.dart` |
+| Archive a project to a verified zip, and restore it | `lib/services/project_archive_service.dart` |
+| Move one project's files, rewriting its stored paths | `lib/services/project_move_service.dart` |
+| "Does another project share this folder?" (archive scope + move) | `lib/utils/project_folder_utils.dart` |
 | Version stack list (project detail) | `lib/ui/widgets/project_versions_section.dart` |
 | Settings hub — single scrollable page, left nav jumps to section | `lib/ui/settings_page.dart` |
 | Main dashboard | `lib/ui/dashboard_page.dart` |
+| Dashboard card/gallery view | `lib/ui/widgets/project_card_grid.dart` |
+| Project right-click menu (grid + cards) | `lib/ui/project_context_menu.dart` |
+| Sorting shared by cards + mobile list | `lib/utils/project_sort.dart` |
 | Project detail / editor | `lib/ui/project_detail_page.dart` |
 | Localization strings (source of truth) | `lib/l10n/app_en.arb` |
 | Theme specs, builder and providers | `lib/providers/theme_provider.dart` |
 | Theme spec model (`CustomTheme`) | `lib/models/custom_theme.dart` |
 | Theme-derived values (grid colors, vivid-accent test) | `lib/utils/theme_derivations.dart` |
+| Per-project accent color + icon resolution | `lib/utils/project_visuals.dart` |
+| Project cover art tile + grid-row bleed | `lib/ui/widgets/project_cover_avatar.dart` |
+| Project appearance editor (cover, color, icon) | `lib/ui/dialogs/project_appearance_dialog.dart` |
 | Theme editor / color picker dialogs | `lib/ui/dialogs/theme_editor_dialog.dart`, `lib/ui/dialogs/color_picker_dialog.dart` |
 | Theme merge rules shared by backup + Drive sync | `lib/services/custom_theme_merge.dart` |
 | Platform helpers | `lib/utils/mobile_utils.dart` |
