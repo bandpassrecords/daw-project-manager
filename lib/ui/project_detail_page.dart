@@ -2967,13 +2967,20 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     }
   }
 
-  /// Applies [value] to whichever player owns playback. The desktop bar owns
-  /// its own volume control, so there it stays a local-only setting.
+  /// Applies [value] to whichever player is actually making the sound.
+  ///
+  /// On desktop, pressing play here hands the track to the bottom bar, so
+  /// the bar's player is the one to change. This used to fall through to the
+  /// page's own AudioPlayer, which sits idle in that case: the slider and
+  /// ctrl+wheel moved while the audible level stayed exactly where it was.
   Future<void> _applyVolume(double value) async {
-    if (_playbackTarget == PlaybackTarget.mobilePlayer) {
-      await ref.read(mobilePlayerProvider.notifier).setVolume(value);
-    } else {
-      await _audioPlayer.setVolume(value);
+    switch (_playbackTarget) {
+      case PlaybackTarget.mobilePlayer:
+        await ref.read(mobilePlayerProvider.notifier).setVolume(value);
+      case PlaybackTarget.desktopPlayerBar:
+        ref.read(desktopPlayerVolumeProvider.notifier).set(value);
+      case PlaybackTarget.local:
+        await _audioPlayer.setVolume(value);
     }
   }
 
@@ -3451,6 +3458,14 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
       final barOwnsTrack =
           ref.watch(desktopPlayerProvider)?.project.id == widget.project.id;
       if (barOwnsTrack) {
+        // Mirror the bar's level too, so a change made on the bar shows here
+        // rather than leaving this slider at a stale value.
+        final barVolume = ref.watch(desktopPlayerVolumeProvider);
+        if (barVolume != _volume) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _volume = barVolume);
+          });
+        }
         final barPosition = ref.watch(desktopPlayerPositionProvider);
         final barDuration = ref.watch(desktopPlayerDurationProvider);
         if (barPosition != _position || barDuration != _duration) {

@@ -206,5 +206,77 @@ void main() {
       );
       expect(find.byKey(playerArea), findsOneWidget);
     });
+
+    group('inside a scrolling page', () {
+      // The project and release pages both scroll. A Listener alone sees the
+      // wheel but does not stop the scroll view acting on it too, so
+      // ctrl+wheel used to change the volume and scroll the player away.
+      Future<ScrollController> pumpInScrollView(
+        WidgetTester tester, {
+        required double volume,
+        required ValueChanged<double> onChanged,
+      }) async {
+        final controller = ScrollController();
+        addTearDown(controller.dispose);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: ListView(
+                controller: controller,
+                children: [
+                  CtrlWheelVolume(
+                    volume: volume,
+                    onVolumeChanged: onChanged,
+                    child: const SizedBox(
+                      key: playerArea,
+                      width: 200,
+                      height: 200,
+                    ),
+                  ),
+                  const SizedBox(height: 3000),
+                ],
+              ),
+            ),
+          ),
+        );
+        return controller;
+      }
+
+      testWidgets('ctrl+wheel changes the volume and does not scroll',
+          (tester) async {
+        double? received;
+        final controller = await pumpInScrollView(
+          tester,
+          volume: 0.5,
+          onChanged: (v) => received = v,
+        );
+
+        await holdingKey(
+          LogicalKeyboardKey.controlLeft,
+          () => scrollOver(
+              tester, tester.getCenter(find.byKey(playerArea)), 100),
+        );
+        await tester.pumpAndSettle();
+
+        expect(received, closeTo(0.45, 1e-9));
+        expect(controller.offset, 0,
+            reason: 'the page must stay put under the player');
+      });
+
+      testWidgets('a plain wheel still scrolls the page', (tester) async {
+        double? received;
+        final controller = await pumpInScrollView(
+          tester,
+          volume: 0.5,
+          onChanged: (v) => received = v,
+        );
+
+        await scrollOver(tester, tester.getCenter(find.byKey(playerArea)), 100);
+        await tester.pumpAndSettle();
+
+        expect(received, isNull);
+        expect(controller.offset, greaterThan(0));
+      });
+    });
   });
 }

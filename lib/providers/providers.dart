@@ -28,6 +28,7 @@ import '../utils/scan_root_filters.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
 import '../services/audio_analysis_service.dart';
+import '../services/player_volume_store.dart';
 import '../services/thumbnail_toolbar_service.dart';
 import '../services/waveform_disk_cache.dart';
 import '../models/project_detail_layout.dart';
@@ -2898,6 +2899,32 @@ class DesktopPlayerSeekNotifier extends Notifier<DesktopPlayerSeekRequest?> {
 final desktopPlayerSeekRequestProvider =
     NotifierProvider<DesktopPlayerSeekNotifier, DesktopPlayerSeekRequest?>(
       DesktopPlayerSeekNotifier.new,
+    );
+
+/// The desktop player bar's volume, published by the bar and settable from
+/// any page showing the track the bar is playing.
+///
+/// Pressing play on the project page hands the track to the bar, so the
+/// page's own slider and ctrl+wheel have to drive the *bar's* player —
+/// setting the page's idle AudioPlayer instead moved the slider while the
+/// audible level stayed put. Works like [desktopPlayerSeekRequestProvider],
+/// except the value also flows back so the page can mirror a change made on
+/// the bar.
+class DesktopPlayerVolumeNotifier extends Notifier<double> {
+  @override
+  double build() => PlayerVolumeStore.current;
+
+  /// Sets the level, clamped. A no-op for the value already held, which is
+  /// what stops the bar and a page echoing one change back and forth.
+  void set(double volume) {
+    final clamped = clampVolume(volume);
+    if (clamped != state) state = clamped;
+  }
+}
+
+final desktopPlayerVolumeProvider =
+    NotifierProvider<DesktopPlayerVolumeNotifier, double>(
+      DesktopPlayerVolumeNotifier.new,
     );
 
 /// Incremented each time the desktop player finishes a track naturally.

@@ -9842,6 +9842,9 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     if (value > 0) _preMuteVolume = value;
     _player.setVolume(value);
     unawaited(PlayerVolumeStore.save(value));
+    // Published so a page showing this track (the project page) can mirror
+    // the level and drive it — see desktopPlayerVolumeProvider.
+    ref.read(desktopPlayerVolumeProvider.notifier).set(value);
   }
 
   bool _supportsMonoMix() {
@@ -10222,6 +10225,12 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     // project's row again while it's already loaded here).
     ref.listen(desktopPlayerToggleRequestProvider, (prev, next) {
       if (prev != null && prev != next) _togglePlayPause();
+    });
+    // A volume change made from a page showing this track — the project
+    // page's slider or ctrl+wheel. Our own changes come back through here too
+    // and are dropped by the equality check.
+    ref.listen<double>(desktopPlayerVolumeProvider, (prev, next) {
+      if (next != _volume) _setVolume(next);
     });
     // Jump to a project marker clicked somewhere else in the app, on the
     // track this bar already has loaded.

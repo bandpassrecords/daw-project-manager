@@ -77,8 +77,18 @@ class CtrlWheelVolume extends StatelessWidget {
       onPointerSignal: (event) {
         if (event is! PointerScrollEvent) return;
         if (!isVolumeScrollModifierHeld()) return;
-        final next = volumeAfterScroll(volume, event.scrollDelta.dy);
-        if (next != volume) onVolumeChanged(next);
+        // Claimed through the resolver rather than handled directly: a
+        // Listener sees the event but does not stop an enclosing scroll
+        // view acting on it too, so on a scrolling page (the project page,
+        // the release page) ctrl+wheel changed the volume *and* scrolled
+        // the player out from under the cursor. The first registrant wins,
+        // and this sits deeper in the tree than any scroll view around it,
+        // so it registers first. Plain scrolling is never claimed.
+        GestureBinding.instance.pointerSignalResolver.register(event, (e) {
+          final scroll = e as PointerScrollEvent;
+          final next = volumeAfterScroll(volume, scroll.scrollDelta.dy);
+          if (next != volume) onVolumeChanged(next);
+        });
       },
       child: child,
     );
