@@ -210,6 +210,22 @@ class _ProjectCardGridState extends State<ProjectCardGrid> {
   }
 }
 
+/// The mask a card's cover art is drawn through: full strength over the top
+/// of the cover, fading to transparent at the bottom edge where the action
+/// buttons sit.
+///
+/// Starts fading at [kCardCoverFadeStart] rather than halfway, so the artwork
+/// still reads as the card's picture and only its foot gives way.
+LinearGradient cardCoverFade() => const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Colors.white, Colors.white, Colors.transparent],
+      stops: [0.0, kCardCoverFadeStart, 1.0],
+    );
+
+/// Fraction of the cover's height held at full strength before the fade.
+const double kCardCoverFadeStart = 0.6;
+
 class _ProjectCard extends StatefulWidget {
   const _ProjectCard({
     required this.project,
@@ -483,10 +499,17 @@ class _ProjectCardState extends State<_ProjectCard> {
     if (thumbnail != null &&
         thumbnail.isNotEmpty &&
         File(thumbnail).existsSync()) {
-      return Image.file(
-        File(thumbnail),
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => _buildGeneratedCover(accent),
+      // Faded out towards the bottom, where the launch/folder/play buttons
+      // sit: over a busy cover they were close to invisible. The card's own
+      // background shows through instead, which the buttons always read on.
+      return ShaderMask(
+        blendMode: BlendMode.dstIn,
+        shaderCallback: (bounds) => cardCoverFade().createShader(bounds),
+        child: Image.file(
+          File(thumbnail),
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => _buildGeneratedCover(accent),
+        ),
       );
     }
     return _buildGeneratedCover(accent);
