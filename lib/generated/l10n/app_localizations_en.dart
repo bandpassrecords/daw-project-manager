@@ -5682,4 +5682,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shortcutMouseWheel => 'Wheel';
+
+  @override
+  String get releaseTotalLengthLabel => 'Total length';
+
+  @override
+  String get releaseLengthNone =>
+      'No track has a length yet — play a track or type its length on the project page';
+
+  @override
+  String get songLengthHowItWorks =>
+      'Filled in automatically from the preview song — when it is played, or when a release containing this track is opened. You can also type it: 3:45, 1:02:03, or seconds.';
 }

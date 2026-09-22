@@ -5732,4 +5732,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get shortcutMouseWheel => 'Rueda';
+
+  @override
+  String get releaseTotalLengthLabel => 'Duración total';
+
+  @override
+  String get releaseLengthNone =>
+      'Ninguna pista tiene duración todavía: reproduce una pista o escribe su duración en la página del proyecto';
+
+  @override
+  String get songLengthHowItWorks =>
+      'Se rellena automáticamente a partir de la vista previa: al reproducirla o al abrir un lanzamiento que contenga esta pista. También puedes escribirla: 3:45, 1:02:03 o en segundos.';
 }

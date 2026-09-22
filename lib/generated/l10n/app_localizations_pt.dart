@@ -5701,4 +5701,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get shortcutMouseWheel => 'Rolagem';
+
+  @override
+  String get releaseTotalLengthLabel => 'Duração total';
+
+  @override
+  String get releaseLengthNone =>
+      'Nenhuma faixa tem duração ainda — toque uma faixa ou digite a duração na página do projeto';
+
+  @override
+  String get songLengthHowItWorks =>
+      'Preenchida automaticamente a partir da prévia — quando ela é tocada ou quando um lançamento com esta faixa é aberto. Você também pode digitar: 3:45, 1:02:03 ou em segundos.';
 }

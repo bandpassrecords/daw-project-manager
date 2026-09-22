@@ -3786,5 +3786,10 @@
 
   "shortcutPlayerMono": "Attiva/disattiva la riproduzione mono",
   "shortcutPlayerVolume": "Regola il volume",
-  "shortcutMouseWheel": "Rotellina"
+  "shortcutMouseWheel": "Rotellina",
+
+  "releaseTotalLengthLabel": "Durata totale",
+  "releaseLengthNone": "Nessuna traccia ha ancora una durata: riproduci una traccia o inserisci la durata nella pagina del progetto",
+
+  "songLengthHowItWorks": "Compilata automaticamente dall’anteprima: quando viene riprodotta o quando si apre una pubblicazione che contiene questa traccia. Puoi anche inserirla: 3:45, 1:02:03 o in secondi."
 }

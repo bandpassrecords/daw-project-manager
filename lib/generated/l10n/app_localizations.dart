@@ -9526,6 +9526,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wheel'**
   String get shortcutMouseWheel;
+
+  /// No description provided for @releaseTotalLengthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total length'**
+  String get releaseTotalLengthLabel;
+
+  /// No description provided for @releaseLengthNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No track has a length yet — play a track or type its length on the project page'**
+  String get releaseLengthNone;
+
+  /// No description provided for @songLengthHowItWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled in automatically from the preview song — when it is played, or when a release containing this track is opened. You can also type it: 3:45, 1:02:03, or seconds.'**
+  String get songLengthHowItWorks;
 }
 
 class _AppLocalizationsDelegate

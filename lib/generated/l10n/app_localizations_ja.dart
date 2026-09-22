@@ -5540,4 +5540,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shortcutMouseWheel => 'ホイール';
+
+  @override
+  String get releaseTotalLengthLabel => '合計の長さ';
+
+  @override
+  String get releaseLengthNone =>
+      '長さが設定されたトラックはまだありません。トラックを再生するか、プロジェクトページで長さを入力してください';
+
+  @override
+  String get songLengthHowItWorks =>
+      'プレビュー曲から自動で入力されます（再生したとき、またはこのトラックを含むリリースを開いたとき）。手入力も可能です：3:45、1:02:03、または秒数。';
 }

@@ -5719,4 +5719,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get shortcutMouseWheel => 'Mausrad';
+
+  @override
+  String get releaseTotalLengthLabel => 'Gesamtlänge';
+
+  @override
+  String get releaseLengthNone =>
+      'Noch kein Titel hat eine Länge — spielen Sie einen Titel ab oder geben Sie die Länge auf der Projektseite ein';
+
+  @override
+  String get songLengthHowItWorks =>
+      'Wird automatisch aus dem Vorschausong übernommen — beim Abspielen oder beim Öffnen eines Releases mit diesem Titel. Sie können sie auch eingeben: 3:45, 1:02:03 oder in Sekunden.';
 }

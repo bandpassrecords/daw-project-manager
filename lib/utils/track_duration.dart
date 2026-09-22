@@ -138,3 +138,21 @@ Future<MusicProject?> recordMeasuredDuration(
   await save(updated);
   return updated;
 }
+
+/// Which explanation the Length field's info icon shows, given where the
+/// project's length comes from. Takes the localized strings as arguments so
+/// the choice can be tested without a widget tree.
+///
+/// A typed length is reported even when a measured one also exists, because
+/// the typed one is what the field is showing.
+String songLengthSourceMessage({
+  required bool manual,
+  required bool measured,
+  required String typedByHand,
+  required String fromPreview,
+  required String howItWorks,
+}) {
+  if (manual) return typedByHand;
+  if (measured) return fromPreview;
+  return howItWorks;
+}

@@ -84,4 +84,32 @@ void main() {
       expect(shouldYieldReleaseAudio(fileId: 'track-3', owner: current), isTrue);
     });
   });
+
+  group('releaseRowHandlesKeys', () {
+    test('the row holding the floor answers', () {
+      expect(
+        releaseRowHandlesKeys(fileId: 'a', owner: 'a', isFallbackRow: false),
+        isTrue,
+      );
+    });
+
+    test('other rows stay quiet, fallback or not', () {
+      expect(
+        releaseRowHandlesKeys(fileId: 'b', owner: 'a', isFallbackRow: true),
+        isFalse,
+      );
+    });
+
+    test('before anything has played, the first playable row answers', () {
+      // Otherwise M and Space did nothing on a freshly opened release.
+      expect(
+        releaseRowHandlesKeys(fileId: 'a', owner: null, isFallbackRow: true),
+        isTrue,
+      );
+      expect(
+        releaseRowHandlesKeys(fileId: 'b', owner: null, isFallbackRow: false),
+        isFalse,
+      );
+    });
+  });
 }

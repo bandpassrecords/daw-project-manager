@@ -5721,4 +5721,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get shortcutMouseWheel => 'Rotellina';
+
+  @override
+  String get releaseTotalLengthLabel => 'Durata totale';
+
+  @override
+  String get releaseLengthNone =>
+      'Nessuna traccia ha ancora una durata: riproduci una traccia o inserisci la durata nella pagina del progetto';
+
+  @override
+  String get songLengthHowItWorks =>
+      'Compilata automaticamente dall’anteprima: quando viene riprodotta o quando si apre una pubblicazione che contiene questa traccia. Puoi anche inserirla: 3:45, 1:02:03 o in secondi.';
 }

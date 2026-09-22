@@ -5749,4 +5749,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shortcutMouseWheel => 'Molette';
+
+  @override
+  String get releaseTotalLengthLabel => 'Durée totale';
+
+  @override
+  String get releaseLengthNone =>
+      'Aucune piste n’a encore de durée — lisez une piste ou saisissez sa durée sur la page du projet';
+
+  @override
+  String get songLengthHowItWorks =>
+      'Renseignée automatiquement depuis l’aperçu — lorsqu’il est lu, ou à l’ouverture d’une sortie contenant cette piste. Vous pouvez aussi la saisir : 3:45, 1:02:03 ou en secondes.';
 }

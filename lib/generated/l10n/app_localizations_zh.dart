@@ -5479,4 +5479,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get shortcutMouseWheel => '滚轮';
+
+  @override
+  String get releaseTotalLengthLabel => '总时长';
+
+  @override
+  String get releaseLengthNone => '还没有曲目设置时长——播放曲目，或在项目页面输入时长';
+
+  @override
+  String get songLengthHowItWorks =>
+      '根据预览歌曲自动填写——在播放时，或打开包含此曲目的发行时。也可以手动输入：3:45、1:02:03 或秒数。';
 }

@@ -289,4 +289,29 @@ void main() {
       expect(tracksMissingDuration(const []), 0);
     });
   });
+
+  group('songLengthSourceMessage', () {
+    String pick({required bool manual, required bool measured}) =>
+        songLengthSourceMessage(
+          manual: manual,
+          measured: measured,
+          typedByHand: 'typed',
+          fromPreview: 'measured',
+          howItWorks: 'how',
+        );
+
+    test('a typed length says so, even when a measured one exists', () {
+      // The typed value is what the field shows, so that is what to explain.
+      expect(pick(manual: true, measured: true), 'typed');
+      expect(pick(manual: true, measured: false), 'typed');
+    });
+
+    test('a measured length says where it came from', () {
+      expect(pick(manual: false, measured: true), 'measured');
+    });
+
+    test('an empty field explains how a length arrives', () {
+      expect(pick(manual: false, measured: false), 'how');
+    });
+  });
 }

@@ -3786,5 +3786,10 @@
 
   "shortcutPlayerMono": "モノラル再生の切り替え",
   "shortcutPlayerVolume": "音量を調整",
-  "shortcutMouseWheel": "ホイール"
+  "shortcutMouseWheel": "ホイール",
+
+  "releaseTotalLengthLabel": "合計の長さ",
+  "releaseLengthNone": "長さが設定されたトラックはまだありません。トラックを再生するか、プロジェクトページで長さを入力してください",
+
+  "songLengthHowItWorks": "プレビュー曲から自動で入力されます（再生したとき、またはこのトラックを含むリリースを開いたとき）。手入力も可能です：3:45、1:02:03、または秒数。"
 }

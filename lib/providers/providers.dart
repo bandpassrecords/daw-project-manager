@@ -2749,8 +2749,12 @@ int breadcrumbPopCount({required int index, required int length}) {
   return length - 1 - index;
 }
 
-/// Which audio item on the release page currently owns playback, by file id,
-/// or null when nothing is playing.
+/// The release-page audio row that was last started, by file id — the one
+/// that owns playback and answers the keyboard — or null before any has been.
+///
+/// Pausing does **not** give the floor up: a paused row is still what Space
+/// should resume and what M should switch to mono. Only another row starting,
+/// or this one leaving the screen, moves it.
 ///
 /// Every audio file attached to a release builds its own player widget, so
 /// without a single owner two mixdowns play over each other the moment you
@@ -2785,6 +2789,19 @@ final playingReleaseAudioProvider =
     NotifierProvider<PlayingReleaseAudioNotifier, String?>(
       PlayingReleaseAudioNotifier.new,
     );
+
+/// Whether the release-page row for [fileId] should answer a player shortcut
+/// (Space, arrows, M).
+///
+/// The row holding the floor answers. Before any row has been started nobody
+/// holds it, and the first playable row stands in — otherwise the shortcuts
+/// would do nothing until something had been clicked.
+bool releaseRowHandlesKeys({
+  required String fileId,
+  required String? owner,
+  required bool isFallbackRow,
+}) =>
+    owner == null ? isFallbackRow : owner == fileId;
 
 /// Whether an item holding [fileId] should pause because [owner] has the
 /// floor. Pure — the rule the release page's audio items share.

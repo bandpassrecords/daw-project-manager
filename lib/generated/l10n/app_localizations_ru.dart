@@ -5702,4 +5702,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get shortcutMouseWheel => 'Колесо';
+
+  @override
+  String get releaseTotalLengthLabel => 'Общая длительность';
+
+  @override
+  String get releaseLengthNone =>
+      'Ни у одного трека пока нет длительности — воспроизведите трек или укажите длительность на странице проекта';
+
+  @override
+  String get songLengthHowItWorks =>
+      'Заполняется автоматически по превью — при его воспроизведении или при открытии релиза с этим треком. Можно ввести и вручную: 3:45, 1:02:03 или в секундах.';
 }

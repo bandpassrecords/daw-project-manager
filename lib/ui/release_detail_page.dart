@@ -41,6 +41,7 @@ import '../utils/track_duration.dart';
 import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/release_track_parts_chip.dart';
 import 'widgets/scroll_more_hint.dart';
+import 'widgets/release_total_length_footer.dart';
 import 'widgets/release_tracks_table.dart';
 import 'widgets/waveform_widget.dart';
 
@@ -763,13 +764,19 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                 // Right side: Tracklist and Files
                 Expanded(
                   flex: 2,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDesktopTracksSection(context, release, releaseProjects),
-                      const Divider(height: 2),
-                      _buildDesktopFilesSection(context, release),
-                    ],
+                  // Matches the left column's 16 px inset. Without it the
+                  // tracklist ran flush against the window's right edge, its
+                  // row actions crowding the border and the scrollbar.
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildDesktopTracksSection(context, release, releaseProjects),
+                        const Divider(height: 2),
+                        _buildDesktopFilesSection(context, release),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -997,6 +1004,10 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
   }
 
   Widget _buildDesktopTracksSection(BuildContext context, Release release, List<MusicProject> releaseProjects) {
+    final l10n = AppLocalizations.of(context)!;
+    // Reads each track's length off its preview file. Safe on every build —
+    // it latches after the first non-empty list (see _scheduleDurationFill).
+    _scheduleDurationFill(releaseProjects);
     return Expanded(
       flex: 1,
       child: Column(
@@ -1006,33 +1017,135 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.tracksCount(releaseProjects.length),
+                  l10n.tracksCount(releaseProjects.length),
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
+                const Spacer(),
+                // List for the running order (drag to reorder), table for
+                // reading the release at a glance and sorting it.
+                if (releaseProjects.isNotEmpty) ...[
+                  SegmentedButton<bool>(
+                    segments: [
+                      ButtonSegment(
+                        value: false,
+                        icon: const Icon(Icons.view_list, size: 18),
+                        tooltip: l10n.tracksViewList,
+                      ),
+                      ButtonSegment(
+                        value: true,
+                        icon: const Icon(Icons.table_rows, size: 18),
+                        tooltip: l10n.tracksViewTable,
+                      ),
+                    ],
+                    selected: {_tracksAsTable},
+                    showSelectedIcon: false,
+                    style: const ButtonStyle(
+                      visualDensity: VisualDensity.compact,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onSelectionChanged: (selection) =>
+                        setState(() => _tracksAsTable = selection.first),
+                  ),
+                  const SizedBox(width: 12),
+                ],
                 ElevatedButton.icon(
                   icon: const Icon(Icons.add),
-                  label: Text(AppLocalizations.of(context)!.addTracks),
+                  label: Text(l10n.addTracks),
                   onPressed: () => _handleAddTracks(context, release),
                 ),
               ],
             ),
           ),
           const Divider(),
-          // Tracks list
           Expanded(
-            child: ReorderableListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              buildDefaultDragHandles: false,
-              itemCount: releaseProjects.length,
-              onReorder: (oldIndex, newIndex) => _handleReorderTrack(release, oldIndex, newIndex),
-              itemBuilder: (context, index) => _buildDesktopTrackTile(context, release, releaseProjects[index], index),
-            ),
+            child: _tracksAsTable && releaseProjects.isNotEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: _buildTracksTable(context, release, releaseProjects),
+                  )
+                : ReorderableListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    buildDefaultDragHandles: false,
+                    itemCount: releaseProjects.length,
+                    onReorder: (oldIndex, newIndex) => _handleReorderTrack(release, oldIndex, newIndex),
+                    itemBuilder: (context, index) => _buildDesktopTrackTile(context, release, releaseProjects[index], index),
+                  ),
           ),
+          // Total running time, under the tracklist like on a sleeve.
+          const Divider(height: 1),
+          ReleaseTotalLengthFooter(projects: releaseProjects),
         ],
       ),
+    );
+  }
+
+  /// Everything shown under a track's name: DAW, BPM, key, length, phase,
+  /// the parts chip, and the project's note on a line of its own.
+  ///
+  /// One builder for both layouts. The desktop and mobile tracklists are
+  /// separate widgets, and extending only one of them is how the desktop list
+  /// went without lengths, notes and parts while the mobile one had them.
+  Widget _buildTrackDetails(BuildContext context, MusicProject project) {
+    final bullet = Text(
+      '•',
+      style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+    );
+    final note = projectNoteExcerpt(project);
+    final length = effectiveTrackDuration(project);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Wrap(
+          spacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            if (project.dawType != null && project.dawType!.isNotEmpty) ...[
+              Text(
+                project.dawVersion != null && project.dawVersion!.isNotEmpty
+                    ? '${project.dawType!} ${project.dawVersion!}'
+                    : project.dawType!,
+              ),
+              bullet,
+            ],
+            if (project.bpm != null) ...[
+              Text('${project.bpm!.toStringAsFixed(0)} ${AppLocalizations.of(context)!.bpm}'),
+              bullet,
+            ],
+            if (project.musicalKey != null && project.musicalKey!.isNotEmpty) ...[
+              Text(project.musicalKey!),
+              bullet,
+            ],
+            if (length != null) ...[
+              Text(formatTrackDuration(length)),
+              bullet,
+            ],
+            Text(
+              _translateStatus(context, project.status),
+              style: TextStyle(
+                color: _getStatusColor(project.status),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            // Draws nothing for a song with no parts listed.
+            ReleaseTrackPartsChip(project: project, compact: true),
+          ],
+        ),
+        if (note != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              note,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -1065,35 +1178,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
             child: Icon(Icons.drag_indicator, color: Theme.of(context).textTheme.bodyMedium?.color),
           ),
           title: Text(project.displayName),
-          subtitle: Wrap(
-            spacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              if (project.dawType != null && project.dawType!.isNotEmpty) ...[
-                Text(
-                  project.dawVersion != null && project.dawVersion!.isNotEmpty
-                      ? '${project.dawType!} ${project.dawVersion!}'
-                      : project.dawType!,
-                ),
-                Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
-              ],
-              if (project.bpm != null) ...[
-                Text('${project.bpm!.toStringAsFixed(0)} ${AppLocalizations.of(context)!.bpm}'),
-                Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
-              ],
-              if (project.musicalKey != null && project.musicalKey!.isNotEmpty) ...[
-                Text(project.musicalKey!),
-                Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
-              ],
-              Text(
-                _translateStatus(context, project.status),
-                style: TextStyle(
-                  color: _getStatusColor(project.status),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
+          isThreeLine: projectNoteExcerpt(project) != null,
+          subtitle: _buildTrackDetails(context, project),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1520,8 +1606,10 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
     );
   }
 
+  /// The tracklist for the **mobile** layout only. Desktop builds its own in
+  /// [_buildDesktopTracksSection]; the two share [_buildTrackDetails] so a
+  /// detail added to one shows up in both.
   Widget _buildTracksSection(BuildContext context, Release release, List<MusicProject> releaseProjects) {
-    final isMobile = MobileUtils.isMobile();
     // Safe to call on every build — it latches after the first real list.
     _scheduleDurationFill(releaseProjects);
     return Card(
@@ -1531,16 +1619,13 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Tracks Section Header
-            isMobile
-                ? Column(
+            Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         AppLocalizations.of(context)!.tracksCount(releaseProjects.length),
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 4),
-                      _ReleaseTotalLength(projects: releaseProjects),
                       const SizedBox(height: 8),
                       SizedBox(
                         width: double.infinity,
@@ -1581,87 +1666,12 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                         ),
                       ),
                     ],
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.tracksCount(releaseProjects.length),
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      const SizedBox(width: 12),
-                      _ReleaseTotalLength(projects: releaseProjects),
-                      const Spacer(),
-                      // List ↔ table. Desktop only: the table's seven columns
-                      // have nowhere to go on a phone, where the list is
-                      // already the right shape.
-                      if (releaseProjects.isNotEmpty) ...[
-                        SegmentedButton<bool>(
-                          segments: [
-                            ButtonSegment(
-                              value: false,
-                              icon: const Icon(Icons.view_list, size: 18),
-                              tooltip: AppLocalizations.of(context)!.tracksViewList,
-                            ),
-                            ButtonSegment(
-                              value: true,
-                              icon: const Icon(Icons.table_rows, size: 18),
-                              tooltip: AppLocalizations.of(context)!.tracksViewTable,
-                            ),
-                          ],
-                          selected: {_tracksAsTable},
-                          showSelectedIcon: false,
-                          style: const ButtonStyle(
-                            visualDensity: VisualDensity.compact,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          onSelectionChanged: (selection) =>
-                              setState(() => _tracksAsTable = selection.first),
-                        ),
-                        const SizedBox(width: 12),
-                      ],
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.add),
-                        label: Text(AppLocalizations.of(context)!.addTracks),
-                        onPressed: () async {
-                          final allProjectsAsync = ref.read(allProjectsStreamProvider);
-                          final allProjects = allProjectsAsync.value ?? [];
-                          final availableProjects = allProjects.where((p) => !release.trackIds.contains(p.id)).toList();
-                          
-                          if (availableProjects.isEmpty) {
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(AppLocalizations.of(context)!.allProjectsAlreadyInRelease)),
-                              );
-                            }
-                            return;
-                          }
-
-                          final selectedIds = await showDialog<List<String>>(
-                            context: context,
-                            builder: (context) => _TrackSelectionDialog(projects: availableProjects),
-                          );
-
-                          if (selectedIds != null && selectedIds.isNotEmpty) {
-                            final repo = await ref.read(repositoryProvider.future);
-                            final updatedTrackIds = {...release.trackIds, ...selectedIds}.toList();
-                            final updatedRelease = release.copyWith(trackIds: updatedTrackIds);
-                            await repo.updateRelease(updatedRelease);
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length, selectedIds.length == 1 ? '' : 's'))),
-                              );
-                            }
-                          }
-                        },
-                      ),
-                    ],
                   ),
             const Divider(),
             // Tracks List
             ConstrainedBox(
               constraints: BoxConstraints(
-                maxHeight: isMobile ? 400 : 600,
+                maxHeight: 400,
               ),
               child: releaseProjects.isEmpty
                   ? Center(
@@ -1673,8 +1683,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                         ),
                       ),
                     )
-                  : (!isMobile && _tracksAsTable)
-                  ? _buildTracksTable(context, release, releaseProjects)
                   : ReorderableListView.builder(
                       shrinkWrap: true,
                       physics: const AlwaysScrollableScrollPhysics(),
@@ -1698,11 +1706,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                         // /.band) resolves to its parent folder, not the bundle.
                         final folderPath =
                             ScannerService.projectContainingFolder(project.filePath);
-                        final fileExists = File(project.filePath).existsSync() ||
-                            Directory(project.filePath).existsSync();
-                        final sessionMode = ref.watch(sessionModeProvider);
-                        final isSubscribed = sessionMode &&
-                            ref.watch(activeProjectProvider)?.id == project.id;
 
                         return Card(
                           key: ValueKey(project.id),
@@ -1716,168 +1719,14 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                                 ),
                               );
                             },
-                            child: isMobile
-                                ? _buildMobileTrackTile(context, project, release, folderPath, index)
-                                : ListTile(
-                                    leading: ReorderableDragStartListener(
-                                      index: index,
-                                      child: Icon(Icons.drag_indicator, color: Theme.of(context).textTheme.bodyMedium?.color),
-                                    ),
-                                    title: Text(project.displayName),
-                                    isThreeLine:
-                                        projectNoteExcerpt(project) != null,
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Wrap(
-                                          spacing: 8,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.center,
-                                          children: [
-                                        if (project.dawType != null && project.dawType!.isNotEmpty) ...[
-                                          Text(
-                                            project.dawVersion != null && project.dawVersion!.isNotEmpty
-                                                ? '${project.dawType!} ${project.dawVersion!}'
-                                                : project.dawType!,
-                                          ),
-                                          Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
-                                        ],
-                                        if (project.bpm != null) ...[
-                                          Text('${project.bpm!.toStringAsFixed(0)} ${AppLocalizations.of(context)!.bpm}'),
-                                          Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
-                                        ],
-                                        if (project.musicalKey != null && project.musicalKey!.isNotEmpty) ...[
-                                          Text(project.musicalKey!),
-                                          Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
-                                        ],
-                                        if (effectiveTrackDuration(project) case final length?) ...[
-                                          Text(formatTrackDuration(length)),
-                                          Text('•', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
-                                        ],
-                                        Text(
-                                          _translateStatus(context, project.status),
-                                          style: TextStyle(
-                                            color: _getStatusColor(project.status),
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        // Same indicator the table's Parts
-                                        // column shows, so the two views of
-                                        // the tracklist agree; draws nothing
-                                        // for a song with no parts listed.
-                                            ReleaseTrackPartsChip(project: project, compact: true),
-                                          ],
-                                        ),
-                                        // The project's own note, one line, so
-                                        // the default view carries the same
-                                        // detail the table's Notes column does
-                                        // — the table is behind a toggle and
-                                        // easy to miss.
-                                        if (projectNoteExcerpt(project)
-                                            case final note?)
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 2),
-                                            child: Text(
-                                              note,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.copyWith(
-                                                fontStyle: FontStyle.italic,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        // Launch button - only on desktop
-                                        if (!isMobile)
-                                          IconButton(
-                                            icon: Icon(sessionMode
-                                                ? (isSubscribed ? Icons.bookmark : Icons.bookmark_add_outlined)
-                                                : Icons.open_in_new),
-                                            color: isSubscribed ? Colors.green.shade400 : null,
-                                            tooltip: sessionMode
-                                                ? (isSubscribed
-                                                    ? AppLocalizations.of(context)!.endSession
-                                                    : AppLocalizations.of(context)!.startSession)
-                                                : AppLocalizations.of(context)!.tooltipLaunchInDaw,
-                                            onPressed: sessionMode
-                                                ? () => isSubscribed
-                                                    ? confirmEndSession(context, ref)
-                                                    : confirmStartSession(context, ref, project)
-                                                : (fileExists
-                                                    ? () => launchProjectInDaw(context, ref, project)
-                                                    : null),
-                                          ),
-                                        // Separator - only if Launch button is shown
-                                        if (!isMobile)
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                            child: Text(
-                                              '|',
-                                              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.5), fontSize: 18),
-                                            ),
-                                          ),
-                                        IconButton(
-                                          icon: const Icon(Icons.assignment),
-                                          tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
-                                          onPressed: () async {
-                                            await Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (_) => ProjectDetailPage(projectId: project.id),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        // Open Folder button - only on desktop
-                                        if (!isMobile)
-                                          IconButton(
-                                            icon: const Icon(Icons.folder_open),
-                                            tooltip: AppLocalizations.of(context)!.openFolder,
-                                            onPressed: fileExists ? () async {
-                                              final success = await FileLauncher.openFolder(folderPath);
-                                              if (success && context.mounted) {
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(content: Text(AppLocalizations.of(context)!.openingFolder(project.displayName))),
-                                                );
-                                              }
-                                            } : null,
-                                          ),
-                                        // Separator - only if Open Folder button is shown
-                                        if (!isMobile)
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                            child: Text(
-                                              '|',
-                                              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.5), fontSize: 18),
-                                            ),
-                                          ),
-                                        IconButton(
-                                          icon: const Icon(Icons.remove_circle_outline),
-                                          color: Colors.red.shade300,
-                                          tooltip: AppLocalizations.of(context)!.tooltipRemoveFromRelease,
-                                          // Shared with the table view so the
-                                          // wording and the write are identical
-                                          // whichever view the user is in.
-                                          onPressed: () =>
-                                              _confirmRemoveTrackFromRelease(
-                                                  release, project),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                            child: _buildMobileTrackTile(context, project, release, folderPath, index),
                           ),
                         );
                       },
                     ),
             ),
+            // Total running time, under the tracklist like on a sleeve.
+            ReleaseTotalLengthFooter(projects: releaseProjects),
           ],
         ),
       ),
@@ -1912,49 +1761,11 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
       // remediation prompts.
       onLaunch: (project) => launchProjectInDaw(context, ref, project),
       onRemoveFromRelease: (project) =>
-          _confirmRemoveTrackFromRelease(release, project),
+          _handleRemoveTrack(context, release, project),
       onOpenParts: (project) => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => ProjectPartsPage(projectId: project.id),
         ),
-      ),
-    );
-  }
-
-  /// Removes [project] from [release] after one confirmation. Shared by the
-  /// list and the table so the wording and the write are identical.
-  Future<void> _confirmRemoveTrackFromRelease(
-    Release release,
-    MusicProject project,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Theme.of(context).cardColor,
-        title: Text(l10n.tooltipRemoveFromRelease),
-        content: Text(l10n.removeTrackFromReleaseMessage(project.displayName)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade300,
-              foregroundColor: Colors.black,
-            ),
-            child: Text(l10n.remove),
-          ),
-        ],
-      ),
-    );
-    if (confirm != true || !mounted) return;
-    final repo = await ref.read(repositoryProvider.future);
-    await repo.updateRelease(
-      release.copyWith(
-        trackIds: release.trackIds.where((id) => id != project.id).toList(),
       ),
     );
   }
@@ -2226,6 +2037,12 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
   @override
   Widget build(BuildContext context) {
     final audioFiles = widget.files.where((f) => f.fileType == 'audio').toList();
+    // Stands in for shortcuts until something is played. The first file that
+    // is actually on disk — a missing one has no player to drive.
+    final fallbackFileId = audioFiles
+        .where((f) => File(f.filePath).existsSync())
+        .firstOrNull
+        ?.id;
     final otherFiles = widget.files.where((f) => f.fileType != 'audio').toList();
 
     return ListView(
@@ -2252,6 +2069,7 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
                   key: ValueKey(file.id),
                   file: file,
                   release: widget.release,
+                  isKeyboardFallback: file.id == fallbackFileId,
                   onDelete: () => _deleteFile(file),
                   onRename: (updatedFile) => _renameFile(updatedFile),
                 );
@@ -2361,12 +2179,17 @@ class _AudioFileItem extends ConsumerStatefulWidget {
   final VoidCallback onDelete;
   final Function(ReleaseFile) onRename;
 
+  /// The row that answers player shortcuts before any row has been started.
+  /// True for the first playable file only — see releaseRowHandlesKeys.
+  final bool isKeyboardFallback;
+
   const _AudioFileItem({
     super.key,
     required this.file,
     required this.release,
     required this.onDelete,
     required this.onRename,
+    this.isKeyboardFallback = false,
   });
 
   @override
@@ -2406,7 +2229,6 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     player.onPlayerComplete.listen((_) {
       if (gen != _playerGen || !mounted) return;
       setState(() { _isPlaying = false; _position = Duration.zero; _playbackEnded = true; });
-      ref.read(playingReleaseAudioProvider.notifier).releaseFloor(widget.file.id);
     });
   }
 
@@ -2499,7 +2321,16 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) return false;
     if (!mounted) return false;
     if (isTextInputFocused()) return false;
-    if (ref.read(playingReleaseAudioProvider) != widget.file.id) return false;
+    // Keyboard handlers are global: without this, a release row would keep
+    // answering Space and M while the project page is open on top of it.
+    if (!(ModalRoute.of(context)?.isCurrent ?? true)) return false;
+    if (!releaseRowHandlesKeys(
+      fileId: widget.file.id,
+      owner: ref.read(playingReleaseAudioProvider),
+      isFallbackRow: widget.isKeyboardFallback,
+    )) {
+      return false;
+    }
 
     final modified = HardwareKeyboard.instance.isControlPressed ||
         HardwareKeyboard.instance.isMetaPressed;
@@ -2653,9 +2484,9 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
       // Take the floor before starting, so any sibling already playing has
       // paused by the time this one makes a sound.
       ref.read(playingReleaseAudioProvider.notifier).claim(widget.file.id);
-    } else {
-      ref.read(playingReleaseAudioProvider.notifier).releaseFloor(widget.file.id);
     }
+    // Pausing keeps the floor: this row is still what Space resumes and M
+    // switches to mono.
     try {
       if (_isPlaying) {
         await _audioPlayer.pause();
@@ -2682,7 +2513,6 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
 
   Future<void> _stop() async {
     await _audioPlayer.stop();
-    ref.read(playingReleaseAudioProvider.notifier).releaseFloor(widget.file.id);
     setState(() {
       _position = Duration.zero;
       _playbackEnded = false;
@@ -3050,49 +2880,3 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
   }
 }
 
-/// Combined running time of a release, next to its track count.
-///
-/// Draws nothing until at least one track has a length, so a release nobody
-/// has timed yet shows no figure rather than a misleading 0:00. When only
-/// some tracks are timed it says so — the total is a floor, not a fact, and
-/// presenting it as exact would be wrong on a half-filled-in release.
-class _ReleaseTotalLength extends StatelessWidget {
-  const _ReleaseTotalLength({required this.projects});
-
-  final List<MusicProject> projects;
-
-  @override
-  Widget build(BuildContext context) {
-    final total = releaseTotalDuration(projects);
-    if (total == Duration.zero) return const SizedBox.shrink();
-
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final missing = tracksMissingDuration(projects);
-
-    return Tooltip(
-      message: missing > 0
-          ? l10n.releaseLengthPartial(missing)
-          : l10n.releaseLengthComplete,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.timer_outlined,
-            size: 15,
-            color: theme.textTheme.bodySmall?.color,
-          ),
-          const SizedBox(width: 5),
-          Text(
-            missing > 0
-                ? l10n.releaseLengthAtLeast(formatTrackDuration(total))
-                : formatTrackDuration(total),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.textTheme.bodySmall?.color,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

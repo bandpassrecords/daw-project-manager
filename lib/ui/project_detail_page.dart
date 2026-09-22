@@ -1314,11 +1314,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                         decoration: InputDecoration(
                                           labelText: AppLocalizations.of(context)!.songLength,
                                           hintText: AppLocalizations.of(context)!.songLengthHint,
-                                          helperText: hasManualTrackDuration(updatedProject)
-                                              ? AppLocalizations.of(context)!.songLengthManual
-                                              : (updatedProject.autoDurationMs != null
-                                                  ? AppLocalizations.of(context)!.songLengthFromPreview
-                                                  : null),
+                                          // Where the value comes from, on hover rather than as a line of
+                                          // text under the field — it only matters when you wonder.
+                                          suffixIcon: _SongLengthInfo(project: updatedProject),
                                           prefixIcon: const Icon(Icons.timer_outlined, size: 18),
                                         ),
                                         onChanged: (_) => _scheduleAutoSave(),
@@ -1428,11 +1426,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                             decoration: InputDecoration(
                                               labelText: AppLocalizations.of(context)!.songLength,
                                               hintText: AppLocalizations.of(context)!.songLengthHint,
-                                              helperText: hasManualTrackDuration(updatedProject)
-                                                  ? AppLocalizations.of(context)!.songLengthManual
-                                                  : (updatedProject.autoDurationMs != null
-                                                      ? AppLocalizations.of(context)!.songLengthFromPreview
-                                                      : null),
+                                              // Where the value comes from, on hover rather than as a line of
+                                              // text under the field — it only matters when you wonder.
+                                              suffixIcon: _SongLengthInfo(project: updatedProject),
                                               prefixIcon: const Icon(Icons.timer_outlined, size: 18),
                                             ),
                                             onChanged: (_) => _scheduleAutoSave(),
@@ -4613,4 +4609,38 @@ class _DetailSection {
   final IconData icon;
   final String label;
   final List<Widget> children;
+}
+
+/// The info icon at the end of the Length field, explaining on hover where
+/// the value in the field came from.
+///
+/// Three cases, because the field alone cannot tell them apart: a length
+/// typed by hand (which wins, and clearing it falls back to the measured one),
+/// a length measured off the preview song, and none yet — where the useful
+/// thing to say is how one arrives.
+class _SongLengthInfo extends StatelessWidget {
+  const _SongLengthInfo({required this.project});
+
+  final MusicProject project;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final message = songLengthSourceMessage(
+      manual: hasManualTrackDuration(project),
+      measured: project.autoDurationMs != null && project.autoDurationMs! > 0,
+      typedByHand: l10n.songLengthManual,
+      fromPreview: l10n.songLengthFromPreview,
+      howItWorks: l10n.songLengthHowItWorks,
+    );
+    return Tooltip(
+      message: message,
+      waitDuration: const Duration(milliseconds: 300),
+      child: Icon(
+        Icons.info_outline,
+        size: 18,
+        color: Theme.of(context).textTheme.bodySmall?.color,
+      ),
+    );
+  }
 }
