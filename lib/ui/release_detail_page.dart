@@ -1110,9 +1110,11 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
           ),
           title: Text(project.displayName),
           isThreeLine: ReleaseTrackDetails.isTwoLines(project),
-          subtitle: ReleaseTrackDetails.hasContent(project)
-              ? ReleaseTrackDetails(project: project)
-              : null,
+          subtitle: ReleaseTrackDetails(
+            project: project,
+            phaseLabel: _translateStatus(context, project.status),
+            phaseColor: _getStatusColor(project.status),
+          ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1725,12 +1727,14 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                       project.displayName,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    // Length, parts and note — the same details, from the
-                    // same widget, as the desktop tracklist.
-                    if (ReleaseTrackDetails.hasContent(project)) ...[
-                      const SizedBox(height: 4),
-                      ReleaseTrackDetails(project: project),
-                    ],
+                    // The same details, from the same widget, as the
+                    // desktop tracklist.
+                    const SizedBox(height: 4),
+                    ReleaseTrackDetails(
+                      project: project,
+                      phaseLabel: _translateStatus(context, project.status),
+                      phaseColor: _getStatusColor(project.status),
+                    ),
                   ],
                 ),
               ),

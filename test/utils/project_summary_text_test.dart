@@ -11,9 +11,7 @@ void main() {
       expect(projectNoteExcerpt(project), 'Needs a re-amp');
     });
 
-    test('prefers the user\'s notes over the DAW-extracted ones', () {
-      // Someone who typed a line about a song said something deliberate;
-      // projectNotes is whatever the project file happened to carry.
+    test("uses the user's notes when there are DAW notes too", () {
       final project = TestFactories.makeProject(
         notes: 'Mine',
         projectNotes: 'From the DAW',
@@ -21,20 +19,23 @@ void main() {
       expect(projectNoteExcerpt(project), 'Mine');
     });
 
-    test('falls back to the DAW notes when the user wrote none', () {
+    test('never shows the DAW-extracted notes', () {
+      // The project file's embedded text is session scratch, not the user's
+      // word on the song; it used to be the fallback and was taken out.
       final project = TestFactories.makeProject(
         notes: null,
         projectNotes: 'From the DAW',
       );
-      expect(projectNoteExcerpt(project), 'From the DAW');
+      expect(projectNoteExcerpt(project), isNull);
+      expect(projectNoteFullText(project), isNull);
     });
 
-    test('treats blank notes as absent and falls through', () {
+    test('blank user notes do not fall through to the DAW ones', () {
       final project = TestFactories.makeProject(
         notes: '   \n  ',
         projectNotes: 'From the DAW',
       );
-      expect(projectNoteExcerpt(project), 'From the DAW');
+      expect(projectNoteExcerpt(project), isNull);
     });
 
     test('returns null when there is nothing at all', () {

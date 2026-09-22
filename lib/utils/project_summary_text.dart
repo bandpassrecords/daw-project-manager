@@ -8,12 +8,14 @@ import '../models/music_project.dart';
 /// carrying a whole paragraph around, not about pixels.
 const int kNoteExcerptMaxChars = 120;
 
-/// [project]'s notes flattened to a single line, or null when it has none.
+/// The notes the user wrote on [project], flattened to a single line, or null
+/// when they wrote none.
 ///
-/// Prefers the user's own notes over the DAW-extracted ones: someone who typed
-/// a line about a song said something deliberate, whereas `projectNotes` is
-/// whatever the project file happened to carry. Falls back to the DAW text so a
-/// row is not blank when that is all there is.
+/// Only the user's own [MusicProject.notes] — never the DAW-extracted
+/// `projectNotes`. On a release tracklist the note is the user's word on the
+/// song; the project file's embedded text is session scratch (plug-in notes,
+/// comments left in the DAW) that reads as noise there. It used to be the
+/// fallback when no note was typed, and was taken out for that reason.
 ///
 /// Newlines and runs of whitespace collapse to single spaces — a two-paragraph
 /// note must not blow up a table row's height, and the full text is still
@@ -22,27 +24,21 @@ String? projectNoteExcerpt(
   MusicProject project, {
   int maxChars = kNoteExcerptMaxChars,
 }) {
-  final source = _firstNonBlank([project.notes, project.projectNotes]);
-  if (source == null) return null;
-  final flattened = source.replaceAll(RegExp(r'\s+'), ' ').trim();
-  if (flattened.isEmpty) return null;
+  final flattened = _flatten(project.notes);
+  if (flattened == null) return null;
   return _truncate(flattened, maxChars);
 }
 
 /// The full note text behind [projectNoteExcerpt], flattened but uncut — what
 /// a tooltip shows when the excerpt was shortened.
-String? projectNoteFullText(MusicProject project) {
-  final source = _firstNonBlank([project.notes, project.projectNotes]);
-  if (source == null) return null;
-  final flattened = source.replaceAll(RegExp(r'\s+'), ' ').trim();
-  return flattened.isEmpty ? null : flattened;
-}
+String? projectNoteFullText(MusicProject project) => _flatten(project.notes);
 
-String? _firstNonBlank(List<String?> candidates) {
-  for (final candidate in candidates) {
-    if (candidate != null && candidate.trim().isNotEmpty) return candidate;
-  }
-  return null;
+/// [text] with every run of whitespace collapsed to one space, or null when
+/// nothing but whitespace is left.
+String? _flatten(String? text) {
+  if (text == null) return null;
+  final flattened = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+  return flattened.isEmpty ? null : flattened;
 }
 
 /// [text] cut to [maxChars], ending with an ellipsis.
