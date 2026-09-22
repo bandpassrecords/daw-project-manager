@@ -3782,5 +3782,9 @@
   "breadcrumbHome": "主页",
   "breadcrumbGoTo": "前往{label}",
 
-  "scrollForMore": "滚动查看更多"
+  "scrollForMore": "滚动查看更多",
+
+  "shortcutPlayerMono": "切换单声道播放",
+  "shortcutPlayerVolume": "调整音量",
+  "shortcutMouseWheel": "滚轮"
 }

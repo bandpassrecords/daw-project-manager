@@ -5531,4 +5531,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scrollForMore => 'スクロールするとさらに表示';
+
+  @override
+  String get shortcutPlayerMono => 'モノラル再生の切り替え';
+
+  @override
+  String get shortcutPlayerVolume => '音量を調整';
+
+  @override
+  String get shortcutMouseWheel => 'ホイール';
 }

@@ -5692,4 +5692,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get scrollForMore => 'Role para ver mais';
+
+  @override
+  String get shortcutPlayerMono => 'Alternar reprodução em mono';
+
+  @override
+  String get shortcutPlayerVolume => 'Ajustar o volume';
+
+  @override
+  String get shortcutMouseWheel => 'Rolagem';
 }

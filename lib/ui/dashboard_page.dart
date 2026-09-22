@@ -37,7 +37,9 @@ import 'widgets/tab_customization_dialog.dart';
 import '../services/dock_menu_service.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
+import '../services/player_volume_store.dart';
 import '../utils/text_input_focus.dart';
+import '../utils/player_shortcuts.dart';
 import '../utils/track_duration.dart';
 import '../utils/phase_colors.dart';
 import '../utils/project_file_status.dart';
@@ -403,6 +405,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
   void _onTabChanged() {
     if (!_tabController.indexIsChanging && mounted) {
+      // Leaving the tasks tab retires the rows ticked off while it was open.
+      // They are held on screen so a completion can be seen and undone; the
+      // queue's job is otherwise to list what is still outstanding, and last
+      // visit's finished work sitting at the top of it would defeat that.
+      if (_currentTab != AppTab.queue) {
+        ref.read(recentlyCompletedTodosProvider.notifier).clear();
+      }
       switch (_currentTab) {
         case AppTab.projects:
           final projectsSearch = ref.read(projectsSearchProvider);
@@ -8592,7 +8601,9 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  double _volume = 1.0;
+  // Starts at the level the app was last left at, not at full blast —
+  // see PlayerVolumeStore.
+  double _volume = PlayerVolumeStore.current;
   bool _isMono = false;
   bool _isGeneratingMono = false;
   String? _monoFilePath;
@@ -8610,6 +8621,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
   void _setVolume(double value) {
     setState(() => _volume = value);
     unawaited(_audioPlayer.setVolume(value));
+    unawaited(PlayerVolumeStore.save(value));
   }
 
   void _attachListeners(AudioPlayer player, int gen) {
@@ -8862,7 +8874,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
     }
 
     try {
-      await _audioPlayer.play(_currentSource());
+      await _audioPlayer.play(_currentSource(), volume: _volume);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -8891,7 +8903,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
         await _audioPlayer.pause();
       } else {
         if (_position == Duration.zero || _position >= _duration) {
-          await _audioPlayer.play(DeviceFileSource(_effectivePreviewPath!));
+          await _audioPlayer.play(DeviceFileSource(_effectivePreviewPath!), volume: _volume);
         } else {
           await _audioPlayer.resume();
         }
@@ -9082,7 +9094,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
             ),
             const SizedBox(width: 8),
             Tooltip(
-              message: 'Toggle mono playback',
+              message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -9235,7 +9247,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
         Row(
           children: [
             Tooltip(
-              message: 'Toggle mono playback',
+              message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -9667,6 +9679,12 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
           _seek(isModified ? 30 : 5);
           return KeyEventResult.handled;
         }
+        // M toggles mono, as in every other player. Ignored while a mono
+        // file is still being rendered, so a held key can't queue a second.
+        if (isMonoShortcutEvent(event)) {
+          if (!_isGeneratingMono) _toggleMono();
+          return KeyEventResult.handled;
+        }
         return KeyEventResult.ignored;
       },
       child: AlertDialog(
@@ -9762,7 +9780,9 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   bool _playbackEnded = false;
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
-  double _volume = 1.0;
+  // Starts at the level the app was last left at, not at full blast —
+  // see PlayerVolumeStore.
+  double _volume = PlayerVolumeStore.current;
   double _preMuteVolume = 1.0;
   bool _isMono = false;
   bool _isGeneratingMono = false;
@@ -9804,6 +9824,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     setState(() => _volume = value);
     if (value > 0) _preMuteVolume = value;
     _player.setVolume(value);
+    unawaited(PlayerVolumeStore.save(value));
   }
 
   bool _supportsMonoMix() {
@@ -9847,6 +9868,13 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
 
     if (event.logicalKey == LogicalKeyboardKey.space) {
       _togglePlayPause();
+      return true;
+    }
+    // M toggles mono, as in every other player. Global like Space: the bar is
+    // the one thing playing, and "make what I hear mono" should not need the
+    // user to click into it first.
+    if (isMonoShortcutEvent(event)) {
+      if (!_isGeneratingMono) _toggleMono();
       return true;
     }
     // Arrow keys only when the player bar has focus — avoids conflicting with
@@ -9908,7 +9936,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       DeviceFileSource(widget.request.resolvedPath),
       // Non-null when the track was opened at a project marker rather
       // than from the top.
-      position: widget.request.startAt,
+      position: widget.request.startAt, volume: _volume,
     );
     _loadBackgroundData();
   }
@@ -9939,7 +9967,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       });
       _player.play(
         DeviceFileSource(widget.request.resolvedPath),
-        position: widget.request.startAt,
+        position: widget.request.startAt, volume: _volume,
       );
       _loadBackgroundData();
     }
@@ -10047,7 +10075,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     setState(() => _isMono = newMono);
     try {
       if (wasPlaying) {
-        await _player.play(DeviceFileSource(_activePath), position: savedPos);
+        await _player.play(DeviceFileSource(_activePath), position: savedPos, volume: _volume);
       } else {
         await _player.setSource(DeviceFileSource(_activePath));
         if (savedPos > Duration.zero) await _player.seek(savedPos);
@@ -10064,10 +10092,10 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
         await _player.stop();
         await _player.play(
           DeviceFileSource(_activePath),
-          position: _position > Duration.zero ? _position : null,
+          position: _position > Duration.zero ? _position : null, volume: _volume,
         );
       } else if (_position == Duration.zero || _position >= _duration) {
-        await _player.play(DeviceFileSource(_activePath));
+        await _player.play(DeviceFileSource(_activePath), volume: _volume);
       } else {
         await _player.resume();
       }
@@ -10443,7 +10471,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                       // Mono toggle
                       if (_supportsMonoMix())
                         Tooltip(
-                          message: 'Toggle mono playback',
+                          message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

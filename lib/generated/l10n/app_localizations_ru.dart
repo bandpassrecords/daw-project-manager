@@ -5693,4 +5693,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scrollForMore => 'Прокрутите, чтобы увидеть больше';
+
+  @override
+  String get shortcutPlayerMono => 'Переключить воспроизведение в моно';
+
+  @override
+  String get shortcutPlayerVolume => 'Изменить громкость';
+
+  @override
+  String get shortcutMouseWheel => 'Колесо';
 }

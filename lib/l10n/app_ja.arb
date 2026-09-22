@@ -3782,5 +3782,9 @@
   "breadcrumbHome": "ホーム",
   "breadcrumbGoTo": "{label} へ移動",
 
-  "scrollForMore": "スクロールするとさらに表示"
+  "scrollForMore": "スクロールするとさらに表示",
+
+  "shortcutPlayerMono": "モノラル再生の切り替え",
+  "shortcutPlayerVolume": "音量を調整",
+  "shortcutMouseWheel": "ホイール"
 }

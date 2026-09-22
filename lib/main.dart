@@ -37,6 +37,7 @@ import 'services/crash_logger.dart';
 import 'services/dock_menu_service.dart';
 import 'services/quick_action.dart';
 import 'services/tray_notice.dart';
+import 'services/player_volume_store.dart';
 import 'services/tray_service.dart';
 import 'services/folder_watcher_service.dart';
 import 'services/auto_start_service.dart';
@@ -771,6 +772,10 @@ Future<void> _main(List<String> args) async {
     if (kDebugMode) print('[main] Hive lock held by another instance: $e');
     exit(0);
   }
+
+  // Read the remembered playback volume before any player can be built, so
+  // the first one opens at the user's level rather than at full volume.
+  await PlayerVolumeStore.load();
 
   // NOVO: 4. Configuração do Riverpod e Auto-Scan
   final container = ProviderContainer();

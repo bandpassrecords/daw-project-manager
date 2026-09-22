@@ -9508,6 +9508,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scroll for more'**
   String get scrollForMore;
+
+  /// No description provided for @shortcutPlayerMono.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle mono playback'**
+  String get shortcutPlayerMono;
+
+  /// No description provided for @shortcutPlayerVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust volume'**
+  String get shortcutPlayerVolume;
+
+  /// No description provided for @shortcutMouseWheel.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheel'**
+  String get shortcutMouseWheel;
 }
 
 class _AppLocalizationsDelegate

@@ -5710,4 +5710,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scrollForMore => 'Zum Weiterlesen scrollen';
+
+  @override
+  String get shortcutPlayerMono => 'Mono-Wiedergabe umschalten';
+
+  @override
+  String get shortcutPlayerVolume => 'Lautstärke anpassen';
+
+  @override
+  String get shortcutMouseWheel => 'Mausrad';
 }

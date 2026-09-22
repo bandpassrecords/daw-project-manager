@@ -3782,5 +3782,9 @@
   "breadcrumbHome": "Accueil",
   "breadcrumbGoTo": "Aller à {label}",
 
-  "scrollForMore": "Faites défiler pour en voir plus"
+  "scrollForMore": "Faites défiler pour en voir plus",
+
+  "shortcutPlayerMono": "Activer/désactiver la lecture en mono",
+  "shortcutPlayerVolume": "Régler le volume",
+  "shortcutMouseWheel": "Molette"
 }

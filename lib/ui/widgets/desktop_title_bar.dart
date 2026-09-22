@@ -407,10 +407,10 @@ String _crumbLabel(BuildContext context, Breadcrumb crumb) => crumb.isRoot
 
 /// A crumb you can click, which says so on hover.
 ///
-/// The pointer alone is a weak signal in a title bar — the whole strip is
-/// draggable, so a cursor change there does not read as "this is a link".
-/// Hovering therefore also brightens the label, underlines it, and reveals a
-/// link glyph, none of which the resting state spends space on.
+/// Hovering brightens the label and tints its background; the pointer turns
+/// into a hand. Deliberately nothing more — an underline or a link glyph
+/// appearing on hover makes the row jump as the text reflows, and a title bar
+/// is too small a strip to absorb that.
 class _CrumbLink extends StatefulWidget {
   const _CrumbLink({
     required this.label,
@@ -458,26 +458,9 @@ class _CrumbLinkState extends State<_CrumbLink> {
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Only on hover: a glyph on every crumb at rest would make
-                // the bar busier than the path it is describing.
-                if (_hovered) ...[
-                  Icon(Icons.link, size: widget.fontSize - 2, color: color),
-                  const SizedBox(width: 4),
-                ],
-                Text(
-                  widget.label,
-                  style: TextStyle(
-                    color: color,
-                    fontSize: widget.fontSize,
-                    decoration:
-                        _hovered ? TextDecoration.underline : null,
-                    decorationColor: color,
-                  ),
-                ),
-              ],
+            child: Text(
+              widget.label,
+              style: TextStyle(color: color, fontSize: widget.fontSize),
             ),
           ),
         ),

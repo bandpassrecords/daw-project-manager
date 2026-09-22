@@ -27,6 +27,8 @@ import '../repository/project_repository.dart';
 import '../utils/attachment_launcher.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/player_shortcuts.dart';
+import '../services/player_volume_store.dart';
 import '../utils/track_duration.dart';
 import '../utils/file_launcher.dart';
 import '../utils/playback_seek.dart';
@@ -2382,7 +2384,9 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   bool _isDraggingOver = false;
-  double _volume = 1.0;
+  // Starts at the level the app was last left at, not at full blast —
+  // see PlayerVolumeStore.
+  double _volume = PlayerVolumeStore.current;
   double _preMuteVolume = 1.0;
 
   // Mono
@@ -2866,9 +2870,9 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
               setState(() => _playbackEnded = false);
               await _audioPlayer.stop();
               await _audioPlayer.play(_currentSource(),
-                  position: _position > Duration.zero ? _position : null);
+                  position: _position > Duration.zero ? _position : null, volume: _volume);
             } else if (_position == Duration.zero || _position >= _duration) {
-              await _audioPlayer.play(_currentSource());
+              await _audioPlayer.play(_currentSource(), volume: _volume);
             } else {
               await _audioPlayer.resume();
             }
@@ -2902,7 +2906,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
         queueIndex: idx >= 0 ? idx : null,
       );
     } else {
-      await _audioPlayer.play(DeviceFileSource(path));
+      await _audioPlayer.play(DeviceFileSource(path), volume: _volume);
     }
   }
 
@@ -2942,6 +2946,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     setState(() => _volume = value);
     if (value > 0) _preMuteVolume = value;
     unawaited(_applyVolume(value));
+    unawaited(PlayerVolumeStore.save(value));
   }
 
   /// Stores the length the player just measured off the preview song, when
@@ -3667,6 +3672,11 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                             _seek(isModified ? 30 : 5);
                             return KeyEventResult.handled;
                           }
+                          // M toggles mono, as in every other player.
+                          if (isMonoShortcutEvent(event)) {
+                            if (!_isGeneratingMono) _toggleMono();
+                            return KeyEventResult.handled;
+                          }
                           return KeyEventResult.ignored;
                         },
                         child: Column(
@@ -3780,7 +3790,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                         Row(
                           children: [
                             Tooltip(
-                              message: AppLocalizations.of(context)!.monoToggleTooltip,
+                              message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [

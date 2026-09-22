@@ -3782,5 +3782,9 @@
   "breadcrumbHome": "Главная",
   "breadcrumbGoTo": "Перейти к {label}",
 
-  "scrollForMore": "Прокрутите, чтобы увидеть больше"
+  "scrollForMore": "Прокрутите, чтобы увидеть больше",
+
+  "shortcutPlayerMono": "Переключить воспроизведение в моно",
+  "shortcutPlayerVolume": "Изменить громкость",
+  "shortcutMouseWheel": "Колесо"
 }

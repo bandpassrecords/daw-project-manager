@@ -5740,4 +5740,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scrollForMore => 'Faites défiler pour en voir plus';
+
+  @override
+  String get shortcutPlayerMono => 'Activer/désactiver la lecture en mono';
+
+  @override
+  String get shortcutPlayerVolume => 'Régler le volume';
+
+  @override
+  String get shortcutMouseWheel => 'Molette';
 }

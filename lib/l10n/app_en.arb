@@ -5256,5 +5256,9 @@
     }
   },
 
-  "scrollForMore": "Scroll for more"
+  "scrollForMore": "Scroll for more",
+
+  "shortcutPlayerMono": "Toggle mono playback",
+  "shortcutPlayerVolume": "Adjust volume",
+  "shortcutMouseWheel": "Wheel"
 }

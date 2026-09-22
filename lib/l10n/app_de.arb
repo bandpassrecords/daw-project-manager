@@ -3782,5 +3782,9 @@
   "breadcrumbHome": "Start",
   "breadcrumbGoTo": "Zu {label}",
 
-  "scrollForMore": "Zum Weiterlesen scrollen"
+  "scrollForMore": "Zum Weiterlesen scrollen",
+
+  "shortcutPlayerMono": "Mono-Wiedergabe umschalten",
+  "shortcutPlayerVolume": "Lautstärke anpassen",
+  "shortcutMouseWheel": "Mausrad"
 }

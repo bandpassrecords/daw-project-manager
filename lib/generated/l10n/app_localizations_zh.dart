@@ -5470,4 +5470,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scrollForMore => '滚动查看更多';
+
+  @override
+  String get shortcutPlayerMono => '切换单声道播放';
+
+  @override
+  String get shortcutPlayerVolume => '调整音量';
+
+  @override
+  String get shortcutMouseWheel => '滚轮';
 }

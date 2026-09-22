@@ -2623,6 +2623,39 @@ final desktopPlayerProvider =
       DesktopPlayerNotifier.new,
     );
 
+/// Todos ticked off during this visit to the tasks queue.
+///
+/// The queue lists outstanding work, so a completed todo drops out of it.
+/// Done the instant the box is ticked, that means the row vanishes under the
+/// cursor: no confirmation of what was just checked, and no way back if it
+/// was the wrong one. Holding the ids here keeps those rows on screen,
+/// struck through and undoable, until the user leaves the tab.
+///
+/// Deliberately *not* persisted, and cleared on leaving: the queue's job is
+/// to show what is left to do, and yesterday's completed work sitting at the
+/// top of it would defeat that.
+class RecentlyCompletedTodosNotifier extends Notifier<Set<String>> {
+  @override
+  Set<String> build() => const {};
+
+  void add(String todoId) => state = {...state, todoId};
+
+  void remove(String todoId) {
+    if (!state.contains(todoId)) return;
+    state = {...state}..remove(todoId);
+  }
+
+  void clear() {
+    if (state.isEmpty) return;
+    state = const {};
+  }
+}
+
+final recentlyCompletedTodosProvider =
+    NotifierProvider<RecentlyCompletedTodosNotifier, Set<String>>(
+      RecentlyCompletedTodosNotifier.new,
+    );
+
 /// One step in the navigation trail shown in the desktop title bar.
 @immutable
 class Breadcrumb {

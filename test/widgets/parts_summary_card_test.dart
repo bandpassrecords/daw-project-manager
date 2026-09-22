@@ -98,4 +98,37 @@ void main() {
 
     expect(find.textContaining('more'), findsNothing);
   });
+
+  // Regression: the title was a loose Flexible beside a Spacer. Each got half
+  // the free space and the Flexible returned none of what its short title
+  // didn't use, so the button floated left of the card's edge.
+  testWidgets('Manage parts sits flush against the right edge',
+      (tester) async {
+    // Wide, as on a maximised desktop window: the gap this guards grew with
+    // the width, and the default 800 px test surface hid it.
+    tester.view.physicalSize = const Size(1800, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    for (final project in [
+      TestFactories.makeProject(),
+      TestFactories.makeProject(parts: [part('1', 'Bass')]),
+    ]) {
+      await pumpCard(tester, project);
+
+      final button = find.widgetWithText(FilledButton, 'Manage parts');
+      final buttonRight = tester.getTopRight(button).dx;
+      // The InkWell fills the card inside its margin, so only the 16 px of
+      // padding may separate its edge from the button's.
+      final cardRight = tester
+          .getTopRight(
+            find.descendant(
+              of: find.byType(Card),
+              matching: find.byType(InkWell),
+            ).first,
+          )
+          .dx;
+
+      expect(cardRight - buttonRight, closeTo(16, 1));
+    }
+  });
 }

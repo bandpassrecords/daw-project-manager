@@ -25,6 +25,7 @@ import '../utils/app_paths.dart';
 import '../utils/playback_seek.dart';
 import '../utils/route_observer.dart';
 import '../utils/mobile_utils.dart';
+import '../services/player_volume_store.dart';
 import '../utils/file_launcher.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'project_detail_page.dart';
@@ -35,6 +36,7 @@ import 'widgets/todo_list_widget.dart';
 import '../services/track_duration_probe_service.dart';
 import '../utils/project_summary_text.dart';
 import '../utils/text_input_focus.dart';
+import '../utils/player_shortcuts.dart';
 import '../utils/track_duration.dart';
 import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/release_track_parts_chip.dart';
@@ -2379,7 +2381,9 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
   bool _playbackEnded = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  double _volume = 1.0;
+  // Starts at the level the app was last left at, not at full blast —
+  // see PlayerVolumeStore.
+  double _volume = PlayerVolumeStore.current;
   bool _isMono = false;
   bool _isGeneratingMono = false;
   String? _monoFilePath;
@@ -2473,6 +2477,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
   void _setVolume(double value) {
     setState(() => _volume = value);
     unawaited(_audioPlayer.setVolume(value));
+    unawaited(PlayerVolumeStore.save(value));
   }
 
   /// Nudges playback by [seconds], clamped to the track.
@@ -2509,6 +2514,11 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     }
     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
       unawaited(_seek(modified ? 30 : 5));
+      return true;
+    }
+    // M toggles mono, as in every other player.
+    if (isMonoShortcutEvent(event)) {
+      if (!_isGeneratingMono) unawaited(_toggleMono(!_isMono));
       return true;
     }
     return false;
@@ -2654,9 +2664,9 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
           setState(() => _playbackEnded = false);
           await _audioPlayer.stop();
           await _audioPlayer.play(_currentSource(),
-              position: _position > Duration.zero ? _position : null);
+              position: _position > Duration.zero ? _position : null, volume: _volume);
         } else if (_position == Duration.zero || _position >= _duration) {
-          await _audioPlayer.play(_currentSource());
+          await _audioPlayer.play(_currentSource(), volume: _volume);
         } else {
           await _audioPlayer.resume();
         }
@@ -2872,7 +2882,10 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  Row(
+                  Tooltip(
+                    message:
+                        '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
+                    child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
@@ -2896,6 +2909,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                         ),
                       ),
                     ],
+                  ),
                   ),
                 ],
               ),
