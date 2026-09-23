@@ -67,7 +67,6 @@ import 'widgets/conversion_progress_dialog.dart';
 import 'dialogs/release_artwork_carryover_dialog.dart';
 import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/whats_new_dialog.dart';
-import 'changelog_page.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_card_grid.dart';
 import 'widgets/drag_to_share_button.dart';
@@ -1704,9 +1703,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         showWhatsNewDialog(
           context,
           releases,
+          // Settings > Changelog rather than a page of its own: one place
+          // for the history, with its search, whichever way the user got
+          // there.
           onViewFullChangelog: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => const ChangelogPage(currentVersion: appVersion),
+              builder: (_) => const SettingsPage(
+                initialSection: SettingsSection.changelog,
+              ),
             ),
           ),
         );

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
 import 'package:daw_project_manager/services/changelog_service.dart';
-import 'package:daw_project_manager/ui/changelog_page.dart';
+import 'package:daw_project_manager/ui/widgets/changelog_browser.dart';
 
 ChangelogRelease _release(
   String version,
@@ -17,7 +17,7 @@ ChangelogRelease _release(
       highlightsByLocale: {'en': en, ...extra},
     );
 
-/// Pumps the list directly — no asset bundle, no navigation. The loading half
+/// Pumps the browser directly — no asset bundle, no navigation. The loading half
 /// lives in `changelog_service_test.dart`.
 Future<void> _pumpList(
   WidgetTester tester, {
@@ -30,10 +30,12 @@ Future<void> _pumpList(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: ChangelogListView(
-          releases: releases,
-          currentVersion: currentVersion,
-          localeCode: localeCode,
+        body: SingleChildScrollView(
+          child: ChangelogBrowser(
+            releases: releases,
+            currentVersion: currentVersion,
+            localeCode: localeCode,
+          ),
         ),
       ),
     ),
@@ -226,6 +228,18 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Project templates'), findsOneWidget);
+    });
+
+    testWidgets('matches fuzzily, like the dashboard project search',
+        (tester) async {
+      await pumpBrowser(tester);
+
+      // Word-anchored chunks: "parperf" is par|ts per|formers.
+      await tester.enterText(find.byType(TextField), 'parperf');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Parts and performers'), findsOneWidget);
+      expect(find.textContaining('2.9.0'), findsNothing);
     });
 
     testWidgets('says so when nothing matches', (tester) async {

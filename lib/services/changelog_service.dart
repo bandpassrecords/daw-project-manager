@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:hive_ce/hive.dart';
 
+import '../utils/search_utils.dart';
+
 /// Where the changelog lives. A committed JSON asset rather than Dart
 /// constants or a live fetch of the GitHub release notes:
 ///
@@ -210,10 +212,14 @@ String? upgradeBaselineVersion(
   return best;
 }
 
-/// Releases whose version or highlight text contains [query], each trimmed
-/// to the highlights that match — unless the version itself matched, in
-/// which case the whole release is kept. Case-insensitive; a blank query
-/// returns [changelog] unchanged.
+/// Releases with highlights matching [query], each trimmed to the lines that
+/// match. A line is searched together with its version number, so a version
+/// query keeps the whole release. A blank query returns [changelog] unchanged.
+///
+/// Matching is `fuzzyMatchAll`, the same rule the dashboard's project search
+/// uses: every word of the query has to hit the line, as a substring or as
+/// word-anchored chunks ("chilvib" finds "chillout vibes"). One search
+/// behaviour across the app rather than a stricter one here.
 ///
 /// Searches the text in [localeCode] (with its English fallback), since that
 /// is what is on screen.
@@ -222,15 +228,15 @@ List<ChangelogRelease> filterChangelog(
   String query, {
   required String localeCode,
 }) {
-  final q = query.trim().toLowerCase();
-  if (q.isEmpty) return changelog;
+  if (query.trim().isEmpty) return changelog;
   final results = <ChangelogRelease>[];
   for (final release in changelog) {
-    final lines = release.highlightsFor(localeCode);
-    final versionHit = release.version.toLowerCase().contains(q);
-    final hits = versionHit
-        ? lines
-        : [for (final line in lines) if (line.toLowerCase().contains(q)) line];
+    // Each line is matched together with its version, so "2.8" keeps the
+    // whole of 2.8.0 and "2.8 reaper" narrows to the REAPER line in it.
+    final hits = [
+      for (final line in release.highlightsFor(localeCode))
+        if (fuzzyMatchAll('${release.version} $line', query)) line,
+    ];
     if (hits.isEmpty) continue;
     results.add(ChangelogRelease(
       version: release.version,
@@ -240,7 +246,6 @@ List<ChangelogRelease> filterChangelog(
   }
   return results;
 }
-
 /// Where the last version whose changelog was shown is remembered.
 ///
 /// Deliberately **device-local**: it records what this installation has

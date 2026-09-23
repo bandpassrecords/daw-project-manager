@@ -53,7 +53,7 @@ import 'widgets/language_switcher.dart' show LanguageSwitcher;
 import 'widgets/license_dialog.dart';
 import 'widgets/shortcuts_help_dialog.dart';
 import 'widgets/update_available_dialog.dart';
-import 'changelog_page.dart';
+import 'widgets/changelog_browser.dart';
 
 /// A Flatpak document-portal path, e.g.
 /// `/run/user/1000/doc/98127/projects` — the portal never exposes the real

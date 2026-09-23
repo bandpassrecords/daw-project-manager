@@ -50,6 +50,31 @@ void main() {
       expect(hits.single.highlightsFor('en'), hasLength(2));
     });
 
+    test('matches the way the dashboard project search does', () {
+      // Word-anchored fuzzy chunks, as in fuzzyMatchAll: bre|adcrumbs ti|tle.
+      final hits = filterChangelog(changelog, 'bretit', localeCode: 'en');
+      expect(hits.single.highlightsFor('en'), ['Breadcrumbs in the title bar']);
+    });
+
+    test('every word has to match, in any order', () {
+      final hits =
+          filterChangelog(changelog, 'bar breadcrumbs', localeCode: 'en');
+      expect(hits.single.highlightsFor('en'), ['Breadcrumbs in the title bar']);
+      expect(filterChangelog(changelog, 'volume reaper', localeCode: 'en'),
+          isEmpty);
+    });
+
+    test('a version and a word narrow to that release line', () {
+      final hits = filterChangelog(changelog, '2.8 reaper', localeCode: 'en');
+      expect(hits.single.version, '2.8.0');
+      expect(hits.single.highlightsFor('en'), ['REAPER markers']);
+    });
+
+    test('does not scavenge letters across unrelated words', () {
+      // A plain subsequence test finds l-u-m in Volume and b-e-r in remembered.
+      expect(filterChangelog(changelog, 'lumber', localeCode: 'en'), isEmpty);
+    });
+
     test('nothing matching gives an empty list', () {
       expect(filterChangelog(changelog, 'zzz', localeCode: 'en'), isEmpty);
     });
