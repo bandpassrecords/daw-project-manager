@@ -3796,5 +3796,10 @@
   "changelogSectionSubtitle": "Alles, was sich in jeder Version geändert hat, neueste zuerst.",
 
   "changelogSearchHint": "Changelog durchsuchen",
-  "changelogNoMatches": "Keine Änderungen passen zu „{query}“"
+  "changelogNoMatches": "Keine Änderungen passen zu „{query}“",
+
+  "projectFileMenu": "Datei",
+  "moreActions": "Weitere Aktionen",
+
+  "sectionRailResizeHint": "Ziehen zum Ändern der Breite · Doppelklick zum Zurücksetzen"
 }

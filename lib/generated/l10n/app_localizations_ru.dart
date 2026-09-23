@@ -5725,4 +5725,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String changelogNoMatches(String query) {
     return 'Нет изменений, соответствующих «$query»';
   }
+
+  @override
+  String get projectFileMenu => 'Файл';
+
+  @override
+  String get moreActions => 'Другие действия';
+
+  @override
+  String get sectionRailResizeHint =>
+      'Перетащите, чтобы изменить размер · двойной щелчок — сбросить';
 }

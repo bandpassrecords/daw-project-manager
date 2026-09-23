@@ -5562,4 +5562,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String changelogNoMatches(String query) {
     return '「$query」に一致する変更はありません';
   }
+
+  @override
+  String get projectFileMenu => 'ファイル';
+
+  @override
+  String get moreActions => 'その他の操作';
+
+  @override
+  String get sectionRailResizeHint => 'ドラッグで幅を変更 · ダブルクリックで元に戻す';
 }

@@ -5744,4 +5744,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String changelogNoMatches(String query) {
     return 'Nessuna modifica corrisponde a \"$query\"';
   }
+
+  @override
+  String get projectFileMenu => 'File';
+
+  @override
+  String get moreActions => 'Altre azioni';
+
+  @override
+  String get sectionRailResizeHint =>
+      'Trascina per ridimensionare · doppio clic per ripristinare';
 }

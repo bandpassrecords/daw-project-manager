@@ -3796,5 +3796,10 @@
   "changelogSectionSubtitle": "Tout ce qui a changé dans chaque version, de la plus récente à la plus ancienne.",
 
   "changelogSearchHint": "Rechercher dans le journal",
-  "changelogNoMatches": "Aucune modification ne correspond à « {query} »"
+  "changelogNoMatches": "Aucune modification ne correspond à « {query} »",
+
+  "projectFileMenu": "Fichier",
+  "moreActions": "Plus d'actions",
+
+  "sectionRailResizeHint": "Faites glisser pour redimensionner · double-cliquez pour réinitialiser"
 }

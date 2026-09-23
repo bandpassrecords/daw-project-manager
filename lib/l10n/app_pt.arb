@@ -3820,5 +3820,10 @@
   "changelogSectionSubtitle": "Tudo o que mudou em cada versão, da mais recente para a mais antiga.",
 
   "changelogSearchHint": "Pesquisar no changelog",
-  "changelogNoMatches": "Nenhuma mudança corresponde a \"{query}\""
+  "changelogNoMatches": "Nenhuma mudança corresponde a \"{query}\"",
+
+  "projectFileMenu": "Arquivo",
+  "moreActions": "Mais ações",
+
+  "sectionRailResizeHint": "Arraste para redimensionar · clique duas vezes para restaurar"
 }

@@ -52,6 +52,7 @@ import '../services/scanner_service.dart';
 import 'dialogs/attachment_edit_dialog.dart';
 import 'dialogs/save_as_template_dialog.dart';
 import 'dialogs/stack_version_picker_dialog.dart';
+import 'widgets/project_detail_action_bar.dart';
 import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
@@ -2117,40 +2118,39 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
                       final active =
                           _activeSection.clamp(0, sections.length - 1);
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(
-                            width: 200,
-                            child: SectionNavRail(
-                              items: [
-                                for (final section in sections)
-                                  SectionNavItem(
-                                    icon: section.icon,
-                                    label: section.label,
-                                  ),
-                              ],
-                              activeIndex: active,
-                              onTap: (index) =>
-                                  setState(() => _activeSection = index),
-                            ),
-                          ),
-                          const VerticalDivider(width: 1),
-                          Expanded(
-                            child: ListView(
-                              // Keyed by section so switching starts the new
-                              // one at the top instead of inheriting the
-                              // previous section's scroll offset.
-                              key: ValueKey(active),
-                              padding:
-                                  MobileUtils.getResponsivePadding(context),
-                              children: [
-                                ...banner,
-                                ...sections[active].children,
-                              ],
-                            ),
-                          ),
-                        ],
+                      final railWidth =
+                          ref.read(sectionRailWidthProvider.notifier);
+                      return ResizableRailLayout(
+                        width: ref.watch(sectionRailWidthProvider),
+                        defaultWidth: 200,
+                        onResize: railWidth.preview,
+                        onResizeEnd: railWidth.commit,
+                        onReset: railWidth.reset,
+                        handleTooltip: AppLocalizations.of(context)!
+                            .sectionRailResizeHint,
+                        rail: SectionNavRail(
+                          items: [
+                            for (final section in sections)
+                              SectionNavItem(
+                                icon: section.icon,
+                                label: section.label,
+                              ),
+                          ],
+                          activeIndex: active,
+                          onTap: (index) =>
+                              setState(() => _activeSection = index),
+                        ),
+                        child: ListView(
+                          // Keyed by section so switching starts the new
+                          // one at the top instead of inheriting the
+                          // previous section's scroll offset.
+                          key: ValueKey(active),
+                          padding: MobileUtils.getResponsivePadding(context),
+                          children: [
+                            ...banner,
+                            ...sections[active].children,
+                          ],
+                        ),
                       );
                     }),
                   ),
@@ -2194,6 +2194,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
 // ─── Action Toolbar ───────────────────────────────────────────────────────────
 
+/// Resolves session state and the layout preference for
+/// [ProjectDetailActionBar], which is the plain, testable part.
 class _ProjectDetailActionBar extends ConsumerWidget {
   final MusicProject project;
   final bool isMobile;
@@ -2225,124 +2227,34 @@ class _ProjectDetailActionBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final notFoundMsg = l10n.sourceFileNotFoundOnThisMachine;
+    // Every action here is desktop-only, and a phone always gets the single
+    // scroll, so there is nothing for this bar to show on mobile.
+    if (isMobile) return const SizedBox.shrink();
+
     final sessionMode = ref.watch(sessionModeProvider);
     final isSubscribed =
         sessionMode && ref.watch(activeProjectProvider)?.id == project.id;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
-      ),
-      // Wrap, not Row: this bar holds seven buttons on desktop and a Row would
-      // hard-overflow on a narrow window rather than reflowing.
-      child: Wrap(
-        alignment: WrapAlignment.end,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8,
-        runSpacing: 6,
-        children: [
-          if (!isMobile) ...[
-            if (sessionMode) ...[
-              OutlinedButton.icon(
-                onPressed: () => isSubscribed
-                    ? confirmEndSession(context, ref)
-                    : confirmStartSession(context, ref, project),
-                icon: Icon(
-                  isSubscribed ? Icons.bookmark : Icons.bookmark_add_outlined,
-                  size: 16,
-                  color: isSubscribed ? Colors.green.shade400 : null,
-                ),
-                label: Text(isSubscribed ? l10n.endSession : l10n.startSession),
-              ),
-              // Once this project's session is active, still let the user
-              // launch the DAW from here instead of needing the dashboard.
-              if (isSubscribed) ...[
-                Tooltip(
-                  message: sourceFileExists ? '' : notFoundMsg,
-                  child: OutlinedButton.icon(
-                    onPressed: sourceFileExists ? onOpenInDaw : null,
-                    icon: const Icon(Icons.open_in_new, size: 16),
-                    label: Text(l10n.openInDaw),
-                  ),
-                ),
-              ],
-            ] else
-              Tooltip(
-                message: sourceFileExists ? '' : notFoundMsg,
-                child: OutlinedButton.icon(
-                  onPressed: sourceFileExists ? onOpenInDaw : null,
-                  icon: const Icon(Icons.open_in_new, size: 16),
-                  label: Text(l10n.openInDaw),
-                ),
-              ),
-          ],
-          if (!isMobile) ...[
-            Tooltip(
-              message: sourceFileExists ? '' : notFoundMsg,
-              child: OutlinedButton.icon(
-                onPressed: sourceFileExists ? onOpenFolder : null,
-                icon: const Icon(Icons.folder_open, size: 16),
-                label: Text(l10n.openFolder),
-              ),
-            ),
-          ],
-          if (!isMobile) ...[
-            Tooltip(
-              message: sourceFileExists ? '' : notFoundMsg,
-              child: OutlinedButton.icon(
-                onPressed: sourceFileExists ? onRename : null,
-                icon: const Icon(Icons.drive_file_rename_outline, size: 16),
-                label: Text(l10n.renameFileButtonLabel),
-              ),
-            ),
-            // A stack owns no file of its own, so there is nothing to move or
-            // archive — its versions are handled from their own pages.
-            if (!project.isVirtual) ...[
-              Tooltip(
-                message: sourceFileExists ? '' : notFoundMsg,
-                child: OutlinedButton.icon(
-                  onPressed: sourceFileExists ? onMove : null,
-                  icon: const Icon(Icons.drive_file_move_outline, size: 16),
-                  label: Text(l10n.moveProjectButtonLabel),
-                ),
-              ),
-              if (project.isArchived)
-                OutlinedButton.icon(
-                  onPressed: onRestore,
-                  icon: const Icon(Icons.unarchive_outlined, size: 16),
-                  label: Text(l10n.restoreProjectButtonLabel),
-                )
-              else
-                Tooltip(
-                  message: sourceFileExists ? '' : notFoundMsg,
-                  child: OutlinedButton.icon(
-                    onPressed: sourceFileExists ? onArchive : null,
-                    icon: const Icon(Icons.archive_outlined, size: 16),
-                    label: Text(l10n.archiveProjectButtonLabel),
-                  ),
-                ),
-            ],
-            OutlinedButton.icon(
-              onPressed: onStats,
-              icon: const Icon(Icons.bar_chart, size: 16),
-              label: Text(l10n.statsSingleProjectActivity),
-            ),
-            OutlinedButton.icon(
-              onPressed: onExport,
-              icon: const Icon(Icons.description_outlined, size: 16),
-              label: Text(l10n.exportProjectInfo),
-            ),
-            OutlinedButton.icon(
-              onPressed: onSaveAsTemplate,
-              icon: const Icon(Icons.bookmark_add_outlined, size: 16),
-              label: Text(l10n.saveAsTemplate),
-            ),
-          ],
-        ],
-      ),
+    return ProjectDetailActionBar(
+      layout: ref.watch(projectDetailLayoutProvider),
+      onLayoutChanged: (layout) =>
+          ref.read(projectDetailLayoutProvider.notifier).set(layout),
+      sourceFileExists: sourceFileExists,
+      isVirtual: project.isVirtual,
+      isArchived: project.isArchived,
+      sessionMode: sessionMode,
+      isSubscribed: isSubscribed,
+      onStartSession: () => confirmStartSession(context, ref, project),
+      onEndSession: () => confirmEndSession(context, ref),
+      onOpenInDaw: onOpenInDaw,
+      onOpenFolder: onOpenFolder,
+      onRename: onRename,
+      onMove: onMove,
+      onArchive: onArchive,
+      onRestore: onRestore,
+      onStats: onStats,
+      onExport: onExport,
+      onSaveAsTemplate: onSaveAsTemplate,
     );
   }
 }

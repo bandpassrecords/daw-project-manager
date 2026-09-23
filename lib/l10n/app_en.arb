@@ -5278,5 +5278,10 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "projectFileMenu": "File",
+  "moreActions": "More actions",
+
+  "sectionRailResizeHint": "Drag to resize · double-click to reset"
 }

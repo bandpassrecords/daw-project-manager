@@ -9562,6 +9562,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No changes match \"{query}\"'**
   String changelogNoMatches(String query);
+
+  /// No description provided for @projectFileMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get projectFileMenu;
+
+  /// No description provided for @moreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get moreActions;
+
+  /// No description provided for @sectionRailResizeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to resize · double-click to reset'**
+  String get sectionRailResizeHint;
 }
 
 class _AppLocalizationsDelegate

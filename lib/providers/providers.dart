@@ -48,6 +48,7 @@ import '../models/template_root.dart';
 import '../models/project_event.dart';
 import '../repository/project_repository.dart';
 import '../utils/search_utils.dart';
+import '../utils/section_rail_width.dart';
 import '../repository/profile_repository.dart';
 import '../services/google_drive_sync_service.dart';
 import '../services/deadline_notification_service.dart';
@@ -3096,6 +3097,69 @@ class ProjectDetailLayoutNotifier extends Notifier<ProjectDetailLayout> {
 final projectDetailLayoutProvider =
     NotifierProvider<ProjectDetailLayoutNotifier, ProjectDetailLayout>(
       ProjectDetailLayoutNotifier.new,
+    );
+
+/// How wide the user has dragged the left section rail — shared by Settings
+/// and the project detail page's sections layout, so both rails match. Null
+/// means "never resized": each page then uses its own default width.
+///
+/// Device-local, in the `settings` box alongside [projectDetailLayoutProvider]:
+/// a preference about this machine's screen, so it is deliberately not synced
+/// or backed up.
+class SectionRailWidthNotifier extends Notifier<double?> {
+  static const boxKey = 'sectionRailWidth';
+
+  @override
+  double? build() {
+    SchedulerBinding.instance.addPostFrameCallback((_) => load());
+    return null;
+  }
+
+  @visibleForTesting
+  Future<void> load() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      final saved = parseStoredSectionRailWidth(box.get(boxKey));
+      if (saved != null) state = saved;
+    } catch (_) {
+      // Keep the page defaults if the box cannot be read.
+    }
+  }
+
+  /// Follows the pointer while dragging. Nothing is written until [commit],
+  /// so a drag is one write, not one per frame.
+  void preview(double width) => state = width;
+
+  /// Saves whatever width the drag ended on.
+  Future<void> commit() async {
+    final width = state;
+    if (width == null) return;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.put(boxKey, width.toStringAsFixed(1));
+    } catch (e) {
+      debugPrint('[SectionRailWidth] failed to save: $e');
+    }
+  }
+
+  /// Back to each page's default width.
+  Future<void> reset() async {
+    state = null;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.delete(boxKey);
+    } catch (e) {
+      debugPrint('[SectionRailWidth] failed to reset: $e');
+    }
+  }
+}
+
+final sectionRailWidthProvider =
+    NotifierProvider<SectionRailWidthNotifier, double?>(
+      SectionRailWidthNotifier.new,
     );
 
 // ─── Dashboard view mode ──────────────────────────────────────────────────────

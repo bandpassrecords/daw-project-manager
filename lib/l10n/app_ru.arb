@@ -3796,5 +3796,10 @@
   "changelogSectionSubtitle": "Всё, что изменилось в каждой версии, начиная с самой новой.",
 
   "changelogSearchHint": "Поиск по списку изменений",
-  "changelogNoMatches": "Нет изменений, соответствующих «{query}»"
+  "changelogNoMatches": "Нет изменений, соответствующих «{query}»",
+
+  "projectFileMenu": "Файл",
+  "moreActions": "Другие действия",
+
+  "sectionRailResizeHint": "Перетащите, чтобы изменить размер · двойной щелчок — сбросить"
 }

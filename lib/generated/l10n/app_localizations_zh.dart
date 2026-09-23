@@ -5500,4 +5500,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String changelogNoMatches(String query) {
     return '没有与“$query”匹配的变更';
   }
+
+  @override
+  String get projectFileMenu => '文件';
+
+  @override
+  String get moreActions => '更多操作';
+
+  @override
+  String get sectionRailResizeHint => '拖动调整宽度 · 双击恢复默认';
 }

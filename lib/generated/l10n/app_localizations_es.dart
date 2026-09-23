@@ -5755,4 +5755,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String changelogNoMatches(String query) {
     return 'Ningún cambio coincide con \"$query\"';
   }
+
+  @override
+  String get projectFileMenu => 'Archivo';
+
+  @override
+  String get moreActions => 'Más acciones';
+
+  @override
+  String get sectionRailResizeHint =>
+      'Arrastra para cambiar el tamaño · doble clic para restablecer';
 }

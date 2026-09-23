@@ -3796,5 +3796,10 @@
   "changelogSectionSubtitle": "各バージョンの変更点（新しい順）。",
 
   "changelogSearchHint": "変更履歴を検索",
-  "changelogNoMatches": "「{query}」に一致する変更はありません"
+  "changelogNoMatches": "「{query}」に一致する変更はありません",
+
+  "projectFileMenu": "ファイル",
+  "moreActions": "その他の操作",
+
+  "sectionRailResizeHint": "ドラッグで幅を変更 · ダブルクリックで元に戻す"
 }

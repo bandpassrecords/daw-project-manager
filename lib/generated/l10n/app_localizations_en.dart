@@ -5705,4 +5705,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String changelogNoMatches(String query) {
     return 'No changes match \"$query\"';
   }
+
+  @override
+  String get projectFileMenu => 'File';
+
+  @override
+  String get moreActions => 'More actions';
+
+  @override
+  String get sectionRailResizeHint => 'Drag to resize · double-click to reset';
 }

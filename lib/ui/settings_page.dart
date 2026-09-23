@@ -1223,29 +1223,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         children: [
           DesktopTitleBar(title: l10n.settings, showBack: true),
           Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  width: 240,
-                  child: SectionNavRail(
-                    items: navItems,
-                    activeIndex: _activeSection,
-                    searchController: _searchController,
-                    searchHint: l10n.searchSettings,
-                    onTap: _selectSection,
-                  ),
-                ),
-                const VerticalDivider(width: 1),
-                Expanded(
-                  child: Padding(
-                    padding: MobileUtils.getResponsivePadding(context),
-                    child: query.isEmpty
-                        ? SingleChildScrollView(child: _sectionBuilders[_activeSection](l10n))
-                        : _buildSearchResults(l10n, query),
-                  ),
-                ),
-              ],
+            child: ResizableRailLayout(
+              width: ref.watch(sectionRailWidthProvider),
+              defaultWidth: 240,
+              onResize: ref.read(sectionRailWidthProvider.notifier).preview,
+              onResizeEnd: ref.read(sectionRailWidthProvider.notifier).commit,
+              onReset: ref.read(sectionRailWidthProvider.notifier).reset,
+              handleTooltip: l10n.sectionRailResizeHint,
+              rail: SectionNavRail(
+                items: navItems,
+                activeIndex: _activeSection,
+                searchController: _searchController,
+                searchHint: l10n.searchSettings,
+                onTap: _selectSection,
+              ),
+              child: Padding(
+                padding: MobileUtils.getResponsivePadding(context),
+                child: query.isEmpty
+                    ? SingleChildScrollView(child: _sectionBuilders[_activeSection](l10n))
+                    : _buildSearchResults(l10n, query),
+              ),
             ),
           ),
         ],

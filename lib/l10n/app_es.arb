@@ -3796,5 +3796,10 @@
   "changelogSectionSubtitle": "Todo lo que cambió en cada versión, de la más reciente a la más antigua.",
 
   "changelogSearchHint": "Buscar en el changelog",
-  "changelogNoMatches": "Ningún cambio coincide con \"{query}\""
+  "changelogNoMatches": "Ningún cambio coincide con \"{query}\"",
+
+  "projectFileMenu": "Archivo",
+  "moreActions": "Más acciones",
+
+  "sectionRailResizeHint": "Arrastra para cambiar el tamaño · doble clic para restablecer"
 }
