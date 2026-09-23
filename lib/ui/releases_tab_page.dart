@@ -910,6 +910,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
           // (odd/even and click-selection) with no per-cell border/fill on click.
           activatedBorderColor: Colors.transparent,
           activatedColor: Colors.transparent,
+          inactivatedBorderColor: Colors.transparent,
           iconColor: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
           menuBackgroundColor: Theme.of(context).cardColor,
           oddRowColor: oddColor,

@@ -36,6 +36,7 @@ import 'widgets/startup_dialog.dart';
 import 'widgets/tab_customization_dialog.dart';
 import '../services/dock_menu_service.dart';
 import '../utils/daw_logo.dart';
+import '../utils/grid_current_cell_parking.dart';
 import '../utils/library_projects.dart';
 import '../utils/mobile_utils.dart';
 import '../services/player_volume_store.dart';
@@ -6401,6 +6402,25 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     with RouteAwareDropTargetState<_PlutoProjectsTable> {
   TrinaGridStateManager? stateManager;
   bool _isRebuildingRows = false;
+
+  // While the grid is unfocused (the user clicked the preview player's
+  // waveform, the search box…) the last-clicked cell is parked instead of
+  // being left current, so TrinaGrid has nothing to outline. See
+  // GridCurrentCellParking for why the style alone cannot hide it.
+  final _cellParking = GridCurrentCellParking(
+    rowKey: (row) => (row.cells['data']?.value as MusicProject?)?.id,
+  );
+  FocusNode? _parkingFocusNode;
+
+  void _onGridFocusChanged() {
+    final sm = stateManager;
+    if (sm == null || !mounted) return;
+    if (sm.gridFocusNode.hasFocus) {
+      _cellParking.restore(sm);
+    } else {
+      _cellParking.park(sm);
+    }
+  }
   // Set to true when the theme changes so onLoaded can schedule a _rebuildRows()
   // call that busts TrinaGrid's renderer cache (which only invalidates on cell/
   // row/selection changes, not on theme changes).
@@ -6629,6 +6649,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     final sm = stateManager;
     if (sm == null) return;
     sm.gridFocusNode.requestFocus();
+    _cellParking.restore(sm);
     if (sm.currentRow == null && sm.rows.isNotEmpty) {
       sm.setCurrentCell(sm.rows.first.cells.values.first, 0);
     }
@@ -8218,7 +8239,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           final playing = ref.read(desktopPlayerProvider);
           if (playing?.project.id == project.id) return playingHighlightColor;
           final isSession = ref.read(activeProjectProvider)?.id == project.id;
-          final isActivated = stateManager?.currentRow == ctx.row;
+          final isActivated = stateManager?.currentRow == ctx.row ||
+              (stateManager?.currentRow == null &&
+                  _cellParking.isParkedRow(ctx.row));
           if (isSession) {
             // Read current paused state directly so notifyListeners refreshes pick it up.
             final isPaused = ref.read(workTimerPausedProvider);
@@ -8257,6 +8280,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                 ),
         );
         stateManager!.addListener(_onStateManagerChanged);
+        // A remount (theme / locale switch) brings a new grid and focus node.
+        _parkingFocusNode?.removeListener(_onGridFocusChanged);
+        _parkingFocusNode = stateManager!.gridFocusNode
+          ..addListener(_onGridFocusChanged);
+        _cellParking.clear();
         if (_needsThemeRefresh) {
           // The deferred _rebuildRows() below busts the renderer cache
           // AND restores expand/sort state itself, so don't also call
@@ -8324,6 +8352,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           // per-cell border/fill on click.
           activatedBorderColor: Colors.transparent,
           activatedColor: Colors.transparent,
+          // The outline TrinaGrid draws round the current cell once the grid
+          // loses focus — never wanted here (see _cellParking).
+          inactivatedBorderColor: Colors.transparent,
           iconColor: isVividAccent
               ? activeTheme.colorScheme.primary.withValues(alpha: 0.7)
               : activeTheme.textTheme.bodyMedium?.color ?? Colors.grey,
@@ -8471,6 +8502,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
   @override
   void dispose() {
     stateManager?.removeListener(_onStateManagerChanged);
+    _parkingFocusNode?.removeListener(_onGridFocusChanged);
     super.dispose();
   }
 }

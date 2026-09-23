@@ -401,6 +401,7 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
           // Transparent so rowColorCallback owns every row background.
           activatedBorderColor: Colors.transparent,
           activatedColor: Colors.transparent,
+          inactivatedBorderColor: Colors.transparent,
           iconColor: theme.textTheme.bodyMedium?.color ?? Colors.grey,
           menuBackgroundColor: theme.cardColor,
           oddRowColor: oddColor,

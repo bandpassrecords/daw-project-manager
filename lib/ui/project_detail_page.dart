@@ -3638,7 +3638,10 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                   tooltip: Platform.isMacOS ? '→ +5s  •  ⌘+→ +30s' : '→ +5s  •  Ctrl+→ +30s',
                                   onPressed: () => _seek(5),
                                 ),
-                                const Spacer(),
+                                // Volume sits right after the transport, as in
+                                // the dashboard's preview player, rather than
+                                // pushed to the far edge of the card.
+                                const SizedBox(width: 4),
                                 IconButton(
                                   icon: Icon(
                                     _volume == 0 ? Icons.volume_off : (_volume < 0.5 ? Icons.volume_down : Icons.volume_up),
