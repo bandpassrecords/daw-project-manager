@@ -9505,18 +9505,10 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
             '[preview_share] ShareResult: status=${result.status} raw=${result.raw}',
           );
         }
-        // Unpackaged Windows builds have no working share sheet
-        // (DataTransferManager needs MSIX) — without this the click does
-        // nothing visible at all.
-        if (result.status == ShareResultStatus.unavailable && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)!.shareSheetUnavailable,
-              ),
-            ),
-          );
-        }
+        // No "share menu unavailable" warning on `unavailable`: share_plus
+        // returns that status on Windows every time, right after the share
+        // menu has opened — Windows does not report what the user picked. A
+        // share that really fails throws, and the catch below reports it.
       }
     } catch (e, st) {
       if (kDebugMode) {

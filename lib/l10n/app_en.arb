@@ -2401,7 +2401,6 @@
   },
   "share": "Share",
   "convertingAudioForSharing": "Preparing audio for sharing…",
-  "shareSheetUnavailable": "The system share menu isn't available here — use the \"Drag to Share\" chip on the song preview to drag the file onto another app instead.",
   "dragToShare": "Drag to Share",
   "dragToShareTooltip": "Drag this onto another app's window (e.g. WhatsApp) to share the file directly — useful when the Share button doesn't open a share menu.",
   "mp3ConversionFailed": "Audio conversion isn't available on this system — sharing the original file, which some apps like WhatsApp may reject.",

@@ -1583,7 +1583,6 @@
   },
   "share": "Teilen",
   "convertingAudioForSharing": "Audio wird zum Teilen vorbereitet…",
-  "shareSheetUnavailable": "Das System-Freigabemenü ist hier nicht verfügbar — nutze stattdessen den \"Zum Teilen ziehen\"-Chip in der Song-Vorschau, um die Datei auf eine andere App zu ziehen.",
   "dragToShare": "Zum Teilen ziehen",
   "dragToShareTooltip": "Ziehe dies auf das Fenster einer anderen App (z. B. WhatsApp), um die Datei direkt zu teilen — nützlich, wenn der Teilen-Button kein Freigabemenü öffnet.",
   "mp3ConversionFailed": "Audio-Konvertierung ist auf diesem System nicht verfügbar — die Originaldatei wird geteilt, die manche Apps wie WhatsApp ablehnen könnten.",

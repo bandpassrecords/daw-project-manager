@@ -4121,12 +4121,6 @@ abstract class AppLocalizations {
   /// **'Preparing audio for sharing…'**
   String get convertingAudioForSharing;
 
-  /// No description provided for @shareSheetUnavailable.
-  ///
-  /// In en, this message translates to:
-  /// **'The system share menu isn\'t available here — use the \"Drag to Share\" chip on the song preview to drag the file onto another app instead.'**
-  String get shareSheetUnavailable;
-
   /// No description provided for @dragToShare.
   ///
   /// In en, this message translates to:

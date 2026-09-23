@@ -2468,10 +2468,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get convertingAudioForSharing => 'Audio wird zum Teilen vorbereitet…';
 
   @override
-  String get shareSheetUnavailable =>
-      'Das System-Freigabemenü ist hier nicht verfügbar — nutze stattdessen den \"Zum Teilen ziehen\"-Chip in der Song-Vorschau, um die Datei auf eine andere App zu ziehen.';
-
-  @override
   String get dragToShare => 'Zum Teilen ziehen';
 
   @override

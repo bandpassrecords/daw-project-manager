@@ -2397,10 +2397,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get convertingAudioForSharing => '共有用にオーディオを準備しています…';
 
   @override
-  String get shareSheetUnavailable =>
-      'システムの共有メニューはここでは利用できません。代わりに、曲のプレビューにある「ドラッグして共有」チップでファイルを他のアプリへドラッグしてください。';
-
-  @override
   String get dragToShare => 'ドラッグして共有';
 
   @override

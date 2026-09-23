@@ -2455,10 +2455,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get convertingAudioForSharing => 'Подготовка аудио к отправке…';
 
   @override
-  String get shareSheetUnavailable =>
-      'Системное меню отправки здесь недоступно — используйте кнопку «Перетащить, чтобы поделиться» в предпрослушивании трека, чтобы перетащить файл в другое приложение.';
-
-  @override
   String get dragToShare => 'Перетащить, чтобы поделиться';
 
   @override

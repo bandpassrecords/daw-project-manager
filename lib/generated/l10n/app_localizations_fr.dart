@@ -2481,10 +2481,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Préparation de l\'audio pour le partage…';
 
   @override
-  String get shareSheetUnavailable =>
-      'Le menu de partage du système n\'est pas disponible ici — utilisez la puce « Glisser pour Partager » sur l\'aperçu du morceau pour glisser le fichier vers une autre application.';
-
-  @override
   String get dragToShare => 'Glisser pour Partager';
 
   @override

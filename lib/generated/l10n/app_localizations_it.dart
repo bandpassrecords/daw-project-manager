@@ -2463,10 +2463,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Preparazione dell\'audio per la condivisione…';
 
   @override
-  String get shareSheetUnavailable =>
-      'Il menu di condivisione di sistema non è disponibile qui — usa il pulsante \"Trascina per Condividere\" nell\'anteprima del brano per trascinare il file su un\'altra app.';
-
-  @override
   String get dragToShare => 'Trascina per Condividere';
 
   @override

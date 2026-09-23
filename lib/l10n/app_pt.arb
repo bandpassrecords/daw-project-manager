@@ -1607,7 +1607,6 @@
   },
   "share": "Compartilhar",
   "convertingAudioForSharing": "Preparando o áudio para compartilhar…",
-  "shareSheetUnavailable": "O menu de compartilhamento do sistema não está disponível aqui — use o botão \"Arraste para Compartilhar\" na prévia da música para arrastar o arquivo até outro app.",
   "dragToShare": "Arraste para Compartilhar",
   "dragToShareTooltip": "Arraste isso para a janela de outro app (ex: WhatsApp) pra compartilhar o arquivo direto — útil quando o botão Compartilhar não abre um menu de compartilhamento.",
   "mp3ConversionFailed": "A conversão de áudio não está disponível neste sistema — compartilhando o arquivo original, que alguns apps como o WhatsApp podem rejeitar.",

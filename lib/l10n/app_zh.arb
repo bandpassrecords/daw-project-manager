@@ -1583,7 +1583,6 @@
   },
   "share": "分享",
   "convertingAudioForSharing": "正在准备要分享的音频…",
-  "shareSheetUnavailable": "系统分享菜单在此不可用——请改用歌曲预览中的“拖动以分享”按钮，将文件拖到其他应用中。",
   "dragToShare": "拖动以分享",
   "dragToShareTooltip": "把它拖到另一个应用的窗口（例如 WhatsApp）即可直接分享文件——当“分享”按钮无法打开分享菜单时很有用。",
   "mp3ConversionFailed": "此系统不支持音频转换——将分享原始文件，但某些应用（如 WhatsApp）可能会拒绝该文件。",

@@ -2372,10 +2372,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get convertingAudioForSharing => '正在准备要分享的音频…';
 
   @override
-  String get shareSheetUnavailable =>
-      '系统分享菜单在此不可用——请改用歌曲预览中的“拖动以分享”按钮，将文件拖到其他应用中。';
-
-  @override
   String get dragToShare => '拖动以分享';
 
   @override
