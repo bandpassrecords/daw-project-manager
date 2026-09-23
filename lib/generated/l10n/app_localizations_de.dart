@@ -5730,4 +5730,8 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get songLengthHowItWorks =>
       'Wird automatisch aus dem Vorschausong übernommen — beim Abspielen oder beim Öffnen eines Releases mit diesem Titel. Sie können sie auch eingeben: 3:45, 1:02:03 oder in Sekunden.';
+
+  @override
+  String get changelogSectionSubtitle =>
+      'Alles, was sich in jeder Version geändert hat, neueste zuerst.';
 }

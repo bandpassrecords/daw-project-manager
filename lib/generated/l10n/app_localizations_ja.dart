@@ -5551,4 +5551,7 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get songLengthHowItWorks =>
       'プレビュー曲から自動で入力されます（再生したとき、またはこのトラックを含むリリースを開いたとき）。手入力も可能です：3:45、1:02:03、または秒数。';
+
+  @override
+  String get changelogSectionSubtitle => '各バージョンの変更点（新しい順）。';
 }

@@ -3791,5 +3791,7 @@
   "releaseTotalLengthLabel": "Duración total",
   "releaseLengthNone": "Ninguna pista tiene duración todavía: reproduce una pista o escribe su duración en la página del proyecto",
 
-  "songLengthHowItWorks": "Se rellena automáticamente a partir de la vista previa: al reproducirla o al abrir un lanzamiento que contenga esta pista. También puedes escribirla: 3:45, 1:02:03 o en segundos."
+  "songLengthHowItWorks": "Se rellena automáticamente a partir de la vista previa: al reproducirla o al abrir un lanzamiento que contenga esta pista. También puedes escribirla: 3:45, 1:02:03 o en segundos.",
+
+  "changelogSectionSubtitle": "Todo lo que cambió en cada versión, de la más reciente a la más antigua."
 }

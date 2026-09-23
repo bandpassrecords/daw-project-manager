@@ -9544,6 +9544,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Filled in automatically from the preview song — when it is played, or when a release containing this track is opened. You can also type it: 3:45, 1:02:03, or seconds.'**
   String get songLengthHowItWorks;
+
+  /// No description provided for @changelogSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything that changed in each version, newest first.'**
+  String get changelogSectionSubtitle;
 }
 
 class _AppLocalizationsDelegate

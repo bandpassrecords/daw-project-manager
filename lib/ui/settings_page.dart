@@ -21,6 +21,7 @@ import '../services/auto_start_service.dart';
 import '../services/backup_service.dart';
 import '../utils/app_paths.dart' show canPickAppDataDir;
 import 'dev_library_picker.dart' show DevLibraryCard;
+import '../services/changelog_service.dart';
 import '../services/crash_logger.dart';
 import '../services/google_drive_sync_service.dart' show GoogleDriveSyncService;
 import '../services/project_archive_service.dart' show conflictingScanRoot;
@@ -82,6 +83,7 @@ enum SettingsSection {
   backup,
   dangerZone,
   shortcuts,
+  changelog,
   about,
 }
 
@@ -1080,6 +1082,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         SettingsSection.backup,
         SettingsSection.dangerZone,
         SettingsSection.shortcuts,
+        SettingsSection.changelog,
         SettingsSection.about,
       ];
 
@@ -1105,6 +1108,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return SectionNavItem(icon: Icons.warning_amber_rounded, label: l10n.pathsSettingsDangerZoneTitle);
       case SettingsSection.shortcuts:
         return SectionNavItem(icon: Icons.keyboard_outlined, label: l10n.keyboardShortcuts, newGroup: true);
+      case SettingsSection.changelog:
+        return SectionNavItem(icon: Icons.auto_awesome, label: l10n.changelogPageTitle);
       case SettingsSection.about:
         return SectionNavItem(icon: Icons.info_outline, label: l10n.aboutTabLabel);
     }
@@ -1135,6 +1140,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return _buildDangerZoneSection;
       case SettingsSection.shortcuts:
         return _buildShortcutsSection;
+      case SettingsSection.changelog:
+        return _buildChangelogSection;
       case SettingsSection.about:
         return _buildAboutSection;
     }
@@ -1193,6 +1200,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.dangerZone, Icons.delete_forever, l10n.clearLibrary, l10n.clearLibraryMessage),
         _SearchEntry(SettingsSection.dangerZone, Icons.delete_sweep_rounded, l10n.deleteAllData, l10n.deleteAllDataSubtitle),
         _SearchEntry(SettingsSection.shortcuts, Icons.keyboard_outlined, l10n.keyboardShortcuts, null),
+        _SearchEntry(SettingsSection.changelog, Icons.auto_awesome, l10n.changelogPageTitle, l10n.changelogSectionSubtitle),
         _SearchEntry(SettingsSection.about, Icons.info_outline, l10n.aboutTabLabel, l10n.appDescription),
         if (UpdateCheckService.isSupported)
           _SearchEntry(SettingsSection.about, Icons.system_update_alt_outlined, l10n.checkForUpdates, l10n.checkForUpdatesDescription),
@@ -2731,6 +2739,42 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
+  /// Every release's highlights, newest first, back to 1.0.
+  ///
+  /// The "What's New" dialog marks itself seen after one showing, so this is
+  /// the way back to what it said — and to everything older. Read from the
+  /// changelog shipped inside the app, so it works offline and in Flatpak.
+  Widget _buildChangelogSection(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            l10n.changelogSectionSubtitle,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+        FutureBuilder<List<ChangelogRelease>>(
+          future: ChangelogService.loadChangelog(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            return ChangelogReleaseCards(
+              releases: snapshot.data ?? const [],
+              localeCode: Localizations.localeOf(context).toLanguageTag(),
+              currentVersion: appVersion,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildAboutSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2792,19 +2836,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       ),
                       icon: const Icon(Icons.menu_book_outlined, size: 16),
                       label: Text(l10n.menuDocumentation),
-                    ),
-                    // The whole accumulated history. The startup dialog marks
-                    // itself seen, so without this there'd be no way back to
-                    // what it showed — or to anything older.
-                    OutlinedButton.icon(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              const ChangelogPage(currentVersion: appVersion),
-                        ),
-                      ),
-                      icon: const Icon(Icons.auto_awesome, size: 16),
-                      label: Text(l10n.changelogPageTitle),
                     ),
                     OutlinedButton.icon(
                       onPressed: () => showLicenseDialog(context),

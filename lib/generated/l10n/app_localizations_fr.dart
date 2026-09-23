@@ -5760,4 +5760,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get songLengthHowItWorks =>
       'Renseignée automatiquement depuis l’aperçu — lorsqu’il est lu, ou à l’ouverture d’une sortie contenant cette piste. Vous pouvez aussi la saisir : 3:45, 1:02:03 ou en secondes.';
+
+  @override
+  String get changelogSectionSubtitle =>
+      'Tout ce qui a changé dans chaque version, de la plus récente à la plus ancienne.';
 }

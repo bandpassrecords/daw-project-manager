@@ -5743,4 +5743,8 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get songLengthHowItWorks =>
       'Se rellena automáticamente a partir de la vista previa: al reproducirla o al abrir un lanzamiento que contenga esta pista. También puedes escribirla: 3:45, 1:02:03 o en segundos.';
+
+  @override
+  String get changelogSectionSubtitle =>
+      'Todo lo que cambió en cada versión, de la más reciente a la más antigua.';
 }

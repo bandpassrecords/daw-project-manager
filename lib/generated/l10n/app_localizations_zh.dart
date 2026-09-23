@@ -5489,4 +5489,7 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get songLengthHowItWorks =>
       '根据预览歌曲自动填写——在播放时，或打开包含此曲目的发行时。也可以手动输入：3:45、1:02:03 或秒数。';
+
+  @override
+  String get changelogSectionSubtitle => '每个版本的所有变更，按从新到旧排列。';
 }

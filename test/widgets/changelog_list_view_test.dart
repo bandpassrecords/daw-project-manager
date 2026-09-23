@@ -123,4 +123,61 @@ void main() {
     expect(find.text('Linha em português'), findsOneWidget);
     expect(find.text('English line'), findsNothing);
   });
+
+  group('ChangelogReleaseCards', () {
+    // The history runs back to 1.0; seventy-odd open cards would bury the
+    // release anyone is looking for, so only the newest few start open.
+    Future<void> pumpCards(WidgetTester tester, int count) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ChangelogReleaseCards(
+                releases: [
+                  for (var i = count; i > 0; i--)
+                    _release('1.$i.0', ['Change in 1.$i.0']),
+                ],
+                localeCode: 'en',
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('opens the newest three and folds the rest', (tester) async {
+      await pumpCards(tester, 5);
+
+      expect(find.text('Change in 1.5.0'), findsOneWidget);
+      expect(find.text('Change in 1.3.0'), findsOneWidget);
+      expect(find.text('Change in 1.2.0'), findsNothing);
+      expect(find.text('Change in 1.1.0'), findsNothing);
+    });
+
+    testWidgets('a folded release opens when tapped', (tester) async {
+      await pumpCards(tester, 5);
+
+      await tester.tap(find.textContaining('1.1.0'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Change in 1.1.0'), findsOneWidget);
+    });
+
+    testWidgets('sits inside a page that already scrolls', (tester) async {
+      // The Settings pane scrolls; the list must not bring its own scroll view.
+      await pumpCards(tester, 5);
+
+      expect(tester.takeException(), isNull);
+      expect(
+        find.descendant(
+          of: find.byType(ChangelogReleaseCards),
+          matching: find.byType(Scrollable),
+        ),
+        findsNothing,
+      );
+    });
+  });
 }

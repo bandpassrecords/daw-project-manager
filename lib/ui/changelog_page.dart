@@ -76,7 +76,6 @@ class ChangelogListView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDesktop = !kIsWeb && MobileUtils.isDesktop();
-    final dateFormat = DateFormat.yMMMd(localeCode);
 
     if (releases.isEmpty) {
       return Center(
@@ -97,57 +96,103 @@ class ChangelogListView extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 760),
           child: Padding(
             padding: EdgeInsets.all(isDesktop ? 24 : 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (final release in releases)
-                  Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                l10n.versionLabel(release.version),
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              if (currentVersion != null &&
-                                  compareVersions(
-                                        release.version,
-                                        currentVersion!,
-                                      ) ==
-                                      0) ...[
-                                const SizedBox(width: 8),
-                                _CurrentVersionBadge(
-                                  label: l10n.changelogCurrentVersionBadge,
-                                ),
-                              ],
-                              const Spacer(),
-                              if (release.date != null)
-                                Text(
-                                  dateFormat.format(release.date!),
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                            ],
-                          ),
-                          const Divider(height: 20),
-                          for (final text
-                              in release.highlightsFor(localeCode))
-                            ChangelogHighlightRow(text: text),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
+            child: ChangelogReleaseCards(
+              releases: releases,
+              localeCode: localeCode,
+              currentVersion: currentVersion,
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Every release as a card, newest first — without a scroll view of its own,
+/// so it can sit inside a page that already scrolls (the Settings pane) as
+/// well as inside [ChangelogListView].
+///
+/// Each card collapses to its version and date. The newest
+/// [expandedCount] start open: the history runs back to 1.0, and seventy-odd
+/// open cards would bury the release anyone is actually looking for.
+class ChangelogReleaseCards extends StatelessWidget {
+  const ChangelogReleaseCards({
+    super.key,
+    required this.releases,
+    required this.localeCode,
+    this.currentVersion,
+    this.expandedCount = 3,
+  });
+
+  final List<ChangelogRelease> releases;
+  final String localeCode;
+  final String? currentVersion;
+  final int expandedCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final dateFormat = DateFormat.yMMMd(localeCode);
+
+    if (releases.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(32),
+        child: Text(
+          l10n.changelogEmpty,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium,
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < releases.length; i++)
+          Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            clipBehavior: Clip.antiAlias,
+            child: ExpansionTile(
+              // Keyed by version so expanding one card never carries over
+              // to another when the list is rebuilt.
+              key: PageStorageKey('changelog-${releases[i].version}'),
+              initiallyExpanded: i < expandedCount,
+              shape: const Border(),
+              collapsedShape: const Border(),
+              childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              expandedCrossAxisAlignment: CrossAxisAlignment.start,
+              title: Row(
+                children: [
+                  Text(
+                    l10n.versionLabel(releases[i].version),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (currentVersion != null &&
+                      compareVersions(releases[i].version, currentVersion!) ==
+                          0) ...[
+                    const SizedBox(width: 8),
+                    _CurrentVersionBadge(
+                      label: l10n.changelogCurrentVersionBadge,
+                    ),
+                  ],
+                  const Spacer(),
+                  if (releases[i].date != null)
+                    Text(
+                      dateFormat.format(releases[i].date!),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                ],
+              ),
+              children: [
+                for (final text in releases[i].highlightsFor(localeCode))
+                  ChangelogHighlightRow(text: text),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

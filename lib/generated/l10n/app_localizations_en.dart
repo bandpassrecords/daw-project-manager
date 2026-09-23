@@ -5693,4 +5693,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get songLengthHowItWorks =>
       'Filled in automatically from the preview song — when it is played, or when a release containing this track is opened. You can also type it: 3:45, 1:02:03, or seconds.';
+
+  @override
+  String get changelogSectionSubtitle =>
+      'Everything that changed in each version, newest first.';
 }

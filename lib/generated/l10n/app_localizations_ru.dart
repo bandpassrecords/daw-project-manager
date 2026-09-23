@@ -5713,4 +5713,8 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get songLengthHowItWorks =>
       'Заполняется автоматически по превью — при его воспроизведении или при открытии релиза с этим треком. Можно ввести и вручную: 3:45, 1:02:03 или в секундах.';
+
+  @override
+  String get changelogSectionSubtitle =>
+      'Всё, что изменилось в каждой версии, начиная с самой новой.';
 }

@@ -5712,4 +5712,8 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get songLengthHowItWorks =>
       'Preenchida automaticamente a partir da prévia — quando ela é tocada ou quando um lançamento com esta faixa é aberto. Você também pode digitar: 3:45, 1:02:03 ou em segundos.';
+
+  @override
+  String get changelogSectionSubtitle =>
+      'Tudo o que mudou em cada versão, da mais recente para a mais antiga.';
 }
