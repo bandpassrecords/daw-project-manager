@@ -5717,4 +5717,12 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get changelogSectionSubtitle =>
       'Всё, что изменилось в каждой версии, начиная с самой новой.';
+
+  @override
+  String get changelogSearchHint => 'Поиск по списку изменений';
+
+  @override
+  String changelogNoMatches(String query) {
+    return 'Нет изменений, соответствующих «$query»';
+  }
 }

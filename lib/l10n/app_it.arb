@@ -3793,5 +3793,8 @@
 
   "songLengthHowItWorks": "Compilata automaticamente dall’anteprima: quando viene riprodotta o quando si apre una pubblicazione che contiene questa traccia. Puoi anche inserirla: 3:45, 1:02:03 o in secondi.",
 
-  "changelogSectionSubtitle": "Tutto ciò che è cambiato in ogni versione, dalla più recente."
+  "changelogSectionSubtitle": "Tutto ciò che è cambiato in ogni versione, dalla più recente.",
+
+  "changelogSearchHint": "Cerca nel changelog",
+  "changelogNoMatches": "Nessuna modifica corrisponde a \"{query}\""
 }

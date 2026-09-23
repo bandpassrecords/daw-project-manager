@@ -9550,6 +9550,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Everything that changed in each version, newest first.'**
   String get changelogSectionSubtitle;
+
+  /// No description provided for @changelogSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search the changelog'**
+  String get changelogSearchHint;
+
+  /// Shown when a changelog search finds nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No changes match \"{query}\"'**
+  String changelogNoMatches(String query);
 }
 
 class _AppLocalizationsDelegate

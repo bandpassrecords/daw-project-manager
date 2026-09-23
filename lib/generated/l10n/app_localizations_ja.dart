@@ -5554,4 +5554,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get changelogSectionSubtitle => '各バージョンの変更点（新しい順）。';
+
+  @override
+  String get changelogSearchHint => '変更履歴を検索';
+
+  @override
+  String changelogNoMatches(String query) {
+    return '「$query」に一致する変更はありません';
+  }
 }

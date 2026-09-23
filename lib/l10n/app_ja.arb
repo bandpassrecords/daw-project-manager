@@ -3793,5 +3793,8 @@
 
   "songLengthHowItWorks": "プレビュー曲から自動で入力されます（再生したとき、またはこのトラックを含むリリースを開いたとき）。手入力も可能です：3:45、1:02:03、または秒数。",
 
-  "changelogSectionSubtitle": "各バージョンの変更点（新しい順）。"
+  "changelogSectionSubtitle": "各バージョンの変更点（新しい順）。",
+
+  "changelogSearchHint": "変更履歴を検索",
+  "changelogNoMatches": "「{query}」に一致する変更はありません"
 }

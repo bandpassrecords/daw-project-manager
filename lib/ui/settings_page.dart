@@ -2739,42 +2739,42 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
-  /// Every release's highlights, newest first, back to 1.0.
-  ///
-  /// The "What's New" dialog marks itself seen after one showing, so this is
-  /// the way back to what it said — and to everything older. Read from the
-  /// changelog shipped inside the app, so it works offline and in Flatpak.
-  Widget _buildChangelogSection(AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text(
-            l10n.changelogSectionSubtitle,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ),
-        FutureBuilder<List<ChangelogRelease>>(
-          future: ChangelogService.loadChangelog(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-            return ChangelogReleaseCards(
-              releases: snapshot.data ?? const [],
-              localeCode: Localizations.localeOf(context).toLanguageTag(),
-              currentVersion: appVersion,
-            );
-          },
-        ),
-      ],
-    );
-  }
-
+  /// Every release's highlights, newest first, back to 1.0.
+  ///
+  /// The "What's New" dialog marks itself seen after one showing, so this is
+  /// the way back to what it said — and to everything older. Read from the
+  /// changelog shipped inside the app, so it works offline and in Flatpak.
+  Widget _buildChangelogSection(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            l10n.changelogSectionSubtitle,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+        FutureBuilder<List<ChangelogRelease>>(
+          future: ChangelogService.loadChangelog(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            return ChangelogBrowser(
+              releases: snapshot.data ?? const [],
+              localeCode: Localizations.localeOf(context).toLanguageTag(),
+              currentVersion: appVersion,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildAboutSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

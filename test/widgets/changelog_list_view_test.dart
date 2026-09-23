@@ -180,4 +180,74 @@ void main() {
       );
     });
   });
+
+  group('ChangelogBrowser search', () {
+    Future<void> pumpBrowser(WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ChangelogBrowser(
+                releases: [
+                  _release('2.9.0', ['Volume is remembered']),
+                  _release('2.8.0', ['Parts and performers']),
+                  _release('2.7.0', ['Zrythm support']),
+                  _release('2.6.0', ['Project templates']),
+                ],
+                localeCode: 'en',
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('narrows the list as the user types', (tester) async {
+      await pumpBrowser(tester);
+
+      await tester.enterText(find.byType(TextField), 'volume');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Volume is remembered'), findsOneWidget);
+      expect(find.textContaining('2.8.0'), findsNothing);
+    });
+
+    testWidgets('opens a match even in a release folded by default',
+        (tester) async {
+      // 2.6.0 is the fourth release, so it starts folded; a search hit in it
+      // must be visible without another click.
+      await pumpBrowser(tester);
+      expect(find.text('Project templates'), findsNothing);
+
+      await tester.enterText(find.byType(TextField), 'templates');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Project templates'), findsOneWidget);
+    });
+
+    testWidgets('says so when nothing matches', (tester) async {
+      await pumpBrowser(tester);
+
+      await tester.enterText(find.byType(TextField), 'zzz');
+      await tester.pumpAndSettle();
+
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      expect(find.text(l10n.changelogNoMatches('zzz')), findsOneWidget);
+    });
+
+    testWidgets('clearing the search brings everything back', (tester) async {
+      await pumpBrowser(tester);
+      await tester.enterText(find.byType(TextField), 'volume');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('2.8.0'), findsOneWidget);
+      expect(find.textContaining('2.6.0'), findsOneWidget);
+    });
+  });
 }

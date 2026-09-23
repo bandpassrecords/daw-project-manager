@@ -37,6 +37,7 @@ import 'services/crash_logger.dart';
 import 'services/dock_menu_service.dart';
 import 'services/quick_action.dart';
 import 'services/tray_notice.dart';
+import 'services/changelog_service.dart';
 import 'services/player_volume_store.dart';
 import 'services/tray_service.dart';
 import 'services/folder_watcher_service.dart';
@@ -776,6 +777,17 @@ Future<void> _main(List<String> args) async {
   // Read the remembered playback volume before any player can be built, so
   // the first one opens at the user's level rather than at full volume.
   await PlayerVolumeStore.load();
+
+  // Decided now, before this run writes a single setting: an empty settings
+  // box means a first-ever launch. An install that has run before, but on a
+  // build older than the changelog, has settings and no last-seen version —
+  // seed one so its first update still gets the What's New dialog.
+  final settingsBox = Hive.box<String>('settings');
+  await ChangelogService.seedBaselineForUpgrade(
+    hadPriorUse: settingsBox.keys
+        .any((k) => k != kLastSeenChangelogVersionKey),
+    currentVersion: appVersion,
+  );
 
   // NOVO: 4. Configuração do Riverpod e Auto-Scan
   final container = ProviderContainer();

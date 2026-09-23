@@ -186,6 +186,61 @@ List<ChangelogRelease> changelogFor(
   ];
 }
 
+/// The version to treat as "last seen" for an install that has been used
+/// before but never recorded one — the newest release strictly older than
+/// [currentVersion], or null when there is none.
+///
+/// Needed exactly once, for the update that introduces the changelog: every
+/// earlier build ran without recording a version, so without this an upgrade
+/// from one of them is indistinguishable from a fresh install and the dialog
+/// would stay silent on the very update that adds it. Assuming the user came
+/// from the previous release shows them the notes for the version they just
+/// installed, and nothing older.
+String? upgradeBaselineVersion(
+  String currentVersion, {
+  required List<ChangelogRelease> changelog,
+}) {
+  String? best;
+  for (final release in changelog) {
+    if (compareVersions(release.version, currentVersion) >= 0) continue;
+    if (best == null || compareVersions(release.version, best) > 0) {
+      best = release.version;
+    }
+  }
+  return best;
+}
+
+/// Releases whose version or highlight text contains [query], each trimmed
+/// to the highlights that match — unless the version itself matched, in
+/// which case the whole release is kept. Case-insensitive; a blank query
+/// returns [changelog] unchanged.
+///
+/// Searches the text in [localeCode] (with its English fallback), since that
+/// is what is on screen.
+List<ChangelogRelease> filterChangelog(
+  List<ChangelogRelease> changelog,
+  String query, {
+  required String localeCode,
+}) {
+  final q = query.trim().toLowerCase();
+  if (q.isEmpty) return changelog;
+  final results = <ChangelogRelease>[];
+  for (final release in changelog) {
+    final lines = release.highlightsFor(localeCode);
+    final versionHit = release.version.toLowerCase().contains(q);
+    final hits = versionHit
+        ? lines
+        : [for (final line in lines) if (line.toLowerCase().contains(q)) line];
+    if (hits.isEmpty) continue;
+    results.add(ChangelogRelease(
+      version: release.version,
+      date: release.date,
+      highlightsByLocale: {localeCode: hits, 'en': hits},
+    ));
+  }
+  return results;
+}
+
 /// Where the last version whose changelog was shown is remembered.
 ///
 /// Deliberately **device-local**: it records what this installation has
@@ -218,6 +273,25 @@ class ChangelogService {
   }
 
   static Future<Box<String>> _box() => Hive.openBox<String>('settings');
+
+  /// Records a baseline last-seen version for an install that has been used
+  /// before but has none yet (see [upgradeBaselineVersion]).
+  ///
+  /// [hadPriorUse] must be decided at startup, before this run writes
+  /// anything: once onboarding or a preference change has touched the
+  /// settings, a fresh install looks exactly like an old one.
+  static Future<void> seedBaselineForUpgrade({
+    required bool hadPriorUse,
+    required String currentVersion,
+  }) async {
+    if (!hadPriorUse) return;
+    if (await loadLastSeenVersion() != null) return;
+    final baseline = upgradeBaselineVersion(
+      currentVersion,
+      changelog: await loadChangelog(),
+    );
+    if (baseline != null) await saveLastSeenVersion(baseline);
+  }
 
   static Future<String?> loadLastSeenVersion() async {
     final box = await _box();

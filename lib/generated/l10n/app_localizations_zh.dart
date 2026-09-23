@@ -5492,4 +5492,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get changelogSectionSubtitle => '每个版本的所有变更，按从新到旧排列。';
+
+  @override
+  String get changelogSearchHint => '搜索更新日志';
+
+  @override
+  String changelogNoMatches(String query) {
+    return '没有与“$query”匹配的变更';
+  }
 }

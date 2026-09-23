@@ -5734,4 +5734,12 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get changelogSectionSubtitle =>
       'Alles, was sich in jeder Version geändert hat, neueste zuerst.';
+
+  @override
+  String get changelogSearchHint => 'Changelog durchsuchen';
+
+  @override
+  String changelogNoMatches(String query) {
+    return 'Keine Änderungen passen zu „$query“';
+  }
 }

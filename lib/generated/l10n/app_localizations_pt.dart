@@ -5716,4 +5716,12 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get changelogSectionSubtitle =>
       'Tudo o que mudou em cada versão, da mais recente para a mais antiga.';
+
+  @override
+  String get changelogSearchHint => 'Pesquisar no changelog';
+
+  @override
+  String changelogNoMatches(String query) {
+    return 'Nenhuma mudança corresponde a \"$query\"';
+  }
 }

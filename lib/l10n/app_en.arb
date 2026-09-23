@@ -5267,5 +5267,16 @@
 
   "songLengthHowItWorks": "Filled in automatically from the preview song — when it is played, or when a release containing this track is opened. You can also type it: 3:45, 1:02:03, or seconds.",
 
-  "changelogSectionSubtitle": "Everything that changed in each version, newest first."
+  "changelogSectionSubtitle": "Everything that changed in each version, newest first.",
+
+  "changelogSearchHint": "Search the changelog",
+  "changelogNoMatches": "No changes match \"{query}\"",
+  "@changelogNoMatches": {
+    "description": "Shown when a changelog search finds nothing",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  }
 }

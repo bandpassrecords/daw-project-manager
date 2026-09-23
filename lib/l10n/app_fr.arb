@@ -3793,5 +3793,8 @@
 
   "songLengthHowItWorks": "Renseignée automatiquement depuis l’aperçu — lorsqu’il est lu, ou à l’ouverture d’une sortie contenant cette piste. Vous pouvez aussi la saisir : 3:45, 1:02:03 ou en secondes.",
 
-  "changelogSectionSubtitle": "Tout ce qui a changé dans chaque version, de la plus récente à la plus ancienne."
+  "changelogSectionSubtitle": "Tout ce qui a changé dans chaque version, de la plus récente à la plus ancienne.",
+
+  "changelogSearchHint": "Rechercher dans le journal",
+  "changelogNoMatches": "Aucune modification ne correspond à « {query} »"
 }

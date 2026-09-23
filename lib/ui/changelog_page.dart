@@ -96,7 +96,7 @@ class ChangelogListView extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 760),
           child: Padding(
             padding: EdgeInsets.all(isDesktop ? 24 : 16),
-            child: ChangelogReleaseCards(
+            child: ChangelogBrowser(
               releases: releases,
               localeCode: localeCode,
               currentVersion: currentVersion,
@@ -122,12 +122,17 @@ class ChangelogReleaseCards extends StatelessWidget {
     required this.localeCode,
     this.currentVersion,
     this.expandedCount = 3,
+    this.expandAll = false,
   });
 
   final List<ChangelogRelease> releases;
   final String localeCode;
   final String? currentVersion;
   final int expandedCount;
+
+  /// Opens every card — for search results, where each card is there because
+  /// something in it matched and a folded one would hide the match.
+  final bool expandAll;
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +161,12 @@ class ChangelogReleaseCards extends StatelessWidget {
             child: ExpansionTile(
               // Keyed by version so expanding one card never carries over
               // to another when the list is rebuilt.
-              key: PageStorageKey('changelog-${releases[i].version}'),
-              initiallyExpanded: i < expandedCount,
+              // A separate key in search mode, so results open expanded
+              // rather than inheriting the folded state of the full list.
+              key: expandAll
+                  ? ValueKey('changelog-search-${releases[i].version}')
+                  : PageStorageKey('changelog-${releases[i].version}'),
+              initiallyExpanded: expandAll || i < expandedCount,
               shape: const Border(),
               collapsedShape: const Border(),
               childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -218,6 +227,95 @@ class _CurrentVersionBadge extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
+    );
+  }
+}
+
+/// The changelog with a search field above it: [ChangelogReleaseCards]
+/// filtered to what matches as the user types.
+///
+/// Like the cards, it has no scroll view of its own, so it sits inside the
+/// Settings pane as well as inside [ChangelogListView].
+class ChangelogBrowser extends StatefulWidget {
+  const ChangelogBrowser({
+    super.key,
+    required this.releases,
+    required this.localeCode,
+    this.currentVersion,
+  });
+
+  final List<ChangelogRelease> releases;
+  final String localeCode;
+  final String? currentVersion;
+
+  @override
+  State<ChangelogBrowser> createState() => _ChangelogBrowserState();
+}
+
+class _ChangelogBrowserState extends State<ChangelogBrowser> {
+  final _controller = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final searching = _query.trim().isNotEmpty;
+    final shown = filterChangelog(
+      widget.releases,
+      _query,
+      localeCode: widget.localeCode,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (widget.releases.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                hintText: l10n.changelogSearchHint,
+                prefixIcon: const Icon(Icons.search, size: 20),
+                isDense: true,
+                border: const OutlineInputBorder(),
+                suffixIcon: searching
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 18),
+                        tooltip: l10n.clear,
+                        onPressed: () {
+                          _controller.clear();
+                          setState(() => _query = '');
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: (value) => setState(() => _query = value),
+            ),
+          ),
+        if (searching && shown.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              l10n.changelogNoMatches(_query.trim()),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          )
+        else
+          ChangelogReleaseCards(
+            releases: shown,
+            localeCode: widget.localeCode,
+            currentVersion: widget.currentVersion,
+            expandAll: searching,
+          ),
+      ],
     );
   }
 }
