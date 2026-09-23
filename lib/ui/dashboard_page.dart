@@ -27,6 +27,7 @@ import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
 import 'row_click_selection.dart';
+import 'widgets/now_playing_icon.dart';
 import 'widgets/shortcuts_help_dialog.dart';
 import 'widgets/waveform_widget.dart';
 import 'music_player_page.dart';
@@ -7896,41 +7897,38 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                       : project.previewSongAutoPath != null
                       ? Colors.amber
                       : Colors.grey;
-                  return _PlayButtonWithGlow(
-                    isActive: isActive,
-                    glowColor: iconColor,
-                    child: IconButton(
-                      icon: Icon(
-                        isCurrent
-                            ? (isPlaying
-                                  ? Icons.pause_circle
-                                  : Icons.play_circle)
-                            : (hasPreview
-                                  ? Icons.play_circle
-                                  : Icons.play_circle_outline),
-                      ),
-                      iconSize: 24,
-                      padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(),
-                      tooltip: isCurrent
-                          ? (isPlaying
-                                ? AppLocalizations.of(context)!.pause
-                                : AppLocalizations.of(context)!.playPreview)
-                          : project.previewSongAutoPath != null &&
-                                project.previewSongPath?.isNotEmpty != true
-                          ? '${AppLocalizations.of(context)!.playPreview} (P)\n⚡ ${AppLocalizations.of(context)!.autoDetected}: ${path.basename(project.previewSongAutoPath!)}'
-                          : '${AppLocalizations.of(context)!.playPreview} (P)',
-                      onPressed: () {
-                        if (isCurrent) {
-                          ref
-                              .read(desktopPlayerToggleRequestProvider.notifier)
-                              .bump();
-                        } else {
-                          _playPreviewSong(project);
-                        }
-                      },
-                      color: iconColor,
+                  return IconButton(
+                    // Bouncing bars while this row's preview plays (the pause
+                    // icon on hover), the play icon otherwise.
+                    icon: NowPlayingIcon(
+                      isPlaying: isActive,
+                      idleIcon: isCurrent
+                          ? Icons.play_circle
+                          : (hasPreview
+                                ? Icons.play_circle
+                                : Icons.play_circle_outline),
                     ),
+                    iconSize: 24,
+                    padding: const EdgeInsets.all(4),
+                    constraints: const BoxConstraints(),
+                    tooltip: isCurrent
+                        ? (isPlaying
+                              ? AppLocalizations.of(context)!.pause
+                              : AppLocalizations.of(context)!.playPreview)
+                        : project.previewSongAutoPath != null &&
+                              project.previewSongPath?.isNotEmpty != true
+                        ? '${AppLocalizations.of(context)!.playPreview} (P)\n⚡ ${AppLocalizations.of(context)!.autoDetected}: ${path.basename(project.previewSongAutoPath!)}'
+                        : '${AppLocalizations.of(context)!.playPreview} (P)',
+                    onPressed: () {
+                      if (isCurrent) {
+                        ref
+                            .read(desktopPlayerToggleRequestProvider.notifier)
+                            .bump();
+                      } else {
+                        _playPreviewSong(project);
+                      }
+                    },
+                    color: iconColor,
                   );
                 },
               ),
@@ -13100,85 +13098,3 @@ class _PendingFolderRow extends ConsumerWidget {
   }
 }
 
-class _PlayButtonWithGlow extends StatefulWidget {
-  final bool isActive;
-  final Color glowColor;
-  final Widget child;
-
-  const _PlayButtonWithGlow({
-    required this.isActive,
-    required this.glowColor,
-    required this.child,
-  });
-
-  @override
-  State<_PlayButtonWithGlow> createState() => _PlayButtonWithGlowState();
-}
-
-class _PlayButtonWithGlowState extends State<_PlayButtonWithGlow>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _anim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    );
-    _anim = Tween<double>(
-      begin: 0.15,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
-    if (widget.isActive) _ctrl.repeat(reverse: true);
-  }
-
-  @override
-  void didUpdateWidget(_PlayButtonWithGlow old) {
-    super.didUpdateWidget(old);
-    if (widget.isActive && !old.isActive) {
-      _ctrl.repeat(reverse: true);
-    } else if (!widget.isActive && old.isActive) {
-      _ctrl.stop();
-      _ctrl.value = 0;
-    }
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!widget.isActive) return widget.child;
-
-    return AnimatedBuilder(
-      animation: _anim,
-      builder: (_, child) => Stack(
-        alignment: Alignment.center,
-        clipBehavior: Clip.none,
-        children: [
-          // Positioned so it does not affect the Stack's layout size.
-          // The glow overflows visually but the button's footprint stays constant.
-          Positioned(
-            left: -3,
-            right: -3,
-            top: -3,
-            bottom: -3,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.glowColor.withValues(alpha: _anim.value * 0.28),
-              ),
-            ),
-          ),
-          child!,
-        ],
-      ),
-      child: widget.child,
-    );
-  }
-}
