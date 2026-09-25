@@ -5750,4 +5750,13 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get sectionRailResizeHint =>
       'Trascina per ridimensionare · doppio clic per ripristinare';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'copertina';
+
+  @override
+  String get stackMetadataColorLabel => 'colore d\'accento';
+
+  @override
+  String get stackMetadataIconLabel => 'icona';
 }

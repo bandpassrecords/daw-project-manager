@@ -5567,4 +5567,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get sectionRailResizeHint => 'ドラッグで幅を変更 · ダブルクリックで元に戻す';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'カバーアート';
+
+  @override
+  String get stackMetadataColorLabel => 'アクセントカラー';
+
+  @override
+  String get stackMetadataIconLabel => 'アイコン';
 }

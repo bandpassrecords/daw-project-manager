@@ -5761,4 +5761,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get sectionRailResizeHint =>
       'Arrastra para cambiar el tamaño · doble clic para restablecer';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'portada';
+
+  @override
+  String get stackMetadataColorLabel => 'color de acento';
+
+  @override
+  String get stackMetadataIconLabel => 'icono';
 }

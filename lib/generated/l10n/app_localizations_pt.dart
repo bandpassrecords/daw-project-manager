@@ -5730,4 +5730,13 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get sectionRailResizeHint =>
       'Arraste para redimensionar · clique duas vezes para restaurar';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'capa';
+
+  @override
+  String get stackMetadataColorLabel => 'cor de destaque';
+
+  @override
+  String get stackMetadataIconLabel => 'ícone';
 }

@@ -24,7 +24,8 @@ import '../models/playlist.dart';
 import '../models/project_event.dart';
 import '../services/metadata_extractor.dart';
 import '../services/notification_background_service.dart';
-import '../utils/app_paths.dart';
+import '../utils/app_paths.dart';
+import '../utils/version_stacks.dart';
 import 'profile_repository.dart';
 import '../models/profile.dart';
 
@@ -1146,15 +1147,16 @@ class ProjectRepository {
       throw ArgumentError('A project can only belong to one stack');
     }
 
-    // Default to the oldest member: when someone saves v1 → v2 → v3, the
-    // metadata they have been maintaining is on the one they started from.
+    // Default to the oldest member with something to promote (the oldest
+    // outright if none has): when someone saves v1 → v2 → v3, the metadata
+    // they have been maintaining is on the one they started from — but a
+    // blank v1 must not win over a v2 carrying details or cover art.
     final source = metadataSourceId != null
         ? members.firstWhere(
             (m) => m.id == metadataSourceId,
             orElse: () => members.first,
           )
-        : (members.toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt)))
-              .first;
+        : preferredStackMetadataSource(members);
 
     final now = DateTime.now();
     final folder = p.dirname(p.normalize(source.filePath));

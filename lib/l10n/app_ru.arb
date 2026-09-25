@@ -3800,5 +3800,9 @@
   "projectFileMenu": "Файл",
   "moreActions": "Другие действия",
 
-  "sectionRailResizeHint": "Перетащите, чтобы изменить размер · двойной щелчок — сбросить"
+  "sectionRailResizeHint": "Перетащите, чтобы изменить размер · двойной щелчок — сбросить",
+
+  "stackMetadataCoverArtLabel": "обложка",
+  "stackMetadataColorLabel": "акцентный цвет",
+  "stackMetadataIconLabel": "значок"
 }

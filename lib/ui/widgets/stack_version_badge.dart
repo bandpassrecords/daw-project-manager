@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'on_art_marker.dart';
+
 /// The "N versions" capsule after a version stack's name in the projects
 /// grid, so a stacked song is distinguishable from an ordinary project at a
 /// glance.
@@ -20,17 +22,10 @@ class StackVersionBadge extends StatelessWidget {
   final int count;
   final String tooltip;
 
-  /// How much of the primary colour is mixed into the card colour.
-  static const double tintStrength = 0.22;
-
-  /// The badge's fill for [theme]: always fully opaque.
-  static Color backgroundFor(ThemeData theme) {
-    final base = theme.cardColor.withValues(alpha: 1);
-    return Color.alphaBlend(
-      theme.colorScheme.primary.withValues(alpha: tintStrength),
-      base,
-    );
-  }
+  /// The badge's fill for [theme]: always fully opaque. The same recipe as
+  /// every other marker drawn over artwork (see on_art_marker.dart).
+  static Color backgroundFor(ThemeData theme) =>
+      onArtFill(theme, theme.colorScheme.primary);
 
   @override
   Widget build(BuildContext context) {
@@ -40,15 +35,7 @@ class StackVersionBadge extends StatelessWidget {
       message: tooltip,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-        decoration: ShapeDecoration(
-          color: backgroundFor(theme),
-          shape: StadiumBorder(
-            side: BorderSide(color: primary.withValues(alpha: 0.45)),
-          ),
-          shadows: const [
-            BoxShadow(color: Color(0x40000000), blurRadius: 3),
-          ],
-        ),
+        decoration: onArtCapsule(theme, primary),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

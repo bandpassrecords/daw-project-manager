@@ -3800,5 +3800,9 @@
   "projectFileMenu": "ファイル",
   "moreActions": "その他の操作",
 
-  "sectionRailResizeHint": "ドラッグで幅を変更 · ダブルクリックで元に戻す"
+  "sectionRailResizeHint": "ドラッグで幅を変更 · ダブルクリックで元に戻す",
+
+  "stackMetadataCoverArtLabel": "カバーアート",
+  "stackMetadataColorLabel": "アクセントカラー",
+  "stackMetadataIconLabel": "アイコン"
 }

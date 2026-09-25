@@ -3800,5 +3800,9 @@
   "projectFileMenu": "文件",
   "moreActions": "更多操作",
 
-  "sectionRailResizeHint": "拖动调整宽度 · 双击恢复默认"
+  "sectionRailResizeHint": "拖动调整宽度 · 双击恢复默认",
+
+  "stackMetadataCoverArtLabel": "封面",
+  "stackMetadataColorLabel": "强调色",
+  "stackMetadataIconLabel": "图标"
 }

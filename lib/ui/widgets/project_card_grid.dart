@@ -210,6 +210,10 @@ class _ProjectCardGridState extends State<ProjectCardGrid> {
   }
 }
 
+/// Opacity of the dark disc behind a card's selection checkbox. At 0.35 an
+/// unticked box nearly vanished on a bright cover.
+const double kCardCheckboxBackingAlpha = 0.5;
+
 /// The mask a card's cover art is drawn through: full strength over the top
 /// of the cover, fading to transparent at the bottom edge where the action
 /// buttons sit.
@@ -335,7 +339,8 @@ class _ProjectCardState extends State<_ProjectCard> {
             message: widget.labels.selectTooltip,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.35),
+                // Dark enough to keep the checkbox visible on a bright cover.
+                color: Colors.black.withValues(alpha: kCardCheckboxBackingAlpha),
                 shape: BoxShape.circle,
               ),
               child: Checkbox(

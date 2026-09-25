@@ -3824,5 +3824,9 @@
   "projectFileMenu": "Arquivo",
   "moreActions": "Mais ações",
 
-  "sectionRailResizeHint": "Arraste para redimensionar · clique duas vezes para restaurar"
+  "sectionRailResizeHint": "Arraste para redimensionar · clique duas vezes para restaurar",
+
+  "stackMetadataCoverArtLabel": "capa",
+  "stackMetadataColorLabel": "cor de destaque",
+  "stackMetadataIconLabel": "ícone"
 }

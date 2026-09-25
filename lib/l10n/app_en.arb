@@ -5282,5 +5282,18 @@
   "projectFileMenu": "File",
   "moreActions": "More actions",
 
-  "sectionRailResizeHint": "Drag to resize · double-click to reset"
+  "sectionRailResizeHint": "Drag to resize · double-click to reset",
+
+  "stackMetadataCoverArtLabel": "cover art",
+  "@stackMetadataCoverArtLabel": {
+    "description": "Stack chooser: this version has its own cover art"
+  },
+  "stackMetadataColorLabel": "accent color",
+  "@stackMetadataColorLabel": {
+    "description": "Stack chooser: this version has a chosen accent colour"
+  },
+  "stackMetadataIconLabel": "icon",
+  "@stackMetadataIconLabel": {
+    "description": "Stack chooser: this version has a chosen icon"
+  }
 }

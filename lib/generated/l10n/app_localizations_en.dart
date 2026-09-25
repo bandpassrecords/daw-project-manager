@@ -5710,4 +5710,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sectionRailResizeHint => 'Drag to resize · double-click to reset';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'cover art';
+
+  @override
+  String get stackMetadataColorLabel => 'accent color';
+
+  @override
+  String get stackMetadataIconLabel => 'icon';
 }

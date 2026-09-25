@@ -27,6 +27,7 @@ import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
 import 'row_click_selection.dart';
+import 'widgets/on_art_marker.dart';
 import 'widgets/stack_version_badge.dart';
 import 'widgets/now_playing_icon.dart';
 import 'widgets/shortcuts_help_dialog.dart';
@@ -1221,6 +1222,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       context,
       releaseArtworkCandidates(selectedProjects),
     );
+    // The release gets its own copy, not the project's cover file.
+    final artworkPath = await copyArtworkForRelease(artwork.imagePath);
     if (!context.mounted) return;
 
     final selectedProjectIds = selectedProjects.map((p) => p.id).toList();
@@ -1229,7 +1232,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       ref,
       selectedProjectIds,
       releaseTitle,
-      artworkImagePath: artwork.imagePath,
+      artworkImagePath: artworkPath,
     );
 
     // Clear selection after creating release
@@ -1296,7 +1299,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   /// One-line summary of what a project would contribute as the main
   /// project's metadata.
   ///
-  /// Covers exactly the fields [MusicProject.hasUserMetadata] counts. A
+  /// Covers exactly the fields [MusicProject.hasSomethingToPromote] counts. A
   /// project appears in the chooser *because* that getter said it has
   /// details, so any field it counts but this omits produces a row offered to
   /// the user over "No details yet" — which reads as a bug in the dialog.
@@ -1322,6 +1325,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         l10n.stackMetadataWorkHours(
           (project.totalWorkSeconds / 3600).toStringAsFixed(1),
         ),
+      // The look counts too (MusicProject.hasCustomAppearance) — the stack
+      // takes the chosen version's cover, colour and icon along with it.
+      if (project.thumbnailPath?.trim().isNotEmpty ?? false)
+        l10n.stackMetadataCoverArtLabel,
+      if (project.accentColor != null) l10n.stackMetadataColorLabel,
+      if (project.iconKey?.trim().isNotEmpty ?? false)
+        l10n.stackMetadataIconLabel,
     ];
     return parts.isEmpty ? l10n.stackMetadataNoneLabel : parts.join('  ·  ');
   }
@@ -7394,7 +7404,16 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
               // inline; the name only needs to clear the bleed's solid half.
               if (hasBleed && bleedOnLeft)
                 const SizedBox(width: _kNameCellBleedTextOffset),
-              Expanded(child: Text(rendererContext.cell.value.toString())),
+              Expanded(
+                child: Text(
+                  rendererContext.cell.value.toString(),
+                  // A halo of the card colour, so a light cover fading in
+                  // under the name can't wash it out. Plain rows need none.
+                  style: hasBleed
+                      ? TextStyle(shadows: onArtTextHalo(Theme.of(context)))
+                      : null,
+                ),
+              ),
               // Version count, so a stacked song is distinguishable from an
               // ordinary project at a glance rather than only once opened.
               if (project.isVirtual) ...[
@@ -7419,10 +7438,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   message: AppLocalizations.of(context)!.matchedInDescription,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 6),
-                    child: Icon(
-                      Icons.notes,
-                      size: 14,
+                    child: OnArtMarker(
+                      icon: Icons.notes,
                       color: Colors.amber.shade600,
+                      onArt: hasBleed,
                     ),
                   ),
                 ),
@@ -7433,10 +7452,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   )!.matchedInProjectNotes,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 6),
-                    child: Icon(
-                      Icons.description_outlined,
-                      size: 14,
+                    child: OnArtMarker(
+                      icon: Icons.description_outlined,
                       color: Colors.amber.shade600,
+                      onArt: hasBleed,
                     ),
                   ),
                 ),
@@ -7452,12 +7471,12 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                       : AppLocalizations.of(context)!.archivedAwayTooltip,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 6),
-                    child: Icon(
-                      Icons.archive_outlined,
-                      size: 14,
+                    child: OnArtMarker(
+                      icon: Icons.archive_outlined,
                       color: fileExists
                           ? Colors.blueGrey.shade300
                           : Colors.blueGrey.shade200,
+                      onArt: hasBleed,
                     ),
                   ),
                 ),
@@ -7472,10 +7491,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   message: AppLocalizations.of(
                     context,
                   )!.sourceFileNotFoundOnThisMachine,
-                  child: Icon(
-                    Icons.cloud_off,
-                    size: 14,
+                  child: OnArtMarker(
+                    icon: Icons.cloud_off,
                     color: Colors.orange.shade400,
+                    onArt: hasBleed,
                   ),
                 ),
               // Right-anchored art: the name and its badges end before the
@@ -12496,14 +12515,9 @@ class _NewProjectBadge extends StatelessWidget {
       onEnter: (_) => onDismiss(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        decoration: BoxDecoration(
-          color: Colors.green.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: Colors.green.withValues(alpha: 0.4),
-            width: 1,
-          ),
-        ),
+        // Opaque, like every marker that can sit over a row's cover art —
+        // the old 12% tint vanished into a busy thumbnail.
+        decoration: onArtCapsule(Theme.of(context), Colors.green),
         child: Text(
           AppLocalizations.of(context)!.newProjectBadge,
           style: TextStyle(

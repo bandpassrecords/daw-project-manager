@@ -5748,4 +5748,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get sectionRailResizeHint =>
       'Ziehen zum Ändern der Breite · Doppelklick zum Zurücksetzen';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'Cover';
+
+  @override
+  String get stackMetadataColorLabel => 'Akzentfarbe';
+
+  @override
+  String get stackMetadataIconLabel => 'Symbol';
 }

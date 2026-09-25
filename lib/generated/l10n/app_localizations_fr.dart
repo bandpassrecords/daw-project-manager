@@ -5778,4 +5778,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get sectionRailResizeHint =>
       'Faites glisser pour redimensionner · double-cliquez pour réinitialiser';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'pochette';
+
+  @override
+  String get stackMetadataColorLabel => 'couleur d\'accent';
+
+  @override
+  String get stackMetadataIconLabel => 'icône';
 }

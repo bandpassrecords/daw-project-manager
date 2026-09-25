@@ -171,7 +171,8 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
       title: releaseTitle,
       trackIds: selectedProjectIds,
       releaseDate: DateTime.now(),
-      artworkImagePath: artwork.imagePath,
+      // The release gets its own copy, not the project's cover file.
+      artworkImagePath: await copyArtworkForRelease(artwork.imagePath),
     );
     await repo.addRelease(newRelease);
 

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 
 import 'package:daw_project_manager/services/release_artwork_service.dart';
 import 'package:daw_project_manager/utils/project_visuals.dart';
@@ -155,6 +158,72 @@ void main() {
         imageExists: existsExcept(const {}),
       );
       expect(shouldOfferArtworkCarryOver(candidates), isTrue);
+    });
+  });
+
+  group('copyArtworkForRelease', () {
+    late Directory tmp;
+    late Directory artDir;
+
+    setUp(() async {
+      tmp = await Directory.systemTemp.createTemp('release_art_copy_');
+      artDir = Directory(p.join(tmp.path, 'release_artwork'));
+    });
+
+    tearDown(() async {
+      if (await tmp.exists()) await tmp.delete(recursive: true);
+    });
+
+    // The regression: a release made with a carried-over cover pointed at the
+    // project's own cover file, so removing the project's cover deleted the
+    // release's artwork too.
+    test('gives the release its own copy, not the project file', () async {
+      final cover = File(p.join(tmp.path, 'project_cover_art', 'c.png'));
+      await cover.create(recursive: true);
+      await cover.writeAsString('pixels');
+
+      final copy = await copyArtworkForRelease(
+        cover.path,
+        artworkDir: () async => artDir.path,
+      );
+
+      expect(copy, isNotNull);
+      expect(p.equals(copy!, cover.path), isFalse);
+      expect(p.dirname(copy), artDir.path);
+      expect(p.extension(copy), '.png');
+      expect(await File(copy).readAsString(), 'pixels');
+
+      // Deleting the project's cover leaves the release's artwork alone.
+      await cover.delete();
+      expect(await File(copy).exists(), isTrue);
+    });
+
+    test('two releases from the same cover get separate files', () async {
+      final cover = File(p.join(tmp.path, 'c.jpg'));
+      await cover.writeAsString('pixels');
+
+      final a = await copyArtworkForRelease(cover.path,
+          artworkDir: () async => artDir.path);
+      final b = await copyArtworkForRelease(cover.path,
+          artworkDir: () async => artDir.path);
+
+      expect(a, isNot(b));
+    });
+
+    test('no artwork chosen means none', () async {
+      expect(
+        await copyArtworkForRelease(null, artworkDir: () async => artDir.path),
+        isNull,
+      );
+    });
+
+    test('a cover that has gone missing gives no artwork, not a dead path',
+        () async {
+      expect(
+        await copyArtworkForRelease(p.join(tmp.path, 'gone.png'),
+            artworkDir: () async => artDir.path),
+        isNull,
+      );
     });
   });
 }

@@ -422,6 +422,23 @@ class MusicProject {
       attachments.isNotEmpty ||
       totalWorkSeconds > 0;
 
+  /// Whether the user has given this project a look of its own: cover art, an
+  /// accent colour or an icon (#110).
+  ///
+  /// Kept apart from [hasUserMetadata] because it is not "details", but it
+  /// matters just as much when stacking: the stack is a copy of one member,
+  /// appearance included, so two versions with different covers are a choice
+  /// the user has to make, and a version with a cover must not lose out to an
+  /// older one without.
+  bool get hasCustomAppearance =>
+      (thumbnailPath?.trim().isNotEmpty ?? false) ||
+      accentColor != null ||
+      (iconKey?.trim().isNotEmpty ?? false);
+
+  /// Whether stacking would carry anything of this project's onto the stack:
+  /// details ([hasUserMetadata]) or a look ([hasCustomAppearance]).
+  bool get hasSomethingToPromote => hasUserMetadata || hasCustomAppearance;
+
   /// Whether a non-resolving [filePath] on this project means "the file was
   /// deleted or moved".
   ///

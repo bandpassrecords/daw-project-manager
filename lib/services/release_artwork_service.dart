@@ -1,4 +1,10 @@
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
+import 'package:uuid/uuid.dart';
+
 import '../models/music_project.dart';
+import '../utils/app_paths.dart';
 import '../utils/project_visuals.dart';
 
 /// One project's thumbnail, offered as artwork for a release being created.
@@ -64,3 +70,34 @@ List<ReleaseArtworkCandidate> releaseArtworkCandidates(
 /// chose is harder to notice than one created without any.
 bool shouldOfferArtworkCarryOver(List<ReleaseArtworkCandidate> candidates) =>
     candidates.isNotEmpty;
+
+/// Gives a release its own copy of the carried-over cover at [sourcePath],
+/// in the release artwork folder, and returns the copy's path.
+///
+/// The release must not point at the project's cover file itself: that file
+/// belongs to the project, and changing or removing the project's cover
+/// deletes it, which took the release's artwork with it. Returns null when
+/// there is nothing to copy or the copy fails, so the release is simply
+/// created without artwork rather than pointing at somebody else's file.
+///
+/// [artworkDir] is injectable for tests; it defaults to the app's managed
+/// release artwork folder.
+Future<String?> copyArtworkForRelease(
+  String? sourcePath, {
+  Future<String> Function() artworkDir = getReleaseArtworkPath,
+}) async {
+  if (sourcePath == null || sourcePath.trim().isEmpty) return null;
+  try {
+    final source = File(sourcePath);
+    if (!await source.exists()) return null;
+    final dir = Directory(await artworkDir());
+    if (!await dir.exists()) await dir.create(recursive: true);
+    final dest = p.join(
+      dir.path,
+      '${const Uuid().v4()}${p.extension(sourcePath)}',
+    );
+    return (await source.copy(dest)).path;
+  } catch (_) {
+    return null;
+  }
+}

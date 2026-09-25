@@ -27,6 +27,9 @@ void main() {
     int totalWorkSeconds = 0,
     String? projectNotes,
     String? dawType = 'Ableton Live',
+    String? thumbnailPath,
+    int? accentColor,
+    String? iconKey,
   }) => TestFactories.makeProject(
     id: id,
     createdAt: createdAt,
@@ -40,6 +43,9 @@ void main() {
     totalWorkSeconds: totalWorkSeconds,
     projectNotes: projectNotes,
     dawType: dawType,
+    thumbnailPath: thumbnailPath,
+    accentColor: accentColor,
+    iconKey: iconKey,
   );
 
   group('hasUserMetadata', () {
@@ -138,6 +144,75 @@ void main() {
       // Only the ones with something to promote are offered — picking an
       // empty version would just blank the song.
       expect(candidates.map((p) => p.id).toList(), ['a', 'b']);
+    });
+  });
+
+  group('appearance counts when stacking', () {
+    test('hasCustomAppearance: cover art, colour or icon', () {
+      expect(project('a').hasCustomAppearance, isFalse);
+      expect(project('a', thumbnailPath: '/art/a.png').hasCustomAppearance,
+          isTrue);
+      expect(project('a', accentColor: 0xFF00FF00).hasCustomAppearance,
+          isTrue);
+      expect(project('a', iconKey: 'guitar').hasCustomAppearance, isTrue);
+      expect(project('a', thumbnailPath: '  ').hasCustomAppearance, isFalse);
+    });
+
+    test('a cover alone is not "details", but is something to promote', () {
+      final covered = project('a', thumbnailPath: '/art/a.png');
+      expect(covered.hasUserMetadata, isFalse);
+      expect(covered.hasSomethingToPromote, isTrue);
+    });
+
+    // The regression: two versions that differed only in cover art were
+    // never asked about — the oldest won silently.
+    test('two versions with different covers are asked about', () {
+      final candidates = stackMetadataSourceCandidates([
+        project('a', thumbnailPath: '/art/a.png'),
+        project('b', thumbnailPath: '/art/b.png'),
+      ]);
+      expect(candidates.map((p) => p.id), ['a', 'b']);
+    });
+
+    test('details on one and a cover on the other is a choice too', () {
+      final candidates = stackMetadataSourceCandidates([
+        project('a', bpm: 120),
+        project('b', accentColor: 0xFFFF0000),
+        project('c'),
+      ]);
+      expect(candidates.map((p) => p.id), ['a', 'b']);
+    });
+  });
+
+  group('the default never promotes an empty version over a filled one', () {
+    // The regression: with exactly one version holding details, nothing was
+    // asked (correctly) but the *oldest* was promoted — a blank v1 over a v2
+    // with BPM, notes or cover art, hiding all of it behind an empty song.
+    test('the only version with details wins over an older blank one', () {
+      final members = [
+        project('v1', createdAt: DateTime(2025, 1, 1)),
+        project('v2', createdAt: DateTime(2025, 2, 1), bpm: 128),
+      ];
+      expect(stackMetadataSourceCandidates(members), isEmpty);
+      expect(defaultStackMetadataSource(members).id, 'v2');
+    });
+
+    test('the only version with a cover wins over an older blank one', () {
+      final members = [
+        project('v1', createdAt: DateTime(2025, 1, 1)),
+        project('v2',
+            createdAt: DateTime(2025, 2, 1), thumbnailPath: '/art/v2.png'),
+      ];
+      expect(defaultStackMetadataSource(members).id, 'v2');
+    });
+
+    test('among several filled versions the oldest still wins', () {
+      final members = [
+        project('v3', createdAt: DateTime(2025, 3, 1), bpm: 100),
+        project('v1', createdAt: DateTime(2025, 1, 1)),
+        project('v2', createdAt: DateTime(2025, 2, 1), notes: 'keep'),
+      ];
+      expect(defaultStackMetadataSource(members).id, 'v2');
     });
   });
 }

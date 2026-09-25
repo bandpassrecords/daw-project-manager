@@ -3800,5 +3800,9 @@
   "projectFileMenu": "Fichier",
   "moreActions": "Plus d'actions",
 
-  "sectionRailResizeHint": "Faites glisser pour redimensionner · double-cliquez pour réinitialiser"
+  "sectionRailResizeHint": "Faites glisser pour redimensionner · double-cliquez pour réinitialiser",
+
+  "stackMetadataCoverArtLabel": "pochette",
+  "stackMetadataColorLabel": "couleur d'accent",
+  "stackMetadataIconLabel": "icône"
 }

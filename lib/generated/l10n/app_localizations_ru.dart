@@ -5731,4 +5731,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get sectionRailResizeHint =>
       'Перетащите, чтобы изменить размер · двойной щелчок — сбросить';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'обложка';
+
+  @override
+  String get stackMetadataColorLabel => 'акцентный цвет';
+
+  @override
+  String get stackMetadataIconLabel => 'значок';
 }

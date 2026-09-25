@@ -5505,4 +5505,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sectionRailResizeHint => '拖动调整宽度 · 双击恢复默认';
+
+  @override
+  String get stackMetadataCoverArtLabel => '封面';
+
+  @override
+  String get stackMetadataColorLabel => '强调色';
+
+  @override
+  String get stackMetadataIconLabel => '图标';
 }

@@ -9574,6 +9574,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Drag to resize · double-click to reset'**
   String get sectionRailResizeHint;
+
+  /// Stack chooser: this version has its own cover art
+  ///
+  /// In en, this message translates to:
+  /// **'cover art'**
+  String get stackMetadataCoverArtLabel;
+
+  /// Stack chooser: this version has a chosen accent colour
+  ///
+  /// In en, this message translates to:
+  /// **'accent color'**
+  String get stackMetadataColorLabel;
+
+  /// Stack chooser: this version has a chosen icon
+  ///
+  /// In en, this message translates to:
+  /// **'icon'**
+  String get stackMetadataIconLabel;
 }
 
 class _AppLocalizationsDelegate

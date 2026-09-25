@@ -3800,5 +3800,9 @@
   "projectFileMenu": "Datei",
   "moreActions": "Weitere Aktionen",
 
-  "sectionRailResizeHint": "Ziehen zum Ändern der Breite · Doppelklick zum Zurücksetzen"
+  "sectionRailResizeHint": "Ziehen zum Ändern der Breite · Doppelklick zum Zurücksetzen",
+
+  "stackMetadataCoverArtLabel": "Cover",
+  "stackMetadataColorLabel": "Akzentfarbe",
+  "stackMetadataIconLabel": "Symbol"
 }
