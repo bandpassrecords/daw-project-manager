@@ -27,6 +27,7 @@ import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
 import 'row_click_selection.dart';
+import 'widgets/stack_version_badge.dart';
 import 'widgets/now_playing_icon.dart';
 import 'widgets/shortcuts_help_dialog.dart';
 import 'widgets/waveform_widget.dart';
@@ -7398,41 +7399,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
               // ordinary project at a glance rather than only once opened.
               if (project.isVirtual) ...[
                 const SizedBox(width: 6),
-                Tooltip(
-                  message: AppLocalizations.of(
+                StackVersionBadge(
+                  count: project.versionCount,
+                  tooltip: AppLocalizations.of(
                     context,
                   )!.stackTooltipStacked(project.versionCount),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.layers,
-                          size: 11,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          '${project.versionCount}',
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.w700,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ],
               if (isNewlyDiscovered) ...[
