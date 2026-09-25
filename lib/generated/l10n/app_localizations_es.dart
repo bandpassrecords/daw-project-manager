@@ -2470,10 +2470,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get convertingAudioForSharing => 'Preparando el audio para compartir…';
 
   @override
-  String get shareSheetUnavailable =>
-      'El menú de compartir del sistema no está disponible aquí — usa el botón \"Arrastrar para Compartir\" en la vista previa de la canción para arrastrar el archivo a otra app.';
-
-  @override
   String get dragToShare => 'Arrastrar para Compartir';
 
   @override
@@ -5583,4 +5579,195 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'Comprimido descartado';
+
+  @override
+  String get whatsNewTitle => 'Novedades';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'Novedades en la versión $version';
+  }
+
+  @override
+  String get whatsNewIntro =>
+      'Esto es lo que cambió desde tu versión anterior.';
+
+  @override
+  String get whatsNewGotIt => 'Entendido';
+
+  @override
+  String get changelogFullButton => 'Changelog completo';
+
+  @override
+  String get changelogPageTitle => 'Changelog';
+
+  @override
+  String get changelogEmpty =>
+      'No hay changelog disponible para esta compilación.';
+
+  @override
+  String get changelogCurrentVersionBadge => 'Instalada';
+
+  @override
+  String get disableProjectFolderTooltip =>
+      'Desactivar esta carpeta (conserva sus proyectos)';
+
+  @override
+  String get enableProjectFolderTooltip => 'Activar esta carpeta';
+
+  @override
+  String get projectFolderDisabledBadge => 'Desactivada';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'No se escanea y sus proyectos están ocultos. No se borró nada: actívala para recuperarlos.';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '\"$name\" vuelve a escanearse';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '\"$name\" está desactivada: sus proyectos se ocultan, no se eliminan';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle => '¿Usar la portada de una pista?';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count de las pistas seleccionadas tienen portada. Elige una para usarla como portada de este lanzamiento.',
+      one:
+          'Una de las pistas seleccionadas tiene portada. ¿Usarla como portada de este lanzamiento?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'Usar como portada';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'Sin portada';
+
+  @override
+  String get tracksViewList => 'Vista de lista';
+
+  @override
+  String get tracksViewTable => 'Vista de tabla';
+
+  @override
+  String get partsColumn => 'Partes';
+
+  @override
+  String partsNeededCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partes aún necesarias',
+      one: '1 parte aún necesaria',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get songLength => 'Duración';
+
+  @override
+  String get songLengthColumn => 'Duración';
+
+  @override
+  String get songLengthHint => '3:45';
+
+  @override
+  String get songLengthManual =>
+      'Introducida a mano: bórrala para usar la duración de la vista previa';
+
+  @override
+  String get songLengthFromPreview => 'Medida a partir de la vista previa';
+
+  @override
+  String releaseLengthAtLeast(String total) {
+    return '$total+';
+  }
+
+  @override
+  String get releaseLengthComplete => 'Duración total';
+
+  @override
+  String releaseLengthPartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Total parcial: $count pistas aún sin duración',
+      one: 'Total parcial: 1 pista aún sin duración',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get breadcrumbHome => 'Inicio';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return 'Ir a $label';
+  }
+
+  @override
+  String get scrollForMore => 'Desplázate para ver más';
+
+  @override
+  String get shortcutPlayerMono => 'Alternar reproducción en mono';
+
+  @override
+  String get shortcutPlayerVolume => 'Ajustar el volumen';
+
+  @override
+  String get shortcutMouseWheel => 'Rueda';
+
+  @override
+  String get releaseTotalLengthLabel => 'Duración total';
+
+  @override
+  String get releaseLengthNone =>
+      'Ninguna pista tiene duración todavía: reproduce una pista o escribe su duración en la página del proyecto';
+
+  @override
+  String get songLengthHowItWorks =>
+      'Se rellena automáticamente a partir de la vista previa: al reproducirla o al abrir un lanzamiento que contenga esta pista. También puedes escribirla: 3:45, 1:02:03 o en segundos.';
+
+  @override
+  String get changelogSectionSubtitle =>
+      'Todo lo que cambió en cada versión, de la más reciente a la más antigua.';
+
+  @override
+  String get changelogSearchHint => 'Buscar en el changelog';
+
+  @override
+  String changelogNoMatches(String query) {
+    return 'Ningún cambio coincide con \"$query\"';
+  }
+
+  @override
+  String get projectFileMenu => 'Archivo';
+
+  @override
+  String get moreActions => 'Más acciones';
+
+  @override
+  String get sectionRailResizeHint =>
+      'Arrastra para cambiar el tamaño · doble clic para restablecer';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'portada';
+
+  @override
+  String get stackMetadataColorLabel => 'color de acento';
+
+  @override
+  String get stackMetadataIconLabel => 'icono';
 }

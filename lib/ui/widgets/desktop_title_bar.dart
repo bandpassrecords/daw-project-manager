@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart'
     if (dart.library.html) 'package:window_manager/window_manager_stub.dart';
 
 import '../../generated/l10n/app_localizations.dart';
+import '../../providers/providers.dart';
 import '../../utils/mobile_utils.dart';
 
 /// Icon for the maximize/restore window-control button: a single square
@@ -27,7 +29,7 @@ IconData windowMaximizeToggleIcon(bool isMaximized) =>
 /// a slim back-navigation bar when [showBack] is true.
 ///
 /// **Mobile / web:** Returns an empty widget.
-class DesktopTitleBar extends StatefulWidget {
+class DesktopTitleBar extends ConsumerStatefulWidget {
   final String title;
 
   /// Show a back button that calls [Navigator.pop].
@@ -46,16 +48,37 @@ class DesktopTitleBar extends StatefulWidget {
   });
 
   @override
-  State<DesktopTitleBar> createState() => _DesktopTitleBarState();
+  ConsumerState<DesktopTitleBar> createState() => _DesktopTitleBarState();
 }
 
-class _DesktopTitleBarState extends State<DesktopTitleBar> with WindowListener {
+class _DesktopTitleBarState extends ConsumerState<DesktopTitleBar>
+    with WindowListener {
+  /// Identity of this bar's breadcrumb, stable for the life of the widget.
+  ///
+  /// The title bar is the one thing every page already has, which is what
+  /// makes it the right place to register the trail — no page has to know
+  /// breadcrumbs exist, and the trail can only ever describe pages that are
+  /// really on screen.
+  late final String _crumbId = _nextCrumbId();
+
+  /// Captured while the element is still active. Looking the container up in
+  /// dispose() is unsafe — the ancestor lookup asserts once the widget is
+  /// deactivated — and the notifier outlives every page, so holding it is
+  /// safe where holding a BuildContext would not be.
+  BreadcrumbTrailNotifier? _trail;
   // Manual double-tap detection for the drag area — avoids placing a
   // DoubleTapGestureRecognizer over the entire bar (which would delay the
   // window-control buttons by the double-tap timeout).
   DateTime? _lastDragAreaTap;
 
   bool _isMaximized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _trail = ref.read(breadcrumbTrailProvider.notifier);
+    _registerCrumb();
+  }
 
   @override
   void initState() {
@@ -69,11 +92,50 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> with WindowListener {
   }
 
   @override
+  void didUpdateWidget(DesktopTitleBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A page can rename itself while open — a release being retitled, say.
+    if (widget.title != oldWidget.title) _registerCrumb();
+  }
+
+  @override
   void dispose() {
+    // Deferred: dispose runs during a frame, and a provider write here would
+    // land mid-build for whatever is replacing this page.
+    final id = _crumbId;
+    final trail = _trail;
+    if (trail != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => trail.remove(id));
+    }
     if (!kIsWeb && !MobileUtils.isMobile()) {
       windowManager.removeListener(this);
     }
     super.dispose();
+  }
+
+  /// Puts this page's title into the trail. Deferred for the same reason the
+  /// removal is: initState runs while the route above is still building.
+  void _registerCrumb() {
+    final crumb = Breadcrumb(
+      id: _crumbId,
+      label: widget.title,
+      // The one bar with no back button is the page the app opens on.
+      isRoot: !widget.showBack,
+    );
+    final trail = _trail;
+    if (trail == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      trail.push(crumb);
+    });
+  }
+
+  /// Pops back to the page at [index] in the trail.
+  void _goToCrumb(int index, int length) {
+    final pops = breadcrumbPopCount(index: index, length: length);
+    if (pops <= 0) return;
+    var popped = 0;
+    Navigator.of(context).popUntil((_) => popped++ >= pops);
   }
 
   @override
@@ -142,11 +204,11 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> with WindowListener {
               onPressed: () => Navigator.pop(context),
               tooltip: AppLocalizations.of(context)!.back,
             ),
-            Text(
-              widget.title,
-              style: TextStyle(
-                color: Theme.of(context).textTheme.titleMedium?.color,
+            Flexible(
+              child: _TitleOrTrail(
+                title: widget.title,
                 fontSize: 15,
+                onCrumbTap: _goToCrumb,
               ),
             ),
           ],
@@ -186,16 +248,15 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> with WindowListener {
                         ),
                         onPressed: () => Navigator.pop(context),
                       ),
-                    Padding(
-                      padding: EdgeInsets.only(left: widget.showBack ? 4 : 12),
-                      child: Text(
-                        widget.title,
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.titleMedium?.color,
+                    Flexible(
+                      child: Padding(
+                        padding:
+                            EdgeInsets.only(left: widget.showBack ? 4 : 12),
+                        child: _TitleOrTrail(
+                          title: widget.title,
                           fontSize: 16,
-                          fontWeight: widget.showBack
-                              ? FontWeight.normal
-                              : FontWeight.w600,
+                          bold: !widget.showBack,
+                          onCrumbTap: _goToCrumb,
                         ),
                       ),
                     ),
@@ -251,6 +312,159 @@ class _WindowControlButtons extends StatelessWidget {
           highlightColor: const Color(0xFFC42B1C),
         ),
       ],
+    );
+  }
+}
+
+/// Monotonic ids for breadcrumb entries — unique per title bar instance, so
+/// two pages that happen to share a title still remove the right entry.
+int _crumbSeq = 0;
+String _nextCrumbId() => 'crumb-${_crumbSeq++}';
+
+/// The title bar's text: a breadcrumb trail once the user is more than one
+/// page deep, and the plain title otherwise.
+///
+/// Falls back to the plain title whenever the trail does not end on this page
+/// — during the frame after a push or pop, the trail and the widget tree are
+/// briefly out of step, and showing a stale path is worse than showing none.
+class _TitleOrTrail extends ConsumerWidget {
+  const _TitleOrTrail({
+    required this.title,
+    required this.fontSize,
+    required this.onCrumbTap,
+    this.bold = false,
+  });
+
+  final String title;
+  final double fontSize;
+  final bool bold;
+  final void Function(int index, int length) onCrumbTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final color = theme.textTheme.titleMedium?.color;
+    final trail = ref.watch(breadcrumbTrailProvider);
+
+    final plain = Text(
+      title,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        color: color,
+        fontSize: fontSize,
+        fontWeight: bold ? FontWeight.w600 : FontWeight.normal,
+      ),
+    );
+
+    // One entry is the root page: a trail of one is just the title.
+    if (trail.length < 2) return plain;
+    if (trail.last.label != title) return plain;
+
+
+    final muted = color?.withValues(alpha: 0.6);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      // The trail can outgrow a narrow window; scrolling it keeps the window
+      // controls reachable instead of overflowing the bar.
+      reverse: true,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < trail.length; i++) ...[
+            if (i > 0)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: Icon(Icons.chevron_right, size: 16, color: muted),
+              ),
+            if (i == trail.length - 1)
+              Text(
+                _crumbLabel(context, trail[i]),
+                style: TextStyle(color: color, fontSize: fontSize),
+              )
+            else
+              _CrumbLink(
+                label: _crumbLabel(context, trail[i]),
+                fontSize: fontSize,
+                restingColor: muted,
+                hoverColor: color,
+                onTap: () => onCrumbTap(i, trail.length),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// What a crumb reads as in the trail.
+///
+/// The root page's own title is the app name and version — a product banner,
+/// fine as the only thing in the bar and wrong as the head of a path. Every
+/// other crumb shows the title its page set.
+String _crumbLabel(BuildContext context, Breadcrumb crumb) => crumb.isRoot
+    ? AppLocalizations.of(context)!.breadcrumbHome
+    : crumb.label;
+
+/// A crumb you can click, which says so on hover.
+///
+/// Hovering brightens the label and tints its background; the pointer turns
+/// into a hand. Deliberately nothing more — an underline or a link glyph
+/// appearing on hover makes the row jump as the text reflows, and a title bar
+/// is too small a strip to absorb that.
+class _CrumbLink extends StatefulWidget {
+  const _CrumbLink({
+    required this.label,
+    required this.fontSize,
+    required this.restingColor,
+    required this.hoverColor,
+    required this.onTap,
+  });
+
+  final String label;
+  final double fontSize;
+  final Color? restingColor;
+  final Color? hoverColor;
+  final VoidCallback onTap;
+
+  @override
+  State<_CrumbLink> createState() => _CrumbLinkState();
+}
+
+class _CrumbLinkState extends State<_CrumbLink> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _hovered ? widget.hoverColor : widget.restingColor;
+    return Tooltip(
+      message: AppLocalizations.of(context)!.breadcrumbGoTo(widget.label),
+      waitDuration: const Duration(milliseconds: 500),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          // Opaque so the whole padded box is clickable, and so the title
+          // bar's own pan-to-drag recognizer does not swallow the tap.
+          behavior: HitTestBehavior.opaque,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: _hovered
+                  ? (widget.hoverColor?.withValues(alpha: 0.10) ??
+                      Colors.transparent)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              widget.label,
+              style: TextStyle(color: color, fontSize: widget.fontSize),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

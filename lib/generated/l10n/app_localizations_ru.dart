@@ -2455,10 +2455,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get convertingAudioForSharing => 'Подготовка аудио к отправке…';
 
   @override
-  String get shareSheetUnavailable =>
-      'Системное меню отправки здесь недоступно — используйте кнопку «Перетащить, чтобы поделиться» в предпрослушивании трека, чтобы перетащить файл в другое приложение.';
-
-  @override
   String get dragToShare => 'Перетащить, чтобы поделиться';
 
   @override
@@ -5554,4 +5550,194 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'Архив удалён';
+
+  @override
+  String get whatsNewTitle => 'Что нового';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'Что нового в версии $version';
+  }
+
+  @override
+  String get whatsNewIntro =>
+      'Вот что изменилось с момента вашей предыдущей версии.';
+
+  @override
+  String get whatsNewGotIt => 'Понятно';
+
+  @override
+  String get changelogFullButton => 'Полный список изменений';
+
+  @override
+  String get changelogPageTitle => 'Список изменений';
+
+  @override
+  String get changelogEmpty => 'Для этой сборки список изменений недоступен.';
+
+  @override
+  String get changelogCurrentVersionBadge => 'Установлена';
+
+  @override
+  String get disableProjectFolderTooltip =>
+      'Отключить эту папку (проекты сохраняются)';
+
+  @override
+  String get enableProjectFolderTooltip => 'Включить эту папку';
+
+  @override
+  String get projectFolderDisabledBadge => 'Отключена';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'Не сканируется, её проекты скрыты. Ничего не удалено — включите её, чтобы вернуть их.';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '«$name» снова сканируется';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '«$name» отключена — её проекты скрыты, а не удалены';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle => 'Использовать обложку трека?';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Обложки есть у $count выбранных треков. Выберите одну для обложки этого релиза.',
+      one:
+          'У одного из выбранных треков есть обложка. Использовать её как обложку этого релиза?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'Использовать как обложку';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'Без обложки';
+
+  @override
+  String get tracksViewList => 'Списком';
+
+  @override
+  String get tracksViewTable => 'Таблицей';
+
+  @override
+  String get partsColumn => 'Партии';
+
+  @override
+  String partsNeededCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ещё нужно партий: $count',
+      one: 'ещё нужна 1 партия',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get songLength => 'Длительность';
+
+  @override
+  String get songLengthColumn => 'Длительность';
+
+  @override
+  String get songLengthHint => '3:45';
+
+  @override
+  String get songLengthManual =>
+      'Введено вручную — очистите, чтобы использовать длительность превью';
+
+  @override
+  String get songLengthFromPreview => 'Измерено по превью';
+
+  @override
+  String releaseLengthAtLeast(String total) {
+    return '$total+';
+  }
+
+  @override
+  String get releaseLengthComplete => 'Общая длительность';
+
+  @override
+  String releaseLengthPartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Промежуточный итог — треков без длительности: $count',
+      one: 'Промежуточный итог — у 1 трека ещё нет длительности',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get breadcrumbHome => 'Главная';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return 'Перейти к $label';
+  }
+
+  @override
+  String get scrollForMore => 'Прокрутите, чтобы увидеть больше';
+
+  @override
+  String get shortcutPlayerMono => 'Переключить воспроизведение в моно';
+
+  @override
+  String get shortcutPlayerVolume => 'Изменить громкость';
+
+  @override
+  String get shortcutMouseWheel => 'Колесо';
+
+  @override
+  String get releaseTotalLengthLabel => 'Общая длительность';
+
+  @override
+  String get releaseLengthNone =>
+      'Ни у одного трека пока нет длительности — воспроизведите трек или укажите длительность на странице проекта';
+
+  @override
+  String get songLengthHowItWorks =>
+      'Заполняется автоматически по превью — при его воспроизведении или при открытии релиза с этим треком. Можно ввести и вручную: 3:45, 1:02:03 или в секундах.';
+
+  @override
+  String get changelogSectionSubtitle =>
+      'Всё, что изменилось в каждой версии, начиная с самой новой.';
+
+  @override
+  String get changelogSearchHint => 'Поиск по списку изменений';
+
+  @override
+  String changelogNoMatches(String query) {
+    return 'Нет изменений, соответствующих «$query»';
+  }
+
+  @override
+  String get projectFileMenu => 'Файл';
+
+  @override
+  String get moreActions => 'Другие действия';
+
+  @override
+  String get sectionRailResizeHint =>
+      'Перетащите, чтобы изменить размер · двойной щелчок — сбросить';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'обложка';
+
+  @override
+  String get stackMetadataColorLabel => 'акцентный цвет';
+
+  @override
+  String get stackMetadataIconLabel => 'значок';
 }

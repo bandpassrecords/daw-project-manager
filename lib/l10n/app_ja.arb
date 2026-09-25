@@ -1583,7 +1583,6 @@
   },
   "share": "共有",
   "convertingAudioForSharing": "共有用にオーディオを準備しています…",
-  "shareSheetUnavailable": "システムの共有メニューはここでは利用できません。代わりに、曲のプレビューにある「ドラッグして共有」チップでファイルを他のアプリへドラッグしてください。",
   "dragToShare": "ドラッグして共有",
   "dragToShareTooltip": "これを他のアプリ（WhatsAppなど）のウィンドウにドラッグすると、ファイルを直接共有できます。共有ボタンで共有メニューが開かない場合に便利です。",
   "mp3ConversionFailed": "このシステムではオーディオ変換を利用できません。元のファイルを共有しますが、WhatsAppなど一部のアプリでは拒否される場合があります。",
@@ -3744,5 +3743,66 @@
   "discardArchiveButtonLabel": "アーカイブを破棄",
   "discardArchiveConfirmTitle": "アーカイブを破棄しますか？",
   "discardArchiveConfirmMessage": "zip を削除し、アーカイブ済みの印を外します。プロジェクト自体のファイルはそのまま残ります。",
-  "discardArchiveDone": "アーカイブを破棄しました"
+  "discardArchiveDone": "アーカイブを破棄しました",
+
+  "whatsNewTitle": "新着情報",
+  "whatsNewTitleWithVersion": "バージョン {version} の新着情報",
+  "whatsNewIntro": "前のバージョンからの変更点です。",
+  "whatsNewGotIt": "OK",
+  "changelogFullButton": "全変更履歴",
+  "changelogPageTitle": "変更履歴",
+  "changelogEmpty": "このビルドの変更履歴はありません。",
+  "changelogCurrentVersionBadge": "インストール済み",
+  "disableProjectFolderTooltip": "このフォルダーを無効にする（プロジェクトは保持）",
+  "enableProjectFolderTooltip": "このフォルダーを有効にする",
+  "projectFolderDisabledBadge": "無効",
+  "projectFolderDisabledExplanation": "スキャンされず、プロジェクトは非表示になります。削除はされていません。有効にすると元に戻ります。",
+  "projectFolderEnabled": "「{name}」のスキャンを再開しました",
+  "projectFolderDisabled": "「{name}」を無効にしました。プロジェクトは非表示になるだけで削除されません",
+  "releaseArtworkCarryOverTitle": "トラックのカバーアートを使いますか？",
+  "releaseArtworkCarryOverBody": "{count, plural, other{選択したトラックのうち {count} 件にカバーアートがあります。このリリースのアートワークに使うものを選んでください。}}",
+  "releaseArtworkCarryOverUse": "アートワークに使う",
+  "releaseArtworkCarryOverSkip": "アートワークなし",
+  "tracksViewList": "リスト表示",
+  "tracksViewTable": "テーブル表示",
+
+  "partsColumn": "パート",
+  "partsNeededCount": "{count, plural, other{未録音のパートが {count} 件}}",
+
+  "songLength": "長さ",
+  "songLengthColumn": "長さ",
+  "songLengthHint": "3:45",
+  "songLengthManual": "手入力です。空にするとプレビュー曲の長さを使います",
+  "songLengthFromPreview": "プレビュー曲から計測しました",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "合計時間",
+  "releaseLengthPartial": "{count, plural, other{暫定の合計 — 長さ未設定のトラックが {count} 件}}",
+
+  "breadcrumbHome": "ホーム",
+  "breadcrumbGoTo": "{label} へ移動",
+
+  "scrollForMore": "スクロールするとさらに表示",
+
+  "shortcutPlayerMono": "モノラル再生の切り替え",
+  "shortcutPlayerVolume": "音量を調整",
+  "shortcutMouseWheel": "ホイール",
+
+  "releaseTotalLengthLabel": "合計の長さ",
+  "releaseLengthNone": "長さが設定されたトラックはまだありません。トラックを再生するか、プロジェクトページで長さを入力してください",
+
+  "songLengthHowItWorks": "プレビュー曲から自動で入力されます（再生したとき、またはこのトラックを含むリリースを開いたとき）。手入力も可能です：3:45、1:02:03、または秒数。",
+
+  "changelogSectionSubtitle": "各バージョンの変更点（新しい順）。",
+
+  "changelogSearchHint": "変更履歴を検索",
+  "changelogNoMatches": "「{query}」に一致する変更はありません",
+
+  "projectFileMenu": "ファイル",
+  "moreActions": "その他の操作",
+
+  "sectionRailResizeHint": "ドラッグで幅を変更 · ダブルクリックで元に戻す",
+
+  "stackMetadataCoverArtLabel": "カバーアート",
+  "stackMetadataColorLabel": "アクセントカラー",
+  "stackMetadataIconLabel": "アイコン"
 }

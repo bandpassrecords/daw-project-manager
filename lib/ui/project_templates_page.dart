@@ -1304,6 +1304,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                                       // no per-cell border/fill on click.
                                       activatedBorderColor: Colors.transparent,
                                       activatedColor: Colors.transparent,
+                                      inactivatedBorderColor: Colors.transparent,
                                       iconColor: isVividAccent
                                           ? activeTheme.colorScheme.primary
                                                 .withValues(alpha: 0.7)

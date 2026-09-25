@@ -2372,10 +2372,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get convertingAudioForSharing => '正在准备要分享的音频…';
 
   @override
-  String get shareSheetUnavailable =>
-      '系统分享菜单在此不可用——请改用歌曲预览中的“拖动以分享”按钮，将文件拖到其他应用中。';
-
-  @override
   String get dragToShare => '拖动以分享';
 
   @override
@@ -5339,4 +5335,183 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get discardArchiveDone => '已丢弃归档';
+
+  @override
+  String get whatsNewTitle => '新增功能';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return '$version 版本的新增功能';
+  }
+
+  @override
+  String get whatsNewIntro => '以下是自上一个版本以来的变化。';
+
+  @override
+  String get whatsNewGotIt => '知道了';
+
+  @override
+  String get changelogFullButton => '完整更新日志';
+
+  @override
+  String get changelogPageTitle => '更新日志';
+
+  @override
+  String get changelogEmpty => '此版本没有可用的更新日志。';
+
+  @override
+  String get changelogCurrentVersionBadge => '已安装';
+
+  @override
+  String get disableProjectFolderTooltip => '停用此文件夹（保留其项目）';
+
+  @override
+  String get enableProjectFolderTooltip => '启用此文件夹';
+
+  @override
+  String get projectFolderDisabledBadge => '已停用';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      '不会被扫描，其项目会被隐藏。没有删除任何内容——重新启用即可恢复。';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '已重新开始扫描“$name”';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '已停用“$name”——其项目被隐藏，而非删除';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle => '使用曲目的封面吗？';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '所选曲目中有 $count 个带有封面。请选择一个作为此发行的封面。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => '用作封面';
+
+  @override
+  String get releaseArtworkCarryOverSkip => '不使用封面';
+
+  @override
+  String get tracksViewList => '列表视图';
+
+  @override
+  String get tracksViewTable => '表格视图';
+
+  @override
+  String get partsColumn => '声部';
+
+  @override
+  String partsNeededCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '仍需 $count 个声部',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get songLength => '时长';
+
+  @override
+  String get songLengthColumn => '时长';
+
+  @override
+  String get songLengthHint => '3:45';
+
+  @override
+  String get songLengthManual => '手动输入——清空后将使用预览歌曲的时长';
+
+  @override
+  String get songLengthFromPreview => '根据预览歌曲测得';
+
+  @override
+  String releaseLengthAtLeast(String total) {
+    return '$total+';
+  }
+
+  @override
+  String get releaseLengthComplete => '总时长';
+
+  @override
+  String releaseLengthPartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '当前合计——仍有 $count 首曲目没有时长',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get breadcrumbHome => '主页';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return '前往$label';
+  }
+
+  @override
+  String get scrollForMore => '滚动查看更多';
+
+  @override
+  String get shortcutPlayerMono => '切换单声道播放';
+
+  @override
+  String get shortcutPlayerVolume => '调整音量';
+
+  @override
+  String get shortcutMouseWheel => '滚轮';
+
+  @override
+  String get releaseTotalLengthLabel => '总时长';
+
+  @override
+  String get releaseLengthNone => '还没有曲目设置时长——播放曲目，或在项目页面输入时长';
+
+  @override
+  String get songLengthHowItWorks =>
+      '根据预览歌曲自动填写——在播放时，或打开包含此曲目的发行时。也可以手动输入：3:45、1:02:03 或秒数。';
+
+  @override
+  String get changelogSectionSubtitle => '每个版本的所有变更，按从新到旧排列。';
+
+  @override
+  String get changelogSearchHint => '搜索更新日志';
+
+  @override
+  String changelogNoMatches(String query) {
+    return '没有与“$query”匹配的变更';
+  }
+
+  @override
+  String get projectFileMenu => '文件';
+
+  @override
+  String get moreActions => '更多操作';
+
+  @override
+  String get sectionRailResizeHint => '拖动调整宽度 · 双击恢复默认';
+
+  @override
+  String get stackMetadataCoverArtLabel => '封面';
+
+  @override
+  String get stackMetadataColorLabel => '强调色';
+
+  @override
+  String get stackMetadataIconLabel => '图标';
 }

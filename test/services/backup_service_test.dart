@@ -4,6 +4,8 @@ import 'package:daw_project_manager/services/backup_service.dart';
 import 'package:daw_project_manager/models/part_template.dart';
 import 'package:daw_project_manager/models/project_part.dart';
 import 'package:daw_project_manager/models/project_template.dart';
+import 'package:daw_project_manager/models/scan_mode.dart';
+import 'package:daw_project_manager/models/scan_root.dart';
 import 'package:daw_project_manager/models/template_root.dart';
 import 'package:daw_project_manager/models/todo_template.dart';
 import '../helpers/hive_test_helper.dart';
@@ -522,6 +524,76 @@ void main() {
       expect(restored.path, original.path);
       expect(restored.addedAt, original.addedAt);
       expect(restored.lastRefreshedAt, original.lastRefreshedAt);
+    });
+
+    // Regression (#155): _rootToJson used to carry only id/path/addedAt/
+    // lastScanAt, so every other field a scan root holds silently reverted to
+    // its default on import — a folder came back renamed to its own folder
+    // name, in Flat mode, and scanning, whatever the user had set. This is
+    // Flatpak's only backup path, so those settings were not merely lost on
+    // restore there: they could never be backed up at all.
+    test('ScanRoot preserves every field, not just id/path/dates', () {
+      final original = ScanRoot(
+        id: 'scan-root-1',
+        path: '/Users/artist/Music/Projects',
+        addedAt: DateTime(2023, 1, 1),
+        lastScanAt: DateTime(2023, 2, 1),
+        scanDepth: 1,
+        displayName: 'My LMMS Projects',
+        autoStackVersions: true,
+        enabled: false,
+      );
+
+      final restored =
+          BackupService.scanRootFromJson(BackupService.scanRootToJson(original));
+
+      expect(restored.id, original.id);
+      expect(restored.path, original.path);
+      expect(restored.addedAt, original.addedAt);
+      expect(restored.lastScanAt, original.lastScanAt);
+      expect(restored.displayName, original.displayName);
+      expect(restored.scanDepth, original.scanDepth);
+      expect(restored.autoStackVersions, original.autoStackVersions);
+      expect(restored.enabled, original.enabled);
+    });
+
+    test('ScanRoot round-trips its scan mode, not just the raw fields', () {
+      // scanMode is derived from two fields at once; asserting on it directly
+      // is what a user would notice.
+      for (final mode in ScanMode.values) {
+        final original = ScanRoot(
+          id: 'scan-root-${mode.name}',
+          path: '/Projects/${mode.name}',
+          addedAt: DateTime(2023, 1, 1),
+          scanDepth: mode == ScanMode.smartFolder ? 1 : 0,
+          autoStackVersions: mode == ScanMode.versionStack,
+        );
+
+        final restored = BackupService.scanRootFromJson(
+            BackupService.scanRootToJson(original));
+
+        expect(restored.scanMode, mode, reason: 'mode ${mode.name}');
+      }
+    });
+
+    test('ScanRoot falls back sensibly for a backup written before these fields',
+        () {
+      // A 1.0–1.3 backup carries only these four keys. Reading one must not
+      // throw, and must land on what such a root effectively was: no explicit
+      // label, Flat mode, no auto-stacking, and being scanned.
+      final restored = BackupService.scanRootFromJson({
+        'id': 'legacy-root',
+        'path': '/Users/artist/Music',
+        'addedAt': DateTime(2023, 1, 1).toIso8601String(),
+        'lastScanAt': null,
+      });
+
+      expect(restored.displayName, isNull);
+      expect(restored.effectiveDisplayName, 'Music');
+      expect(restored.scanMode, ScanMode.flat);
+      expect(restored.autoStackVersions, isFalse);
+      expect(restored.enabled, isTrue);
+      expect(restored.lastScanAt, isNull);
     });
 
     test('TemplateRoot preserves null lastRefreshedAt', () {

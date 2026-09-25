@@ -1583,7 +1583,6 @@
   },
   "share": "Compartir",
   "convertingAudioForSharing": "Preparando el audio para compartir…",
-  "shareSheetUnavailable": "El menú de compartir del sistema no está disponible aquí — usa el botón \"Arrastrar para Compartir\" en la vista previa de la canción para arrastrar el archivo a otra app.",
   "dragToShare": "Arrastrar para Compartir",
   "dragToShareTooltip": "Arrastra esto a la ventana de otra app (ej: WhatsApp) para compartir el archivo directamente — útil cuando el botón Compartir no abre un menú de compartir.",
   "mp3ConversionFailed": "La conversión de audio no está disponible en este sistema — se compartirá el archivo original, que algunas apps como WhatsApp pueden rechazar.",
@@ -3744,5 +3743,66 @@
   "discardArchiveButtonLabel": "Descartar comprimido",
   "discardArchiveConfirmTitle": "¿Descartar el comprimido?",
   "discardArchiveConfirmMessage": "Elimina el zip y quita la marca de archivado. Los archivos del proyecto se quedan donde están.",
-  "discardArchiveDone": "Comprimido descartado"
+  "discardArchiveDone": "Comprimido descartado",
+
+  "whatsNewTitle": "Novedades",
+  "whatsNewTitleWithVersion": "Novedades en la versión {version}",
+  "whatsNewIntro": "Esto es lo que cambió desde tu versión anterior.",
+  "whatsNewGotIt": "Entendido",
+  "changelogFullButton": "Changelog completo",
+  "changelogPageTitle": "Changelog",
+  "changelogEmpty": "No hay changelog disponible para esta compilación.",
+  "changelogCurrentVersionBadge": "Instalada",
+  "disableProjectFolderTooltip": "Desactivar esta carpeta (conserva sus proyectos)",
+  "enableProjectFolderTooltip": "Activar esta carpeta",
+  "projectFolderDisabledBadge": "Desactivada",
+  "projectFolderDisabledExplanation": "No se escanea y sus proyectos están ocultos. No se borró nada: actívala para recuperarlos.",
+  "projectFolderEnabled": "\"{name}\" vuelve a escanearse",
+  "projectFolderDisabled": "\"{name}\" está desactivada: sus proyectos se ocultan, no se eliminan",
+  "releaseArtworkCarryOverTitle": "¿Usar la portada de una pista?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{Una de las pistas seleccionadas tiene portada. ¿Usarla como portada de este lanzamiento?} other{{count} de las pistas seleccionadas tienen portada. Elige una para usarla como portada de este lanzamiento.}}",
+  "releaseArtworkCarryOverUse": "Usar como portada",
+  "releaseArtworkCarryOverSkip": "Sin portada",
+  "tracksViewList": "Vista de lista",
+  "tracksViewTable": "Vista de tabla",
+
+  "partsColumn": "Partes",
+  "partsNeededCount": "{count, plural, =1{1 parte aún necesaria} other{{count} partes aún necesarias}}",
+
+  "songLength": "Duración",
+  "songLengthColumn": "Duración",
+  "songLengthHint": "3:45",
+  "songLengthManual": "Introducida a mano: bórrala para usar la duración de la vista previa",
+  "songLengthFromPreview": "Medida a partir de la vista previa",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "Duración total",
+  "releaseLengthPartial": "{count, plural, =1{Total parcial: 1 pista aún sin duración} other{Total parcial: {count} pistas aún sin duración}}",
+
+  "breadcrumbHome": "Inicio",
+  "breadcrumbGoTo": "Ir a {label}",
+
+  "scrollForMore": "Desplázate para ver más",
+
+  "shortcutPlayerMono": "Alternar reproducción en mono",
+  "shortcutPlayerVolume": "Ajustar el volumen",
+  "shortcutMouseWheel": "Rueda",
+
+  "releaseTotalLengthLabel": "Duración total",
+  "releaseLengthNone": "Ninguna pista tiene duración todavía: reproduce una pista o escribe su duración en la página del proyecto",
+
+  "songLengthHowItWorks": "Se rellena automáticamente a partir de la vista previa: al reproducirla o al abrir un lanzamiento que contenga esta pista. También puedes escribirla: 3:45, 1:02:03 o en segundos.",
+
+  "changelogSectionSubtitle": "Todo lo que cambió en cada versión, de la más reciente a la más antigua.",
+
+  "changelogSearchHint": "Buscar en el changelog",
+  "changelogNoMatches": "Ningún cambio coincide con \"{query}\"",
+
+  "projectFileMenu": "Archivo",
+  "moreActions": "Más acciones",
+
+  "sectionRailResizeHint": "Arrastra para cambiar el tamaño · doble clic para restablecer",
+
+  "stackMetadataCoverArtLabel": "portada",
+  "stackMetadataColorLabel": "color de acento",
+  "stackMetadataIconLabel": "icono"
 }

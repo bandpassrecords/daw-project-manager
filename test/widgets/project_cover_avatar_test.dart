@@ -183,29 +183,109 @@ void main() {
   });
 
   group('ProjectCoverBleed', () {
-    testWidgets('draws nothing for a project without cover art',
-        (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: ProjectCoverBleed(
-                project: TestFactories.makeProject(
-                  id: 'no-cover',
-                  // A colour is deliberately not enough: a bare colour block
-                  // bleeding into the row would be a stripe down the list.
-                  accentColor: 0xFF123456,
-                  iconKey: 'mic',
+    Future<void> pumpBleed(WidgetTester tester, MusicProject project) =>
+        tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: ProjectCoverBleed(
+                  project: project,
+                  height: 48,
+                  width: 96,
+                  side: CoverBleedSide.right,
                 ),
-                height: 48,
-                width: 96,
               ),
             ),
           ),
+        );
+
+    testWidgets('draws nothing for a project nobody decorated',
+        (tester) async {
+      // Still #110's rule: no placeholder, no invented colour.
+      await pumpBleed(tester, TestFactories.makeProject(id: 'plain'));
+
+      expect(tester.getSize(find.byType(ProjectCoverBleed)), Size.zero);
+    });
+
+    testWidgets('bleeds a chosen accent colour like cover art',
+        (tester) async {
+      // Previously left out on purpose; asked for so a coloured row reads
+      // like a covered one.
+      await pumpBleed(
+        tester,
+        TestFactories.makeProject(id: 'coloured', accentColor: 0xFF3366CC),
+      );
+
+      expect(
+        tester.getSize(find.byType(ProjectCoverBleed)),
+        const Size(96, 48),
+      );
+      final box = tester.widget<ColoredBox>(find.descendant(
+        of: find.byType(ProjectCoverBleed),
+        matching: find.byType(ColoredBox),
+      ));
+      expect(box.color.toARGB32() & 0x00FFFFFF, 0x3366CC,
+          reason: 'the colour the user chose, not a stand-in');
+      expect(box.color.a, closeTo(kAccentBleedOpacity, 0.01));
+    });
+
+    testWidgets('carries the chosen icon in the solid square',
+        (tester) async {
+      await pumpBleed(
+        tester,
+        TestFactories.makeProject(
+          id: 'decorated',
+          accentColor: 0xFF3366CC,
+          iconKey: 'mic',
         ),
       );
 
-      expect(tester.getSize(find.byType(ProjectCoverBleed)), Size.zero);
+      expect(
+        find.descendant(
+          of: find.byType(ProjectCoverBleed),
+          matching: find.byType(Icon),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    test('defaults to the left edge, as it always has', () {
+      final bleed = ProjectCoverBleed(
+        project: TestFactories.makeProject(),
+        height: 48,
+        width: 96,
+      );
+      expect(bleed.side, CoverBleedSide.left);
+    });
+  });
+
+  group('coverBleedGradient', () {
+    test('left-anchored art is solid on the left and fades rightwards', () {
+      final g = coverBleedGradient(
+        side: CoverBleedSide.left,
+        solidFraction: 0.5,
+      );
+      expect(g.begin, Alignment.centerLeft);
+      expect(g.end, Alignment.centerRight);
+    });
+
+    test('right-anchored art is solid on the right and fades leftwards', () {
+      final g = coverBleedGradient(
+        side: CoverBleedSide.right,
+        solidFraction: 0.5,
+      );
+      expect(g.begin, Alignment.centerRight);
+      expect(g.end, Alignment.centerLeft);
+    });
+
+    test('holds full strength for the solid fraction, then fades out', () {
+      for (final side in CoverBleedSide.values) {
+        final g = coverBleedGradient(side: side, solidFraction: 0.5);
+        expect(g.stops, [0.0, 0.5, 1.0]);
+        expect(g.colors.first.a, 1.0, reason: '$side starts opaque');
+        expect(g.colors[1].a, 1.0, reason: '$side stays opaque to the stop');
+        expect(g.colors.last.a, 0.0, reason: '$side ends transparent');
+      }
     });
   });
 }

@@ -319,6 +319,27 @@ class MusicProject {
   /// which matters when a folder-scoped archive holds several `.als` files.
   final String? archiveEntryPath;
 
+  // Song length (#157).
+
+  /// Length of the song in milliseconds **as the user typed it**, or null if
+  /// they never did.
+  ///
+  /// Wins over [autoDurationMs] when both are set, and clearing it falls back
+  /// to the measured value rather than to nothing — so correcting a length is
+  /// never destructive. Read through `effectiveTrackDuration`, never directly.
+  @HiveField(45)
+  final int? durationMs;
+
+  /// Length in milliseconds **measured off the preview song** by whichever
+  /// player last loaded it, or null if none ever has.
+  ///
+  /// Separate from [durationMs] for the same reason `previewSongAutoPath` is
+  /// separate from `previewSongPath`: re-measuring must never overwrite what
+  /// the user deliberately entered, and losing the file must never erase a
+  /// length they can still see.
+  @HiveField(46)
+  final int? autoDurationMs;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -365,6 +386,8 @@ class MusicProject {
     this.archivePath,
     this.archivedAt,
     this.archiveEntryPath,
+    this.durationMs,
+    this.autoDurationMs,
   });
 
   /// Whether this project's files have been zipped out to an archive (#116).
@@ -398,6 +421,23 @@ class MusicProject {
       parts.isNotEmpty ||
       attachments.isNotEmpty ||
       totalWorkSeconds > 0;
+
+  /// Whether the user has given this project a look of its own: cover art, an
+  /// accent colour or an icon (#110).
+  ///
+  /// Kept apart from [hasUserMetadata] because it is not "details", but it
+  /// matters just as much when stacking: the stack is a copy of one member,
+  /// appearance included, so two versions with different covers are a choice
+  /// the user has to make, and a version with a cover must not lose out to an
+  /// older one without.
+  bool get hasCustomAppearance =>
+      (thumbnailPath?.trim().isNotEmpty ?? false) ||
+      accentColor != null ||
+      (iconKey?.trim().isNotEmpty ?? false);
+
+  /// Whether stacking would carry anything of this project's onto the stack:
+  /// details ([hasUserMetadata]) or a look ([hasCustomAppearance]).
+  bool get hasSomethingToPromote => hasUserMetadata || hasCustomAppearance;
 
   /// Whether a non-resolving [filePath] on this project means "the file was
   /// deleted or moved".
@@ -681,6 +721,9 @@ class MusicProject {
     DateTime? archivedAt,
     bool clearArchivedAt = false,
     String? archiveEntryPath,
+    int? durationMs,
+    bool clearDurationMs = false,
+    int? autoDurationMs,
     bool clearArchiveEntryPath = false,
   }) {
     return MusicProject(
@@ -735,6 +778,10 @@ class MusicProject {
       archiveEntryPath: clearArchiveEntryPath
           ? null
           : (archiveEntryPath ?? this.archiveEntryPath),
+      // Clearing falls back to the measured length, not to nothing — see the
+      // field's doc.
+      durationMs: clearDurationMs ? null : (durationMs ?? this.durationMs),
+      autoDurationMs: autoDurationMs ?? this.autoDurationMs,
     );
   }
 
@@ -827,13 +874,16 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       archivePath: fields.containsKey(42) ? fields[42] as String? : null,
       archivedAt: fields.containsKey(43) ? fields[43] as DateTime? : null,
       archiveEntryPath: fields.containsKey(44) ? fields[44] as String? : null,
+      // Absent in every box written before song length existed.
+      durationMs: fields[45] as int?,
+      autoDurationMs: fields[46] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(45) // 45 fields (0-44)
+      ..writeByte(47) // 47 fields (0-46)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -923,6 +973,10 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(43)
       ..write(obj.archivedAt)
       ..writeByte(44)
-      ..write(obj.archiveEntryPath);
+      ..write(obj.archiveEntryPath)
+      ..writeByte(45)
+      ..write(obj.durationMs)
+      ..writeByte(46)
+      ..write(obj.autoDurationMs);
   }
 }

@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
 
+import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
 import 'package:daw_project_manager/models/music_project.dart';
 import 'package:daw_project_manager/ui/preview_share.dart';
 
@@ -19,6 +22,32 @@ class _FakePathProvider extends PathProviderPlatform
 
   @override
   Future<String?> getTemporaryPath() async => tempPath;
+}
+
+/// Stands in for share_plus. By default it answers the way the Windows
+/// plugin does after opening the share menu: `unavailable`, because Windows
+/// never reports what the user picked.
+///
+/// One instance for the whole file: `SharePlus.instance` captures the
+/// platform the first time it is used, so swapping in a second fake later
+/// would be silently ignored. Tests change [error] instead.
+class _FakeSharePlatform extends SharePlatform with MockPlatformInterfaceMixin {
+  ShareResult result = ShareResult.unavailable;
+  Object? error;
+  final shared = <ShareParams>[];
+
+  void reset() {
+    result = ShareResult.unavailable;
+    error = null;
+    shared.clear();
+  }
+
+  @override
+  Future<ShareResult> share(ShareParams params) async {
+    shared.add(params);
+    if (error != null) throw error!;
+    return result;
+  }
 }
 
 void main() {
@@ -175,6 +204,74 @@ void main() {
       );
 
       expect(project.previewShareFileName, 'Teardrop.wav');
+    });
+  });
+
+  group('shareProjectPreview on desktop', () {
+    late Directory dir;
+    final fake = _FakeSharePlatform();
+
+    setUpAll(() => SharePlatform.instance = fake);
+
+    setUp(() async {
+      dir = await Directory.systemTemp.createTemp('share_desktop_');
+      fake.reset();
+    });
+
+    tearDown(() async {
+      if (await dir.exists()) await dir.delete(recursive: true);
+    });
+
+    Future<BuildContext> pumpHost(WidgetTester tester) async {
+      late BuildContext ctx;
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(builder: (context) {
+            ctx = context;
+            return const SizedBox();
+          }),
+        ),
+      ));
+      return ctx;
+    }
+
+    Future<MusicProject> projectWithPreview() async {
+      final song = File(p.join(dir.path, 'Bounce.mp3'));
+      await song.writeAsString('audio bytes');
+      return TestFactories.makeProject(previewSongPath: song.path);
+    }
+
+    // The regression: Windows opened its share menu, the share worked, and
+    // the app still said the share menu was unavailable — because the
+    // plugin always answers `unavailable` there.
+    testWidgets('an `unavailable` result after sharing shows no warning',
+        (tester) async {
+      final context = await pumpHost(tester);
+      final project = await tester.runAsync(projectWithPreview);
+
+      await tester.runAsync(() => shareProjectPreview(context, project!));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(fake.shared, hasLength(1));
+      expect(fake.shared.single.files!.single.path, endsWith('Bounce.mp3'));
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
+    testWidgets('a share that really fails is still reported', (tester) async {
+      fake.error = Exception('no share target');
+      final context = await pumpHost(tester);
+      final project = await tester.runAsync(projectWithPreview);
+
+      await tester.runAsync(() => shareProjectPreview(context, project!));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(fake.shared, hasLength(1));
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.textContaining('no share target'), findsOneWidget);
     });
   });
 }

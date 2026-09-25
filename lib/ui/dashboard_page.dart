@@ -21,10 +21,15 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../services/scanner_service.dart';
+import '../services/changelog_service.dart';
+import '../services/release_artwork_service.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
 import 'row_click_selection.dart';
+import 'widgets/on_art_marker.dart';
+import 'widgets/stack_version_badge.dart';
+import 'widgets/now_playing_icon.dart';
 import 'widgets/shortcuts_help_dialog.dart';
 import 'widgets/waveform_widget.dart';
 import 'music_player_page.dart';
@@ -34,7 +39,13 @@ import 'widgets/startup_dialog.dart';
 import 'widgets/tab_customization_dialog.dart';
 import '../services/dock_menu_service.dart';
 import '../utils/daw_logo.dart';
+import '../utils/grid_current_cell_parking.dart';
+import '../utils/library_projects.dart';
 import '../utils/mobile_utils.dart';
+import '../services/player_volume_store.dart';
+import '../utils/text_input_focus.dart';
+import '../utils/player_shortcuts.dart';
+import '../utils/track_duration.dart';
 import '../utils/phase_colors.dart';
 import '../utils/project_file_status.dart';
 import '../utils/project_sort.dart';
@@ -57,6 +68,9 @@ import 'statistics_page.dart';
 import 'queue_page.dart';
 import 'notification_settings_page.dart';
 import 'widgets/conversion_progress_dialog.dart';
+import 'dialogs/release_artwork_carryover_dialog.dart';
+import 'widgets/ctrl_wheel_volume.dart';
+import 'widgets/whats_new_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_card_grid.dart';
 import 'widgets/drag_to_share_button.dart';
@@ -115,27 +129,28 @@ const double _kNameCellBleedHeight = 48;
 /// then an equally wide tail fading to nothing under the start of the name.
 const double _kNameCellBleedWidth = _kNameCellBleedHeight * 2;
 
-/// Leading space the name gives up on a row that has cover art, so it starts
-/// clear of the artwork's solid half and only ever sits over the faded tail.
-/// Offsets [_kNameCellInset], which the artwork does not observe.
+/// Which edge of the Name cell the cover art is anchored to.
+///
+/// Right-anchored is being tried out: the artwork sits at the end of the name,
+/// solid against the column's right border and fading leftwards under the
+/// text, so the name starts at the same position on every row whether or not
+/// it has a cover. Set back to [CoverBleedSide.left] to restore the original
+/// look — nothing else needs to change.
+const CoverBleedSide _kNameCellBleedSide = CoverBleedSide.right;
+
+/// Space the name gives up on a row that has cover art, so it stays clear
+/// of the artwork's solid half and only ever sits over the faded tail — at the
+/// start of the row or the end, per [_kNameCellBleedSide]. Offsets
+/// [_kNameCellInset], which the artwork does not observe.
 const double _kNameCellBleedTextOffset =
     _kNameCellBleedHeight - _kNameCellInsetX;
 
 /// Width of the tree connector drawn for a row nested inside a folder group.
 const double _kNameCellTreeConnectorWidth = 20;
 
-/// Returns true when any text input (TextField / EditableText) currently has
-/// focus. Used by keyboard handlers to avoid stealing Space / arrow keys while
-/// the user is typing.
-///
-/// Reliable approach: the inner [Focus] widget created by [EditableText] is a
-/// widget-tree descendant of [EditableText], so walking ancestors from its
-/// BuildContext will find [EditableText] as a parent.
-bool _isTextInputFocused() {
-  final context = FocusManager.instance.primaryFocus?.context;
-  if (context == null) return false;
-  return context.findAncestorWidgetOfExactType<EditableText>() != null;
-}
+/// Shared with the release page's audio rows, which bind the same keys — see
+/// `utils/text_input_focus.dart`.
+bool _isTextInputFocused() => isTextInputFocused();
 
 // Intent classes for keyboard shortcuts
 class _SearchIntent extends Intent {
@@ -225,6 +240,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   bool _pinnedWarningPending = false;
   bool _pinnedWarningShown = false;
   PinnedLibraryWarning? _pinnedWarning;
+
+  // "What's New" after an update. The pending changelog is read once in
+  // initState — reading it also marks this version seen, so the dialog can
+  // never appear twice for one update even if the user quits before
+  // dismissing it. Empty on a fresh install and on every launch that isn't
+  // the first after an update.
+  List<ChangelogRelease> _pendingChangelog = const [];
+  bool _changelogShown = false;
 
   // Ordered list of currently visible tabs (derived from provider, updated via ref.listen)
   List<AppTab> _currentVisibleTabs = [
@@ -321,6 +344,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       });
     }
 
+    // Shown on every platform: an Android user who updates through the Play
+    // Store has as much reason to see what changed as a desktop one.
+    ChangelogService.takePendingChangelog(appVersion).then((releases) {
+      if (mounted && releases.isNotEmpty) {
+        setState(() => _pendingChangelog = releases);
+      }
+    });
+
     // Not gated on desktop: CI hands testers a pinned debug APK too
     // (build_android), and it is isolated from their installed app in exactly
     // the same way.
@@ -388,6 +419,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
   void _onTabChanged() {
     if (!_tabController.indexIsChanging && mounted) {
+      // Leaving the tasks tab retires the rows ticked off while it was open.
+      // They are held on screen so a completion can be seen and undone; the
+      // queue's job is otherwise to list what is still outstanding, and last
+      // visit's finished work sitting at the top of it would defeat that.
+      if (_currentTab != AppTab.queue) {
+        ref.read(recentlyCompletedTodosProvider.notifier).clear();
+      }
       switch (_currentTab) {
         case AppTab.projects:
           final projectsSearch = ref.read(projectsSearchProvider);
@@ -772,7 +810,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       // so the progress overlay can show an accurate "X of Y" total before
       // the slow part — per-file metadata extraction — begins below.
       final entitiesByRoot = <ScanRoot, List<FileSystemEntity>>{};
-      for (final root in repo.getRoots()) {
+      for (final root in repo.getActiveRoots()) {
         if (_scanCancelRequested) break;
         if (kDebugMode) debugPrint('[_scanAll] enumerating root ${root.path}...');
         final entities = <FileSystemEntity>[];
@@ -1176,8 +1214,26 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       releaseTitle = ''; // Empty title, user will fill it in the release page
     }
 
+    // Offer the selected tracks' own thumbnails as the release artwork (see
+    // release_artwork_service.dart). Asked here, before the release exists,
+    // so the cover is part of creating it rather than a follow-up edit.
+    if (!context.mounted) return;
+    final artwork = await showReleaseArtworkCarryOverDialog(
+      context,
+      releaseArtworkCandidates(selectedProjects),
+    );
+    // The release gets its own copy, not the project's cover file.
+    final artworkPath = await copyArtworkForRelease(artwork.imagePath);
+    if (!context.mounted) return;
+
     final selectedProjectIds = selectedProjects.map((p) => p.id).toList();
-    await _createRelease(context, ref, selectedProjectIds, releaseTitle);
+    await _createRelease(
+      context,
+      ref,
+      selectedProjectIds,
+      releaseTitle,
+      artworkImagePath: artworkPath,
+    );
 
     // Clear selection after creating release
     ref.read(selectedProjectsProvider.notifier).clear();
@@ -1243,7 +1299,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   /// One-line summary of what a project would contribute as the main
   /// project's metadata.
   ///
-  /// Covers exactly the fields [MusicProject.hasUserMetadata] counts. A
+  /// Covers exactly the fields [MusicProject.hasSomethingToPromote] counts. A
   /// project appears in the chooser *because* that getter said it has
   /// details, so any field it counts but this omits produces a row offered to
   /// the user over "No details yet" — which reads as a bug in the dialog.
@@ -1269,6 +1325,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         l10n.stackMetadataWorkHours(
           (project.totalWorkSeconds / 3600).toStringAsFixed(1),
         ),
+      // The look counts too (MusicProject.hasCustomAppearance) — the stack
+      // takes the chosen version's cover, colour and icon along with it.
+      if (project.thumbnailPath?.trim().isNotEmpty ?? false)
+        l10n.stackMetadataCoverArtLabel,
+      if (project.accentColor != null) l10n.stackMetadataColorLabel,
+      if (project.iconKey?.trim().isNotEmpty ?? false)
+        l10n.stackMetadataIconLabel,
     ];
     return parts.isEmpty ? l10n.stackMetadataNoneLabel : parts.join('  ·  ');
   }
@@ -1556,8 +1619,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     BuildContext context,
     WidgetRef ref,
     List<String> selectedProjectIds,
-    String releaseTitle,
-  ) async {
+    String releaseTitle, {
+    String? artworkImagePath,
+  }) async {
     try {
       final repo = await ref.read(repositoryProvider.future);
       final newRelease = Release(
@@ -1565,6 +1629,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         title: releaseTitle,
         trackIds: selectedProjectIds,
         releaseDate: DateTime.now(),
+        artworkImagePath: artworkImagePath,
       );
       await repo.addRelease(newRelease);
 
@@ -1634,6 +1699,34 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         await showPinnedLibraryWarningDialog(context, warning);
         // Releases the startup dialog below, and rebuilds so it can run.
         if (mounted) setState(() => _pinnedWarningPending = false);
+      });
+    }
+
+    // "What's New" after an update. Queued behind the pinned-library warning
+    // so the two never stack; it cannot collide with the first-launch dialog
+    // below, which only ever shows on a blank profile — exactly the case
+    // where there is no changelog to show.
+    if (_pendingChangelog.isNotEmpty &&
+        !_changelogShown &&
+        !_pinnedWarningPending) {
+      _changelogShown = true;
+      final releases = _pendingChangelog;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showWhatsNewDialog(
+          context,
+          releases,
+          // Settings > Changelog rather than a page of its own: one place
+          // for the history, with its search, whichever way the user got
+          // there.
+          onViewFullChangelog: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const SettingsPage(
+                initialSection: SettingsSection.changelog,
+              ),
+            ),
+          ),
+        );
       });
     }
 
@@ -1713,58 +1806,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       );
     }
 
-    // Get all projects and filter out preserved projects (same logic as projectsProvider)
-    final allProjectsAsync = ref.watch(allProjectsStreamProvider);
-    final allProjects = allProjectsAsync.value ?? [];
-    final releasesAsync = ref.watch(releasesProvider);
-    final scanRoots = ref.watch(scanRootsProvider);
-
-    // Filter out preserved projects (in releases but not in any active scan root)
-    // On mobile, we're only syncing metadata, so show ALL projects (both in releases and not)
-    // On desktop, filter preserved projects that aren't in active scan roots
-    final List<MusicProject> filteredProjects;
-    if (MobileUtils.isMobile()) {
-      // Mobile: show all projects (metadata-only mode, no file system checks)
-      filteredProjects = allProjects;
-    } else {
-      // Desktop: filter preserved projects that aren't in active scan roots
-      final releases = releasesAsync.value ?? [];
-      final protectedProjectIds = <String>{};
-      for (final release in releases) {
-        protectedProjectIds.addAll(release.trackIds);
-      }
-
-      // Get all active scan root paths (normalized for comparison)
-      final activeRootPaths = scanRoots.map((root) {
-        final normalized = path.normalize(root.path);
-        // Ensure root path ends with separator for proper prefix matching
-        return normalized.endsWith(path.separator)
-            ? normalized
-            : normalized + path.separator;
-      }).toList();
-
-      // Filter out preserved projects before counting
-      filteredProjects = allProjects.where((project) {
-        // If project is not in any release, always include it
-        if (!protectedProjectIds.contains(project.id)) {
-          return true;
-        }
-
-        // If project is in a release, check if it's in any active scan root
-        final projectPath = path.normalize(project.filePath);
-        final isInActiveRoot = activeRootPaths.any((rootPath) {
-          // Check if project path starts with the root path
-          return projectPath.startsWith(rootPath);
-        });
-
-        // Only include if it's in an active root (preserved projects not in active roots are excluded)
-        return isInActiveRoot;
-      }).toList();
-    }
-
-    // Count visible and hidden from filtered projects only
-    final visibleCount = filteredProjects.where((p) => !p.hidden).length;
-    final hiddenCount = filteredProjects.where((p) => p.hidden).length;
+    // Counted from the same library the list is built on (stacks collapsed,
+    // disabled folders and stale release-preserved projects dropped). This
+    // used to be its own hand-copied filter, which never learned about
+    // disabled folders and counted a stack and each of its versions
+    // separately, so the numbers disagreed with the list under them.
+    final (visible: visibleCount, hidden: hiddenCount) =
+        libraryProjectCounts(ref.watch(libraryProjectsProvider));
 
     // RawKeyboardListener is now the primary handler for Ctrl+F and Ctrl+R
     // This ensures it works even when other widgets (like PlutoGrid) have focus
@@ -6366,6 +6414,25 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     with RouteAwareDropTargetState<_PlutoProjectsTable> {
   TrinaGridStateManager? stateManager;
   bool _isRebuildingRows = false;
+
+  // While the grid is unfocused (the user clicked the preview player's
+  // waveform, the search box…) the last-clicked cell is parked instead of
+  // being left current, so TrinaGrid has nothing to outline. See
+  // GridCurrentCellParking for why the style alone cannot hide it.
+  final _cellParking = GridCurrentCellParking(
+    rowKey: (row) => (row.cells['data']?.value as MusicProject?)?.id,
+  );
+  FocusNode? _parkingFocusNode;
+
+  void _onGridFocusChanged() {
+    final sm = stateManager;
+    if (sm == null || !mounted) return;
+    if (sm.gridFocusNode.hasFocus) {
+      _cellParking.restore(sm);
+    } else {
+      _cellParking.park(sm);
+    }
+  }
   // Set to true when the theme changes so onLoaded can schedule a _rebuildRows()
   // call that busts TrinaGrid's renderer cache (which only invalidates on cell/
   // row/selection changes, not on theme changes).
@@ -6594,6 +6661,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     final sm = stateManager;
     if (sm == null) return;
     sm.gridFocusNode.requestFocus();
+    _cellParking.restore(sm);
     if (sm.currentRow == null && sm.rows.isNotEmpty) {
       sm.setCurrentCell(sm.rows.first.cells.values.first, 0);
     }
@@ -7309,10 +7377,13 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           // than the square it occupies and the row's text can start over its
           // tail. Undecorated projects get nothing — no placeholder, no
           // auto-assigned colour — so the list stays as quiet as it was.
-          final hasBleed = projectHasCoverArt(project);
+          // Cover art, or failing that a chosen colour/icon, bleeds into the
+          // cell (see ProjectCoverBleed). Undecorated rows get nothing.
+          final hasBleed = projectHasVisualIdentity(project);
           // Nested rows keep their tree connector clear of the artwork —
           // a guide line drawn across a cover reads as damage, not structure.
           final bleedLeft = depth > 0 ? _kNameCellTreeConnectorWidth : 0.0;
+          final bleedOnLeft = _kNameCellBleedSide == CoverBleedSide.left;
 
           final content = Row(
             children: [
@@ -7329,56 +7400,29 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                     ),
                   ),
                 ),
-              // Cover art is drawn behind this row, so only the accent badge
-              // sits inline — and that is nothing at all unless the user chose
-              // a colour or an icon. Either way the name clears the artwork's
-              // solid half.
-              if (hasBleed)
-                const SizedBox(width: _kNameCellBleedTextOffset)
-              else if (projectHasVisualIdentity(project)) ...[
-                ProjectCoverAvatar(project: project, size: 22),
-                const SizedBox(width: 8),
-              ],
-              Expanded(child: Text(rendererContext.cell.value.toString())),
+              // Cover art or accent colour is drawn behind this row, never
+              // inline; the name only needs to clear the bleed's solid half.
+              if (hasBleed && bleedOnLeft)
+                const SizedBox(width: _kNameCellBleedTextOffset),
+              Expanded(
+                child: Text(
+                  rendererContext.cell.value.toString(),
+                  // A halo of the card colour, so a light cover fading in
+                  // under the name can't wash it out. Plain rows need none.
+                  style: hasBleed
+                      ? TextStyle(shadows: onArtTextHalo(Theme.of(context)))
+                      : null,
+                ),
+              ),
               // Version count, so a stacked song is distinguishable from an
               // ordinary project at a glance rather than only once opened.
               if (project.isVirtual) ...[
                 const SizedBox(width: 6),
-                Tooltip(
-                  message: AppLocalizations.of(
+                StackVersionBadge(
+                  count: project.versionCount,
+                  tooltip: AppLocalizations.of(
                     context,
                   )!.stackTooltipStacked(project.versionCount),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.layers,
-                          size: 11,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          '${project.versionCount}',
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.w700,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ],
               if (isNewlyDiscovered) ...[
@@ -7394,10 +7438,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   message: AppLocalizations.of(context)!.matchedInDescription,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 6),
-                    child: Icon(
-                      Icons.notes,
-                      size: 14,
+                    child: OnArtMarker(
+                      icon: Icons.notes,
                       color: Colors.amber.shade600,
+                      onArt: hasBleed,
                     ),
                   ),
                 ),
@@ -7408,10 +7452,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   )!.matchedInProjectNotes,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 6),
-                    child: Icon(
-                      Icons.description_outlined,
-                      size: 14,
+                    child: OnArtMarker(
+                      icon: Icons.description_outlined,
                       color: Colors.amber.shade600,
+                      onArt: hasBleed,
                     ),
                   ),
                 ),
@@ -7427,12 +7471,12 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                       : AppLocalizations.of(context)!.archivedAwayTooltip,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 6),
-                    child: Icon(
-                      Icons.archive_outlined,
-                      size: 14,
+                    child: OnArtMarker(
+                      icon: Icons.archive_outlined,
                       color: fileExists
                           ? Colors.blueGrey.shade300
                           : Colors.blueGrey.shade200,
+                      onArt: hasBleed,
                     ),
                   ),
                 ),
@@ -7447,12 +7491,16 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   message: AppLocalizations.of(
                     context,
                   )!.sourceFileNotFoundOnThisMachine,
-                  child: Icon(
-                    Icons.cloud_off,
-                    size: 14,
+                  child: OnArtMarker(
+                    icon: Icons.cloud_off,
                     color: Colors.orange.shade400,
+                    onArt: hasBleed,
                   ),
                 ),
+              // Right-anchored art: the name and its badges end before the
+              // artwork's solid half, sitting only over the faded part.
+              if (hasBleed && !bleedOnLeft)
+                const SizedBox(width: _kNameCellBleedTextOffset),
             ],
           );
 
@@ -7466,7 +7514,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
             fit: StackFit.expand,
             children: [
               Positioned(
-                left: bleedLeft,
+                left: bleedOnLeft ? bleedLeft : null,
+                right: bleedOnLeft ? null : 0,
                 top: 0,
                 bottom: 0,
                 child: ProjectCoverBleed(
@@ -7475,6 +7524,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   width: _kNameCellBleedWidth,
                   solidFraction:
                       _kNameCellBleedHeight / _kNameCellBleedWidth,
+                  side: _kNameCellBleedSide,
                 ),
               ),
               Padding(padding: _kNameCellInset, child: content),
@@ -7837,41 +7887,38 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                       : project.previewSongAutoPath != null
                       ? Colors.amber
                       : Colors.grey;
-                  return _PlayButtonWithGlow(
-                    isActive: isActive,
-                    glowColor: iconColor,
-                    child: IconButton(
-                      icon: Icon(
-                        isCurrent
-                            ? (isPlaying
-                                  ? Icons.pause_circle
-                                  : Icons.play_circle)
-                            : (hasPreview
-                                  ? Icons.play_circle
-                                  : Icons.play_circle_outline),
-                      ),
-                      iconSize: 24,
-                      padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(),
-                      tooltip: isCurrent
-                          ? (isPlaying
-                                ? AppLocalizations.of(context)!.pause
-                                : AppLocalizations.of(context)!.playPreview)
-                          : project.previewSongAutoPath != null &&
-                                project.previewSongPath?.isNotEmpty != true
-                          ? '${AppLocalizations.of(context)!.playPreview} (P)\n⚡ ${AppLocalizations.of(context)!.autoDetected}: ${path.basename(project.previewSongAutoPath!)}'
-                          : '${AppLocalizations.of(context)!.playPreview} (P)',
-                      onPressed: () {
-                        if (isCurrent) {
-                          ref
-                              .read(desktopPlayerToggleRequestProvider.notifier)
-                              .bump();
-                        } else {
-                          _playPreviewSong(project);
-                        }
-                      },
-                      color: iconColor,
+                  return IconButton(
+                    // Bouncing bars while this row's preview plays (the pause
+                    // icon on hover), the play icon otherwise.
+                    icon: NowPlayingIcon(
+                      isPlaying: isActive,
+                      idleIcon: isCurrent
+                          ? Icons.play_circle
+                          : (hasPreview
+                                ? Icons.play_circle
+                                : Icons.play_circle_outline),
                     ),
+                    iconSize: 24,
+                    padding: const EdgeInsets.all(4),
+                    constraints: const BoxConstraints(),
+                    tooltip: isCurrent
+                        ? (isPlaying
+                              ? AppLocalizations.of(context)!.pause
+                              : AppLocalizations.of(context)!.playPreview)
+                        : project.previewSongAutoPath != null &&
+                              project.previewSongPath?.isNotEmpty != true
+                        ? '${AppLocalizations.of(context)!.playPreview} (P)\n⚡ ${AppLocalizations.of(context)!.autoDetected}: ${path.basename(project.previewSongAutoPath!)}'
+                        : '${AppLocalizations.of(context)!.playPreview} (P)',
+                    onPressed: () {
+                      if (isCurrent) {
+                        ref
+                            .read(desktopPlayerToggleRequestProvider.notifier)
+                            .bump();
+                      } else {
+                        _playPreviewSong(project);
+                      }
+                    },
+                    color: iconColor,
                   );
                 },
               ),
@@ -8180,7 +8227,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           final playing = ref.read(desktopPlayerProvider);
           if (playing?.project.id == project.id) return playingHighlightColor;
           final isSession = ref.read(activeProjectProvider)?.id == project.id;
-          final isActivated = stateManager?.currentRow == ctx.row;
+          final isActivated = stateManager?.currentRow == ctx.row ||
+              (stateManager?.currentRow == null &&
+                  _cellParking.isParkedRow(ctx.row));
           if (isSession) {
             // Read current paused state directly so notifyListeners refreshes pick it up.
             final isPaused = ref.read(workTimerPausedProvider);
@@ -8219,6 +8268,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                 ),
         );
         stateManager!.addListener(_onStateManagerChanged);
+        // A remount (theme / locale switch) brings a new grid and focus node.
+        _parkingFocusNode?.removeListener(_onGridFocusChanged);
+        _parkingFocusNode = stateManager!.gridFocusNode
+          ..addListener(_onGridFocusChanged);
+        _cellParking.clear();
         if (_needsThemeRefresh) {
           // The deferred _rebuildRows() below busts the renderer cache
           // AND restores expand/sort state itself, so don't also call
@@ -8286,6 +8340,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           // per-cell border/fill on click.
           activatedBorderColor: Colors.transparent,
           activatedColor: Colors.transparent,
+          // The outline TrinaGrid draws round the current cell once the grid
+          // loses focus — never wanted here (see _cellParking).
+          inactivatedBorderColor: Colors.transparent,
           iconColor: isVividAccent
               ? activeTheme.colorScheme.primary.withValues(alpha: 0.7)
               : activeTheme.textTheme.bodyMedium?.color ?? Colors.grey,
@@ -8433,6 +8490,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
   @override
   void dispose() {
     stateManager?.removeListener(_onStateManagerChanged);
+    _parkingFocusNode?.removeListener(_onGridFocusChanged);
     super.dispose();
   }
 }
@@ -8536,7 +8594,9 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  double _volume = 1.0;
+  // Starts at the level the app was last left at, not at full blast —
+  // see PlayerVolumeStore.
+  double _volume = PlayerVolumeStore.current;
   bool _isMono = false;
   bool _isGeneratingMono = false;
   String? _monoFilePath;
@@ -8547,6 +8607,15 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
       widget.project.previewSongPath?.isNotEmpty == true
       ? widget.project.previewSongPath
       : (_autoDetectedPath ?? widget.project.previewSongAutoPath);
+
+  /// The one way volume changes in this dialog — both sliders and the
+  /// ctrl+wheel handler call it, so the displayed level and the player can't
+  /// drift apart.
+  void _setVolume(double value) {
+    setState(() => _volume = value);
+    unawaited(_audioPlayer.setVolume(value));
+    unawaited(PlayerVolumeStore.save(value));
+  }
 
   void _attachListeners(AudioPlayer player, int gen) {
     player.onPlayerStateChanged.listen((state) {
@@ -8798,7 +8867,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
     }
 
     try {
-      await _audioPlayer.play(_currentSource());
+      await _audioPlayer.play(_currentSource(), volume: _volume);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -8827,7 +8896,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
         await _audioPlayer.pause();
       } else {
         if (_position == Duration.zero || _position >= _duration) {
-          await _audioPlayer.play(DeviceFileSource(_effectivePreviewPath!));
+          await _audioPlayer.play(DeviceFileSource(_effectivePreviewPath!), volume: _volume);
         } else {
           await _audioPlayer.resume();
         }
@@ -9013,17 +9082,12 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                 value: _volume,
                 min: 0.0,
                 max: 1.0,
-                onChanged: (value) async {
-                  setState(() {
-                    _volume = value;
-                  });
-                  await _audioPlayer.setVolume(value);
-                },
+                onChanged: _setVolume,
               ),
             ),
             const SizedBox(width: 8),
             Tooltip(
-              message: 'Toggle mono playback',
+              message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -9167,12 +9231,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                 value: _volume,
                 min: 0.0,
                 max: 1.0,
-                onChanged: (value) async {
-                  setState(() {
-                    _volume = value;
-                  });
-                  await _audioPlayer.setVolume(value);
-                },
+                onChanged: _setVolume,
               ),
             ),
           ],
@@ -9181,7 +9240,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
         Row(
           children: [
             Tooltip(
-              message: 'Toggle mono playback',
+              message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -9434,18 +9493,10 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
             '[preview_share] ShareResult: status=${result.status} raw=${result.raw}',
           );
         }
-        // Unpackaged Windows builds have no working share sheet
-        // (DataTransferManager needs MSIX) — without this the click does
-        // nothing visible at all.
-        if (result.status == ShareResultStatus.unavailable && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)!.shareSheetUnavailable,
-              ),
-            ),
-          );
-        }
+        // No "share menu unavailable" warning on `unavailable`: share_plus
+        // returns that status on Windows every time, right after the share
+        // menu has opened — Windows does not report what the user picked. A
+        // share that really fails throws, and the catch below reports it.
       }
     } catch (e, st) {
       if (kDebugMode) {
@@ -9613,6 +9664,12 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
           _seek(isModified ? 30 : 5);
           return KeyEventResult.handled;
         }
+        // M toggles mono, as in every other player. Ignored while a mono
+        // file is still being rendered, so a held key can't queue a second.
+        if (isMonoShortcutEvent(event)) {
+          if (!_isGeneratingMono) _toggleMono();
+          return KeyEventResult.handled;
+        }
         return KeyEventResult.ignored;
       },
       child: AlertDialog(
@@ -9660,9 +9717,16 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
         ),
         content: SizedBox(
           width: MobileUtils.isMobile() ? double.infinity : 600,
-          child: MobileUtils.isMobile()
-              ? _buildAndroidPlayerLayout(context)
-              : _buildDesktopPlayerLayout(context),
+          // Ctrl+wheel anywhere over the player moves the volume, so the user
+          // doesn't have to hit the slider itself.
+          child: CtrlWheelVolume(
+            volume: _volume,
+            onVolumeChanged: _setVolume,
+            enabled: !MobileUtils.isMobile(),
+            child: MobileUtils.isMobile()
+                ? _buildAndroidPlayerLayout(context)
+                : _buildDesktopPlayerLayout(context),
+          ),
         ),
       ),
     );
@@ -9701,7 +9765,9 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   bool _playbackEnded = false;
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
-  double _volume = 1.0;
+  // Starts at the level the app was last left at, not at full blast —
+  // see PlayerVolumeStore.
+  double _volume = PlayerVolumeStore.current;
   double _preMuteVolume = 1.0;
   bool _isMono = false;
   bool _isGeneratingMono = false;
@@ -9716,6 +9782,38 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   String get _activePath => _isMono && _monoFilePath != null
       ? _monoFilePath!
       : widget.request.resolvedPath;
+
+  /// Stores the length the player just measured off this track, when it
+  /// differs from what is already saved. Silent and best-effort: a failure
+  /// here must not interrupt playback.
+  Future<void> _captureMeasuredDuration(Duration measured) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final current = ref.read(allProjectsStreamProvider).value
+          ?.where((p) => p.id == widget.request.project.id)
+          .firstOrNull;
+      if (current == null) return;
+      await recordMeasuredDuration(current, measured, repo.updateProject);
+    } catch (_) {
+      // Best-effort by design — see above.
+    }
+  }
+
+  /// The one way volume changes in this bar — slider, mute button and the
+  /// ctrl+wheel handler all call it, so the icon, the slider position and the
+  /// player never disagree.
+  ///
+  /// Any non-zero level is remembered as the level unmute restores, which is
+  /// why the wheel can be used to come back up from a muted player.
+  void _setVolume(double value) {
+    setState(() => _volume = value);
+    if (value > 0) _preMuteVolume = value;
+    _player.setVolume(value);
+    unawaited(PlayerVolumeStore.save(value));
+    // Published so a page showing this track (the project page) can mirror
+    // the level and drive it — see desktopPlayerVolumeProvider.
+    ref.read(desktopPlayerVolumeProvider.notifier).set(value);
+  }
 
   bool _supportsMonoMix() {
     final ext = widget.request.resolvedPath.toLowerCase().split('.').last;
@@ -9760,6 +9858,13 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       _togglePlayPause();
       return true;
     }
+    // M toggles mono, as in every other player. Global like Space: the bar is
+    // the one thing playing, and "make what I hear mono" should not need the
+    // user to click into it first.
+    if (isMonoShortcutEvent(event)) {
+      if (!_isGeneratingMono) _toggleMono();
+      return true;
+    }
     // Arrow keys only when the player bar has focus — avoids conflicting with
     // table row navigation when the user has clicked into the projects table.
     if (!_focusNode.hasFocus) return false;
@@ -9793,6 +9898,9 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       if (!mounted) return;
       setState(() => _duration = d);
       _durationNotifier.set(d);
+      // Playing a track from the dashboard is enough for it to learn its own
+      // length (#157) — the same capture the detail page's player does.
+      _captureMeasuredDuration(d);
     });
     _player.onPositionChanged.listen((p) {
       if (!mounted) return;
@@ -9816,7 +9924,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       DeviceFileSource(widget.request.resolvedPath),
       // Non-null when the track was opened at a project marker rather
       // than from the top.
-      position: widget.request.startAt,
+      position: widget.request.startAt, volume: _volume,
     );
     _loadBackgroundData();
   }
@@ -9847,7 +9955,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       });
       _player.play(
         DeviceFileSource(widget.request.resolvedPath),
-        position: widget.request.startAt,
+        position: widget.request.startAt, volume: _volume,
       );
       _loadBackgroundData();
     }
@@ -9955,7 +10063,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     setState(() => _isMono = newMono);
     try {
       if (wasPlaying) {
-        await _player.play(DeviceFileSource(_activePath), position: savedPos);
+        await _player.play(DeviceFileSource(_activePath), position: savedPos, volume: _volume);
       } else {
         await _player.setSource(DeviceFileSource(_activePath));
         if (savedPos > Duration.zero) await _player.seek(savedPos);
@@ -9972,10 +10080,10 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
         await _player.stop();
         await _player.play(
           DeviceFileSource(_activePath),
-          position: _position > Duration.zero ? _position : null,
+          position: _position > Duration.zero ? _position : null, volume: _volume,
         );
       } else if (_position == Duration.zero || _position >= _duration) {
-        await _player.play(DeviceFileSource(_activePath));
+        await _player.play(DeviceFileSource(_activePath), volume: _volume);
       } else {
         await _player.resume();
       }
@@ -10086,6 +10194,12 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     ref.listen(desktopPlayerToggleRequestProvider, (prev, next) {
       if (prev != null && prev != next) _togglePlayPause();
     });
+    // A volume change made from a page showing this track — the project
+    // page's slider or ctrl+wheel. Our own changes come back through here too
+    // and are dropped by the equality check.
+    ref.listen<double>(desktopPlayerVolumeProvider, (prev, next) {
+      if (next != _volume) _setVolume(next);
+    });
     // Jump to a project marker clicked somewhere else in the app, on the
     // track this bar already has loaded.
     ref.listen(desktopPlayerSeekRequestProvider, (prev, next) {
@@ -10147,7 +10261,13 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
 
     return Focus(
       focusNode: _focusNode,
-      child: GestureDetector(
+      // Ctrl+wheel anywhere over the bar rides the volume — this player has
+      // no window of its own, so reaching the slider means crossing the whole
+      // bar first.
+      child: CtrlWheelVolume(
+        volume: _volume,
+        onVolumeChanged: _setVolume,
+        child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapDown: (_) => _focusNode.requestFocus(),
         child: Material(
@@ -10269,19 +10389,16 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                         color: cs.onSurface.withValues(alpha: 0.6),
                         padding: iconPad,
                         constraints: iconConstraints,
-                        tooltip: _volume == 0 ? 'Unmute' : 'Mute',
+                        tooltip: _volume == 0
+                            ? l10n.volumeUnmute
+                            : l10n.volumeMute,
                         onPressed: () {
                           if (_volume > 0) {
                             _preMuteVolume = _volume;
-                            setState(() => _volume = 0);
+                            _setVolume(0);
                           } else {
-                            setState(
-                              () => _volume = _preMuteVolume > 0
-                                  ? _preMuteVolume
-                                  : 1.0,
-                            );
+                            _setVolume(_preMuteVolume > 0 ? _preMuteVolume : 1.0);
                           }
-                          _player.setVolume(_volume);
                         },
                       ),
                       SizedBox(
@@ -10290,11 +10407,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                           value: _volume,
                           min: 0,
                           max: 1,
-                          onChanged: (v) {
-                            setState(() => _volume = v);
-                            if (v > 0) _preMuteVolume = v;
-                            _player.setVolume(v);
-                          },
+                          onChanged: _setVolume,
                         ),
                       ),
                       // Centered track name + filename
@@ -10352,7 +10465,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                       // Mono toggle
                       if (_supportsMonoMix())
                         Tooltip(
-                          message: 'Toggle mono playback',
+                          message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -10508,6 +10621,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );
@@ -12401,14 +12515,9 @@ class _NewProjectBadge extends StatelessWidget {
       onEnter: (_) => onDismiss(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        decoration: BoxDecoration(
-          color: Colors.green.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: Colors.green.withValues(alpha: 0.4),
-            width: 1,
-          ),
-        ),
+        // Opaque, like every marker that can sit over a row's cover art —
+        // the old 12% tint vanished into a busy thumbnail.
+        decoration: onArtCapsule(Theme.of(context), Colors.green),
         child: Text(
           AppLocalizations.of(context)!.newProjectBadge,
           style: TextStyle(
@@ -12974,85 +13083,3 @@ class _PendingFolderRow extends ConsumerWidget {
   }
 }
 
-class _PlayButtonWithGlow extends StatefulWidget {
-  final bool isActive;
-  final Color glowColor;
-  final Widget child;
-
-  const _PlayButtonWithGlow({
-    required this.isActive,
-    required this.glowColor,
-    required this.child,
-  });
-
-  @override
-  State<_PlayButtonWithGlow> createState() => _PlayButtonWithGlowState();
-}
-
-class _PlayButtonWithGlowState extends State<_PlayButtonWithGlow>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _anim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    );
-    _anim = Tween<double>(
-      begin: 0.15,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
-    if (widget.isActive) _ctrl.repeat(reverse: true);
-  }
-
-  @override
-  void didUpdateWidget(_PlayButtonWithGlow old) {
-    super.didUpdateWidget(old);
-    if (widget.isActive && !old.isActive) {
-      _ctrl.repeat(reverse: true);
-    } else if (!widget.isActive && old.isActive) {
-      _ctrl.stop();
-      _ctrl.value = 0;
-    }
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!widget.isActive) return widget.child;
-
-    return AnimatedBuilder(
-      animation: _anim,
-      builder: (_, child) => Stack(
-        alignment: Alignment.center,
-        clipBehavior: Clip.none,
-        children: [
-          // Positioned so it does not affect the Stack's layout size.
-          // The glow overflows visually but the button's footprint stays constant.
-          Positioned(
-            left: -3,
-            right: -3,
-            top: -3,
-            bottom: -3,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.glowColor.withValues(alpha: _anim.value * 0.28),
-              ),
-            ),
-          ),
-          child!,
-        ],
-      ),
-      child: widget.child,
-    );
-  }
-}

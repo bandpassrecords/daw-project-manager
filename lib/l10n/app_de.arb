@@ -1583,7 +1583,6 @@
   },
   "share": "Teilen",
   "convertingAudioForSharing": "Audio wird zum Teilen vorbereitet…",
-  "shareSheetUnavailable": "Das System-Freigabemenü ist hier nicht verfügbar — nutze stattdessen den \"Zum Teilen ziehen\"-Chip in der Song-Vorschau, um die Datei auf eine andere App zu ziehen.",
   "dragToShare": "Zum Teilen ziehen",
   "dragToShareTooltip": "Ziehe dies auf das Fenster einer anderen App (z. B. WhatsApp), um die Datei direkt zu teilen — nützlich, wenn der Teilen-Button kein Freigabemenü öffnet.",
   "mp3ConversionFailed": "Audio-Konvertierung ist auf diesem System nicht verfügbar — die Originaldatei wird geteilt, die manche Apps wie WhatsApp ablehnen könnten.",
@@ -3744,5 +3743,66 @@
   "discardArchiveButtonLabel": "Archiv verwerfen",
   "discardArchiveConfirmTitle": "Archiv verwerfen?",
   "discardArchiveConfirmMessage": "Löscht die ZIP-Datei und entfernt die Archiv-Markierung. Die Projektdateien selbst bleiben, wo sie sind.",
-  "discardArchiveDone": "Archiv verworfen"
+  "discardArchiveDone": "Archiv verworfen",
+
+  "whatsNewTitle": "Neuigkeiten",
+  "whatsNewTitleWithVersion": "Neuigkeiten in Version {version}",
+  "whatsNewIntro": "Das hat sich seit Ihrer letzten Version geändert.",
+  "whatsNewGotIt": "Verstanden",
+  "changelogFullButton": "Vollständiges Changelog",
+  "changelogPageTitle": "Changelog",
+  "changelogEmpty": "Für diesen Build ist kein Changelog verfügbar.",
+  "changelogCurrentVersionBadge": "Installiert",
+  "disableProjectFolderTooltip": "Diesen Ordner deaktivieren (Projekte bleiben erhalten)",
+  "enableProjectFolderTooltip": "Diesen Ordner aktivieren",
+  "projectFolderDisabledBadge": "Deaktiviert",
+  "projectFolderDisabledExplanation": "Wird nicht gescannt, und die Projekte sind ausgeblendet. Es wurde nichts gelöscht — aktivieren Sie ihn, um sie zurückzuholen.",
+  "projectFolderEnabled": "„{name}“ wird wieder gescannt",
+  "projectFolderDisabled": "„{name}“ ist deaktiviert — die Projekte sind ausgeblendet, nicht gelöscht",
+  "releaseArtworkCarryOverTitle": "Cover einer Spur verwenden?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{Eine der ausgewählten Spuren hat ein Cover. Als Cover dieses Releases übernehmen?} other{{count} der ausgewählten Spuren haben ein Cover. Wählen Sie eines als Cover dieses Releases.}}",
+  "releaseArtworkCarryOverUse": "Als Cover verwenden",
+  "releaseArtworkCarryOverSkip": "Kein Cover",
+  "tracksViewList": "Listenansicht",
+  "tracksViewTable": "Tabellenansicht",
+
+  "partsColumn": "Parts",
+  "partsNeededCount": "{count, plural, =1{1 Part fehlt noch} other{{count} Parts fehlen noch}}",
+
+  "songLength": "Länge",
+  "songLengthColumn": "Länge",
+  "songLengthHint": "3:45",
+  "songLengthManual": "Von Hand eingegeben — leeren, um die Länge des Vorschausongs zu verwenden",
+  "songLengthFromPreview": "Aus dem Vorschausong gemessen",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "Gesamtlaufzeit",
+  "releaseLengthPartial": "{count, plural, =1{Zwischensumme — 1 Titel hat noch keine Länge} other{Zwischensumme — {count} Titel haben noch keine Länge}}",
+
+  "breadcrumbHome": "Start",
+  "breadcrumbGoTo": "Zu {label}",
+
+  "scrollForMore": "Zum Weiterlesen scrollen",
+
+  "shortcutPlayerMono": "Mono-Wiedergabe umschalten",
+  "shortcutPlayerVolume": "Lautstärke anpassen",
+  "shortcutMouseWheel": "Mausrad",
+
+  "releaseTotalLengthLabel": "Gesamtlänge",
+  "releaseLengthNone": "Noch kein Titel hat eine Länge — spielen Sie einen Titel ab oder geben Sie die Länge auf der Projektseite ein",
+
+  "songLengthHowItWorks": "Wird automatisch aus dem Vorschausong übernommen — beim Abspielen oder beim Öffnen eines Releases mit diesem Titel. Sie können sie auch eingeben: 3:45, 1:02:03 oder in Sekunden.",
+
+  "changelogSectionSubtitle": "Alles, was sich in jeder Version geändert hat, neueste zuerst.",
+
+  "changelogSearchHint": "Changelog durchsuchen",
+  "changelogNoMatches": "Keine Änderungen passen zu „{query}“",
+
+  "projectFileMenu": "Datei",
+  "moreActions": "Weitere Aktionen",
+
+  "sectionRailResizeHint": "Ziehen zum Ändern der Breite · Doppelklick zum Zurücksetzen",
+
+  "stackMetadataCoverArtLabel": "Cover",
+  "stackMetadataColorLabel": "Akzentfarbe",
+  "stackMetadataIconLabel": "Symbol"
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
+import '../../utils/version_stacks.dart';
+import '../widgets/project_cover_avatar.dart';
 
 /// The projects whose metadata a new stack could inherit, if the user has to
 /// be asked at all (#94).
@@ -10,22 +12,21 @@ import '../../models/music_project.dart';
 /// every other member's untouched — nothing is merged, so there is no way for
 /// two versions' details to be mangled together. What *can* go unnoticed is
 /// the promotion picking a version the user did not expect, so the choice is
-/// only worth surfacing when more than one version actually has details to
-/// promote. With zero or one, the answer is forced and the dialog would be
-/// pure friction.
+/// only worth surfacing when more than one version actually has something to
+/// promote — details or a look of its own (cover art, colour, icon). With zero
+/// or one, the answer is forced and the dialog would be pure friction.
 List<MusicProject> stackMetadataSourceCandidates(
   List<MusicProject> members,
 ) {
-  final withMetadata = members.where((m) => m.hasUserMetadata).toList();
-  return withMetadata.length >= 2 ? withMetadata : const [];
+  final withSomething =
+      members.where((m) => m.hasSomethingToPromote).toList();
+  return withSomething.length >= 2 ? withSomething : const [];
 }
 
-/// The member promoted to *main project* when the user isn't asked: the
-/// oldest, because with `v1 → v2 → v3` the details someone has been
-/// maintaining sit on the one they started from.
+/// The member promoted to *main project* when the user isn't asked — see
+/// [preferredStackMetadataSource], which automatic folder stacking uses too.
 MusicProject defaultStackMetadataSource(List<MusicProject> members) =>
-    (members.toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt)))
-        .first;
+    preferredStackMetadataSource(members);
 
 /// Asks which member's metadata the new stack should inherit. Returns the
 /// chosen project, or null if the user cancelled.
@@ -99,6 +100,13 @@ class _StackMetadataSourceDialogState
                             setState(() => _selectedId = id ?? _selectedId),
                         contentPadding: EdgeInsets.zero,
                         dense: true,
+                        // Its cover, colour or icon, so choosing between two
+                        // versions' looks is a choice the user can see.
+                        // Renders nothing for a version without one.
+                        secondary: ProjectCoverAvatar(
+                          project: project,
+                          size: 36,
+                        ),
                         title: Text(
                           project.displayName,
                           overflow: TextOverflow.ellipsis,

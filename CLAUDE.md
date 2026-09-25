@@ -73,6 +73,9 @@ Instructions for AI assistants working on this codebase.
 - **Archiving gathers out-of-folder attachments** (`attachmentsToGather`) into `_attachments/<id>/<basename>` in the zip, keyed by id so two `notes.pdf` can't collide. Links have no bytes; attachments already inside the folder are picked up by the walk. `deleteOriginals` still only ever deletes the project's own files — an attachment in `~/Downloads` is not ours to delete. `repathRestoredAttachments` repoints a gathered attachment on restore **only** when its original has since gone away.
 - **Moving repaths attachments** under the moved prefix (`repathProject`). The lyric sheet beside the project file is the common case and a move that ignored it would break every one.
 - Cover art lives in the app-managed `project_cover_art` folder (`app_paths.dart`), so it is untouched by moves and archives and rides along in Drive sync / local backup instead.
+- **One image file can belong to several rows.** A version stack is a copy of its promoted member, `thumbnailPath` included, so the stack and that member share one cover file. Never delete a managed image without first asking `isImageInUse` (`lib/utils/cover_art_refs.dart`), after the row that let go of it has been saved. Deleting it outright once broke the member's cover the moment the stack's changed. Release artwork carried over from a project is **copied** (`copyArtworkForRelease`), never pointed at the project's file.
+- **Stacking promotes a member's look along with its details.** `MusicProject.hasSomethingToPromote` (details *or* cover/colour/icon) decides both whether to ask and the default, and `preferredStackMetadataSource` (`lib/utils/version_stacks.dart`) is the one default rule. It picks the oldest member with something to promote, never a blank older one. The dashboard and automatic folder stacking both use it.
+- **Markers over a row's cover-art bleed need an opaque backing.** Use `on_art_marker.dart`: `onArtCapsule` for text badges, `OnArtMarker` for status icons (a disc only on rows with artwork), and `onArtTextHalo` for the name. A translucent tint disappears into a busy cover.
 
 ### An archived project is not a missing one
 - Archiving (#116) zips a project out of the working library and sets `archivePath` / `archivedAt` / `archiveEntryPath`. `filePath` deliberately keeps naming the **original location** — it is what `fileExtension`, DAW launching and the containing-folder helpers read, and leaving it alone is what makes "restore to where it came from" free.
@@ -112,10 +115,12 @@ Instructions for AI assistants working on this codebase.
 - **Nothing is assigned by default.** `thumbnailPath`, `accentColor` and `iconKey` are all opt-in; `projectAccentColor` / `projectIcon` in `lib/utils/project_visuals.dart` return null for a project nobody has decorated, and the widgets then render *zero size*. Never invent a stand-in color, icon or placeholder image for a list row — a generic default on every row is the thing this feature deliberately does not do. `projectHasVisualIdentity` is the check for "is there anything to draw".
 - The one exception is `showEmptyPlaceholder`, for editing surfaces only (detail header, appearance dialog), where the tile is the way into the editor.
 - A stored `iconKey` this build no longer ships reads as "no icon", not as a crash — retiring an icon from `kProjectIconChoices` is safe.
-- The grid's Name column sets `cellPadding: EdgeInsets.zero` so the cover can reach the cell's left border and span the full row height; everything else in that cell re-applies `_kNameCellInset` itself.
+- The grid's Name column sets `cellPadding: EdgeInsets.zero` so the bleed can reach the cell's border and span the full row height; everything else in that cell re-applies `_kNameCellInset` itself.
+- In the grid, `ProjectCoverBleed` is anchored to the Name cell's **right** border and fades leftwards under the name (`_kNameCellBleedSide`); the name and its trailing badges stop before the solid square. It bleeds cover art, or — when there is none — the chosen accent colour (with its icon) at `kAccentBleedOpacity`. A project nobody decorated still draws nothing. Card covers (`ProjectCardGrid`) are masked by `cardCoverFade` so the action buttons along their foot stay visible.
 
 ### The dashboard has two views and exactly one filtered list
 - The desktop projects tab draws either the `TrinaGrid` table or `ProjectCardGrid` (`lib/ui/widgets/project_card_grid.dart`, #111). Both are handed the **same** `projectsProvider` output — the toggle in the filter bar chooses how that list is drawn, never what is in it. Never filter, search or re-sort inside a view; that belongs in `projectsProvider` so both views can't disagree.
+- **What is in the library** (version stacks collapsed, disabled folders and stale release-preserved projects dropped) is `buildLibraryProjects` in `lib/utils/library_projects.dart`, behind `libraryProjectsProvider`. `projectsProvider` applies display filters on top of it, and the dashboard's "Projects: N (M hidden)" counts it directly. Never re-derive that set elsewhere — a hand-copied version of it is how the counts drifted from the list.
 - `dashboardViewModeProvider` is a device-local preference in the `settings` box, like the theme and the detail-page layout — deliberately not Drive-synced and not backed up.
 - `ProjectCardGrid` takes plain values, label strings and callbacks — no `Ref`, no Hive, no `AppLocalizations` — which is what makes it widget-testable. Resolve strings in the page and pass a `ProjectCardLabels`.
 - A project with no cover art still needs a visual identity: `projectAccentColor`/`projectInitials` in `lib/utils/project_accent_color.dart` derive one from the project id, so it is identical on every machine with nothing stored. Cover art (`thumbnailPath`) wins over the generated colour, and a user-typed `MusicProject.cardInitials` wins over the derived letters (`projectCardInitials` resolves that order; blank means "go back to derived", never a blank card).
@@ -130,6 +135,11 @@ Instructions for AI assistants working on this codebase.
 ---
 
 ## Common tasks
+
+### Cutting a release: the in-app changelog
+- `assets/changelog/changelog.json` is the changelog the app ships — the "What's New" dialog shown once after an update, and Settings > Changelog. It is an asset, not fetched from GitHub, because the Flatpak build has no network.
+- **Before tagging**, add the version's entry: `python scripts/new_changelog_entry.py 2.10.0 --highlight "..."` (repeat `--highlight`; add `--locale pt` etc. for translations — a missing locale falls back to English). `release.yml` fails the release if the newest entry doesn't match the tag.
+- Write user-facing highlights, not commit messages. Entries before 2.9.0 were backfilled from GitHub release notes and git history, and are English-only.
 
 ### Adding a new DAW
 1. Add the file extension (with comment) to `ScannerService.supportedExtensions` in `lib/services/scanner_service.dart`.
@@ -174,6 +184,8 @@ Instructions for AI assistants working on this codebase.
 | Sorting shared by cards + mobile list | `lib/utils/project_sort.dart` |
 | Project detail / editor | `lib/ui/project_detail_page.dart` |
 | Localization strings (source of truth) | `lib/l10n/app_en.arb` |
+| In-app changelog (What's New + Settings > Changelog) | `assets/changelog/changelog.json`, `lib/services/changelog_service.dart` |
+| Release page tracklists (desktop and mobile are **separate** builders) | `lib/ui/release_detail_page.dart` — `_buildDesktopTracksSection` / `_buildTracksSection`, sharing `ReleaseTrackDetails` |
 | Theme specs, builder and providers | `lib/providers/theme_provider.dart` |
 | Theme spec model (`CustomTheme`) | `lib/models/custom_theme.dart` |
 | Theme-derived values (grid colors, vivid-accent test) | `lib/utils/theme_derivations.dart` |

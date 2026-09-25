@@ -37,6 +37,8 @@ import 'services/crash_logger.dart';
 import 'services/dock_menu_service.dart';
 import 'services/quick_action.dart';
 import 'services/tray_notice.dart';
+import 'services/changelog_service.dart';
+import 'services/player_volume_store.dart';
 import 'services/tray_service.dart';
 import 'services/folder_watcher_service.dart';
 import 'services/auto_start_service.dart';
@@ -310,9 +312,11 @@ void _startFolderWatcher(ProviderContainer container) {
     if (identical(repo, _folderWatcherActiveRepo)) return;
     _folderWatcherActiveRepo = repo;
     _folderWatcherRootsSub?.cancel();
-    watcher.syncRoots(repo.getRoots());
+    watcher.syncRoots(repo.getActiveRoots());
     _folderWatcherRootsSub = repo.watchRoots().listen((_) {
-      watcher.syncRoots(repo.getRoots());
+      // Re-read through getActiveRoots so flipping a root's enabled switch
+      // adds or drops its watcher right away, without a restart.
+      watcher.syncRoots(repo.getActiveRoots());
     });
   }
 
@@ -513,7 +517,7 @@ Future<int> _runInitialScan(
     // initial population, not a "new since last time" discovery.
     final knownPaths = repo.getAllProjects().map((p) => p.filePath).toSet();
     final newlyDiscoveredIds = <String>[];
-    for (final root in repo.getRoots()) {
+    for (final root in repo.getActiveRoots()) {
       final entities = <FileSystemEntity>[];
       await for (final entity in scanner.scanDirectory(
         root.path,
@@ -769,6 +773,21 @@ Future<void> _main(List<String> args) async {
     if (kDebugMode) print('[main] Hive lock held by another instance: $e');
     exit(0);
   }
+
+  // Read the remembered playback volume before any player can be built, so
+  // the first one opens at the user's level rather than at full volume.
+  await PlayerVolumeStore.load();
+
+  // Decided now, before this run writes a single setting: an empty settings
+  // box means a first-ever launch. An install that has run before, but on a
+  // build older than the changelog, has settings and no last-seen version —
+  // seed one so its first update still gets the What's New dialog.
+  final settingsBox = Hive.box<String>('settings');
+  await ChangelogService.seedBaselineForUpgrade(
+    hadPriorUse: settingsBox.keys
+        .any((k) => k != kLastSeenChangelogVersionKey),
+    currentVersion: appVersion,
+  );
 
   // NOVO: 4. Configuração do Riverpod e Auto-Scan
   final container = ProviderContainer();

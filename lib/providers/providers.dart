@@ -22,10 +22,13 @@ import '../utils/mobile_utils.dart';
 import '../utils/version_stacks.dart';
 import '../utils/phase_colors.dart';
 import '../utils/todo_due_utils.dart';
+import '../utils/project_visuals.dart';
+import '../utils/library_projects.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
 import '../services/audio_analysis_service.dart';
+import '../services/player_volume_store.dart';
 import '../services/thumbnail_toolbar_service.dart';
 import '../services/waveform_disk_cache.dart';
 import '../models/project_detail_layout.dart';
@@ -45,6 +48,7 @@ import '../models/template_root.dart';
 import '../models/project_event.dart';
 import '../repository/project_repository.dart';
 import '../utils/search_utils.dart';
+import '../utils/section_rail_width.dart';
 import '../repository/profile_repository.dart';
 import '../services/google_drive_sync_service.dart';
 import '../services/deadline_notification_service.dart';
@@ -455,6 +459,24 @@ final allProjectsStreamProvider = StreamProvider<List<MusicProject>>((
   yield* repo.watchAllProjects();
 });
 
+/// Every project in the library, before display filters — see
+/// [buildLibraryProjects] for exactly what that means.
+///
+/// [projectsProvider] applies hidden/archived/phase/search on top of this, and
+/// the dashboard counts it directly, so the list and the numbers above it come
+/// from one definition instead of two copies that drift.
+final libraryProjectsProvider = Provider<List<MusicProject>>((ref) {
+  final allProjects = ref.watch(allProjectsStreamProvider).value ?? const [];
+  final fileExistence = ref.watch(fileExistenceCacheProvider);
+  return buildLibraryProjects(
+    allProjects: allProjects,
+    releases: ref.watch(releasesProvider).value ?? const [],
+    scanRoots: ref.watch(scanRootsProvider),
+    isMobile: MobileUtils.isMobile(),
+    fileExistsLocally: fileExistence.exists,
+  );
+});
+
 // PROVIDER CORRIGIDO: Agora observa o allProjectsStreamProvider e o Notifier
 final projectsProvider = Provider<List<MusicProject>>((ref) {
   // 1. Observa o stream de todos os projetos (retorna um AsyncValue)
@@ -463,77 +485,19 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
   // 2. Observa o estado ATUAL (QueryParams) do nosso novo Notifier
   final params = ref.watch(queryParamsNotifierProvider);
 
-  // 3. Observa releases e scan roots para filter preserved projects
-  final releasesAsync = ref.watch(releasesProvider);
-  final scanRoots = ref.watch(scanRootsProvider);
+  // For the archived filter below (whether an archived project's files are
+  // still here). The library rules have their own watch on it.
   final fileExistenceCache = ref.watch(fileExistenceCacheProvider);
+
 
   // 4. Usa .whenData para acessar a lista quando estiver pronta e aplicar o filtro/ordenação
   return allProjectsAsync
-      .whenData((allProjects) {
-        var projects = allProjects;
-
-        // --- Collapse version stacks (#94) ---
-        // A stacked file is represented in the list by its stack, which owns
-        // the shared metadata. Showing both would list the same project twice
-        // and double-count it in every total derived from this list. The
-        // helper also rolls each stack's work time up from its members, which
-        // is where it is actually stored.
-        projects = collapseVersionStacks(projects);
-
-        // --- Filter out stale preserved projects ---
-        // A "preserved" project is one attached to a release. We hide it only when its
-        // source file DOES exist locally but falls outside every active scan root (the
-        // user removed the root). Projects whose files are NOT present locally are always
-        // shown — they are metadata-only entries restored from a backup on another machine.
-        if (!MobileUtils.isMobile()) {
-          final releases = releasesAsync.value ?? [];
-          final protectedProjectIds = <String>{};
-          for (final release in releases) {
-            protectedProjectIds.addAll(release.trackIds);
-          }
-
-          final activeRootPaths = scanRoots.map((root) {
-            final normalized = p.normalize(root.path);
-            return normalized.endsWith(p.separator)
-                ? normalized
-                : normalized + p.separator;
-          }).toList();
-
-          projects = projects.where((project) {
-            // Projects not attached to any release are always shown.
-            if (!protectedProjectIds.contains(project.id)) return true;
-
-            // A stack has no scanned file: its path is the folder its versions
-            // sit in, which can be the scan root itself when a version lives
-            // directly in the root. That folder exists but is not *inside* any
-            // root by the prefix test below, so a stack on a release would be
-            // dropped from the list entirely — along with its versions, which
-            // are already collapsed into it. Judged by its members, never by a
-            // path it only synthesized.
-            if (!project.isMissingFileCandidate) return true;
-
-            // File not present locally → metadata-only from backup / different machine.
-            // Always show so the user can inspect / edit metadata.
-            final fileExistsLocally = fileExistenceCache.exists(
-              project.filePath,
-            );
-            if (!fileExistsLocally) return true;
-
-            // File exists locally: only show if it's under an active scan root.
-            final projectPath = p.normalize(project.filePath);
-            return activeRootPaths.any(
-              (rootPath) => projectPath.startsWith(rootPath),
-            );
-          }).toList();
-        } else {
-          // Android: show all projects (metadata-only mode, no file system checks).
-          if (kDebugMode) {
-            print(
-              'projectsProvider (Android): Showing all ${projects.length} projects (metadata-only mode)',
-            );
-          }
-        }
+      .whenData((_) {
+        // What is in the library at all — stacks collapsed, disabled folders
+        // and stale release-preserved projects dropped. Shared with the
+        // dashboard's project counts so the two can never disagree; see
+        // buildLibraryProjects.
+        var projects = ref.watch(libraryProjectsProvider);
 
         // --- Filter hidden projects ---
         final hiddenMode = ref.watch(showHiddenProjectsProvider);
@@ -2608,6 +2572,192 @@ final desktopPlayerProvider =
       DesktopPlayerNotifier.new,
     );
 
+/// Todos ticked off during this visit to the tasks queue.
+///
+/// The queue lists outstanding work, so a completed todo drops out of it.
+/// Done the instant the box is ticked, that means the row vanishes under the
+/// cursor: no confirmation of what was just checked, and no way back if it
+/// was the wrong one. Holding the ids here keeps those rows on screen,
+/// struck through and undoable, until the user leaves the tab.
+///
+/// Deliberately *not* persisted, and cleared on leaving: the queue's job is
+/// to show what is left to do, and yesterday's completed work sitting at the
+/// top of it would defeat that.
+class RecentlyCompletedTodosNotifier extends Notifier<Set<String>> {
+  @override
+  Set<String> build() => const {};
+
+  void add(String todoId) => state = {...state, todoId};
+
+  void remove(String todoId) {
+    if (!state.contains(todoId)) return;
+    state = {...state}..remove(todoId);
+  }
+
+  void clear() {
+    if (state.isEmpty) return;
+    state = const {};
+  }
+}
+
+final recentlyCompletedTodosProvider =
+    NotifierProvider<RecentlyCompletedTodosNotifier, Set<String>>(
+      RecentlyCompletedTodosNotifier.new,
+    );
+
+/// One step in the navigation trail shown in the desktop title bar.
+@immutable
+class Breadcrumb {
+  const Breadcrumb({
+    required this.id,
+    required this.label,
+    this.isRoot = false,
+  });
+
+  /// Identifies the title bar that registered this crumb, so it can remove
+  /// exactly its own entry on the way out rather than popping whatever is
+  /// last — which would be the wrong entry if two pages ever overlap.
+  final String id;
+
+  final String label;
+
+  /// Whether this is the page the app opens on — the one title bar with no
+  /// back button.
+  ///
+  /// Its own [label] is the app name and version, which reads as a product
+  /// banner rather than a place. As the head of a trail it is rendered as
+  /// "Home" instead; alone, it stays the banner it was.
+  final bool isRoot;
+
+  @override
+  bool operator ==(Object other) =>
+      other is Breadcrumb &&
+      other.id == id &&
+      other.label == label &&
+      other.isRoot == isRoot;
+
+  @override
+  int get hashCode => Object.hash(id, label, isRoot);
+}
+
+/// The trail of pages between the dashboard and wherever the user is now.
+///
+/// Built from the [DesktopTitleBar]s that are actually mounted, not from a
+/// fixed hierarchy. That distinction is the whole point: Flutter's Navigator
+/// holds a *history*, and the same page is reachable by several routes — the
+/// parts workspace can be opened from the dashboard, from a project, or from
+/// a release's tracklist. A trail drawn from a declared tree would confidently
+/// state a path the user did not take.
+class BreadcrumbTrailNotifier extends Notifier<List<Breadcrumb>> {
+  @override
+  List<Breadcrumb> build() => const [];
+
+  /// Adds [crumb] to the end of the trail, replacing an entry with the same
+  /// id (a page whose title changed while open — a release being renamed, for
+  /// instance).
+  void push(Breadcrumb crumb) {
+    final existing = state.indexWhere((c) => c.id == crumb.id);
+    if (existing >= 0) {
+      if (state[existing] == crumb) return;
+      final next = [...state];
+      next[existing] = crumb;
+      state = next;
+      return;
+    }
+    state = [...state, crumb];
+  }
+
+  /// Removes the crumb with [id] **and everything after it**.
+  ///
+  /// Dropping the tail matters: title bars are disposed as routes pop, and a
+  /// page removed from the middle means every page beyond it is gone too.
+  /// Removing only its own entry would leave orphans pointing at pages that
+  /// no longer exist.
+  void remove(String id) {
+    final index = state.indexWhere((c) => c.id == id);
+    if (index < 0) return;
+    state = state.sublist(0, index);
+  }
+
+  void clear() => state = const [];
+}
+
+final breadcrumbTrailProvider =
+    NotifierProvider<BreadcrumbTrailNotifier, List<Breadcrumb>>(
+      BreadcrumbTrailNotifier.new,
+    );
+
+/// How many routes to pop to reach the crumb at [index] in a trail of
+/// [length] crumbs.
+///
+/// Zero for the crumb the user is already on, so tapping it does nothing
+/// rather than popping the page out from under them.
+int breadcrumbPopCount({required int index, required int length}) {
+  if (index < 0 || index >= length) return 0;
+  return length - 1 - index;
+}
+
+/// The release-page audio row that was last started, by file id — the one
+/// that owns playback and answers the keyboard — or null before any has been.
+///
+/// Pausing does **not** give the floor up: a paused row is still what Space
+/// should resume and what M should switch to mono. Only another row starting,
+/// or this one leaving the screen, moves it.
+///
+/// Every audio file attached to a release builds its own player widget, so
+/// without a single owner two mixdowns play over each other the moment you
+/// start a second one. This is the one place that says who has the floor;
+/// each item watches it and pauses itself when someone else claims it.
+///
+/// Deliberately a *claim*, not a broadcast stop: the item that starts playing
+/// names itself, and every other item reacts. That keeps the rule in one
+/// place and means an item can never be asked to stop by a sibling that has
+/// since been disposed.
+class PlayingReleaseAudioNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  /// [fileId] takes the floor. Every other item stops.
+  void claim(String fileId) => state = fileId;
+
+  /// Gives the floor up, but only if [fileId] still holds it.
+  ///
+  /// The guard matters: a paused item's stop handler can fire *after* another
+  /// item has already claimed the floor, and an unguarded clear would then
+  /// silence the one that just started.
+  void releaseFloor(String fileId) {
+    if (state == fileId) state = null;
+  }
+
+  /// Nothing is playing — used when the page itself goes away.
+  void clear() => state = null;
+}
+
+final playingReleaseAudioProvider =
+    NotifierProvider<PlayingReleaseAudioNotifier, String?>(
+      PlayingReleaseAudioNotifier.new,
+    );
+
+/// Whether the release-page row for [fileId] should answer a player shortcut
+/// (Space, arrows, M).
+///
+/// The row holding the floor answers. Before any row has been started nobody
+/// holds it, and the first playable row stands in — otherwise the shortcuts
+/// would do nothing until something had been clicked.
+bool releaseRowHandlesKeys({
+  required String fileId,
+  required String? owner,
+  required bool isFallbackRow,
+}) =>
+    owner == null ? isFallbackRow : owner == fileId;
+
+/// Whether an item holding [fileId] should pause because [owner] has the
+/// floor. Pure — the rule the release page's audio items share.
+bool shouldYieldReleaseAudio({
+  required String fileId,
+  required String? owner,
+}) => owner != null && owner != fileId;
+
 /// True while the desktop player is actively playing (false when paused/stopped).
 class DesktopIsPlayingNotifier extends Notifier<bool> {
   @override
@@ -2714,6 +2864,32 @@ class DesktopPlayerSeekNotifier extends Notifier<DesktopPlayerSeekRequest?> {
 final desktopPlayerSeekRequestProvider =
     NotifierProvider<DesktopPlayerSeekNotifier, DesktopPlayerSeekRequest?>(
       DesktopPlayerSeekNotifier.new,
+    );
+
+/// The desktop player bar's volume, published by the bar and settable from
+/// any page showing the track the bar is playing.
+///
+/// Pressing play on the project page hands the track to the bar, so the
+/// page's own slider and ctrl+wheel have to drive the *bar's* player —
+/// setting the page's idle AudioPlayer instead moved the slider while the
+/// audible level stayed put. Works like [desktopPlayerSeekRequestProvider],
+/// except the value also flows back so the page can mirror a change made on
+/// the bar.
+class DesktopPlayerVolumeNotifier extends Notifier<double> {
+  @override
+  double build() => PlayerVolumeStore.current;
+
+  /// Sets the level, clamped. A no-op for the value already held, which is
+  /// what stops the bar and a page echoing one change back and forth.
+  void set(double volume) {
+    final clamped = clampVolume(volume);
+    if (clamped != state) state = clamped;
+  }
+}
+
+final desktopPlayerVolumeProvider =
+    NotifierProvider<DesktopPlayerVolumeNotifier, double>(
+      DesktopPlayerVolumeNotifier.new,
     );
 
 /// Incremented each time the desktop player finishes a track naturally.
@@ -2921,6 +3097,69 @@ class ProjectDetailLayoutNotifier extends Notifier<ProjectDetailLayout> {
 final projectDetailLayoutProvider =
     NotifierProvider<ProjectDetailLayoutNotifier, ProjectDetailLayout>(
       ProjectDetailLayoutNotifier.new,
+    );
+
+/// How wide the user has dragged the left section rail — shared by Settings
+/// and the project detail page's sections layout, so both rails match. Null
+/// means "never resized": each page then uses its own default width.
+///
+/// Device-local, in the `settings` box alongside [projectDetailLayoutProvider]:
+/// a preference about this machine's screen, so it is deliberately not synced
+/// or backed up.
+class SectionRailWidthNotifier extends Notifier<double?> {
+  static const boxKey = 'sectionRailWidth';
+
+  @override
+  double? build() {
+    SchedulerBinding.instance.addPostFrameCallback((_) => load());
+    return null;
+  }
+
+  @visibleForTesting
+  Future<void> load() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      final saved = parseStoredSectionRailWidth(box.get(boxKey));
+      if (saved != null) state = saved;
+    } catch (_) {
+      // Keep the page defaults if the box cannot be read.
+    }
+  }
+
+  /// Follows the pointer while dragging. Nothing is written until [commit],
+  /// so a drag is one write, not one per frame.
+  void preview(double width) => state = width;
+
+  /// Saves whatever width the drag ended on.
+  Future<void> commit() async {
+    final width = state;
+    if (width == null) return;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.put(boxKey, width.toStringAsFixed(1));
+    } catch (e) {
+      debugPrint('[SectionRailWidth] failed to save: $e');
+    }
+  }
+
+  /// Back to each page's default width.
+  Future<void> reset() async {
+    state = null;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.delete(boxKey);
+    } catch (e) {
+      debugPrint('[SectionRailWidth] failed to reset: $e');
+    }
+  }
+}
+
+final sectionRailWidthProvider =
+    NotifierProvider<SectionRailWidthNotifier, double?>(
+      SectionRailWidthNotifier.new,
     );
 
 // ─── Dashboard view mode ──────────────────────────────────────────────────────
@@ -3395,13 +3634,20 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
   }
 
   ja.AudioSource _toAudioSource(MusicProject project, String trackPath) {
+    // The project's own cover art (#110) becomes the lock-screen /
+    // notification artwork when it has one; the bundled app icon (_artUri)
+    // is the fallback for everything else. Checked against the filesystem
+    // rather than stored state alone: Android is handed a file:// URI
+    // directly, and a path that no longer resolves shows a blank tile
+    // instead of falling back.
+    final cover = existingCoverArtPath(project);
     return ja.AudioSource.uri(
       Uri.file(trackPath),
       tag: MediaItem(
         id: trackPath,
         title: project.displayName,
         artist: '',
-        artUri: _artUri,
+        artUri: cover != null ? Uri.file(cover) : _artUri,
       ),
     );
   }

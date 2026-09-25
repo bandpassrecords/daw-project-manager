@@ -2397,10 +2397,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get convertingAudioForSharing => '共有用にオーディオを準備しています…';
 
   @override
-  String get shareSheetUnavailable =>
-      'システムの共有メニューはここでは利用できません。代わりに、曲のプレビューにある「ドラッグして共有」チップでファイルを他のアプリへドラッグしてください。';
-
-  @override
   String get dragToShare => 'ドラッグして共有';
 
   @override
@@ -5400,4 +5396,184 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get discardArchiveDone => 'アーカイブを破棄しました';
+
+  @override
+  String get whatsNewTitle => '新着情報';
+
+  @override
+  String whatsNewTitleWithVersion(String version) {
+    return 'バージョン $version の新着情報';
+  }
+
+  @override
+  String get whatsNewIntro => '前のバージョンからの変更点です。';
+
+  @override
+  String get whatsNewGotIt => 'OK';
+
+  @override
+  String get changelogFullButton => '全変更履歴';
+
+  @override
+  String get changelogPageTitle => '変更履歴';
+
+  @override
+  String get changelogEmpty => 'このビルドの変更履歴はありません。';
+
+  @override
+  String get changelogCurrentVersionBadge => 'インストール済み';
+
+  @override
+  String get disableProjectFolderTooltip => 'このフォルダーを無効にする（プロジェクトは保持）';
+
+  @override
+  String get enableProjectFolderTooltip => 'このフォルダーを有効にする';
+
+  @override
+  String get projectFolderDisabledBadge => '無効';
+
+  @override
+  String get projectFolderDisabledExplanation =>
+      'スキャンされず、プロジェクトは非表示になります。削除はされていません。有効にすると元に戻ります。';
+
+  @override
+  String projectFolderEnabled(String name) {
+    return '「$name」のスキャンを再開しました';
+  }
+
+  @override
+  String projectFolderDisabled(String name) {
+    return '「$name」を無効にしました。プロジェクトは非表示になるだけで削除されません';
+  }
+
+  @override
+  String get releaseArtworkCarryOverTitle => 'トラックのカバーアートを使いますか？';
+
+  @override
+  String releaseArtworkCarryOverBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '選択したトラックのうち $count 件にカバーアートがあります。このリリースのアートワークに使うものを選んでください。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get releaseArtworkCarryOverUse => 'アートワークに使う';
+
+  @override
+  String get releaseArtworkCarryOverSkip => 'アートワークなし';
+
+  @override
+  String get tracksViewList => 'リスト表示';
+
+  @override
+  String get tracksViewTable => 'テーブル表示';
+
+  @override
+  String get partsColumn => 'パート';
+
+  @override
+  String partsNeededCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未録音のパートが $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get songLength => '長さ';
+
+  @override
+  String get songLengthColumn => '長さ';
+
+  @override
+  String get songLengthHint => '3:45';
+
+  @override
+  String get songLengthManual => '手入力です。空にするとプレビュー曲の長さを使います';
+
+  @override
+  String get songLengthFromPreview => 'プレビュー曲から計測しました';
+
+  @override
+  String releaseLengthAtLeast(String total) {
+    return '$total+';
+  }
+
+  @override
+  String get releaseLengthComplete => '合計時間';
+
+  @override
+  String releaseLengthPartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '暫定の合計 — 長さ未設定のトラックが $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get breadcrumbHome => 'ホーム';
+
+  @override
+  String breadcrumbGoTo(String label) {
+    return '$label へ移動';
+  }
+
+  @override
+  String get scrollForMore => 'スクロールするとさらに表示';
+
+  @override
+  String get shortcutPlayerMono => 'モノラル再生の切り替え';
+
+  @override
+  String get shortcutPlayerVolume => '音量を調整';
+
+  @override
+  String get shortcutMouseWheel => 'ホイール';
+
+  @override
+  String get releaseTotalLengthLabel => '合計の長さ';
+
+  @override
+  String get releaseLengthNone =>
+      '長さが設定されたトラックはまだありません。トラックを再生するか、プロジェクトページで長さを入力してください';
+
+  @override
+  String get songLengthHowItWorks =>
+      'プレビュー曲から自動で入力されます（再生したとき、またはこのトラックを含むリリースを開いたとき）。手入力も可能です：3:45、1:02:03、または秒数。';
+
+  @override
+  String get changelogSectionSubtitle => '各バージョンの変更点（新しい順）。';
+
+  @override
+  String get changelogSearchHint => '変更履歴を検索';
+
+  @override
+  String changelogNoMatches(String query) {
+    return '「$query」に一致する変更はありません';
+  }
+
+  @override
+  String get projectFileMenu => 'ファイル';
+
+  @override
+  String get moreActions => 'その他の操作';
+
+  @override
+  String get sectionRailResizeHint => 'ドラッグで幅を変更 · ダブルクリックで元に戻す';
+
+  @override
+  String get stackMetadataCoverArtLabel => 'カバーアート';
+
+  @override
+  String get stackMetadataColorLabel => 'アクセントカラー';
+
+  @override
+  String get stackMetadataIconLabel => 'アイコン';
 }
