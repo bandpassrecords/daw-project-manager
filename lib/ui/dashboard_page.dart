@@ -4828,7 +4828,16 @@ class _PlutoProjectsTableWithSelectionState
     );
     final scanRoots = ref.watch(scanRootsProvider);
     final viewMode = ref.watch(dashboardViewModeProvider);
-    final cardSort = ref.watch(dashboardCardSortProvider);
+    final tagsEnabled = ref.watch(tagsEnabledProvider);
+    final storedCardSort = ref.watch(dashboardCardSortProvider);
+    // A tag sort picked while tags were on falls back to the default order
+    // once they're off — see effectiveSortField.
+    final cardSort =
+        effectiveSortField(storedCardSort.field, tagsEnabled: tagsEnabled) ==
+            storedCardSort.field
+        ? storedCardSort
+        : DashboardCardSort.initial;
+    final sortFields = offeredSortFields(tagsEnabled: tagsEnabled);
     final l10n = AppLocalizations.of(context)!;
 
     // Filtering an empty grid makes no sense — hide the whole filter bar
@@ -5194,7 +5203,7 @@ class _PlutoProjectsTableWithSelectionState
                       isDense: true,
                       style: const TextStyle(fontSize: 12),
                       selectedItemBuilder: (context) => [
-                        for (final field in ProjectSortField.values)
+                        for (final field in sortFields)
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
@@ -5209,7 +5218,7 @@ class _PlutoProjectsTableWithSelectionState
                           ),
                       ],
                       items: [
-                        for (final field in ProjectSortField.values)
+                        for (final field in sortFields)
                           DropdownMenuItem(
                             value: field,
                             child: Row(
@@ -5630,14 +5639,16 @@ class _PlutoProjectsTableWithSelectionState
                         ),
                         onPressed: () => _showChangeStatusDialog(context),
                       ),
-                      const SizedBox(width: 8),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.sell_outlined),
-                        label: Text(
-                          AppLocalizations.of(context)!.bulkTagsButton,
+                      if (ref.watch(tagsEnabledProvider)) ...[
+                        const SizedBox(width: 8),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.sell_outlined),
+                          label: Text(
+                            AppLocalizations.of(context)!.bulkTagsButton,
+                          ),
+                          onPressed: () => _showBulkTagsDialog(context),
                         ),
-                        onPressed: () => _showBulkTagsDialog(context),
-                      ),
+                      ],
                       const SizedBox(width: 8),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.album),
@@ -7876,6 +7887,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         title: l10n.projectTags,
         field: 'tags',
         type: TrinaColumnType.text(),
+        // Hidden rather than left out, so every row's cells still match the
+        // column set; the grid key below rebuilds the grid when this flips.
+        hide: !ref.watch(tagsEnabledProvider),
         enableEditingMode: false,
         width: 180,
         minWidth: 100,
@@ -8399,7 +8413,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         // themeSpec.identityKey rather than just the theme id: editing a user
         // theme's colors keeps the same id, and TrinaGrid caches its renderer
         // colors, so the id alone would leave the old palette on screen.
-        'trina_grid_${l10n.localeName}_${themeSpec.identityKey}_${excludeFoldersFromSort}_${mergeFoldersByName}_${alwaysShowSmartFolders}_${ref.watch(nameDateStrippingProvider)}',
+        'trina_grid_${l10n.localeName}_${themeSpec.identityKey}_${excludeFoldersFromSort}_${mergeFoldersByName}_${alwaysShowSmartFolders}_${ref.watch(nameDateStrippingProvider)}_${ref.watch(tagsEnabledProvider)}',
       ),
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
       columns: columns,
@@ -10885,10 +10899,18 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
 
   /// Shared with the desktop card grid so "sort by phase" means the same
   /// thing in both — see `lib/utils/project_sort.dart`.
-  List<MusicProject> _sorted(List<MusicProject> projects) => sortProjects(
-    projects,
+  List<MusicProject> _sorted(List<MusicProject> projects) {
+    final field = _effectiveSortField;
+    return sortProjects(
+      projects,
+      field,
+      descending: defaultDescendingFor(field),
+    );
+  }
+
+  ProjectSortField get _effectiveSortField => effectiveSortField(
     _sortField,
-    descending: defaultDescendingFor(_sortField),
+    tagsEnabled: ref.read(tagsEnabledProvider),
   );
 
   void _toggleProjectSelection(String projectId) {
@@ -11129,7 +11151,7 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
               ),
               const SizedBox(width: 4),
               DropdownButton<ProjectSortField>(
-                value: _sortField,
+                value: _effectiveSortField,
                 underline: const SizedBox.shrink(),
                 isDense: true,
                 style: Theme.of(context).textTheme.bodySmall,
@@ -11154,10 +11176,11 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                     value: ProjectSortField.bpm,
                     child: Text(l10n.sortByBpm),
                   ),
-                  DropdownMenuItem(
-                    value: ProjectSortField.tags,
-                    child: Text(l10n.sortByTags),
-                  ),
+                  if (ref.watch(tagsEnabledProvider))
+                    DropdownMenuItem(
+                      value: ProjectSortField.tags,
+                      child: Text(l10n.sortByTags),
+                    ),
                 ],
                 onChanged: (v) {
                   if (v != null) setState(() => _sortField = v);

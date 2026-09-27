@@ -5852,4 +5852,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String projectExportTagsLabel(String tags) {
     return 'Etiquetas: $tags';
   }
+
+  @override
+  String get enableTags => 'Activar etiquetas';
+
+  @override
+  String get tagsSettingDescription =>
+      'Ponle tus propias etiquetas a los proyectos y filtra, busca y ordena por ellas. Al desactivarlo solo se ocultan: las etiquetas que ya añadiste se conservan.';
 }

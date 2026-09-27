@@ -614,6 +614,9 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
         // --- Aplicação dos Filtros ---
         // Use projects search provider instead of queryParams
         final projectsSearch = ref.watch(projectsSearchProvider);
+        // Hidden tags must not make a project match: the user would see a
+        // result with nothing on screen explaining why.
+        final searchTags = ref.watch(tagsEnabledProvider);
         if (projectsSearch.trim().isNotEmpty) {
           projects = projects
               .where(
@@ -636,7 +639,7 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
                     // two unrelated markers.
                     ...p.markers.map((m) => m.name),
                     // Tags one entry each, for the same reason (#109).
-                    ...p.tags,
+                    if (searchTags) ...p.tags,
                   ],
                   projectsSearch,
                 ),
@@ -1063,7 +1066,11 @@ class TagFilterNotifier extends Notifier<String?> {
 // Every tag in use in the current profile, sorted — over the whole library,
 // never the filtered list, so picking a tag doesn't make the others vanish
 // from the dropdown. Also what the tag editors autocomplete from.
+//
+// Empty while tags are switched off, which is what hides the filter dropdowns
+// and — through effectiveTagFilter — drops any tag filter still set.
 final availableTagsProvider = Provider<List<String>>((ref) {
+  if (!ref.watch(tagsEnabledProvider)) return const [];
   final allProjectsAsync = ref.watch(allProjectsStreamProvider);
   // Collapsed: a stack's versions keep their own, dormant tags, which are
   // not the song's.
@@ -2076,6 +2083,45 @@ final nameDateStrippingProvider =
     NotifierProvider<NameDateStrippingNotifier, bool>(() {
   return NameDateStrippingNotifier();
 });
+
+/// Whether project tags (#109) are shown at all. Off by default: tags are for
+/// people who organise that way, and everyone else shouldn't meet a filter,
+/// a column and an editor they never asked for.
+///
+/// Turning it off only hides tags — they stay on every project and keep
+/// syncing, so turning it back on brings them all back. Device-local, like
+/// the other display preferences in the `settings` box: not synced, not
+/// backed up.
+class TagsEnabledNotifier extends Notifier<bool> {
+  static const _key = 'tagsEnabled';
+
+  @override
+  bool build() {
+    try {
+      return Hive.box<String>('settings').get(_key) == 'true';
+    } catch (e) {
+      if (kDebugMode) print('Failed to load tagsEnabled: $e');
+      return false;
+    }
+  }
+
+  Future<void> set(bool value) async {
+    if (value == state) return;
+    state = value;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      await box.put(_key, value.toString());
+    } catch (e) {
+      if (kDebugMode) print('Failed to save tagsEnabled: $e');
+    }
+  }
+}
+
+final tagsEnabledProvider = NotifierProvider<TagsEnabledNotifier, bool>(
+  TagsEnabledNotifier.new,
+);
 
 // ---------------------------------------------------------------------------
 // Tab Visibility

@@ -3862,5 +3862,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "enableTags": "Attiva i tag",
+  "tagsSettingDescription": "Aggiungi i tuoi tag ai progetti, poi filtra, cerca e ordina in base a essi. Disattivandoli vengono solo nascosti: i tag già aggiunti restano."
 }

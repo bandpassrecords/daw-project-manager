@@ -31,6 +31,14 @@ class _FakeShowOnlyWithDeadlineNotifier extends ShowOnlyWithDeadlineNotifier {
   bool build() => false;
 }
 
+class _FakeTagsEnabledNotifier extends TagsEnabledNotifier {
+  _FakeTagsEnabledNotifier(this._enabled);
+  final bool _enabled;
+
+  @override
+  bool build() => _enabled;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -39,8 +47,11 @@ ProviderContainer _makeContainer(
   List<MusicProject> projects, {
   List<Release> releases = const [],
   List<ScanRoot> roots = const [],
+  bool tagsEnabled = false,
 }) {
   return ProviderContainer(overrides: [
+    tagsEnabledProvider.overrideWith(
+        () => _FakeTagsEnabledNotifier(tagsEnabled)),
     allProjectsStreamProvider.overrideWith(
         (ref) => Stream.value(projects)),
     releasesProvider.overrideWith(
@@ -439,7 +450,7 @@ void main() {
 
   group('projectsProvider — tag filter (#109)', () {
     test('keeps only projects with the tag, ignoring case', () async {
-      final c = _makeContainer([
+      final c = _makeContainer(tagsEnabled: true, [
         TestFactories.makeProject(id: 'trap', tags: ['Trap']),
         TestFactories.makeProject(id: 'house', tags: ['house']),
         TestFactories.makeProject(id: 'none'),
@@ -453,7 +464,7 @@ void main() {
     test('a filter on a tag nobody has any more shows everything', () async {
       // The dropdown only offers tags in use, so it would show no filter —
       // an empty list behind it would be unexplainable.
-      final c = _makeContainer([
+      final c = _makeContainer(tagsEnabled: true, [
         TestFactories.makeProject(id: 'a', tags: ['house']),
         TestFactories.makeProject(id: 'b'),
       ]);
@@ -464,7 +475,7 @@ void main() {
     });
 
     test('clear() shows everything again', () async {
-      final c = _makeContainer([
+      final c = _makeContainer(tagsEnabled: true, [
         TestFactories.makeProject(id: 'a', tags: ['trap']),
         TestFactories.makeProject(id: 'b'),
       ]);
@@ -476,8 +487,30 @@ void main() {
       expect((await _readProjects(c)).length, 2);
     });
 
-    test('the search box finds a project by its tag', () async {
+    test('a tag filter left set does nothing once tags are switched off', () async {
       final c = _makeContainer([
+        TestFactories.makeProject(id: 'trap', tags: ['trap']),
+        TestFactories.makeProject(id: 'none'),
+      ]);
+      addTearDown(c.dispose);
+      c.read(tagFilterProvider.notifier).setTag('trap');
+
+      expect((await _readProjects(c)).length, 2);
+    });
+
+    test('search ignores hidden tags while tags are switched off', () async {
+      // A match with nothing on screen to explain it reads as a bug.
+      final c = _makeContainer([
+        TestFactories.makeProject(id: 'tagged', tags: ['for the Luna EP']),
+      ]);
+      addTearDown(c.dispose);
+      c.read(projectsSearchProvider.notifier).setSearchText('luna');
+
+      expect(await _readProjects(c), isEmpty);
+    });
+
+    test('the search box finds a project by its tag', () async {
+      final c = _makeContainer(tagsEnabled: true, [
         TestFactories.makeProject(id: 'tagged', tags: ['for the Luna EP']),
         TestFactories.makeProject(id: 'other'),
       ]);
@@ -495,7 +528,7 @@ void main() {
     }
 
     test('is every tag in the profile, sorted, including hidden projects', () async {
-      final c = _makeContainer([
+      final c = _makeContainer(tagsEnabled: true, [
         TestFactories.makeProject(id: 'a', tags: ['zeta', 'trap']),
         TestFactories.makeProject(id: 'b', tags: ['Trap'], hidden: true),
         TestFactories.makeProject(id: 'c', tags: ['alpha']),
@@ -505,10 +538,19 @@ void main() {
       expect(await readTags(c), ['alpha', 'trap', 'zeta']);
     });
 
+    test('is empty while tags are switched off, which hides the filter', () async {
+      final c = _makeContainer([
+        TestFactories.makeProject(id: 'a', tags: ['trap']),
+      ]);
+      addTearDown(c.dispose);
+
+      expect(await readTags(c), isEmpty);
+    });
+
     test("ignores a stacked version's own dormant tags", () async {
       // The stack carries the song's tags; a member's are only what it had
       // before stacking, kept for unstack, and not the song's.
-      final c = _makeContainer([
+      final c = _makeContainer(tagsEnabled: true, [
         TestFactories.makeProject(
           id: 'stack',
           isVirtual: true,

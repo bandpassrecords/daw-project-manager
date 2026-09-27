@@ -5822,4 +5822,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String projectExportTagsLabel(String tags) {
     return 'Теги: $tags';
   }
+
+  @override
+  String get enableTags => 'Включить теги';
+
+  @override
+  String get tagsSettingDescription =>
+      'Отмечайте проекты своими тегами и фильтруйте, ищите и сортируйте по ним. Выключение только скрывает теги — добавленные теги сохраняются.';
 }

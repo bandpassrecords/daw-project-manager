@@ -5389,5 +5389,13 @@
         "type": "String"
       }
     }
+  },
+  "enableTags": "Enable tags",
+  "@enableTags": {
+    "description": "Settings switch that turns project tags (#109) on or off"
+  },
+  "tagsSettingDescription": "Label projects with your own tags, then filter, search and sort by them. Turning this off only hides them — tags you've added are kept.",
+  "@tagsSettingDescription": {
+    "description": "Settings: explains the tags switch, and that turning it off keeps existing tags"
   }
 }

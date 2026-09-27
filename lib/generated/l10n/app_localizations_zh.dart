@@ -5590,4 +5590,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String projectExportTagsLabel(String tags) {
     return '标签：$tags';
   }
+
+  @override
+  String get enableTags => '启用标签';
+
+  @override
+  String get tagsSettingDescription =>
+      '为项目添加自定义标签，并按标签筛选、搜索和排序。关闭后只是隐藏标签，已添加的标签会保留。';
 }

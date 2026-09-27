@@ -3886,5 +3886,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "enableTags": "Ativar tags",
+  "tagsSettingDescription": "Adicione suas próprias tags aos projetos e filtre, pesquise e ordene por elas. Desativar só as esconde — as tags que você já adicionou continuam salvas."
 }

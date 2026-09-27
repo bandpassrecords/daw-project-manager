@@ -25,6 +25,24 @@ bool defaultDescendingFor(ProjectSortField field) => switch (field) {
   ProjectSortField.tags => false,
 };
 
+/// The sort fields a control should offer. Tags only while the tags feature
+/// is switched on (#109) — sorting by something invisible reads as random.
+List<ProjectSortField> offeredSortFields({required bool tagsEnabled}) => [
+  for (final field in ProjectSortField.values)
+    if (field != ProjectSortField.tags || tagsEnabled) field,
+];
+
+/// [field], or [ProjectSortField.lastModified] when it is the tag sort and
+/// tags are switched off — so a sort chosen while tags were on doesn't keep
+/// ordering the list by hidden data (or leave a dropdown pointing at an
+/// option it no longer has).
+ProjectSortField effectiveSortField(
+  ProjectSortField field, {
+  required bool tagsEnabled,
+}) => field == ProjectSortField.tags && !tagsEnabled
+    ? ProjectSortField.lastModified
+    : field;
+
 /// [projects] sorted by [field], ascending unless [descending].
 ///
 /// Returns a new list; the input is never mutated — callers hand it output

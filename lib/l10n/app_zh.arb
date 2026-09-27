@@ -3862,5 +3862,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "enableTags": "启用标签",
+  "tagsSettingDescription": "为项目添加自定义标签，并按标签筛选、搜索和排序。关闭后只是隐藏标签，已添加的标签会保留。"
 }

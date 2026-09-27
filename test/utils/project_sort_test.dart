@@ -180,6 +180,36 @@ void main() {
     test('opens ascending', () {
       expect(defaultDescendingFor(ProjectSortField.tags), isFalse);
     });
+
+    test('is offered only while tags are switched on', () {
+      expect(
+        offeredSortFields(tagsEnabled: true),
+        contains(ProjectSortField.tags),
+      );
+      expect(
+        offeredSortFields(tagsEnabled: false),
+        isNot(contains(ProjectSortField.tags)),
+      );
+      expect(
+        offeredSortFields(tagsEnabled: false),
+        hasLength(ProjectSortField.values.length - 1),
+      );
+    });
+
+    test('a tag sort chosen earlier falls back once tags are off', () {
+      expect(
+        effectiveSortField(ProjectSortField.tags, tagsEnabled: false),
+        ProjectSortField.lastModified,
+      );
+      expect(
+        effectiveSortField(ProjectSortField.tags, tagsEnabled: true),
+        ProjectSortField.tags,
+      );
+      expect(
+        effectiveSortField(ProjectSortField.bpm, tagsEnabled: false),
+        ProjectSortField.bpm,
+      );
+    });
   });
 
   group('defaultDescendingFor', () {

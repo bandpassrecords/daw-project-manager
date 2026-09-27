@@ -3862,5 +3862,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "enableTags": "Tags aktivieren",
+  "tagsSettingDescription": "Versieh Projekte mit eigenen Tags und filtere, suche und sortiere danach. Beim Ausschalten werden sie nur ausgeblendet – vorhandene Tags bleiben erhalten."
 }

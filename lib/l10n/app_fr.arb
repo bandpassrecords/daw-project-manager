@@ -3862,5 +3862,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "enableTags": "Activer les étiquettes",
+  "tagsSettingDescription": "Ajoutez vos propres étiquettes aux projets, puis filtrez, recherchez et triez par étiquette. Désactiver l'option les masque seulement : les étiquettes ajoutées sont conservées."
 }

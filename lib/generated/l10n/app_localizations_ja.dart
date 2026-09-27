@@ -5653,4 +5653,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String projectExportTagsLabel(String tags) {
     return 'タグ: $tags';
   }
+
+  @override
+  String get enableTags => 'タグを有効にする';
+
+  @override
+  String get tagsSettingDescription =>
+      'プロジェクトに独自のタグを付けて、絞り込み・検索・並べ替えに使えます。オフにしても非表示になるだけで、追加済みのタグは保持されます。';
 }

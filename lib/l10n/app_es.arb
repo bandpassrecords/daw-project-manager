@@ -3862,5 +3862,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "enableTags": "Activar etiquetas",
+  "tagsSettingDescription": "Ponle tus propias etiquetas a los proyectos y filtra, busca y ordena por ellas. Al desactivarlo solo se ocultan: las etiquetas que ya añadiste se conservan."
 }

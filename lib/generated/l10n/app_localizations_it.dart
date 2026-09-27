@@ -5841,4 +5841,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String projectExportTagsLabel(String tags) {
     return 'Tag: $tags';
   }
+
+  @override
+  String get enableTags => 'Attiva i tag';
+
+  @override
+  String get tagsSettingDescription =>
+      'Aggiungi i tuoi tag ai progetti, poi filtra, cerca e ordina in base a essi. Disattivandoli vengono solo nascosti: i tag già aggiunti restano.';
 }

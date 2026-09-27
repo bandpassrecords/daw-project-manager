@@ -1698,8 +1698,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                 ),
                               ),
                             ),
+                            // Tags (#109), when switched on in Settings.
+                            if (ref.watch(tagsEnabledProvider)) ...[
                             const SizedBox(height: 12),
-                            // Tags (#109)
                             ProjectTagsEditor(
                               tags: updatedProject.tags,
                               suggestions: ref.watch(availableTagsProvider),
@@ -1709,6 +1710,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                               onAdd: (raw) => _addTag(repo, raw),
                               onRemove: (tag) => _removeTag(repo, tag),
                             ),
+                            ],
 
                             const SizedBox(height: 24),
                           ],

@@ -3209,6 +3209,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final visibleSet = ref.watch(visibleTabsProvider);
     final tabPos = ref.watch(tabPositionProvider);
     final hideDatesInNames = ref.watch(nameDateStrippingProvider);
+    final tagsEnabled = ref.watch(tagsEnabledProvider);
     final allTabs = VisibleTabsNotifier.canonicalOrder
         .where((t) => t != AppTab.playlists) // playlists is mobile-only
         .toList();
@@ -3444,6 +3445,39 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   onChanged: (v) =>
                       ref.read(nameDateStrippingProvider.notifier).set(v),
                   title: Text(l10n.hideDatesInNames),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Project tags (#109) — off by default; see TagsEnabledNotifier.
+        Card(
+          clipBehavior: Clip.antiAlias,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.sell_outlined),
+                    const SizedBox(width: 10),
+                    Text(l10n.projectTags,
+                        style: Theme.of(context).textTheme.titleMedium),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(l10n.tagsSettingDescription,
+                    style: Theme.of(context).textTheme.bodySmall),
+                const SizedBox(height: 8),
+                SwitchListTile(
+                  value: tagsEnabled,
+                  onChanged: (v) =>
+                      ref.read(tagsEnabledProvider.notifier).set(v),
+                  title: Text(l10n.enableTags),
                   contentPadding: EdgeInsets.zero,
                   dense: true,
                 ),

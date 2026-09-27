@@ -9688,6 +9688,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tags: {tags}'**
   String projectExportTagsLabel(String tags);
+
+  /// Settings switch that turns project tags (#109) on or off
+  ///
+  /// In en, this message translates to:
+  /// **'Enable tags'**
+  String get enableTags;
+
+  /// Settings: explains the tags switch, and that turning it off keeps existing tags
+  ///
+  /// In en, this message translates to:
+  /// **'Label projects with your own tags, then filter, search and sort by them. Turning this off only hides them — tags you\'ve added are kept.'**
+  String get tagsSettingDescription;
 }
 
 class _AppLocalizationsDelegate
