@@ -7,9 +7,12 @@ import 'package:daw_project_manager/models/pending_folder.dart';
 import 'package:daw_project_manager/models/profile.dart';
 import 'package:daw_project_manager/models/project_event.dart';
 import 'package:daw_project_manager/models/release.dart';
+import 'package:daw_project_manager/models/todo_item.dart';
 import 'package:daw_project_manager/repository/profile_repository.dart';
 import 'package:daw_project_manager/repository/project_repository.dart';
+import 'package:daw_project_manager/models/notification_preferences.dart';
 import 'package:daw_project_manager/services/backup_service.dart';
+import 'package:daw_project_manager/services/deadline_notification_plan.dart';
 import '../helpers/hive_test_helper.dart';
 import '../helpers/test_factories.dart';
 
@@ -42,6 +45,129 @@ void main() {
 
   tearDown(() async {
     await HiveTestHelper.tearDown(tempDir);
+  });
+
+  // #113: todo due dates only reach the notification scheduler if every save
+  // hands it this profile's projects *and* releases. It used to read a legacy
+  // global box with no releases, wiping every reminder on each edit.
+  group('ProjectRepository deadline rescheduling', () {
+    late List<({List<MusicProject> projects, List<Release> releases})> calls;
+
+    Future<ProjectRepository> recordingRepository({
+      String profileId = 'test-profile',
+    }) {
+      return HiveTestHelper.createRepository(
+        profileId: profileId,
+        rescheduleDeadlineNotifications: ({
+          required List<MusicProject> projects,
+          required List<Release> releases,
+        }) async {
+          calls.add((projects: projects, releases: releases));
+        },
+      );
+    }
+
+    Release makeRelease({List<TodoItem> todos = const []}) => Release(
+          id: 'r1',
+          title: 'Summer EP',
+          trackIds: const [],
+          todos: todos,
+        );
+
+    setUp(() => calls = []);
+
+    test("updateProject hands over this profile's projects and releases",
+        () async {
+      final repo = await recordingRepository();
+      await repo.releasesBox.put(
+        'r1',
+        makeRelease(todos: [
+          TestFactories.makeTodo(id: 'art', dueAt: DateTime(2030, 6, 20)),
+        ]),
+      );
+
+      await repo.updateProject(TestFactories.makeProject(
+        id: 'p1',
+        todos: [
+          TestFactories.makeTodo(id: 'vox', dueAt: DateTime(2030, 6, 18)),
+        ],
+      ));
+
+      expect(calls, hasLength(1));
+      expect(calls.single.projects.map((p) => p.id), ['p1']);
+      expect(calls.single.releases.map((r) => r.id), ['r1']);
+
+      // What was handed over is enough to plan both todo reminders.
+      final todoIds = planDeadlineNotifications(
+        preferences: NotificationPreferences(reminderDays: const []),
+        now: DateTime(2030, 6, 1),
+        projects: calls.single.projects,
+        releases: calls.single.releases,
+      ).map((o) => o.todo?.id);
+      expect(todoIds, containsAll(['vox', 'art']));
+    });
+
+    test("does not read another profile's projects", () async {
+      final other = await HiveTestHelper.createRepository(profileId: 'other');
+      await other.projectsBox.put(
+          'elsewhere', TestFactories.makeProject(id: 'elsewhere'));
+
+      final repo = await recordingRepository();
+      await repo.updateProject(TestFactories.makeProject(id: 'p1'));
+
+      expect(calls.single.projects.map((p) => p.id), ['p1']);
+    });
+
+    test('updateRelease reschedules with the new todo due date', () async {
+      final repo = await recordingRepository();
+      final due = DateTime(2030, 6, 20);
+
+      await repo.updateRelease(makeRelease(todos: [
+        TestFactories.makeTodo(id: 'art', dueAt: due),
+      ]));
+
+      expect(calls, hasLength(1));
+      expect(calls.single.releases.single.todos.single.dueAt, due);
+    });
+
+    test('addRelease reschedules', () async {
+      final repo = await recordingRepository();
+      await repo.addRelease(makeRelease());
+      expect(calls.single.releases.map((r) => r.id), ['r1']);
+    });
+
+    test('deleteRelease reschedules without the deleted release', () async {
+      final repo = await recordingRepository();
+      await repo.releasesBox.put('r1', makeRelease());
+
+      await repo.deleteRelease('r1');
+
+      expect(calls.single.releases, isEmpty);
+    });
+
+    test('deleteProjectsPermanently reschedules without the deleted project',
+        () async {
+      final repo = await recordingRepository();
+      await repo.projectsBox.put('p1', TestFactories.makeProject(id: 'p1'));
+
+      await repo.deleteProjectsPermanently(['p1']);
+
+      expect(calls.single.projects, isEmpty);
+    });
+
+    test('a failing scheduler does not fail the save', () async {
+      final repo = await HiveTestHelper.createRepository(
+        rescheduleDeadlineNotifications: ({
+          required List<MusicProject> projects,
+          required List<Release> releases,
+        }) async =>
+            throw StateError('plugin unavailable'),
+      );
+
+      await repo.updateProject(TestFactories.makeProject(id: 'p1'));
+
+      expect(repo.getById('p1'), isNotNull);
+    });
   });
 
   group('ProjectRepository.updateProject', () {

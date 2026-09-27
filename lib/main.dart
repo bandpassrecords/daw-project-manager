@@ -30,7 +30,6 @@ import 'providers/providers.dart';
 import 'repository/project_repository.dart';
 import 'services/scanner_service.dart';
 import 'services/deadline_notification_service.dart';
-import 'services/notification_background_service.dart';
 import 'services/google_drive_sync_service.dart';
 import 'services/update_check_service.dart';
 import 'services/crash_logger.dart';
@@ -699,18 +698,17 @@ Future<void> _main(List<String> args) async {
   }
 
   // Deadline notifications are Android-only for now: DeadlineNotificationService
-  // and NotificationBackgroundService both bail out on any other platform, and
-  // the background rescheduling half is built on Android WorkManager with no
-  // iOS counterpart. Kept as its own gate rather than folded into the block
-  // above so enabling background audio on iOS didn't silently switch on a
-  // half-implemented notification stack too.
+  // bails out on any other platform. Kept as its own gate rather than folded
+  // into the block above so enabling background audio on iOS didn't silently
+  // switch on a half-implemented notification stack too. The first schedule
+  // runs once the repository is open (step 4d); every save that can change a
+  // deadline reschedules through ProjectRepository.rescheduleDeadlines.
   if (!kIsWeb && Platform.isAndroid) {
     // Notificações de deadline: fire-and-forget para não bloquear o startup.
     try {
       final notificationService = DeadlineNotificationService();
       await notificationService.initialize();
       notificationService.setOnNotificationTapCallback(_handleNotificationTap);
-      unawaited(NotificationBackgroundService.initialize());
     } catch (e) {
       if (kDebugMode) print('Error initializing notification services: $e');
     }
