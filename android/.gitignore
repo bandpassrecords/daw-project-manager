@@ -1,4 +1,14 @@
-# Add this to your existing .gitignore or create it if it doesn't exist
+/.gradle
+/captures/
+/local.properties
+GeneratedPluginRegistrant.java
+.cxx/
+
+# The Gradle wrapper (gradlew, gradlew.bat, gradle/wrapper/) is deliberately
+# tracked, unlike in Flutter's template, so it is not listed here.
+
+# Remember to never publicly share your keystore.
+# See https://flutter.dev/to/reference-keystore
 key.properties
-*.keystore
-*.jks
+**/*.keystore
+**/*.jks
