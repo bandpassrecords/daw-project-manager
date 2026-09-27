@@ -188,9 +188,18 @@ void main() {
     setUp(() {
       support = Directory(p.join(root.path, 'appsupport'))..createSync();
       PathProviderPlatform.instance = _FakePathProvider(support.path);
+      // Windows resolves the app-support root from %LOCALAPPDATA%, which a
+      // swapped PathProviderPlatform never reaches — without this the two
+      // tests below compared against the developer's real AppData and failed
+      // on Windows while passing everywhere else. Ignored off Windows, so it
+      // is set unconditionally.
+      debugLocalAppDataOverride = support.path;
       resetSelectedAppDataDir();
     });
-    tearDown(resetSelectedAppDataDir);
+    tearDown(() {
+      debugLocalAppDataOverride = null;
+      resetSelectedAppDataDir();
+    });
 
     test('is the app-support dir and does not move when a library is selected',
         () async {

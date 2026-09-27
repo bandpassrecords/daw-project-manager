@@ -4121,12 +4121,6 @@ abstract class AppLocalizations {
   /// **'Preparing audio for sharing…'**
   String get convertingAudioForSharing;
 
-  /// No description provided for @shareSheetUnavailable.
-  ///
-  /// In en, this message translates to:
-  /// **'The system share menu isn\'t available here — use the \"Drag to Share\" chip on the song preview to drag the file onto another app instead.'**
-  String get shareSheetUnavailable;
-
   /// No description provided for @dragToShare.
   ///
   /// In en, this message translates to:
@@ -9310,6 +9304,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Archive discarded'**
   String get discardArchiveDone;
+
+  /// No description provided for @whatsNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s New'**
+  String get whatsNewTitle;
+
+  /// Title of the one-time post-update dialog, e.g. What's New in 2.9.0
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s New in {version}'**
+  String whatsNewTitleWithVersion(String version);
+
+  /// No description provided for @whatsNewIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s what changed since your last version.'**
+  String get whatsNewIntro;
+
+  /// No description provided for @whatsNewGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get whatsNewGotIt;
+
+  /// No description provided for @changelogFullButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Full changelog'**
+  String get changelogFullButton;
+
+  /// No description provided for @changelogPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Changelog'**
+  String get changelogPageTitle;
+
+  /// No description provided for @changelogEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No changelog is available for this build.'**
+  String get changelogEmpty;
+
+  /// No description provided for @changelogCurrentVersionBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed'**
+  String get changelogCurrentVersionBadge;
+
+  /// No description provided for @disableProjectFolderTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable this folder (keeps its projects)'**
+  String get disableProjectFolderTooltip;
+
+  /// No description provided for @enableProjectFolderTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable this folder'**
+  String get enableProjectFolderTooltip;
+
+  /// No description provided for @projectFolderDisabledBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get projectFolderDisabledBadge;
+
+  /// No description provided for @projectFolderDisabledExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Not scanned, and its projects are hidden. Nothing was deleted — enable it to bring them back.'**
+  String get projectFolderDisabledExplanation;
+
+  /// Snackbar after switching a scan root back on
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" is now being scanned again'**
+  String projectFolderEnabled(String name);
+
+  /// Snackbar after switching a scan root off
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" is disabled — its projects are hidden, not deleted'**
+  String projectFolderDisabled(String name);
+
+  /// No description provided for @releaseArtworkCarryOverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a track\'s cover art?'**
+  String get releaseArtworkCarryOverTitle;
+
+  /// Body of the dialog offering a selected track thumbnail as release artwork
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One of the selected tracks has cover art. Carry it over as this release’s artwork?} other{{count} of the selected tracks have cover art. Pick one to carry over as this release’s artwork.}}'**
+  String releaseArtworkCarryOverBody(int count);
+
+  /// No description provided for @releaseArtworkCarryOverUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Use as artwork'**
+  String get releaseArtworkCarryOverUse;
+
+  /// No description provided for @releaseArtworkCarryOverSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'No artwork'**
+  String get releaseArtworkCarryOverSkip;
+
+  /// No description provided for @tracksViewList.
+  ///
+  /// In en, this message translates to:
+  /// **'List view'**
+  String get tracksViewList;
+
+  /// No description provided for @tracksViewTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Table view'**
+  String get tracksViewTable;
+
+  /// No description provided for @partsColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Parts'**
+  String get partsColumn;
+
+  /// Tooltip on the release tracklist parts chip, counting parts still to record
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 part still needed} other{{count} parts still needed}}'**
+  String partsNeededCount(int count);
+
+  /// No description provided for @songLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get songLength;
+
+  /// No description provided for @songLengthColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get songLengthColumn;
+
+  /// No description provided for @songLengthHint.
+  ///
+  /// In en, this message translates to:
+  /// **'3:45'**
+  String get songLengthHint;
+
+  /// No description provided for @songLengthManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Entered by hand — clear to use the preview song’s length'**
+  String get songLengthManual;
+
+  /// No description provided for @songLengthFromPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Measured from the preview song'**
+  String get songLengthFromPreview;
+
+  /// Release running time when some tracks have no length yet; total is a floor
+  ///
+  /// In en, this message translates to:
+  /// **'{total}+'**
+  String releaseLengthAtLeast(String total);
+
+  /// No description provided for @releaseLengthComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Total running time'**
+  String get releaseLengthComplete;
+
+  /// Tooltip explaining that a release total excludes untimed tracks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Total so far — 1 track has no length yet} other{Total so far — {count} tracks have no length yet}}'**
+  String releaseLengthPartial(int count);
+
+  /// No description provided for @breadcrumbHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get breadcrumbHome;
+
+  /// Tooltip on a clickable breadcrumb in the desktop title bar
+  ///
+  /// In en, this message translates to:
+  /// **'Go to {label}'**
+  String breadcrumbGoTo(String label);
+
+  /// No description provided for @scrollForMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll for more'**
+  String get scrollForMore;
+
+  /// No description provided for @shortcutPlayerMono.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle mono playback'**
+  String get shortcutPlayerMono;
+
+  /// No description provided for @shortcutPlayerVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust volume'**
+  String get shortcutPlayerVolume;
+
+  /// No description provided for @shortcutMouseWheel.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheel'**
+  String get shortcutMouseWheel;
+
+  /// No description provided for @releaseTotalLengthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total length'**
+  String get releaseTotalLengthLabel;
+
+  /// No description provided for @releaseLengthNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No track has a length yet — play a track or type its length on the project page'**
+  String get releaseLengthNone;
+
+  /// No description provided for @songLengthHowItWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled in automatically from the preview song — when it is played, or when a release containing this track is opened. You can also type it: 3:45, 1:02:03, or seconds.'**
+  String get songLengthHowItWorks;
+
+  /// No description provided for @changelogSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything that changed in each version, newest first.'**
+  String get changelogSectionSubtitle;
+
+  /// No description provided for @changelogSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search the changelog'**
+  String get changelogSearchHint;
+
+  /// Shown when a changelog search finds nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No changes match \"{query}\"'**
+  String changelogNoMatches(String query);
+
+  /// No description provided for @projectFileMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get projectFileMenu;
+
+  /// No description provided for @moreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get moreActions;
+
+  /// No description provided for @sectionRailResizeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to resize · double-click to reset'**
+  String get sectionRailResizeHint;
+
+  /// Stack chooser: this version has its own cover art
+  ///
+  /// In en, this message translates to:
+  /// **'cover art'**
+  String get stackMetadataCoverArtLabel;
+
+  /// Stack chooser: this version has a chosen accent colour
+  ///
+  /// In en, this message translates to:
+  /// **'accent color'**
+  String get stackMetadataColorLabel;
+
+  /// Stack chooser: this version has a chosen icon
+  ///
+  /// In en, this message translates to:
+  /// **'icon'**
+  String get stackMetadataIconLabel;
 }
 
 class _AppLocalizationsDelegate

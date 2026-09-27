@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/models/music_project.dart';
 import 'package:daw_project_manager/repository/project_repository.dart';
+import 'package:daw_project_manager/utils/cover_art_refs.dart';
 
 import '../helpers/hive_test_helper.dart';
 import '../helpers/test_factories.dart';
@@ -35,6 +36,7 @@ void main() {
     int totalWorkSeconds = 0,
     List<SessionRecord> sessions = const [],
     String? notes,
+    String? thumbnailPath,
   }) async {
     final project = TestFactories.makeProject(
       id: id,
@@ -44,6 +46,7 @@ void main() {
       totalWorkSeconds: totalWorkSeconds,
       sessions: sessions,
       notes: notes,
+      thumbnailPath: thumbnailPath,
     );
     await repo.projectsBox.put(id, project);
     return project;
@@ -398,6 +401,60 @@ void main() {
       expect(legacy.memberProjectIds, isEmpty);
       expect(legacy.stackId, isNull);
       expect(legacy.isStackMember, isFalse);
+    });
+  });
+
+  group('cover art', () {
+    test('automatic stacking promotes the version that has a cover', () async {
+      // No metadataSourceId, as for folder auto-stacking: a blank older
+      // version must not win and bury the newer one's cover.
+      await addProject(
+        id: 'v1',
+        filePath: path(['Music', 'SongA', 'A v1.als']),
+        createdAt: DateTime(2025, 1, 1),
+      );
+      await addProject(
+        id: 'v2',
+        filePath: path(['Music', 'SongA', 'A v2.als']),
+        createdAt: DateTime(2025, 2, 1),
+        thumbnailPath: path(['art', 'v2.png']),
+      );
+
+      final stack = await repo.stackProjects(memberIds: ['v1', 'v2']);
+
+      expect(stack.thumbnailPath, path(['art', 'v2.png']));
+    });
+
+    test('a stack shares its main version\'s cover file, so changing the '
+        "stack's cover must not delete it", () async {
+      final shared = path(['art', 'shared.png']);
+      await addProject(
+        id: 'v1',
+        filePath: path(['Music', 'SongA', 'A v1.als']),
+        thumbnailPath: shared,
+      );
+      await addProject(id: 'v2', filePath: path(['Music', 'SongA', 'A v2.als']));
+      final stack = await repo.stackProjects(
+        memberIds: ['v1', 'v2'],
+        metadataSourceId: 'v1',
+      );
+      expect(stack.thumbnailPath, shared);
+
+      // What the appearance editor does when the stack gets a new cover:
+      // save the stack, then ask whether the old file may be deleted.
+      await repo.updateProject(
+        stack.copyWith(thumbnailPath: path(['art', 'new.png'])),
+      );
+
+      expect(
+        isImageInUse(
+          shared,
+          projects: repo.projectsBox.values,
+          releases: repo.releasesBox.values,
+        ),
+        isTrue,
+        reason: 'v1 still points at it and gets it back on unstack',
+      );
     });
   });
 }

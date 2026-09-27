@@ -21,6 +21,7 @@ import '../services/auto_start_service.dart';
 import '../services/backup_service.dart';
 import '../utils/app_paths.dart' show canPickAppDataDir;
 import 'dev_library_picker.dart' show DevLibraryCard;
+import '../services/changelog_service.dart';
 import '../services/crash_logger.dart';
 import '../services/google_drive_sync_service.dart' show GoogleDriveSyncService;
 import '../services/project_archive_service.dart' show conflictingScanRoot;
@@ -52,6 +53,7 @@ import 'widgets/language_switcher.dart' show LanguageSwitcher;
 import 'widgets/license_dialog.dart';
 import 'widgets/shortcuts_help_dialog.dart';
 import 'widgets/update_available_dialog.dart';
+import 'widgets/changelog_browser.dart';
 
 /// A Flatpak document-portal path, e.g.
 /// `/run/user/1000/doc/98127/projects` — the portal never exposes the real
@@ -81,6 +83,7 @@ enum SettingsSection {
   backup,
   dangerZone,
   shortcuts,
+  changelog,
   about,
 }
 
@@ -651,6 +654,36 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     ref.invalidate(scanRootsProvider);
   }
 
+  /// Flips a root's [ScanRoot.enabled] switch — the non-destructive
+  /// counterpart to [_removeProjectFolder], which deletes the projects under
+  /// the folder. No confirmation: nothing is lost either way, and the switch
+  /// is right there to put back.
+  Future<void> _setProjectFolderEnabled(ScanRoot root, bool enabled) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      await repo.setRootEnabled(root.id, enabled);
+      ref.invalidate(rootsWatchProvider);
+      ref.invalidate(scanRootsProvider);
+      ref.invalidate(allProjectsStreamProvider);
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              enabled
+                  ? l10n.projectFolderEnabled(root.effectiveDisplayName)
+                  : l10n.projectFolderDisabled(root.effectiveDisplayName),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _removeProjectFolder(String folderId) async {
     if (_busy) return;
 
@@ -1049,6 +1082,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         SettingsSection.backup,
         SettingsSection.dangerZone,
         SettingsSection.shortcuts,
+        SettingsSection.changelog,
         SettingsSection.about,
       ];
 
@@ -1074,6 +1108,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return SectionNavItem(icon: Icons.warning_amber_rounded, label: l10n.pathsSettingsDangerZoneTitle);
       case SettingsSection.shortcuts:
         return SectionNavItem(icon: Icons.keyboard_outlined, label: l10n.keyboardShortcuts, newGroup: true);
+      case SettingsSection.changelog:
+        return SectionNavItem(icon: Icons.auto_awesome, label: l10n.changelogPageTitle);
       case SettingsSection.about:
         return SectionNavItem(icon: Icons.info_outline, label: l10n.aboutTabLabel);
     }
@@ -1104,6 +1140,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return _buildDangerZoneSection;
       case SettingsSection.shortcuts:
         return _buildShortcutsSection;
+      case SettingsSection.changelog:
+        return _buildChangelogSection;
       case SettingsSection.about:
         return _buildAboutSection;
     }
@@ -1162,6 +1200,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.dangerZone, Icons.delete_forever, l10n.clearLibrary, l10n.clearLibraryMessage),
         _SearchEntry(SettingsSection.dangerZone, Icons.delete_sweep_rounded, l10n.deleteAllData, l10n.deleteAllDataSubtitle),
         _SearchEntry(SettingsSection.shortcuts, Icons.keyboard_outlined, l10n.keyboardShortcuts, null),
+        _SearchEntry(SettingsSection.changelog, Icons.auto_awesome, l10n.changelogPageTitle, l10n.changelogSectionSubtitle),
         _SearchEntry(SettingsSection.about, Icons.info_outline, l10n.aboutTabLabel, l10n.appDescription),
         if (UpdateCheckService.isSupported)
           _SearchEntry(SettingsSection.about, Icons.system_update_alt_outlined, l10n.checkForUpdates, l10n.checkForUpdatesDescription),
@@ -1184,29 +1223,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         children: [
           DesktopTitleBar(title: l10n.settings, showBack: true),
           Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  width: 240,
-                  child: SectionNavRail(
-                    items: navItems,
-                    activeIndex: _activeSection,
-                    searchController: _searchController,
-                    searchHint: l10n.searchSettings,
-                    onTap: _selectSection,
-                  ),
-                ),
-                const VerticalDivider(width: 1),
-                Expanded(
-                  child: Padding(
-                    padding: MobileUtils.getResponsivePadding(context),
-                    child: query.isEmpty
-                        ? SingleChildScrollView(child: _sectionBuilders[_activeSection](l10n))
-                        : _buildSearchResults(l10n, query),
-                  ),
-                ),
-              ],
+            child: ResizableRailLayout(
+              width: ref.watch(sectionRailWidthProvider),
+              defaultWidth: 240,
+              onResize: ref.read(sectionRailWidthProvider.notifier).preview,
+              onResizeEnd: ref.read(sectionRailWidthProvider.notifier).commit,
+              onReset: ref.read(sectionRailWidthProvider.notifier).reset,
+              handleTooltip: l10n.sectionRailResizeHint,
+              rail: SectionNavRail(
+                items: navItems,
+                activeIndex: _activeSection,
+                searchController: _searchController,
+                searchHint: l10n.searchSettings,
+                onTap: _selectSection,
+              ),
+              child: Padding(
+                padding: MobileUtils.getResponsivePadding(context),
+                child: query.isEmpty
+                    ? SingleChildScrollView(child: _sectionBuilders[_activeSection](l10n))
+                    : _buildSearchResults(l10n, query),
+              ),
             ),
           ),
         ],
@@ -1638,10 +1674,37 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 else
                   ...projectFolders.map((f) {
                     final isPortalPath = looksLikeFlatpakPortalPath(f.path);
+                    // A disabled root stays listed — it is the only way back
+                    // on — but reads as switched off rather than as a folder
+                    // that is quietly not working.
+                    final disabledTone = Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.color
+                        ?.withValues(alpha: 0.45);
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.folder),
-                      title: Text(f.effectiveDisplayName),
+                      leading: Icon(
+                        f.enabled ? Icons.folder : Icons.folder_off_outlined,
+                        color: f.enabled ? null : disabledTone,
+                      ),
+                      title: Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              f.effectiveDisplayName,
+                              overflow: TextOverflow.ellipsis,
+                              style: f.enabled
+                                  ? null
+                                  : TextStyle(color: disabledTone),
+                            ),
+                          ),
+                          if (!f.enabled) ...[
+                            const SizedBox(width: 8),
+                            _DisabledFolderBadge(label: l10n.projectFolderDisabledBadge),
+                          ],
+                        ],
+                      ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1655,6 +1718,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 ? l10n.notScannedYet
                                 : l10n.lastScan(dateFormat.format(f.lastScanAt!)),
                           ),
+                          if (!f.enabled)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                l10n.projectFolderDisabledExplanation,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(fontStyle: FontStyle.italic),
+                              ),
+                            ),
                           if (isPortalPath)
                             Padding(
                               padding: const EdgeInsets.only(top: 4),
@@ -1696,7 +1768,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     visualDensity: VisualDensity.compact,
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
-                                  onSelectionChanged: _busy
+                                  onSelectionChanged: (_busy || !f.enabled)
                                       ? null
                                       : (selection) => _updateScanMode(f, selection.first),
                                 ),
@@ -1708,6 +1780,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // Sits before Remove on purpose: switching a folder
+                          // off is the reversible thing to reach for first.
+                          Tooltip(
+                            message: f.enabled
+                                ? l10n.disableProjectFolderTooltip
+                                : l10n.enableProjectFolderTooltip,
+                            child: Switch(
+                              value: f.enabled,
+                              onChanged: _busy
+                                  ? null
+                                  : (value) => _setProjectFolderEnabled(f, value),
+                            ),
+                          ),
                           IconButton(
                             tooltip: l10n.renameButton,
                             onPressed: _busy ? null : () => _renameProjectFolder(f.id, f.effectiveDisplayName),
@@ -2651,6 +2736,42 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
+  /// Every release's highlights, newest first, back to 1.0.
+  ///
+  /// The "What's New" dialog marks itself seen after one showing, so this is
+  /// the way back to what it said — and to everything older. Read from the
+  /// changelog shipped inside the app, so it works offline and in Flatpak.
+  Widget _buildChangelogSection(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            l10n.changelogSectionSubtitle,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+        FutureBuilder<List<ChangelogRelease>>(
+          future: ChangelogService.loadChangelog(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            return ChangelogBrowser(
+              releases: snapshot.data ?? const [],
+              localeCode: Localizations.localeOf(context).toLanguageTag(),
+              currentVersion: appVersion,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildAboutSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -3454,6 +3575,34 @@ class _SearchEntry {
   final String? subtitle;
 
   const _SearchEntry(this.section, this.icon, this.title, this.subtitle);
+}
+
+/// Small "Disabled" pill next to a switched-off scan root's name, so the
+/// state reads at a glance without hunting for the switch on the far right.
+class _DisabledFolderBadge extends StatelessWidget {
+  const _DisabledFolderBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.4,
+        ),
+      ),
+    );
+  }
 }
 
 class _EmptyState extends StatelessWidget {

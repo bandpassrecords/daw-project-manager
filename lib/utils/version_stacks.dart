@@ -60,3 +60,24 @@ List<MusicProject> collapseVersionStacks(List<MusicProject> projects) {
 /// distinction.
 List<MusicProject>? collapseVersionStacksOrNull(List<MusicProject>? projects) =>
     projects == null ? null : collapseVersionStacks(projects);
+
+/// The member promoted to *main project* of a new stack when the user is not
+/// asked: the oldest member that has something to promote, or the oldest
+/// member if none has.
+///
+/// Oldest, because with `v1 -> v2 -> v3` the details someone has been
+/// maintaining sit on the one they started from. But never an empty member
+/// over one with details or a cover: the stack is a copy of the promoted
+/// member, so promoting a blank v1 over a v2 that has BPM, notes or cover art
+/// would hide all of it behind an empty song.
+///
+/// Shared by the dashboard's stack action and the repository's automatic
+/// folder stacking, so both pick the same member. Does not reorder [members]:
+/// member order is the stack's display order.
+MusicProject preferredStackMetadataSource(List<MusicProject> members) {
+  MusicProject oldest(Iterable<MusicProject> of) => of.reduce(
+    (a, b) => b.createdAt.isBefore(a.createdAt) ? b : a,
+  );
+  final withSomething = members.where((m) => m.hasSomethingToPromote);
+  return withSomething.isNotEmpty ? oldest(withSomething) : oldest(members);
+}

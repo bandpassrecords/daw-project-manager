@@ -43,6 +43,19 @@ class ScanRoot {
   @HiveField(6)
   final bool autoStackVersions;
 
+  /// Whether this root takes part in scanning and feeds the library.
+  ///
+  /// A disabled root is left entirely alone: it is skipped by every scan and
+  /// by the folder watcher, and the projects underneath it drop out of the
+  /// lists — but nothing is deleted, so re-enabling it brings the folder back
+  /// with its notes, todos, deadlines and work time intact. That is the whole
+  /// point of having it next to Remove, which *does* delete the projects
+  /// under the root (see `ProjectRepository.removeRoot`): an external drive
+  /// that is currently unplugged, or a client folder that is done for now,
+  /// should be silenced rather than thrown away.
+  @HiveField(7)
+  final bool enabled;
+
   ScanMode get scanMode => autoStackVersions
       ? ScanMode.versionStack
       : (scanDepth >= 1 ? ScanMode.smartFolder : ScanMode.flat);
@@ -63,6 +76,7 @@ class ScanRoot {
     this.scanDepth = 0,
     this.displayName,
     this.autoStackVersions = false,
+    this.enabled = true,
   });
 
   ScanRoot copyWith({
@@ -73,6 +87,7 @@ class ScanRoot {
     int? scanDepth,
     String? displayName,
     bool? autoStackVersions,
+    bool? enabled,
   }) {
     return ScanRoot(
       id: id ?? this.id,
@@ -82,6 +97,7 @@ class ScanRoot {
       scanDepth: scanDepth ?? this.scanDepth,
       displayName: displayName ?? this.displayName,
       autoStackVersions: autoStackVersions ?? this.autoStackVersions,
+      enabled: enabled ?? this.enabled,
     );
   }
 }
@@ -105,13 +121,16 @@ class ScanRootAdapter extends TypeAdapter<ScanRoot> {
       scanDepth: fields.containsKey(4) ? (fields[4] as int? ?? 0) : 0,
       displayName: fields[5] as String?,
       autoStackVersions: fields[6] as bool? ?? false,
+      // Absent in every box written before this field existed — a root that
+      // predates it was, by definition, being scanned.
+      enabled: fields[7] as bool? ?? true,
     );
   }
 
   @override
   void write(BinaryWriter writer, ScanRoot obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -125,7 +144,9 @@ class ScanRootAdapter extends TypeAdapter<ScanRoot> {
       ..writeByte(5)
       ..write(obj.displayName)
       ..writeByte(6)
-      ..write(obj.autoStackVersions);
+      ..write(obj.autoStackVersions)
+      ..writeByte(7)
+      ..write(obj.enabled);
   }
 }
 

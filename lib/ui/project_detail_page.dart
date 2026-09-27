@@ -27,6 +27,9 @@ import '../repository/project_repository.dart';
 import '../utils/attachment_launcher.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/player_shortcuts.dart';
+import '../services/player_volume_store.dart';
+import '../utils/track_duration.dart';
 import '../utils/file_launcher.dart';
 import '../utils/playback_seek.dart';
 import '../utils/route_observer.dart';
@@ -49,6 +52,8 @@ import '../services/scanner_service.dart';
 import 'dialogs/attachment_edit_dialog.dart';
 import 'dialogs/save_as_template_dialog.dart';
 import 'dialogs/stack_version_picker_dialog.dart';
+import 'widgets/project_detail_action_bar.dart';
+import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_attachments_section.dart';
@@ -95,15 +100,18 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   late TextEditingController _nameCtrl;
   late TextEditingController _bpmCtrl;
   late TextEditingController _keyCtrl;
+  late TextEditingController _durationCtrl;
   late TextEditingController _notesCtrl; // NOVO CONTROLLER
   late TextEditingController _projectNotesCtrl;
   late FocusNode _nameFocusNode;
   late FocusNode _bpmFocusNode;
   late FocusNode _keyFocusNode;
+  late FocusNode _durationFocusNode;
   late FocusNode _notesFocusNode;
   String? _lastSavedName;
   String? _lastSavedBpm;
   String? _lastSavedKey;
+  String? _lastSavedDuration;
   String? _lastSavedNotes;
   String? _selectedPhase;
 
@@ -591,11 +599,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     _nameCtrl = TextEditingController();
     _bpmCtrl = TextEditingController();
     _keyCtrl = TextEditingController();
+    _durationCtrl = TextEditingController();
     _notesCtrl = TextEditingController(); // INICIALIZA
     _projectNotesCtrl = TextEditingController();
     _nameFocusNode = FocusNode();
     _bpmFocusNode = FocusNode();
     _keyFocusNode = FocusNode();
+    _durationFocusNode = FocusNode();
     _notesFocusNode = FocusNode();
 
     // Defer the badge dismissal until after the first frame has finished building.
@@ -612,6 +622,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     _nameCtrl.dispose();
     _bpmCtrl.dispose();
     _keyCtrl.dispose();
+    _durationCtrl.dispose();
     _notesCtrl.dispose();
     _projectNotesCtrl.dispose();
     _nameFocusNode.dispose();
@@ -646,6 +657,12 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     final statusChanged = project.status != newStatus;
     final bpmText = _bpmCtrl.text.trim();
     final keyText = _keyCtrl.text.trim();
+    // An unparseable length is left alone rather than wiping the stored one:
+    // autosave fires on every keystroke, so "3:" on the way to "3:45" must
+    // not clear the field (see parseTrackDuration).
+    final durationText = _durationCtrl.text.trim();
+    final typedDuration = parseTrackDuration(durationText);
+    final clearDuration = durationText.isEmpty;
 
     final updated = project.copyWith(
       customDisplayName: newCustomDisplayName,
@@ -658,6 +675,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
       clearNotes: newNotes == null,
       status: newStatus,
       statusChangedAt: statusChanged ? DateTime.now() : null,
+      durationMs: typedDuration?.inMilliseconds,
+      clearDurationMs: clearDuration,
     );
 
     await repo.updateProject(updated);
@@ -671,6 +690,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     _lastSavedName = newCustomDisplayName ?? project.fileName;
     _lastSavedBpm = bpmText;
     _lastSavedKey = keyText;
+    _lastSavedDuration = durationText;
     _lastSavedNotes = newNotes ?? '';
   }
 
@@ -1032,6 +1052,23 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
               _lastSavedKey ??= currentKey;
             }
           }
+
+          // Song length (#157). Shows whichever value is in effect — typed or
+          // measured — so playing the preview song fills the field in.
+          if (!_durationFocusNode.hasFocus) {
+            final effective = effectiveTrackDuration(updatedProject);
+            final currentDuration =
+                effective == null ? '' : formatTrackDuration(effective);
+            if (_lastSavedDuration == null ||
+                _durationCtrl.text == _lastSavedDuration) {
+              if (_durationCtrl.text != currentDuration) {
+                _durationCtrl.text = currentDuration;
+                _lastSavedDuration = currentDuration;
+              }
+            } else {
+              _lastSavedDuration ??= currentDuration;
+            }
+          }
           
           // NOVO: Sincroniza Notas - só atualiza se não estiver com foco E se o texto não foi modificado
           if (!_notesFocusNode.hasFocus) {
@@ -1271,6 +1308,20 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                           _scheduleAutoSave();
                                         },
                                       ),
+                                      const SizedBox(height: 12),
+                                      TextFormField(
+                                        controller: _durationCtrl,
+                                        focusNode: _durationFocusNode,
+                                        decoration: InputDecoration(
+                                          labelText: AppLocalizations.of(context)!.songLength,
+                                          hintText: AppLocalizations.of(context)!.songLengthHint,
+                                          // Where the value comes from, on hover rather than as a line of
+                                          // text under the field — it only matters when you wonder.
+                                          suffixIcon: _SongLengthInfo(project: updatedProject),
+                                          prefixIcon: const Icon(Icons.timer_outlined, size: 18),
+                                        ),
+                                        onChanged: (_) => _scheduleAutoSave(),
+                                      ),
                                       // Camelot code field (only shown when key is set)
                                       if (updatedProject.camelotCode != null) ...[
                                         const SizedBox(height: 12),
@@ -1367,6 +1418,22 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                             _scheduleAutoSave();
                                           },
                                         ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: TextFormField(
+                                            controller: _durationCtrl,
+                                            focusNode: _durationFocusNode,
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(context)!.songLength,
+                                              hintText: AppLocalizations.of(context)!.songLengthHint,
+                                              // Where the value comes from, on hover rather than as a line of
+                                              // text under the field — it only matters when you wonder.
+                                              suffixIcon: _SongLengthInfo(project: updatedProject),
+                                              prefixIcon: const Icon(Icons.timer_outlined, size: 18),
+                                            ),
+                                            onChanged: (_) => _scheduleAutoSave(),
+                                          )
                                       ),
                                       // Camelot code field on desktop (next to key field)
                                       if (updatedProject.camelotCode != null) ...[
@@ -2051,40 +2118,39 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
                       final active =
                           _activeSection.clamp(0, sections.length - 1);
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(
-                            width: 200,
-                            child: SectionNavRail(
-                              items: [
-                                for (final section in sections)
-                                  SectionNavItem(
-                                    icon: section.icon,
-                                    label: section.label,
-                                  ),
-                              ],
-                              activeIndex: active,
-                              onTap: (index) =>
-                                  setState(() => _activeSection = index),
-                            ),
-                          ),
-                          const VerticalDivider(width: 1),
-                          Expanded(
-                            child: ListView(
-                              // Keyed by section so switching starts the new
-                              // one at the top instead of inheriting the
-                              // previous section's scroll offset.
-                              key: ValueKey(active),
-                              padding:
-                                  MobileUtils.getResponsivePadding(context),
-                              children: [
-                                ...banner,
-                                ...sections[active].children,
-                              ],
-                            ),
-                          ),
-                        ],
+                      final railWidth =
+                          ref.read(sectionRailWidthProvider.notifier);
+                      return ResizableRailLayout(
+                        width: ref.watch(sectionRailWidthProvider),
+                        defaultWidth: 200,
+                        onResize: railWidth.preview,
+                        onResizeEnd: railWidth.commit,
+                        onReset: railWidth.reset,
+                        handleTooltip: AppLocalizations.of(context)!
+                            .sectionRailResizeHint,
+                        rail: SectionNavRail(
+                          items: [
+                            for (final section in sections)
+                              SectionNavItem(
+                                icon: section.icon,
+                                label: section.label,
+                              ),
+                          ],
+                          activeIndex: active,
+                          onTap: (index) =>
+                              setState(() => _activeSection = index),
+                        ),
+                        child: ListView(
+                          // Keyed by section so switching starts the new
+                          // one at the top instead of inheriting the
+                          // previous section's scroll offset.
+                          key: ValueKey(active),
+                          padding: MobileUtils.getResponsivePadding(context),
+                          children: [
+                            ...banner,
+                            ...sections[active].children,
+                          ],
+                        ),
                       );
                     }),
                   ),
@@ -2128,6 +2194,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
 // ─── Action Toolbar ───────────────────────────────────────────────────────────
 
+/// Resolves session state and the layout preference for
+/// [ProjectDetailActionBar], which is the plain, testable part.
 class _ProjectDetailActionBar extends ConsumerWidget {
   final MusicProject project;
   final bool isMobile;
@@ -2159,124 +2227,34 @@ class _ProjectDetailActionBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final notFoundMsg = l10n.sourceFileNotFoundOnThisMachine;
+    // Every action here is desktop-only, and a phone always gets the single
+    // scroll, so there is nothing for this bar to show on mobile.
+    if (isMobile) return const SizedBox.shrink();
+
     final sessionMode = ref.watch(sessionModeProvider);
     final isSubscribed =
         sessionMode && ref.watch(activeProjectProvider)?.id == project.id;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
-      ),
-      // Wrap, not Row: this bar holds seven buttons on desktop and a Row would
-      // hard-overflow on a narrow window rather than reflowing.
-      child: Wrap(
-        alignment: WrapAlignment.end,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8,
-        runSpacing: 6,
-        children: [
-          if (!isMobile) ...[
-            if (sessionMode) ...[
-              OutlinedButton.icon(
-                onPressed: () => isSubscribed
-                    ? confirmEndSession(context, ref)
-                    : confirmStartSession(context, ref, project),
-                icon: Icon(
-                  isSubscribed ? Icons.bookmark : Icons.bookmark_add_outlined,
-                  size: 16,
-                  color: isSubscribed ? Colors.green.shade400 : null,
-                ),
-                label: Text(isSubscribed ? l10n.endSession : l10n.startSession),
-              ),
-              // Once this project's session is active, still let the user
-              // launch the DAW from here instead of needing the dashboard.
-              if (isSubscribed) ...[
-                Tooltip(
-                  message: sourceFileExists ? '' : notFoundMsg,
-                  child: OutlinedButton.icon(
-                    onPressed: sourceFileExists ? onOpenInDaw : null,
-                    icon: const Icon(Icons.open_in_new, size: 16),
-                    label: Text(l10n.openInDaw),
-                  ),
-                ),
-              ],
-            ] else
-              Tooltip(
-                message: sourceFileExists ? '' : notFoundMsg,
-                child: OutlinedButton.icon(
-                  onPressed: sourceFileExists ? onOpenInDaw : null,
-                  icon: const Icon(Icons.open_in_new, size: 16),
-                  label: Text(l10n.openInDaw),
-                ),
-              ),
-          ],
-          if (!isMobile) ...[
-            Tooltip(
-              message: sourceFileExists ? '' : notFoundMsg,
-              child: OutlinedButton.icon(
-                onPressed: sourceFileExists ? onOpenFolder : null,
-                icon: const Icon(Icons.folder_open, size: 16),
-                label: Text(l10n.openFolder),
-              ),
-            ),
-          ],
-          if (!isMobile) ...[
-            Tooltip(
-              message: sourceFileExists ? '' : notFoundMsg,
-              child: OutlinedButton.icon(
-                onPressed: sourceFileExists ? onRename : null,
-                icon: const Icon(Icons.drive_file_rename_outline, size: 16),
-                label: Text(l10n.renameFileButtonLabel),
-              ),
-            ),
-            // A stack owns no file of its own, so there is nothing to move or
-            // archive — its versions are handled from their own pages.
-            if (!project.isVirtual) ...[
-              Tooltip(
-                message: sourceFileExists ? '' : notFoundMsg,
-                child: OutlinedButton.icon(
-                  onPressed: sourceFileExists ? onMove : null,
-                  icon: const Icon(Icons.drive_file_move_outline, size: 16),
-                  label: Text(l10n.moveProjectButtonLabel),
-                ),
-              ),
-              if (project.isArchived)
-                OutlinedButton.icon(
-                  onPressed: onRestore,
-                  icon: const Icon(Icons.unarchive_outlined, size: 16),
-                  label: Text(l10n.restoreProjectButtonLabel),
-                )
-              else
-                Tooltip(
-                  message: sourceFileExists ? '' : notFoundMsg,
-                  child: OutlinedButton.icon(
-                    onPressed: sourceFileExists ? onArchive : null,
-                    icon: const Icon(Icons.archive_outlined, size: 16),
-                    label: Text(l10n.archiveProjectButtonLabel),
-                  ),
-                ),
-            ],
-            OutlinedButton.icon(
-              onPressed: onStats,
-              icon: const Icon(Icons.bar_chart, size: 16),
-              label: Text(l10n.statsSingleProjectActivity),
-            ),
-            OutlinedButton.icon(
-              onPressed: onExport,
-              icon: const Icon(Icons.description_outlined, size: 16),
-              label: Text(l10n.exportProjectInfo),
-            ),
-            OutlinedButton.icon(
-              onPressed: onSaveAsTemplate,
-              icon: const Icon(Icons.bookmark_add_outlined, size: 16),
-              label: Text(l10n.saveAsTemplate),
-            ),
-          ],
-        ],
-      ),
+    return ProjectDetailActionBar(
+      layout: ref.watch(projectDetailLayoutProvider),
+      onLayoutChanged: (layout) =>
+          ref.read(projectDetailLayoutProvider.notifier).set(layout),
+      sourceFileExists: sourceFileExists,
+      isVirtual: project.isVirtual,
+      isArchived: project.isArchived,
+      sessionMode: sessionMode,
+      isSubscribed: isSubscribed,
+      onStartSession: () => confirmStartSession(context, ref, project),
+      onEndSession: () => confirmEndSession(context, ref),
+      onOpenInDaw: onOpenInDaw,
+      onOpenFolder: onOpenFolder,
+      onRename: onRename,
+      onMove: onMove,
+      onArchive: onArchive,
+      onRestore: onRestore,
+      onStats: onStats,
+      onExport: onExport,
+      onSaveAsTemplate: onSaveAsTemplate,
     );
   }
 }
@@ -2314,7 +2292,9 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   bool _isDraggingOver = false;
-  double _volume = 1.0;
+  // Starts at the level the app was last left at, not at full blast —
+  // see PlayerVolumeStore.
+  double _volume = PlayerVolumeStore.current;
   double _preMuteVolume = 1.0;
 
   // Mono
@@ -2415,6 +2395,9 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     player.onDurationChanged.listen((d) {
       if (gen != _playerGen || !mounted) return;
       setState(() => _duration = d);
+      // Loading the preview song is how a project learns its own length
+      // (#157) — no extra decode, just the figure the player already has.
+      _captureMeasuredDuration(d);
     });
     player.onPositionChanged.listen((p) {
       if (gen != _playerGen || !mounted) return;
@@ -2795,9 +2778,9 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
               setState(() => _playbackEnded = false);
               await _audioPlayer.stop();
               await _audioPlayer.play(_currentSource(),
-                  position: _position > Duration.zero ? _position : null);
+                  position: _position > Duration.zero ? _position : null, volume: _volume);
             } else if (_position == Duration.zero || _position >= _duration) {
-              await _audioPlayer.play(_currentSource());
+              await _audioPlayer.play(_currentSource(), volume: _volume);
             } else {
               await _audioPlayer.resume();
             }
@@ -2831,7 +2814,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
         queueIndex: idx >= 0 ? idx : null,
       );
     } else {
-      await _audioPlayer.play(DeviceFileSource(path));
+      await _audioPlayer.play(DeviceFileSource(path), volume: _volume);
     }
   }
 
@@ -2864,13 +2847,48 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     await _seekTo(seekTarget(_position, seconds, _duration));
   }
 
-  /// Applies [value] to whichever player owns playback. The desktop bar owns
-  /// its own volume control, so there it stays a local-only setting.
+  /// The one way volume changes on this page — slider, mute button and the
+  /// ctrl+wheel handler all call it, so the icon, the slider and the player
+  /// stay in step.
+  void _setVolume(double value) {
+    setState(() => _volume = value);
+    if (value > 0) _preMuteVolume = value;
+    unawaited(_applyVolume(value));
+    unawaited(PlayerVolumeStore.save(value));
+  }
+
+  /// Stores the length the player just measured off the preview song, when
+  /// it differs from what is already saved.
+  ///
+  /// Silent and best-effort: this is a side effect of pressing play, so a
+  /// failure here must not interrupt playback or surface an error.
+  Future<void> _captureMeasuredDuration(Duration measured) async {
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final current = ref.read(allProjectsStreamProvider).value
+          ?.where((p) => p.id == widget.project.id)
+          .firstOrNull;
+      if (current == null) return;
+      await recordMeasuredDuration(current, measured, repo.updateProject);
+    } catch (_) {
+      // Best-effort by design — see above.
+    }
+  }
+
+  /// Applies [value] to whichever player is actually making the sound.
+  ///
+  /// On desktop, pressing play here hands the track to the bottom bar, so
+  /// the bar's player is the one to change. This used to fall through to the
+  /// page's own AudioPlayer, which sits idle in that case: the slider and
+  /// ctrl+wheel moved while the audible level stayed exactly where it was.
   Future<void> _applyVolume(double value) async {
-    if (_playbackTarget == PlaybackTarget.mobilePlayer) {
-      await ref.read(mobilePlayerProvider.notifier).setVolume(value);
-    } else {
-      await _audioPlayer.setVolume(value);
+    switch (_playbackTarget) {
+      case PlaybackTarget.mobilePlayer:
+        await ref.read(mobilePlayerProvider.notifier).setVolume(value);
+      case PlaybackTarget.desktopPlayerBar:
+        ref.read(desktopPlayerVolumeProvider.notifier).set(value);
+      case PlaybackTarget.local:
+        await _audioPlayer.setVolume(value);
     }
   }
 
@@ -3009,14 +3027,10 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
         if (kDebugMode) {
           debugPrint('[preview_share] ShareResult: status=${result.status} raw=${result.raw}');
         }
-        // Unpackaged Windows builds have no working share sheet
-        // (DataTransferManager needs MSIX) — without this the click does
-        // nothing visible at all.
-        if (result.status == ShareResultStatus.unavailable && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.shareSheetUnavailable)),
-          );
-        }
+        // No "share menu unavailable" warning on `unavailable`: share_plus
+        // returns that status on Windows every time, right after the share
+        // menu has opened — Windows does not report what the user picked. A
+        // share that really fails throws, and the catch below reports it.
       }
     } catch (e, st) {
       if (kDebugMode) {
@@ -3348,6 +3362,14 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
       final barOwnsTrack =
           ref.watch(desktopPlayerProvider)?.project.id == widget.project.id;
       if (barOwnsTrack) {
+        // Mirror the bar's level too, so a change made on the bar shows here
+        // rather than leaving this slider at a stale value.
+        final barVolume = ref.watch(desktopPlayerVolumeProvider);
+        if (barVolume != _volume) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _volume = barVolume);
+          });
+        }
         final barPosition = ref.watch(desktopPlayerPositionProvider);
         final barDuration = ref.watch(desktopPlayerDurationProvider);
         if (barPosition != _position || barDuration != _duration) {
@@ -3429,7 +3451,12 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
           _isDraggingOver = false;
         });
       },
-      child: Card(
+      // Ctrl+wheel anywhere over the player card rides the volume.
+      child: CtrlWheelVolume(
+        volume: _volume,
+        onVolumeChanged: _setVolume,
+        enabled: !MobileUtils.isMobile(),
+        child: Card(
         color: _isDraggingOver
             ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3)
             : null,
@@ -3564,6 +3591,11 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                             _seek(isModified ? 30 : 5);
                             return KeyEventResult.handled;
                           }
+                          // M toggles mono, as in every other player.
+                          if (isMonoShortcutEvent(event)) {
+                            if (!_isGeneratingMono) _toggleMono();
+                            return KeyEventResult.handled;
+                          }
                           return KeyEventResult.ignored;
                         },
                         child: Column(
@@ -3602,20 +3634,21 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                   tooltip: Platform.isMacOS ? '→ +5s  •  ⌘+→ +30s' : '→ +5s  •  Ctrl+→ +30s',
                                   onPressed: () => _seek(5),
                                 ),
-                                const Spacer(),
+                                // Volume sits right after the transport, as in
+                                // the dashboard's preview player, rather than
+                                // pushed to the far edge of the card.
+                                const SizedBox(width: 4),
                                 IconButton(
                                   icon: Icon(
                                     _volume == 0 ? Icons.volume_off : (_volume < 0.5 ? Icons.volume_down : Icons.volume_up),
                                     size: 20,
                                   ),
-                                  onPressed: () async {
+                                  onPressed: () {
                                     if (_volume > 0) {
-                                      setState(() { _preMuteVolume = _volume; _volume = 0; });
-                                      await _applyVolume(0);
+                                      _preMuteVolume = _volume;
+                                      _setVolume(0);
                                     } else {
-                                      final restore = _preMuteVolume > 0 ? _preMuteVolume : 1.0;
-                                      setState(() { _volume = restore; });
-                                      await _applyVolume(restore);
+                                      _setVolume(_preMuteVolume > 0 ? _preMuteVolume : 1.0);
                                     }
                                   },
                                   tooltip: _volume == 0 ? AppLocalizations.of(context)!.volumeUnmute : AppLocalizations.of(context)!.volumeMute,
@@ -3628,10 +3661,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                       value: _volume,
                                       min: 0.0,
                                       max: 1.0,
-                                      onChanged: (value) async {
-                                        setState(() { _volume = value; });
-                                        await _applyVolume(value);
-                                      },
+                                      onChanged: _setVolume,
                                     ),
                                   ),
                                 ),
@@ -3682,7 +3712,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                         Row(
                           children: [
                             Tooltip(
-                              message: AppLocalizations.of(context)!.monoToggleTooltip,
+                              message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -3843,6 +3873,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
               ],
             ),
           ),
+        ),
         ),
       ),
     );
@@ -4489,4 +4520,38 @@ class _DetailSection {
   final IconData icon;
   final String label;
   final List<Widget> children;
+}
+
+/// The info icon at the end of the Length field, explaining on hover where
+/// the value in the field came from.
+///
+/// Three cases, because the field alone cannot tell them apart: a length
+/// typed by hand (which wins, and clearing it falls back to the measured one),
+/// a length measured off the preview song, and none yet — where the useful
+/// thing to say is how one arrives.
+class _SongLengthInfo extends StatelessWidget {
+  const _SongLengthInfo({required this.project});
+
+  final MusicProject project;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final message = songLengthSourceMessage(
+      manual: hasManualTrackDuration(project),
+      measured: project.autoDurationMs != null && project.autoDurationMs! > 0,
+      typedByHand: l10n.songLengthManual,
+      fromPreview: l10n.songLengthFromPreview,
+      howItWorks: l10n.songLengthHowItWorks,
+    );
+    return Tooltip(
+      message: message,
+      waitDuration: const Duration(milliseconds: 300),
+      child: Icon(
+        Icons.info_outline,
+        size: 18,
+        color: Theme.of(context).textTheme.bodySmall?.color,
+      ),
+    );
+  }
 }

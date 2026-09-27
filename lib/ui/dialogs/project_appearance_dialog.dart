@@ -12,7 +12,9 @@ import '../../models/music_project.dart';
 import '../../providers/providers.dart';
 import '../../utils/app_paths.dart';
 import '../../utils/mobile_utils.dart';
-import '../../utils/project_visuals.dart';
+import '../../utils/project_visuals.dart';
+import '../../repository/project_repository.dart';
+import '../../utils/cover_art_refs.dart';
 import '../widgets/project_cover_avatar.dart';
 import 'color_picker_dialog.dart';
 
@@ -103,7 +105,7 @@ class _ProjectAppearanceDialogState
       await repo.updateProject(
         project.copyWith(thumbnailPath: destFile.path),
       );
-      await _deleteManagedCover(previous);
+      await _deleteManagedCover(previous, repo);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -117,9 +119,23 @@ class _ProjectAppearanceDialogState
     }
   }
 
-  Future<void> _deleteManagedCover(String? coverPath) async {
+  /// Deletes [coverPath] once nothing points at it any more. Called after the
+  /// edited project has been saved, so only *other* rows can still hold it:
+  /// a version stack shares its promoted member's cover file, and deleting it
+  /// here used to break the member's cover the moment the stack's changed.
+  Future<void> _deleteManagedCover(
+    String? coverPath,
+    ProjectRepository repo,
+  ) async {
     if (coverPath == null || coverPath.isEmpty) return;
     if (!_isManagedCover(coverPath)) return;
+    if (isImageInUse(
+      coverPath,
+      projects: repo.projectsBox.values,
+      releases: repo.releasesBox.values,
+    )) {
+      return;
+    }
     try {
       final file = File(coverPath);
       if (await file.exists()) await file.delete();
@@ -178,7 +194,7 @@ class _ProjectAppearanceDialogState
     try {
       final repo = await ref.read(repositoryProvider.future);
       await repo.updateProject(project.copyWith(clearThumbnailPath: true));
-      await _deleteManagedCover(project.thumbnailPath);
+      await _deleteManagedCover(project.thumbnailPath, repo);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.coverArtRemoved)),

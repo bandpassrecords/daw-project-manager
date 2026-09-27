@@ -1,0 +1,1021 @@
+{
+  "_comment": [
+    "The app's own changelog — the source of truth for the 'What's New' dialog",
+    "shown once after an update, and for Settings > About > Full changelog.",
+    "",
+    "Newest release FIRST. Every entry needs a `version` (bare semver, no",
+    "leading v), a `date` (YYYY-MM-DD) and a `highlights` map of locale -> list",
+    "of one-line strings. `en` is required; any locale that is missing falls",
+    "back to it, so a release can ship translated late without breaking.",
+    "",
+    "Add the entry for a release BEFORE tagging it:",
+    "  python scripts/new_changelog_entry.py 2.9.0 --highlight \"...\"",
+    "CI enforces this — see 'Verify changelog has an entry for the tag' in",
+    ".github/workflows/release.yml."
+  ],
+  "releases": [
+    {
+      "version": "2.9.0",
+      "date": "2026-09-23",
+      "highlights": {
+        "en": [
+          "A \"What's New\" summary appears once after each update, and Settings now has a full changelog going back to 1.0.",
+          "Release tracks show each song's length, parts progress (click it to manage parts) and your notes, with the release's total running time at the bottom.",
+          "A song's length is read from its preview song automatically, or can be typed on the project page.",
+          "A release's tracks can also be viewed as a sortable table.",
+          "Creating a release offers to reuse a selected track's cover art as the release artwork.",
+          "Cover art shows in the mobile player, the mini player and the lock-screen notification.",
+          "Only one song on a release plays at a time, and audio files show their length before you press play.",
+          "Player shortcuts: Ctrl+scroll (⌘+scroll on macOS) changes the volume, M toggles mono, and the volume is remembered.",
+          "Project folders can be switched off instead of removed — nothing is deleted — and the project counts now match the list.",
+          "Tasks tab: tasks are ticked off with the checkbox only, and a ticked task stays visible with an Undo button until you leave the tab.",
+          "Breadcrumbs in the title bar show where you are and take you back in one click.",
+          "Cover art and accent colours fade in from the right of the projects list, and card covers fade at the bottom so their buttons stay visible."
+        ],
+        "pt": [
+          "Um resumo de \"Novidades\" aparece uma vez após cada atualização, e as Configurações agora têm o changelog completo desde a versão 1.0.",
+          "As faixas de um lançamento mostram a duração de cada música, o progresso das partes (clique para gerenciá-las) e suas anotações, com a duração total no final.",
+          "A duração de uma música é lida automaticamente da prévia, ou pode ser digitada na página do projeto.",
+          "As faixas de um lançamento também podem ser vistas em uma tabela ordenável.",
+          "Ao criar um lançamento, o app oferece reaproveitar a capa de uma faixa selecionada.",
+          "As capas aparecem no player mobile, no mini player e na notificação da tela de bloqueio.",
+          "Só uma música de um lançamento toca por vez, e os arquivos de áudio mostram a duração antes de dar play.",
+          "Atalhos do player: Ctrl+rolagem (⌘+rolagem no macOS) altera o volume, M alterna o mono, e o volume fica salvo.",
+          "Pastas de projetos podem ser desativadas em vez de removidas — nada é apagado — e a contagem de projetos agora bate com a lista.",
+          "Aba Tarefas: as tarefas só são concluídas pela caixa de seleção, e uma tarefa concluída continua visível com um botão Desfazer até você sair da aba.",
+          "Um caminho de navegação na barra de título mostra onde você está e volta com um clique.",
+          "Capas e cores de destaque surgem pela direita na lista de projetos, e as capas dos cards esmaecem embaixo para os botões ficarem visíveis."
+        ],
+        "es": [
+          "Tras cada actualización aparece una vez un resumen de \"Novedades\", y Ajustes incluye ahora el changelog completo desde la 1.0.",
+          "Las pistas de un lanzamiento muestran la duración de cada canción, el progreso de sus partes (haz clic para gestionarlas) y tus notas, con la duración total al final.",
+          "La duración de una canción se lee automáticamente de su vista previa, o se puede escribir en la página del proyecto.",
+          "Las pistas de un lanzamiento también se pueden ver en una tabla ordenable.",
+          "Al crear un lanzamiento, se ofrece reutilizar la portada de una pista seleccionada.",
+          "Las portadas se muestran en el reproductor móvil, el minirreproductor y la notificación de la pantalla de bloqueo.",
+          "Solo suena una canción de un lanzamiento a la vez, y los archivos de audio muestran su duración antes de reproducirlos.",
+          "Atajos del reproductor: Ctrl+rueda (⌘+rueda en macOS) cambia el volumen, M alterna mono y el volumen se recuerda.",
+          "Las carpetas de proyectos se pueden desactivar en lugar de eliminar —no se borra nada— y el recuento de proyectos coincide ahora con la lista.",
+          "Pestaña Tareas: las tareas solo se marcan con la casilla, y una tarea marcada sigue visible con un botón Deshacer hasta que sales de la pestaña.",
+          "Una ruta de navegación en la barra de título muestra dónde estás y te devuelve con un clic.",
+          "Las portadas y los colores de acento aparecen desde la derecha en la lista de proyectos, y las portadas de las tarjetas se difuminan abajo para que sus botones se vean."
+        ],
+        "fr": [
+          "Un résumé « Nouveautés » s'affiche une fois après chaque mise à jour, et les Paramètres contiennent désormais le journal complet depuis la 1.0.",
+          "Les pistes d'une sortie affichent la durée de chaque morceau, l'avancement de ses parties (cliquez pour les gérer) et vos notes, avec la durée totale en bas.",
+          "La durée d'un morceau est lue automatiquement depuis son aperçu, ou peut être saisie sur la page du projet.",
+          "Les pistes d'une sortie peuvent aussi s'afficher dans un tableau triable.",
+          "À la création d'une sortie, l'app propose de réutiliser la pochette d'une piste sélectionnée.",
+          "Les pochettes apparaissent dans le lecteur mobile, le mini-lecteur et la notification de l'écran de verrouillage.",
+          "Un seul morceau d'une sortie joue à la fois, et les fichiers audio affichent leur durée avant la lecture.",
+          "Raccourcis du lecteur : Ctrl+molette (⌘+molette sur macOS) règle le volume, M bascule en mono, et le volume est mémorisé.",
+          "Les dossiers de projets peuvent être désactivés plutôt que supprimés — rien n'est effacé — et le nombre de projets correspond désormais à la liste.",
+          "Onglet Tâches : une tâche ne se coche qu'avec sa case, et une tâche cochée reste visible avec un bouton Annuler jusqu'à ce que vous quittiez l'onglet.",
+          "Un fil d'Ariane dans la barre de titre indique où vous êtes et vous ramène en un clic.",
+          "Pochettes et couleurs d'accent apparaissent en fondu par la droite dans la liste des projets, et les pochettes des cartes s'estompent en bas pour laisser voir leurs boutons."
+        ],
+        "de": [
+          "Nach jedem Update erscheint einmalig eine „Neuigkeiten“-Übersicht, und die Einstellungen enthalten jetzt das vollständige Changelog seit 1.0.",
+          "Die Titel eines Releases zeigen Länge, Fortschritt der Parts (zum Verwalten anklicken) und Ihre Notizen, mit der Gesamtlaufzeit unten.",
+          "Die Länge eines Songs wird automatisch aus dem Vorschausong gelesen oder lässt sich auf der Projektseite eingeben.",
+          "Die Titel eines Releases lassen sich auch als sortierbare Tabelle anzeigen.",
+          "Beim Erstellen eines Releases wird angeboten, das Cover eines ausgewählten Titels zu übernehmen.",
+          "Cover erscheinen im Mobil-Player, im Mini-Player und in der Sperrbildschirm-Benachrichtigung.",
+          "Von einem Release spielt immer nur ein Song gleichzeitig, und Audiodateien zeigen ihre Länge schon vor der Wiedergabe.",
+          "Player-Kürzel: Strg+Mausrad (⌘+Mausrad unter macOS) ändert die Lautstärke, M schaltet Mono um, und die Lautstärke wird gespeichert.",
+          "Projektordner können abgeschaltet statt entfernt werden — nichts wird gelöscht — und die Projektanzahl stimmt jetzt mit der Liste überein.",
+          "Aufgaben-Tab: Aufgaben werden nur über das Kontrollkästchen abgehakt, und eine abgehakte Aufgabe bleibt mit Rückgängig-Schaltfläche sichtbar, bis Sie den Tab verlassen.",
+          "Eine Brotkrumen-Navigation in der Titelleiste zeigt, wo Sie sind, und führt mit einem Klick zurück.",
+          "Cover und Akzentfarben blenden in der Projektliste von rechts ein, und Karten-Cover blenden unten aus, damit ihre Schaltflächen sichtbar bleiben."
+        ],
+        "it": [
+          "Dopo ogni aggiornamento compare una volta un riepilogo \"Novità\", e le Impostazioni ora contengono il changelog completo dalla 1.0.",
+          "Le tracce di una pubblicazione mostrano la durata di ogni brano, l'avanzamento delle parti (clicca per gestirle) e le tue note, con la durata totale in fondo.",
+          "La durata di un brano viene letta automaticamente dall'anteprima, oppure si può inserire nella pagina del progetto.",
+          "Le tracce di una pubblicazione si possono vedere anche in una tabella ordinabile.",
+          "Creando una pubblicazione, l'app propone di riusare la copertina di una traccia selezionata.",
+          "Le copertine compaiono nel player mobile, nel mini player e nella notifica della schermata di blocco.",
+          "Suona un solo brano di una pubblicazione alla volta, e i file audio mostrano la durata prima della riproduzione.",
+          "Scorciatoie del player: Ctrl+rotellina (⌘+rotellina su macOS) regola il volume, M attiva/disattiva il mono, e il volume viene ricordato.",
+          "Le cartelle dei progetti si possono disattivare invece di rimuoverle — non si elimina nulla — e il conteggio dei progetti ora corrisponde alla lista.",
+          "Scheda Attività: le attività si spuntano solo dalla casella, e un'attività spuntata resta visibile con un pulsante Annulla finché non lasci la scheda.",
+          "Un percorso di navigazione nella barra del titolo mostra dove ti trovi e ti riporta indietro con un clic.",
+          "Copertine e colori d'accento compaiono in dissolvenza da destra nella lista dei progetti, e le copertine delle schede sfumano in basso per lasciare visibili i pulsanti."
+        ],
+        "ru": [
+          "После каждого обновления один раз показывается сводка «Что нового», а в Настройках теперь есть полный список изменений начиная с 1.0.",
+          "Треки релиза показывают длительность каждой песни, прогресс партий (нажмите, чтобы управлять ими) и ваши заметки, а внизу — общую длительность.",
+          "Длительность песни автоматически берётся из превью или вводится на странице проекта.",
+          "Треки релиза можно также просматривать в сортируемой таблице.",
+          "При создании релиза предлагается использовать обложку выбранного трека.",
+          "Обложки отображаются в мобильном плеере, мини-плеере и уведомлении на экране блокировки.",
+          "Из треков релиза одновременно играет только один, а аудиофайлы показывают длительность ещё до воспроизведения.",
+          "Горячие клавиши плеера: Ctrl+колесо (⌘+колесо на macOS) меняет громкость, M включает моно, а громкость запоминается.",
+          "Папки проектов можно отключить вместо удаления — ничего не стирается, — а число проектов теперь совпадает со списком.",
+          "Вкладка «Задачи»: задача отмечается только флажком, а отмеченная задача остаётся видна с кнопкой «Отменить», пока вы не покинете вкладку.",
+          "«Хлебные крошки» в заголовке окна показывают, где вы находитесь, и возвращают одним щелчком.",
+          "Обложки и акцентные цвета плавно появляются справа в списке проектов, а обложки карточек снизу растворяются, чтобы были видны кнопки."
+        ],
+        "ja": [
+          "アップデート後に「新着情報」の概要が一度だけ表示され、設定には 1.0 以降の全変更履歴が載るようになりました。",
+          "リリースのトラックに各曲の長さ、パートの進捗（クリックで管理）、メモが表示され、下部に合計時間が表示されます。",
+          "曲の長さはプレビュー曲から自動で読み取られ、プロジェクトページで入力することもできます。",
+          "リリースのトラックは並べ替え可能なテーブルでも表示できます。",
+          "リリース作成時に、選択したトラックのカバーアートを使うか尋ねます。",
+          "カバーアートがモバイルプレーヤー、ミニプレーヤー、ロック画面の通知に表示されます。",
+          "リリース内の曲は一度に1曲だけ再生され、音声ファイルは再生前から長さが表示されます。",
+          "プレーヤーのショートカット：Ctrl+スクロール（macOS では ⌘+スクロール）で音量、M でモノラル切り替え。音量は記憶されます。",
+          "プロジェクトフォルダーは削除せずに無効化できます（何も消えません）。プロジェクト数もリストと一致するようになりました。",
+          "タスクタブ：タスクはチェックボックスでのみ完了になり、完了したタスクはタブを離れるまで「元に戻す」ボタン付きで表示されます。",
+          "タイトルバーのパンくずリストで現在地がわかり、ワンクリックで戻れます。",
+          "プロジェクト一覧ではカバーアートとアクセントカラーが右からフェードインし、カードのカバーは下部がフェードしてボタンが見やすくなりました。"
+        ],
+        "zh": [
+          "每次更新后会显示一次“新增功能”摘要，“设置”中现在有自 1.0 以来的完整更新日志。",
+          "发行的曲目会显示每首歌的时长、声部进度（点击可管理）和你的备注，底部显示总时长。",
+          "歌曲时长会自动从预览歌曲读取，也可以在项目页面手动输入。",
+          "发行的曲目也可以用可排序的表格查看。",
+          "创建发行时，可选择沿用所选曲目的封面。",
+          "封面会显示在移动播放器、迷你播放器和锁屏通知中。",
+          "同一发行中一次只播放一首歌，音频文件在播放前就会显示时长。",
+          "播放器快捷键：Ctrl+滚轮（macOS 为 ⌘+滚轮）调整音量，M 切换单声道，音量会被记住。",
+          "项目文件夹可以停用而不必移除——不会删除任何内容——项目数量现在与列表一致。",
+          "任务标签页：只能通过复选框完成任务，已完成的任务会带着“撤销”按钮保持可见，直到你离开该标签页。",
+          "标题栏中的导航路径会显示当前位置，一键即可返回。",
+          "项目列表中的封面和强调色从右侧渐入，卡片封面底部渐隐，让按钮保持可见。"
+        ]
+      }
+    },
+    {
+      "version": "2.8.0",
+      "date": "2026-09-06",
+      "highlights": {
+        "en": [
+          "Parts & performers — track a song part by part (instrument, performer, take status), in a full workspace page with filters, bulk actions and reorder, plus reusable part templates and CSV/Excel export & re-import.",
+          "REAPER markers and regions — extracted from the project file and turned into a clickable table of contents; tapping one seeks the preview player.",
+          "Logic Pro & LUNA finally behave — launching, \"Open folder\" and pending-folder resolution all work for package-bundle projects, and Logic projects now yield BPM, key and app version.",
+          "DAW Locations on every desktop platform — Windows and macOS get the executable override that was Linux-only, and a DAW can now hold several locations (e.g. two Ableton versions) with a picker at launch.",
+          "Redesigned preview waveform — a peak/RMS bar rendering with real MP3 decoding instead of a header estimate, optional stereo lanes, and a Classic style kept as an option.",
+          "Search that narrows as you type — substring matching first, with a far stricter fuzzy fallback, and DAW project notes are now searchable.",
+          "Sectioned project detail layout — an optional left-rail layout for the long detail page, matching Settings."
+        ]
+      }
+    },
+    {
+      "version": "2.7.4",
+      "date": "2026-08-12",
+      "highlights": {
+        "en": [
+          "Hide DAW-generated date stamps in project names (new setting).",
+          "\"Find automatically\" when a preview song is missing — clears the dead reference and re-runs mixdown detection. Desktop only, where detection actually runs.",
+          "iOS now matches Android for preview-song sharing and background audio: audio is transcoded to AAC/.m4a via AVAssetExportSession, and playback continues with lock-screen controls when the app loses focus.",
+          "Mobile long-press opens an action sheet (Play / Share / Details / Select) instead of jumping straight into multi-select. Once selecting, long-press is a plain toggle again.",
+          "BPM and key are edited on the detail page, not inline in the grid. Inline editing put a bordered text field inside the cell — the source of the stray \"selected\" highlight — and drag-selection no longer paints a range.",
+          "The title bar version string drops its leading v.",
+          "Android download is roughly half the size: a debug arm64 APK goes from 228.5 MB to 112.7 MB.",
+          "Android transcoding uses the platform's own MediaCodec via a ~200-line Kotlin converter instead of a bundled ffmpeg plugin."
+        ]
+      }
+    },
+    {
+      "version": "2.7.3",
+      "date": "2026-08-07",
+      "highlights": {
+        "en": [
+          "Added a Cancel button while an update is fetching, downloading, or verifying; a failed or cancelled update now always cleans up its partial download instead of leaving a stray file next to the running AppImage.",
+          "Update failures now show a friendly message with an expandable \"Error Details\" section (with a copy button) and a button to open a pre-filled GitHub issue, instead of dumping the raw exception.",
+          "Fixed Share Diagnostic Log doing nothing on Linux (share_plus has no file-sharing implementation there) and popping a broken native dialog on Windows (the share flyout fails inside its own UI for an unpackaged build).",
+          "Added a Clear Diagnostic Log action and an Enable Diagnostic Logging toggle — logging is now off by default (opt-in) instead of always on.",
+          "Redesigned per-folder Scan Mode selection: it's now a compact inline control on each folder row instead of a separate card whose full mockup preview was duplicated for every folder added. The Flat vs."
+        ]
+      }
+    },
+    {
+      "version": "2.7.2",
+      "date": "2026-08-06",
+      "highlights": {
+        "en": [
+          "\"Report an Issue\" now opens a structured GitHub issue form (bug/feature/other, repro steps, app version, OS, DAW, diagnostic log pointer) directly, instead of a blank issue page.",
+          "The License button now opens a dialog rendering the bundled LICENSE file in-app instead of sending users to GitHub.",
+          "Redesigned the Session Mode selector as a vertical list of icon + label + description rows, replacing side-by-side cards that used fabricated preview mockups.",
+          "Work session reminder controls are now disabled (with an explanatory hint) when Session Mode is off, since reminders only fire for projects subscribed via Session Mode.",
+          "Added a Send Test Notification button, available in every build/distribution channel (not just debug), to verify notification delivery across desktop packaging targets.",
+          "Fixed cramped padding on the Check Now button."
+        ]
+      }
+    },
+    {
+      "version": "2.7.1",
+      "date": "2026-08-05",
+      "highlights": {
+        "en": [
+          "Added Zrythm (.zpj) DAW support.",
+          "Packaged a Linux AppImage as a third distribution channel alongside the tarball and Flatpak.",
+          "Deep Scan now shows real progress (\"Loading project X of Y\") instead of a spinner, and its confirmation dialog links to the Metadata Extraction settings page instead of a hardcoded DAW list.",
+          "Added a \"Remix\" project naming scheme to the create-project wizard.",
+          "Extract Metadata is now disabled (with an explanatory tooltip) for DAW types with no extraction support, instead of silently doing nothing.",
+          "Extracted project notes from Cubase/Nuendo's Notepad panel.",
+          "Added \"Launch in DAW\" binary configuration for Linux: detects installed DAWs from .desktop files, lets you map a DAW to a binary path, and no longer fails silently when nothing is configured.",
+          "Re-enabled Google Drive sync on Linux — it's now gated on actually running inside a Flatpak sandbox, not on Linux itself, so the tarball and AppImage builds get it like every other desktop platform."
+        ]
+      }
+    },
+    {
+      "version": "2.7.0",
+      "date": "2026-08-01",
+      "highlights": {
+        "en": [
+          "Projects can now be linked back to the template they were created from.",
+          "Per-DAW mixdown folder names.",
+          "Dedicated Language and Theme settings.",
+          "New Metadata Extraction settings page.",
+          "Added detection support for 13 more DAWs — all 27 supported DAWs now have logos.",
+          "Added a Linux build, packaged as a Flatpak for Flathub distribution.",
+          "Google Drive sync is intentionally not offered on Linux (the desktop OAuth flow needs a client secret that can't be safely shipped in the public Flathub build)…",
+          "Linux notifications now go through xdg-desktop-portal instead of flutter_local_notifications."
+        ]
+      }
+    },
+    {
+      "version": "2.6.1",
+      "date": "2026-07-28",
+      "highlights": {
+        "en": [
+          "README updated with the current feature set and Google Drive sync details.",
+          "Restored the Folders, Updates, Suggestions, and Session Mode wizard steps.",
+          "Music player tasks are now stamped with a playback timestamp when added to the currently playing track."
+        ]
+      }
+    },
+    {
+      "version": "2.6.0",
+      "date": "2026-07-27",
+      "highlights": {
+        "en": [
+          "Project templates: register template folders, browse templates, and create new projects from them.",
+          "Multi-root template scanning, including support for shared-folder templates.",
+          "Launch-at-startup option with start-minimized-to-tray.",
+          "Shift-click range selection for projects in the desktop table.",
+          "Extract BPM and version from FL Studio .flp files.",
+          "Extract Ableton Live's minor version from its Creator attribute.",
+          "Extract and display Reaper's Title/Author/Notes as read-only project notes.",
+          "Expanded Reaper scale-mask lookup from 23 to 250 scales via .reascale."
+        ]
+      }
+    },
+    {
+      "version": "2.5.6",
+      "date": "2026-07-21",
+      "highlights": {
+        "en": [
+          "Prevent the Actions column from being drag-reordered"
+        ]
+      }
+    },
+    {
+      "version": "2.5.5",
+      "date": "2026-07-21",
+      "highlights": {
+        "en": [
+          "Add option to create a todo item at the current player timestamp"
+        ]
+      }
+    },
+    {
+      "version": "2.5.4",
+      "date": "2026-07-21",
+      "highlights": {
+        "en": [
+          "Fix Last Modified column sorting alphabetically instead of by date",
+          "Fix stale row order when a column sort cycles back to \"no sort\"",
+          "Add opt-in setting to always show smart folders with one project",
+          "Stop demoting merged smart-folder groups to flat rows"
+        ]
+      }
+    },
+    {
+      "version": "2.5.3",
+      "date": "2026-07-20",
+      "highlights": {
+        "en": [
+          "Add opt-in setting to merge same-named smart folders across roots",
+          "Mention MAGDA support in the deep scan confirmation dialog",
+          "Add support for MAGDA (.mgd) DAW projects",
+          "Translate the \"keep smart folders out of sorting\" setting strings",
+          "Add export project info to a text file",
+          "Add MIT license"
+        ]
+      }
+    },
+    {
+      "version": "2.5.2",
+      "date": "2026-07-20",
+      "highlights": {
+        "en": [
+          "Add opt-in setting to exclude smart folders from column sorting",
+          "Persist the Projects grid's column sort across app restarts",
+          "Let the user opt in to deleting release-tracked missing projects too",
+          "Protect release-tracked projects from the \"Delete Missing\" bulk action",
+          "Stop auto-deleting projects on scan; add explicit \"Delete Missing\" action",
+          "Stop blocking the UI for background/manual project scans"
+        ]
+      }
+    },
+    {
+      "version": "2.5.1",
+      "date": "2026-07-19",
+      "highlights": {
+        "en": [
+          "Fix sort-direction header icon reverting to neutral on theme switch",
+          "Avoid double-settling the grid on theme switch to reduce smart-folder flicker",
+          "Update stale onLoaded comment after the pre-sort/expand fix",
+          "Fix theme switch collapsing smart folders again (regression from the flash fix)",
+          "Pre-sort/expand initial rows to avoid a one-frame flash on grid remount",
+          "Fix sort snapshot being clobbered mid-restore on theme/locale switch",
+          "Fix smart-folder groups collapsing and sort resetting on refresh/theme/locale changes"
+        ]
+      }
+    },
+    {
+      "version": "2.5.0",
+      "date": "2026-07-19",
+      "highlights": {
+        "en": [
+          "Fix Windows project launch failure for paths containing '#' (#62)",
+          "Never fall back to the real app-data directory under flutter test",
+          "Expose thumbnailPath, uploadedPreviewSongHash, sessions and metadataScanned in TestFactories.makeProject()",
+          "Fix macOS build break: missing arguments label in invokeMethod call",
+          "Localize three hardcoded tooltip strings",
+          "Remove redundant Platform.isIOS checks layered on isMobile()",
+          "Use MobileUtils.isMobile() instead of re-deriving it ad hoc",
+          "Hide studioLight theme from onboarding wizard and cycle()"
+        ]
+      }
+    },
+    {
+      "version": "2.4.4",
+      "date": "2026-07-17",
+      "highlights": {
+        "en": [
+          "Fix macOS build failure from removed NSApplication.activate(options:)…"
+        ]
+      }
+    },
+    {
+      "version": "2.4.3",
+      "date": "2026-07-16",
+      "highlights": {
+        "en": [
+          "Fix auto-backup silently overwriting a newer Drive backup",
+          "Disable the testing database tools in release builds. They are only meant for development and testing purposes, and should not be accessible in production.",
+          "Move the mobile player's add-task button next to Share",
+          "Fix close-to-tray/warn-before-quit ignoring saved preference on launch",
+          "Move the Phase/DAW filter icon in front of the label",
+          "Materialize real project files/folders for the demo data profile",
+          "Add a DAW filter next to the Phase filter on the dashboard",
+          "Show the DAW logo and theme color on the project detail DAW field"
+        ]
+      }
+    },
+    {
+      "version": "2.4.2",
+      "date": "2026-07-15",
+      "highlights": {
+        "en": [
+          "Brand the Android media notification with the app logo and accent color",
+          "Make swipe/skip respect shuffle on the mobile player",
+          "Harden mobile player against stuck play/pause button",
+          "Add to-do from the mobile player at the current timestamp",
+          "Hide description drag-resize grip on mobile",
+          "Localize remaining hardcoded UI strings"
+        ]
+      }
+    },
+    {
+      "version": "2.4.1",
+      "date": "2026-07-15",
+      "highlights": {
+        "en": [
+          "Give release descriptions the same expand/resize field as project notes",
+          "Fix mobile pull-to-refresh triggering a desktop folder scan",
+          "Stop blocking quit on an in-flight Drive backup",
+          "Split statsProjectActivity into a per-project singular key",
+          "Simplify the project detail header into a compact meta line"
+        ]
+      }
+    },
+    {
+      "version": "2.4.0",
+      "date": "2026-07-14",
+      "highlights": {
+        "en": [
+          "Back up custom mixdown folders and phase customization to Google Drive",
+          "Add native splash screen for Android",
+          "Support multiple preview mixdown folders instead of a single one",
+          "Show DAW info and add an expandable/resizable notes field in project detail",
+          "Reconcile Launch in DAW controls with session mode",
+          "Fix preview song auto-detect not refreshing dashboard until unrelated refresh",
+          "Show a converting spinner on the Drag-to-Share chip",
+          "Reword the conversion-failed message without developer jargon"
+        ]
+      }
+    },
+    {
+      "version": "2.3.0",
+      "date": "2026-06-11",
+      "highlights": {
+        "en": [
+          "Fix desktop Drive restore always showing sign-in error"
+        ]
+      }
+    },
+    {
+      "version": "2.2.8",
+      "date": "2026-06-11",
+      "highlights": {
+        "en": [
+          "Maintenance release."
+        ]
+      }
+    },
+    {
+      "version": "2.2.7",
+      "date": "2026-06-10",
+      "highlights": {
+        "en": [
+          "Fix dashboard table not refreshing after rescan / deep scan",
+          "Fix clearing custom display name in project details",
+          "Fix clearing BPM and musical key fields in project details"
+        ]
+      }
+    },
+    {
+      "version": "2.2.6",
+      "date": "2026-06-10",
+      "highlights": {
+        "en": [
+          "Fix Android backup download: retry stream errors, fix IOSink leak, skip redundant hash reads",
+          "Add single-project Drive restore and pulsing play icon glow",
+          "Fix table text colors not refreshing immediately on theme switch",
+          "Fix hardcoded Colors.white in toolbar and search field",
+          "Fix table background not updating on theme switch",
+          "Add Studio Light theme (warm cream + deep violet)",
+          "Fix neon dark theme background split in empty table area"
+        ]
+      }
+    },
+    {
+      "version": "2.2.5",
+      "date": "2026-06-05",
+      "highlights": {
+        "en": [
+          "Add Session Mode step to onboarding wizard"
+        ]
+      }
+    },
+    {
+      "version": "2.2.4",
+      "date": "2026-06-04",
+      "highlights": {
+        "en": [
+          "Fix stale waveform when preview file is overwritten at the same path",
+          "Crossfade old player out when switching mono/stereo"
+        ]
+      }
+    },
+    {
+      "version": "2.2.3",
+      "date": "2026-06-04",
+      "highlights": {
+        "en": [
+          "Remove auth debug logging and move newer-backup banner to bottom"
+        ]
+      }
+    },
+    {
+      "version": "2.2.2",
+      "date": "2026-06-04",
+      "highlights": {
+        "en": [
+          "Fix smart folder expansion state inversion and Windows path grouping",
+          "Fix smart folder path matching for cross-platform databases",
+          "Prevent adding a duplicate project folder",
+          "Fix smart folder grouping not applying when scan mode is toggled",
+          "Use enharmonic root note spelling based on scale type in Bitwig extraction",
+          "Add Bitwig Studio to deep scan supported DAWs text",
+          "Add Bitwig Studio .bwproject metadata extraction"
+        ]
+      }
+    },
+    {
+      "version": "2.2.1",
+      "date": "2026-06-04",
+      "highlights": {
+        "en": [
+          "Fix mobile Google Drive silent re-login + add auth debug log viewer"
+        ]
+      }
+    },
+    {
+      "version": "2.2.0",
+      "date": "2026-06-04",
+      "highlights": {
+        "en": [
+          "Collapsible session history + fix phase dropdown crash for custom phases"
+        ]
+      }
+    },
+    {
+      "version": "2.1.0",
+      "date": "2026-06-03",
+      "highlights": {
+        "en": [
+          "Add custom phases"
+        ]
+      }
+    },
+    {
+      "version": "2.0.1",
+      "date": "2026-06-02",
+      "highlights": {
+        "en": [
+          "Fix table not refreshing after profile switch",
+          "Hoist title bar above NavigationRail on Windows/Linux left-rail mode",
+          "Align NavigationRail bottom with action bar on macOS left-rail",
+          "Fix macOS traffic-light overlap with NavigationRail background",
+          "Fix macOS left-rail layout: clear traffic lights and trim top bar",
+          "Fix group collapse/expand on refresh/rescan via in-place cell updates",
+          "Add refresh button to pending folder rows",
+          "Show Ctrl+F / ⌘F shortcut in search bar hint when in left-rail mode"
+        ]
+      }
+    },
+    {
+      "version": "2.0.0",
+      "date": "2026-05-28",
+      "highlights": {
+        "en": [
+          "New 2.0 version with remodeling of the program",
+          "New left tab option"
+        ]
+      }
+    },
+    {
+      "version": "1.12.1",
+      "date": "2026-05-10",
+      "highlights": {
+        "en": [
+          "Fix click latency and player bar blink in music player",
+          "Update displayName tests to match basenameWithoutExtension behaviour",
+          "Overhaul Music Player tab with project detail panel, queue, and audio exclusivity",
+          "Fix layout shifts in dashboard filter bar and statistics page",
+          "Persist preview player bar across all dashboard tabs",
+          "Fix mono toggle blink and player closing on filter/dropdown interaction",
+          "Include release todos in queue tab and make music player sidebar resizable",
+          "Add compact filter bar with sort to Releases tab"
+        ]
+      }
+    },
+    {
+      "version": "1.12.0",
+      "date": "2026-05-08",
+      "highlights": {
+        "en": [
+          "Add waveform player with persistent cache, Music Player tab, and keyboard shortcuts",
+          "Fixed size for the dashboard preview player",
+          "Fix issue of backup metadata not being deleted",
+          "Add auto-backup for Google Drive with configurable interval",
+          "Improve Google Drive sync: cancellation, hash cache, retry, progress, failure surfacing",
+          "Add Documentation icon button to Windows/Linux title bar",
+          "Add Documentation link to macOS menu bar"
+        ]
+      }
+    },
+    {
+      "version": "1.11.1",
+      "date": "2026-05-02",
+      "highlights": {
+        "en": [
+          "Add startup page"
+        ]
+      }
+    },
+    {
+      "version": "1.11.0",
+      "date": "2026-04-30",
+      "highlights": {
+        "en": [
+          "Enter key now opens project details (previously moved rows like a spreadsheet)",
+          "Cmd+T / Ctrl+T focuses the project table globally",
+          "Right-click context menu now includes Extract Metadata for individual projects",
+          "Play button with no preview song set now prompts to load a file (with drag-and-drop hint)",
+          "Missing preview song file now shows a dialog with options to select a new file or remove the entry",
+          "New option to show/hide individual tabs (Projects always stays visible); preference is persisted",
+          "Customize Tabs and Keyboard Shortcuts are now in the View menu",
+          "Keyboard shortcuts reference dialog added"
+        ]
+      }
+    },
+    {
+      "version": "1.10.5",
+      "date": "2026-04-28",
+      "highlights": {
+        "en": [
+          "Add auto discover new preview song detection"
+        ]
+      }
+    },
+    {
+      "version": "1.10.4",
+      "date": "2026-04-19",
+      "highlights": {
+        "en": [
+          "Add search to description data",
+          "Add feature to relocate project folder",
+          "Revamp project detail UI"
+        ]
+      }
+    },
+    {
+      "version": "1.10.3",
+      "date": "2026-04-18",
+      "highlights": {
+        "en": [
+          "Drag & drop preview song — drag an audio file directly onto a project row in the dashboard to set it as the preview track",
+          "Auto-detected preview song persistence — the auto-detected preview song path is now stored and survives scans, restarts, and Google Drive backups…",
+          "Custom preview mixdown folder — settings option to specify a subfolder name (e.g. Mixdowns) to search first when auto-detecting preview songs",
+          "Rename project file — rename a .rpp/.als/etc. file directly from the project detail page, with an optional checkbox to also rename the containing folder; all stored paths are updated automatically",
+          "macOS Dock recent projects — right-clicking the Dock icon shows the 5 most recently modified projects; clicking one opens it in its associated DAW",
+          "Windows Jump List — same recent projects list exposed via the Windows taskbar right-click Jump List",
+          "Android notification icon — proper monochrome notification icon derived from the app icon: orange and navy bands as white, gray stripe transparent",
+          "macOS app name fix — Dock and system UI now correctly display \"DAW Project Manager\" instead of \"DAWProjectManager\""
+        ]
+      }
+    },
+    {
+      "version": "1.10.2",
+      "date": "2026-03-31",
+      "highlights": {
+        "en": [
+          "Google Drive sync button added to the main dashboard (mobile AppBar and desktop toolbar)",
+          "Preview song player on mobile: transport controls and seek bar on separate rows — no more overflow in portrait mode",
+          "Seek bar now has a visible contrasting color in all layouts",
+          "Backup import now propagates the desktop DAW modification date to mobile correctly (was silently skipped when only the date changed)"
+        ]
+      }
+    },
+    {
+      "version": "1.10.1",
+      "date": "2026-03-29",
+      "highlights": {
+        "en": [
+          "Modified date display — project detail page now shows a properly formatted date instead of a raw timestamp string",
+          "Project age display — fixed incorrect month calculation that was showing wrong values (e.g. \"5 months\" for a 35-day-old project)",
+          "Backup import preserves dates — importing a backup now correctly restores the original lastModifiedAt from the desktop DAW file…",
+          "Added unit test suite: 56 tests covering model logic, backup JSON serialisation round-trips, and repository behaviour (including end-to-end scenario: Android has old date, desktop backup has newer date…",
+          "CI now runs unit tests on every PR, merge to main, and release tag — builds are blocked if any test fails"
+        ]
+      }
+    },
+    {
+      "version": "1.10.0",
+      "date": "2026-03-26",
+      "highlights": {
+        "en": [
+          "Task Queue tab — unified view of all unfinished todos across every project, grouped by project with phase indicator and pending count; check off tasks directly without opening each project",
+          "Fuzzy search — all search fields (projects, releases, tasks, playlists) now use character-level fuzzy matching instead of plain substring",
+          "Production phase is now editable directly from the table via a dropdown — no need to open the project",
+          "Keyboard shortcuts on focused row: P preview, O open in DAW, D details, F open folder",
+          "Preview player with seek controls: ←/→ ±5s, Ctrl+←/→ ±30s",
+          "Quick action button icons enlarged for easier clicking",
+          "Focused row highlight is now more visible in dark theme",
+          "Table borders are subtler"
+        ]
+      }
+    },
+    {
+      "version": "1.9.9",
+      "date": "2026-03-22",
+      "highlights": {
+        "en": [
+          "Add option to play preview songs in mono.",
+          "Show LUFS for preview songs in Wave format.",
+          "Various fixes to the UI."
+        ]
+      }
+    },
+    {
+      "version": "1.9.8",
+      "date": "2026-03-10",
+      "highlights": {
+        "en": [
+          "Add Statistics preview feature with various statistics about projects",
+          "Fix various issues on Mac version of the App. For example, the app is not sandboxed anymore so projects can be opened normally through the open commands.",
+          "Ignore various auto backup folders by default, this means backup projects should not appear in the table anymore (d98e5ee35063ae7b045811b7b15c85fbb5a10686).",
+          "Fixed many issues in the google drive backup handling, handling of artwork, handling of projects that come from a different location."
+        ]
+      }
+    },
+    {
+      "version": "1.9.7",
+      "date": "2026-02-12",
+      "highlights": {
+        "en": [
+          "Fix google drive sync on desktop"
+        ]
+      }
+    },
+    {
+      "version": "1.9.6",
+      "date": "2026-01-26",
+      "highlights": {
+        "en": [
+          "Improve backup handling"
+        ]
+      }
+    },
+    {
+      "version": "1.9.5",
+      "date": "2026-01-26",
+      "highlights": {
+        "en": [
+          "Fix playlists",
+          "Fix backup",
+          "Add notifications based on deadlines"
+        ]
+      }
+    },
+    {
+      "version": "1.9.4",
+      "date": "2026-01-26",
+      "highlights": {
+        "en": [
+          "Fix closing of google drive sync window after completing download of backup."
+        ]
+      }
+    },
+    {
+      "version": "1.9.3",
+      "date": "2026-01-26",
+      "highlights": {
+        "en": [
+          "Improve backup handling, download and upload."
+        ]
+      }
+    },
+    {
+      "version": "1.9.2",
+      "date": "2026-01-25",
+      "highlights": {
+        "en": [
+          "Fix backup service",
+          "General UI improvements",
+          "Fix editing playlists",
+          "Fix missing translations"
+        ]
+      }
+    },
+    {
+      "version": "1.9.1",
+      "date": "2026-01-25",
+      "highlights": {
+        "en": [
+          "Fix many UI issues in the android app",
+          "Improve Backup handling",
+          "General improvements to the desktop app user interface"
+        ]
+      }
+    },
+    {
+      "version": "1.9.0",
+      "date": "2026-01-24",
+      "highlights": {
+        "en": [
+          "Add playlists to android app",
+          "Add deadline data to projects",
+          "Improve backup overall",
+          "Add camelot wheel data",
+          "App TODOList templates and importing todos from text files"
+        ]
+      }
+    },
+    {
+      "version": "1.8.2",
+      "date": "2026-01-21",
+      "highlights": {
+        "en": [
+          "Improve upload backup UI feedback",
+          "Switch Google Drive Sign to use approved method for release mode."
+        ]
+      }
+    },
+    {
+      "version": "1.8.1",
+      "date": "2026-01-21",
+      "highlights": {
+        "en": [
+          "Android: add option to export preview song using a zip file (Whatsapp limits to max 64MB audio files)"
+        ]
+      }
+    },
+    {
+      "version": "1.8.0",
+      "date": "2026-01-19",
+      "highlights": {
+        "en": [
+          "Add option to exclude paths",
+          "Many other small improvements"
+        ]
+      }
+    },
+    {
+      "version": "1.7.2",
+      "date": "2026-01-18",
+      "highlights": {
+        "en": [
+          "More improvements on the android UI",
+          "Fix main page ui",
+          "Clean up main page",
+          "Fix releases page",
+          "Fix test data",
+          "More improvements on sync backup",
+          "Fix song uploading to respect the hashing acorrdingly."
+        ]
+      }
+    },
+    {
+      "version": "1.7.1",
+      "date": "2026-01-18",
+      "highlights": {
+        "en": [
+          "Improvements on the Android APP UI",
+          "Fix broken release page detail on desktop"
+        ]
+      }
+    },
+    {
+      "version": "1.7.0",
+      "date": "2026-01-15",
+      "highlights": {
+        "en": [
+          "New android app to synchronize data through Google Drive",
+          "The desktop app will also synchronize the data through Google Drive",
+          "Added support for Cakewalk Sonnar and Tracktion Waveform projects"
+        ]
+      }
+    },
+    {
+      "version": "1.6.1",
+      "date": "2026-01-12",
+      "highlights": {
+        "en": [
+          "Fix version number in the main page (1.6.1)."
+        ]
+      }
+    },
+    {
+      "version": "1.6.0",
+      "date": "2026-01-08",
+      "highlights": {
+        "en": [
+          "Automatically Detect cubase projects tempo and root key/scale types.",
+          "Add project aging data.",
+          "Add volume slider to song preview player."
+        ]
+      }
+    },
+    {
+      "version": "1.5.4",
+      "date": "2026-01-06",
+      "highlights": {
+        "en": [
+          "Add persistent theme configuration."
+        ]
+      }
+    },
+    {
+      "version": "1.5.3",
+      "date": "2026-01-03",
+      "highlights": {
+        "en": [
+          "Search bar works independently for Projects and Releases tabs",
+          "The preview song when started can be paused/played by hitting the Space Bar"
+        ]
+      }
+    },
+    {
+      "version": "1.5.2",
+      "date": "2025-12-30",
+      "highlights": {
+        "en": [
+          "Fix Ctrl+F focusing on the search box in every situation",
+          "The search bar now searches for releases if the releases tab is active",
+          "More UX improvements"
+        ]
+      }
+    },
+    {
+      "version": "1.5.1",
+      "date": "2025-12-29",
+      "highlights": {
+        "en": [
+          "Fix deleting preview songs",
+          "Drag and drop preview songs"
+        ]
+      }
+    },
+    {
+      "version": "1.5.0",
+      "date": "2025-12-28",
+      "highlights": {
+        "en": [
+          "Add ability to add preview songs in the project detail and listen them in the projects page and detail.",
+          "Add support the project button (donation based)."
+        ]
+      }
+    },
+    {
+      "version": "1.4.0",
+      "date": "2025-12-22",
+      "highlights": {
+        "en": [
+          "Add Backup feature",
+          "Add a new color theme",
+          "Add new Profile view page to add assets from the project",
+          "General improvements on the UI and UX"
+        ]
+      }
+    },
+    {
+      "version": "1.3.0",
+      "date": "2025-12-19",
+      "highlights": {
+        "en": [
+          "New Quick Scan Option",
+          "Add Multiple Languages"
+        ]
+      }
+    },
+    {
+      "version": "1.2.0",
+      "date": "2025-12-11",
+      "highlights": {
+        "en": [
+          "Add ability to hide projects",
+          "Todo lists to releases and tracks",
+          "Many improvements and fixes to the project."
+        ]
+      }
+    },
+    {
+      "version": "1.1.0",
+      "date": "2025-12-10",
+      "highlights": {
+        "en": [
+          "Add Releases Page",
+          "Add support for multiple Profiles",
+          "Various Fixes and Improvements"
+        ]
+      }
+    },
+    {
+      "version": "1.0.3",
+      "date": "2025-12-09",
+      "highlights": {
+        "en": [
+          "BPM and Key detection on Ableton projects",
+          "Display DAW Version for Cubase and Ableton"
+        ]
+      }
+    },
+    {
+      "version": "1.0.2",
+      "date": "2025-12-04",
+      "highlights": {
+        "en": [
+          "Ignore backup folder for Ableton projects.",
+          "Display the version program on the main page."
+        ]
+      }
+    },
+    {
+      "version": "1.0.1",
+      "date": "2025-10-29",
+      "highlights": {
+        "en": [
+          "Resize window and add Ctrl+R",
+          "Add Ctrl+F shortcut to find projects"
+        ]
+      }
+    },
+    {
+      "version": "1.0.0",
+      "date": "2025-10-14",
+      "highlights": {
+        "en": [
+          "First public release of DAW Project Manager."
+        ]
+      }
+    }
+  ]
+}

@@ -24,7 +24,8 @@ import '../models/playlist.dart';
 import '../models/project_event.dart';
 import '../services/metadata_extractor.dart';
 import '../services/notification_background_service.dart';
-import '../utils/app_paths.dart';
+import '../utils/app_paths.dart';
+import '../utils/version_stacks.dart';
 import 'profile_repository.dart';
 import '../models/profile.dart';
 
@@ -601,6 +602,38 @@ class ProjectRepository {
 
   List<ScanRoot> getRoots() => rootsBox.values.toList(growable: false);
 
+  /// The roots a scan should actually walk — [getRoots] minus the disabled
+  /// ones (see [ScanRoot.enabled]).
+  ///
+  /// Every scan entry point and the folder watcher go through this rather
+  /// than [getRoots]; Settings deliberately keeps using [getRoots], since a
+  /// disabled root still has to be listed for the user to turn it back on.
+  List<ScanRoot> getActiveRoots() => [
+    for (final root in rootsBox.values)
+      if (root.enabled) root,
+  ];
+
+  /// Saves a root exactly as-is, preserving its id, label, scan mode and
+  /// enabled flag. Use this for backup/sync restore, NOT for adding a folder
+  /// the user just picked — [addRoot] is that, and it deliberately builds a
+  /// fresh root from the path alone.
+  Future<void> restoreRoot(ScanRoot root) async {
+    await rootsBox.put(root.id, root);
+  }
+
+  /// Turns scanning for root [id] on or off. No-op if the root doesn't exist.
+  ///
+  /// Nothing is deleted either way — this is the non-destructive counterpart
+  /// to [removeRoot]. The projects under a disabled root stay in the box and
+  /// are merely filtered out of the lists (see `projectsProvider`), so the
+  /// switch is fully reversible.
+  Future<void> setRootEnabled(String id, bool enabled) async {
+    final root = rootsBox.get(id);
+    if (root == null) return;
+    if (root.enabled == enabled) return;
+    await rootsBox.put(id, root.copyWith(enabled: enabled));
+  }
+
   /// Updates the stored path for a scan root and rewrites the `filePath`,
   /// `previewSongPath`, and `previewSongAutoPath` of every project whose path
   /// starts with the old root path. No files are moved on disk.
@@ -1114,15 +1147,16 @@ class ProjectRepository {
       throw ArgumentError('A project can only belong to one stack');
     }
 
-    // Default to the oldest member: when someone saves v1 → v2 → v3, the
-    // metadata they have been maintaining is on the one they started from.
+    // Default to the oldest member with something to promote (the oldest
+    // outright if none has): when someone saves v1 → v2 → v3, the metadata
+    // they have been maintaining is on the one they started from — but a
+    // blank v1 must not win over a v2 carrying details or cover art.
     final source = metadataSourceId != null
         ? members.firstWhere(
             (m) => m.id == metadataSourceId,
             orElse: () => members.first,
           )
-        : (members.toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt)))
-              .first;
+        : preferredStackMetadataSource(members);
 
     final now = DateTime.now();
     final folder = p.dirname(p.normalize(source.filePath));
@@ -1315,7 +1349,7 @@ class ProjectRepository {
   Future<int> autoStackFolders() async {
     final stackRoots = [
       for (final root in rootsBox.values)
-        if (root.scanMode == ScanMode.versionStack) root.path,
+        if (root.enabled && root.scanMode == ScanMode.versionStack) root.path,
     ];
     if (stackRoots.isEmpty) return 0;
     return applyAutoStackPlan(planAutoStack(stackRoots));

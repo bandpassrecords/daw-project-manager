@@ -187,12 +187,29 @@ Future<void> ensureHiveInitialized() async {
 /// library is selected, which made the picker write its choice to one
 /// directory and the settings card look for it in another.
 Future<Directory> getAppSupportRoot() async {
-  if (Platform.isWindows) {
-    final localAppData = Platform.environment['LOCALAPPDATA'];
-    if (localAppData != null) return Directory(localAppData);
-  }
+  final localAppData = _windowsLocalAppData();
+  if (localAppData != null) return Directory(localAppData);
   return getApplicationSupportDirectory();
 }
+
+/// `%LOCALAPPDATA%` on Windows, null everywhere else (and when the variable
+/// is somehow unset, which falls back to the path_provider directory).
+///
+/// The Windows branch reads the real process environment, which a test cannot
+/// fake the way it can swap `PathProviderPlatform.instance` — so without
+/// [debugLocalAppDataOverride] every path test here is silently a no-op on
+/// Windows, passing against the developer's actual AppData.
+String? _windowsLocalAppData() {
+  if (!Platform.isWindows) return null;
+  return debugLocalAppDataOverride ?? Platform.environment['LOCALAPPDATA'];
+}
+
+/// Test-only: stands in for `%LOCALAPPDATA%`, so the Windows branch above can
+/// be pointed at a temp directory. Set it in `setUp` and null it in
+/// `tearDown`; it is ignored on every other platform, so a test can set it
+/// unconditionally and run the same way everywhere.
+@visibleForTesting
+String? debugLocalAppDataOverride;
 
 /// Gets the LocalAppData directory path for the application.
 /// On Windows, this returns %LocalAppData%\[appDataDirName]
@@ -200,22 +217,18 @@ Future<Directory> getAppSupportRoot() async {
 /// [appDataDirName] appended when this build is isolated, since the support
 /// directory itself is fixed by the OS bundle id.
 Future<String> getLocalAppDataPath() async {
-  if (Platform.isWindows) {
-    // On Windows, use LOCALAPPDATA environment variable
-    final localAppData = Platform.environment['LOCALAPPDATA'];
-    if (localAppData != null) {
-      final appDir = Directory(path.join(localAppData, appDataDirName));
-      if (!await appDir.exists()) {
-        await appDir.create(recursive: true);
-      }
-      return appDir.path;
+  // Windows: %LOCALAPPDATA%\<appDataDirName>. Null on every other platform
+  // (and if the variable is unset), which falls through to the application
+  // support directory below.
+  final localAppData = _windowsLocalAppData();
+  if (localAppData != null) {
+    final appDir = Directory(path.join(localAppData, appDataDirName));
+    if (!await appDir.exists()) {
+      await appDir.create(recursive: true);
     }
-    // Fallback to application support directory if LOCALAPPDATA is not available
-    return _appSupportPath();
-  } else {
-    // On other platforms, use application support directory
-    return _appSupportPath();
+    return appDir.path;
   }
+  return _appSupportPath();
 }
 
 Future<String> _appSupportPath() async {

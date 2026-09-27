@@ -1583,7 +1583,6 @@
   },
   "share": "Partager",
   "convertingAudioForSharing": "Préparation de l'audio pour le partage…",
-  "shareSheetUnavailable": "Le menu de partage du système n'est pas disponible ici — utilisez la puce « Glisser pour Partager » sur l'aperçu du morceau pour glisser le fichier vers une autre application.",
   "dragToShare": "Glisser pour Partager",
   "dragToShareTooltip": "Glissez ceci sur la fenêtre d'une autre application (ex : WhatsApp) pour partager le fichier directement — utile quand le bouton Partager n'ouvre pas de menu de partage.",
   "mp3ConversionFailed": "La conversion audio n'est pas disponible sur ce système — partage du fichier original, que certaines applications comme WhatsApp peuvent refuser.",
@@ -3744,5 +3743,66 @@
   "discardArchiveButtonLabel": "Supprimer l'archive",
   "discardArchiveConfirmTitle": "Supprimer l'archive ?",
   "discardArchiveConfirmMessage": "Supprime le zip et retire l'indicateur d'archivage. Les fichiers du projet restent en place.",
-  "discardArchiveDone": "Archive supprimée"
+  "discardArchiveDone": "Archive supprimée",
+
+  "whatsNewTitle": "Nouveautés",
+  "whatsNewTitleWithVersion": "Nouveautés de la version {version}",
+  "whatsNewIntro": "Voici ce qui a changé depuis votre version précédente.",
+  "whatsNewGotIt": "J'ai compris",
+  "changelogFullButton": "Journal complet",
+  "changelogPageTitle": "Journal des modifications",
+  "changelogEmpty": "Aucun journal des modifications disponible pour cette version.",
+  "changelogCurrentVersionBadge": "Installée",
+  "disableProjectFolderTooltip": "Désactiver ce dossier (conserve ses projets)",
+  "enableProjectFolderTooltip": "Activer ce dossier",
+  "projectFolderDisabledBadge": "Désactivé",
+  "projectFolderDisabledExplanation": "Non analysé, et ses projets sont masqués. Rien n’a été supprimé — réactivez-le pour les retrouver.",
+  "projectFolderEnabled": "« {name} » est de nouveau analysé",
+  "projectFolderDisabled": "« {name} » est désactivé — ses projets sont masqués, pas supprimés",
+  "releaseArtworkCarryOverTitle": "Utiliser la pochette d’une piste ?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{Une des pistes sélectionnées a une pochette. L’utiliser comme pochette de cette sortie ?} other{{count} des pistes sélectionnées ont une pochette. Choisissez-en une comme pochette de cette sortie.}}",
+  "releaseArtworkCarryOverUse": "Utiliser comme pochette",
+  "releaseArtworkCarryOverSkip": "Aucune pochette",
+  "tracksViewList": "Vue liste",
+  "tracksViewTable": "Vue tableau",
+
+  "partsColumn": "Parties",
+  "partsNeededCount": "{count, plural, =1{1 partie encore nécessaire} other{{count} parties encore nécessaires}}",
+
+  "songLength": "Durée",
+  "songLengthColumn": "Durée",
+  "songLengthHint": "3:45",
+  "songLengthManual": "Saisie à la main — videz le champ pour utiliser la durée de l’aperçu",
+  "songLengthFromPreview": "Mesurée depuis l’aperçu",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "Durée totale",
+  "releaseLengthPartial": "{count, plural, =1{Total partiel — 1 piste n’a pas encore de durée} other{Total partiel — {count} pistes n’ont pas encore de durée}}",
+
+  "breadcrumbHome": "Accueil",
+  "breadcrumbGoTo": "Aller à {label}",
+
+  "scrollForMore": "Faites défiler pour en voir plus",
+
+  "shortcutPlayerMono": "Activer/désactiver la lecture en mono",
+  "shortcutPlayerVolume": "Régler le volume",
+  "shortcutMouseWheel": "Molette",
+
+  "releaseTotalLengthLabel": "Durée totale",
+  "releaseLengthNone": "Aucune piste n’a encore de durée — lisez une piste ou saisissez sa durée sur la page du projet",
+
+  "songLengthHowItWorks": "Renseignée automatiquement depuis l’aperçu — lorsqu’il est lu, ou à l’ouverture d’une sortie contenant cette piste. Vous pouvez aussi la saisir : 3:45, 1:02:03 ou en secondes.",
+
+  "changelogSectionSubtitle": "Tout ce qui a changé dans chaque version, de la plus récente à la plus ancienne.",
+
+  "changelogSearchHint": "Rechercher dans le journal",
+  "changelogNoMatches": "Aucune modification ne correspond à « {query} »",
+
+  "projectFileMenu": "Fichier",
+  "moreActions": "Plus d'actions",
+
+  "sectionRailResizeHint": "Faites glisser pour redimensionner · double-cliquez pour réinitialiser",
+
+  "stackMetadataCoverArtLabel": "pochette",
+  "stackMetadataColorLabel": "couleur d'accent",
+  "stackMetadataIconLabel": "icône"
 }

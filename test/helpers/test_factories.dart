@@ -53,6 +53,8 @@ class TestFactories {
     String? archivePath,
     DateTime? archivedAt,
     String? archiveEntryPath,
+    int? durationMs,
+    int? autoDurationMs,
   }) {
     return MusicProject(
       id: id,
@@ -100,6 +102,8 @@ class TestFactories {
       archivePath: archivePath,
       archivedAt: archivedAt,
       archiveEntryPath: archiveEntryPath,
+      durationMs: durationMs,
+      autoDurationMs: autoDurationMs,
     );
   }
 

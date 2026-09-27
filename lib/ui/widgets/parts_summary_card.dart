@@ -41,18 +41,29 @@ class PartsSummaryCard extends StatelessWidget {
                 children: [
                   Icon(Icons.piano, color: theme.textTheme.bodyMedium?.color),
                   const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      l10n.songParts,
-                      style: theme.textTheme.titleMedium,
-                      overflow: TextOverflow.ellipsis,
+                  // Title and chip share one Expanded rather than sitting
+                  // beside a Spacer. A loose Flexible next to a Spacer is
+                  // allotted half the free space and hands back none of what
+                  // it doesn't use, so the button stopped short of the edge by
+                  // however much the title didn't need.
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            l10n.songParts,
+                            style: theme.textTheme.titleMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (parts.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          _ProgressChip(parts: parts),
+                        ],
+                      ],
                     ),
                   ),
-                  if (parts.isNotEmpty) ...[
-                    const SizedBox(width: 8),
-                    _ProgressChip(parts: parts),
-                  ],
-                  const Spacer(),
+                  const SizedBox(width: 8),
                   FilledButton.tonalIcon(
                     onPressed: () => open(context),
                     icon: const Icon(Icons.tune, size: 18),

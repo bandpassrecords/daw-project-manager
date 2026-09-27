@@ -1,4 +1,7 @@
+import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:flutter/material.dart';
+
+import '../../utils/section_rail_width.dart';
 
 /// One entry in a [SectionNavRail].
 class SectionNavItem {
@@ -118,7 +121,7 @@ class SectionNavRail extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: Text(
+                              child: _RailLabel(
                                 item.label,
                                 style: TextStyle(
                                   fontSize: 13,
@@ -128,7 +131,6 @@ class SectionNavRail extends StatelessWidget {
                                   color:
                                       selected ? cs.primary : cs.onSurface,
                                 ),
-                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
@@ -143,5 +145,161 @@ class SectionNavRail extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// A rail label kept to one line. A long translation is cut with an ellipsis
+/// instead of wrapping (which made rows uneven heights), and only a label that
+/// was actually cut gets a tooltip with the full text — a tooltip on every row
+/// would pop up over labels that are already fully visible.
+class _RailLabel extends StatelessWidget {
+  const _RailLabel(this.text, {required this.style});
+
+  final String text;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final label = Text(
+        text,
+        style: style,
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
+      );
+      final painter = TextPainter(
+        text: TextSpan(
+          text: text,
+          style: DefaultTextStyle.of(context).style.merge(style),
+        ),
+        maxLines: 1,
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout(maxWidth: constraints.maxWidth);
+      final truncated = painter.didExceedMaxLines;
+      painter.dispose();
+      return truncated ? Tooltip(message: text, child: label) : label;
+    });
+  }
+}
+
+/// A [SectionNavRail] (or any rail) beside its content, with a handle on the
+/// divider between them that the user drags to resize the rail.
+///
+/// Plain values and callbacks — the page owns the width (see
+/// `sectionRailWidthProvider`), this only draws it and reports drags:
+/// [onResize] follows the pointer, [onResizeEnd] is where the page saves, and
+/// double-clicking the handle calls [onReset]. The width always goes through
+/// [clampSectionRailWidth] against the space actually available, so a width
+/// saved on a large window still leaves room for the content.
+class ResizableRailLayout extends StatefulWidget {
+  const ResizableRailLayout({
+    super.key,
+    required this.rail,
+    required this.child,
+    required this.width,
+    required this.defaultWidth,
+    required this.onResize,
+    required this.onResizeEnd,
+    required this.onReset,
+    this.handleTooltip,
+  });
+
+  final Widget rail;
+  final Widget child;
+
+  /// The width the user chose, or null to use [defaultWidth].
+  final double? width;
+  final double defaultWidth;
+  final ValueChanged<double> onResize;
+  final VoidCallback onResizeEnd;
+  final VoidCallback onReset;
+  final String? handleTooltip;
+
+  /// How wide the grab area is. The visible divider inside it stays 1px.
+  static const double handleWidth = 7;
+
+  @override
+  State<ResizableRailLayout> createState() => _ResizableRailLayoutState();
+}
+
+class _ResizableRailLayoutState extends State<ResizableRailLayout> {
+  bool _hovering = false;
+  bool _dragging = false;
+
+  /// The unclamped width under the pointer. Tracked apart from the clamped
+  /// width so that dragging past a limit and back does not leave the divider
+  /// out of step with the pointer.
+  double _dragWidth = 0;
+
+  void _endDrag() {
+    setState(() => _dragging = false);
+    widget.onResizeEnd();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return LayoutBuilder(builder: (context, constraints) {
+      final available = constraints.maxWidth;
+      final width = clampSectionRailWidth(
+        widget.width ?? widget.defaultWidth,
+        available: available,
+      );
+      final active = _hovering || _dragging;
+
+      Widget handle = MouseRegion(
+        cursor: SystemMouseCursors.resizeColumn,
+        onEnter: (_) => setState(() => _hovering = true),
+        onExit: (_) => setState(() => _hovering = false),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          // Measure from where the pointer went down, not from where the
+          // drag was recognised, so the divider stays under the pointer.
+          dragStartBehavior: DragStartBehavior.down,
+          onHorizontalDragStart: (_) => setState(() {
+            _dragging = true;
+            _dragWidth = width;
+          }),
+          onHorizontalDragUpdate: (details) {
+            _dragWidth += details.delta.dx;
+            widget.onResize(
+              clampSectionRailWidth(_dragWidth, available: available),
+            );
+          },
+          onHorizontalDragEnd: (_) => _endDrag(),
+          onHorizontalDragCancel: _endDrag,
+          onDoubleTap: widget.onReset,
+          child: SizedBox(
+            width: ResizableRailLayout.handleWidth,
+            child: Center(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 120),
+                width: active ? 3 : 1,
+                color: active ? cs.primary : Theme.of(context).dividerColor,
+              ),
+            ),
+          ),
+        ),
+      );
+      final tooltip = widget.handleTooltip;
+      if (tooltip != null && !_dragging) {
+        handle = Tooltip(
+          message: tooltip,
+          waitDuration: const Duration(milliseconds: 800),
+          child: handle,
+        );
+      }
+
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(width: width, child: widget.rail),
+          handle,
+          Expanded(child: widget.child),
+        ],
+      );
+    });
   }
 }

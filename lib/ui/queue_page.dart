@@ -5,6 +5,7 @@ import '../models/release.dart';
 import '../models/todo_item.dart';
 import '../providers/providers.dart';
 import '../utils/queue_sections.dart';
+import '../utils/todo_completion.dart';
 import '../utils/todo_due_utils.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'project_detail_page.dart';
@@ -54,6 +55,9 @@ class QueuePage extends ConsumerWidget {
           searchText: searchText,
           dueFilter: dueFilter,
           now: now,
+          // Rows ticked off during this visit stay put, struck through and
+          // undoable, instead of vanishing under the cursor.
+          keepVisibleTodoIds: ref.watch(recentlyCompletedTodosProvider),
         );
 
         final totalPending = queuePendingCount(sections);
@@ -331,11 +335,7 @@ class _ProjectTodoSectionState extends ConsumerState<_ProjectTodoSection> {
           if (_expanded) ...[
             const Divider(height: 1),
             ...pendingTodos.map(
-              (todo) => _TodoCheckItem(
-                project: project,
-                todo: todo,
-                onTap: () => setState(() => _expanded = !_expanded),
-              ),
+              (todo) => _TodoCheckItem(project: project, todo: todo),
             ),
           ],
         ],
@@ -376,61 +376,102 @@ class _Badge extends StatelessWidget {
   }
 }
 
+/// One task row in the queue.
+///
+/// Completion is bound to the **checkbox alone**, not to the row. A
+/// CheckboxListTile ticks itself off when tapped anywhere, which on a list
+/// that removes each row as it is checked means a stray click — or a second
+/// click landing where a row used to be — silently ticks off work nobody
+/// meant to touch.
 class _TodoCheckItem extends ConsumerWidget {
   final MusicProject project;
   final TodoItem todo;
-  final VoidCallback? onTap;
 
   const _TodoCheckItem({
     required this.project,
     required this.todo,
-    this.onTap,
   });
+
+  /// Writes [completed] for this todo against a **freshly read** project.
+  ///
+  /// Completion rewrites the project's whole todo list, so building that list
+  /// from the snapshot captured when this row was built lets two quick
+  /// changes clobber one another — the second reviving what the first had
+  /// just completed. Re-reading means each write starts from what is
+  /// currently stored.
+  Future<void> _setCompleted(WidgetRef ref, bool completed) async {
+    final repo = await ref.read(repositoryProvider.future);
+    final current = ref.read(allProjectsStreamProvider).value
+        ?.where((p) => p.id == project.id)
+        .firstOrNull ??
+        project;
+    final updatedTodos =
+        setTodoCompleted(current.todos, todo.id, completed: completed);
+    if (!identical(updatedTodos, current.todos)) {
+      await repo.updateProject(current.copyWith(todos: updatedTodos));
+      ref.invalidate(allProjectsStreamProvider);
+    }
+    final recent = ref.read(recentlyCompletedTodosProvider.notifier);
+    completed ? recent.add(todo.id) : recent.remove(todo.id);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CheckboxListTile(
-      value: false,
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final done = todo.completed;
+
+    return ListTile(
       dense: true,
-      controlAffinity: ListTileControlAffinity.leading,
+      // No onTap: the row is not a completion target (see the class doc).
+      leading: Checkbox(
+        value: done,
+        onChanged: (value) => _setCompleted(ref, value ?? false),
+      ),
       title: Text(
         todo.text,
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          decoration: done ? TextDecoration.lineThrough : null,
+          color: done
+              ? theme.textTheme.bodySmall?.color
+              : theme.textTheme.bodyMedium?.color,
+        ),
       ),
-      subtitle: todo.dueAt == null
+      subtitle: todo.dueAt == null || done
           ? null
           : Align(
               alignment: Alignment.centerLeft,
               child: TodoDueChip(dueAt: todo.dueAt!),
             ),
-      // Due dates are settable from the queue itself — planning them
-      // shouldn't mean opening every project in turn.
-      secondary: TodoDueButton(
-        todo: todo,
-        onDueDateChanged: (dueAt) async {
-          final repo = await ref.read(repositoryProvider.future);
-          final updated = dueAt == null
-              ? todo.copyWith(clearDueAt: true)
-              : todo.copyWith(dueAt: dueAt);
-          final updatedTodos = project.todos
-              .map((t) => t.id == todo.id ? updated : t)
-              .toList();
-          await repo.updateProject(project.copyWith(todos: updatedTodos));
-          ref.invalidate(allProjectsStreamProvider);
-        },
-      ),
-      onChanged: (_) async {
-        final repo = await ref.read(repositoryProvider.future);
-        final updatedTodos = project.todos
-            .map((t) => t.id == todo.id ? t.copyWith(completed: true) : t)
-            .toList();
-        await repo.updateProject(project.copyWith(todos: updatedTodos));
-        ref.invalidate(allProjectsStreamProvider);
-      },
+      trailing: done
+          // Undo replaces the due-date button while the row is struck
+          // through: re-dating something already done is meaningless, and
+          // getting it back is the only thing worth offering there.
+          ? TextButton.icon(
+              icon: const Icon(Icons.undo, size: 16),
+              label: Text(l10n.undo),
+              onPressed: () => _setCompleted(ref, false),
+            )
+          // Due dates are settable from the queue itself — planning them
+          // shouldn't mean opening every project in turn.
+          : TodoDueButton(
+              todo: todo,
+              onDueDateChanged: (dueAt) async {
+                final repo = await ref.read(repositoryProvider.future);
+                final updated = dueAt == null
+                    ? todo.copyWith(clearDueAt: true)
+                    : todo.copyWith(dueAt: dueAt);
+                final updatedTodos = project.todos
+                    .map((t) => t.id == todo.id ? updated : t)
+                    .toList();
+                await repo.updateProject(
+                    project.copyWith(todos: updatedTodos));
+                ref.invalidate(allProjectsStreamProvider);
+              },
+            ),
     );
   }
 }
-
 
 // ─── Release sections ────────────────────────────────────────────────────────
 
@@ -531,6 +572,8 @@ class _ReleaseTodoSectionState extends ConsumerState<_ReleaseTodoSection> {
   }
 }
 
+/// A release's task row. Same rules as [_TodoCheckItem] — see its docs for
+/// why completion is bound to the checkbox and why the write re-reads.
 class _ReleaseTodoCheckItem extends ConsumerWidget {
   final Release release;
   final TodoItem todo;
@@ -540,44 +583,70 @@ class _ReleaseTodoCheckItem extends ConsumerWidget {
     required this.todo,
   });
 
+  Future<void> _setCompleted(WidgetRef ref, bool completed) async {
+    final repo = await ref.read(repositoryProvider.future);
+    final current = ref.read(releasesProvider).value
+        ?.where((r) => r.id == release.id)
+        .firstOrNull ??
+        release;
+    final updatedTodos =
+        setTodoCompleted(current.todos, todo.id, completed: completed);
+    if (!identical(updatedTodos, current.todos)) {
+      await repo.updateRelease(current.copyWith(todos: updatedTodos));
+      ref.invalidate(releasesProvider);
+    }
+    final recent = ref.read(recentlyCompletedTodosProvider.notifier);
+    completed ? recent.add(todo.id) : recent.remove(todo.id);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CheckboxListTile(
-      value: false,
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final done = todo.completed;
+
+    return ListTile(
       dense: true,
-      controlAffinity: ListTileControlAffinity.leading,
+      leading: Checkbox(
+        value: done,
+        onChanged: (value) => _setCompleted(ref, value ?? false),
+      ),
       title: Text(
         todo.text,
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          decoration: done ? TextDecoration.lineThrough : null,
+          color: done
+              ? theme.textTheme.bodySmall?.color
+              : theme.textTheme.bodyMedium?.color,
+        ),
       ),
-      subtitle: todo.dueAt == null
+      subtitle: todo.dueAt == null || done
           ? null
           : Align(
               alignment: Alignment.centerLeft,
               child: TodoDueChip(dueAt: todo.dueAt!),
             ),
-      secondary: TodoDueButton(
-        todo: todo,
-        onDueDateChanged: (dueAt) async {
-          final repo = await ref.read(repositoryProvider.future);
-          final updated = dueAt == null
-              ? todo.copyWith(clearDueAt: true)
-              : todo.copyWith(dueAt: dueAt);
-          final updatedTodos = release.todos
-              .map((t) => t.id == todo.id ? updated : t)
-              .toList();
-          await repo.updateRelease(release.copyWith(todos: updatedTodos));
-          ref.invalidate(releasesProvider);
-        },
-      ),
-      onChanged: (_) async {
-        final repo = await ref.read(repositoryProvider.future);
-        final updatedTodos = release.todos
-            .map((t) => t.id == todo.id ? t.copyWith(completed: true) : t)
-            .toList();
-        await repo.updateRelease(release.copyWith(todos: updatedTodos));
-        ref.invalidate(releasesProvider);
-      },
+      trailing: done
+          ? TextButton.icon(
+              icon: const Icon(Icons.undo, size: 16),
+              label: Text(l10n.undo),
+              onPressed: () => _setCompleted(ref, false),
+            )
+          : TodoDueButton(
+              todo: todo,
+              onDueDateChanged: (dueAt) async {
+                final repo = await ref.read(repositoryProvider.future);
+                final updated = dueAt == null
+                    ? todo.copyWith(clearDueAt: true)
+                    : todo.copyWith(dueAt: dueAt);
+                final updatedTodos = release.todos
+                    .map((t) => t.id == todo.id ? updated : t)
+                    .toList();
+                await repo.updateRelease(
+                    release.copyWith(todos: updatedTodos));
+                ref.invalidate(releasesProvider);
+              },
+            ),
     );
   }
 }

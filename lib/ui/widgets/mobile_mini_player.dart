@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../models/music_project.dart';
 import '../../providers/providers.dart';
+import '../../utils/project_visuals.dart';
 import '../mobile_player_page.dart';
+import 'project_cover_avatar.dart';
 
 /// Barra estilo SoundCloud que aparece acima do NavigationBar quando há
 /// uma faixa tocando no mobile. Toque abre o [MobilePlayerPage] completo.
@@ -94,20 +97,9 @@ class _MobileMiniPlayerState extends ConsumerState<MobileMiniPlayer>
                 padding: const EdgeInsets.fromLTRB(12, 10, 8, 6),
                 child: Row(
                   children: [
-                    // Music note icon
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.music_note_rounded,
-                        size: 22,
-                        color: colorScheme.primary,
-                      ),
-                    ),
+                    // Thumbnail of the playing track, or the note icon when
+                    // it has none — same image the full player shows.
+                    _MiniArtwork(project: state.currentProject),
                     const SizedBox(width: 10),
 
                     // Track name — slides during drag, AnimatedSwitcher on track change
@@ -176,6 +168,43 @@ class _MiniPlayPauseButton extends ConsumerWidget {
           ref.read(mobilePlayerProvider.notifier).togglePlayPause(),
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(),
+    );
+  }
+}
+
+/// The mini player's 38 px tile: the playing project's cover art or accent
+/// badge (#110), falling back to the tinted note this bar has always shown.
+///
+/// Composes [ProjectCoverAvatar] so the bar, the full player and the
+/// dashboard row all draw the same thing; the note fallback is this widget's
+/// own, since the avatar collapses to nothing for an undecorated project.
+class _MiniArtwork extends StatelessWidget {
+  const _MiniArtwork({required this.project});
+
+  final MusicProject? project;
+
+  static const double _size = 38;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = project;
+    if (p != null && projectHasVisualIdentity(p)) {
+      return ProjectCoverAvatar(project: p, size: _size);
+    }
+
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      width: _size,
+      height: _size,
+      decoration: BoxDecoration(
+        color: colorScheme.primary.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(
+        Icons.music_note_rounded,
+        size: 22,
+        color: colorScheme.primary,
+      ),
     );
   }
 }

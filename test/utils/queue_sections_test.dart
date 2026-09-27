@@ -29,6 +29,7 @@ void main() {
     List<Release> releases = const [],
     String searchText = '',
     QueueDueFilter dueFilter = QueueDueFilter.all,
+    Set<String> keepVisibleTodoIds = const {},
   }) =>
       buildQueueSections(
         projects: projects.cast(),
@@ -36,6 +37,7 @@ void main() {
         searchText: searchText,
         dueFilter: dueFilter,
         now: now,
+        keepVisibleTodoIds: keepVisibleTodoIds,
       );
 
   group('what appears', () {
@@ -241,5 +243,100 @@ void main() {
     );
 
     expect(queuePendingCount(sections), 3);
+  });
+
+  // #157 — ticking a task off used to remove its row instantly, leaving no
+  // confirmation of what was checked and no way back. Completed rows now stay
+  // for the rest of the visit.
+  group('keepVisibleTodoIds', () {
+    test('a completed todo is dropped by default', () {
+      final sections = build(releases: [
+        release('EP', [todo('mix', completed: true), todo('master')]),
+      ]);
+
+      expect(sections.single.todos.map((t) => t.text), ['master']);
+    });
+
+    test('a completed todo is kept when its id is held visible', () {
+      final sections = build(
+        releases: [
+          release('EP', [todo('mix', completed: true), todo('master')]),
+        ],
+        keepVisibleTodoIds: {'mix'},
+      );
+
+      // Membership, not order: where a held row sits is decided by the
+      // existing due-date sort, which has its own tests.
+      expect(
+        sections.single.todos.map((t) => t.text),
+        containsAll(['mix', 'master']),
+      );
+      expect(sections.single.todos, hasLength(2));
+    });
+
+    test('holding the last todo visible keeps its section on screen', () {
+      // Otherwise completing the only task in a project makes the whole card
+      // disappear — the case that reads as "everything vanished at once".
+      final sections = build(
+        releases: [release('EP', [todo('mix', completed: true)])],
+        keepVisibleTodoIds: {'mix'},
+      );
+
+      expect(sections, hasLength(1));
+      expect(sections.single.todos.single.completed, isTrue);
+    });
+
+    test('without the hold, that section disappears', () {
+      final sections = build(
+        releases: [release('EP', [todo('mix', completed: true)])],
+      );
+
+      expect(sections, isEmpty);
+    });
+
+    test('an id that matches nothing changes nothing', () {
+      final sections = build(
+        releases: [release('EP', [todo('master')])],
+        keepVisibleTodoIds: {'not-a-todo'},
+      );
+
+      expect(sections.single.todos.map((t) => t.text), ['master']);
+    });
+
+    test('held rows still honour the search filter', () {
+      final sections = build(
+        releases: [
+          release('EP', [todo('mix', completed: true), todo('master')]),
+        ],
+        searchText: 'master',
+        keepVisibleTodoIds: {'mix'},
+      );
+
+      expect(sections.single.todos.map((t) => t.text), ['master']);
+    });
+  });
+
+  group('queuePendingCount with held rows', () {
+    test('a held completed row is not counted as outstanding', () {
+      // Ticking something off has to move the summary number, even though
+      // the row is still on screen.
+      final sections = build(
+        releases: [
+          release('EP', [todo('mix', completed: true), todo('master')]),
+        ],
+        keepVisibleTodoIds: {'mix'},
+      );
+
+      expect(sections.single.todos, hasLength(2));
+      expect(queuePendingCount(sections), 1);
+    });
+
+    test('counts every row when nothing is held', () {
+      final sections = build(
+        releases: [release('EP', [todo('mix'), todo('master')])],
+      );
+
+      expect(queuePendingCount(sections), 2);
+    });
   });
 }

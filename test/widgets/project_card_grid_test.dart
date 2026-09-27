@@ -469,4 +469,27 @@ void main() {
 
     expect(menus, ['a']);
   });
+
+  group('cardCoverFade', () {
+    // Cover art ran fully opaque to the bottom edge, where the launch,
+    // folder and play buttons sit, so a busy cover swallowed them.
+    test('fades from the top of the cover down to the bottom', () {
+      final g = cardCoverFade();
+      expect(g.begin, Alignment.topCenter);
+      expect(g.end, Alignment.bottomCenter);
+    });
+
+    test('is fully transparent at the bottom, where the buttons are', () {
+      expect(cardCoverFade().colors.last.a, 0.0);
+    });
+
+    test('keeps the top of the artwork at full strength', () {
+      final g = cardCoverFade();
+      expect(g.colors.first.a, 1.0);
+      expect(g.colors[1].a, 1.0);
+      expect(g.stops, [0.0, kCardCoverFadeStart, 1.0]);
+      expect(kCardCoverFadeStart, greaterThanOrEqualTo(0.5),
+          reason: 'the artwork should still read as the card picture');
+    });
+  });
 }

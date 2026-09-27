@@ -1583,7 +1583,6 @@
   },
   "share": "Condividi",
   "convertingAudioForSharing": "Preparazione dell'audio per la condivisione…",
-  "shareSheetUnavailable": "Il menu di condivisione di sistema non è disponibile qui — usa il pulsante \"Trascina per Condividere\" nell'anteprima del brano per trascinare il file su un'altra app.",
   "dragToShare": "Trascina per Condividere",
   "dragToShareTooltip": "Trascina questo sulla finestra di un'altra app (es: WhatsApp) per condividere il file direttamente — utile quando il pulsante Condividi non apre un menu di condivisione.",
   "mp3ConversionFailed": "La conversione audio non è disponibile su questo sistema — verrà condiviso il file originale, che alcune app come WhatsApp potrebbero rifiutare.",
@@ -3744,5 +3743,66 @@
   "discardArchiveButtonLabel": "Elimina archivio",
   "discardArchiveConfirmTitle": "Eliminare l'archivio?",
   "discardArchiveConfirmMessage": "Elimina lo zip e toglie il contrassegno di archiviato. I file del progetto restano dove sono.",
-  "discardArchiveDone": "Archivio eliminato"
+  "discardArchiveDone": "Archivio eliminato",
+
+  "whatsNewTitle": "Novità",
+  "whatsNewTitleWithVersion": "Novità nella versione {version}",
+  "whatsNewIntro": "Ecco cosa è cambiato dalla tua versione precedente.",
+  "whatsNewGotIt": "Ho capito",
+  "changelogFullButton": "Changelog completo",
+  "changelogPageTitle": "Changelog",
+  "changelogEmpty": "Nessun changelog disponibile per questa build.",
+  "changelogCurrentVersionBadge": "Installata",
+  "disableProjectFolderTooltip": "Disattiva questa cartella (mantiene i progetti)",
+  "enableProjectFolderTooltip": "Attiva questa cartella",
+  "projectFolderDisabledBadge": "Disattivata",
+  "projectFolderDisabledExplanation": "Non viene scansionata e i suoi progetti sono nascosti. Non è stato eliminato nulla: riattivala per recuperarli.",
+  "projectFolderEnabled": "\"{name}\" viene nuovamente scansionata",
+  "projectFolderDisabled": "\"{name}\" è disattivata: i suoi progetti sono nascosti, non eliminati",
+  "releaseArtworkCarryOverTitle": "Usare la copertina di una traccia?",
+  "releaseArtworkCarryOverBody": "{count, plural, =1{Una delle tracce selezionate ha una copertina. Usarla come copertina di questa pubblicazione?} other{{count} delle tracce selezionate hanno una copertina. Scegline una come copertina di questa pubblicazione.}}",
+  "releaseArtworkCarryOverUse": "Usa come copertina",
+  "releaseArtworkCarryOverSkip": "Nessuna copertina",
+  "tracksViewList": "Vista elenco",
+  "tracksViewTable": "Vista tabella",
+
+  "partsColumn": "Parti",
+  "partsNeededCount": "{count, plural, =1{1 parte ancora necessaria} other{{count} parti ancora necessarie}}",
+
+  "songLength": "Durata",
+  "songLengthColumn": "Durata",
+  "songLengthHint": "3:45",
+  "songLengthManual": "Inserita a mano: svuota il campo per usare la durata dell’anteprima",
+  "songLengthFromPreview": "Misurata dall’anteprima",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "Durata totale",
+  "releaseLengthPartial": "{count, plural, =1{Totale parziale: 1 traccia non ha ancora una durata} other{Totale parziale: {count} tracce non hanno ancora una durata}}",
+
+  "breadcrumbHome": "Home",
+  "breadcrumbGoTo": "Vai a {label}",
+
+  "scrollForMore": "Scorri per vedere altro",
+
+  "shortcutPlayerMono": "Attiva/disattiva la riproduzione mono",
+  "shortcutPlayerVolume": "Regola il volume",
+  "shortcutMouseWheel": "Rotellina",
+
+  "releaseTotalLengthLabel": "Durata totale",
+  "releaseLengthNone": "Nessuna traccia ha ancora una durata: riproduci una traccia o inserisci la durata nella pagina del progetto",
+
+  "songLengthHowItWorks": "Compilata automaticamente dall’anteprima: quando viene riprodotta o quando si apre una pubblicazione che contiene questa traccia. Puoi anche inserirla: 3:45, 1:02:03 o in secondi.",
+
+  "changelogSectionSubtitle": "Tutto ciò che è cambiato in ogni versione, dalla più recente.",
+
+  "changelogSearchHint": "Cerca nel changelog",
+  "changelogNoMatches": "Nessuna modifica corrisponde a \"{query}\"",
+
+  "projectFileMenu": "File",
+  "moreActions": "Altre azioni",
+
+  "sectionRailResizeHint": "Trascina per ridimensionare · doppio clic per ripristinare",
+
+  "stackMetadataCoverArtLabel": "copertina",
+  "stackMetadataColorLabel": "colore d'accento",
+  "stackMetadataIconLabel": "icona"
 }

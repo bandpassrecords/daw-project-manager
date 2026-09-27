@@ -158,17 +158,13 @@ Future<void> shareProjectPreview(
         ),
       );
     } else {
-      final result = await SharePlus.instance.share(
+      // No "share menu unavailable" warning on `unavailable`: share_plus
+      // returns that status on Windows every time, right after the share
+      // menu has opened — Windows does not report what the user picked. A
+      // share that really fails throws, and the catch below reports it.
+      await SharePlus.instance.share(
         ShareParams(files: [XFile(fileToShare.path)], text: shareText),
       );
-      // Unpackaged Windows builds have no working share sheet
-      // (DataTransferManager needs MSIX) — without this the click does
-      // nothing visible at all.
-      if (result.status == ShareResultStatus.unavailable) {
-        messenger.showSnackBar(
-          SnackBar(content: Text(l10n.shareSheetUnavailable)),
-        );
-      }
     }
   } catch (e) {
     messenger.showSnackBar(

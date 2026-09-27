@@ -41,12 +41,18 @@ class QueueSection {
 /// queue reads as "what is actually due next" rather than "who has the longest
 /// backlog". Sections with nothing dated fall back to the old pending-count
 /// order, which is what the queue looked like before due dates existed.
+/// [keepVisibleTodoIds] are todos that have been completed *during this visit*
+/// to the queue and should stay on screen anyway, struck through and undoable.
+/// Ticking something off and watching it vanish leaves no way to tell what was
+/// just checked, and no way back if it was the wrong row. They disappear on
+/// the next visit, which is what keeps the queue a list of outstanding work.
 List<QueueSection> buildQueueSections({
   required List<MusicProject> projects,
   required List<Release> releases,
   required String searchText,
   required QueueDueFilter dueFilter,
   required DateTime now,
+  Set<String> keepVisibleTodoIds = const {},
 }) {
   final search = searchText.toLowerCase().trim();
 
@@ -55,7 +61,7 @@ List<QueueSection> buildQueueSections({
     // todo has to match on its own text.
     final ownerMatches = search.isNotEmpty && fuzzyMatchAll(ownerName, search);
     return sortTodosByDue(todos.where((t) =>
-        !t.completed &&
+        (!t.completed || keepVisibleTodoIds.contains(t.id)) &&
         matchesDueFilter(t, dueFilter, now) &&
         (search.isEmpty || ownerMatches || fuzzyMatchAll(t.text, search))));
   }
@@ -94,5 +100,11 @@ List<QueueSection> buildQueueSections({
 }
 
 /// Total pending todos across [sections] — the number in the summary line.
-int queuePendingCount(Iterable<QueueSection> sections) =>
-    sections.fold<int>(0, (sum, s) => sum + s.todos.length);
+///
+/// Counts only what is still outstanding: a todo held on screen by
+/// `keepVisibleTodoIds` has been done, and counting it would make ticking
+/// something off leave the total unchanged.
+int queuePendingCount(Iterable<QueueSection> sections) => sections.fold<int>(
+      0,
+      (sum, s) => sum + s.todos.where((t) => !t.completed).length,
+    );

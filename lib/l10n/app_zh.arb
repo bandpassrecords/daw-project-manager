@@ -1583,7 +1583,6 @@
   },
   "share": "分享",
   "convertingAudioForSharing": "正在准备要分享的音频…",
-  "shareSheetUnavailable": "系统分享菜单在此不可用——请改用歌曲预览中的“拖动以分享”按钮，将文件拖到其他应用中。",
   "dragToShare": "拖动以分享",
   "dragToShareTooltip": "把它拖到另一个应用的窗口（例如 WhatsApp）即可直接分享文件——当“分享”按钮无法打开分享菜单时很有用。",
   "mp3ConversionFailed": "此系统不支持音频转换——将分享原始文件，但某些应用（如 WhatsApp）可能会拒绝该文件。",
@@ -3744,5 +3743,66 @@
   "discardArchiveButtonLabel": "丢弃归档",
   "discardArchiveConfirmTitle": "要丢弃归档吗？",
   "discardArchiveConfirmMessage": "删除 zip 并清除归档标记。项目自身的文件会留在原处。",
-  "discardArchiveDone": "已丢弃归档"
+  "discardArchiveDone": "已丢弃归档",
+
+  "whatsNewTitle": "新增功能",
+  "whatsNewTitleWithVersion": "{version} 版本的新增功能",
+  "whatsNewIntro": "以下是自上一个版本以来的变化。",
+  "whatsNewGotIt": "知道了",
+  "changelogFullButton": "完整更新日志",
+  "changelogPageTitle": "更新日志",
+  "changelogEmpty": "此版本没有可用的更新日志。",
+  "changelogCurrentVersionBadge": "已安装",
+  "disableProjectFolderTooltip": "停用此文件夹（保留其项目）",
+  "enableProjectFolderTooltip": "启用此文件夹",
+  "projectFolderDisabledBadge": "已停用",
+  "projectFolderDisabledExplanation": "不会被扫描，其项目会被隐藏。没有删除任何内容——重新启用即可恢复。",
+  "projectFolderEnabled": "已重新开始扫描“{name}”",
+  "projectFolderDisabled": "已停用“{name}”——其项目被隐藏，而非删除",
+  "releaseArtworkCarryOverTitle": "使用曲目的封面吗？",
+  "releaseArtworkCarryOverBody": "{count, plural, other{所选曲目中有 {count} 个带有封面。请选择一个作为此发行的封面。}}",
+  "releaseArtworkCarryOverUse": "用作封面",
+  "releaseArtworkCarryOverSkip": "不使用封面",
+  "tracksViewList": "列表视图",
+  "tracksViewTable": "表格视图",
+
+  "partsColumn": "声部",
+  "partsNeededCount": "{count, plural, other{仍需 {count} 个声部}}",
+
+  "songLength": "时长",
+  "songLengthColumn": "时长",
+  "songLengthHint": "3:45",
+  "songLengthManual": "手动输入——清空后将使用预览歌曲的时长",
+  "songLengthFromPreview": "根据预览歌曲测得",
+  "releaseLengthAtLeast": "{total}+",
+  "releaseLengthComplete": "总时长",
+  "releaseLengthPartial": "{count, plural, other{当前合计——仍有 {count} 首曲目没有时长}}",
+
+  "breadcrumbHome": "主页",
+  "breadcrumbGoTo": "前往{label}",
+
+  "scrollForMore": "滚动查看更多",
+
+  "shortcutPlayerMono": "切换单声道播放",
+  "shortcutPlayerVolume": "调整音量",
+  "shortcutMouseWheel": "滚轮",
+
+  "releaseTotalLengthLabel": "总时长",
+  "releaseLengthNone": "还没有曲目设置时长——播放曲目，或在项目页面输入时长",
+
+  "songLengthHowItWorks": "根据预览歌曲自动填写——在播放时，或打开包含此曲目的发行时。也可以手动输入：3:45、1:02:03 或秒数。",
+
+  "changelogSectionSubtitle": "每个版本的所有变更，按从新到旧排列。",
+
+  "changelogSearchHint": "搜索更新日志",
+  "changelogNoMatches": "没有与“{query}”匹配的变更",
+
+  "projectFileMenu": "文件",
+  "moreActions": "更多操作",
+
+  "sectionRailResizeHint": "拖动调整宽度 · 双击恢复默认",
+
+  "stackMetadataCoverArtLabel": "封面",
+  "stackMetadataColorLabel": "强调色",
+  "stackMetadataIconLabel": "图标"
 }

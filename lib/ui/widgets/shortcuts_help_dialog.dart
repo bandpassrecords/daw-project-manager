@@ -80,6 +80,11 @@ class ShortcutsHelpDialog extends StatelessWidget {
                   ShortcutEntry(keys: ['Space'], description: l10n.shortcutPlayerPlayPause),
                   ShortcutEntry(keys: ['←  /  →'], description: l10n.shortcutPlayerSeek5),
                   ShortcutEntry(keys: [isMac ? '⌃' : 'Ctrl', '←  /  →'], description: l10n.shortcutPlayerSeek30),
+                  ShortcutEntry(keys: ['M'], description: l10n.shortcutPlayerMono),
+                  ShortcutEntry(
+                    keys: [isMac ? '⌘' : 'Ctrl', l10n.shortcutMouseWheel],
+                    description: l10n.shortcutPlayerVolume,
+                  ),
                 ],
               ),
               ShortcutGroup(
