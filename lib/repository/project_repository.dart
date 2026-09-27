@@ -23,11 +23,31 @@ import '../models/template_root.dart';
 import '../models/playlist.dart';
 import '../models/project_event.dart';
 import '../services/metadata_extractor.dart';
-import '../services/notification_background_service.dart';
-import '../utils/app_paths.dart';
+import '../services/deadline_notification_service.dart';
+import '../utils/app_paths.dart';
+
 import '../utils/version_stacks.dart';
 import 'profile_repository.dart';
 import '../models/profile.dart';
+
+/// Replaces every pending deadline notification with the set planned from
+/// [projects] and [releases]. See [ProjectRepository.rescheduleDeadlines].
+typedef DeadlineNotificationRescheduler = Future<void> Function({
+  required List<MusicProject> projects,
+  required List<Release> releases,
+});
+
+Future<void> _scheduleWithDeadlineNotificationService({
+  required List<MusicProject> projects,
+  required List<Release> releases,
+}) async {
+  // Notifications are Android-only; skip reading the boxes anywhere else.
+  if (!Platform.isAndroid) return;
+  await DeadlineNotificationService().scheduleAllDeadlineNotifications(
+    projects: projects,
+    releases: releases,
+  );
+}
 
 class ProjectRepository {
   final String profileId;
@@ -39,6 +59,10 @@ class ProjectRepository {
   final Box<ProjectEvent> eventsBox;
   // Global (profile-agnostic) key-value settings box
   final Box<String> appSettingsBox;
+
+  /// How a save that can change a deadline or a todo due date reaches the
+  /// notification scheduler. Tests pass a recorder; the app uses the default.
+  final DeadlineNotificationRescheduler rescheduleDeadlineNotifications;
   final _uuid = const Uuid();
 
   static const _keyCustomMixdownFolder = 'customMixdownFolder';
@@ -55,6 +79,8 @@ class ProjectRepository {
     required this.playlistsBox,
     required this.eventsBox,
     required this.appSettingsBox,
+    this.rescheduleDeadlineNotifications =
+        _scheduleWithDeadlineNotificationService,
   });
 
   // Closes every per-profile box this repository opened, so switching to a
@@ -598,6 +624,7 @@ class ProjectRepository {
   Future<void> deleteProjectsPermanently(Iterable<String> projectIds) async {
     await projectsBox.deleteAll(projectIds);
     await cleanUpDanglingStackLinks();
+    await rescheduleDeadlines();
   }
 
   List<ScanRoot> getRoots() => rootsBox.values.toList(growable: false);
@@ -1410,14 +1437,24 @@ class ProjectRepository {
   Future<void> updateProject(MusicProject project) async {
     final updatedProject = project.copyWith(updatedAt: DateTime.now());
     await projectsBox.put(updatedProject.id, updatedProject);
+    await rescheduleDeadlines();
+  }
 
-    // Reschedule notifications if on Android and deadline changed
-    if (Platform.isAndroid) {
-      try {
-        await NotificationBackgroundService.triggerCheck();
-      } catch (e) {
-        if (kDebugMode) print('Error rescheduling notifications: $e');
-      }
+  /// Re-plans deadline notifications from this profile's projects *and*
+  /// releases, so a project deadline, a project todo's due date and a release
+  /// todo's due date all stay scheduled (#113).
+  ///
+  /// The scheduler cancels everything before scheduling, so it must always be
+  /// handed the whole picture — a call that left out the releases would
+  /// silently drop every release todo reminder.
+  Future<void> rescheduleDeadlines() async {
+    try {
+      await rescheduleDeadlineNotifications(
+        projects: getAllProjects(),
+        releases: getAllReleases(),
+      );
+    } catch (e) {
+      if (kDebugMode) print('Error rescheduling notifications: $e');
     }
   }
 
@@ -1644,14 +1681,17 @@ class ProjectRepository {
   // Releases
   Future<void> addRelease(Release release) async {
     await releasesBox.put(release.id, release);
+    await rescheduleDeadlines();
   }
 
   Future<void> updateRelease(Release release) async {
     await releasesBox.put(release.id, release);
+    await rescheduleDeadlines();
   }
 
   Future<void> deleteRelease(String releaseId) async {
     await releasesBox.delete(releaseId);
+    await rescheduleDeadlines();
   }
 
   List<Release> getAllReleases() => releasesBox.values.toList(growable: false);

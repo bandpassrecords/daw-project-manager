@@ -508,11 +508,11 @@ class DeadlineNotificationService {
         scheduledCount++;
       }
 
-      // Verify pending notifications after scheduling
-      await Future.delayed(const Duration(milliseconds: 500));
-      final pendingNotifications = await _notifications.pendingNotificationRequests();
-      
+      // Verify pending notifications after scheduling. Debug only: every
+      // project/release save reschedules, and the delay would stall each one.
       if (kDebugMode) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        final pendingNotifications = await _notifications.pendingNotificationRequests();
         print('[DeadlineNotification] Total notifications scheduled: $scheduledCount');
         print('[DeadlineNotification] Total pending notifications: ${pendingNotifications.length}');
         for (var notif in pendingNotifications) {

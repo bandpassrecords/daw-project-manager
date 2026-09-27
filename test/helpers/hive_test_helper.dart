@@ -75,6 +75,7 @@ class HiveTestHelper {
 
   static Future<ProjectRepository> createRepository({
     String profileId = 'test-profile',
+    DeadlineNotificationRescheduler? rescheduleDeadlineNotifications,
   }) async {
     final projectsBox = await Hive.openBox<MusicProject>('${profileId}_projects');
     final rootsBox = await Hive.openBox<ScanRoot>('${profileId}_roots');
@@ -93,6 +94,13 @@ class HiveTestHelper {
       playlistsBox: playlistsBox,
       eventsBox: eventsBox,
       appSettingsBox: appSettingsBox,
+      rescheduleDeadlineNotifications:
+          rescheduleDeadlineNotifications ?? _noDeadlineNotifications,
     );
   }
+
+  static Future<void> _noDeadlineNotifications({
+    required List<MusicProject> projects,
+    required List<Release> releases,
+  }) async {}
 }
