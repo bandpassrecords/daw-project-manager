@@ -79,6 +79,15 @@ void main() {
       expect(text, isNot(contains('BPM:')));
       expect(text, isNot(contains('Key:')));
       expect(text, isNot(contains('Parts:')));
+      expect(text, isNot(contains('Tags:')));
+    });
+
+    test('lists the tags on one line (#109)', () {
+      final project = TestFactories.makeProject(tags: ['trap', '🔥🔥🔥']);
+
+      final text = ProjectTextExportService.formatProject(project, l10n);
+
+      expect(text, contains('Tags: trap, 🔥🔥🔥'));
     });
 
     test('lists each part with its performer, status and progress summary', () {

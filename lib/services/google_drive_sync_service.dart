@@ -3964,6 +3964,7 @@ class GoogleDriveSyncService {
         !_todosEqual(remote.todos, local.todos) ||
         !_listEquals(remote.parts, local.parts) ||
         !_listEquals(remote.attachments, local.attachments) ||
+        !_listEquals(remote.tags, local.tags) ||
         remote.bpm != local.bpm ||
         remote.musicalKey != local.musicalKey ||
         remote.status != local.status ||
@@ -4503,6 +4504,7 @@ class GoogleDriveSyncService {
                     todos: remoteProject.todos,
                     parts: remoteProject.parts,
                     attachments: remoteProject.attachments,
+                    tags: remoteProject.tags,
                     bpm: remoteProject.bpm,
                     musicalKey: remoteProject.musicalKey,
                     status: remoteProject.status,
@@ -5514,6 +5516,8 @@ class GoogleDriveSyncService {
       // that holds the metadata but not the audio file.
       'durationMs': project.durationMs,
       'autoDurationMs': project.autoDurationMs,
+      // User data (#109) — lost on every restore if left out.
+      'tags': project.tags,
     };
   }
 
@@ -5594,6 +5598,10 @@ class GoogleDriveSyncService {
       archiveEntryPath: data['archiveEntryPath'] as String?,
       durationMs: (data['durationMs'] as num?)?.toInt(),
       autoDurationMs: (data['autoDurationMs'] as num?)?.toInt(),
+      tags: [
+        for (final tag in (data['tags'] as List?) ?? const [])
+          if (tag is String) tag,
+      ],
     );
   }
 
@@ -5927,6 +5935,7 @@ class GoogleDriveSyncService {
         todos: remoteProject.todos,
         parts: remoteProject.parts,
         attachments: remoteProject.attachments,
+        tags: remoteProject.tags,
         bpm: remoteProject.bpm,
         musicalKey: remoteProject.musicalKey,
         status: remoteProject.status,

@@ -3804,5 +3804,65 @@
 
   "stackMetadataCoverArtLabel": "portada",
   "stackMetadataColorLabel": "color de acento",
-  "stackMetadataIconLabel": "icono"
+  "stackMetadataIconLabel": "icono",
+  "projectTags": "Etiquetas",
+  "filterByTag": "Filtrar por etiqueta",
+  "allTags": "Todas las etiquetas",
+  "addTagHint": "Añadir una etiqueta…",
+  "tagsHelper": "Pulsa Intro para añadir. Género, ambiente, cliente, emoji: lo que quieras usar para filtrar.",
+  "removeTagTooltip": "Quitar la etiqueta \"{tag}\"",
+  "@removeTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterByThisTagTooltip": "Mostrar solo proyectos con la etiqueta \"{tag}\"",
+  "@filterByThisTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "sortByTags": "Etiquetas",
+  "bulkTagsButton": "Etiquetas",
+  "bulkTagsTitle": "{count, plural, =1{Etiquetar 1 proyecto} other{Etiquetar {count} proyectos}}",
+  "@bulkTagsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkTagsAddLabel": "Añadir una etiqueta a todos los proyectos seleccionados",
+  "bulkTagsRemoveLabel": "Quitar una etiqueta de la selección",
+  "bulkTagsNoneToRemove": "Ninguno de los proyectos seleccionados tiene etiquetas todavía.",
+  "bulkTagsUpdated": "{count, plural, =0{Nada que cambiar} =1{1 proyecto actualizado} other{{count} proyectos actualizados}}",
+  "@bulkTagsUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stackMetadataTagsLabel": "{count, plural, =1{1 etiqueta} other{{count} etiquetas}}",
+  "@stackMetadataTagsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectExportTagsLabel": "Etiquetas: {tags}",
+  "@projectExportTagsLabel": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "enableTags": "Activar etiquetas",
+  "tagsSettingDescription": "Ponle tus propias etiquetas a los proyectos y filtra, busca y ordena por ellas. Al desactivarlo solo se ocultan: las etiquetas que ya añadiste se conservan."
 }

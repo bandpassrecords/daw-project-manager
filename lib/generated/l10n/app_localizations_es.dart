@@ -5770,4 +5770,93 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stackMetadataIconLabel => 'icono';
+
+  @override
+  String get projectTags => 'Etiquetas';
+
+  @override
+  String get filterByTag => 'Filtrar por etiqueta';
+
+  @override
+  String get allTags => 'Todas las etiquetas';
+
+  @override
+  String get addTagHint => 'Añadir una etiqueta…';
+
+  @override
+  String get tagsHelper =>
+      'Pulsa Intro para añadir. Género, ambiente, cliente, emoji: lo que quieras usar para filtrar.';
+
+  @override
+  String removeTagTooltip(String tag) {
+    return 'Quitar la etiqueta \"$tag\"';
+  }
+
+  @override
+  String filterByThisTagTooltip(String tag) {
+    return 'Mostrar solo proyectos con la etiqueta \"$tag\"';
+  }
+
+  @override
+  String get sortByTags => 'Etiquetas';
+
+  @override
+  String get bulkTagsButton => 'Etiquetas';
+
+  @override
+  String bulkTagsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Etiquetar $count proyectos',
+      one: 'Etiquetar 1 proyecto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bulkTagsAddLabel =>
+      'Añadir una etiqueta a todos los proyectos seleccionados';
+
+  @override
+  String get bulkTagsRemoveLabel => 'Quitar una etiqueta de la selección';
+
+  @override
+  String get bulkTagsNoneToRemove =>
+      'Ninguno de los proyectos seleccionados tiene etiquetas todavía.';
+
+  @override
+  String bulkTagsUpdated(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count proyectos actualizados',
+      one: '1 proyecto actualizado',
+      zero: 'Nada que cambiar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stackMetadataTagsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count etiquetas',
+      one: '1 etiqueta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String projectExportTagsLabel(String tags) {
+    return 'Etiquetas: $tags';
+  }
+
+  @override
+  String get enableTags => 'Activar etiquetas';
+
+  @override
+  String get tagsSettingDescription =>
+      'Ponle tus propias etiquetas a los proyectos y filtra, busca y ordena por ellas. Al desactivarlo solo se ocultan: las etiquetas que ya añadiste se conservan.';
 }

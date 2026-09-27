@@ -55,6 +55,7 @@ class TestFactories {
     String? archiveEntryPath,
     int? durationMs,
     int? autoDurationMs,
+    List<String>? tags,
   }) {
     return MusicProject(
       id: id,
@@ -104,6 +105,7 @@ class TestFactories {
       archiveEntryPath: archiveEntryPath,
       durationMs: durationMs,
       autoDurationMs: autoDurationMs,
+      tags: tags ?? const [],
     );
   }
 

@@ -29,6 +29,7 @@ import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/player_shortcuts.dart';
 import '../services/player_volume_store.dart';
+import '../utils/project_tags.dart';
 import '../utils/track_duration.dart';
 import '../utils/file_launcher.dart';
 import '../utils/playback_seek.dart';
@@ -57,6 +58,7 @@ import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_attachments_section.dart';
+import 'widgets/project_tags_editor.dart';
 import 'widgets/project_detail_header.dart';
 import 'widgets/project_markers_section.dart';
 import 'widgets/project_versions_section.dart';
@@ -156,6 +158,37 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     }
   }
 
+
+  // --- Tags (#109) -----------------------------------------------------------
+  //
+  // Saved straight away, like the deadline, rather than through the debounced
+  // autosave: a chip that appears is a tag that is stored. Both read the
+  // project fresh from the box so a pending autosave can't be undone by a
+  // stale copy captured when the page last built.
+
+  Future<void> _addTag(ProjectRepository repo, String raw) async {
+    final project = repo.projectsBox.get(widget.projectId);
+    if (project == null) return;
+    final tag = canonicalTag(raw, ref.read(availableTagsProvider));
+    if (tag == null) return;
+    final tags = addTag(project.tags, tag);
+    if (identical(tags, project.tags)) return;
+    await repo.updateProject(
+      project.copyWith(tags: tags, updatedAt: DateTime.now()),
+    );
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
+
+  Future<void> _removeTag(ProjectRepository repo, String tag) async {
+    final project = repo.projectsBox.get(widget.projectId);
+    if (project == null) return;
+    final tags = removeTag(project.tags, tag);
+    if (identical(tags, project.tags)) return;
+    await repo.updateProject(
+      project.copyWith(tags: tags, updatedAt: DateTime.now()),
+    );
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
 
   // --- Attachments (#112) -------------------------------------------------
   //
@@ -1665,6 +1698,19 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                 ),
                               ),
                             ),
+                            // Tags (#109), when switched on in Settings.
+                            if (ref.watch(tagsEnabledProvider)) ...[
+                            const SizedBox(height: 12),
+                            ProjectTagsEditor(
+                              tags: updatedProject.tags,
+                              suggestions: ref.watch(availableTagsProvider),
+                              hintText: l10n.addTagHint,
+                              helperText: l10n.tagsHelper,
+                              removeTooltip: l10n.removeTagTooltip,
+                              onAdd: (raw) => _addTag(repo, raw),
+                              onRemove: (tag) => _removeTag(repo, tag),
+                            ),
+                            ],
 
                             const SizedBox(height: 24),
                           ],

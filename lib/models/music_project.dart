@@ -340,6 +340,15 @@ class MusicProject {
   @HiveField(46)
   final int? autoDurationMs;
 
+  /// The user's own labels for this song (#109) — "trap", "for the Luna EP",
+  /// "needs vocals", "🔥🔥🔥". Free text, in the order they were added.
+  ///
+  /// Never two that differ only by case: the helpers in
+  /// `lib/utils/project_tags.dart` are the only writers and compare
+  /// case-insensitively, so "Trap" and "trap" can't split one filter in two.
+  @HiveField(47)
+  final List<String> tags;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -388,6 +397,7 @@ class MusicProject {
     this.archiveEntryPath,
     this.durationMs,
     this.autoDurationMs,
+    this.tags = const [],
   });
 
   /// Whether this project's files have been zipped out to an archive (#116).
@@ -420,6 +430,7 @@ class MusicProject {
       todos.isNotEmpty ||
       parts.isNotEmpty ||
       attachments.isNotEmpty ||
+      tags.isNotEmpty ||
       totalWorkSeconds > 0;
 
   /// Whether the user has given this project a look of its own: cover art, an
@@ -725,6 +736,7 @@ class MusicProject {
     bool clearDurationMs = false,
     int? autoDurationMs,
     bool clearArchiveEntryPath = false,
+    List<String>? tags,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -782,6 +794,7 @@ class MusicProject {
       // field's doc.
       durationMs: clearDurationMs ? null : (durationMs ?? this.durationMs),
       autoDurationMs: autoDurationMs ?? this.autoDurationMs,
+      tags: tags ?? this.tags,
     );
   }
 
@@ -877,13 +890,18 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       // Absent in every box written before song length existed.
       durationMs: fields[45] as int?,
       autoDurationMs: fields[46] as int?,
+      // Absent in every box written before tags existed (#109). Type-tested
+      // for the same reason as accentColor above.
+      tags: fields[47] is List
+          ? List<String>.unmodifiable((fields[47] as List).whereType<String>())
+          : const <String>[],
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(47) // 47 fields (0-46)
+      ..writeByte(48) // 48 fields (0-47)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -977,6 +995,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(45)
       ..write(obj.durationMs)
       ..writeByte(46)
-      ..write(obj.autoDurationMs);
+      ..write(obj.autoDurationMs)
+      ..writeByte(47)
+      ..write(obj.tags);
   }
 }

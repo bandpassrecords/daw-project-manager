@@ -972,6 +972,8 @@ class BackupService {
       // are carried.
       'durationMs': project.durationMs,
       'autoDurationMs': project.autoDurationMs,
+      // User data (#109) — see the Drive serializer.
+      'tags': project.tags,
     };
   }
 
@@ -1040,6 +1042,10 @@ class BackupService {
       archiveEntryPath: json['archiveEntryPath'] as String?,
       durationMs: (json['durationMs'] as num?)?.toInt(),
       autoDurationMs: (json['autoDurationMs'] as num?)?.toInt(),
+      tags: [
+        for (final tag in (json['tags'] as List?) ?? const [])
+          if (tag is String) tag,
+      ],
     );
   }
 

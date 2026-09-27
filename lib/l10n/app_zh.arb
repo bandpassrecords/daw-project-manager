@@ -3804,5 +3804,65 @@
 
   "stackMetadataCoverArtLabel": "封面",
   "stackMetadataColorLabel": "强调色",
-  "stackMetadataIconLabel": "图标"
+  "stackMetadataIconLabel": "图标",
+  "projectTags": "标签",
+  "filterByTag": "按标签筛选",
+  "allTags": "全部标签",
+  "addTagHint": "添加标签…",
+  "tagsHelper": "按 Enter 添加。流派、情绪、客户、表情符号——任何你想用来筛选的内容。",
+  "removeTagTooltip": "移除标签“{tag}”",
+  "@removeTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterByThisTagTooltip": "只显示带有标签“{tag}”的项目",
+  "@filterByThisTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "sortByTags": "标签",
+  "bulkTagsButton": "标签",
+  "bulkTagsTitle": "{count, plural, other{为 {count} 个项目添加标签}}",
+  "@bulkTagsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkTagsAddLabel": "为所有选中的项目添加标签",
+  "bulkTagsRemoveLabel": "从所选项目中移除标签",
+  "bulkTagsNoneToRemove": "所选项目还没有任何标签。",
+  "bulkTagsUpdated": "{count, plural, =0{没有需要更改的内容} other{已更新 {count} 个项目}}",
+  "@bulkTagsUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stackMetadataTagsLabel": "{count, plural, other{{count} 个标签}}",
+  "@stackMetadataTagsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectExportTagsLabel": "标签：{tags}",
+  "@projectExportTagsLabel": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "enableTags": "启用标签",
+  "tagsSettingDescription": "为项目添加自定义标签，并按标签筛选、搜索和排序。关闭后只是隐藏标签，已添加的标签会保留。"
 }

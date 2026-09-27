@@ -43,6 +43,9 @@ class ProjectTextExportService {
       );
     }
     buffer.writeln(l10n.projectExportStatusLabel(project.status));
+    if (project.tags.isNotEmpty) {
+      buffer.writeln(l10n.projectExportTagsLabel(project.tags.join(', ')));
+    }
     if (project.bpm != null) {
       buffer.writeln(l10n.projectExportBpmLabel(_formatBpm(project.bpm!)));
     }

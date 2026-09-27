@@ -660,6 +660,63 @@ void main() {
       expect(restored.archiveEntryPath, 'Midnight/Midnight.als');
       expect(restored.isArchived, isTrue);
     });
+
+    test('preserves tags, in order (#109)', () async {
+      final original = TestFactories.makeProject(
+        id: 'tags-round-trip',
+        tags: ['trap', 'for the Luna EP', '🔥🔥🔥'],
+      );
+
+      final box = await Hive.openBox<MusicProject>('tags_round_trip');
+      await box.put(original.id, original);
+      await box.close();
+      // Reopened so the value really comes back through the adapter rather
+      // than out of the box's in-memory cache.
+      final reopened = await Hive.openBox<MusicProject>('tags_round_trip');
+
+      expect(
+        reopened.get(original.id)!.tags,
+        ['trap', 'for the Luna EP', '🔥🔥🔥'],
+      );
+    });
+
+    test('reads a record written before tags existed as untagged (#109)', () async {
+      // Written by an adapter that only knows the fields every build has
+      // always written — the shape of a record from an older version, where
+      // field 47 is simply absent.
+      Hive.registerAdapter<MusicProject>(_PreTagsAdapter(), override: true);
+      final box = await Hive.openBox<MusicProject>('pre_tags_record');
+      try {
+        await box.put('old', TestFactories.makeProject(id: 'old'));
+        await box.close();
+      } finally {
+        Hive.registerAdapter<MusicProject>(MusicProjectAdapter(), override: true);
+      }
+
+      final reopened = await Hive.openBox<MusicProject>('pre_tags_record');
+      final restored = reopened.get('old')!;
+
+      expect(restored.id, 'old');
+      expect(restored.tags, isEmpty);
+    });
+  });
+
+  group('MusicProject tags (#109)', () {
+    test('default to empty', () {
+      expect(TestFactories.makeProject().tags, isEmpty);
+    });
+
+    test('copyWith replaces them and otherwise keeps them', () {
+      final p = TestFactories.makeProject(tags: ['a']);
+
+      expect(p.copyWith(tags: ['b']).tags, ['b']);
+      expect(p.copyWith(bpm: 120).tags, ['a']);
+    });
+
+    test('count as user metadata, so stacking asks whose details to keep', () {
+      expect(TestFactories.makeProject().hasUserMetadata, isFalse);
+      expect(TestFactories.makeProject(tags: ['trap']).hasUserMetadata, isTrue);
+    });
   });
 
   group('MusicProject.previewShareFileName', () {
@@ -876,4 +933,32 @@ void main() {
       expect(restored.isMissingFileCandidate, isTrue);
     });
   });
+}
+
+/// Writes only the fields every version of the adapter has always written, so
+/// a record looks like one from a build that predates the newer fields.
+class _PreTagsAdapter extends MusicProjectAdapter {
+  @override
+  void write(BinaryWriter writer, MusicProject obj) {
+    writer
+      ..writeByte(9)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.filePath)
+      ..writeByte(2)
+      ..write(obj.fileName)
+      ..writeByte(3)
+      ..write(obj.fileSizeBytes)
+      ..writeByte(4)
+      ..write(obj.lastModifiedAt)
+      ..writeByte(7)
+      ..write(obj.status)
+      ..writeByte(8)
+      ..write(obj.fileExtension)
+      ..writeByte(9)
+      ..write(obj.createdAt)
+      ..writeByte(10)
+      ..write(obj.updatedAt);
+  }
 }

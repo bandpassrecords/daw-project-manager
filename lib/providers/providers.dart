@@ -34,6 +34,7 @@ import '../services/waveform_disk_cache.dart';
 import '../models/project_detail_layout.dart';
 import '../models/dashboard_view_mode.dart';
 import '../utils/project_sort.dart';
+import '../utils/project_tags.dart';
 import '../models/waveform_style.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
@@ -548,6 +549,18 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
           projects = projects.where((p) => p.dawType == dawFilter).toList();
         }
 
+        // --- Filter by tag (#109) ---
+        // Resolved against the tags still in use, so a filter on a tag that
+        // has since disappeared lets the list back rather than emptying it
+        // behind a dropdown that no longer shows it.
+        final tagFilter = effectiveTagFilter(
+          ref.watch(tagFilterProvider),
+          ref.watch(availableTagsProvider),
+        );
+        if (tagFilter != null) {
+          projects = projects.where((p) => projectHasTag(p, tagFilter)).toList();
+        }
+
         // --- Filter by deadline ---
         final deadlineFilter = ref.watch(deadlineFilterProvider);
         if (deadlineFilter != DeadlineFilter.all) {
@@ -601,6 +614,9 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
         // --- Aplicação dos Filtros ---
         // Use projects search provider instead of queryParams
         final projectsSearch = ref.watch(projectsSearchProvider);
+        // Hidden tags must not make a project match: the user would see a
+        // result with nothing on screen explaining why.
+        final searchTags = ref.watch(tagsEnabledProvider);
         if (projectsSearch.trim().isNotEmpty) {
           projects = projects
               .where(
@@ -622,6 +638,8 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
                     // entry, so a joined string would match words picked out of
                     // two unrelated markers.
                     ...p.markers.map((m) => m.name),
+                    // Tags one entry each, for the same reason (#109).
+                    if (searchTags) ...p.tags,
                   ],
                   projectsSearch,
                 ),
@@ -1024,6 +1042,41 @@ final availableDawsProvider = Provider<List<String>>((ref) {
       .toList();
   daws.sort();
   return daws;
+});
+
+// Tag Filter Provider (#109) — one tag at a time, null means all. Session
+// only, like the phase and DAW filters.
+final tagFilterProvider = NotifierProvider<TagFilterNotifier, String?>(() {
+  return TagFilterNotifier();
+});
+
+class TagFilterNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void setTag(String? tag) {
+    state = tag;
+  }
+
+  void clear() {
+    state = null;
+  }
+}
+
+// Every tag in use in the current profile, sorted — over the whole library,
+// never the filtered list, so picking a tag doesn't make the others vanish
+// from the dropdown. Also what the tag editors autocomplete from.
+//
+// Empty while tags are switched off, which is what hides the filter dropdowns
+// and — through effectiveTagFilter — drops any tag filter still set.
+final availableTagsProvider = Provider<List<String>>((ref) {
+  if (!ref.watch(tagsEnabledProvider)) return const [];
+  final allProjectsAsync = ref.watch(allProjectsStreamProvider);
+  // Collapsed: a stack's versions keep their own, dormant tags, which are
+  // not the song's.
+  return collectTags(
+    collapseVersionStacks(allProjectsAsync.value ?? const <MusicProject>[]),
+  );
 });
 
 // Template DAW/Key Filter Providers — same null-means-all shape as
@@ -2030,6 +2083,45 @@ final nameDateStrippingProvider =
     NotifierProvider<NameDateStrippingNotifier, bool>(() {
   return NameDateStrippingNotifier();
 });
+
+/// Whether project tags (#109) are shown at all. Off by default: tags are for
+/// people who organise that way, and everyone else shouldn't meet a filter,
+/// a column and an editor they never asked for.
+///
+/// Turning it off only hides tags — they stay on every project and keep
+/// syncing, so turning it back on brings them all back. Device-local, like
+/// the other display preferences in the `settings` box: not synced, not
+/// backed up.
+class TagsEnabledNotifier extends Notifier<bool> {
+  static const _key = 'tagsEnabled';
+
+  @override
+  bool build() {
+    try {
+      return Hive.box<String>('settings').get(_key) == 'true';
+    } catch (e) {
+      if (kDebugMode) print('Failed to load tagsEnabled: $e');
+      return false;
+    }
+  }
+
+  Future<void> set(bool value) async {
+    if (value == state) return;
+    state = value;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      await box.put(_key, value.toString());
+    } catch (e) {
+      if (kDebugMode) print('Failed to save tagsEnabled: $e');
+    }
+  }
+}
+
+final tagsEnabledProvider = NotifierProvider<TagsEnabledNotifier, bool>(
+  TagsEnabledNotifier.new,
+);
 
 // ---------------------------------------------------------------------------
 // Tab Visibility

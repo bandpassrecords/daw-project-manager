@@ -3804,5 +3804,65 @@
 
   "stackMetadataCoverArtLabel": "обложка",
   "stackMetadataColorLabel": "акцентный цвет",
-  "stackMetadataIconLabel": "значок"
+  "stackMetadataIconLabel": "значок",
+  "projectTags": "Теги",
+  "filterByTag": "Фильтр по тегу",
+  "allTags": "Все теги",
+  "addTagHint": "Добавить тег…",
+  "tagsHelper": "Нажмите Enter, чтобы добавить. Жанр, настроение, клиент, эмодзи — всё, по чему хотите фильтровать.",
+  "removeTagTooltip": "Удалить тег «{tag}»",
+  "@removeTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterByThisTagTooltip": "Показать только проекты с тегом «{tag}»",
+  "@filterByThisTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "sortByTags": "Теги",
+  "bulkTagsButton": "Теги",
+  "bulkTagsTitle": "{count, plural, one{Теги для {count} проекта} other{Теги для {count} проектов}}",
+  "@bulkTagsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkTagsAddLabel": "Добавить тег ко всем выбранным проектам",
+  "bulkTagsRemoveLabel": "Удалить тег у выбранных проектов",
+  "bulkTagsNoneToRemove": "У выбранных проектов пока нет тегов.",
+  "bulkTagsUpdated": "{count, plural, =0{Нечего менять} one{Обновлён {count} проект} few{Обновлено {count} проекта} other{Обновлено {count} проектов}}",
+  "@bulkTagsUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stackMetadataTagsLabel": "{count, plural, one{{count} тег} few{{count} тега} other{{count} тегов}}",
+  "@stackMetadataTagsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectExportTagsLabel": "Теги: {tags}",
+  "@projectExportTagsLabel": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "enableTags": "Включить теги",
+  "tagsSettingDescription": "Отмечайте проекты своими тегами и фильтруйте, ищите и сортируйте по ним. Выключение только скрывает теги — добавленные теги сохраняются."
 }

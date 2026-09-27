@@ -3804,5 +3804,65 @@
 
   "stackMetadataCoverArtLabel": "カバーアート",
   "stackMetadataColorLabel": "アクセントカラー",
-  "stackMetadataIconLabel": "アイコン"
+  "stackMetadataIconLabel": "アイコン",
+  "projectTags": "タグ",
+  "filterByTag": "タグで絞り込み",
+  "allTags": "すべてのタグ",
+  "addTagHint": "タグを追加…",
+  "tagsHelper": "Enter キーで追加します。ジャンル、ムード、クライアント、絵文字など、絞り込みに使いたいものを自由に。",
+  "removeTagTooltip": "タグ「{tag}」を削除",
+  "@removeTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterByThisTagTooltip": "タグ「{tag}」のプロジェクトだけを表示",
+  "@filterByThisTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "sortByTags": "タグ",
+  "bulkTagsButton": "タグ",
+  "bulkTagsTitle": "{count, plural, other{{count} 件のプロジェクトにタグ付け}}",
+  "@bulkTagsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkTagsAddLabel": "選択したすべてのプロジェクトにタグを追加",
+  "bulkTagsRemoveLabel": "選択からタグを削除",
+  "bulkTagsNoneToRemove": "選択したプロジェクトにはまだタグがありません。",
+  "bulkTagsUpdated": "{count, plural, =0{変更はありません} other{{count} 件のプロジェクトを更新しました}}",
+  "@bulkTagsUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stackMetadataTagsLabel": "{count, plural, other{タグ {count} 個}}",
+  "@stackMetadataTagsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectExportTagsLabel": "タグ: {tags}",
+  "@projectExportTagsLabel": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "enableTags": "タグを有効にする",
+  "tagsSettingDescription": "プロジェクトに独自のタグを付けて、絞り込み・検索・並べ替えに使えます。オフにしても非表示になるだけで、追加済みのタグは保持されます。"
 }

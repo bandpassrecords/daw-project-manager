@@ -5576,4 +5576,88 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stackMetadataIconLabel => 'アイコン';
+
+  @override
+  String get projectTags => 'タグ';
+
+  @override
+  String get filterByTag => 'タグで絞り込み';
+
+  @override
+  String get allTags => 'すべてのタグ';
+
+  @override
+  String get addTagHint => 'タグを追加…';
+
+  @override
+  String get tagsHelper =>
+      'Enter キーで追加します。ジャンル、ムード、クライアント、絵文字など、絞り込みに使いたいものを自由に。';
+
+  @override
+  String removeTagTooltip(String tag) {
+    return 'タグ「$tag」を削除';
+  }
+
+  @override
+  String filterByThisTagTooltip(String tag) {
+    return 'タグ「$tag」のプロジェクトだけを表示';
+  }
+
+  @override
+  String get sortByTags => 'タグ';
+
+  @override
+  String get bulkTagsButton => 'タグ';
+
+  @override
+  String bulkTagsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のプロジェクトにタグ付け',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bulkTagsAddLabel => '選択したすべてのプロジェクトにタグを追加';
+
+  @override
+  String get bulkTagsRemoveLabel => '選択からタグを削除';
+
+  @override
+  String get bulkTagsNoneToRemove => '選択したプロジェクトにはまだタグがありません。';
+
+  @override
+  String bulkTagsUpdated(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のプロジェクトを更新しました',
+      zero: '変更はありません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stackMetadataTagsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'タグ $count 個',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String projectExportTagsLabel(String tags) {
+    return 'タグ: $tags';
+  }
+
+  @override
+  String get enableTags => 'タグを有効にする';
+
+  @override
+  String get tagsSettingDescription =>
+      'プロジェクトに独自のタグを付けて、絞り込み・検索・並べ替えに使えます。オフにしても非表示になるだけで、追加済みのタグは保持されます。';
 }
