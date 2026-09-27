@@ -34,7 +34,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Dashboard overview with projects across multiple DAWs</caption>
-      <image>https://raw.githubusercontent.com/bandpassrecords/daw-project-manager/v2.7.0/resources/screenshots/dashboard/dashboard-overview.png</image>
+      <image>https://raw.githubusercontent.com/bandpassrecords/daw-project-manager/v2.9.0/resources/screenshots/dashboard/dashboard-overview.png</image>
     </screenshot>
   </screenshots>
 
@@ -58,6 +58,35 @@
       this one for each shipped version instead of overwriting it, so the
       changelog accumulates.
     -->
+    <release version="2.9.0" date="2026-09-27">
+      <description>
+        <ul>
+          <li>Version stacks keep every version of a song under one main project with shared notes, todos, deadline and work time — stack by hand, or automatically by folder with the new Version Stack scan mode.</li>
+          <li>Build your own colour themes and share them as a .dpmtheme file.</li>
+          <li>Give a project its own cover art, colour and icon — projects you don't decorate look exactly as before.</li>
+          <li>A new card view shows your library as a gallery of covers, next to the table.</li>
+          <li>Todos can have their own due dates: the Tasks tab puts what's due next first and marks overdue tasks, and Android reminds you ahead of time.</li>
+          <li>Attach files and links to a project — a reference track, lyric sheet or stems link — and export them together.</li>
+          <li>Move a project to another folder from inside the app; its paths and attachments follow.</li>
+          <li>Archive a finished project into a checked zip outside your library, and restore it whenever you need it.</li>
+          <li>Tag projects with your own labels and filter, search and sort by them — turn tags on in Settings › Appearance.</li>
+          <li>Ctrl/Cmd-click and Shift-click select several rows in Projects, Templates and Releases, and releases can be deleted in bulk.</li>
+          <li>A "What's New" summary appears once after each update, and Settings now has a full changelog going back to 1.0.</li>
+          <li>Release tracks show each song's length, parts progress (click it to manage parts) and your notes, with the release's total running time at the bottom.</li>
+          <li>A song's length is read from its preview song automatically, or can be typed on the project page.</li>
+          <li>A release's tracks can also be viewed as a sortable table.</li>
+          <li>Creating a release offers to reuse a selected track's cover art as the release artwork.</li>
+          <li>Cover art shows in the mobile player, the mini player and the lock-screen notification.</li>
+          <li>Only one song on a release plays at a time, and audio files show their length before you press play.</li>
+          <li>Player shortcuts: Ctrl+scroll (⌘+scroll on macOS) changes the volume, M toggles mono, and the volume is remembered.</li>
+          <li>Project folders can be switched off instead of removed — nothing is deleted — and the project counts now match the list.</li>
+          <li>Tasks tab: tasks are ticked off with the checkbox only, and a ticked task stays visible with an Undo button until you leave the tab.</li>
+          <li>Breadcrumbs in the title bar show where you are and take you back in one click.</li>
+          <li>Cover art and accent colours fade in from the right of the projects list, and card covers fade at the bottom so their buttons stay visible.</li>
+        </ul>
+      </description>
+      <url>https://github.com/bandpassrecords/daw-project-manager/releases/tag/v2.9.0</url>
+    </release>
     <release version="2.8.0" date="2026-09-07">
       <description>
         <p>See the GitHub release notes for details.</p>
