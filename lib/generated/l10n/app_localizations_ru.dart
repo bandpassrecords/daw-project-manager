@@ -5740,4 +5740,86 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stackMetadataIconLabel => 'значок';
+
+  @override
+  String get projectTags => 'Теги';
+
+  @override
+  String get filterByTag => 'Фильтр по тегу';
+
+  @override
+  String get allTags => 'Все теги';
+
+  @override
+  String get addTagHint => 'Добавить тег…';
+
+  @override
+  String get tagsHelper =>
+      'Нажмите Enter, чтобы добавить. Жанр, настроение, клиент, эмодзи — всё, по чему хотите фильтровать.';
+
+  @override
+  String removeTagTooltip(String tag) {
+    return 'Удалить тег «$tag»';
+  }
+
+  @override
+  String filterByThisTagTooltip(String tag) {
+    return 'Показать только проекты с тегом «$tag»';
+  }
+
+  @override
+  String get sortByTags => 'Теги';
+
+  @override
+  String get bulkTagsButton => 'Теги';
+
+  @override
+  String bulkTagsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Теги для $count проектов',
+      one: 'Теги для $count проекта',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bulkTagsAddLabel => 'Добавить тег ко всем выбранным проектам';
+
+  @override
+  String get bulkTagsRemoveLabel => 'Удалить тег у выбранных проектов';
+
+  @override
+  String get bulkTagsNoneToRemove => 'У выбранных проектов пока нет тегов.';
+
+  @override
+  String bulkTagsUpdated(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Обновлено $count проектов',
+      few: 'Обновлено $count проекта',
+      one: 'Обновлён $count проект',
+      zero: 'Нечего менять',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stackMetadataTagsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count тегов',
+      few: '$count тега',
+      one: '$count тег',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String projectExportTagsLabel(String tags) {
+    return 'Теги: $tags';
+  }
 }

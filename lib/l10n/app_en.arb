@@ -5295,5 +5295,99 @@
   "stackMetadataIconLabel": "icon",
   "@stackMetadataIconLabel": {
     "description": "Stack chooser: this version has a chosen icon"
+  },
+  "projectTags": "Tags",
+  "@projectTags": {
+    "description": "Label for a project's user-defined tags (#109): section heading, grid column title"
+  },
+  "filterByTag": "Filter by Tag",
+  "@filterByTag": {
+    "description": "Hint of the dashboard's tag filter dropdown"
+  },
+  "allTags": "All Tags",
+  "@allTags": {
+    "description": "Tag filter option that shows every project"
+  },
+  "addTagHint": "Add a tag…",
+  "@addTagHint": {
+    "description": "Placeholder of the field that adds a tag to a project"
+  },
+  "tagsHelper": "Press Enter to add. Genre, mood, client, emoji — anything you want to filter by.",
+  "@tagsHelper": {
+    "description": "Helper text under the tag field in the project detail page"
+  },
+  "removeTagTooltip": "Remove tag \"{tag}\"",
+  "@removeTagTooltip": {
+    "description": "Tooltip on the delete icon of a tag chip",
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterByThisTagTooltip": "Show only projects tagged \"{tag}\"",
+  "@filterByThisTagTooltip": {
+    "description": "Tooltip on a tag chip in the projects table; clicking it filters by that tag",
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "sortByTags": "Tags",
+  "@sortByTags": {
+    "description": "Sort option: order projects by their tags"
+  },
+  "bulkTagsButton": "Tags",
+  "@bulkTagsButton": {
+    "description": "Bulk-actions button that adds or removes a tag on every selected project"
+  },
+  "bulkTagsTitle": "{count, plural, =1{Tag 1 project} other{Tag {count} projects}}",
+  "@bulkTagsTitle": {
+    "description": "Title of the bulk tag dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkTagsAddLabel": "Add a tag to every selected project",
+  "@bulkTagsAddLabel": {
+    "description": "Bulk tag dialog: heading above the field that adds a tag"
+  },
+  "bulkTagsRemoveLabel": "Remove a tag from the selection",
+  "@bulkTagsRemoveLabel": {
+    "description": "Bulk tag dialog: heading above the tags that can be removed"
+  },
+  "bulkTagsNoneToRemove": "None of the selected projects has a tag yet.",
+  "@bulkTagsNoneToRemove": {
+    "description": "Bulk tag dialog: shown instead of removable tags when the selection has none"
+  },
+  "bulkTagsUpdated": "{count, plural, =0{Nothing to change} =1{Updated 1 project} other{Updated {count} projects}}",
+  "@bulkTagsUpdated": {
+    "description": "Snackbar after a bulk tag change",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stackMetadataTagsLabel": "{count, plural, =1{1 tag} other{{count} tags}}",
+  "@stackMetadataTagsLabel": {
+    "description": "Stack chooser: this version has tags",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectExportTagsLabel": "Tags: {tags}",
+  "@projectExportTagsLabel": {
+    "description": "Tags line in a plain-text project export",
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
   }
 }

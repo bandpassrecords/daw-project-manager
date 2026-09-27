@@ -17,6 +17,7 @@ void main() {
     DateTime? created,
     double? bpm,
     DateTime? deadline,
+    List<String>? tags,
   }) => TestFactories.makeProject(
     id: id,
     customDisplayName: name ?? id,
@@ -25,6 +26,7 @@ void main() {
     createdAt: created ?? DateTime(2024, 1, 1),
     bpm: bpm,
     deadline: deadline,
+    tags: tags,
   );
 
   List<String> ids(List<MusicProject> projects) =>
@@ -148,6 +150,35 @@ void main() {
         ),
         ['later', 'sooner', 'none'],
       );
+    });
+  });
+
+  group('by tags (#109)', () {
+    final projects = [
+      p('none'),
+      p('zeta', tags: ['zeta']),
+      p('alpha', tags: ['Alpha', 'zeta']),
+    ];
+
+    test('ascending is alphabetical by tag, untagged last', () {
+      expect(ids(sortProjects(projects, ProjectSortField.tags)), [
+        'alpha',
+        'zeta',
+        'none',
+      ]);
+    });
+
+    test('descending reverses the tagged ones, untagged still last', () {
+      // No tags is an absence, like no deadline — flipping the arrow must not
+      // bring every untagged project to the top.
+      expect(
+        ids(sortProjects(projects, ProjectSortField.tags, descending: true)),
+        ['zeta', 'alpha', 'none'],
+      );
+    });
+
+    test('opens ascending', () {
+      expect(defaultDescendingFor(ProjectSortField.tags), isFalse);
     });
   });
 

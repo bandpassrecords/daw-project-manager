@@ -5787,4 +5787,86 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stackMetadataIconLabel => 'icône';
+
+  @override
+  String get projectTags => 'Étiquettes';
+
+  @override
+  String get filterByTag => 'Filtrer par étiquette';
+
+  @override
+  String get allTags => 'Toutes les étiquettes';
+
+  @override
+  String get addTagHint => 'Ajouter une étiquette…';
+
+  @override
+  String get tagsHelper =>
+      'Appuyez sur Entrée pour ajouter. Genre, ambiance, client, emoji : tout ce qui vous sert à filtrer.';
+
+  @override
+  String removeTagTooltip(String tag) {
+    return 'Retirer l\'étiquette « $tag »';
+  }
+
+  @override
+  String filterByThisTagTooltip(String tag) {
+    return 'Afficher uniquement les projets avec l\'étiquette « $tag »';
+  }
+
+  @override
+  String get sortByTags => 'Étiquettes';
+
+  @override
+  String get bulkTagsButton => 'Étiquettes';
+
+  @override
+  String bulkTagsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Étiqueter $count projets',
+      one: 'Étiqueter 1 projet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bulkTagsAddLabel =>
+      'Ajouter une étiquette à tous les projets sélectionnés';
+
+  @override
+  String get bulkTagsRemoveLabel => 'Retirer une étiquette de la sélection';
+
+  @override
+  String get bulkTagsNoneToRemove =>
+      'Aucun des projets sélectionnés n\'a encore d\'étiquette.';
+
+  @override
+  String bulkTagsUpdated(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projets mis à jour',
+      one: '1 projet mis à jour',
+      zero: 'Rien à modifier',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stackMetadataTagsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count étiquettes',
+      one: '1 étiquette',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String projectExportTagsLabel(String tags) {
+    return 'Étiquettes : $tags';
+  }
 }

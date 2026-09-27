@@ -183,6 +183,24 @@ void main() {
       expect(restored.cardInitials, isNull);
     });
 
+    test('preserves tags, in order (#109)', () {
+      // Flatpak's only backup path — tags skipped here could never be backed
+      // up there at all.
+      final original = TestFactories.makeProject(tags: ['trap', '🔥🔥🔥']);
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(original));
+
+      expect(restored.tags, ['trap', '🔥🔥🔥']);
+    });
+
+    test('reads a backup written before tags existed as untagged', () {
+      final json = BackupService.projectToJson(TestFactories.makeProject())
+        ..remove('tags');
+
+      expect(BackupService.projectFromJson(json).tags, isEmpty);
+    });
+
     test('preserves deadline', () {
       final deadline = DateTime(2026, 9, 1);
       final original = TestFactories.makeProject(deadline: deadline);

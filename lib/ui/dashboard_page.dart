@@ -49,6 +49,7 @@ import '../utils/track_duration.dart';
 import '../utils/phase_colors.dart';
 import '../utils/project_file_status.dart';
 import '../utils/project_sort.dart';
+import '../utils/project_tags.dart';
 import '../utils/theme_derivations.dart';
 import '../providers/theme_provider.dart';
 import '../utils/file_launcher.dart';
@@ -82,6 +83,7 @@ import 'widgets/project_cover_avatar.dart';
 import '../utils/project_visuals.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'session_actions.dart';
+import 'dialogs/bulk_tags_dialog.dart';
 import 'dialogs/create_project_dialog.dart';
 import 'dialogs/archive_project_dialog.dart';
 import 'dialogs/move_project_dialog.dart';
@@ -1321,6 +1323,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         l10n.stackMetadataTodosLabel(project.todos.length),
       if (project.parts.isNotEmpty)
         l10n.stackMetadataPartsLabel(project.parts.length),
+      if (project.tags.isNotEmpty)
+        l10n.stackMetadataTagsLabel(project.tags.length),
       if (project.totalWorkSeconds > 0)
         l10n.stackMetadataWorkHours(
           (project.totalWorkSeconds / 3600).toStringAsFixed(1),
@@ -1781,6 +1785,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     final customPhases = ref.watch(customPhasesProvider);
     final dawFilter = ref.watch(dawFilterProvider);
     final availableDaws = ref.watch(availableDawsProvider);
+    final availableTags = ref.watch(availableTagsProvider);
+    final tagFilter = effectiveTagFilter(
+      ref.watch(tagFilterProvider),
+      availableTags,
+    );
     final deadlineFilter = ref.watch(deadlineFilterProvider);
     final initialScanning = ref.watch(initialScanStateProvider);
     final isProfileSwitching = ref.watch(profileSwitchingProvider);
@@ -2623,6 +2632,81 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                                   .notifier,
                                                             )
                                                             .setDaw(value);
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              // Tag filter (#109) — only once some project has a tag
+                                              if (availableTags.isNotEmpty)
+                                                Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.sell_outlined,
+                                                      size: 16,
+                                                      color: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.color,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    DropdownButton<String>(
+                                                      value: tagFilter,
+                                                      hint: Text(
+                                                        AppLocalizations.of(
+                                                          context,
+                                                        )!.filterByTag,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodySmall
+                                                                  ?.color,
+                                                        ),
+                                                      ),
+                                                      underline:
+                                                          const SizedBox.shrink(),
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.color,
+                                                      ),
+                                                      icon:
+                                                          const SizedBox.shrink(),
+                                                      items: [
+                                                        DropdownMenuItem<
+                                                          String
+                                                        >(
+                                                          value: null,
+                                                          child: Text(
+                                                            AppLocalizations.of(
+                                                              context,
+                                                            )!.allTags,
+                                                          ),
+                                                        ),
+                                                        ...availableTags.map(
+                                                          (tag) =>
+                                                              DropdownMenuItem<
+                                                                String
+                                                              >(
+                                                                value: tag,
+                                                                child: Text(
+                                                                  tag,
+                                                                ),
+                                                              ),
+                                                        ),
+                                                      ],
+                                                      onChanged: (String? value) {
+                                                        ref
+                                                            .read(
+                                                              tagFilterProvider
+                                                                  .notifier,
+                                                            )
+                                                            .setTag(value);
                                                       },
                                                     ),
                                                   ],
@@ -4526,6 +4610,7 @@ class _PlutoProjectsTableWithSelectionState
         ProjectSortField.createdAt => l10n.sortByCreatedAt,
         ProjectSortField.bpm => l10n.sortByBpm,
         ProjectSortField.deadline => l10n.sortByDeadline,
+        ProjectSortField.tags => l10n.sortByTags,
       };
 
   void _toggleGroupSelection(Set<String> groupProjectIds) {
@@ -4585,6 +4670,46 @@ class _PlutoProjectsTableWithSelectionState
     if (result != null && mounted) {
       await _changeProjectsStatus(context, result);
     }
+  }
+
+  /// Adds a tag to, or removes one from, every selected project (#109).
+  Future<void> _showBulkTagsDialog(BuildContext context) async {
+    final selected = widget.projects
+        .where((p) => _selectedProjectIds.contains(p.id))
+        .toList();
+    if (selected.isEmpty) return;
+    final allTags = ref.read(availableTagsProvider);
+    final change = await showBulkTagsDialog(
+      context,
+      projectCount: selected.length,
+      suggestions: allTags,
+      removable: collectTags(selected),
+    );
+    if (change == null || !mounted) return;
+
+    final tag = change.add ? canonicalTag(change.tag, allTags) : change.tag;
+    if (tag == null) return;
+    final repo = await ref.read(repositoryProvider.future);
+    // Only the projects whose tags actually change are written, so the count
+    // in the snackbar is honest and untouched rows keep their updatedAt.
+    final changes = planBulkTagChange(selected, tag, add: change.add);
+    final now = DateTime.now();
+    for (final (project, tags) in changes) {
+      // Fresh from the box: the list this dashboard holds can be a frame
+      // behind an edit made elsewhere.
+      final current = repo.projectsBox.get(project.id) ?? project;
+      await repo.updateProject(current.copyWith(tags: tags, updatedAt: now));
+    }
+    if (!mounted) return;
+    ref.invalidate(allProjectsStreamProvider);
+    ScaffoldMessenger.of(this.context).showSnackBar(
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(this.context)!.bulkTagsUpdated(changes.length),
+        ),
+      ),
+    );
+    _clearSelection();
   }
 
   Future<void> _changeProjectsStatus(
@@ -4696,6 +4821,11 @@ class _PlutoProjectsTableWithSelectionState
     final customPhases = ref.watch(customPhasesProvider);
     final dawFilter = ref.watch(dawFilterProvider);
     final availableDaws = ref.watch(availableDawsProvider);
+    final availableTags = ref.watch(availableTagsProvider);
+    final tagFilter = effectiveTagFilter(
+      ref.watch(tagFilterProvider),
+      availableTags,
+    );
     final scanRoots = ref.watch(scanRootsProvider);
     final viewMode = ref.watch(dashboardViewModeProvider);
     final cardSort = ref.watch(dashboardCardSortProvider);
@@ -5016,6 +5146,30 @@ class _PlutoProjectsTableWithSelectionState
                     ],
                     onChanged: (String? value) {
                       ref.read(dawFilterProvider.notifier).setDaw(value);
+                    },
+                  ),
+                ],
+                // Tag filter (#109) — only once some project has a tag.
+                if (availableTags.isNotEmpty) ...[
+                  const SizedBox(width: 4),
+                  FilterDropdown<String>(
+                    icon: Icons.sell_outlined,
+                    value: tagFilter,
+                    hintText: l10n.filterByTag,
+                    items: [
+                      DropdownMenuItem<String>(
+                        value: null,
+                        child: Text(l10n.allTags),
+                      ),
+                      ...availableTags.map(
+                        (tag) => DropdownMenuItem<String>(
+                          value: tag,
+                          child: Text(tag),
+                        ),
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      ref.read(tagFilterProvider.notifier).setTag(value);
                     },
                   ),
                 ],
@@ -5475,6 +5629,14 @@ class _PlutoProjectsTableWithSelectionState
                           ).colorScheme.primary,
                         ),
                         onPressed: () => _showChangeStatusDialog(context),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.sell_outlined),
+                        label: Text(
+                          AppLocalizations.of(context)!.bulkTagsButton,
+                        ),
+                        onPressed: () => _showBulkTagsDialog(context),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton.icon(
@@ -6619,6 +6781,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       row.cells['dawType']?.value = dawDisplay(updated);
       row.cells['bpm']?.value = updated.bpm?.toString() ?? '';
       row.cells['key']?.value = updated.musicalKey ?? '';
+      row.cells['tags']?.value = updated.tags.join(', ');
       row.cells['lastModified']?.value = updated.lastModifiedAt;
       row.cells['deadline']?.value = updated.deadlineStatus ?? '';
       // Update the launch cell's own value so TrinaGrid re-renders the action
@@ -6947,6 +7110,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         'dawType': TrinaCell(value: dawDisplay),
         'bpm': TrinaCell(value: p.bpm?.toString() ?? ''),
         'key': TrinaCell(value: p.musicalKey ?? ''),
+        'tags': TrinaCell(value: p.tags.join(', ')),
         'lastModified': TrinaCell(value: p.lastModifiedAt),
         'deadline': TrinaCell(value: p.deadlineStatus ?? ''),
         'launch': TrinaCell(value: ''),
@@ -7056,6 +7220,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
             'dawType': TrinaCell(value: ''),
             'bpm': TrinaCell(value: ''),
             'key': TrinaCell(value: ''),
+            'tags': TrinaCell(value: ''),
             'lastModified': TrinaCell(value: latestModified),
             'deadline': TrinaCell(value: ''),
             'launch': TrinaCell(value: ''),
@@ -7701,6 +7866,45 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                 ),
               ],
             ],
+          );
+        },
+      ),
+      // Tags (#109). The cell value is the tags joined, which is what the
+      // header sorts by; the chips are drawn by the renderer, and clicking one
+      // filters the list to that tag.
+      TrinaColumn(
+        title: l10n.projectTags,
+        field: 'tags',
+        type: TrinaColumnType.text(),
+        enableEditingMode: false,
+        width: 180,
+        minWidth: 100,
+        renderer: (rendererContext) {
+          final project =
+              rendererContext.row.cells['data']?.value as MusicProject?;
+          if (project == null || project.tags.isEmpty) {
+            return const SizedBox.shrink();
+          }
+          // A scroll view that never scrolls: it clips chips past the cell's
+          // edge without the overflow error a bare Row would raise. Widening
+          // the column shows the rest.
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const NeverScrollableScrollPhysics(),
+            child: Row(
+              children: [
+                for (final tag in project.tags)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: _TagCellChip(
+                      tag: tag,
+                      tooltip: l10n.filterByThisTagTooltip(tag),
+                      onTap: () =>
+                          ref.read(tagFilterProvider.notifier).setTag(tag),
+                    ),
+                  ),
+              ],
+            ),
           );
         },
       ),
@@ -10950,6 +11154,10 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                     value: ProjectSortField.bpm,
                     child: Text(l10n.sortByBpm),
                   ),
+                  DropdownMenuItem(
+                    value: ProjectSortField.tags,
+                    child: Text(l10n.sortByTags),
+                  ),
                 ],
                 onChanged: (v) {
                   if (v != null) setState(() => _sortField = v);
@@ -13083,3 +13291,45 @@ class _PendingFolderRow extends ConsumerWidget {
   }
 }
 
+
+/// One tag in the projects table's Tags column (#109): a compact pill that
+/// filters the list to its tag when clicked.
+///
+/// Deliberately smaller than a Material chip — it has to sit several abreast
+/// inside a table row without making the row taller.
+class _TagCellChip extends StatelessWidget {
+  const _TagCellChip({
+    required this.tag,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  final String tag;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Tooltip(
+      message: tooltip,
+      waitDuration: const Duration(milliseconds: 400),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+          decoration: BoxDecoration(
+            color: scheme.secondaryContainer.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            tag,
+            maxLines: 1,
+            style: TextStyle(fontSize: 11, color: scheme.onSecondaryContainer),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -9592,6 +9592,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'icon'**
   String get stackMetadataIconLabel;
+
+  /// Label for a project's user-defined tags (#109): section heading, grid column title
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get projectTags;
+
+  /// Hint of the dashboard's tag filter dropdown
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Tag'**
+  String get filterByTag;
+
+  /// Tag filter option that shows every project
+  ///
+  /// In en, this message translates to:
+  /// **'All Tags'**
+  String get allTags;
+
+  /// Placeholder of the field that adds a tag to a project
+  ///
+  /// In en, this message translates to:
+  /// **'Add a tag…'**
+  String get addTagHint;
+
+  /// Helper text under the tag field in the project detail page
+  ///
+  /// In en, this message translates to:
+  /// **'Press Enter to add. Genre, mood, client, emoji — anything you want to filter by.'**
+  String get tagsHelper;
+
+  /// Tooltip on the delete icon of a tag chip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove tag \"{tag}\"'**
+  String removeTagTooltip(String tag);
+
+  /// Tooltip on a tag chip in the projects table; clicking it filters by that tag
+  ///
+  /// In en, this message translates to:
+  /// **'Show only projects tagged \"{tag}\"'**
+  String filterByThisTagTooltip(String tag);
+
+  /// Sort option: order projects by their tags
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get sortByTags;
+
+  /// Bulk-actions button that adds or removes a tag on every selected project
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get bulkTagsButton;
+
+  /// Title of the bulk tag dialog
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Tag 1 project} other{Tag {count} projects}}'**
+  String bulkTagsTitle(int count);
+
+  /// Bulk tag dialog: heading above the field that adds a tag
+  ///
+  /// In en, this message translates to:
+  /// **'Add a tag to every selected project'**
+  String get bulkTagsAddLabel;
+
+  /// Bulk tag dialog: heading above the tags that can be removed
+  ///
+  /// In en, this message translates to:
+  /// **'Remove a tag from the selection'**
+  String get bulkTagsRemoveLabel;
+
+  /// Bulk tag dialog: shown instead of removable tags when the selection has none
+  ///
+  /// In en, this message translates to:
+  /// **'None of the selected projects has a tag yet.'**
+  String get bulkTagsNoneToRemove;
+
+  /// Snackbar after a bulk tag change
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing to change} =1{Updated 1 project} other{Updated {count} projects}}'**
+  String bulkTagsUpdated(int count);
+
+  /// Stack chooser: this version has tags
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 tag} other{{count} tags}}'**
+  String stackMetadataTagsLabel(int count);
+
+  /// Tags line in a plain-text project export
+  ///
+  /// In en, this message translates to:
+  /// **'Tags: {tags}'**
+  String projectExportTagsLabel(String tags);
 }
 
 class _AppLocalizationsDelegate

@@ -1,4 +1,5 @@
 import '../models/music_project.dart';
+import 'project_tags.dart';
 
 /// Sorting for the project views that have no column headers to click — the
 /// mobile list and the dashboard card grid (#111).
@@ -8,7 +9,7 @@ import '../models/music_project.dart';
 /// "sort by phase" means. Pure functions over a list, so the rules are
 /// testable without a widget.
 
-enum ProjectSortField { lastModified, name, phase, createdAt, bpm, deadline }
+enum ProjectSortField { lastModified, name, phase, createdAt, bpm, deadline, tags }
 
 /// The direction each field is most useful in when it is first picked.
 ///
@@ -21,6 +22,7 @@ bool defaultDescendingFor(ProjectSortField field) => switch (field) {
   ProjectSortField.name => false,
   ProjectSortField.phase => false,
   ProjectSortField.deadline => false,
+  ProjectSortField.tags => false,
 };
 
 /// [projects] sorted by [field], ascending unless [descending].
@@ -31,7 +33,8 @@ bool defaultDescendingFor(ProjectSortField field) => switch (field) {
 /// A project with no deadline sorts last in **both** directions: "no deadline"
 /// is the absence of a date rather than a very early or very late one, and
 /// flipping the arrow should not march the undated half of the library up to
-/// the top. Missing BPM is different — 0 is a sensible floor for a number.
+/// the top. Untagged projects stay last the same way (#109). Missing BPM is
+/// different — 0 is a sensible floor for a number.
 List<MusicProject> sortProjects(
   List<MusicProject> projects,
   ProjectSortField field, {
@@ -51,13 +54,17 @@ List<MusicProject> sortProjects(
     ),
     ProjectSortField.bpm => (a.bpm ?? 0).compareTo(b.bpm ?? 0),
     ProjectSortField.deadline => _compareDeadlines(a, b, descending),
+    ProjectSortField.tags => _compareTags(a, b, descending),
   };
 
   list.sort((a, b) {
     final result = compare(a, b);
-    // The deadline comparator has already resolved its own direction so that
-    // undated projects stay at the bottom either way.
-    if (field == ProjectSortField.deadline) return result;
+    // The deadline and tag comparators have already resolved their own
+    // direction so that undated / untagged projects stay at the bottom either
+    // way.
+    if (field == ProjectSortField.deadline || field == ProjectSortField.tags) {
+      return result;
+    }
     return descending ? -result : result;
   });
   return list;
@@ -70,5 +77,13 @@ int _compareDeadlines(MusicProject a, MusicProject b, bool descending) {
   if (aDeadline == null) return 1;
   if (bDeadline == null) return -1;
   final result = aDeadline.compareTo(bDeadline);
+  return descending ? -result : result;
+}
+
+int _compareTags(MusicProject a, MusicProject b, bool descending) {
+  if (a.tags.isEmpty && b.tags.isEmpty) return 0;
+  if (a.tags.isEmpty) return 1;
+  if (b.tags.isEmpty) return -1;
+  final result = compareByTags(a, b)!;
   return descending ? -result : result;
 }

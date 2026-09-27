@@ -5757,4 +5757,86 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get stackMetadataIconLabel => 'Symbol';
+
+  @override
+  String get projectTags => 'Tags';
+
+  @override
+  String get filterByTag => 'Nach Tag filtern';
+
+  @override
+  String get allTags => 'Alle Tags';
+
+  @override
+  String get addTagHint => 'Tag hinzufügen…';
+
+  @override
+  String get tagsHelper =>
+      'Mit Enter hinzufügen. Genre, Stimmung, Kunde, Emoji – alles, wonach du filtern möchtest.';
+
+  @override
+  String removeTagTooltip(String tag) {
+    return 'Tag „$tag“ entfernen';
+  }
+
+  @override
+  String filterByThisTagTooltip(String tag) {
+    return 'Nur Projekte mit dem Tag „$tag“ anzeigen';
+  }
+
+  @override
+  String get sortByTags => 'Tags';
+
+  @override
+  String get bulkTagsButton => 'Tags';
+
+  @override
+  String bulkTagsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte taggen',
+      one: '1 Projekt taggen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bulkTagsAddLabel =>
+      'Allen ausgewählten Projekten einen Tag hinzufügen';
+
+  @override
+  String get bulkTagsRemoveLabel => 'Einen Tag aus der Auswahl entfernen';
+
+  @override
+  String get bulkTagsNoneToRemove =>
+      'Keines der ausgewählten Projekte hat bisher einen Tag.';
+
+  @override
+  String bulkTagsUpdated(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte aktualisiert',
+      one: '1 Projekt aktualisiert',
+      zero: 'Nichts zu ändern',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stackMetadataTagsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tags',
+      one: '1 Tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String projectExportTagsLabel(String tags) {
+    return 'Tags: $tags';
+  }
 }

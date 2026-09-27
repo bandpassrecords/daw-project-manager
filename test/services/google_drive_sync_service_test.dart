@@ -649,6 +649,27 @@ void main() {
       expect(restored.cardInitials, isNull);
     });
 
+    test('preserves tags, in order (#109)', () {
+      // User data: without this every Drive restore silently untags the
+      // whole library.
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(tags: ['trap', '🔥🔥🔥']);
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.tags, ['trap', '🔥🔥🔥']);
+    });
+
+    test('reads a backup written before tags existed as untagged', () {
+      final service = GoogleDriveSyncService();
+      final data = service.serializeProjectForTest(TestFactories.makeProject())
+        ..remove('tags');
+
+      expect(service.deserializeProjectForTest(data).tags, isEmpty);
+    });
+
     test('preserves the archived state (#116)', () {
       // An archived project's files are deliberately gone from filePath. Drop
       // these on restore and it comes back looking merely missing, with no
@@ -909,6 +930,7 @@ void main() {
       String? parentProjectId,
       String? ignoredNewerSongPath,
       List<Map<String, dynamic>>? parts,
+      List<String>? tags,
     }) {
       return {
         'id': id,
@@ -925,8 +947,44 @@ void main() {
         'parentProjectId': parentProjectId,
         'ignoredNewerSongPath': ignoredNewerSongPath,
         'parts': parts,
+        'tags': tags,
       };
     }
+
+    test('takes newer remote tags when they are the only change (#109)', () async {
+      // Tags have to count in the "did the metadata change?" check, or a
+      // retag made on another device is never merged in.
+      final local = TestFactories.makeProject(
+        id: 'tagged',
+        tags: ['trap'],
+        status: 'Mixing',
+        // Matches remoteProjectMap, so tags are the only difference.
+        lastModifiedAt: DateTime(2025, 1, 1),
+        updatedAt: DateTime(2025, 6, 1, 8, 0),
+      );
+      await projectRepo.projectsBox.put(local.id, local);
+
+      final service = GoogleDriveSyncService();
+      await service.mergeData(
+        remoteData: {
+          'projects': [
+            remoteProjectMap(
+              id: 'tagged',
+              updatedAt: DateTime(2025, 6, 1, 12, 0),
+              tags: ['trap', 'for the Luna EP'],
+            ),
+          ],
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      expect(
+        projectRepo.projectsBox.get('tagged')!.tags,
+        ['trap', 'for the Luna EP'],
+      );
+    });
 
     test('keeps local edits when local was modified after the remote copy', () async {
       final local = TestFactories.makeProject(

@@ -3828,5 +3828,63 @@
 
   "stackMetadataCoverArtLabel": "capa",
   "stackMetadataColorLabel": "cor de destaque",
-  "stackMetadataIconLabel": "ícone"
+  "stackMetadataIconLabel": "ícone",
+  "projectTags": "Tags",
+  "filterByTag": "Filtrar por tag",
+  "allTags": "Todas as tags",
+  "addTagHint": "Adicionar uma tag…",
+  "tagsHelper": "Pressione Enter para adicionar. Gênero, clima, cliente, emoji — qualquer coisa que você queira usar como filtro.",
+  "removeTagTooltip": "Remover a tag \"{tag}\"",
+  "@removeTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterByThisTagTooltip": "Mostrar só projetos com a tag \"{tag}\"",
+  "@filterByThisTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "sortByTags": "Tags",
+  "bulkTagsButton": "Tags",
+  "bulkTagsTitle": "{count, plural, =1{Adicionar tags a 1 projeto} other{Adicionar tags a {count} projetos}}",
+  "@bulkTagsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkTagsAddLabel": "Adicionar uma tag a todos os projetos selecionados",
+  "bulkTagsRemoveLabel": "Remover uma tag da seleção",
+  "bulkTagsNoneToRemove": "Nenhum dos projetos selecionados tem tags ainda.",
+  "bulkTagsUpdated": "{count, plural, =0{Nada para alterar} =1{1 projeto atualizado} other{{count} projetos atualizados}}",
+  "@bulkTagsUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stackMetadataTagsLabel": "{count, plural, =1{1 tag} other{{count} tags}}",
+  "@stackMetadataTagsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectExportTagsLabel": "Tags: {tags}",
+  "@projectExportTagsLabel": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  }
 }

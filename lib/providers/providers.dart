@@ -34,6 +34,7 @@ import '../services/waveform_disk_cache.dart';
 import '../models/project_detail_layout.dart';
 import '../models/dashboard_view_mode.dart';
 import '../utils/project_sort.dart';
+import '../utils/project_tags.dart';
 import '../models/waveform_style.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
@@ -548,6 +549,18 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
           projects = projects.where((p) => p.dawType == dawFilter).toList();
         }
 
+        // --- Filter by tag (#109) ---
+        // Resolved against the tags still in use, so a filter on a tag that
+        // has since disappeared lets the list back rather than emptying it
+        // behind a dropdown that no longer shows it.
+        final tagFilter = effectiveTagFilter(
+          ref.watch(tagFilterProvider),
+          ref.watch(availableTagsProvider),
+        );
+        if (tagFilter != null) {
+          projects = projects.where((p) => projectHasTag(p, tagFilter)).toList();
+        }
+
         // --- Filter by deadline ---
         final deadlineFilter = ref.watch(deadlineFilterProvider);
         if (deadlineFilter != DeadlineFilter.all) {
@@ -622,6 +635,8 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
                     // entry, so a joined string would match words picked out of
                     // two unrelated markers.
                     ...p.markers.map((m) => m.name),
+                    // Tags one entry each, for the same reason (#109).
+                    ...p.tags,
                   ],
                   projectsSearch,
                 ),
@@ -1024,6 +1039,37 @@ final availableDawsProvider = Provider<List<String>>((ref) {
       .toList();
   daws.sort();
   return daws;
+});
+
+// Tag Filter Provider (#109) — one tag at a time, null means all. Session
+// only, like the phase and DAW filters.
+final tagFilterProvider = NotifierProvider<TagFilterNotifier, String?>(() {
+  return TagFilterNotifier();
+});
+
+class TagFilterNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void setTag(String? tag) {
+    state = tag;
+  }
+
+  void clear() {
+    state = null;
+  }
+}
+
+// Every tag in use in the current profile, sorted — over the whole library,
+// never the filtered list, so picking a tag doesn't make the others vanish
+// from the dropdown. Also what the tag editors autocomplete from.
+final availableTagsProvider = Provider<List<String>>((ref) {
+  final allProjectsAsync = ref.watch(allProjectsStreamProvider);
+  // Collapsed: a stack's versions keep their own, dormant tags, which are
+  // not the song's.
+  return collectTags(
+    collapseVersionStacks(allProjectsAsync.value ?? const <MusicProject>[]),
+  );
 });
 
 // Template DAW/Key Filter Providers — same null-means-all shape as

@@ -437,6 +437,92 @@ void main() {
     });
   });
 
+  group('projectsProvider — tag filter (#109)', () {
+    test('keeps only projects with the tag, ignoring case', () async {
+      final c = _makeContainer([
+        TestFactories.makeProject(id: 'trap', tags: ['Trap']),
+        TestFactories.makeProject(id: 'house', tags: ['house']),
+        TestFactories.makeProject(id: 'none'),
+      ]);
+      addTearDown(c.dispose);
+      c.read(tagFilterProvider.notifier).setTag('trap');
+
+      expect((await _readProjects(c)).map((p) => p.id), ['trap']);
+    });
+
+    test('a filter on a tag nobody has any more shows everything', () async {
+      // The dropdown only offers tags in use, so it would show no filter —
+      // an empty list behind it would be unexplainable.
+      final c = _makeContainer([
+        TestFactories.makeProject(id: 'a', tags: ['house']),
+        TestFactories.makeProject(id: 'b'),
+      ]);
+      addTearDown(c.dispose);
+      c.read(tagFilterProvider.notifier).setTag('gone');
+
+      expect((await _readProjects(c)).length, 2);
+    });
+
+    test('clear() shows everything again', () async {
+      final c = _makeContainer([
+        TestFactories.makeProject(id: 'a', tags: ['trap']),
+        TestFactories.makeProject(id: 'b'),
+      ]);
+      addTearDown(c.dispose);
+      c.read(tagFilterProvider.notifier).setTag('trap');
+      expect((await _readProjects(c)).length, 1);
+
+      c.read(tagFilterProvider.notifier).clear();
+      expect((await _readProjects(c)).length, 2);
+    });
+
+    test('the search box finds a project by its tag', () async {
+      final c = _makeContainer([
+        TestFactories.makeProject(id: 'tagged', tags: ['for the Luna EP']),
+        TestFactories.makeProject(id: 'other'),
+      ]);
+      addTearDown(c.dispose);
+      c.read(projectsSearchProvider.notifier).setSearchText('luna');
+
+      expect((await _readProjects(c)).map((p) => p.id), ['tagged']);
+    });
+  });
+
+  group('availableTagsProvider (#109)', () {
+    Future<List<String>> readTags(ProviderContainer c) async {
+      await _readAvailableDaws(c); // Same wait for the project stream.
+      return c.read(availableTagsProvider);
+    }
+
+    test('is every tag in the profile, sorted, including hidden projects', () async {
+      final c = _makeContainer([
+        TestFactories.makeProject(id: 'a', tags: ['zeta', 'trap']),
+        TestFactories.makeProject(id: 'b', tags: ['Trap'], hidden: true),
+        TestFactories.makeProject(id: 'c', tags: ['alpha']),
+      ]);
+      addTearDown(c.dispose);
+
+      expect(await readTags(c), ['alpha', 'trap', 'zeta']);
+    });
+
+    test("ignores a stacked version's own dormant tags", () async {
+      // The stack carries the song's tags; a member's are only what it had
+      // before stacking, kept for unstack, and not the song's.
+      final c = _makeContainer([
+        TestFactories.makeProject(
+          id: 'stack',
+          isVirtual: true,
+          memberProjectIds: ['v1'],
+          tags: ['song'],
+        ),
+        TestFactories.makeProject(id: 'v1', stackId: 'stack', tags: ['dormant']),
+      ]);
+      addTearDown(c.dispose);
+
+      expect(await readTags(c), ['song']);
+    });
+  });
+
   group('availableDawsProvider', () {
     test('returns distinct, alphabetically sorted DAW types', () async {
       final c = _makeContainer([

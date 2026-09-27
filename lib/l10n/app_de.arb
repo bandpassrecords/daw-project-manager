@@ -3804,5 +3804,63 @@
 
   "stackMetadataCoverArtLabel": "Cover",
   "stackMetadataColorLabel": "Akzentfarbe",
-  "stackMetadataIconLabel": "Symbol"
+  "stackMetadataIconLabel": "Symbol",
+  "projectTags": "Tags",
+  "filterByTag": "Nach Tag filtern",
+  "allTags": "Alle Tags",
+  "addTagHint": "Tag hinzufügen…",
+  "tagsHelper": "Mit Enter hinzufügen. Genre, Stimmung, Kunde, Emoji – alles, wonach du filtern möchtest.",
+  "removeTagTooltip": "Tag „{tag}“ entfernen",
+  "@removeTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "filterByThisTagTooltip": "Nur Projekte mit dem Tag „{tag}“ anzeigen",
+  "@filterByThisTagTooltip": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "sortByTags": "Tags",
+  "bulkTagsButton": "Tags",
+  "bulkTagsTitle": "{count, plural, =1{1 Projekt taggen} other{{count} Projekte taggen}}",
+  "@bulkTagsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkTagsAddLabel": "Allen ausgewählten Projekten einen Tag hinzufügen",
+  "bulkTagsRemoveLabel": "Einen Tag aus der Auswahl entfernen",
+  "bulkTagsNoneToRemove": "Keines der ausgewählten Projekte hat bisher einen Tag.",
+  "bulkTagsUpdated": "{count, plural, =0{Nichts zu ändern} =1{1 Projekt aktualisiert} other{{count} Projekte aktualisiert}}",
+  "@bulkTagsUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stackMetadataTagsLabel": "{count, plural, =1{1 Tag} other{{count} Tags}}",
+  "@stackMetadataTagsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectExportTagsLabel": "Tags: {tags}",
+  "@projectExportTagsLabel": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  }
 }

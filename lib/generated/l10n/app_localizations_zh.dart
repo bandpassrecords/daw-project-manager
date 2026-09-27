@@ -5514,4 +5514,80 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stackMetadataIconLabel => '图标';
+
+  @override
+  String get projectTags => '标签';
+
+  @override
+  String get filterByTag => '按标签筛选';
+
+  @override
+  String get allTags => '全部标签';
+
+  @override
+  String get addTagHint => '添加标签…';
+
+  @override
+  String get tagsHelper => '按 Enter 添加。流派、情绪、客户、表情符号——任何你想用来筛选的内容。';
+
+  @override
+  String removeTagTooltip(String tag) {
+    return '移除标签“$tag”';
+  }
+
+  @override
+  String filterByThisTagTooltip(String tag) {
+    return '只显示带有标签“$tag”的项目';
+  }
+
+  @override
+  String get sortByTags => '标签';
+
+  @override
+  String get bulkTagsButton => '标签';
+
+  @override
+  String bulkTagsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '为 $count 个项目添加标签',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bulkTagsAddLabel => '为所有选中的项目添加标签';
+
+  @override
+  String get bulkTagsRemoveLabel => '从所选项目中移除标签';
+
+  @override
+  String get bulkTagsNoneToRemove => '所选项目还没有任何标签。';
+
+  @override
+  String bulkTagsUpdated(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已更新 $count 个项目',
+      zero: '没有需要更改的内容',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stackMetadataTagsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个标签',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String projectExportTagsLabel(String tags) {
+    return '标签：$tags';
+  }
 }
