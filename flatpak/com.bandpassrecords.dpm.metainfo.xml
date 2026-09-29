@@ -34,7 +34,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Dashboard overview with projects across multiple DAWs</caption>
-      <image>https://raw.githubusercontent.com/bandpassrecords/daw-project-manager/v2.9.0/resources/screenshots/dashboard/dashboard-overview.png</image>
+      <image>https://raw.githubusercontent.com/bandpassrecords/daw-project-manager/v2.9.1/resources/screenshots/dashboard/dashboard-overview.png</image>
     </screenshot>
   </screenshots>
 
@@ -58,6 +58,14 @@
       this one for each shipped version instead of overwriting it, so the
       changelog accumulates.
     -->
+    <release version="2.9.1" date="2026-09-29">
+      <description>
+        <ul>
+          <li>Fixed the Flatpak build so the app can be published to Flathub.</li>
+        </ul>
+      </description>
+      <url>https://github.com/bandpassrecords/daw-project-manager/releases/tag/v2.9.1</url>
+    </release>
     <release version="2.9.0" date="2026-09-27">
       <description>
         <ul>
