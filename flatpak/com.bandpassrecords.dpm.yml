@@ -116,15 +116,12 @@ modules:
       # forgotten, so this can't silently go stale the way a hardcoded
       # value here once did.
       #
-      # ffmpeg_kit_flutter_new_audio is pinned to a vendored copy
-      # (dependency_overrides -> third_party/ffmpeg_kit_flutter_new_audio)
-      # whose Linux/macOS/Windows native layers are already stubbed to a
-      # no-op in-repo. The upstream Linux CMakeLists downloads a ~19 MB
-      # prebuilt ffmpeg bundle from GitHub at *configure* time and
-      # FATAL_ERRORs without network, which this sandboxed offline build
-      # can't do; the app never calls ffmpeg-kit on Linux anyway
-      # (AudioAnalysisService shells out to a PATH ffmpeg there). Nothing to
-      # patch at build time now — the vendored source is what gets built.
+      # ffmpeg-kit is only ever called in-process on Android/iOS, so this
+      # build drops it entirely: remove the dependency (and its path
+      # override) from pubspec.yaml and swap the one file that imports it for
+      # a stub. Nothing ffmpeg-related then has to be vendored offline.
+      - sed -i -e '/^  ffmpeg_kit_flutter_new_audio: \^/d' -e '/^  ffmpeg_kit_flutter_new_audio:$/,/^    path: third_party\/ffmpeg_kit_flutter_new_audio$/d' pubspec.yaml
+      - cp flatpak/in_process_ffmpeg_stub.dart lib/services/in_process_ffmpeg.dart
       - APP_VERSION=$(grep -o '<release version="[^"]*"' flatpak/com.bandpassrecords.dpm.metainfo.xml | head -1 | sed -E 's/.*version="([^"]*)".*/\1/');
         flutter build linux --release --no-pub --dart-define=APP_VERSION=${APP_VERSION:-0.0.0}
       # `flutter build linux` names the bundle directory after the *host*

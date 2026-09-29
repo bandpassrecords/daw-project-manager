@@ -1,13 +1,12 @@
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
-import 'package:ffmpeg_kit_flutter_new_audio/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter_new_audio/return_code.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../utils/mobile_utils.dart';
+import 'in_process_ffmpeg.dart';
 
 /// Results of audio loudness & mastering analysis.
 class AudioAnalysisResult {
@@ -198,16 +197,7 @@ class AudioAnalysisService {
     final override = ffmpegRunnerOverride;
     if (override != null) return override(args);
 
-    if (_usesInProcessFfmpeg) {
-      final session = await FFmpegKit.executeWithArguments(args);
-      final returnCode = await session.getReturnCode();
-      if (ReturnCode.isSuccess(returnCode)) return true;
-      debugPrint(
-        '[ShareConvert] ffmpeg-kit failed (${returnCode?.getValue()}): '
-        '${await session.getOutput()}',
-      );
-      return false;
-    }
+    if (_usesInProcessFfmpeg) return runInProcessFfmpeg(args);
 
     final result = await Process.run(await _resolveFfmpegCommand(), args);
     if (result.exitCode == 0) return true;

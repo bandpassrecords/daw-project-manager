@@ -91,11 +91,13 @@ dependencies:
   # build now needs network at build time. CI's Windows/macOS/Linux-tarball
   # builds have network, so they just get slower and ~15 MB fatter with
   # ffmpeg libs nothing calls. The offline Flathub build can't download at
-  # all — it swaps this plugin's Linux native side for a no-op stub (see
-  # flatpak/ffmpeg_kit_linux_stub/ and the `cp` in
+  # all — it removes this dependency (and the override below) from
+  # pubspec.yaml with sed and replaces lib/services/in_process_ffmpeg.dart
+  # with flatpak/in_process_ffmpeg_stub.dart (see
   # flatpak/com.bandpassrecords.dpm.yml), which is safe because nothing
   # calls ffmpeg-kit on Linux (AudioAnalysisService.convertForSharing shells
-  # out to a PATH ffmpeg there instead).
+  # out to a PATH ffmpeg there instead). Keep both entries on their own
+  # lines, in this shape — that sed matches them literally.
   ffmpeg_kit_flutter_new_audio: ^2.5.2
   flutter_secure_storage: ^10.0.0
   flutter_local_notifications: ^22.0.0
