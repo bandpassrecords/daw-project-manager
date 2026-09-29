@@ -119,8 +119,10 @@ modules:
       # ffmpeg-kit is only ever called in-process on Android/iOS, so this
       # build drops it entirely: remove the dependency (and its path
       # override) from pubspec.yaml and swap the one file that imports it for
-      # a stub. Nothing ffmpeg-related then has to be vendored offline.
-      - sed -i -e '/^  ffmpeg_kit_flutter_new_audio: \^/d' -e '/^  ffmpeg_kit_flutter_new_audio:$/,/^    path: third_party\/ffmpeg_kit_flutter_new_audio$/d' pubspec.yaml
+      # a stub. Nothing ffmpeg-related then has to be vendored offline. The
+      # [ ] in the sed patterns is a space: a literal ": " would make YAML
+      # read this unquoted command as a mapping.
+      - sed -i -e '/^  ffmpeg_kit_flutter_new_audio:[ ]\^/d' -e '/^  ffmpeg_kit_flutter_new_audio:$/,/^    path:[ ]third_party\/ffmpeg_kit_flutter_new_audio$/d' pubspec.yaml
       - cp flatpak/in_process_ffmpeg_stub.dart lib/services/in_process_ffmpeg.dart
       - APP_VERSION=$(grep -o '<release version="[^"]*"' flatpak/com.bandpassrecords.dpm.metainfo.xml | head -1 | sed -E 's/.*version="([^"]*)".*/\1/');
         flutter build linux --release --no-pub --dart-define=APP_VERSION=${APP_VERSION:-0.0.0}
