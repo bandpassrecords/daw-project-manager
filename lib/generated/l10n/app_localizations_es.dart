@@ -6097,4 +6097,91 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get synthVoicePercussion => 'Percusión';
+
+  @override
+  String get midiLibraryTab => 'MIDI';
+
+  @override
+  String get midiLibrarySearchHint => 'Buscar clips MIDI';
+
+  @override
+  String get midiLibraryAllClips => 'Todos los clips';
+
+  @override
+  String get midiCollectionsTitle => 'Colecciones';
+
+  @override
+  String get midiCollectionNew => 'Nueva colección';
+
+  @override
+  String get midiCollectionNameHint => 'Nombre de la colección';
+
+  @override
+  String get midiCollectionCreate => 'Crear';
+
+  @override
+  String get midiCollectionRename => 'Renombrar';
+
+  @override
+  String get midiCollectionDelete => 'Eliminar colección';
+
+  @override
+  String midiCollectionDeleteConfirm(String name) {
+    return '¿Eliminar \"$name\"? Sus clips son copias, así que los proyectos de origen no se ven afectados.';
+  }
+
+  @override
+  String get midiCollectionAddTo => 'Añadir a una colección';
+
+  @override
+  String get midiCollectionRemoveFrom => 'Quitar de la colección';
+
+  @override
+  String midiCollectionAdded(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se añadieron $count clips a $name',
+      one: 'Añadido a $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiCollectionAlreadyIn(String name) {
+    return 'Ya está en $name';
+  }
+
+  @override
+  String midiCollectionRemoved(String clip, String name) {
+    return 'Se quitó $clip de $name';
+  }
+
+  @override
+  String get midiCollectionEmpty =>
+      'Esta colección está vacía. Añade clips desde Todos los clips o desde la página de un proyecto.';
+
+  @override
+  String midiCollectionShareText(String name) {
+    return 'Colección MIDI \"$name\"';
+  }
+
+  @override
+  String get midiLibraryEmpty =>
+      'Aún no hay clips MIDI. Extrae los metadatos de un proyecto para leer sus clips.';
+
+  @override
+  String get midiLibraryNoMatches => 'Ningún clip coincide.';
+
+  @override
+  String get midiLibraryAllInstruments => 'Todos los instrumentos';
+
+  @override
+  String get midiClipMoreActions => 'Más';
+
+  @override
+  String get midiTempoAuto => 'Auto';
+
+  @override
+  String get midiTempoResetAuto => 'Volver al tempo propio de cada clip';
 }

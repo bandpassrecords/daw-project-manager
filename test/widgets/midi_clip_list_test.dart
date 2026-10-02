@@ -24,6 +24,9 @@ void main() {
     noTrack: 'Other clips',
     expandTrack: 'Show track',
     collapseTrack: 'Hide track',
+    addToCollection: 'Add to collection',
+    removeFromCollection: 'Remove',
+    more: 'More',
   );
 
   MidiClip clip(String name, {String? track, int occurrences = 1, int beats = 16}) =>
@@ -43,8 +46,12 @@ void main() {
   late List<int> saved;
   late List<int> shared;
   late List<(int, SynthVoice)> voiceChanges;
+  late List<int> added;
+  late List<int> removed;
 
   setUp(() {
+    added = [];
+    removed = [];
     played = [];
     saved = [];
     shared = [];
@@ -58,6 +65,11 @@ void main() {
     bool draggable = false,
     bool canSave = true,
     int expandAllUpTo = 12,
+    bool compact = false,
+    bool grouped = true,
+    bool collectionActions = false,
+    String? Function(int)? groupLabelOf,
+    String? Function(int)? detailPrefixOf,
   }) =>
       MaterialApp(
         home: Scaffold(
@@ -72,6 +84,13 @@ void main() {
               onShare: (i, _) => shared.add(i),
               voiceOf: (i) => i.isEven ? SynthVoice.bass : SynthVoice.pad,
               onVoiceChanged: (i, v) => voiceChanges.add((i, v)),
+              compact: compact,
+              grouped: grouped,
+              groupLabelOf: groupLabelOf,
+              detailPrefixOf: detailPrefixOf,
+              onAddToCollection:
+                  collectionActions ? (i, _) => added.add(i) : null,
+              onRemove: collectionActions ? removed.add : null,
               expandAllUpTo: expandAllUpTo,
               dragHandleBuilder: draggable
                   ? (context, index, handle) =>
@@ -227,5 +246,69 @@ void main() {
     await tester.tap(find.text('keys').last);
     await tester.pumpAndSettle();
     expect(voiceChanges, [(1, SynthVoice.keys)]);
+  });
+
+  testWidgets('groups by any label, with a details prefix per row',
+      (tester) async {
+    final clips = [clip('Riff', track: 'Bass'), clip('Pad', track: 'Keys')];
+    await tester.pumpWidget(wrap(
+      clips,
+      groupLabelOf: (i) => i == 0 ? 'Song A' : 'Song B',
+      detailPrefixOf: (i) => clips[i].trackName,
+    ));
+
+    expect(find.text('Song A'), findsOneWidget);
+    expect(find.text('Song B'), findsOneWidget);
+    expect(find.text('Bass · 4 bars · 2 notes'), findsOneWidget);
+  });
+
+  testWidgets('ungrouped lists rows only, in order', (tester) async {
+    await tester.pumpWidget(wrap(
+      [clip('One', track: 'X'), clip('Two', track: 'Y')],
+      grouped: false,
+    ));
+    expect(find.text('X'), findsNothing, reason: 'no headers');
+    expect(find.text('One'), findsOneWidget);
+    expect(find.text('Two'), findsOneWidget);
+  });
+
+  testWidgets('collection actions report the clip', (tester) async {
+    await tester.pumpWidget(wrap([clip('A'), clip('B')], collectionActions: true));
+    await tester.tap(find.byTooltip('Add to collection').last);
+    await tester.tap(find.byTooltip('Remove').first);
+    expect(added, [1]);
+    expect(removed, [0]);
+  });
+
+  testWidgets('compact rows keep play and fold the rest into More',
+      (tester) async {
+    await tester.pumpWidget(wrap([clip('A')], compact: true, collectionActions: true));
+
+    expect(find.byTooltip('Play'), findsOneWidget);
+    expect(find.byTooltip('Share'), findsNothing);
+    expect(find.byTooltip('Add to collection'), findsNothing);
+
+    await tester.tap(find.byTooltip('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add to collection'));
+    await tester.pumpAndSettle();
+    expect(added, [0]);
+
+    await tester.tap(find.byTooltip('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Share'));
+    await tester.pumpAndSettle();
+    expect(shared, [0]);
+  });
+
+  testWidgets('compact instrument choice goes through a dialog', (tester) async {
+    await tester.pumpWidget(wrap([clip('A')], compact: true));
+    await tester.tap(find.byTooltip('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Instrument: bass'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('organ'));
+    await tester.pumpAndSettle();
+    expect(voiceChanges, [(0, SynthVoice.organ)]);
   });
 }

@@ -18,6 +18,8 @@ import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/models/project_stats.dart';
 import 'package:daw_project_manager/models/stored_midi_clips.dart';
 import 'package:daw_project_manager/repository/midi_clip_store.dart';
+import 'package:daw_project_manager/repository/midi_collection_store.dart';
+import 'package:daw_project_manager/models/midi_collection.dart';
 import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/todo_template.dart';
 import 'package:daw_project_manager/repository/profile_repository.dart';
@@ -1067,6 +1069,47 @@ void main() {
 
       expect((await store.get('with-clips'))!.clips.single.name, 'new');
       expect(await store.get('unknown'), isNull);
+    });
+
+    test('MIDI collections merge per profile, deletions included', () async {
+      final store = MidiCollectionStore(projectRepo.profileId);
+      final kept = await store.create('Kept here');
+      final doomed = await store.create('Deleted elsewhere');
+
+      MidiCollection remote(MidiCollection c, {bool deleted = false, String? name}) =>
+          MidiCollection(
+            id: c.id,
+            name: name ?? c.name,
+            createdAt: c.createdAt,
+            updatedAt: DateTime.now().add(const Duration(hours: 1)),
+            deleted: deleted,
+          );
+
+      await GoogleDriveSyncService().mergeData(
+        remoteData: {
+          'midiCollectionsByProfile': {
+            projectRepo.profileId: [
+              remote(doomed, deleted: true).toJson(),
+              MidiCollection(
+                id: 'from-laptop',
+                name: 'From the laptop',
+                createdAt: DateTime.utc(2026),
+                updatedAt: DateTime.utc(2026),
+              ).toJson(),
+            ],
+            'a-profile-not-on-this-device': [
+              remote(kept, name: 'Should not land anywhere').toJson(),
+            ],
+          },
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      final names = (await store.all()).map((c) => c.name);
+      expect(names, containsAll(['Kept here', 'From the laptop']));
+      expect(names, isNot(contains('Deleted elsewhere')));
     });
 
     test('a remote copy that was never deep-scanned keeps local stats', () async {

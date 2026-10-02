@@ -36,18 +36,7 @@ class StoredMidiClips {
         'extractedAt': extractedAt.toIso8601String(),
         if (sourceModifiedAt != null)
           'sourceModifiedAt': sourceModifiedAt!.toIso8601String(),
-        'clips': [
-          for (final c in clips)
-            {
-              'name': c.name,
-              if (c.trackName != null) 'track': c.trackName,
-              'ppq': c.ppq,
-              'length': c.lengthTicks,
-              'occurrences': c.occurrences,
-              if (c.otherNames.isNotEmpty) 'otherNames': c.otherNames,
-              'notes': bytes(packMidiNotes(c.notes)),
-            },
-        ],
+        'clips': [for (final c in clips) midiClipToMap(c, bytes: bytes)],
       };
 
   /// Reads either form ([toMap] or [toJson]). Null when [value] isn't a
@@ -56,35 +45,10 @@ class StoredMidiClips {
     if (value is! Map) return null;
     final extractedAt = DateTime.tryParse(value['extractedAt'] as String? ?? '');
     if (extractedAt == null) return null;
-    final clips = <MidiClip>[];
-    for (final raw in (value['clips'] as List?) ?? const []) {
-      if (raw is! Map) continue;
-      try {
-        final notesRaw = raw['notes'];
-        final Uint8List notesBytes = notesRaw is String
-            ? base64Decode(notesRaw)
-            : notesRaw is Uint8List
-                ? notesRaw
-                : Uint8List.fromList((notesRaw as List).cast<int>());
-        final ppq = (raw['ppq'] as num).toInt();
-        final length = (raw['length'] as num).toInt();
-        if (ppq <= 0 || length < 0) continue;
-        clips.add(MidiClip(
-          name: raw['name'] as String? ?? '',
-          trackName: raw['track'] as String?,
-          ppq: ppq,
-          lengthTicks: length,
-          occurrences: (raw['occurrences'] as num?)?.toInt() ?? 1,
-          otherNames: [
-            for (final n in (raw['otherNames'] as List?) ?? const [])
-              if (n is String) n,
-          ],
-          notes: unpackMidiNotes(notesBytes),
-        ));
-      } catch (_) {
-        continue;
-      }
-    }
+    final clips = <MidiClip>[
+      for (final raw in (value['clips'] as List?) ?? const [])
+        ?midiClipFromMap(raw),
+    ];
     return StoredMidiClips(
       extractedAt: extractedAt,
       sourceModifiedAt:
@@ -99,6 +63,54 @@ class StoredMidiClips {
       sourceModifiedAt != null &&
       fileModifiedAt != null &&
       fileModifiedAt.isAfter(sourceModifiedAt!);
+}
+
+/// One clip as a map. [bytes] turns the packed notes into what the target
+/// format holds: the bytes themselves for Hive, base64 text for JSON.
+/// Shared by [StoredMidiClips] and MIDI collections.
+Map<String, dynamic> midiClipToMap(
+  MidiClip c, {
+  required Object Function(Uint8List) bytes,
+}) =>
+    {
+      'name': c.name,
+      if (c.trackName != null) 'track': c.trackName,
+      'ppq': c.ppq,
+      'length': c.lengthTicks,
+      'occurrences': c.occurrences,
+      if (c.otherNames.isNotEmpty) 'otherNames': c.otherNames,
+      'notes': bytes(packMidiNotes(c.notes)),
+    };
+
+/// Reads [midiClipToMap]'s output in either form. Null for anything that
+/// isn't a readable clip.
+MidiClip? midiClipFromMap(Object? raw) {
+  if (raw is! Map) return null;
+  try {
+    final notesRaw = raw['notes'];
+    final Uint8List notesBytes = notesRaw is String
+        ? base64Decode(notesRaw)
+        : notesRaw is Uint8List
+            ? notesRaw
+            : Uint8List.fromList((notesRaw as List).cast<int>());
+    final ppq = (raw['ppq'] as num).toInt();
+    final length = (raw['length'] as num).toInt();
+    if (ppq <= 0 || length < 0) return null;
+    return MidiClip(
+      name: raw['name'] as String? ?? '',
+      trackName: raw['track'] as String?,
+      ppq: ppq,
+      lengthTicks: length,
+      occurrences: (raw['occurrences'] as num?)?.toInt() ?? 1,
+      otherNames: [
+        for (final n in (raw['otherNames'] as List?) ?? const [])
+          if (n is String) n,
+      ],
+      notes: unpackMidiNotes(notesBytes),
+    );
+  } catch (_) {
+    return null;
+  }
 }
 
 const _packVersion = 1;

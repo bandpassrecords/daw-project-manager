@@ -283,35 +283,40 @@ List<MidiNote> windowMidiNotes(
   return out;
 }
 
-/// One track's worth of clips, for listing clips under the track they sit
-/// on — a clip's own name is often a DAW default ("MIDI 01", "Diva 01") and
-/// the track name is what says what it is for.
-class MidiClipTrackGroup {
-  const MidiClipTrackGroup(this.trackName, this.clipIndices);
+/// One group of clips in a list — a track's clips on a project page, a
+/// project's clips in the MIDI library.
+class MidiClipGroup {
+  const MidiClipGroup(this.label, this.clipIndices);
 
-  /// Null for clips whose format didn't say which track they're on.
-  final String? trackName;
+  /// The heading, or null for the clips nothing could be said about (no
+  /// track known, say).
+  final String? label;
 
   /// Indices into the list that was grouped, in their original order.
   final List<int> clipIndices;
 }
 
-/// Groups [clips] by [MidiClip.trackName], tracks in first-seen order and
-/// trackless clips last. A merged clip is listed once, under the track it was
-/// first found on.
-List<MidiClipTrackGroup> groupMidiClipsByTrack(List<MidiClip> clips) {
-  final byTrack = <String, List<int>>{};
-  final trackless = <int>[];
-  for (var i = 0; i < clips.length; i++) {
-    final track = clips[i].trackName?.trim();
-    if (track == null || track.isEmpty) {
-      trackless.add(i);
+/// Groups `count` list items by the label [labelOf] gives each, groups in
+/// first-seen order and unlabelled items last. Labels are compared trimmed.
+List<MidiClipGroup> groupMidiClips(int count, String? Function(int) labelOf) {
+  final byLabel = <String, List<int>>{};
+  final unlabelled = <int>[];
+  for (var i = 0; i < count; i++) {
+    final label = labelOf(i)?.trim();
+    if (label == null || label.isEmpty) {
+      unlabelled.add(i);
     } else {
-      (byTrack[track] ??= []).add(i);
+      (byLabel[label] ??= []).add(i);
     }
   }
   return [
-    for (final e in byTrack.entries) MidiClipTrackGroup(e.key, e.value),
-    if (trackless.isNotEmpty) MidiClipTrackGroup(null, trackless),
+    for (final e in byLabel.entries) MidiClipGroup(e.key, e.value),
+    if (unlabelled.isNotEmpty) MidiClipGroup(null, unlabelled),
   ];
 }
+
+/// Groups [clips] by [MidiClip.trackName] — a clip's own name is often a DAW
+/// default ("MIDI 01", "Diva 01") and the track name is what says what it is
+/// for. A merged clip is listed once, under the track it was first found on.
+List<MidiClipGroup> groupMidiClipsByTrack(List<MidiClip> clips) =>
+    groupMidiClips(clips.length, (i) => clips[i].trackName);

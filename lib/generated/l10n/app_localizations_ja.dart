@@ -5892,4 +5892,90 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get synthVoicePercussion => 'パーカッション';
+
+  @override
+  String get midiLibraryTab => 'MIDI';
+
+  @override
+  String get midiLibrarySearchHint => 'MIDIクリップを検索';
+
+  @override
+  String get midiLibraryAllClips => 'すべてのクリップ';
+
+  @override
+  String get midiCollectionsTitle => 'コレクション';
+
+  @override
+  String get midiCollectionNew => '新しいコレクション';
+
+  @override
+  String get midiCollectionNameHint => 'コレクション名';
+
+  @override
+  String get midiCollectionCreate => '作成';
+
+  @override
+  String get midiCollectionRename => '名前を変更';
+
+  @override
+  String get midiCollectionDelete => 'コレクションを削除';
+
+  @override
+  String midiCollectionDeleteConfirm(String name) {
+    return '「$name」を削除しますか？クリップはコピーなので、元のプロジェクトには影響しません。';
+  }
+
+  @override
+  String get midiCollectionAddTo => 'コレクションに追加';
+
+  @override
+  String get midiCollectionRemoveFrom => 'コレクションから削除';
+
+  @override
+  String midiCollectionAdded(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$name に追加しました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiCollectionAlreadyIn(String name) {
+    return 'すでに $name にあります';
+  }
+
+  @override
+  String midiCollectionRemoved(String clip, String name) {
+    return '$clip を $name から削除しました';
+  }
+
+  @override
+  String get midiCollectionEmpty =>
+      'このコレクションは空です。「すべてのクリップ」やプロジェクトのページからクリップを追加してください。';
+
+  @override
+  String midiCollectionShareText(String name) {
+    return 'MIDIコレクション「$name」';
+  }
+
+  @override
+  String get midiLibraryEmpty =>
+      'MIDIクリップはまだありません。プロジェクトのメタデータを抽出するとクリップを読み込みます。';
+
+  @override
+  String get midiLibraryNoMatches => '一致するクリップはありません。';
+
+  @override
+  String get midiLibraryAllInstruments => 'すべての楽器';
+
+  @override
+  String get midiClipMoreActions => 'その他';
+
+  @override
+  String get midiTempoAuto => '自動';
+
+  @override
+  String get midiTempoResetAuto => '各クリップ本来のテンポに戻す';
 }

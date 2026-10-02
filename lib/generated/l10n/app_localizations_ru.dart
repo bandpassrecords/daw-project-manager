@@ -6071,4 +6071,93 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get synthVoicePercussion => 'Перкуссия';
+
+  @override
+  String get midiLibraryTab => 'MIDI';
+
+  @override
+  String get midiLibrarySearchHint => 'Поиск MIDI-клипов';
+
+  @override
+  String get midiLibraryAllClips => 'Все клипы';
+
+  @override
+  String get midiCollectionsTitle => 'Коллекции';
+
+  @override
+  String get midiCollectionNew => 'Новая коллекция';
+
+  @override
+  String get midiCollectionNameHint => 'Название коллекции';
+
+  @override
+  String get midiCollectionCreate => 'Создать';
+
+  @override
+  String get midiCollectionRename => 'Переименовать';
+
+  @override
+  String get midiCollectionDelete => 'Удалить коллекцию';
+
+  @override
+  String midiCollectionDeleteConfirm(String name) {
+    return 'Удалить «$name»? Клипы в ней — копии, исходные проекты не изменятся.';
+  }
+
+  @override
+  String get midiCollectionAddTo => 'Добавить в коллекцию';
+
+  @override
+  String get midiCollectionRemoveFrom => 'Убрать из коллекции';
+
+  @override
+  String midiCollectionAdded(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Добавлено $count клипа в $name',
+      many: 'Добавлено $count клипов в $name',
+      few: 'Добавлено $count клипа в $name',
+      one: 'Добавлено в $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiCollectionAlreadyIn(String name) {
+    return 'Уже в $name';
+  }
+
+  @override
+  String midiCollectionRemoved(String clip, String name) {
+    return '$clip убран из $name';
+  }
+
+  @override
+  String get midiCollectionEmpty =>
+      'Коллекция пуста. Добавьте клипы из «Все клипы» или со страницы проекта.';
+
+  @override
+  String midiCollectionShareText(String name) {
+    return 'MIDI-коллекция «$name»';
+  }
+
+  @override
+  String get midiLibraryEmpty =>
+      'MIDI-клипов пока нет. Извлеките метаданные проекта, чтобы прочитать его клипы.';
+
+  @override
+  String get midiLibraryNoMatches => 'Подходящих клипов нет.';
+
+  @override
+  String get midiLibraryAllInstruments => 'Все инструменты';
+
+  @override
+  String get midiClipMoreActions => 'Ещё';
+
+  @override
+  String get midiTempoAuto => 'Авто';
+
+  @override
+  String get midiTempoResetAuto => 'Вернуть собственный темп каждого клипа';
 }

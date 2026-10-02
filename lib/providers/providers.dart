@@ -27,6 +27,8 @@ import '../utils/library_projects.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
+import '../models/midi_collection.dart';
+import '../models/midi_library.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/player_volume_store.dart';
 import '../services/thumbnail_toolbar_service.dart';
@@ -2108,7 +2110,7 @@ final tagsEnabledProvider = NotifierProvider<TagsEnabledNotifier, bool>(
 // Tab Visibility
 // ---------------------------------------------------------------------------
 
-enum AppTab { projects, releases, playlists, queue, statistics, player }
+enum AppTab { projects, releases, playlists, midi, queue, statistics, player }
 
 class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
   static const _key = 'visibleTabs';
@@ -2118,6 +2120,7 @@ class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
     AppTab.projects,
     AppTab.releases,
     AppTab.playlists,
+    AppTab.midi,
     AppTab.queue,
     AppTab.statistics,
     AppTab.player,
@@ -2130,6 +2133,7 @@ class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
       AppTab.projects,
       AppTab.releases,
       AppTab.playlists,
+      AppTab.midi,
       AppTab.queue,
       AppTab.statistics,
       AppTab.player,
@@ -2573,6 +2577,72 @@ class QueueSearchNotifier extends Notifier<String> {
 final queueSearchProvider = NotifierProvider<QueueSearchNotifier, String>(
   QueueSearchNotifier.new,
 );
+
+class MidiLibrarySearchNotifier extends Notifier<String> {
+  @override
+  String build() => '';
+  void set(String text) => state = text;
+  void clear() => state = '';
+}
+
+/// What the dashboard search box holds while the MIDI tab is showing.
+final midiLibrarySearchProvider =
+    NotifierProvider<MidiLibrarySearchNotifier, String>(
+  MidiLibrarySearchNotifier.new,
+);
+
+// ---------------------------------------------------------------------------
+// MIDI library
+// ---------------------------------------------------------------------------
+
+/// The current profile's unique MIDI clips across all projects (see
+/// [buildMidiLibrary]), rebuilt when stored clips or projects change.
+///
+/// Store events are debounced: a deep scan writes one project's clips at a
+/// time, and rebuilding the whole library after each would decode every
+/// project's notes over and over.
+final midiLibraryProvider = StreamProvider<List<LibraryClip>>((ref) {
+  final controller = StreamController<List<LibraryClip>>();
+  Timer? debounce;
+  StreamSubscription<String>? sub;
+
+  Future<void> start() async {
+    final repo = await ref.watch(repositoryProvider.future);
+    final projects = await ref.watch(allProjectsStreamProvider.future);
+    final byId = {for (final p in projects) p.id: p};
+    Future<void> rebuild() async {
+      final stored = await repo.midiClips.getAll();
+      if (!controller.isClosed) controller.add(buildMidiLibrary(stored, byId));
+    }
+
+    await rebuild();
+    sub = repo.midiClips.watch().listen((_) {
+      debounce?.cancel();
+      debounce = Timer(const Duration(milliseconds: 400), rebuild);
+    });
+  }
+
+  start().catchError((Object e, StackTrace st) {
+    if (!controller.isClosed) controller.addError(e, st);
+  });
+  ref.onDispose(() {
+    debounce?.cancel();
+    sub?.cancel();
+    controller.close();
+  });
+  return controller.stream;
+});
+
+/// The current profile's MIDI collections, live.
+final midiCollectionsProvider = StreamProvider<List<MidiCollection>>((
+  ref,
+) async* {
+  final repo = await ref.watch(repositoryProvider.future);
+  yield await repo.midiCollections.all();
+  await for (final _ in repo.midiCollections.watch()) {
+    yield await repo.midiCollections.all();
+  }
+});
 
 /// Which due dates the Task Queue is currently narrowed to. Session state, on
 /// purpose — like the tab's search text, it isn't worth persisting.

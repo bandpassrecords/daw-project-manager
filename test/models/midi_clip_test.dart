@@ -222,7 +222,7 @@ void main() {
         clip('e', const [], track: '  '),
       ];
       final groups = groupMidiClipsByTrack(clips);
-      expect(groups.map((g) => g.trackName), ['Bass', 'Lead', null]);
+      expect(groups.map((g) => g.label), ['Bass', 'Lead', null]);
       expect(groups.map((g) => g.clipIndices), [
         [0, 3],
         [2],

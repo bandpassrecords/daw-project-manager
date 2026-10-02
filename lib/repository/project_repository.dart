@@ -29,6 +29,7 @@ import '../utils/app_paths.dart';
 
 import '../utils/version_stacks.dart';
 import 'midi_clip_store.dart';
+import 'midi_collection_store.dart';
 import 'profile_repository.dart';
 import '../models/profile.dart';
 
@@ -70,6 +71,11 @@ class ProjectRepository {
   /// This profile's stored MIDI clips (see [MidiClipStore]). Written by every
   /// full-metadata extraction; deleted along with the project.
   late final MidiClipStore midiClips = MidiClipStore(profileId);
+
+  /// This profile's MIDI collections (see [MidiCollectionStore]). Copies, so
+  /// deleting a project never touches them.
+  late final MidiCollectionStore midiCollections =
+      MidiCollectionStore(profileId);
 
   static const _keyCustomMixdownFolder = 'customMixdownFolder';
   static const _keyCustomMixdownFolders = 'customMixdownFolders';
@@ -1683,6 +1689,7 @@ class ProjectRepository {
     const perProfileBoxes = [
       'projects',
       'midi_clips',
+      'midi_collections',
       'roots',
       'ignored_paths',
       'releases',

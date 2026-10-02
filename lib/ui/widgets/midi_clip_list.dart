@@ -20,6 +20,9 @@ class MidiClipListLabels {
     required this.noTrack,
     required this.expandTrack,
     required this.collapseTrack,
+    this.addToCollection = '',
+    this.removeFromCollection = '',
+    this.more = '',
   });
 
   final String play;
@@ -38,20 +41,28 @@ class MidiClipListLabels {
   /// Tooltip listing the other clips merged into this one.
   final String Function(String names) alsoAs;
 
-  /// Heading for clips whose format didn't say which track they're on.
+  /// Heading for the clips no group label could be found for.
   final String noTrack;
   final String expandTrack;
   final String collapseTrack;
+  final String addToCollection;
+  final String removeFromCollection;
+
+  /// Tooltip on the compact layout's overflow menu.
+  final String more;
 }
 
-/// The MIDI clips read out of a project, grouped under the track each sits
-/// on (see [groupMidiClipsByTrack]): a collapsible header per track, then per
-/// clip a piano-roll thumbnail, its name, length and note count, and
-/// play / save / drag.
+/// A list of MIDI clips: per clip a piano-roll thumbnail, its name, length
+/// and note count, and play / instrument / share / save / drag.
 ///
-/// Every track starts expanded when the whole list is short; past
-/// [expandAllUpTo] clips they start collapsed, so the headers read as an
-/// overview of which tracks have MIDI.
+/// Grouped under collapsible headers by [groupLabelOf] — the track on a
+/// project page (the default), the project in the MIDI library — or not at
+/// all when [grouped] is false, as in a collection. When grouped, every group
+/// starts open while the whole list is short; past [expandAllUpTo] clips they
+/// start collapsed, so the headers read as an overview.
+///
+/// [compact] is for phones: a smaller thumbnail, and everything but play in
+/// one overflow menu, so a row keeps room for its name.
 ///
 /// A plain view: it owns no player and touches no files. [dragHandleBuilder]
 /// wraps the drag handle in whatever makes it draggable (the page passes a
@@ -67,9 +78,15 @@ class MidiClipList extends StatefulWidget {
     required this.voiceOf,
     required this.onVoiceChanged,
     this.onSave,
+    this.onAddToCollection,
+    this.onRemove,
     this.playingIndex,
     this.preparingIndex,
     this.dragHandleBuilder,
+    this.groupLabelOf,
+    this.grouped = true,
+    this.detailPrefixOf,
+    this.compact = false,
     this.expandAllUpTo = 12,
   });
 
@@ -87,6 +104,12 @@ class MidiClipList extends StatefulWidget {
   /// Files", and the row needs the room.
   final void Function(int index)? onSave;
 
+  /// Null hides "Add to collection". [origin] anchors the collection menu.
+  final void Function(int index, Rect? origin)? onAddToCollection;
+
+  /// Null hides "Remove from collection".
+  final void Function(int index)? onRemove;
+
   /// The voice clip [index] plays with (inferred or picked).
   final SynthVoice Function(int index) voiceOf;
   final void Function(int index, SynthVoice voice) onVoiceChanged;
@@ -100,6 +123,15 @@ class MidiClipList extends StatefulWidget {
   final Widget Function(BuildContext context, int index, Widget handle)?
       dragHandleBuilder;
 
+  /// The heading clip [index] is listed under; defaults to its track.
+  final String? Function(int index)? groupLabelOf;
+  final bool grouped;
+
+  /// Shown first in a row's details line — the track in the library, where
+  /// the group heading is the project.
+  final String? Function(int index)? detailPrefixOf;
+
+  final bool compact;
   final int expandAllUpTo;
 
   @override
@@ -107,12 +139,12 @@ class MidiClipList extends StatefulWidget {
 }
 
 class _MidiClipListState extends State<MidiClipList> {
-  /// Tracks the user toggled away from the default state.
+  /// Groups the user toggled away from the default state.
   final Set<String?> _toggled = {};
 
-  bool _isOpen(String? track) {
+  bool _isOpen(String? label) {
     final byDefault = widget.clips.length <= widget.expandAllUpTo;
-    return _toggled.contains(track) ? !byDefault : byDefault;
+    return _toggled.contains(label) ? !byDefault : byDefault;
   }
 
   @override
@@ -123,16 +155,27 @@ class _MidiClipListState extends State<MidiClipList> {
 
   @override
   Widget build(BuildContext context) {
-    final groups = groupMidiClipsByTrack(widget.clips);
+    if (!widget.grouped) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < widget.clips.length; i++) _row(context, i),
+        ],
+      );
+    }
+    final labelOf =
+        widget.groupLabelOf ?? (int i) => widget.clips[i].trackName;
+    final groups = groupMidiClips(widget.clips.length, labelOf);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         for (final group in groups) ...[
           _header(context, group),
-          if (_isOpen(group.trackName))
+          if (_isOpen(group.label))
             Padding(
-              padding: const EdgeInsets.only(left: 12),
+              padding: EdgeInsets.only(left: widget.compact ? 4 : 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -146,17 +189,17 @@ class _MidiClipListState extends State<MidiClipList> {
     );
   }
 
-  Widget _header(BuildContext context, MidiClipTrackGroup group) {
+  Widget _header(BuildContext context, MidiClipGroup group) {
     final theme = Theme.of(context);
-    final open = _isOpen(group.trackName);
-    final name = group.trackName ?? widget.labels.noTrack;
+    final open = _isOpen(group.label);
+    final name = group.label ?? widget.labels.noTrack;
     return Tooltip(
       message: open ? widget.labels.collapseTrack : widget.labels.expandTrack,
       waitDuration: const Duration(milliseconds: 600),
       child: InkWell(
         borderRadius: BorderRadius.circular(6),
         onTap: () => setState(() {
-          if (!_toggled.remove(group.trackName)) _toggled.add(group.trackName);
+          if (!_toggled.remove(group.label)) _toggled.add(group.label);
         }),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
@@ -178,7 +221,7 @@ class _MidiClipListState extends State<MidiClipList> {
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     fontStyle:
-                        group.trackName == null ? FontStyle.italic : null,
+                        group.label == null ? FontStyle.italic : null,
                   ),
                 ),
               ),
@@ -203,11 +246,13 @@ class _MidiClipListState extends State<MidiClipList> {
     final labels = widget.labels;
     final playing = widget.playingIndex == index;
     final preparing = widget.preparingIndex == index;
+    final compact = widget.compact;
 
     // Rounded up: a 4-bar clip trimmed by a tick is still "4 bars".
     final bars = (clip.lengthBeats / 4).ceil().clamp(1, 1 << 20);
-    // The track is the group header, so it isn't repeated per row.
+    final prefix = widget.detailPrefixOf?.call(index);
     final details = <String>[
+      if (prefix != null && prefix.isNotEmpty) prefix,
       labels.bars(bars),
       labels.notes(clip.notes.length),
       if (clip.occurrences > 1) labels.usedTimes(clip.occurrences),
@@ -215,6 +260,23 @@ class _MidiClipListState extends State<MidiClipList> {
     final title = clip.name.isNotEmpty ? clip.name : (clip.trackName ?? '');
 
     final handle = widget.dragHandleBuilder;
+    final playButton = preparing
+        ? const Padding(
+            padding: EdgeInsets.all(12),
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          )
+        : IconButton(
+            tooltip: playing ? labels.stop : labels.play,
+            icon: Icon(
+              playing ? Icons.stop_circle_outlined : Icons.play_circle_outline,
+            ),
+            onPressed: () => widget.onPlay(index),
+          );
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -241,11 +303,13 @@ class _MidiClipListState extends State<MidiClipList> {
             ),
           MidiClipThumbnail(
             clip: clip,
-            width: 72,
-            height: 32,
-            color: playing ? theme.colorScheme.secondary : theme.colorScheme.primary,
+            width: compact ? 44 : 72,
+            height: compact ? 28 : 32,
+            color: playing
+                ? theme.colorScheme.secondary
+                : theme.colorScheme.primary,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: compact ? 8 : 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,44 +337,107 @@ class _MidiClipListState extends State<MidiClipList> {
               ],
             ),
           ),
-          if (preparing)
-            const Padding(
-              padding: EdgeInsets.all(12),
-              child: SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
+          playButton,
+          if (compact)
+            _overflowMenu(context, index)
+          else ...[
+            _VoicePicker(
+              voice: widget.voiceOf(index),
+              labels: labels,
+              onChanged: (v) => widget.onVoiceChanged(index, v),
+            ),
+            if (widget.onAddToCollection != null)
+              Builder(
+                builder: (buttonContext) => IconButton(
+                  tooltip: labels.addToCollection,
+                  icon: const Icon(Icons.playlist_add),
+                  onPressed: () => widget.onAddToCollection!(
+                    index,
+                    _rectOf(buttonContext),
+                  ),
+                ),
               ),
-            )
-          else
-            IconButton(
-              tooltip: playing ? labels.stop : labels.play,
-              icon: Icon(playing ? Icons.stop_circle_outlined : Icons.play_circle_outline),
-              onPressed: () => widget.onPlay(index),
+            if (widget.onRemove != null)
+              IconButton(
+                tooltip: labels.removeFromCollection,
+                icon: const Icon(Icons.playlist_remove),
+                onPressed: () => widget.onRemove!(index),
+              ),
+            Builder(
+              builder: (buttonContext) => IconButton(
+                tooltip: labels.share,
+                icon: const Icon(Icons.share_outlined),
+                onPressed: () => widget.onShare(index, _rectOf(buttonContext)),
+              ),
             ),
-          _VoicePicker(
-            voice: widget.voiceOf(index),
-            labels: labels,
-            onChanged: (v) => widget.onVoiceChanged(index, v),
-          ),
-          Builder(
-            builder: (buttonContext) => IconButton(
-              tooltip: labels.share,
-              icon: const Icon(Icons.share_outlined),
-              onPressed: () => widget.onShare(index, _rectOf(buttonContext)),
+            if (widget.onSave != null)
+              IconButton(
+                tooltip: labels.save,
+                icon: const Icon(Icons.save_alt),
+                onPressed: () => widget.onSave!(index),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// Phones: instrument, collection, share and save behind one button.
+  Widget _overflowMenu(BuildContext context, int index) {
+    final labels = widget.labels;
+    return Builder(
+      builder: (menuContext) => PopupMenuButton<_RowAction>(
+        tooltip: labels.more,
+        icon: const Icon(Icons.more_vert),
+        onSelected: (action) async {
+          final origin = _rectOf(menuContext);
+          switch (action) {
+            case _RowAction.instrument:
+              final voice = await showDialog<SynthVoice>(
+                context: context,
+                builder: (_) => _VoiceDialog(
+                  current: widget.voiceOf(index),
+                  labels: labels,
+                ),
+              );
+              if (voice != null) widget.onVoiceChanged(index, voice);
+            case _RowAction.share:
+              widget.onShare(index, origin);
+            case _RowAction.add:
+              widget.onAddToCollection?.call(index, origin);
+            case _RowAction.remove:
+              widget.onRemove?.call(index);
+            case _RowAction.save:
+              widget.onSave?.call(index);
+          }
+        },
+        itemBuilder: (context) => [
+          PopupMenuItem(
+            value: _RowAction.instrument,
+            child: Text(
+              labels.instrument(labels.voiceName(widget.voiceOf(index))),
             ),
           ),
+          PopupMenuItem(value: _RowAction.share, child: Text(labels.share)),
+          if (widget.onAddToCollection != null)
+            PopupMenuItem(
+              value: _RowAction.add,
+              child: Text(labels.addToCollection),
+            ),
+          if (widget.onRemove != null)
+            PopupMenuItem(
+              value: _RowAction.remove,
+              child: Text(labels.removeFromCollection),
+            ),
           if (widget.onSave != null)
-            IconButton(
-              tooltip: labels.save,
-              icon: const Icon(Icons.save_alt),
-              onPressed: () => widget.onSave!(index),
-            ),
+            PopupMenuItem(value: _RowAction.save, child: Text(labels.save)),
         ],
       ),
     );
   }
 }
+
+enum _RowAction { instrument, share, add, remove, save }
 
 Rect? _rectOf(BuildContext context) {
   final box = context.findRenderObject();
@@ -357,6 +484,31 @@ class _VoicePicker extends StatelessWidget {
             child: Text(labels.voiceName(v)),
           ),
         ],
+      ],
+    );
+  }
+}
+
+/// The phone layout's instrument chooser: the same voices as [_VoicePicker],
+/// as a dialog (a 16-item popup out of an overflow menu is unwieldy).
+class _VoiceDialog extends StatelessWidget {
+  const _VoiceDialog({required this.current, required this.labels});
+
+  final SynthVoice current;
+  final MidiClipListLabels labels;
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      children: [
+        for (final v in SynthVoice.values)
+          ListTile(
+            dense: true,
+            leading: Icon(_voiceIcon(v), size: 20),
+            title: Text(labels.voiceName(v)),
+            trailing: v == current ? const Icon(Icons.check, size: 18) : null,
+            onTap: () => Navigator.of(context).pop(v),
+          ),
       ],
     );
   }

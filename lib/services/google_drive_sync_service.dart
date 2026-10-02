@@ -32,6 +32,8 @@ import '../models/backup_progress.dart';
 import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
 import '../repository/midi_clip_store.dart';
+import '../repository/midi_collection_store.dart';
+import '../models/midi_collection.dart';
 import 'custom_theme_merge.dart';
 import '../utils/app_paths.dart'
     show
@@ -3433,6 +3435,26 @@ class GoogleDriveSyncService {
         }
       }
 
+      // MIDI collections, per profile (they hold copies of clips, so they
+      // follow the profile, not any one project).
+      final Map<String, dynamic> midiCollectionsByProfile = {};
+      for (final profile in allProfiles) {
+        try {
+          // Tombstones included: that is how a deletion reaches the others.
+          final collections =
+              await MidiCollectionStore(profile.id).all(includeDeleted: true);
+          if (collections.isNotEmpty) {
+            midiCollectionsByProfile[profile.id] = [
+              for (final c in collections) c.toJson(),
+            ];
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error collecting MIDI collections for ${profile.id}: $e');
+          }
+        }
+      }
+
       final data = {
         'timestamp': DateTime.now().toIso8601String(),
         'version': '1.7', // Incremented to include custom themes
@@ -3440,6 +3462,8 @@ class GoogleDriveSyncService {
         'projects': allProjects.map((p) => _serializeProject(p)).toList(),
         // project id -> StoredMidiClips.toJson(). Absent on older backups.
         'midiClips': midiClipsByProject,
+        // profile id -> [MidiCollection.toJson()]. Absent on older backups.
+        'midiCollectionsByProfile': midiCollectionsByProfile,
         'releases': allReleases.map((r) => _serializeRelease(r)).toList(),
         'roots': allRoots.map((r) => _serializeRoot(r)).toList(),
         'templates': allTemplates.map((t) => _serializeTemplate(t)).toList(),
@@ -4944,6 +4968,12 @@ class GoogleDriveSyncService {
     if (remoteData['midiClips'] != null) {
       await _mergeMidiClips(remoteData['midiClips'], allProfiles);
     }
+    if (remoteData['midiCollectionsByProfile'] is Map) {
+      await _mergeMidiCollections(
+        remoteData['midiCollectionsByProfile'] as Map,
+        allProfiles,
+      );
+    }
 
     // Merge releases - distribute to CORRECT profiles (or ALL if no mappings)
     if (remoteData['releases'] != null) {
@@ -5660,6 +5690,20 @@ class GoogleDriveSyncService {
       }
     } catch (e) {
       if (kDebugMode) print('Error merging MIDI clips: $e');
+    }
+  }
+
+  /// Merges each profile's collections into that profile's store, for the
+  /// profiles that exist here. See [MidiCollectionStore.mergeIncoming].
+  Future<void> _mergeMidiCollections(Map byProfile, List<Profile> profiles) async {
+    for (final profile in profiles) {
+      try {
+        final incoming = midiCollectionsFromJson(byProfile[profile.id]);
+        if (incoming.isEmpty) continue;
+        await MidiCollectionStore(profile.id).mergeIncoming(incoming);
+      } catch (e) {
+        if (kDebugMode) print('Error merging MIDI collections: $e');
+      }
     }
   }
 

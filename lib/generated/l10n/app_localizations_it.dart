@@ -6085,4 +6085,91 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get synthVoicePercussion => 'Percussioni';
+
+  @override
+  String get midiLibraryTab => 'MIDI';
+
+  @override
+  String get midiLibrarySearchHint => 'Cerca clip MIDI';
+
+  @override
+  String get midiLibraryAllClips => 'Tutte le clip';
+
+  @override
+  String get midiCollectionsTitle => 'Raccolte';
+
+  @override
+  String get midiCollectionNew => 'Nuova raccolta';
+
+  @override
+  String get midiCollectionNameHint => 'Nome della raccolta';
+
+  @override
+  String get midiCollectionCreate => 'Crea';
+
+  @override
+  String get midiCollectionRename => 'Rinomina';
+
+  @override
+  String get midiCollectionDelete => 'Elimina raccolta';
+
+  @override
+  String midiCollectionDeleteConfirm(String name) {
+    return 'Eliminare \"$name\"? Le sue clip sono copie, quindi i progetti di origine non vengono toccati.';
+  }
+
+  @override
+  String get midiCollectionAddTo => 'Aggiungi a una raccolta';
+
+  @override
+  String get midiCollectionRemoveFrom => 'Rimuovi dalla raccolta';
+
+  @override
+  String midiCollectionAdded(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count clip aggiunte a $name',
+      one: 'Aggiunta a $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiCollectionAlreadyIn(String name) {
+    return 'Già in $name';
+  }
+
+  @override
+  String midiCollectionRemoved(String clip, String name) {
+    return '$clip rimossa da $name';
+  }
+
+  @override
+  String get midiCollectionEmpty =>
+      'Questa raccolta è vuota. Aggiungi clip da Tutte le clip o dalla pagina di un progetto.';
+
+  @override
+  String midiCollectionShareText(String name) {
+    return 'Raccolta MIDI \"$name\"';
+  }
+
+  @override
+  String get midiLibraryEmpty =>
+      'Ancora nessuna clip MIDI. Estrai i metadati di un progetto per leggerne le clip.';
+
+  @override
+  String get midiLibraryNoMatches => 'Nessuna clip corrisponde.';
+
+  @override
+  String get midiLibraryAllInstruments => 'Tutti gli strumenti';
+
+  @override
+  String get midiClipMoreActions => 'Altro';
+
+  @override
+  String get midiTempoAuto => 'Auto';
+
+  @override
+  String get midiTempoResetAuto => 'Torna al tempo di ogni clip';
 }

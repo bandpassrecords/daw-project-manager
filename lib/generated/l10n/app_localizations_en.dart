@@ -6043,4 +6043,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get synthVoicePercussion => 'Percussion';
+
+  @override
+  String get midiLibraryTab => 'MIDI';
+
+  @override
+  String get midiLibrarySearchHint => 'Search MIDI clips';
+
+  @override
+  String get midiLibraryAllClips => 'All clips';
+
+  @override
+  String get midiCollectionsTitle => 'Collections';
+
+  @override
+  String get midiCollectionNew => 'New collection';
+
+  @override
+  String get midiCollectionNameHint => 'Collection name';
+
+  @override
+  String get midiCollectionCreate => 'Create';
+
+  @override
+  String get midiCollectionRename => 'Rename';
+
+  @override
+  String get midiCollectionDelete => 'Delete collection';
+
+  @override
+  String midiCollectionDeleteConfirm(String name) {
+    return 'Delete \"$name\"? Its clips are copies, so the projects they came from are not affected.';
+  }
+
+  @override
+  String get midiCollectionAddTo => 'Add to collection';
+
+  @override
+  String get midiCollectionRemoveFrom => 'Remove from collection';
+
+  @override
+  String midiCollectionAdded(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Added $count clips to $name',
+      one: 'Added to $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiCollectionAlreadyIn(String name) {
+    return 'Already in $name';
+  }
+
+  @override
+  String midiCollectionRemoved(String clip, String name) {
+    return 'Removed $clip from $name';
+  }
+
+  @override
+  String get midiCollectionEmpty =>
+      'This collection is empty. Add clips from All clips or from a project\'s page.';
+
+  @override
+  String midiCollectionShareText(String name) {
+    return 'MIDI collection \"$name\"';
+  }
+
+  @override
+  String get midiLibraryEmpty =>
+      'No MIDI clips yet. Extract a project\'s metadata to read its clips.';
+
+  @override
+  String get midiLibraryNoMatches => 'No clips match.';
+
+  @override
+  String get midiLibraryAllInstruments => 'All instruments';
+
+  @override
+  String get midiClipMoreActions => 'More';
+
+  @override
+  String get midiTempoAuto => 'Auto';
+
+  @override
+  String get midiTempoResetAuto => 'Back to each clip\'s own tempo';
 }

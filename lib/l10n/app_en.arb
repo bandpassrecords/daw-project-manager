@@ -5721,5 +5721,128 @@
   "synthVoicePercussion": "Percussion",
   "@synthVoicePercussion": {
     "description": "Built-in preview instrument name: Percussion"
+  },
+  "midiLibraryTab": "MIDI",
+  "@midiLibraryTab": {
+    "description": "Dashboard tab with every MIDI clip across projects and the user's collections"
+  },
+  "midiLibrarySearchHint": "Search MIDI clips",
+  "@midiLibrarySearchHint": {
+    "description": "Search box hint on the MIDI tab"
+  },
+  "midiLibraryAllClips": "All clips",
+  "@midiLibraryAllClips": {
+    "description": "MIDI tab: the view listing every unique clip across all projects"
+  },
+  "midiCollectionsTitle": "Collections",
+  "@midiCollectionsTitle": {
+    "description": "MIDI tab: heading over the user's collections of clips"
+  },
+  "midiCollectionNew": "New collection",
+  "@midiCollectionNew": {
+    "description": "Button and dialog title for making a new MIDI collection"
+  },
+  "midiCollectionNameHint": "Collection name",
+  "@midiCollectionNameHint": {
+    "description": "Placeholder in the MIDI collection name field"
+  },
+  "midiCollectionCreate": "Create",
+  "@midiCollectionCreate": {
+    "description": "Confirm button when creating a MIDI collection"
+  },
+  "midiCollectionRename": "Rename",
+  "@midiCollectionRename": {
+    "description": "Button and dialog title for renaming a MIDI collection"
+  },
+  "midiCollectionDelete": "Delete collection",
+  "@midiCollectionDelete": {
+    "description": "Button and dialog title for deleting a MIDI collection"
+  },
+  "midiCollectionDeleteConfirm": "Delete \"{name}\"? Its clips are copies, so the projects they came from are not affected.",
+  "@midiCollectionDeleteConfirm": {
+    "description": "Confirmation when deleting a MIDI collection; its clips are copies so projects are unaffected",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCollectionAddTo": "Add to collection",
+  "@midiCollectionAddTo": {
+    "description": "Action that copies a MIDI clip into a collection"
+  },
+  "midiCollectionRemoveFrom": "Remove from collection",
+  "@midiCollectionRemoveFrom": {
+    "description": "Action that removes a MIDI clip from the collection on show"
+  },
+  "midiCollectionAdded": "{count, plural, =1{Added to {name}} other{Added {count} clips to {name}}}",
+  "@midiCollectionAdded": {
+    "description": "Snackbar after adding MIDI clips to a collection",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCollectionAlreadyIn": "Already in {name}",
+  "@midiCollectionAlreadyIn": {
+    "description": "Snackbar when the clip being added is already in that collection",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCollectionRemoved": "Removed {clip} from {name}",
+  "@midiCollectionRemoved": {
+    "description": "Snackbar after removing a clip from a collection, with an undo action",
+    "placeholders": {
+      "clip": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCollectionEmpty": "This collection is empty. Add clips from All clips or from a project's page.",
+  "@midiCollectionEmpty": {
+    "description": "Shown in an empty MIDI collection"
+  },
+  "midiCollectionShareText": "MIDI collection \"{name}\"",
+  "@midiCollectionShareText": {
+    "description": "Message sent along with a shared MIDI collection",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiLibraryEmpty": "No MIDI clips yet. Extract a project's metadata to read its clips.",
+  "@midiLibraryEmpty": {
+    "description": "MIDI tab when no project has stored clips yet"
+  },
+  "midiLibraryNoMatches": "No clips match.",
+  "@midiLibraryNoMatches": {
+    "description": "MIDI tab when the search or instrument filter matches nothing"
+  },
+  "midiLibraryAllInstruments": "All instruments",
+  "@midiLibraryAllInstruments": {
+    "description": "Instrument filter option on the MIDI tab that shows every clip"
+  },
+  "midiClipMoreActions": "More",
+  "@midiClipMoreActions": {
+    "description": "Tooltip on the overflow menu of a MIDI clip row on phones"
+  },
+  "midiTempoAuto": "Auto",
+  "@midiTempoAuto": {
+    "description": "Placeholder in the tempo field while each clip plays at its own project tempo"
+  },
+  "midiTempoResetAuto": "Back to each clip's own tempo",
+  "@midiTempoResetAuto": {
+    "description": "Tooltip on the button that goes back to playing each clip at its own project tempo"
   }
 }

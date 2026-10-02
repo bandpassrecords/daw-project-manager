@@ -30,23 +30,30 @@ void main() {
 
   group('MidiTempoControl', () {
     late List<double> changes;
+    late int resets;
 
-    setUp(() => changes = []);
+    setUp(() {
+      changes = [];
+      resets = 0;
+    });
 
-    Widget wrap({required double bpm, double? project = 145}) => MaterialApp(
+    Widget wrap({double? bpm, bool resettable = false, double nudgeFrom = 120}) =>
+        MaterialApp(
           home: Scaffold(
             body: Column(
               children: [
                 MidiTempoControl(
                   bpm: bpm,
-                  projectBpm: project,
+                  nudgeFrom: nudgeFrom,
                   onChanged: changes.add,
-                  labels: MidiTempoLabels(
+                  onReset: resettable ? () => resets++ : null,
+                  resetTooltip: 'Reset',
+                  labels: const MidiTempoLabels(
                     unit: 'BPM',
                     tooltip: 'Tempo',
                     slower: 'Slower',
                     faster: 'Faster',
-                    resetTo: (bpm) => 'Reset to $bpm',
+                    auto: 'Auto',
                   ),
                 ),
                 const TextField(key: ValueKey('elsewhere')),
@@ -67,11 +74,11 @@ void main() {
       expect(changes, [146, 144]);
     });
 
-    testWidgets('a typed tempo is applied on submit', (tester) async {
+    testWidgets('a typed tempo is applied once on submit', (tester) async {
       await tester.pumpWidget(wrap(bpm: 145));
       await tester.enterText(find.byType(TextField).first, '170');
       await tester.testTextInput.receiveAction(TextInputAction.done);
-      expect(changes, [170]);
+      expect(changes, [170], reason: 'Enter then losing focus must not apply it twice');
     });
 
     testWidgets('a typed tempo is applied when the field loses focus',
@@ -93,19 +100,32 @@ void main() {
       expect(find.widgetWithText(TextField, '145'), findsOneWidget);
     });
 
-    testWidgets('offers a reset only once the tempo differs from the project',
-        (tester) async {
+    testWidgets("the reset button is the caller's to offer", (tester) async {
       await tester.pumpWidget(wrap(bpm: 145));
-      expect(find.byTooltip('Reset to 145'), findsNothing);
+      expect(find.byTooltip('Reset'), findsNothing);
 
-      await tester.pumpWidget(wrap(bpm: 160));
-      await tester.tap(find.byTooltip('Reset to 145'));
-      expect(changes, [145]);
+      await tester.pumpWidget(wrap(bpm: 160, resettable: true));
+      await tester.tap(find.byTooltip('Reset'));
+      expect(resets, 1);
     });
 
-    testWidgets('no reset when the project tempo is unknown', (tester) async {
-      await tester.pumpWidget(wrap(bpm: 120, project: null));
-      expect(find.byIcon(Icons.restart_alt), findsNothing);
+    testWidgets('automatic: an empty field with a hint, nudges start from nudgeFrom',
+        (tester) async {
+      await tester.pumpWidget(wrap(nudgeFrom: 140));
+      final field = tester.widget<TextField>(find.byType(TextField).first);
+      expect(field.controller!.text, isEmpty);
+      expect(field.decoration!.hintText, 'Auto');
+
+      await tester.tap(find.byTooltip('Faster'));
+      expect(changes, [141]);
+    });
+
+    testWidgets('clearing the field while automatic stays automatic',
+        (tester) async {
+      await tester.pumpWidget(wrap());
+      await tester.enterText(find.byType(TextField).first, '');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      expect(changes, isEmpty);
     });
 
     testWidgets('follows a tempo changed from outside', (tester) async {

@@ -30,7 +30,7 @@ class MidiTempoLabels {
     required this.tooltip,
     required this.slower,
     required this.faster,
-    required this.resetTo,
+    this.auto = '',
   });
 
   /// "BPM".
@@ -39,45 +39,52 @@ class MidiTempoLabels {
   final String slower;
   final String faster;
 
-  /// Tooltip on the reset button, given the formatted project tempo.
-  final String Function(String bpm) resetTo;
+  /// Placeholder shown while no tempo is set (see [MidiTempoControl.bpm]).
+  final String auto;
 }
 
 /// The tempo MIDI clips are previewed and saved at: a small BPM field with
-/// −/+ nudges, and a reset back to [projectBpm] once it differs.
+/// −/+ nudges and, when the page offers one, a reset.
 ///
-/// A plain view: the page owns the value and decides what a change means
-/// (re-rendering the playing preview, the tempo written into `.mid` files).
+/// A plain view: the page owns the value and decides what a change or a
+/// reset means — back to the project's tempo on a project page, back to
+/// "each clip at its own project's tempo" in the library.
 class MidiTempoControl extends StatefulWidget {
   const MidiTempoControl({
     super.key,
     required this.bpm,
-    required this.projectBpm,
     required this.onChanged,
     required this.labels,
+    this.onReset,
+    this.resetTooltip,
+    this.nudgeFrom = 120,
   });
 
-  final double bpm;
-
-  /// The project's own tempo, or null when it isn't known — then there is
-  /// nothing to reset to.
-  final double? projectBpm;
+  /// The tempo in effect, or null for "automatic": the field then shows
+  /// [MidiTempoLabels.auto], and a nudge starts from [nudgeFrom].
+  final double? bpm;
   final ValueChanged<double> onChanged;
   final MidiTempoLabels labels;
+
+  /// Shown as a reset button when non-null.
+  final VoidCallback? onReset;
+  final String? resetTooltip;
+  final double nudgeFrom;
 
   @override
   State<MidiTempoControl> createState() => _MidiTempoControlState();
 }
 
 class _MidiTempoControlState extends State<MidiTempoControl> {
-  late final TextEditingController _controller = TextEditingController(
-    text: formatPreviewBpm(widget.bpm),
-  );
+  late final TextEditingController _controller =
+      TextEditingController(text: _text(widget.bpm));
   final FocusNode _focus = FocusNode();
 
   /// What the field last reported, so Enter followed by the focus leaving
   /// doesn't report the same entry twice.
   double? _lastSent;
+
+  static String _text(double? bpm) => bpm == null ? '' : formatPreviewBpm(bpm);
 
   @override
   void initState() {
@@ -93,7 +100,7 @@ class _MidiTempoControlState extends State<MidiTempoControl> {
     // Follow outside changes (nudges, reset) unless the user is mid-edit.
     if (old.bpm != widget.bpm) {
       _lastSent = null;
-      if (!_focus.hasFocus) _controller.text = formatPreviewBpm(widget.bpm);
+      if (!_focus.hasFocus) _controller.text = _text(widget.bpm);
     }
   }
 
@@ -107,8 +114,9 @@ class _MidiTempoControlState extends State<MidiTempoControl> {
   void _commit() {
     final value = parsePreviewBpm(_controller.text);
     if (value == null) {
-      // Not a usable tempo: put back the one in effect rather than guessing.
-      _controller.text = formatPreviewBpm(widget.bpm);
+      // Not a usable tempo (or emptied): put back the one in effect rather
+      // than guessing.
+      _controller.text = _text(widget.bpm);
       return;
     }
     _controller.text = formatPreviewBpm(value);
@@ -119,16 +127,16 @@ class _MidiTempoControlState extends State<MidiTempoControl> {
   }
 
   void _nudge(double delta) {
-    final next = (widget.bpm + delta).clamp(kMinPreviewBpm, kMaxPreviewBpm);
-    if (next != widget.bpm) widget.onChanged(next.toDouble());
+    final from = widget.bpm ?? widget.nudgeFrom;
+    final next = (from + delta).clamp(kMinPreviewBpm, kMaxPreviewBpm).toDouble();
+    if (next != widget.bpm) widget.onChanged(next);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final labels = widget.labels;
-    final project = widget.projectBpm;
-    final differs = project != null && project != widget.bpm;
+    final current = widget.bpm ?? widget.nudgeFrom;
 
     // One tooltip per control, never one around the row: a tooltip wrapping
     // the buttons' own tooltips nests overlay entries.
@@ -149,7 +157,7 @@ class _MidiTempoControlState extends State<MidiTempoControl> {
           tooltip: labels.slower,
           visualDensity: VisualDensity.compact,
           icon: const Icon(Icons.remove, size: 18),
-          onPressed: widget.bpm > kMinPreviewBpm ? () => _nudge(-1) : null,
+          onPressed: current > kMinPreviewBpm ? () => _nudge(-1) : null,
         ),
         SizedBox(
           width: 64,
@@ -159,10 +167,12 @@ class _MidiTempoControlState extends State<MidiTempoControl> {
             textAlign: TextAlign.center,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: theme.textTheme.bodyMedium,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               isDense: true,
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+              border: const OutlineInputBorder(),
+              hintText: labels.auto,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             ),
             onSubmitted: (_) => _commit(),
           ),
@@ -171,15 +181,15 @@ class _MidiTempoControlState extends State<MidiTempoControl> {
           tooltip: labels.faster,
           visualDensity: VisualDensity.compact,
           icon: const Icon(Icons.add, size: 18),
-          onPressed: widget.bpm < kMaxPreviewBpm ? () => _nudge(1) : null,
+          onPressed: current < kMaxPreviewBpm ? () => _nudge(1) : null,
         ),
         Text(labels.unit, style: theme.textTheme.bodySmall),
-        if (differs)
+        if (widget.onReset != null)
           IconButton(
-            tooltip: labels.resetTo(formatPreviewBpm(project)),
+            tooltip: widget.resetTooltip,
             visualDensity: VisualDensity.compact,
             icon: const Icon(Icons.restart_alt, size: 18),
-            onPressed: () => widget.onChanged(project),
+            onPressed: widget.onReset,
           ),
       ],
     );

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +19,9 @@ import '../../services/midi/midi_file_writer.dart';
 import '../../services/midi/synth_voice.dart';
 import '../../utils/mobile_utils.dart';
 import '../midi_clip_share.dart';
+import '../midi_collection_actions.dart';
 import 'midi_clip_list.dart';
+import '../midi_preview_player.dart';
 import 'midi_tempo_control.dart';
 
 /// A project's MIDI clips: the ones stored by the last extraction (see
@@ -55,10 +56,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
   bool _loaded = false;
   bool _reading = false;
   bool _stale = false;
-  int? _playing;
-  int? _preparing;
-  AudioPlayer? _player;
-  StreamSubscription<void>? _completeSub;
+  final MidiPreviewPlayer _player = MidiPreviewPlayer();
   StreamSubscription<String>? _storeSub;
 
   /// Instruments picked by hand, by clip content — so a refresh that reorders
@@ -82,10 +80,22 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     return _voiceOverrides[clip.contentKey] ?? inferSynthVoice(clip);
   }
 
+  /// Where clip [index] sits in [_clips] by the player's key, for the list.
+  int? _indexOfKey(String? key) {
+    if (key == null) return null;
+    final i = _clips.indexWhere((c) => c.contentKey == key);
+    return i < 0 ? null : i;
+  }
+
   @override
   void initState() {
     super.initState();
+    _player.addListener(_onPlayer);
     _attach();
+  }
+
+  void _onPlayer() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -107,8 +117,8 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
   @override
   void dispose() {
     _storeSub?.cancel();
-    _completeSub?.cancel();
-    _player?.dispose();
+    _player.removeListener(_onPlayer);
+    _player.dispose();
     super.dispose();
   }
 
@@ -163,13 +173,13 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
   void _setTempo(double bpm) {
     setState(() => _tempoOverride = bpm == _projectBpm ? null : bpm);
     // A playing preview follows the new tempo straight away.
-    final playing = _playing;
+    final playing = _indexOfKey(_player.playingKey);
     if (playing != null) _play(playing);
   }
 
   void _setVoice(int index, SynthVoice voice) {
     setState(() => _voiceOverrides[_clips[index].contentKey] = voice);
-    if (_playing == index) _play(index);
+    if (_player.playingKey == _clips[index].contentKey) _play(index);
   }
 
   Future<Directory> _tempDir(String name) async {
@@ -177,49 +187,26 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     return Directory(p.join(base.path, 'daw_project_manager', name));
   }
 
-  Future<void> _stop() async {
-    await _player?.stop();
-    if (mounted && _playing != null) setState(() => _playing = null);
-  }
+  Future<void> _stop() => _player.stop();
 
   Future<void> _togglePlay(int index) async {
-    if (_playing == index) {
-      await _stop();
-      return;
-    }
+    final clip = _clips[index];
+    if (_player.playingKey == clip.contentKey) return _stop();
     await _play(index);
   }
 
   Future<void> _play(int index) async {
     final l10n = AppLocalizations.of(context)!;
     final clip = _clips[index];
-    final tempo = _tempo;
-    final voice = _voiceOf(index);
-    setState(() => _preparing = index);
     try {
-      final path = await MidiClipService.renderPreview(
+      await _player.play(
+        clip.contentKey,
         clip,
-        bpm: tempo,
-        voice: voice,
-        directory: await _tempDir('midi_previews'),
+        bpm: _tempo,
+        voice: _voiceOf(index),
       );
-      // Tempo or instrument moved while this render ran: render again rather
-      // than start a preview the user already changed their mind about.
-      if (mounted && (tempo != _tempo || voice != _voiceOf(index))) {
-        await _play(index);
-        return;
-      }
-      final player = _player ??= AudioPlayer();
-      _completeSub ??= player.onPlayerComplete.listen((_) {
-        if (mounted) setState(() => _playing = null);
-      });
-      await player.stop();
-      await player.play(DeviceFileSource(path));
-      if (mounted) setState(() => _playing = index);
     } catch (e) {
       _snack(l10n.midiClipPreviewFailed(e.toString()));
-    } finally {
-      if (mounted) setState(() => _preparing = null);
     }
   }
 
@@ -395,15 +382,14 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
             padding: const EdgeInsets.only(top: 4),
             child: MidiTempoControl(
               bpm: _tempo,
-              projectBpm: _projectBpm,
               onChanged: _setTempo,
-              labels: MidiTempoLabels(
-                unit: l10n.bpm,
-                tooltip: l10n.midiTempoTooltip,
-                slower: l10n.midiTempoSlower,
-                faster: l10n.midiTempoFaster,
-                resetTo: l10n.midiTempoReset,
-              ),
+              onReset: (_tempoOverride != null && _projectBpm != null)
+                  ? () => _setTempo(_projectBpm!)
+                  : null,
+              resetTooltip: _projectBpm == null
+                  ? null
+                  : l10n.midiTempoReset(formatPreviewBpm(_projectBpm!)),
+              labels: midiTempoLabelsOf(l10n),
             ),
           ),
         const SizedBox(height: 8),
@@ -440,11 +426,26 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
         else
           MidiClipList(
             clips: clips,
-            playingIndex: _playing,
-            preparingIndex: _preparing,
+            playingIndex: _indexOfKey(_player.playingKey),
+            preparingIndex: _indexOfKey(_player.preparingKey),
             onPlay: _togglePlay,
             onShare: _share,
             onSave: isMobile ? null : _save,
+            compact: isMobile,
+            onAddToCollection: (index, origin) => addToCollectionFlow(
+              context,
+              ref,
+              [
+                collectionItemFor(
+                  _clips[index],
+                  projectId: widget.project.id,
+                  projectName: widget.project.displayName,
+                  bpm: _tempo,
+                  pickedVoice: _voiceOverrides[_clips[index].contentKey],
+                ),
+              ],
+              origin: origin,
+            ),
             voiceOf: _voiceOf,
             onVoiceChanged: _setVoice,
             dragHandleBuilder: isMobile
@@ -466,6 +467,14 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
   }
 }
 
+MidiTempoLabels midiTempoLabelsOf(AppLocalizations l10n) => MidiTempoLabels(
+      unit: l10n.bpm,
+      tooltip: l10n.midiTempoTooltip,
+      slower: l10n.midiTempoSlower,
+      faster: l10n.midiTempoFaster,
+      auto: l10n.midiTempoAuto,
+    );
+
 /// Every string [MidiClipList] needs. Shared with the MIDI library page.
 MidiClipListLabels midiClipListLabelsOf(AppLocalizations l10n) =>
     MidiClipListLabels(
@@ -483,6 +492,9 @@ MidiClipListLabels midiClipListLabelsOf(AppLocalizations l10n) =>
       noTrack: l10n.midiClipsNoTrack,
       expandTrack: l10n.midiClipsExpandTrack,
       collapseTrack: l10n.midiClipsCollapseTrack,
+      addToCollection: l10n.midiCollectionAddTo,
+      removeFromCollection: l10n.midiCollectionRemoveFrom,
+      more: l10n.midiClipMoreActions,
     );
 
 String synthVoiceName(AppLocalizations l10n, SynthVoice v) => switch (v) {

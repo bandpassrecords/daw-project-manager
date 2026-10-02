@@ -10072,6 +10072,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Percussion'**
   String get synthVoicePercussion;
+
+  /// Dashboard tab with every MIDI clip across projects and the user's collections
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI'**
+  String get midiLibraryTab;
+
+  /// Search box hint on the MIDI tab
+  ///
+  /// In en, this message translates to:
+  /// **'Search MIDI clips'**
+  String get midiLibrarySearchHint;
+
+  /// MIDI tab: the view listing every unique clip across all projects
+  ///
+  /// In en, this message translates to:
+  /// **'All clips'**
+  String get midiLibraryAllClips;
+
+  /// MIDI tab: heading over the user's collections of clips
+  ///
+  /// In en, this message translates to:
+  /// **'Collections'**
+  String get midiCollectionsTitle;
+
+  /// Button and dialog title for making a new MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'New collection'**
+  String get midiCollectionNew;
+
+  /// Placeholder in the MIDI collection name field
+  ///
+  /// In en, this message translates to:
+  /// **'Collection name'**
+  String get midiCollectionNameHint;
+
+  /// Confirm button when creating a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get midiCollectionCreate;
+
+  /// Button and dialog title for renaming a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get midiCollectionRename;
+
+  /// Button and dialog title for deleting a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'Delete collection'**
+  String get midiCollectionDelete;
+
+  /// Confirmation when deleting a MIDI collection; its clips are copies so projects are unaffected
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? Its clips are copies, so the projects they came from are not affected.'**
+  String midiCollectionDeleteConfirm(String name);
+
+  /// Action that copies a MIDI clip into a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Add to collection'**
+  String get midiCollectionAddTo;
+
+  /// Action that removes a MIDI clip from the collection on show
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from collection'**
+  String get midiCollectionRemoveFrom;
+
+  /// Snackbar after adding MIDI clips to a collection
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Added to {name}} other{Added {count} clips to {name}}}'**
+  String midiCollectionAdded(int count, String name);
+
+  /// Snackbar when the clip being added is already in that collection
+  ///
+  /// In en, this message translates to:
+  /// **'Already in {name}'**
+  String midiCollectionAlreadyIn(String name);
+
+  /// Snackbar after removing a clip from a collection, with an undo action
+  ///
+  /// In en, this message translates to:
+  /// **'Removed {clip} from {name}'**
+  String midiCollectionRemoved(String clip, String name);
+
+  /// Shown in an empty MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'This collection is empty. Add clips from All clips or from a project\'s page.'**
+  String get midiCollectionEmpty;
+
+  /// Message sent along with a shared MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI collection \"{name}\"'**
+  String midiCollectionShareText(String name);
+
+  /// MIDI tab when no project has stored clips yet
+  ///
+  /// In en, this message translates to:
+  /// **'No MIDI clips yet. Extract a project\'s metadata to read its clips.'**
+  String get midiLibraryEmpty;
+
+  /// MIDI tab when the search or instrument filter matches nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No clips match.'**
+  String get midiLibraryNoMatches;
+
+  /// Instrument filter option on the MIDI tab that shows every clip
+  ///
+  /// In en, this message translates to:
+  /// **'All instruments'**
+  String get midiLibraryAllInstruments;
+
+  /// Tooltip on the overflow menu of a MIDI clip row on phones
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get midiClipMoreActions;
+
+  /// Placeholder in the tempo field while each clip plays at its own project tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get midiTempoAuto;
+
+  /// Tooltip on the button that goes back to playing each clip at its own project tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Back to each clip\'s own tempo'**
+  String get midiTempoResetAuto;
 }
 
 class _AppLocalizationsDelegate

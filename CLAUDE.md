@@ -82,6 +82,9 @@ Instructions for AI assistants working on this codebase.
 - `MusicProject.stats` (`ProjectStats`: track counts by kind, plug-in names, clip count) follows the **markers' null contract**: null means "never read", and a lightweight scan passes null so the last deep scan's value stands. It is scanned, yet it syncs and backs up — a phone or a Flatpak restore without the project folders cannot re-read the file.
 - MIDI clips are **stored per project in their own lazy box** (`MidiClipStore`, `<profileId>_midi_clips`), never on `MusicProject` — the projects box is loaded whole and rewritten on every edit. Every full-metadata extraction replaces them; a lightweight scan never touches them. They sync to Drive and go into local backup under `midiClips` (project id → `StoredMidiClips.toJson`), merged with `MidiClipStore.mergeNewer`: newer `extractedAt` wins, nothing is deleted. Deleting a project deletes its clips.
 - The first read is still behind a button: the project may sit on a cloud drive where reading means downloading.
+- **MIDI collections hold copies, never links** (`MidiCollection` / `MidiCollectionStore`, `<profileId>_midi_collections`): a collection keeps working after its source project is edited, re-extracted or deleted, and shares as a self-contained set of files. Deleting a project never touches them.
+- Deleting a collection writes a **tombstone** (`deleted: true`, newer `updatedAt`) instead of removing the record. Collections merge with the union rule, so a plain delete would be undone by the next sync from a device that still had it; the tombstone wins instead. Anything reading collections must skip tombstones (`all()` does by default); only sync and backup ask for them.
+- The MIDI tab (`midi_library_page.dart`) lists `buildMidiLibrary` — unique clips across all of a profile's projects — and collections. It and a project's clip section both play through one `MidiPreviewPlayer`, keyed by clip, never by list index.
 - Per-format readers live in `lib/services/daw_parsers/` and return values for `MetadataExtractor` to merge — stats are a bonus there, so a parser failure costs the stats, never the tempo/key/notes.
 - **Cubase archives count by back-reference.** A class name is written once; every later object of that class is `0x80000000 | (definition offset − ARCH start)`. Counting names finds one audio track in a project with forty. The format notes are on `CubaseProjectParser`.
 - A clip holds only what plays: `windowMidiNotes` drops material trimmed off a part's edges and unrolls loops.
@@ -182,7 +185,9 @@ Instructions for AI assistants working on this codebase.
 | File scanner | `lib/services/scanner_service.dart` |
 | Metadata extractor (BPM, key, DAW version) | `lib/services/metadata_extractor.dart` |
 | Per-DAW readers for tracks, plug-ins and MIDI clips | `lib/services/daw_parsers/` |
-| MIDI clips: read on demand, `.mid` export, preview synth | `lib/services/midi/` |
+| MIDI clips: `.mid` export, preview synth and its instruments | `lib/services/midi/` |
+| Stored clips and collections (per-profile boxes) | `lib/repository/midi_clip_store.dart`, `lib/repository/midi_collection_store.dart` |
+| MIDI tab: library across projects + collections | `lib/ui/midi_library_page.dart`, `lib/models/midi_library.dart` |
 | Google Drive sync (not available inside Flatpak) | `lib/services/google_drive_sync_service.dart` |
 | Local backup/restore (Flatpak's only backup path) | `lib/services/backup_service.dart` |
 | Archive a project to a verified zip, and restore it | `lib/services/project_archive_service.dart` |

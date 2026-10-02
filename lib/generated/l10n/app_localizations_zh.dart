@@ -5826,4 +5826,88 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get synthVoicePercussion => '打击乐';
+
+  @override
+  String get midiLibraryTab => 'MIDI';
+
+  @override
+  String get midiLibrarySearchHint => '搜索 MIDI 片段';
+
+  @override
+  String get midiLibraryAllClips => '全部片段';
+
+  @override
+  String get midiCollectionsTitle => '合集';
+
+  @override
+  String get midiCollectionNew => '新建合集';
+
+  @override
+  String get midiCollectionNameHint => '合集名称';
+
+  @override
+  String get midiCollectionCreate => '创建';
+
+  @override
+  String get midiCollectionRename => '重命名';
+
+  @override
+  String get midiCollectionDelete => '删除合集';
+
+  @override
+  String midiCollectionDeleteConfirm(String name) {
+    return '删除“$name”？其中的片段都是副本，不会影响来源项目。';
+  }
+
+  @override
+  String get midiCollectionAddTo => '添加到合集';
+
+  @override
+  String get midiCollectionRemoveFrom => '从合集中移除';
+
+  @override
+  String midiCollectionAdded(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已添加到 $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiCollectionAlreadyIn(String name) {
+    return '已在 $name 中';
+  }
+
+  @override
+  String midiCollectionRemoved(String clip, String name) {
+    return '已从 $name 中移除 $clip';
+  }
+
+  @override
+  String get midiCollectionEmpty => '此合集为空。可从“全部片段”或项目页面添加片段。';
+
+  @override
+  String midiCollectionShareText(String name) {
+    return 'MIDI 合集“$name”';
+  }
+
+  @override
+  String get midiLibraryEmpty => '还没有 MIDI 片段。提取项目元数据即可读取其片段。';
+
+  @override
+  String get midiLibraryNoMatches => '没有匹配的片段。';
+
+  @override
+  String get midiLibraryAllInstruments => '全部乐器';
+
+  @override
+  String get midiClipMoreActions => '更多';
+
+  @override
+  String get midiTempoAuto => '自动';
+
+  @override
+  String get midiTempoResetAuto => '恢复为各片段自身的速度';
 }
