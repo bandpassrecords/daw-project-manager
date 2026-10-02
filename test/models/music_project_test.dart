@@ -680,6 +680,41 @@ void main() {
       );
     });
 
+    test('preserves custom field values', () async {
+      final original = TestFactories.makeProject(
+        id: 'custom-fields-round-trip',
+        customFields: {'lufs-id': '-14.2', 'eng-id': 'Ana'},
+      );
+
+      final box = await Hive.openBox<MusicProject>('custom_fields_round_trip');
+      await box.put(original.id, original);
+      await box.close();
+      final reopened =
+          await Hive.openBox<MusicProject>('custom_fields_round_trip');
+
+      expect(
+        reopened.get(original.id)!.customFields,
+        {'lufs-id': '-14.2', 'eng-id': 'Ana'},
+      );
+    });
+
+    test('reads a record written before custom fields existed as empty',
+        () async {
+      Hive.registerAdapter<MusicProject>(_PreTagsAdapter(), override: true);
+      final box = await Hive.openBox<MusicProject>('pre_custom_fields_record');
+      try {
+        await box.put('old', TestFactories.makeProject(id: 'old'));
+        await box.close();
+      } finally {
+        Hive.registerAdapter<MusicProject>(MusicProjectAdapter(), override: true);
+      }
+
+      final reopened =
+          await Hive.openBox<MusicProject>('pre_custom_fields_record');
+
+      expect(reopened.get('old')!.customFields, isEmpty);
+    });
+
     test('reads a record written before tags existed as untagged (#109)', () async {
       // Written by an adapter that only knows the fields every build has
       // always written — the shape of a record from an older version, where
@@ -698,6 +733,60 @@ void main() {
 
       expect(restored.id, 'old');
       expect(restored.tags, isEmpty);
+    });
+  });
+
+  group('MusicProject custom fields', () {
+    test('default to empty', () {
+      expect(TestFactories.makeProject().customFields, isEmpty);
+    });
+
+    test('setCustomFieldValue stores a trimmed value', () {
+      final p = TestFactories.makeProject().setCustomFieldValue('lufs', ' -14.2 ');
+
+      expect(p.customFields, {'lufs': '-14.2'});
+    });
+
+    test('a blank value removes the key, so cleared and unset are the same', () {
+      final p = TestFactories.makeProject(customFields: {'lufs': '-14', 'eng': 'Ana'});
+
+      expect(p.setCustomFieldValue('lufs', '   ').customFields, {'eng': 'Ana'});
+      expect(p.setCustomFieldValue('lufs', null).customFields, {'eng': 'Ana'});
+    });
+
+    test('setCustomFieldValue leaves the original untouched', () {
+      final p = TestFactories.makeProject(customFields: {'lufs': '-14'});
+      p.setCustomFieldValue('lufs', '-9');
+
+      expect(p.customFields, {'lufs': '-14'});
+    });
+
+    test('copyWith keeps them unless replaced', () {
+      final p = TestFactories.makeProject(customFields: {'a': '1'});
+
+      expect(p.copyWith(bpm: 120).customFields, {'a': '1'});
+      expect(p.copyWith(customFields: {'b': '2'}).customFields, {'b': '2'});
+    });
+
+    test('count as user metadata, so stacking asks whose details to keep', () {
+      expect(
+        TestFactories.makeProject(customFields: {'lufs': '-14'}).hasUserMetadata,
+        isTrue,
+      );
+    });
+
+    test('customFieldsFromRaw keeps only non-blank string pairs', () {
+      expect(
+        MusicProject.customFieldsFromRaw({
+          'ok': '-14',
+          'blank': '  ',
+          'number': 3,
+          4: 'non-string key',
+        }),
+        {'ok': '-14'},
+      );
+      expect(MusicProject.customFieldsFromRaw(null), isEmpty);
+      expect(MusicProject.customFieldsFromRaw('not a map'), isEmpty);
     });
   });
 

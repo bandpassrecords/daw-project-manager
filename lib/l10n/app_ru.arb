@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "Удалить архив?",
   "discardArchiveConfirmMessage": "Удаляет zip и снимает пометку «в архиве». Файлы самого проекта остаются на месте.",
   "discardArchiveDone": "Архив удалён",
-
   "whatsNewTitle": "Что нового",
   "whatsNewTitleWithVersion": "Что нового в версии {version}",
   "whatsNewIntro": "Вот что изменилось с момента вашей предыдущей версии.",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "Без обложки",
   "tracksViewList": "Списком",
   "tracksViewTable": "Таблицей",
-
   "partsColumn": "Партии",
   "partsNeededCount": "{count, plural, =1{ещё нужна 1 партия} other{ещё нужно партий: {count}}}",
-
   "songLength": "Длительность",
   "songLengthColumn": "Длительность",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Общая длительность",
   "releaseLengthPartial": "{count, plural, =1{Промежуточный итог — у 1 трека ещё нет длительности} other{Промежуточный итог — треков без длительности: {count}}}",
-
   "breadcrumbHome": "Главная",
   "breadcrumbGoTo": "Перейти к {label}",
-
   "scrollForMore": "Прокрутите, чтобы увидеть больше",
-
   "shortcutPlayerMono": "Переключить воспроизведение в моно",
   "shortcutPlayerVolume": "Изменить громкость",
   "shortcutMouseWheel": "Колесо",
-
   "releaseTotalLengthLabel": "Общая длительность",
   "releaseLengthNone": "Ни у одного трека пока нет длительности — воспроизведите трек или укажите длительность на странице проекта",
-
   "songLengthHowItWorks": "Заполняется автоматически по превью — при его воспроизведении или при открытии релиза с этим треком. Можно ввести и вручную: 3:45, 1:02:03 или в секундах.",
-
   "changelogSectionSubtitle": "Всё, что изменилось в каждой версии, начиная с самой новой.",
-
   "changelogSearchHint": "Поиск по списку изменений",
   "changelogNoMatches": "Нет изменений, соответствующих «{query}»",
-
   "projectFileMenu": "Файл",
   "moreActions": "Другие действия",
-
   "sectionRailResizeHint": "Перетащите, чтобы изменить размер · двойной щелчок — сбросить",
-
   "stackMetadataCoverArtLabel": "обложка",
   "stackMetadataColorLabel": "акцентный цвет",
   "stackMetadataIconLabel": "значок",
@@ -3864,5 +3851,31 @@
     }
   },
   "enableTags": "Включить теги",
-  "tagsSettingDescription": "Отмечайте проекты своими тегами и фильтруйте, ищите и сортируйте по ним. Выключение только скрывает теги — добавленные теги сохраняются."
+  "tagsSettingDescription": "Отмечайте проекты своими тегами и фильтруйте, ищите и сортируйте по ним. Выключение только скрывает теги — добавленные теги сохраняются.",
+  "releaseTracksResizeHint": "Перетащите, чтобы изменить размер · двойной щелчок — сброс",
+  "releaseTracksMaximize": "Показать весь трек-лист",
+  "releaseTracksRestoreFiles": "Снова показать панель файлов",
+  "columnsAndFieldsTabLabel": "Столбцы и поля",
+  "projectsTableColumnsTitle": "Столбцы таблицы проектов",
+  "projectsTableColumnsDescription": "Выберите, какие столбцы показывает таблица проектов, и перетащите их в нужном порядке. Название и действия показываются всегда. Только для этого устройства.",
+  "customFieldsTitle": "Свои поля",
+  "customFieldsDescription": "Добавьте к каждому проекту свои поля — громкость (LUFS), инженер мастеринга, ISRC, что угодно. Поле всегда можно заполнить на странице проекта; выберите, будет ли у него ещё и столбец в таблице проектов или в трек-листах релизов.",
+  "addCustomField": "Добавить поле",
+  "editCustomField": "Изменить поле",
+  "customFieldName": "Название поля",
+  "customFieldNameHint": "например, LUFS",
+  "customFieldNameRequired": "Введите название",
+  "customFieldNameDuplicate": "Поле с таким названием уже есть",
+  "customFieldType": "Тип",
+  "customFieldTypeText": "Текст",
+  "customFieldTypeNumber": "Число",
+  "customFieldTypeNumberHelp": "Числа сортируются по значению: -9,8 идёт после -14,2.",
+  "customFieldShowInProjectsTable": "Столбец в таблице проектов",
+  "customFieldShowInReleaseTracks": "Столбец в трек-листах релизов",
+  "customFieldProjectPageOnly": "Только на странице проекта",
+  "noCustomFieldsYet": "Своих полей пока нет.",
+  "deleteCustomFieldTitle": "Удалить поле?",
+  "deleteCustomFieldMessage": "«{name}» и введённые значения больше не будут отображаться в проектах, таблицах и поиске.",
+  "customFieldInvalidNumber": "Введите число",
+  "customFieldsProjectPageHint": "Ваши собственные поля — добавить или изменить можно в Настройки > Столбцы и поля."
 }

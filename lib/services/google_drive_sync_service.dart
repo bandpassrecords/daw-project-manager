@@ -31,6 +31,7 @@ import '../models/backup_progress.dart';
 import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
 import 'custom_theme_merge.dart';
+import 'custom_field_merge.dart';
 import '../utils/app_paths.dart'
     show
         appDataDirName,
@@ -3399,6 +3400,12 @@ class GoogleDriveSyncService {
         }
       }
 
+      // Collect custom field definitions (global user data, not per-profile).
+      // Tombstones go too, so a deletion here reaches the other devices.
+      final customFieldDefinitions = decodeCustomFieldDefinitions(
+        appSettingsBox.get(customFieldDefinitionsStorageKey),
+      );
+
       // Collect per-DAW custom mixdown folders (global preference, not per-profile)
       Map<String, dynamic> customMixdownFoldersByDaw = {};
       try {
@@ -3433,6 +3440,10 @@ class GoogleDriveSyncService {
         // NEW: User-authored themes (global preference, not per-profile).
         // Definitions only — the selected theme stays device-local.
         'customThemes': customThemes,
+        // The user's own fields (Settings > Columns & fields); each project
+        // carries its values in 'customFields'.
+        'customFieldDefinitions':
+            customFieldDefinitions.map((f) => f.toJson()).toList(),
         // NEW: Per-profile phase customization (custom phase names, colors, finished set)
         'phaseSettingsByProfile': phaseSettingsByProfile,
         // NEW: Profile mappings to restore correct associations
@@ -3939,6 +3950,15 @@ class GoogleDriveSyncService {
     return true;
   }
 
+  /// Helper to compare string maps by content.
+  bool _mapEquals(Map<String, String> a, Map<String, String> b) {
+    if (a.length != b.length) return false;
+    for (final entry in a.entries) {
+      if (b[entry.key] != entry.value) return false;
+    }
+    return true;
+  }
+
   /// Compare todos lists (by content, not just reference)
   bool _todosEqual(List<TodoItem> a, List<TodoItem> b) {
     if (a.length != b.length) return false;
@@ -3965,6 +3985,7 @@ class GoogleDriveSyncService {
         !_listEquals(remote.parts, local.parts) ||
         !_listEquals(remote.attachments, local.attachments) ||
         !_listEquals(remote.tags, local.tags) ||
+        !_mapEquals(remote.customFields, local.customFields) ||
         remote.bpm != local.bpm ||
         remote.musicalKey != local.musicalKey ||
         remote.status != local.status ||
@@ -4505,6 +4526,7 @@ class GoogleDriveSyncService {
                     parts: remoteProject.parts,
                     attachments: remoteProject.attachments,
                     tags: remoteProject.tags,
+                    customFields: remoteProject.customFields,
                     bpm: remoteProject.bpm,
                     musicalKey: remoteProject.musicalKey,
                     status: remoteProject.status,
@@ -5160,6 +5182,29 @@ class GoogleDriveSyncService {
       }
     }
 
+    // Merge custom field definitions — the same union / newer-wins rules as
+    // the themes above, shared with local backup restore.
+    if (remoteData['customFieldDefinitions'] != null) {
+      try {
+        final remoteFields = customFieldDefinitionsFromJson(
+            remoteData['customFieldDefinitions'] as List);
+        if (remoteFields.isNotEmpty) {
+          final appSettingsBox = await Hive.openBox<String>('app_settings');
+          final merged = mergeCustomFieldDefinitions(
+            decodeCustomFieldDefinitions(
+                appSettingsBox.get(customFieldDefinitionsStorageKey)),
+            remoteFields,
+          );
+          await appSettingsBox.put(
+            customFieldDefinitionsStorageKey,
+            encodeCustomFieldDefinitions(merged),
+          );
+        }
+      } catch (e) {
+        if (kDebugMode) print('Error merging custom fields: $e');
+      }
+    }
+
     // Merge per-DAW custom mixdown folders (global preference, not per-profile)
     // - union per DAW key, same as the flat list above.
     if (remoteData['customMixdownFoldersByDaw'] != null) {
@@ -5518,6 +5563,7 @@ class GoogleDriveSyncService {
       'autoDurationMs': project.autoDurationMs,
       // User data (#109) — lost on every restore if left out.
       'tags': project.tags,
+      'customFields': project.customFields,
     };
   }
 
@@ -5602,6 +5648,7 @@ class GoogleDriveSyncService {
         for (final tag in (data['tags'] as List?) ?? const [])
           if (tag is String) tag,
       ],
+      customFields: MusicProject.customFieldsFromRaw(data['customFields']),
     );
   }
 
@@ -5936,6 +5983,7 @@ class GoogleDriveSyncService {
         parts: remoteProject.parts,
         attachments: remoteProject.attachments,
         tags: remoteProject.tags,
+        customFields: remoteProject.customFields,
         bpm: remoteProject.bpm,
         musicalKey: remoteProject.musicalKey,
         status: remoteProject.status,

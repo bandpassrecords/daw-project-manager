@@ -5848,4 +5848,91 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get tagsSettingDescription =>
       'Aggiungi i tuoi tag ai progetti, poi filtra, cerca e ordina in base a essi. Disattivandoli vengono solo nascosti: i tag già aggiunti restano.';
+
+  @override
+  String get releaseTracksResizeHint =>
+      'Trascina per ridimensionare · doppio clic per ripristinare';
+
+  @override
+  String get releaseTracksMaximize => 'Mostra l\'intera tracklist';
+
+  @override
+  String get releaseTracksRestoreFiles =>
+      'Mostra di nuovo il pannello dei file';
+
+  @override
+  String get columnsAndFieldsTabLabel => 'Colonne e campi';
+
+  @override
+  String get projectsTableColumnsTitle => 'Colonne della tabella progetti';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      'Scegli quali colonne mostra la tabella progetti e trascinale nell\'ordine che preferisci. Nome e azioni sono sempre visibili. Vale solo per questo dispositivo.';
+
+  @override
+  String get customFieldsTitle => 'Campi personalizzati';
+
+  @override
+  String get customFieldsDescription =>
+      'Aggiungi campi tuoi a ogni progetto: loudness (LUFS), tecnico di mastering, ISRC, qualsiasi cosa. Un campo si compila sempre nella pagina del progetto; scegli se ha anche una colonna nella tabella progetti o nelle tracklist delle uscite.';
+
+  @override
+  String get addCustomField => 'Aggiungi campo';
+
+  @override
+  String get editCustomField => 'Modifica campo';
+
+  @override
+  String get customFieldName => 'Nome del campo';
+
+  @override
+  String get customFieldNameHint => 'es. LUFS';
+
+  @override
+  String get customFieldNameRequired => 'Inserisci un nome';
+
+  @override
+  String get customFieldNameDuplicate => 'Esiste già un campo con questo nome';
+
+  @override
+  String get customFieldType => 'Tipo';
+
+  @override
+  String get customFieldTypeText => 'Testo';
+
+  @override
+  String get customFieldTypeNumber => 'Numero';
+
+  @override
+  String get customFieldTypeNumberHelp =>
+      'I numeri sono ordinati per valore, quindi -9,8 viene dopo -14,2.';
+
+  @override
+  String get customFieldShowInProjectsTable => 'Colonna nella tabella progetti';
+
+  @override
+  String get customFieldShowInReleaseTracks =>
+      'Colonna nelle tracklist delle uscite';
+
+  @override
+  String get customFieldProjectPageOnly => 'Solo pagina del progetto';
+
+  @override
+  String get noCustomFieldsYet => 'Ancora nessun campo personalizzato.';
+
+  @override
+  String get deleteCustomFieldTitle => 'Eliminare il campo?';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '\"$name\" e i valori inseriti non compariranno più in nessun progetto, tabella o ricerca.';
+  }
+
+  @override
+  String get customFieldInvalidNumber => 'Inserisci un numero';
+
+  @override
+  String get customFieldsProjectPageHint =>
+      'I tuoi campi: aggiungili o modificali in Impostazioni > Colonne e campi.';
 }

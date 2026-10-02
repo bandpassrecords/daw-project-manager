@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "Supprimer l'archive ?",
   "discardArchiveConfirmMessage": "Supprime le zip et retire l'indicateur d'archivage. Les fichiers du projet restent en place.",
   "discardArchiveDone": "Archive supprimée",
-
   "whatsNewTitle": "Nouveautés",
   "whatsNewTitleWithVersion": "Nouveautés de la version {version}",
   "whatsNewIntro": "Voici ce qui a changé depuis votre version précédente.",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "Aucune pochette",
   "tracksViewList": "Vue liste",
   "tracksViewTable": "Vue tableau",
-
   "partsColumn": "Parties",
   "partsNeededCount": "{count, plural, =1{1 partie encore nécessaire} other{{count} parties encore nécessaires}}",
-
   "songLength": "Durée",
   "songLengthColumn": "Durée",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Durée totale",
   "releaseLengthPartial": "{count, plural, =1{Total partiel — 1 piste n’a pas encore de durée} other{Total partiel — {count} pistes n’ont pas encore de durée}}",
-
   "breadcrumbHome": "Accueil",
   "breadcrumbGoTo": "Aller à {label}",
-
   "scrollForMore": "Faites défiler pour en voir plus",
-
   "shortcutPlayerMono": "Activer/désactiver la lecture en mono",
   "shortcutPlayerVolume": "Régler le volume",
   "shortcutMouseWheel": "Molette",
-
   "releaseTotalLengthLabel": "Durée totale",
   "releaseLengthNone": "Aucune piste n’a encore de durée — lisez une piste ou saisissez sa durée sur la page du projet",
-
   "songLengthHowItWorks": "Renseignée automatiquement depuis l’aperçu — lorsqu’il est lu, ou à l’ouverture d’une sortie contenant cette piste. Vous pouvez aussi la saisir : 3:45, 1:02:03 ou en secondes.",
-
   "changelogSectionSubtitle": "Tout ce qui a changé dans chaque version, de la plus récente à la plus ancienne.",
-
   "changelogSearchHint": "Rechercher dans le journal",
   "changelogNoMatches": "Aucune modification ne correspond à « {query} »",
-
   "projectFileMenu": "Fichier",
   "moreActions": "Plus d'actions",
-
   "sectionRailResizeHint": "Faites glisser pour redimensionner · double-cliquez pour réinitialiser",
-
   "stackMetadataCoverArtLabel": "pochette",
   "stackMetadataColorLabel": "couleur d'accent",
   "stackMetadataIconLabel": "icône",
@@ -3864,5 +3851,31 @@
     }
   },
   "enableTags": "Activer les étiquettes",
-  "tagsSettingDescription": "Ajoutez vos propres étiquettes aux projets, puis filtrez, recherchez et triez par étiquette. Désactiver l'option les masque seulement : les étiquettes ajoutées sont conservées."
+  "tagsSettingDescription": "Ajoutez vos propres étiquettes aux projets, puis filtrez, recherchez et triez par étiquette. Désactiver l'option les masque seulement : les étiquettes ajoutées sont conservées.",
+  "releaseTracksResizeHint": "Faites glisser pour redimensionner · double-cliquez pour réinitialiser",
+  "releaseTracksMaximize": "Afficher toute la liste des pistes",
+  "releaseTracksRestoreFiles": "Réafficher le panneau des fichiers",
+  "columnsAndFieldsTabLabel": "Colonnes et champs",
+  "projectsTableColumnsTitle": "Colonnes du tableau des projets",
+  "projectsTableColumnsDescription": "Choisissez les colonnes affichées dans le tableau des projets et faites-les glisser dans l'ordre voulu. Le nom et les actions sont toujours affichés. S'applique à cet appareil uniquement.",
+  "customFieldsTitle": "Champs personnalisés",
+  "customFieldsDescription": "Ajoutez vos propres champs à chaque projet : sonie (LUFS), ingénieur de mastering, ISRC, tout ce que vous voulez. Un champ se remplit toujours sur la page du projet ; choisissez s'il a aussi une colonne dans le tableau des projets ou dans les listes de pistes des sorties.",
+  "addCustomField": "Ajouter un champ",
+  "editCustomField": "Modifier le champ",
+  "customFieldName": "Nom du champ",
+  "customFieldNameHint": "ex. : LUFS",
+  "customFieldNameRequired": "Saisissez un nom",
+  "customFieldNameDuplicate": "Un champ porte déjà ce nom",
+  "customFieldType": "Type",
+  "customFieldTypeText": "Texte",
+  "customFieldTypeNumber": "Nombre",
+  "customFieldTypeNumberHelp": "Les nombres sont triés par valeur : -9,8 vient après -14,2.",
+  "customFieldShowInProjectsTable": "Colonne dans le tableau des projets",
+  "customFieldShowInReleaseTracks": "Colonne dans les listes de pistes des sorties",
+  "customFieldProjectPageOnly": "Page du projet uniquement",
+  "noCustomFieldsYet": "Aucun champ personnalisé pour le moment.",
+  "deleteCustomFieldTitle": "Supprimer le champ ?",
+  "deleteCustomFieldMessage": "« {name} » et les valeurs saisies n’apparaîtront plus dans aucun projet, tableau ni recherche.",
+  "customFieldInvalidNumber": "Saisissez un nombre",
+  "customFieldsProjectPageHint": "Vos propres champs — ajoutez-les ou modifiez-les dans Paramètres > Colonnes et champs."
 }

@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "Archiv verwerfen?",
   "discardArchiveConfirmMessage": "Löscht die ZIP-Datei und entfernt die Archiv-Markierung. Die Projektdateien selbst bleiben, wo sie sind.",
   "discardArchiveDone": "Archiv verworfen",
-
   "whatsNewTitle": "Neuigkeiten",
   "whatsNewTitleWithVersion": "Neuigkeiten in Version {version}",
   "whatsNewIntro": "Das hat sich seit Ihrer letzten Version geändert.",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "Kein Cover",
   "tracksViewList": "Listenansicht",
   "tracksViewTable": "Tabellenansicht",
-
   "partsColumn": "Parts",
   "partsNeededCount": "{count, plural, =1{1 Part fehlt noch} other{{count} Parts fehlen noch}}",
-
   "songLength": "Länge",
   "songLengthColumn": "Länge",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Gesamtlaufzeit",
   "releaseLengthPartial": "{count, plural, =1{Zwischensumme — 1 Titel hat noch keine Länge} other{Zwischensumme — {count} Titel haben noch keine Länge}}",
-
   "breadcrumbHome": "Start",
   "breadcrumbGoTo": "Zu {label}",
-
   "scrollForMore": "Zum Weiterlesen scrollen",
-
   "shortcutPlayerMono": "Mono-Wiedergabe umschalten",
   "shortcutPlayerVolume": "Lautstärke anpassen",
   "shortcutMouseWheel": "Mausrad",
-
   "releaseTotalLengthLabel": "Gesamtlänge",
   "releaseLengthNone": "Noch kein Titel hat eine Länge — spielen Sie einen Titel ab oder geben Sie die Länge auf der Projektseite ein",
-
   "songLengthHowItWorks": "Wird automatisch aus dem Vorschausong übernommen — beim Abspielen oder beim Öffnen eines Releases mit diesem Titel. Sie können sie auch eingeben: 3:45, 1:02:03 oder in Sekunden.",
-
   "changelogSectionSubtitle": "Alles, was sich in jeder Version geändert hat, neueste zuerst.",
-
   "changelogSearchHint": "Changelog durchsuchen",
   "changelogNoMatches": "Keine Änderungen passen zu „{query}“",
-
   "projectFileMenu": "Datei",
   "moreActions": "Weitere Aktionen",
-
   "sectionRailResizeHint": "Ziehen zum Ändern der Breite · Doppelklick zum Zurücksetzen",
-
   "stackMetadataCoverArtLabel": "Cover",
   "stackMetadataColorLabel": "Akzentfarbe",
   "stackMetadataIconLabel": "Symbol",
@@ -3864,5 +3851,31 @@
     }
   },
   "enableTags": "Tags aktivieren",
-  "tagsSettingDescription": "Versieh Projekte mit eigenen Tags und filtere, suche und sortiere danach. Beim Ausschalten werden sie nur ausgeblendet – vorhandene Tags bleiben erhalten."
+  "tagsSettingDescription": "Versieh Projekte mit eigenen Tags und filtere, suche und sortiere danach. Beim Ausschalten werden sie nur ausgeblendet – vorhandene Tags bleiben erhalten.",
+  "releaseTracksResizeHint": "Ziehen zum Ändern der Größe · Doppelklick zum Zurücksetzen",
+  "releaseTracksMaximize": "Ganze Trackliste anzeigen",
+  "releaseTracksRestoreFiles": "Dateibereich wieder anzeigen",
+  "columnsAndFieldsTabLabel": "Spalten & Felder",
+  "projectsTableColumnsTitle": "Spalten der Projekttabelle",
+  "projectsTableColumnsDescription": "Wähle, welche Spalten die Projekttabelle zeigt, und ziehe sie in die gewünschte Reihenfolge. Name und Aktionen werden immer angezeigt. Gilt nur für dieses Gerät.",
+  "customFieldsTitle": "Eigene Felder",
+  "customFieldsDescription": "Füge jedem Projekt eigene Felder hinzu – Lautheit (LUFS), Mastering-Engineer, ISRC, was du willst. Ein Feld lässt sich immer auf der Projektseite ausfüllen; wähle, ob es zusätzlich eine Spalte in der Projekttabelle oder in Release-Tracklisten bekommt.",
+  "addCustomField": "Feld hinzufügen",
+  "editCustomField": "Feld bearbeiten",
+  "customFieldName": "Feldname",
+  "customFieldNameHint": "z. B. LUFS",
+  "customFieldNameRequired": "Gib einen Namen ein",
+  "customFieldNameDuplicate": "Ein Feld mit diesem Namen gibt es bereits",
+  "customFieldType": "Typ",
+  "customFieldTypeText": "Text",
+  "customFieldTypeNumber": "Zahl",
+  "customFieldTypeNumberHelp": "Zahlen werden nach Wert sortiert, -9,8 kommt also nach -14,2.",
+  "customFieldShowInProjectsTable": "Spalte in der Projekttabelle",
+  "customFieldShowInReleaseTracks": "Spalte in Release-Tracklisten",
+  "customFieldProjectPageOnly": "Nur Projektseite",
+  "noCustomFieldsYet": "Noch keine eigenen Felder.",
+  "deleteCustomFieldTitle": "Feld löschen?",
+  "deleteCustomFieldMessage": "„{name}“ und die eingetragenen Werte erscheinen dann in keinem Projekt, keiner Tabelle und keiner Suche mehr.",
+  "customFieldInvalidNumber": "Gib eine Zahl ein",
+  "customFieldsProjectPageHint": "Deine eigenen Felder – hinzufügen oder ändern unter Einstellungen > Spalten & Felder."
 }

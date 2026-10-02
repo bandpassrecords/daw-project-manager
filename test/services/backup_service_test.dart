@@ -201,6 +201,26 @@ void main() {
       expect(BackupService.projectFromJson(json).tags, isEmpty);
     });
 
+    test('preserves custom field values', () {
+      // User data typed into the user's own fields — Flatpak's only backup
+      // path, so a value dropped here could never be backed up there.
+      final original = TestFactories.makeProject(
+        customFields: {'lufs-id': '-14.2', 'eng-id': 'Ana'},
+      );
+
+      final restored =
+          BackupService.projectFromJson(BackupService.projectToJson(original));
+
+      expect(restored.customFields, {'lufs-id': '-14.2', 'eng-id': 'Ana'});
+    });
+
+    test('reads a backup written before custom fields existed as empty', () {
+      final json = BackupService.projectToJson(TestFactories.makeProject())
+        ..remove('customFields');
+
+      expect(BackupService.projectFromJson(json).customFields, isEmpty);
+    });
+
     test('preserves deadline', () {
       final deadline = DateTime(2026, 9, 1);
       final original = TestFactories.makeProject(deadline: deadline);

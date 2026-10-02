@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "Eliminare l'archivio?",
   "discardArchiveConfirmMessage": "Elimina lo zip e toglie il contrassegno di archiviato. I file del progetto restano dove sono.",
   "discardArchiveDone": "Archivio eliminato",
-
   "whatsNewTitle": "Novità",
   "whatsNewTitleWithVersion": "Novità nella versione {version}",
   "whatsNewIntro": "Ecco cosa è cambiato dalla tua versione precedente.",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "Nessuna copertina",
   "tracksViewList": "Vista elenco",
   "tracksViewTable": "Vista tabella",
-
   "partsColumn": "Parti",
   "partsNeededCount": "{count, plural, =1{1 parte ancora necessaria} other{{count} parti ancora necessarie}}",
-
   "songLength": "Durata",
   "songLengthColumn": "Durata",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Durata totale",
   "releaseLengthPartial": "{count, plural, =1{Totale parziale: 1 traccia non ha ancora una durata} other{Totale parziale: {count} tracce non hanno ancora una durata}}",
-
   "breadcrumbHome": "Home",
   "breadcrumbGoTo": "Vai a {label}",
-
   "scrollForMore": "Scorri per vedere altro",
-
   "shortcutPlayerMono": "Attiva/disattiva la riproduzione mono",
   "shortcutPlayerVolume": "Regola il volume",
   "shortcutMouseWheel": "Rotellina",
-
   "releaseTotalLengthLabel": "Durata totale",
   "releaseLengthNone": "Nessuna traccia ha ancora una durata: riproduci una traccia o inserisci la durata nella pagina del progetto",
-
   "songLengthHowItWorks": "Compilata automaticamente dall’anteprima: quando viene riprodotta o quando si apre una pubblicazione che contiene questa traccia. Puoi anche inserirla: 3:45, 1:02:03 o in secondi.",
-
   "changelogSectionSubtitle": "Tutto ciò che è cambiato in ogni versione, dalla più recente.",
-
   "changelogSearchHint": "Cerca nel changelog",
   "changelogNoMatches": "Nessuna modifica corrisponde a \"{query}\"",
-
   "projectFileMenu": "File",
   "moreActions": "Altre azioni",
-
   "sectionRailResizeHint": "Trascina per ridimensionare · doppio clic per ripristinare",
-
   "stackMetadataCoverArtLabel": "copertina",
   "stackMetadataColorLabel": "colore d'accento",
   "stackMetadataIconLabel": "icona",
@@ -3864,5 +3851,31 @@
     }
   },
   "enableTags": "Attiva i tag",
-  "tagsSettingDescription": "Aggiungi i tuoi tag ai progetti, poi filtra, cerca e ordina in base a essi. Disattivandoli vengono solo nascosti: i tag già aggiunti restano."
+  "tagsSettingDescription": "Aggiungi i tuoi tag ai progetti, poi filtra, cerca e ordina in base a essi. Disattivandoli vengono solo nascosti: i tag già aggiunti restano.",
+  "releaseTracksResizeHint": "Trascina per ridimensionare · doppio clic per ripristinare",
+  "releaseTracksMaximize": "Mostra l'intera tracklist",
+  "releaseTracksRestoreFiles": "Mostra di nuovo il pannello dei file",
+  "columnsAndFieldsTabLabel": "Colonne e campi",
+  "projectsTableColumnsTitle": "Colonne della tabella progetti",
+  "projectsTableColumnsDescription": "Scegli quali colonne mostra la tabella progetti e trascinale nell'ordine che preferisci. Nome e azioni sono sempre visibili. Vale solo per questo dispositivo.",
+  "customFieldsTitle": "Campi personalizzati",
+  "customFieldsDescription": "Aggiungi campi tuoi a ogni progetto: loudness (LUFS), tecnico di mastering, ISRC, qualsiasi cosa. Un campo si compila sempre nella pagina del progetto; scegli se ha anche una colonna nella tabella progetti o nelle tracklist delle uscite.",
+  "addCustomField": "Aggiungi campo",
+  "editCustomField": "Modifica campo",
+  "customFieldName": "Nome del campo",
+  "customFieldNameHint": "es. LUFS",
+  "customFieldNameRequired": "Inserisci un nome",
+  "customFieldNameDuplicate": "Esiste già un campo con questo nome",
+  "customFieldType": "Tipo",
+  "customFieldTypeText": "Testo",
+  "customFieldTypeNumber": "Numero",
+  "customFieldTypeNumberHelp": "I numeri sono ordinati per valore, quindi -9,8 viene dopo -14,2.",
+  "customFieldShowInProjectsTable": "Colonna nella tabella progetti",
+  "customFieldShowInReleaseTracks": "Colonna nelle tracklist delle uscite",
+  "customFieldProjectPageOnly": "Solo pagina del progetto",
+  "noCustomFieldsYet": "Ancora nessun campo personalizzato.",
+  "deleteCustomFieldTitle": "Eliminare il campo?",
+  "deleteCustomFieldMessage": "\"{name}\" e i valori inseriti non compariranno più in nessun progetto, tabella o ricerca.",
+  "customFieldInvalidNumber": "Inserisci un numero",
+  "customFieldsProjectPageHint": "I tuoi campi: aggiungili o modificali in Impostazioni > Colonne e campi."
 }

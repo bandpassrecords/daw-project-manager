@@ -9700,6 +9700,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Label projects with your own tags, then filter, search and sort by them. Turning this off only hides them — tags you\'ve added are kept.'**
   String get tagsSettingDescription;
+
+  /// Release page: tooltip on the divider between the tracklist and the files panel
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to resize · double-click to reset'**
+  String get releaseTracksResizeHint;
+
+  /// Release page: button that expands the tracklist over the files panel
+  ///
+  /// In en, this message translates to:
+  /// **'Show the whole tracklist'**
+  String get releaseTracksMaximize;
+
+  /// Release page: button that brings the files panel back under the tracklist
+  ///
+  /// In en, this message translates to:
+  /// **'Show the files panel again'**
+  String get releaseTracksRestoreFiles;
+
+  /// Settings: nav label for the table columns and custom fields section
+  ///
+  /// In en, this message translates to:
+  /// **'Columns & fields'**
+  String get columnsAndFieldsTabLabel;
+
+  /// Settings: heading of the built-in projects table columns list
+  ///
+  /// In en, this message translates to:
+  /// **'Projects table columns'**
+  String get projectsTableColumnsTitle;
+
+  /// Settings: explains the built-in columns list
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which columns the projects table shows and drag them into the order you want. Name and actions are always shown. Applies to this device only.'**
+  String get projectsTableColumnsDescription;
+
+  /// Heading for the user-defined custom fields (Settings and project page)
+  ///
+  /// In en, this message translates to:
+  /// **'Custom fields'**
+  String get customFieldsTitle;
+
+  /// Settings: explains custom fields and where they can appear
+  ///
+  /// In en, this message translates to:
+  /// **'Add your own fields to every project — loudness (LUFS), mastering engineer, ISRC, anything. A field can always be filled in on the project page; choose whether it also gets a column in the projects table or in release tracklists.'**
+  String get customFieldsDescription;
+
+  /// Settings: button that adds a custom field
+  ///
+  /// In en, this message translates to:
+  /// **'Add field'**
+  String get addCustomField;
+
+  /// Title of the dialog that edits a custom field
+  ///
+  /// In en, this message translates to:
+  /// **'Edit field'**
+  String get editCustomField;
+
+  /// Custom field dialog: label of the name input
+  ///
+  /// In en, this message translates to:
+  /// **'Field name'**
+  String get customFieldName;
+
+  /// Custom field dialog: example shown in the empty name input
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. LUFS'**
+  String get customFieldNameHint;
+
+  /// Custom field dialog: error when the name is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get customFieldNameRequired;
+
+  /// Custom field dialog: error when another field already has this name
+  ///
+  /// In en, this message translates to:
+  /// **'A field with this name already exists'**
+  String get customFieldNameDuplicate;
+
+  /// Custom field dialog: label of the type choice
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get customFieldType;
+
+  /// Custom field type: free text
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get customFieldTypeText;
+
+  /// Custom field type: a number, sorted by value
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get customFieldTypeNumber;
+
+  /// Custom field dialog: explains what the Number type changes
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers sort by value, so -9.8 comes after -14.2.'**
+  String get customFieldTypeNumberHelp;
+
+  /// Custom field: option to give the field a column in the projects table
+  ///
+  /// In en, this message translates to:
+  /// **'Column in the projects table'**
+  String get customFieldShowInProjectsTable;
+
+  /// Custom field: option to give the field a column in a release's tracklist table
+  ///
+  /// In en, this message translates to:
+  /// **'Column in release tracklists'**
+  String get customFieldShowInReleaseTracks;
+
+  /// Custom field: shown when the field has no column anywhere
+  ///
+  /// In en, this message translates to:
+  /// **'Project page only'**
+  String get customFieldProjectPageOnly;
+
+  /// Settings: shown when the user has not added any custom field
+  ///
+  /// In en, this message translates to:
+  /// **'No custom fields yet.'**
+  String get noCustomFieldsYet;
+
+  /// Title of the confirmation before deleting a custom field
+  ///
+  /// In en, this message translates to:
+  /// **'Delete field?'**
+  String get deleteCustomFieldTitle;
+
+  /// Confirmation before deleting a custom field
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" and the values entered in it will no longer appear on any project, table or search.'**
+  String deleteCustomFieldMessage(String name);
+
+  /// Project page: error under a number custom field holding something that is not a number
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number'**
+  String get customFieldInvalidNumber;
+
+  /// Project page: shown under the custom fields heading
+  ///
+  /// In en, this message translates to:
+  /// **'Your own fields — add or change them in Settings > Columns & fields.'**
+  String get customFieldsProjectPageHint;
 }
 
 class _AppLocalizationsDelegate

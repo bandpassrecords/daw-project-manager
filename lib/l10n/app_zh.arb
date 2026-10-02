@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "要丢弃归档吗？",
   "discardArchiveConfirmMessage": "删除 zip 并清除归档标记。项目自身的文件会留在原处。",
   "discardArchiveDone": "已丢弃归档",
-
   "whatsNewTitle": "新增功能",
   "whatsNewTitleWithVersion": "{version} 版本的新增功能",
   "whatsNewIntro": "以下是自上一个版本以来的变化。",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "不使用封面",
   "tracksViewList": "列表视图",
   "tracksViewTable": "表格视图",
-
   "partsColumn": "声部",
   "partsNeededCount": "{count, plural, other{仍需 {count} 个声部}}",
-
   "songLength": "时长",
   "songLengthColumn": "时长",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "总时长",
   "releaseLengthPartial": "{count, plural, other{当前合计——仍有 {count} 首曲目没有时长}}",
-
   "breadcrumbHome": "主页",
   "breadcrumbGoTo": "前往{label}",
-
   "scrollForMore": "滚动查看更多",
-
   "shortcutPlayerMono": "切换单声道播放",
   "shortcutPlayerVolume": "调整音量",
   "shortcutMouseWheel": "滚轮",
-
   "releaseTotalLengthLabel": "总时长",
   "releaseLengthNone": "还没有曲目设置时长——播放曲目，或在项目页面输入时长",
-
   "songLengthHowItWorks": "根据预览歌曲自动填写——在播放时，或打开包含此曲目的发行时。也可以手动输入：3:45、1:02:03 或秒数。",
-
   "changelogSectionSubtitle": "每个版本的所有变更，按从新到旧排列。",
-
   "changelogSearchHint": "搜索更新日志",
   "changelogNoMatches": "没有与“{query}”匹配的变更",
-
   "projectFileMenu": "文件",
   "moreActions": "更多操作",
-
   "sectionRailResizeHint": "拖动调整宽度 · 双击恢复默认",
-
   "stackMetadataCoverArtLabel": "封面",
   "stackMetadataColorLabel": "强调色",
   "stackMetadataIconLabel": "图标",
@@ -3864,5 +3851,31 @@
     }
   },
   "enableTags": "启用标签",
-  "tagsSettingDescription": "为项目添加自定义标签，并按标签筛选、搜索和排序。关闭后只是隐藏标签，已添加的标签会保留。"
+  "tagsSettingDescription": "为项目添加自定义标签，并按标签筛选、搜索和排序。关闭后只是隐藏标签，已添加的标签会保留。",
+  "releaseTracksResizeHint": "拖动以调整大小 · 双击以重置",
+  "releaseTracksMaximize": "显示完整曲目列表",
+  "releaseTracksRestoreFiles": "重新显示文件面板",
+  "columnsAndFieldsTabLabel": "列与字段",
+  "projectsTableColumnsTitle": "项目表格的列",
+  "projectsTableColumnsDescription": "选择项目表格显示哪些列，并拖动调整顺序。名称和操作列始终显示。仅对此设备生效。",
+  "customFieldsTitle": "自定义字段",
+  "customFieldsDescription": "为每个项目添加你自己的字段——响度（LUFS）、母带工程师、ISRC，任何内容都可以。字段始终可以在项目页面填写；你可以选择是否同时在项目表格或发行曲目列表中显示为一列。",
+  "addCustomField": "添加字段",
+  "editCustomField": "编辑字段",
+  "customFieldName": "字段名称",
+  "customFieldNameHint": "例如：LUFS",
+  "customFieldNameRequired": "请输入名称",
+  "customFieldNameDuplicate": "已存在同名字段",
+  "customFieldType": "类型",
+  "customFieldTypeText": "文本",
+  "customFieldTypeNumber": "数字",
+  "customFieldTypeNumberHelp": "数字按数值排序，因此 -9.8 排在 -14.2 之后。",
+  "customFieldShowInProjectsTable": "在项目表格中显示为列",
+  "customFieldShowInReleaseTracks": "在发行曲目列表中显示为列",
+  "customFieldProjectPageOnly": "仅在项目页面",
+  "noCustomFieldsYet": "还没有自定义字段。",
+  "deleteCustomFieldTitle": "删除字段？",
+  "deleteCustomFieldMessage": "“{name}”及已填写的值将不再出现在任何项目、表格或搜索中。",
+  "customFieldInvalidNumber": "请输入数字",
+  "customFieldsProjectPageHint": "你自己的字段——可在 设置 > 列与字段 中添加或修改。"
 }

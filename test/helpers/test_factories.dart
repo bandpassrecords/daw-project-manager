@@ -56,6 +56,7 @@ class TestFactories {
     int? durationMs,
     int? autoDurationMs,
     List<String>? tags,
+    Map<String, String>? customFields,
   }) {
     return MusicProject(
       id: id,
@@ -106,6 +107,7 @@ class TestFactories {
       durationMs: durationMs,
       autoDurationMs: autoDurationMs,
       tags: tags ?? const [],
+      customFields: customFields ?? const {},
     );
   }
 

@@ -7,6 +7,10 @@ import 'package:trina_grid/trina_grid.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
+import '../../models/custom_field.dart';
+import '../../utils/custom_fields.dart';
+import 'custom_field_column.dart';
+import '../../providers/providers.dart' show activeCustomFieldsProvider;
 import '../../providers/theme_provider.dart';
 import '../../utils/project_summary_text.dart';
 import '../../utils/track_duration.dart';
@@ -68,6 +72,10 @@ class ReleaseTracksTable extends ConsumerStatefulWidget {
 class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
   TrinaGridStateManager? _stateManager;
 
+  /// Custom fields with a column here, as of the last build — rows get
+  /// exactly these cells, and the grid's key remounts it when they change.
+  List<CustomFieldDefinition> _fields = const [];
+
   @override
   void didUpdateWidget(ReleaseTracksTable oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -102,6 +110,9 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
             // alongside a finished one, both being zero.
             'parts': TrinaCell(value: ReleaseTrackPartsChip.neededCount(projects[i])),
             'modified': TrinaCell(value: projects[i].lastModifiedAt),
+            for (final f in _fields)
+              customFieldColumnField(f.id):
+                  TrinaCell(value: customFieldValue(projects[i], f)),
             'actions': TrinaCell(value: ''),
             'data': TrinaCell(value: projects[i]),
           },
@@ -138,6 +149,13 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
             Colors.black.withValues(alpha: 0.04),
             theme.cardColor,
           );
+
+    // Custom fields asked to appear in release tracklists — the per-album
+    // view, where loudness and the like get compared track by track.
+    _fields = [
+      for (final f in ref.watch(activeCustomFieldsProvider))
+        if (f.showInReleaseTracks) f,
+    ];
 
     final columns = <TrinaColumn>[
       TrinaColumn(
@@ -362,8 +380,16 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
         },
       ),
     ];
+    // Custom field columns go just before the frozen actions column.
+    columns.insertAll(
+      columns.length - 1,
+      [for (final f in _fields) customFieldTrinaColumn(f)],
+    );
 
     return TrinaGrid(
+      // Columns are fixed once a grid mounts.
+      key: ValueKey(
+          'release_tracks_${customFieldColumnsSignature(_fields)}'),
       columns: columns,
       rows: _mapToRows(widget.projects),
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
