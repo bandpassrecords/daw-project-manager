@@ -230,6 +230,19 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     }
   }
 
+  Future<void> _copy(int index) async {
+    final l10n = AppLocalizations.of(context)!;
+    final clip = _clips[index];
+    try {
+      final ok = await copyMidiClipToClipboard(clip, bpm: _tempo);
+      _snack(ok
+          ? l10n.midiClipCopied(midiClipFileName(clip))
+          : l10n.midiClipCopyUnavailable);
+    } catch (e) {
+      _snack(l10n.midiClipSaveFailed(e.toString()));
+    }
+  }
+
   Future<void> _exportAll() async {
     final l10n = AppLocalizations.of(context)!;
     if (_clips.isEmpty) return;
@@ -443,9 +456,11 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
                 player: _player,
                 playerKey: clip.contentKey,
                 bpm: _tempo,
-                onTogglePlay: () => _togglePlay(index),
+                onPlay: () => _play(index),
+                onCopy: isMobile ? null : () => _copy(index),
               );
             },
+            onCopy: isMobile ? null : _copy,
             onAddToCollection: (index, origin) => addToCollectionFlow(
               context,
               ref,
@@ -513,6 +528,8 @@ MidiClipListLabels midiClipListLabelsOf(AppLocalizations l10n) =>
       removeFromCollection: l10n.midiCollectionRemoveFrom,
       more: l10n.midiClipMoreActions,
       openPianoRoll: l10n.midiPianoRollOpen,
+      copy: l10n.midiClipCopy,
+      openProject: l10n.midiOpenSourceProject,
     );
 
 String synthVoiceName(AppLocalizations l10n, SynthVoice v) => switch (v) {

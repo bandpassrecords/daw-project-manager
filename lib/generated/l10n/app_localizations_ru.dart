@@ -6267,4 +6267,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiClipsShowInFolder => 'Показать в папке';
+
+  @override
+  String get midiPianoRollPause => 'Пауза';
+
+  @override
+  String get midiClipCopy => 'Копировать как MIDI-файл';
+
+  @override
+  String midiClipCopied(String fileName) {
+    return '$fileName скопирован. Вставьте его в папку, чат или DAW, которая принимает вставленные файлы.';
+  }
+
+  @override
+  String get midiClipCopyUnavailable => 'Копирование файлов здесь недоступно.';
+
+  @override
+  String get midiOpenSourceProject => 'Открыть проект';
+
+  @override
+  String get midiSourceProjectGone =>
+      'Проекта, из которого взят этот клип, больше нет в библиотеке.';
+
+  @override
+  String get midiCollectionShareZip => 'Поделиться ZIP-архивом';
 }

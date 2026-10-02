@@ -37,20 +37,18 @@ bool isBlackKey(int pitch) => const {1, 3, 6, 8, 10}.contains(pitch % 12);
 double ticksAt(Duration elapsed, double bpm, int ppq) =>
     elapsed.inMicroseconds / 1e6 * bpm / 60 * ppq;
 
-/// The horizontal scroll that keeps a playhead at [playheadX] (content
-/// pixels) in view, paging like a DAW: nothing moves while the playhead is
-/// within the view; once it passes the right edge — or is left of the view,
-/// after a loop or a seek — the view jumps so it sits a tenth of the way in.
+/// The horizontal scroll that follows a playhead at [playheadX] (content
+/// pixels) by keeping it in the middle of the view: the line walks right
+/// until it reaches the centre, then the notes scroll smoothly under it,
+/// and at the end of the clip the scrolling stops and the line walks on to
+/// the right edge.
 double followScroll({
   required double playheadX,
-  required double scrollX,
   required double viewWidth,
   required double maxScroll,
 }) {
-  if (viewWidth <= 0) return scrollX;
-  final inView = playheadX >= scrollX && playheadX <= scrollX + viewWidth * 0.95;
-  if (inView) return scrollX;
-  return (playheadX - viewWidth * 0.1).clamp(0.0, math.max(0.0, maxScroll));
+  if (viewWidth <= 0) return 0;
+  return (playheadX - viewWidth / 2).clamp(0.0, math.max(0.0, maxScroll));
 }
 
 // --- the view ----------------------------------------------------------------
@@ -73,7 +71,8 @@ class MidiPianoRollLabels {
 /// A full piano roll of one [MidiClip]: a keyboard down the left (C's
 /// labelled, middle C = C3), a bar/beat ruler on top, every note as a bar
 /// shaded by velocity, and — while [positionOf] returns a position — a
-/// playhead line that the view pages along with.
+/// playhead line the view scrolls smoothly to keep centred (see
+/// [followScroll]).
 ///
 /// Zoom with the buttons, Ctrl+wheel or a pinch (horizontal, around the
 /// pointer); scroll with the wheel (Shift+wheel sideways) or by dragging.
@@ -198,7 +197,6 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     if (_follow) {
       final next = followScroll(
         playheadX: tick * _px,
-        scrollX: _scrollX,
         viewWidth: _gridWidth,
         maxScroll: _maxScrollX,
       );
@@ -375,6 +373,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   }
 }
 
+const _noteGreen = Color(0xFF8FE3A0);
+const _noteGreenBorder = Color(0xFF3F8F55);
+
 class _RollColors {
   const _RollColors({
     required this.background,
@@ -400,8 +401,10 @@ class _RollColors {
       blackRow: cs.onSurface.withValues(alpha: 0.04),
       beatLine: cs.onSurface.withValues(alpha: 0.08),
       barLine: cs.onSurface.withValues(alpha: 0.22),
-      note: cs.primary,
-      noteBorder: cs.onPrimary.withValues(alpha: 0.35),
+      // FL Studio's light green — fixed, not themed: it is the colour people
+      // read a piano roll in, and it stays legible on every dark theme.
+      note: _noteGreen,
+      noteBorder: _noteGreenBorder,
       whiteKey: cs.surfaceContainerHighest,
       blackKey: cs.onSurface.withValues(alpha: 0.75),
       keyText: cs.onSurfaceVariant,

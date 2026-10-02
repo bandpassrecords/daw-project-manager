@@ -40,6 +40,10 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// The clip being rendered, if any.
   String? preparingKey;
 
+  /// Whether the playing clip ([playingKey]) is paused. Only the piano roll
+  /// pauses; list rows play and stop.
+  bool paused = false;
+
   /// Plays [clip] — or stops it, when [key] is already the one playing.
   Future<void> toggle(String key, MidiClip clip,
       {double? bpm, required SynthVoice voice}) async {
@@ -53,6 +57,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
       {double? bpm, required SynthVoice voice}) async {
     final generation = ++_generation;
     preparingKey = key;
+    paused = false;
     _notify();
     try {
       final path = await MidiClipService.renderPreview(
@@ -65,6 +70,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
       final player = _player ??= AudioPlayer();
       _completeSub ??= player.onPlayerComplete.listen((_) {
         playingKey = null;
+        paused = false;
         _notify();
       });
       _positionSub ??= player.onPositionChanged.listen((p) {
@@ -86,16 +92,38 @@ class MidiPreviewPlayer extends ChangeNotifier {
   }
 
   /// How far into clip [key]'s preview playback is, or null when that clip
-  /// isn't the one playing. Extrapolated from the player's last report.
+  /// isn't the one playing. Extrapolated from the player's last report;
+  /// frozen while paused.
   Duration? positionOf(String key) {
     if (playingKey != key) return null;
+    if (paused) return _lastPosition;
     return extrapolatePosition(_lastPosition, _lastPositionAt, DateTime.now());
+  }
+
+  /// Pauses the playing clip where it is.
+  Future<void> pause() async {
+    final key = playingKey;
+    if (key == null || paused) return;
+    _lastPosition = positionOf(key) ?? _lastPosition;
+    paused = true;
+    _notify();
+    await _player?.pause();
+  }
+
+  /// Carries on from where [pause] left off.
+  Future<void> resume() async {
+    if (playingKey == null || !paused) return;
+    paused = false;
+    _lastPositionAt = DateTime.now();
+    _notify();
+    await _player?.resume();
   }
 
   Future<void> stop() async {
     _generation++;
     preparingKey = null;
     playingKey = null;
+    paused = false;
     _notify();
     await _player?.stop();
   }

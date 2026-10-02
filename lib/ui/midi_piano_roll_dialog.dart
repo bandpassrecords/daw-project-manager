@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/midi_clip.dart';
@@ -6,12 +7,15 @@ import '../utils/mobile_utils.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_piano_roll.dart';
 
-/// Opens [clip] in a large piano roll, with play/stop wired to [player].
+/// Opens [clip] in a large piano roll, with transport wired to [player].
 ///
-/// Playback is the caller's own [onTogglePlay] — the same function the clip
-/// row's play button calls — so the instrument, tempo and error handling are
-/// exactly what the list uses. The playhead follows [player] for [playerKey],
-/// converted to ticks at [bpm].
+/// Starting playback is the caller's own [onPlay] — the same function the
+/// clip row's play button calls — so the instrument, tempo and error
+/// handling are exactly what the list uses; pause, resume and stop go to
+/// [player] directly. Space plays and pauses, Ctrl/Cmd+C copies.
+///
+/// [onCopy] and [onOpenProject] add their buttons when given. Opening the
+/// project closes this window and stops the preview first.
 Future<void> showMidiPianoRoll(
   BuildContext context, {
   required MidiClip clip,
@@ -20,26 +24,35 @@ Future<void> showMidiPianoRoll(
   required MidiPreviewPlayer player,
   required String playerKey,
   required double bpm,
-  required VoidCallback onTogglePlay,
+  required VoidCallback onPlay,
+  VoidCallback? onCopy,
+  VoidCallback? onOpenProject,
 }) {
   final l10n = AppLocalizations.of(context)!;
-  final body = _PianoRollWindow(
+  final body = MidiPianoRollWindow(
     clip: clip,
     title: title,
     subtitle: subtitle,
     player: player,
     playerKey: playerKey,
     bpm: bpm,
-    onTogglePlay: onTogglePlay,
-    labels: MidiPianoRollLabels(
-      zoomIn: l10n.midiPianoRollZoomIn,
-      zoomOut: l10n.midiPianoRollZoomOut,
-      fit: l10n.midiPianoRollFit,
-      follow: l10n.midiPianoRollFollow,
+    onPlay: onPlay,
+    onCopy: onCopy,
+    onOpenProject: onOpenProject,
+    labels: MidiPianoRollWindowLabels(
+      roll: MidiPianoRollLabels(
+        zoomIn: l10n.midiPianoRollZoomIn,
+        zoomOut: l10n.midiPianoRollZoomOut,
+        fit: l10n.midiPianoRollFit,
+        follow: l10n.midiPianoRollFollow,
+      ),
+      close: l10n.close,
+      play: l10n.midiClipPlay,
+      pause: l10n.midiPianoRollPause,
+      stop: l10n.midiClipStop,
+      copy: l10n.midiClipCopy,
+      openProject: l10n.midiOpenSourceProject,
     ),
-    closeLabel: l10n.close,
-    playLabel: l10n.midiClipPlay,
-    stopLabel: l10n.midiClipStop,
   );
   return showDialog<void>(
     context: context,
@@ -58,19 +71,36 @@ Future<void> showMidiPianoRoll(
   );
 }
 
-class _PianoRollWindow extends StatelessWidget {
-  const _PianoRollWindow({
+class MidiPianoRollWindowLabels {
+  const MidiPianoRollWindowLabels({
+    required this.roll,
+    required this.close,
+    required this.play,
+    required this.pause,
+    required this.stop,
+    required this.copy,
+    required this.openProject,
+  });
+
+  final MidiPianoRollLabels roll;
+  final String close, play, pause, stop, copy, openProject;
+}
+
+/// The contents of [showMidiPianoRoll]'s window — public so it can be tested
+/// without a dialog route around it.
+class MidiPianoRollWindow extends StatelessWidget {
+  const MidiPianoRollWindow({
+    super.key,
     required this.clip,
     required this.title,
     required this.subtitle,
     required this.player,
     required this.playerKey,
     required this.bpm,
-    required this.onTogglePlay,
+    required this.onPlay,
     required this.labels,
-    required this.closeLabel,
-    required this.playLabel,
-    required this.stopLabel,
+    this.onCopy,
+    this.onOpenProject,
   });
 
   final MidiClip clip;
@@ -79,80 +109,135 @@ class _PianoRollWindow extends StatelessWidget {
   final MidiPreviewPlayer player;
   final String playerKey;
   final double bpm;
-  final VoidCallback onTogglePlay;
-  final MidiPianoRollLabels labels;
-  final String closeLabel, playLabel, stopLabel;
+  final VoidCallback onPlay;
+  final VoidCallback? onCopy;
+  final VoidCallback? onOpenProject;
+  final MidiPianoRollWindowLabels labels;
+
+  bool get _isOurs => player.playingKey == playerKey;
+
+  /// Space: start, pause, or resume.
+  void _playPause() {
+    if (!_isOurs) {
+      onPlay();
+    } else if (player.paused) {
+      player.resume();
+    } else {
+      player.pause();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.space): _playPause,
+        if (onCopy != null) ...{
+          const SingleActivator(LogicalKeyboardKey.keyC, control: true): onCopy!,
+          const SingleActivator(LogicalKeyboardKey.keyC, meta: true): onCopy!,
+        },
+      },
+      // Autofocus so Space works the moment the window opens, before anything
+      // inside it has been clicked.
+      child: Focus(
+        autofocus: true,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ListenableBuilder(
-                listenable: player,
-                builder: (context, _) {
-                  if (player.preparingKey == playerKey) {
-                    return const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    );
-                  }
-                  final playing = player.playingKey == playerKey;
-                  return IconButton(
-                    tooltip: playing ? stopLabel : playLabel,
-                    iconSize: 32,
-                    icon: Icon(playing
-                        ? Icons.stop_circle_outlined
-                        : Icons.play_circle_outline),
-                    onPressed: onTogglePlay,
-                  );
-                },
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ListenableBuilder(
+                    listenable: player,
+                    builder: (context, _) {
+                      if (player.preparingKey == playerKey) {
+                        return const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        );
+                      }
+                      final running = _isOurs && !player.paused;
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: running ? labels.pause : labels.play,
+                            iconSize: 32,
+                            icon: Icon(running
+                                ? Icons.pause_circle_outline
+                                : Icons.play_circle_outline),
+                            onPressed: _playPause,
+                          ),
+                          if (_isOurs)
+                            IconButton(
+                              tooltip: labels.stop,
+                              icon: const Icon(Icons.stop_circle_outlined),
+                              onPressed: player.stop,
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(title,
+                            style: theme.textTheme.titleMedium,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
+                        if (subtitle != null && subtitle!.isNotEmpty)
+                          Text(subtitle!,
+                              style: theme.textTheme.bodySmall,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis),
+                      ],
+                    ),
+                  ),
+                  if (onCopy != null)
+                    IconButton(
+                      tooltip: labels.copy,
+                      icon: const Icon(Icons.copy),
+                      onPressed: onCopy,
+                    ),
+                  if (onOpenProject != null)
+                    IconButton(
+                      tooltip: labels.openProject,
+                      icon: const Icon(Icons.assignment),
+                      onPressed: () {
+                        player.stop();
+                        Navigator.of(context).pop();
+                        onOpenProject!();
+                      },
+                    ),
+                  IconButton(
+                    tooltip: labels.close,
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(title,
-                        style: theme.textTheme.titleMedium,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
-                    if (subtitle != null && subtitle!.isNotEmpty)
-                      Text(subtitle!,
-                          style: theme.textTheme.bodySmall,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
-                  ],
+                child: MidiPianoRoll(
+                  clip: clip,
+                  bpm: bpm,
+                  labels: labels.roll,
+                  positionOf: () => player.positionOf(playerKey),
+                  playback: player,
                 ),
-              ),
-              IconButton(
-                tooltip: closeLabel,
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           ),
-          Expanded(
-            child: MidiPianoRoll(
-              clip: clip,
-              bpm: bpm,
-              labels: labels,
-              positionOf: () => player.positionOf(playerKey),
-              playback: player,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

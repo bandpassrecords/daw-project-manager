@@ -20,6 +20,7 @@ import '../utils/search_utils.dart';
 import 'midi_clip_share.dart';
 import 'midi_collection_actions.dart';
 import 'midi_piano_roll_dialog.dart';
+import 'project_detail_page.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_clip_list.dart';
 import 'widgets/midi_clips_section.dart' show midiClipListLabelsOf, midiTempoLabelsOf, synthVoiceName;
@@ -142,6 +143,33 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     }
   }
 
+  Future<void> _copy(_Entry e) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final ok = await copyMidiClipToClipboard(e.clip, bpm: _bpmOf(e));
+      _snack(ok
+          ? l10n.midiClipCopied(midiClipFileName(e.clip))
+          : l10n.midiClipCopyUnavailable);
+    } catch (err) {
+      _snack(l10n.midiClipSaveFailed(err.toString()));
+    }
+  }
+
+  /// Opens the project [e] came from — gone for a collection copy whose
+  /// project has since been deleted, which is said rather than failed.
+  void _openProject(_Entry e) {
+    final l10n = AppLocalizations.of(context)!;
+    final id = e.projectId;
+    final projects = ref.read(allProjectsStreamProvider).value ?? const [];
+    if (id == null || !projects.any((p) => p.id == id)) {
+      _snack(l10n.midiSourceProjectGone);
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => ProjectDetailPage(projectId: id)),
+    );
+  }
+
   Future<String> _dragFile(_Entry e) async {
     final base = await getTemporaryDirectory();
     final dir = Directory(p.join(base.path, 'daw_project_manager', 'midi_drag',
@@ -174,6 +202,18 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       // A collection mixes tempos; one shared tempo only if the user set it.
       bpm: _tempo,
       origin: origin,
+    );
+  }
+
+  Future<void> _shareCollectionZip(MidiCollection c, Rect? origin) async {
+    final l10n = AppLocalizations.of(context)!;
+    await shareMidiClips(
+      context,
+      [for (final i in c.items) i.clip],
+      text: l10n.midiCollectionShareText(c.name),
+      bpm: _tempo,
+      origin: origin,
+      zipName: c.name,
     );
   }
 
@@ -418,6 +458,8 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       playingIndex: indexOfKey(_player.playingKey),
       preparingIndex: indexOfKey(_player.preparingKey),
       onPlay: (i) => _play(entries[i]),
+      onCopy: isMobile ? null : (i) => _copy(entries[i]),
+      onOpenProject: (i) => _openProject(entries[i]),
       onOpen: (i) {
         final e = entries[i];
         showMidiPianoRoll(
@@ -428,7 +470,9 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
           player: _player,
           playerKey: e.key,
           bpm: _bpmOf(e),
-          onTogglePlay: () => _play(e),
+          onPlay: () => _play(e),
+          onCopy: MobileUtils.isMobile() ? null : () => _copy(e),
+          onOpenProject: e.projectId == null ? null : () => _openProject(e),
         );
       },
       onShare: (i, origin) => _share(entries[i], origin),
@@ -564,6 +608,14 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
                   onPressed: () => _shareCollection(c, shareOriginOf(buttonContext)),
                   icon: const Icon(Icons.share_outlined, size: 18),
                   label: Text(l10n.midiClipsShareAll),
+                ),
+              ),
+              Builder(
+                builder: (buttonContext) => TextButton.icon(
+                  onPressed: () =>
+                      _shareCollectionZip(c, shareOriginOf(buttonContext)),
+                  icon: const Icon(Icons.folder_zip_outlined, size: 18),
+                  label: Text(l10n.midiCollectionShareZip),
                 ),
               ),
               if (!MobileUtils.isMobile())

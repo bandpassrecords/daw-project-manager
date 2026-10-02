@@ -3982,5 +3982,12 @@
   "midiPianoRollFit": "Ajustar a la ventana",
   "midiPianoRollFollow": "Seguir la reproducción",
   "midiClipsShareOfferFolder": "Si no apareció la ventana para compartir, los archivos están listos en una carpeta.",
-  "midiClipsShowInFolder": "Mostrar en la carpeta"
+  "midiClipsShowInFolder": "Mostrar en la carpeta",
+  "midiPianoRollPause": "Pausa",
+  "midiClipCopy": "Copiar como archivo MIDI",
+  "midiClipCopied": "{fileName} copiado. Pégalo en una carpeta, un chat o una DAW que acepte archivos pegados.",
+  "midiClipCopyUnavailable": "Copiar archivos no está disponible aquí.",
+  "midiOpenSourceProject": "Abrir proyecto",
+  "midiSourceProjectGone": "El proyecto de origen de este clip ya no está en tu biblioteca.",
+  "midiCollectionShareZip": "Compartir como ZIP"
 }

@@ -3982,5 +3982,12 @@
   "midiPianoRollFit": "ウィンドウに合わせる",
   "midiPianoRollFollow": "再生位置を追従",
   "midiClipsShareOfferFolder": "共有ウィンドウが表示されなかった場合、ファイルはフォルダに用意されています。",
-  "midiClipsShowInFolder": "フォルダで表示"
+  "midiClipsShowInFolder": "フォルダで表示",
+  "midiPianoRollPause": "一時停止",
+  "midiClipCopy": "MIDIファイルとしてコピー",
+  "midiClipCopied": "{fileName} をコピーしました。フォルダ、チャット、ファイルの貼り付けに対応したDAWに貼り付けできます。",
+  "midiClipCopyUnavailable": "ここではファイルをコピーできません。",
+  "midiOpenSourceProject": "プロジェクトを開く",
+  "midiSourceProjectGone": "このクリップの元のプロジェクトはライブラリにありません。",
+  "midiCollectionShareZip": "ZIPで共有"
 }

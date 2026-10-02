@@ -6310,4 +6310,29 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get midiClipsShowInFolder => 'Afficher dans le dossier';
+
+  @override
+  String get midiPianoRollPause => 'Pause';
+
+  @override
+  String get midiClipCopy => 'Copier comme fichier MIDI';
+
+  @override
+  String midiClipCopied(String fileName) {
+    return '$fileName copié. Collez-le dans un dossier, une conversation ou une DAW qui accepte les fichiers collés.';
+  }
+
+  @override
+  String get midiClipCopyUnavailable =>
+      'La copie de fichiers n’est pas disponible ici.';
+
+  @override
+  String get midiOpenSourceProject => 'Ouvrir le projet';
+
+  @override
+  String get midiSourceProjectGone =>
+      'Le projet d’origine de ce clip n’est plus dans votre bibliothèque.';
+
+  @override
+  String get midiCollectionShareZip => 'Partager en ZIP';
 }

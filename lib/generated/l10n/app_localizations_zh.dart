@@ -6013,4 +6013,27 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiClipsShowInFolder => '在文件夹中显示';
+
+  @override
+  String get midiPianoRollPause => '暂停';
+
+  @override
+  String get midiClipCopy => '复制为 MIDI 文件';
+
+  @override
+  String midiClipCopied(String fileName) {
+    return '已复制 $fileName。可粘贴到文件夹、聊天或支持粘贴文件的 DAW 中。';
+  }
+
+  @override
+  String get midiClipCopyUnavailable => '此处无法复制文件。';
+
+  @override
+  String get midiOpenSourceProject => '打开项目';
+
+  @override
+  String get midiSourceProjectGone => '此片段的来源项目已不在你的资料库中。';
+
+  @override
+  String get midiCollectionShareZip => '以 ZIP 分享';
 }

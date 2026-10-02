@@ -5981,5 +5981,38 @@
   "midiClipsShowInFolder": "Show in folder",
   "@midiClipsShowInFolder": {
     "description": "Snackbar action that opens the folder holding the shared MIDI files"
+  },
+  "midiPianoRollPause": "Pause",
+  "@midiPianoRollPause": {
+    "description": "Piano roll: pause the playing preview"
+  },
+  "midiClipCopy": "Copy as MIDI file",
+  "@midiClipCopy": {
+    "description": "Copies a MIDI clip to the clipboard as a .mid file"
+  },
+  "midiClipCopied": "Copied {fileName}. Paste it into a folder, a chat, or a DAW that accepts pasted files.",
+  "@midiClipCopied": {
+    "description": "Snackbar after copying a MIDI clip to the clipboard as a file",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipCopyUnavailable": "Copying files isn't available here.",
+  "@midiClipCopyUnavailable": {
+    "description": "Snackbar when the system clipboard cannot hold files on this device"
+  },
+  "midiOpenSourceProject": "Open project",
+  "@midiOpenSourceProject": {
+    "description": "Opens the detail page of the project a MIDI clip came from"
+  },
+  "midiSourceProjectGone": "The project this clip came from is no longer in your library.",
+  "@midiSourceProjectGone": {
+    "description": "Snackbar when the project a collection clip was copied from is no longer in the library"
+  },
+  "midiCollectionShareZip": "Share as ZIP",
+  "@midiCollectionShareZip": {
+    "description": "Shares a whole MIDI collection as a single .zip of .mid files"
   }
 }

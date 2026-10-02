@@ -10408,6 +10408,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show in folder'**
   String get midiClipsShowInFolder;
+
+  /// Piano roll: pause the playing preview
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get midiPianoRollPause;
+
+  /// Copies a MIDI clip to the clipboard as a .mid file
+  ///
+  /// In en, this message translates to:
+  /// **'Copy as MIDI file'**
+  String get midiClipCopy;
+
+  /// Snackbar after copying a MIDI clip to the clipboard as a file
+  ///
+  /// In en, this message translates to:
+  /// **'Copied {fileName}. Paste it into a folder, a chat, or a DAW that accepts pasted files.'**
+  String midiClipCopied(String fileName);
+
+  /// Snackbar when the system clipboard cannot hold files on this device
+  ///
+  /// In en, this message translates to:
+  /// **'Copying files isn\'t available here.'**
+  String get midiClipCopyUnavailable;
+
+  /// Opens the detail page of the project a MIDI clip came from
+  ///
+  /// In en, this message translates to:
+  /// **'Open project'**
+  String get midiOpenSourceProject;
+
+  /// Snackbar when the project a collection clip was copied from is no longer in the library
+  ///
+  /// In en, this message translates to:
+  /// **'The project this clip came from is no longer in your library.'**
+  String get midiSourceProjectGone;
+
+  /// Shares a whole MIDI collection as a single .zip of .mid files
+  ///
+  /// In en, this message translates to:
+  /// **'Share as ZIP'**
+  String get midiCollectionShareZip;
 }
 
 class _AppLocalizationsDelegate

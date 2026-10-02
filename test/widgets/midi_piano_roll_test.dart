@@ -70,29 +70,29 @@ void main() {
       expect(ticksAt(const Duration(milliseconds: 500), 60, 960), 480);
     });
 
-    group('followScroll pages like a DAW', () {
-      double follow(double x, double scroll) => followScroll(
-            playheadX: x,
-            scrollX: scroll,
-            viewWidth: 1000,
-            maxScroll: 5000,
-          );
+    group('followScroll keeps the playhead centred', () {
+      double follow(double x) =>
+          followScroll(playheadX: x, viewWidth: 1000, maxScroll: 5000);
 
-      test('stays put while the playhead is in view', () {
-        expect(follow(500, 0), 0);
-        expect(follow(1400, 1000), 1000);
+      test('the line walks right until it reaches the middle', () {
+        expect(follow(0), 0);
+        expect(follow(300), 0);
+        expect(follow(500), 0);
       });
 
-      test('jumps when the playhead reaches the right edge', () {
-        expect(follow(960, 0), 860);
+      test('then the notes scroll smoothly with the line held centred', () {
+        expect(follow(501), 1);
+        expect(follow(2500), 2000);
+        expect(follow(2500.5), 2000.5, reason: 'continuous, not paged');
       });
 
-      test('jumps back when the playhead is left of the view (loop restart)', () {
-        expect(follow(0, 3000), 0);
+      test('at the end the scroll stops and the line walks to the edge', () {
+        expect(follow(5500), 5000);
+        expect(follow(5990), 5000);
       });
 
-      test('never scrolls past the end', () {
-        expect(follow(5900, 0), 5000);
+      test('a clip narrower than the view never scrolls', () {
+        expect(followScroll(playheadX: 700, viewWidth: 1000, maxScroll: 0), 0);
       });
     });
   });
@@ -227,7 +227,7 @@ void main() {
                 player: player,
                 playerKey: 'k',
                 bpm: 128,
-                onTogglePlay: () => toggles++,
+                onPlay: () => toggles++,
               ),
               child: const Text('open'),
             ),

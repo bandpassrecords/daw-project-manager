@@ -3982,5 +3982,12 @@
   "midiPianoRollFit": "Вписать в окно",
   "midiPianoRollFollow": "Следовать за воспроизведением",
   "midiClipsShareOfferFolder": "Если окно «Поделиться» не появилось, файлы готовы в папке.",
-  "midiClipsShowInFolder": "Показать в папке"
+  "midiClipsShowInFolder": "Показать в папке",
+  "midiPianoRollPause": "Пауза",
+  "midiClipCopy": "Копировать как MIDI-файл",
+  "midiClipCopied": "{fileName} скопирован. Вставьте его в папку, чат или DAW, которая принимает вставленные файлы.",
+  "midiClipCopyUnavailable": "Копирование файлов здесь недоступно.",
+  "midiOpenSourceProject": "Открыть проект",
+  "midiSourceProjectGone": "Проекта, из которого взят этот клип, больше нет в библиотеке.",
+  "midiCollectionShareZip": "Поделиться ZIP-архивом"
 }

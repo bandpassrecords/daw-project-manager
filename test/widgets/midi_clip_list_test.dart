@@ -28,6 +28,8 @@ void main() {
     removeFromCollection: 'Remove',
     more: 'More',
     openPianoRoll: 'Open piano roll',
+    copy: 'Copy',
+    openProject: 'Open project',
   );
 
   MidiClip clip(String name, {String? track, int occurrences = 1, int beats = 16}) =>
@@ -50,8 +52,12 @@ void main() {
   late List<int> added;
   late List<int> removed;
   late List<int> opened;
+  late List<int> copied;
+  late List<int> projectsOpened;
 
   setUp(() {
+    copied = [];
+    projectsOpened = [];
     opened = [];
     added = [];
     removed = [];
@@ -74,6 +80,7 @@ void main() {
     String? Function(int)? groupLabelOf,
     String? Function(int)? detailPrefixOf,
     bool openable = false,
+    bool projectActions = false,
   }) =>
       MaterialApp(
         home: Scaffold(
@@ -96,6 +103,8 @@ void main() {
                   collectionActions ? (i, _) => added.add(i) : null,
               onRemove: collectionActions ? removed.add : null,
               onOpen: openable ? opened.add : null,
+              onCopy: projectActions ? copied.add : null,
+              onOpenProject: projectActions ? projectsOpened.add : null,
               expandAllUpTo: expandAllUpTo,
               dragHandleBuilder: draggable
                   ? (context, index, handle) =>
@@ -335,5 +344,22 @@ void main() {
     await tester.tap(find.text('Open piano roll'));
     await tester.pumpAndSettle();
     expect(opened, [0]);
+  });
+
+  testWidgets('copy and open project report the clip', (tester) async {
+    await tester.pumpWidget(wrap([clip('A'), clip('B')], projectActions: true));
+    await tester.tap(find.byTooltip('Copy').last);
+    await tester.tap(find.byTooltip('Open project').first);
+    expect(copied, [1]);
+    expect(projectsOpened, [0]);
+  });
+
+  testWidgets('compact rows offer copy and open project in More', (tester) async {
+    await tester.pumpWidget(wrap([clip('A')], compact: true, projectActions: true));
+    await tester.tap(find.byTooltip('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open project'));
+    await tester.pumpAndSettle();
+    expect(projectsOpened, [0]);
   });
 }
