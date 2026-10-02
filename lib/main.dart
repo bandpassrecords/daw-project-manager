@@ -206,13 +206,16 @@ Future<void> _showAlreadyRunningMessage() async {
 /// for a newer release in the background.
 Future<void> _runStartupUpdateCheck(ProviderContainer container) async {
   if (!UpdateCheckService.isSupported) return;
+  const current = String.fromEnvironment(
+    'APP_VERSION',
+    defaultValue: '0.0.0',
+  );
+  // Debug and local 0.0.0 builds: don't greet a developer with an update
+  // popup on every launch (see UpdateCheckService.shouldCheckAtStartup).
+  if (!UpdateCheckService.shouldCheckAtStartup(current)) return;
   try {
     final box = await Hive.openBox<String>('app_settings');
     if (box.get('checkForUpdates') != 'true') return;
-    const current = String.fromEnvironment(
-      'APP_VERSION',
-      defaultValue: '0.0.0',
-    );
     final newer = await UpdateCheckService.checkForUpdate(current);
     if (newer != null) {
       container.read(availableUpdateProvider.notifier).set(newer);

@@ -23,4 +23,31 @@ void main() {
       expect(UpdateCheckService.isSupported, expected);
     });
   });
+
+  group('UpdateCheckService.shouldCheckAtStartup', () {
+    test('a release build with a real version checks', () {
+      expect(UpdateCheckService.shouldCheckAtStartup('2.9.1', isDebug: false), isTrue);
+    });
+
+    test('a debug build never checks, whatever its version', () {
+      expect(UpdateCheckService.shouldCheckAtStartup('2.9.1', isDebug: true), isFalse);
+    });
+
+    test('a local 0.0.0 build does not check, even in release mode', () {
+      // Every published release is newer than the placeholder, so checking
+      // would pop "update available" on every launch while developing.
+      expect(UpdateCheckService.shouldCheckAtStartup('0.0.0', isDebug: false), isFalse);
+      expect(UpdateCheckService.shouldCheckAtStartup('0.0.0+0', isDebug: false), isFalse);
+    });
+  });
+
+  group('UpdateCheckService.isDevelopmentVersion', () {
+    test('only the all-zero placeholder counts', () {
+      expect(UpdateCheckService.isDevelopmentVersion('0.0.0'), isTrue);
+      expect(UpdateCheckService.isDevelopmentVersion('0.0.0+42'), isTrue);
+      expect(UpdateCheckService.isDevelopmentVersion('0.0.1'), isFalse);
+      expect(UpdateCheckService.isDevelopmentVersion('0.1.0'), isFalse);
+      expect(UpdateCheckService.isDevelopmentVersion('2.9.1+15'), isFalse);
+    });
+  });
 }
