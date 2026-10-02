@@ -70,8 +70,9 @@ class MidiTempoControl extends StatefulWidget {
 }
 
 class _MidiTempoControlState extends State<MidiTempoControl> {
-  late final TextEditingController _controller =
-      TextEditingController(text: formatPreviewBpm(widget.bpm));
+  late final TextEditingController _controller = TextEditingController(
+    text: formatPreviewBpm(widget.bpm),
+  );
   final FocusNode _focus = FocusNode();
 
   /// What the field last reported, so Enter followed by the focus leaving
@@ -129,57 +130,58 @@ class _MidiTempoControlState extends State<MidiTempoControl> {
     final project = widget.projectBpm;
     final differs = project != null && project != widget.bpm;
 
-    return Tooltip(
-      message: labels.tooltip,
-      waitDuration: const Duration(milliseconds: 600),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.speed, size: 18, color: theme.textTheme.bodySmall?.color),
-          const SizedBox(width: 4),
-          IconButton(
-            tooltip: labels.slower,
-            visualDensity: VisualDensity.compact,
-            icon: const Icon(Icons.remove, size: 18),
-            onPressed:
-                widget.bpm > kMinPreviewBpm ? () => _nudge(-1) : null,
+    // One tooltip per control, never one around the row: a tooltip wrapping
+    // the buttons' own tooltips nests overlay entries.
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Tooltip(
+          message: labels.tooltip,
+          child: Icon(
+            Icons.speed,
+            size: 18,
+            color: theme.textTheme.bodySmall?.color,
           ),
-          SizedBox(
-            width: 64,
-            child: TextField(
-              controller: _controller,
-              focusNode: _focus,
-              textAlign: TextAlign.center,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              style: theme.textTheme.bodyMedium,
-              decoration: const InputDecoration(
-                isDense: true,
-                border: OutlineInputBorder(),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-              ),
-              onSubmitted: (_) => _commit(),
+        ),
+        const SizedBox(width: 4),
+        IconButton(
+          tooltip: labels.slower,
+          visualDensity: VisualDensity.compact,
+          icon: const Icon(Icons.remove, size: 18),
+          onPressed: widget.bpm > kMinPreviewBpm ? () => _nudge(-1) : null,
+        ),
+        SizedBox(
+          width: 64,
+          child: TextField(
+            controller: _controller,
+            focusNode: _focus,
+            textAlign: TextAlign.center,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            style: theme.textTheme.bodyMedium,
+            decoration: const InputDecoration(
+              isDense: true,
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             ),
+            onSubmitted: (_) => _commit(),
           ),
+        ),
+        IconButton(
+          tooltip: labels.faster,
+          visualDensity: VisualDensity.compact,
+          icon: const Icon(Icons.add, size: 18),
+          onPressed: widget.bpm < kMaxPreviewBpm ? () => _nudge(1) : null,
+        ),
+        Text(labels.unit, style: theme.textTheme.bodySmall),
+        if (differs)
           IconButton(
-            tooltip: labels.faster,
+            tooltip: labels.resetTo(formatPreviewBpm(project)),
             visualDensity: VisualDensity.compact,
-            icon: const Icon(Icons.add, size: 18),
-            onPressed:
-                widget.bpm < kMaxPreviewBpm ? () => _nudge(1) : null,
+            icon: const Icon(Icons.restart_alt, size: 18),
+            onPressed: () => widget.onChanged(project),
           ),
-          Text(labels.unit, style: theme.textTheme.bodySmall),
-          if (differs)
-            IconButton(
-              tooltip: labels.resetTo(formatPreviewBpm(project)),
-              visualDensity: VisualDensity.compact,
-              icon: const Icon(Icons.restart_alt, size: 18),
-              onPressed: () => widget.onChanged(project),
-            ),
-        ],
-      ),
+      ],
     );
   }
 }

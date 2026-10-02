@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/midi_clip.dart';
+import '../../services/midi/synth_voice.dart';
 
 /// Localized strings for [MidiClipList], resolved by the page.
 class MidiClipListLabels {
@@ -8,6 +9,9 @@ class MidiClipListLabels {
     required this.play,
     required this.stop,
     required this.save,
+    required this.share,
+    required this.instrument,
+    required this.voiceName,
     required this.dragTooltip,
     required this.bars,
     required this.notes,
@@ -21,6 +25,11 @@ class MidiClipListLabels {
   final String play;
   final String stop;
   final String save;
+  final String share;
+
+  /// Tooltip on the instrument picker, given the current voice's name.
+  final String Function(String name) instrument;
+  final String Function(SynthVoice voice) voiceName;
   final String dragTooltip;
   final String Function(int count) bars;
   final String Function(int count) notes;
@@ -54,7 +63,10 @@ class MidiClipList extends StatefulWidget {
     required this.clips,
     required this.labels,
     required this.onPlay,
-    required this.onSave,
+    required this.onShare,
+    required this.voiceOf,
+    required this.onVoiceChanged,
+    this.onSave,
     this.playingIndex,
     this.preparingIndex,
     this.dragHandleBuilder,
@@ -66,7 +78,18 @@ class MidiClipList extends StatefulWidget {
 
   /// Starts — or, for the playing clip, stops — the preview of clip [index].
   final void Function(int index) onPlay;
-  final void Function(int index) onSave;
+
+  /// [origin] is the share button's on-screen rect, for anchoring the share
+  /// popover on macOS and iPad.
+  final void Function(int index, Rect? origin) onShare;
+
+  /// Null hides Save — on a phone the share sheet already offers "Save to
+  /// Files", and the row needs the room.
+  final void Function(int index)? onSave;
+
+  /// The voice clip [index] plays with (inferred or picked).
+  final SynthVoice Function(int index) voiceOf;
+  final void Function(int index, SynthVoice voice) onVoiceChanged;
 
   /// The clip whose preview is playing, if any.
   final int? playingIndex;
@@ -265,13 +288,76 @@ class _MidiClipListState extends State<MidiClipList> {
               icon: Icon(playing ? Icons.stop_circle_outlined : Icons.play_circle_outline),
               onPressed: () => widget.onPlay(index),
             ),
-          IconButton(
-            tooltip: labels.save,
-            icon: const Icon(Icons.save_alt),
-            onPressed: () => widget.onSave(index),
+          _VoicePicker(
+            voice: widget.voiceOf(index),
+            labels: labels,
+            onChanged: (v) => widget.onVoiceChanged(index, v),
           ),
+          Builder(
+            builder: (buttonContext) => IconButton(
+              tooltip: labels.share,
+              icon: const Icon(Icons.share_outlined),
+              onPressed: () => widget.onShare(index, _rectOf(buttonContext)),
+            ),
+          ),
+          if (widget.onSave != null)
+            IconButton(
+              tooltip: labels.save,
+              icon: const Icon(Icons.save_alt),
+              onPressed: () => widget.onSave!(index),
+            ),
         ],
       ),
+    );
+  }
+}
+
+Rect? _rectOf(BuildContext context) {
+  final box = context.findRenderObject();
+  if (box is! RenderBox || !box.hasSize) return null;
+  return box.localToGlobal(Offset.zero) & box.size;
+}
+
+IconData _voiceIcon(SynthVoice voice) => switch (voice) {
+      SynthVoice.keys || SynthVoice.organ => Icons.piano,
+      SynthVoice.bass => Icons.graphic_eq,
+      SynthVoice.pad || SynthVoice.strings => Icons.waves,
+      SynthVoice.bell || SynthVoice.pluck => Icons.notifications_none,
+      SynthVoice.lead || SynthVoice.brass => Icons.campaign_outlined,
+      _ when voice.isDrum => Icons.album_outlined,
+      _ => Icons.tune,
+    };
+
+/// The instrument a clip previews with: an icon for its family, and a menu
+/// of every voice with the current one checked.
+class _VoicePicker extends StatelessWidget {
+  const _VoicePicker({
+    required this.voice,
+    required this.labels,
+    required this.onChanged,
+  });
+
+  final SynthVoice voice;
+  final MidiClipListLabels labels;
+  final ValueChanged<SynthVoice> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<SynthVoice>(
+      tooltip: labels.instrument(labels.voiceName(voice)),
+      icon: Icon(_voiceIcon(voice)),
+      initialValue: voice,
+      onSelected: onChanged,
+      itemBuilder: (context) => [
+        for (final v in SynthVoice.values) ...[
+          if (v == SynthVoice.drumKit) const PopupMenuDivider(),
+          CheckedPopupMenuItem<SynthVoice>(
+            value: v,
+            checked: v == voice,
+            child: Text(labels.voiceName(v)),
+          ),
+        ],
+      ],
     );
   }
 }

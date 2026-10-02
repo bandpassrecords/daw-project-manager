@@ -5895,7 +5895,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get midiClipsLoadHint =>
-      'Se leen del archivo del proyecto solo cuando lo pides. No se copia ni se guarda nada.';
+      'Se leen del archivo del proyecto y se guardan con el proyecto, para que se sincronicen con tus otros dispositivos.';
 
   @override
   String get midiClipsLoading => 'Leyendo el archivo del proyecto…';
@@ -6008,4 +6008,93 @@ class AppLocalizationsEs extends AppLocalizations {
   String midiTempoReset(String bpm) {
     return 'Volver al tempo del proyecto ($bpm BPM)';
   }
+
+  @override
+  String get midiClipShare => 'Compartir';
+
+  @override
+  String get midiClipsShareAll => 'Compartir todo';
+
+  @override
+  String midiClipShareText(String clip, String project) {
+    return 'Clip MIDI \"$clip\" de $project';
+  }
+
+  @override
+  String midiClipsShareAllText(String project) {
+    return 'Clips MIDI de $project';
+  }
+
+  @override
+  String get midiClipsShareFallback =>
+      'Compartir no está disponible aquí, así que los archivos están en la carpeta que se acaba de abrir. Arrástralos a tu app de chat.';
+
+  @override
+  String midiClipShareFailed(String error) {
+    return 'No se pudo compartir: $error';
+  }
+
+  @override
+  String get midiClipsRefresh => 'Volver a leer del archivo del proyecto';
+
+  @override
+  String get midiClipsStale =>
+      'El archivo del proyecto cambió desde que se leyeron estos clips.';
+
+  @override
+  String get midiClipsNoneStored =>
+      'Aún no hay clips MIDI guardados para este proyecto. Extrae sus metadatos en el ordenador que tiene el archivo del proyecto.';
+
+  @override
+  String midiClipInstrumentTooltip(String name) {
+    return 'Instrumento: $name';
+  }
+
+  @override
+  String get synthVoiceSynth => 'Sintetizador';
+
+  @override
+  String get synthVoiceLead => 'Lead';
+
+  @override
+  String get synthVoiceBass => 'Bajo';
+
+  @override
+  String get synthVoicePad => 'Pad';
+
+  @override
+  String get synthVoicePluck => 'Pluck';
+
+  @override
+  String get synthVoiceKeys => 'Teclado';
+
+  @override
+  String get synthVoiceOrgan => 'Órgano';
+
+  @override
+  String get synthVoiceStrings => 'Cuerdas';
+
+  @override
+  String get synthVoiceBrass => 'Metales';
+
+  @override
+  String get synthVoiceBell => 'Campana';
+
+  @override
+  String get synthVoiceDrumKit => 'Batería';
+
+  @override
+  String get synthVoiceKick => 'Bombo';
+
+  @override
+  String get synthVoiceSnare => 'Caja';
+
+  @override
+  String get synthVoiceClap => 'Palmas';
+
+  @override
+  String get synthVoiceHiHat => 'Hi-hat';
+
+  @override
+  String get synthVoicePercussion => 'Percusión';
 }

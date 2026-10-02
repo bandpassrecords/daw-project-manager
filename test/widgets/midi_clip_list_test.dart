@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/models/midi_clip.dart';
+import 'package:daw_project_manager/services/midi/synth_voice.dart';
 import 'package:daw_project_manager/ui/widgets/midi_clip_list.dart';
 
 /// The list is a plain view: it owns no player and writes no files, so every
@@ -12,6 +13,9 @@ void main() {
     play: 'Play',
     stop: 'Stop',
     save: 'Save',
+    share: 'Share',
+    instrument: (name) => 'Instrument: $name',
+    voiceName: (v) => v.name,
     dragTooltip: 'Drag',
     bars: (n) => n == 1 ? '1 bar' : '$n bars',
     notes: (n) => n == 1 ? '1 note' : '$n notes',
@@ -37,10 +41,14 @@ void main() {
 
   late List<int> played;
   late List<int> saved;
+  late List<int> shared;
+  late List<(int, SynthVoice)> voiceChanges;
 
   setUp(() {
     played = [];
     saved = [];
+    shared = [];
+    voiceChanges = [];
   });
 
   Widget wrap(
@@ -48,6 +56,7 @@ void main() {
     int? playing,
     int? preparing,
     bool draggable = false,
+    bool canSave = true,
     int expandAllUpTo = 12,
   }) =>
       MaterialApp(
@@ -59,7 +68,10 @@ void main() {
               playingIndex: playing,
               preparingIndex: preparing,
               onPlay: played.add,
-              onSave: saved.add,
+              onSave: canSave ? saved.add : null,
+              onShare: (i, _) => shared.add(i),
+              voiceOf: (i) => i.isEven ? SynthVoice.bass : SynthVoice.pad,
+              onVoiceChanged: (i, v) => voiceChanges.add((i, v)),
               expandAllUpTo: expandAllUpTo,
               dragHandleBuilder: draggable
                   ? (context, index, handle) =>
@@ -192,5 +204,28 @@ void main() {
     await tester.pumpWidget(wrap([clip('A'), clip('B')], draggable: true));
     expect(find.byKey(const ValueKey('drag-0')), findsOneWidget);
     expect(find.byKey(const ValueKey('drag-1')), findsOneWidget);
+  });
+
+  testWidgets('share reports the clip; save can be left out', (tester) async {
+    await tester.pumpWidget(wrap([clip('A'), clip('B')], canSave: false));
+
+    expect(find.byTooltip('Save'), findsNothing);
+    await tester.tap(find.byTooltip('Share').last);
+    expect(shared, [1]);
+  });
+
+  testWidgets('each clip shows its instrument and can switch it',
+      (tester) async {
+    await tester.pumpWidget(wrap([clip('A'), clip('B')]));
+
+    expect(find.byTooltip('Instrument: bass'), findsOneWidget);
+    expect(find.byTooltip('Instrument: pad'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Instrument: pad'));
+    await tester.pumpAndSettle();
+    // The menu opens aligned on the current voice, so pick one just below it.
+    await tester.tap(find.text('keys').last);
+    await tester.pumpAndSettle();
+    expect(voiceChanges, [(1, SynthVoice.keys)]);
   });
 }

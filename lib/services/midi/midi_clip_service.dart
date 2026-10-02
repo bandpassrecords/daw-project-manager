@@ -12,6 +12,7 @@ import '../daw_parsers/flp_project_parser.dart';
 import '../daw_parsers/reaper_project_parser.dart';
 import 'midi_clip_synth.dart';
 import 'midi_file_writer.dart';
+import 'synth_voice.dart';
 
 /// Reads MIDI clips out of project files on demand, and turns them into
 /// things the rest of the app can use: `.mid` files and audible previews.
@@ -59,18 +60,20 @@ class MidiClipService {
     return const [];
   }
 
-  /// Renders [clip] to a WAV in [directory] and returns its path. Reuses an
-  /// earlier render of the same clip at the same tempo.
+  /// Renders [clip] with [voice] to a WAV in [directory] and returns its
+  /// path. Reuses an earlier render of the same clip, tempo and voice.
   static Future<String> renderPreview(
     MidiClip clip, {
     double? bpm,
+    SynthVoice voice = SynthVoice.synth,
     required Directory directory,
   }) async {
     final name = 'preview_${_fnv1a(clip.contentKey)}'
-        '_${(bpm ?? 120).toStringAsFixed(2)}.wav';
+        '_${(bpm ?? 120).toStringAsFixed(2)}_${voice.name}.wav';
     final out = File(p.join(directory.path, name));
     if (await out.exists()) return out.path;
-    final bytes = await Isolate.run(() => const MidiClipSynth().renderWav(clip, bpm: bpm));
+    final bytes = await Isolate.run(
+        () => const MidiClipSynth().renderWav(clip, bpm: bpm, voice: voice));
     await directory.create(recursive: true);
     await out.writeAsBytes(bytes, flush: true);
     return out.path;

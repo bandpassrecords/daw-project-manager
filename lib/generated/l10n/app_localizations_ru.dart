@@ -5865,7 +5865,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiClipsLoadHint =>
-      'Читаются из файла проекта только по запросу. Ничего не копируется и не сохраняется.';
+      'Читаются из файла проекта и хранятся вместе с проектом, чтобы синхронизироваться с другими устройствами.';
 
   @override
   String get midiClipsLoading => 'Чтение файла проекта…';
@@ -5982,4 +5982,93 @@ class AppLocalizationsRu extends AppLocalizations {
   String midiTempoReset(String bpm) {
     return 'Вернуть темп проекта ($bpm BPM)';
   }
+
+  @override
+  String get midiClipShare => 'Поделиться';
+
+  @override
+  String get midiClipsShareAll => 'Поделиться всеми';
+
+  @override
+  String midiClipShareText(String clip, String project) {
+    return 'MIDI-клип «$clip» из $project';
+  }
+
+  @override
+  String midiClipsShareAllText(String project) {
+    return 'MIDI-клипы из $project';
+  }
+
+  @override
+  String get midiClipsShareFallback =>
+      'Здесь нельзя поделиться напрямую, поэтому файлы лежат в открытой папке. Перетащите их в мессенджер.';
+
+  @override
+  String midiClipShareFailed(String error) {
+    return 'Не удалось поделиться: $error';
+  }
+
+  @override
+  String get midiClipsRefresh => 'Перечитать из файла проекта';
+
+  @override
+  String get midiClipsStale =>
+      'Файл проекта изменился с тех пор, как были прочитаны эти клипы.';
+
+  @override
+  String get midiClipsNoneStored =>
+      'Для этого проекта ещё нет сохранённых MIDI-клипов. Извлеките метаданные на компьютере, где есть файл проекта.';
+
+  @override
+  String midiClipInstrumentTooltip(String name) {
+    return 'Инструмент: $name';
+  }
+
+  @override
+  String get synthVoiceSynth => 'Синтезатор';
+
+  @override
+  String get synthVoiceLead => 'Лид';
+
+  @override
+  String get synthVoiceBass => 'Бас';
+
+  @override
+  String get synthVoicePad => 'Пэд';
+
+  @override
+  String get synthVoicePluck => 'Плак';
+
+  @override
+  String get synthVoiceKeys => 'Клавишные';
+
+  @override
+  String get synthVoiceOrgan => 'Орган';
+
+  @override
+  String get synthVoiceStrings => 'Струнные';
+
+  @override
+  String get synthVoiceBrass => 'Медные духовые';
+
+  @override
+  String get synthVoiceBell => 'Колокольчик';
+
+  @override
+  String get synthVoiceDrumKit => 'Ударная установка';
+
+  @override
+  String get synthVoiceKick => 'Бочка';
+
+  @override
+  String get synthVoiceSnare => 'Малый барабан';
+
+  @override
+  String get synthVoiceClap => 'Хлопок';
+
+  @override
+  String get synthVoiceHiHat => 'Хай-хэт';
+
+  @override
+  String get synthVoicePercussion => 'Перкуссия';
 }

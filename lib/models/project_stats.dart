@@ -54,6 +54,17 @@ class ProjectStats {
 
   int get totalTracks => contentTracks + busTracks + folderTracks;
 
+  ProjectStats withMidiClipCount(int? count) => ProjectStats(
+        audioTracks: audioTracks,
+        midiTracks: midiTracks,
+        instrumentTracks: instrumentTracks,
+        samplerTracks: samplerTracks,
+        busTracks: busTracks,
+        folderTracks: folderTracks,
+        plugins: plugins,
+        midiClipCount: count,
+      );
+
   bool get isEmpty =>
       totalTracks == 0 && plugins.isEmpty && (midiClipCount ?? 0) == 0;
 

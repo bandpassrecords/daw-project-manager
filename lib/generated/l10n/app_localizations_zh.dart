@@ -5632,7 +5632,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiClipsLoad => '加载 MIDI 片段';
 
   @override
-  String get midiClipsLoadHint => '仅在你需要时从项目文件读取，不会复制或保存任何内容。';
+  String get midiClipsLoadHint => '从项目文件读取并随项目保存，以便同步到你的其他设备。';
 
   @override
   String get midiClipsLoading => '正在读取项目文件…';
@@ -5740,4 +5740,90 @@ class AppLocalizationsZh extends AppLocalizations {
   String midiTempoReset(String bpm) {
     return '恢复为项目速度（$bpm BPM）';
   }
+
+  @override
+  String get midiClipShare => '分享';
+
+  @override
+  String get midiClipsShareAll => '全部分享';
+
+  @override
+  String midiClipShareText(String clip, String project) {
+    return '来自 $project 的 MIDI 片段“$clip”';
+  }
+
+  @override
+  String midiClipsShareAllText(String project) {
+    return '来自 $project 的 MIDI 片段';
+  }
+
+  @override
+  String get midiClipsShareFallback => '此处无法直接分享，文件已放在刚打开的文件夹中。请将它们拖到聊天应用里。';
+
+  @override
+  String midiClipShareFailed(String error) {
+    return '无法分享：$error';
+  }
+
+  @override
+  String get midiClipsRefresh => '从项目文件重新读取';
+
+  @override
+  String get midiClipsStale => '读取这些片段后，项目文件已更改。';
+
+  @override
+  String get midiClipsNoneStored => '此项目尚未保存 MIDI 片段。请在存有项目文件的电脑上提取其元数据。';
+
+  @override
+  String midiClipInstrumentTooltip(String name) {
+    return '乐器：$name';
+  }
+
+  @override
+  String get synthVoiceSynth => '合成器';
+
+  @override
+  String get synthVoiceLead => '主音';
+
+  @override
+  String get synthVoiceBass => '贝斯';
+
+  @override
+  String get synthVoicePad => '铺底';
+
+  @override
+  String get synthVoicePluck => '拨弦音色';
+
+  @override
+  String get synthVoiceKeys => '键盘';
+
+  @override
+  String get synthVoiceOrgan => '风琴';
+
+  @override
+  String get synthVoiceStrings => '弦乐';
+
+  @override
+  String get synthVoiceBrass => '铜管';
+
+  @override
+  String get synthVoiceBell => '钟琴';
+
+  @override
+  String get synthVoiceDrumKit => '架子鼓';
+
+  @override
+  String get synthVoiceKick => '底鼓';
+
+  @override
+  String get synthVoiceSnare => '军鼓';
+
+  @override
+  String get synthVoiceClap => '拍手';
+
+  @override
+  String get synthVoiceHiHat => '踩镲';
+
+  @override
+  String get synthVoicePercussion => '打击乐';
 }

@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/services/midi/midi_clip_synth.dart';
+import 'package:daw_project_manager/services/midi/synth_voice.dart';
 
 MidiClip _clip(List<MidiNote> notes, {int length = 1920}) =>
     MidiClip(name: 'x', ppq: 480, lengthTicks: length, notes: notes);
@@ -94,5 +96,75 @@ void main() {
       MidiNote(startTick: 0, lengthTicks: 480, pitch: 60, velocity: 100),
     ], length: 480 * 1000);
     expect(_samples(capped.renderWav(clip, bpm: 120)).length, 3 * 8000);
+  });
+
+  group('voices', () {
+    final melody = _clip(const [
+      MidiNote(startTick: 0, lengthTicks: 480, pitch: 48, velocity: 110),
+      MidiNote(startTick: 480, lengthTicks: 480, pitch: 55, velocity: 110),
+    ]);
+    final kit = _clip(const [
+      MidiNote(startTick: 0, lengthTicks: 120, pitch: 36, velocity: 120),
+      MidiNote(startTick: 480, lengthTicks: 120, pitch: 38, velocity: 120),
+      MidiNote(startTick: 960, lengthTicks: 120, pitch: 42, velocity: 120),
+      MidiNote(startTick: 1440, lengthTicks: 120, pitch: 49, velocity: 120),
+    ]);
+
+    int peak(Int16List s) => s.map((v) => v.abs()).reduce((a, b) => a > b ? a : b);
+
+    for (final voice in SynthVoice.values) {
+      test('${voice.name} makes sound and stays in range', () {
+        final s = _samples(synth.renderWav(voice.isDrum ? kit : melody,
+            bpm: 120, voice: voice));
+        expect(peak(s), greaterThan(1000));
+        expect(peak(s), lessThanOrEqualTo(32767));
+      });
+    }
+
+    test('different voices sound different', () {
+      final voices = [SynthVoice.lead, SynthVoice.pad, SynthVoice.organ, SynthVoice.bell];
+      final rendered = [
+        for (final v in voices) synth.renderWav(melody, bpm: 120, voice: v),
+      ];
+      for (var i = 0; i < rendered.length; i++) {
+        for (var j = i + 1; j < rendered.length; j++) {
+          expect(listEquals(rendered[i], rendered[j]), isFalse,
+              reason: '${voices[i].name} vs ${voices[j].name}');
+        }
+      }
+    });
+
+    test('a pad swells in; a pluck is loudest right away', () {
+      final early = (0.02 * 8000).round();
+      double level(SynthVoice v) {
+        final s = _samples(synth.renderWav(melody, bpm: 120, voice: v));
+        var p = 0;
+        for (var i = 0; i < early; i++) {
+          if (s[i].abs() > p) p = s[i].abs();
+        }
+        return p / peak(s);
+      }
+
+      expect(level(SynthVoice.pad), lessThan(0.3));
+      expect(level(SynthVoice.pluck), greaterThan(0.5));
+    });
+
+    test('drums render the same bytes every time', () {
+      // The preview cache keys on clip, tempo and voice; noise must be
+      // seeded, not random, or a cached file would differ from a fresh one.
+      expect(synth.renderWav(kit, bpm: 120, voice: SynthVoice.drumKit),
+          synth.renderWav(kit, bpm: 120, voice: SynthVoice.drumKit));
+    });
+
+    test('a kick voice turns every note into a kick, whatever the pitch', () {
+      final high = _clip(const [
+        MidiNote(startTick: 0, lengthTicks: 120, pitch: 84, velocity: 120),
+      ]);
+      final low = _clip(const [
+        MidiNote(startTick: 0, lengthTicks: 120, pitch: 36, velocity: 120),
+      ]);
+      expect(synth.renderWav(high, bpm: 120, voice: SynthVoice.kick),
+          synth.renderWav(low, bpm: 120, voice: SynthVoice.kick));
+    });
   });
 }

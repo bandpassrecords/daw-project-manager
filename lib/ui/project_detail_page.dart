@@ -1918,7 +1918,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                         // the MIDI clips, read on request. Absent for a DAW
                         // we can't read and for a project never deep-scanned.
                         if (updatedProject.stats != null ||
-                            _canReadMidiClips(updatedProject))
+                            _showMidiClips(updatedProject))
                           _DetailSection(
                             icon: Icons.inventory_2_outlined,
                             label: l10n.projectContentsTitle,
@@ -1941,14 +1941,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                   ),
                                 ),
                               ],
-                              if (_canReadMidiClips(updatedProject)) ...[
+                              if (_showMidiClips(updatedProject)) ...[
                                 const SizedBox(height: 20),
                                 MidiClipsSection(
-                                  key: ValueKey(updatedProject.filePath),
-                                  projectFilePath: updatedProject.filePath,
-                                  bpm: updatedProject.bpm,
-                                  knownClipCount:
-                                      updatedProject.stats?.midiClipCount,
+                                  key: ValueKey(updatedProject.id),
+                                  project: updatedProject,
+                                  canReadFile:
+                                      _canReadMidiClips(updatedProject),
                                 ),
                               ],
                               const SizedBox(height: 24),
@@ -4600,7 +4599,16 @@ class _EditSessionDialogState extends State<_EditSessionDialog> {
 /// sectioned layout renders one at a time with the nav rail choosing. Keeping
 /// them as data rather than as separate widgets means both layouts are fed by
 /// exactly the same children, so the two cannot drift apart.
-/// Whether the detail page offers to read MIDI clips for [project]: a real
+/// Whether the detail page shows the MIDI clips section at all: wherever
+/// clips could exist — a format we read clips from, or stats saying the last
+/// extraction found some (which is what a phone has to go on). Never for a
+/// stack: it owns no file.
+bool _showMidiClips(MusicProject project) =>
+    !project.isVirtual &&
+    (MidiClipService.supports(project.filePath) ||
+        (project.stats?.midiClipCount ?? 0) > 0);
+
+/// Whether this device can (re)read [project]'s clips from its file: a real
 /// file (not a stack, not zipped away in an archive) in a format we parse,
 /// on a desktop — where the project folders actually are.
 bool _canReadMidiClips(MusicProject project) =>

@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import 'dart:convert';
 
 import '../models/music_project.dart';
+import '../models/stored_midi_clips.dart';
 import '../models/pending_folder.dart';
 import '../models/scan_mode.dart';
 import '../models/scan_root.dart';
@@ -27,6 +28,7 @@ import '../services/deadline_notification_service.dart';
 import '../utils/app_paths.dart';
 
 import '../utils/version_stacks.dart';
+import 'midi_clip_store.dart';
 import 'profile_repository.dart';
 import '../models/profile.dart';
 
@@ -64,6 +66,10 @@ class ProjectRepository {
   /// notification scheduler. Tests pass a recorder; the app uses the default.
   final DeadlineNotificationRescheduler rescheduleDeadlineNotifications;
   final _uuid = const Uuid();
+
+  /// This profile's stored MIDI clips (see [MidiClipStore]). Written by every
+  /// full-metadata extraction; deleted along with the project.
+  late final MidiClipStore midiClips = MidiClipStore(profileId);
 
   static const _keyCustomMixdownFolder = 'customMixdownFolder';
   static const _keyCustomMixdownFolders = 'customMixdownFolders';
@@ -574,6 +580,7 @@ class ProjectRepository {
     // Delete all projects from this root (except those in releases)
     if (projectsToDelete.isNotEmpty) {
       await projectsBox.deleteAll(projectsToDelete);
+      await midiClips.deleteAll(projectsToDelete);
     }
 
     // Remove the root after deleting projects
@@ -623,6 +630,7 @@ class ProjectRepository {
   /// the "Delete Missing" bulk action.
   Future<void> deleteProjectsPermanently(Iterable<String> projectIds) async {
     await projectsBox.deleteAll(projectIds);
+    await midiClips.deleteAll(projectIds);
     await cleanUpDanglingStackLinks();
     await rescheduleDeadlines();
   }
@@ -764,6 +772,7 @@ class ProjectRepository {
 
     if (projectsToDelete.isNotEmpty) {
       await projectsBox.deleteAll(projectsToDelete);
+      await midiClips.deleteAll(projectsToDelete);
       await cleanUpDanglingStackLinks();
     }
   }
@@ -864,6 +873,9 @@ class ProjectRepository {
     if (built.event != null) {
       await eventsBox.put(built.event!.id, built.event!);
     }
+    if (built.clips != null) {
+      await midiClips.put(built.project.id, built.clips!);
+    }
   }
 
   /// Batched counterpart of [upsertFromFileSystemEntity] for scan loops,
@@ -925,6 +937,11 @@ class ProjectRepository {
         if (built.event != null) {
           pendingEvents[built.event!.id] = built.event!;
         }
+        // Clips live in their own box, so writing them per file costs the
+        // projects list no change events.
+        if (built.clips != null) {
+          await midiClips.put(built.project.id, built.clips!);
+        }
       } catch (e) {
         failedPaths.add(entity.path);
         if (kDebugMode) {
@@ -940,7 +957,8 @@ class ProjectRepository {
     return failedPaths;
   }
 
-  Future<({MusicProject project, ProjectEvent? event})> _buildProjectAndEvent(
+  Future<({MusicProject project, ProjectEvent? event, StoredMidiClips? clips})>
+      _buildProjectAndEvent(
     FileSystemEntity entity, {
     bool fullMetadata = false,
     String? parentProjectId,
@@ -1090,7 +1108,18 @@ class ProjectRepository {
       );
     }
 
-    return (project: projectToSave, event: event);
+    final clips = extractedMetadata?.midiClips;
+    return (
+      project: projectToSave,
+      event: event,
+      clips: clips == null
+          ? null
+          : StoredMidiClips(
+              extractedAt: DateTime.now(),
+              sourceModifiedAt: lastModified,
+              clips: clips,
+            ),
+    );
   }
 
   List<MusicProject> getAllProjects() =>
@@ -1491,6 +1520,21 @@ class ProjectRepository {
       );
 
       await projectsBox.put(projectId, updated);
+      final clips = extractedMetadata.midiClips;
+      if (clips != null) {
+        DateTime? modified;
+        try {
+          modified = await File(project.filePath).lastModified();
+        } catch (_) {}
+        await midiClips.put(
+          projectId,
+          StoredMidiClips(
+            extractedAt: DateTime.now(),
+            sourceModifiedAt: modified,
+            clips: clips,
+          ),
+        );
+      }
     } catch (_) {
       // If extraction fails, silently continue
     }
@@ -1597,10 +1641,12 @@ class ProjectRepository {
       final projectsToDelete = allProjectIds.difference(protectedProjectIds);
       if (projectsToDelete.isNotEmpty) {
         await projectsBox.deleteAll(projectsToDelete);
+        await midiClips.deleteAll(projectsToDelete);
       }
     } else {
       // No protected projects, safe to clear all
       await projectsBox.clear();
+      await midiClips.clear();
     }
 
     // Always clear roots
@@ -1636,6 +1682,7 @@ class ProjectRepository {
     // Clear per-profile boxes.
     const perProfileBoxes = [
       'projects',
+      'midi_clips',
       'roots',
       'ignored_paths',
       'releases',

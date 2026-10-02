@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/services/midi/midi_clip_service.dart';
+import 'package:daw_project_manager/services/midi/synth_voice.dart';
 
 const _rpp = '''
 <REAPER_PROJECT 0.1 "7.0/win64" 0
@@ -103,5 +104,9 @@ void main() {
     final faster = await MidiClipService.renderPreview(clip,
         bpm: 140, directory: tempDir);
     expect(faster, isNot(first), reason: 'tempo is part of the cache key');
+
+    final asBell = await MidiClipService.renderPreview(clip,
+        bpm: 120, voice: SynthVoice.bell, directory: tempDir);
+    expect(asBell, isNot(first), reason: 'so is the instrument');
   });
 }

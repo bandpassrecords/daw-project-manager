@@ -5442,9 +5442,9 @@
   "@midiClipsLoad": {
     "description": "Button that reads the MIDI clips out of the project file"
   },
-  "midiClipsLoadHint": "Read from the project file when you ask. Nothing is copied or stored.",
+  "midiClipsLoadHint": "Read from the project file and kept with the project, so they sync to your other devices.",
   "@midiClipsLoadHint": {
-    "description": "Explains that MIDI clips are read from the project file only when asked and not stored"
+    "description": "Explains, next to the button that first reads them, that MIDI clips are read from the project file and then stored and synced"
   },
   "midiClipsLoading": "Reading the project file…",
   "@midiClipsLoading": {
@@ -5594,5 +5594,132 @@
         "type": "String"
       }
     }
+  },
+  "midiClipShare": "Share",
+  "@midiClipShare": {
+    "description": "Tooltip on the button that shares one MIDI clip as a .mid file"
+  },
+  "midiClipsShareAll": "Share all",
+  "@midiClipsShareAll": {
+    "description": "Button that shares every MIDI clip of a project as .mid files"
+  },
+  "midiClipShareText": "MIDI clip \"{clip}\" from {project}",
+  "@midiClipShareText": {
+    "description": "Message sent along with one shared MIDI clip",
+    "placeholders": {
+      "clip": {
+        "type": "String"
+      },
+      "project": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsShareAllText": "MIDI clips from {project}",
+  "@midiClipsShareAllText": {
+    "description": "Message sent along with all of a project's shared MIDI clips",
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsShareFallback": "Sharing isn't available here, so the files are in the folder that just opened. Drag them into your chat app.",
+  "@midiClipsShareFallback": {
+    "description": "Shown when the system has no share sheet for files, so the folder with the .mid files was opened instead"
+  },
+  "midiClipShareFailed": "Couldn't share: {error}",
+  "@midiClipShareFailed": {
+    "description": "Snackbar when sharing MIDI clips failed",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsRefresh": "Read again from the project file",
+  "@midiClipsRefresh": {
+    "description": "Tooltip on the button that re-reads the MIDI clips (and the rest of the metadata) from the project file"
+  },
+  "midiClipsStale": "The project file has changed since these clips were read.",
+  "@midiClipsStale": {
+    "description": "Shown above stored MIDI clips when the project file was modified after they were read"
+  },
+  "midiClipsNoneStored": "No MIDI clips stored for this project yet. Extract its metadata on the computer that has the project file.",
+  "@midiClipsNoneStored": {
+    "description": "Shown on a device that cannot read the project file when no MIDI clips have been stored for the project yet"
+  },
+  "midiClipInstrumentTooltip": "Instrument: {name}",
+  "@midiClipInstrumentTooltip": {
+    "description": "Tooltip on the button that picks which built-in instrument previews a MIDI clip",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "synthVoiceSynth": "Synth",
+  "@synthVoiceSynth": {
+    "description": "Built-in preview instrument name: Generic synth"
+  },
+  "synthVoiceLead": "Lead",
+  "@synthVoiceLead": {
+    "description": "Built-in preview instrument name: Lead synth"
+  },
+  "synthVoiceBass": "Bass",
+  "@synthVoiceBass": {
+    "description": "Built-in preview instrument name: Bass"
+  },
+  "synthVoicePad": "Pad",
+  "@synthVoicePad": {
+    "description": "Built-in preview instrument name: Pad synth"
+  },
+  "synthVoicePluck": "Pluck",
+  "@synthVoicePluck": {
+    "description": "Built-in preview instrument name: Plucked synth"
+  },
+  "synthVoiceKeys": "Keys",
+  "@synthVoiceKeys": {
+    "description": "Built-in preview instrument name: Piano / keyboard"
+  },
+  "synthVoiceOrgan": "Organ",
+  "@synthVoiceOrgan": {
+    "description": "Built-in preview instrument name: Organ"
+  },
+  "synthVoiceStrings": "Strings",
+  "@synthVoiceStrings": {
+    "description": "Built-in preview instrument name: String section"
+  },
+  "synthVoiceBrass": "Brass",
+  "@synthVoiceBrass": {
+    "description": "Built-in preview instrument name: Brass section"
+  },
+  "synthVoiceBell": "Bell",
+  "@synthVoiceBell": {
+    "description": "Built-in preview instrument name: Bell / mallet"
+  },
+  "synthVoiceDrumKit": "Drum kit",
+  "@synthVoiceDrumKit": {
+    "description": "Built-in preview instrument name: Full drum kit following the General MIDI drum map"
+  },
+  "synthVoiceKick": "Kick",
+  "@synthVoiceKick": {
+    "description": "Built-in preview instrument name: Kick drum"
+  },
+  "synthVoiceSnare": "Snare",
+  "@synthVoiceSnare": {
+    "description": "Built-in preview instrument name: Snare drum"
+  },
+  "synthVoiceClap": "Clap",
+  "@synthVoiceClap": {
+    "description": "Built-in preview instrument name: Hand clap"
+  },
+  "synthVoiceHiHat": "Hi-hat",
+  "@synthVoiceHiHat": {
+    "description": "Built-in preview instrument name: Hi-hat / cymbals"
+  },
+  "synthVoicePercussion": "Percussion",
+  "@synthVoicePercussion": {
+    "description": "Built-in preview instrument name: Percussion"
   }
 }

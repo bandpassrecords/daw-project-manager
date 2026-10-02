@@ -21,6 +21,7 @@ import '../models/project_part.dart';
 import '../models/project_template.dart';
 import '../models/template_root.dart';
 import '../repository/project_repository.dart';
+import '../repository/midi_clip_store.dart';
 import '../repository/profile_repository.dart';
 import 'custom_theme_merge.dart';
 import '../utils/app_paths.dart';
@@ -57,6 +58,9 @@ class BackupService {
       // backup covers a single profile, so only that profile's phase settings
       // are relevant here.
       final phaseSettings = await _readPhaseSettings(profileId);
+      final midiClips = await projectRepo.midiClips.getAll(
+        onlyProjects: projects.map((p) => p.id).toSet(),
+      );
 
       // Create backup data structure
       final backupData = {
@@ -65,11 +69,14 @@ class BackupService {
         // each project, its parts). 1.3 added customThemes. Importing an older
         // file still works — every new key is read with a null check on the
         // way back in.
-        'version': '1.3',
+        'version': '1.4',
         'exportDate': DateTime.now().toIso8601String(),
         'profileId': profileId,
         'profile': profile != null ? await _profileToJson(profile) : null,
         'projects': await Future.wait(projects.map(_projectToJsonWithCoverArt)),
+        // 1.4: project id -> stored MIDI clips. Flatpak's only way to keep
+        // them, since Drive sync isn't offered there.
+        'midiClips': storedMidiClipsToJson(midiClips),
         'roots': roots.map((r) => _rootToJson(r)).toList(),
         'ignoredPaths': ignoredPaths.map((ip) => _ignoredPathToJson(ip)).toList(),
         'releases': await Future.wait(releases.map((r) => _releaseToJson(r))),
@@ -320,6 +327,9 @@ class BackupService {
       for (final project in importedProjects) {
         await targetRepo.restoreProject(project);
       }
+      // Absent before backup 1.4. Merged, never replacing a newer read.
+      await targetRepo.midiClips
+          .mergeNewer(storedMidiClipsFromJson(backupData['midiClips']));
       for (final root in importedRoots) {
         // restoreRoot, not addRoot: addRoot builds a *new* root from a path
         // alone, which threw away the label, scan mode and enabled flag that

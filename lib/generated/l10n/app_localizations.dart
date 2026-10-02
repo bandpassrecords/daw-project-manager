@@ -9767,10 +9767,10 @@ abstract class AppLocalizations {
   /// **'Load MIDI clips'**
   String get midiClipsLoad;
 
-  /// Explains that MIDI clips are read from the project file only when asked and not stored
+  /// Explains, next to the button that first reads them, that MIDI clips are read from the project file and then stored and synced
   ///
   /// In en, this message translates to:
-  /// **'Read from the project file when you ask. Nothing is copied or stored.'**
+  /// **'Read from the project file and kept with the project, so they sync to your other devices.'**
   String get midiClipsLoadHint;
 
   /// Shown while the MIDI clips are being read out of the project file
@@ -9916,6 +9916,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to the project tempo ({bpm} BPM)'**
   String midiTempoReset(String bpm);
+
+  /// Tooltip on the button that shares one MIDI clip as a .mid file
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get midiClipShare;
+
+  /// Button that shares every MIDI clip of a project as .mid files
+  ///
+  /// In en, this message translates to:
+  /// **'Share all'**
+  String get midiClipsShareAll;
+
+  /// Message sent along with one shared MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI clip \"{clip}\" from {project}'**
+  String midiClipShareText(String clip, String project);
+
+  /// Message sent along with all of a project's shared MIDI clips
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI clips from {project}'**
+  String midiClipsShareAllText(String project);
+
+  /// Shown when the system has no share sheet for files, so the folder with the .mid files was opened instead
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing isn\'t available here, so the files are in the folder that just opened. Drag them into your chat app.'**
+  String get midiClipsShareFallback;
+
+  /// Snackbar when sharing MIDI clips failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share: {error}'**
+  String midiClipShareFailed(String error);
+
+  /// Tooltip on the button that re-reads the MIDI clips (and the rest of the metadata) from the project file
+  ///
+  /// In en, this message translates to:
+  /// **'Read again from the project file'**
+  String get midiClipsRefresh;
+
+  /// Shown above stored MIDI clips when the project file was modified after they were read
+  ///
+  /// In en, this message translates to:
+  /// **'The project file has changed since these clips were read.'**
+  String get midiClipsStale;
+
+  /// Shown on a device that cannot read the project file when no MIDI clips have been stored for the project yet
+  ///
+  /// In en, this message translates to:
+  /// **'No MIDI clips stored for this project yet. Extract its metadata on the computer that has the project file.'**
+  String get midiClipsNoneStored;
+
+  /// Tooltip on the button that picks which built-in instrument previews a MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'Instrument: {name}'**
+  String midiClipInstrumentTooltip(String name);
+
+  /// Built-in preview instrument name: Generic synth
+  ///
+  /// In en, this message translates to:
+  /// **'Synth'**
+  String get synthVoiceSynth;
+
+  /// Built-in preview instrument name: Lead synth
+  ///
+  /// In en, this message translates to:
+  /// **'Lead'**
+  String get synthVoiceLead;
+
+  /// Built-in preview instrument name: Bass
+  ///
+  /// In en, this message translates to:
+  /// **'Bass'**
+  String get synthVoiceBass;
+
+  /// Built-in preview instrument name: Pad synth
+  ///
+  /// In en, this message translates to:
+  /// **'Pad'**
+  String get synthVoicePad;
+
+  /// Built-in preview instrument name: Plucked synth
+  ///
+  /// In en, this message translates to:
+  /// **'Pluck'**
+  String get synthVoicePluck;
+
+  /// Built-in preview instrument name: Piano / keyboard
+  ///
+  /// In en, this message translates to:
+  /// **'Keys'**
+  String get synthVoiceKeys;
+
+  /// Built-in preview instrument name: Organ
+  ///
+  /// In en, this message translates to:
+  /// **'Organ'**
+  String get synthVoiceOrgan;
+
+  /// Built-in preview instrument name: String section
+  ///
+  /// In en, this message translates to:
+  /// **'Strings'**
+  String get synthVoiceStrings;
+
+  /// Built-in preview instrument name: Brass section
+  ///
+  /// In en, this message translates to:
+  /// **'Brass'**
+  String get synthVoiceBrass;
+
+  /// Built-in preview instrument name: Bell / mallet
+  ///
+  /// In en, this message translates to:
+  /// **'Bell'**
+  String get synthVoiceBell;
+
+  /// Built-in preview instrument name: Full drum kit following the General MIDI drum map
+  ///
+  /// In en, this message translates to:
+  /// **'Drum kit'**
+  String get synthVoiceDrumKit;
+
+  /// Built-in preview instrument name: Kick drum
+  ///
+  /// In en, this message translates to:
+  /// **'Kick'**
+  String get synthVoiceKick;
+
+  /// Built-in preview instrument name: Snare drum
+  ///
+  /// In en, this message translates to:
+  /// **'Snare'**
+  String get synthVoiceSnare;
+
+  /// Built-in preview instrument name: Hand clap
+  ///
+  /// In en, this message translates to:
+  /// **'Clap'**
+  String get synthVoiceClap;
+
+  /// Built-in preview instrument name: Hi-hat / cymbals
+  ///
+  /// In en, this message translates to:
+  /// **'Hi-hat'**
+  String get synthVoiceHiHat;
+
+  /// Built-in preview instrument name: Percussion
+  ///
+  /// In en, this message translates to:
+  /// **'Percussion'**
+  String get synthVoicePercussion;
 }
 
 class _AppLocalizationsDelegate

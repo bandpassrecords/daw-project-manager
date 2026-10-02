@@ -14,7 +14,10 @@ import 'package:daw_project_manager/models/profile.dart';
 import 'package:daw_project_manager/models/scan_mode.dart';
 import 'package:daw_project_manager/models/scan_root.dart';
 import 'package:daw_project_manager/models/project_part.dart';
+import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/models/project_stats.dart';
+import 'package:daw_project_manager/models/stored_midi_clips.dart';
+import 'package:daw_project_manager/repository/midi_clip_store.dart';
 import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/todo_template.dart';
 import 'package:daw_project_manager/repository/profile_repository.dart';
@@ -1018,6 +1021,52 @@ void main() {
       final stats = projectRepo.projectsBox.get('scanned')!.stats!;
       expect(stats.audioTracks, 12);
       expect(stats.plugins, ['Serum']);
+    });
+
+    test('stored MIDI clips arrive with their project, the newer read winning',
+        () async {
+      final local = TestFactories.makeProject(
+        id: 'with-clips',
+        updatedAt: DateTime(2025, 6, 1, 8, 0),
+      );
+      await projectRepo.projectsBox.put(local.id, local);
+      final store = MidiClipStore(projectRepo.profileId);
+      await store.put('with-clips', StoredMidiClips(
+        extractedAt: DateTime.utc(2026, 1, 1),
+        clips: const [
+          MidiClip(name: 'old', ppq: 480, lengthTicks: 480, notes: [
+            MidiNote(startTick: 0, lengthTicks: 1, pitch: 60, velocity: 1),
+          ]),
+        ],
+      ));
+
+      StoredMidiClips remoteClips(String name, DateTime at) => StoredMidiClips(
+            extractedAt: at,
+            clips: [
+              MidiClip(name: name, ppq: 480, lengthTicks: 480, notes: const [
+                MidiNote(startTick: 0, lengthTicks: 1, pitch: 62, velocity: 1),
+              ]),
+            ],
+          );
+
+      await GoogleDriveSyncService().mergeData(
+        remoteData: {
+          'projects': [
+            remoteProjectMap(id: 'with-clips', updatedAt: DateTime(2025, 6, 1, 12)),
+          ],
+          'midiClips': storedMidiClipsToJson({
+            'with-clips': remoteClips('new', DateTime.utc(2026, 2, 1)),
+            // A project nobody here has: nowhere to put its clips.
+            'unknown': remoteClips('stray', DateTime.utc(2026, 2, 1)),
+          }),
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      expect((await store.get('with-clips'))!.clips.single.name, 'new');
+      expect(await store.get('unknown'), isNull);
     });
 
     test('a remote copy that was never deep-scanned keeps local stats', () async {

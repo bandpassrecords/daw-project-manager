@@ -28,6 +28,19 @@ void main() {
     >
   >
   <TRACK
+    NAME "Bass"
+    <ITEM
+      LENGTH 2
+      NAME "Line"
+      <SOURCE MIDI
+        HASDATA 1 960 QN
+        E 0 90 24 64
+        E 480 80 24 00
+        E 3360 b0 7b 00
+      >
+    >
+  >
+  <TRACK
     NAME "Keys"
     <FXCHAIN
       <VST "VSTi: Serum (Xfer Records)" Serum_x64.dll 0 "" 0 ""
@@ -56,7 +69,8 @@ void main() {
     expect(stats.audioTracks, 1);
     expect(stats.instrumentTracks, 1);
     expect(stats.plugins, ['Serum']);
-    expect(stats.midiClipCount, 0);
+    expect(stats.midiTracks, 1);
+    expect(stats.midiClipCount, 1);
   });
 
   test('a lightweight rescan keeps the last deep scan\'s stats', () async {
@@ -86,5 +100,57 @@ void main() {
     await repo.extractFullMetadataForProject(project.id);
 
     expect(repo.getById(project.id)!.stats!.audioTracks, 1);
+  });
+
+  group('stored MIDI clips', () {
+    test('a deep scan stores the clips it read, with the file time', () async {
+      final file = File('${projectDir.path}/song.rpp')..writeAsStringSync(rpp);
+      await repo.upsertFromFileSystemEntity(file, fullMetadata: true);
+      final project = repo.getByPath(file.path)!;
+
+      final stored = (await repo.midiClips.get(project.id))!;
+      expect(stored.clips.single.name, 'Line');
+      expect(stored.clips.single.trackName, 'Bass');
+      expect(stored.sourceModifiedAt, file.lastModifiedSync());
+    });
+
+    test('the batched scan stores clips too', () async {
+      final file = File('${projectDir.path}/song.rpp')..writeAsStringSync(rpp);
+      await repo.upsertManyFromFileSystemEntities([file], fullMetadata: true);
+      final project = repo.getByPath(file.path)!;
+      expect((await repo.midiClips.get(project.id))!.clips, hasLength(1));
+    });
+
+    test('a lightweight rescan leaves stored clips alone', () async {
+      final file = File('${projectDir.path}/song.rpp')..writeAsStringSync(rpp);
+      await repo.upsertFromFileSystemEntity(file, fullMetadata: true);
+      final project = repo.getByPath(file.path)!;
+      final before = (await repo.midiClips.get(project.id))!.extractedAt;
+
+      await repo.upsertFromFileSystemEntity(file);
+
+      expect((await repo.midiClips.get(project.id))!.extractedAt, before);
+    });
+
+    test('extracting one project replaces its stored clips', () async {
+      final file = File('${projectDir.path}/song.rpp')..writeAsStringSync(rpp);
+      await repo.upsertFromFileSystemEntity(file);
+      final project = repo.getByPath(file.path)!;
+      expect(await repo.midiClips.get(project.id), isNull);
+
+      await repo.extractFullMetadataForProject(project.id);
+
+      expect((await repo.midiClips.get(project.id))!.clips, hasLength(1));
+    });
+
+    test('deleting a project deletes its clips', () async {
+      final file = File('${projectDir.path}/song.rpp')..writeAsStringSync(rpp);
+      await repo.upsertFromFileSystemEntity(file, fullMetadata: true);
+      final project = repo.getByPath(file.path)!;
+
+      await repo.deleteProjectsPermanently([project.id]);
+
+      expect(await repo.midiClips.get(project.id), isNull);
+    });
   });
 }

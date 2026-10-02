@@ -5695,7 +5695,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get midiClipsLoad => 'MIDIクリップを読み込む';
 
   @override
-  String get midiClipsLoadHint => '必要なときにプロジェクトファイルから読み込みます。コピーや保存は行いません。';
+  String get midiClipsLoadHint =>
+      'プロジェクトファイルから読み込んでプロジェクトと一緒に保存し、他のデバイスにも同期します。';
 
   @override
   String get midiClipsLoading => 'プロジェクトファイルを読み込み中…';
@@ -5803,4 +5804,92 @@ class AppLocalizationsJa extends AppLocalizations {
   String midiTempoReset(String bpm) {
     return 'プロジェクトのテンポに戻す ($bpm BPM)';
   }
+
+  @override
+  String get midiClipShare => '共有';
+
+  @override
+  String get midiClipsShareAll => 'すべて共有';
+
+  @override
+  String midiClipShareText(String clip, String project) {
+    return '$project のMIDIクリップ「$clip」';
+  }
+
+  @override
+  String midiClipsShareAllText(String project) {
+    return '$project のMIDIクリップ';
+  }
+
+  @override
+  String get midiClipsShareFallback =>
+      'ここでは共有を利用できないため、ファイルを開いたフォルダに置きました。チャットアプリにドラッグしてください。';
+
+  @override
+  String midiClipShareFailed(String error) {
+    return '共有できませんでした: $error';
+  }
+
+  @override
+  String get midiClipsRefresh => 'プロジェクトファイルから再読み込み';
+
+  @override
+  String get midiClipsStale => 'これらのクリップを読み込んだ後にプロジェクトファイルが変更されました。';
+
+  @override
+  String get midiClipsNoneStored =>
+      'このプロジェクトのMIDIクリップはまだ保存されていません。プロジェクトファイルのあるコンピューターでメタデータを抽出してください。';
+
+  @override
+  String midiClipInstrumentTooltip(String name) {
+    return '楽器: $name';
+  }
+
+  @override
+  String get synthVoiceSynth => 'シンセ';
+
+  @override
+  String get synthVoiceLead => 'リード';
+
+  @override
+  String get synthVoiceBass => 'ベース';
+
+  @override
+  String get synthVoicePad => 'パッド';
+
+  @override
+  String get synthVoicePluck => 'プラック';
+
+  @override
+  String get synthVoiceKeys => 'キーボード';
+
+  @override
+  String get synthVoiceOrgan => 'オルガン';
+
+  @override
+  String get synthVoiceStrings => 'ストリングス';
+
+  @override
+  String get synthVoiceBrass => 'ブラス';
+
+  @override
+  String get synthVoiceBell => 'ベル';
+
+  @override
+  String get synthVoiceDrumKit => 'ドラムキット';
+
+  @override
+  String get synthVoiceKick => 'キック';
+
+  @override
+  String get synthVoiceSnare => 'スネア';
+
+  @override
+  String get synthVoiceClap => 'クラップ';
+
+  @override
+  String get synthVoiceHiHat => 'ハイハット';
+
+  @override
+  String get synthVoicePercussion => 'パーカッション';
 }

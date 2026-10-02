@@ -31,6 +31,7 @@ import '../models/template_root.dart';
 import '../models/backup_progress.dart';
 import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
+import '../repository/midi_clip_store.dart';
 import 'custom_theme_merge.dart';
 import '../utils/app_paths.dart'
     show
@@ -3416,11 +3417,29 @@ class GoogleDriveSyncService {
         }
       }
 
+      // Stored MIDI clips, one box per profile keyed by project id. Read out
+      // of project files on a desktop; synced so a phone has them without
+      // the file (and can play and share them).
+      final Map<String, dynamic> midiClipsByProject = {};
+      for (final profile in allProfiles) {
+        try {
+          midiClipsByProject.addAll(
+            storedMidiClipsToJson(await MidiClipStore(profile.id).getAll()),
+          );
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error collecting MIDI clips for ${profile.id}: $e');
+          }
+        }
+      }
+
       final data = {
         'timestamp': DateTime.now().toIso8601String(),
         'version': '1.7', // Incremented to include custom themes
         'profiles': allProfiles.map((p) => _serializeProfile(p)).toList(),
         'projects': allProjects.map((p) => _serializeProject(p)).toList(),
+        // project id -> StoredMidiClips.toJson(). Absent on older backups.
+        'midiClips': midiClipsByProject,
         'releases': allReleases.map((r) => _serializeRelease(r)).toList(),
         'roots': allRoots.map((r) => _serializeRoot(r)).toList(),
         'templates': allTemplates.map((t) => _serializeTemplate(t)).toList(),
@@ -4919,6 +4938,13 @@ class GoogleDriveSyncService {
       }
     }
 
+    // Merge stored MIDI clips into whichever profile holds each project, the
+    // newer extraction winning. Runs after the projects merge so a project
+    // that just arrived gets its clips too.
+    if (remoteData['midiClips'] != null) {
+      await _mergeMidiClips(remoteData['midiClips'], allProfiles);
+    }
+
     // Merge releases - distribute to CORRECT profiles (or ALL if no mappings)
     if (remoteData['releases'] != null) {
       final remoteReleases = (remoteData['releases'] as List)
@@ -5617,6 +5643,26 @@ class GoogleDriveSyncService {
   /// Test-only accessors for the private serialize/deserialize pair above —
   /// mirrors the pattern in BackupService so round-trip tests don't need to
   /// go through a full Drive upload/download cycle.
+  /// Merges a payload's `midiClips` section into each profile whose projects
+  /// box holds the project. Never deletes (see [MidiClipStore.mergeNewer]).
+  Future<void> _mergeMidiClips(Object? json, List<Profile> profiles) async {
+    try {
+      final incoming = storedMidiClipsFromJson(json);
+      if (incoming.isEmpty) return;
+      for (final profile in profiles) {
+        final projects =
+            await Hive.openBox<MusicProject>('${profile.id}_projects');
+        final mine = {
+          for (final e in incoming.entries)
+            if (projects.containsKey(e.key)) e.key: e.value,
+        };
+        if (mine.isNotEmpty) await MidiClipStore(profile.id).mergeNewer(mine);
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error merging MIDI clips: $e');
+    }
+  }
+
   @visibleForTesting
   Map<String, dynamic> serializeProjectForTest(MusicProject project) =>
       _serializeProject(project);
