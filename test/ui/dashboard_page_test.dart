@@ -6,6 +6,8 @@ import 'package:hive_ce/hive.dart';
 import 'package:path/path.dart' as path;
 import 'package:trina_grid/trina_grid.dart';
 
+import 'package:daw_project_manager/models/custom_field.dart';
+import 'package:daw_project_manager/utils/custom_fields.dart';
 import 'package:daw_project_manager/generated/l10n/app_localizations_en.dart';
 import 'package:daw_project_manager/ui/dashboard_page.dart';
 
@@ -775,6 +777,24 @@ void main() {
         'Bravo',
         'Alpha',
       ]);
+    });
+
+    test('uses the column comparison it is given', () {
+      // A number custom field (LUFS) must not flash into alphabetical order
+      // for a frame on remount: '-9.8' sorts before '-14.2' as a string.
+      TrinaRow lufsRow(String v) => TrinaRow(cells: {'cf_lufs': TrinaCell(value: v)});
+      final rows = [lufsRow('-9.8'), lufsRow('-14.2'), lufsRow('-11')];
+
+      applySortSnapshot(
+        rows,
+        'cf_lufs',
+        TrinaColumnSort.ascending,
+        compareValues: (a, b) =>
+            compareCustomFieldValues(CustomFieldType.number, a, b),
+      );
+
+      expect(rows.map((r) => r.cells['cf_lufs']!.value),
+          ['-14.2', '-11', '-9.8']);
     });
 
     test('is a no-op when direction is none', () {

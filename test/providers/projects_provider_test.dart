@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:daw_project_manager/models/custom_field.dart';
 import 'package:daw_project_manager/models/music_project.dart';
 import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/scan_root.dart';
@@ -48,8 +49,10 @@ ProviderContainer _makeContainer(
   List<Release> releases = const [],
   List<ScanRoot> roots = const [],
   bool tagsEnabled = false,
+  List<CustomFieldDefinition> customFields = const [],
 }) {
   return ProviderContainer(overrides: [
+    activeCustomFieldsProvider.overrideWithValue(customFields),
     tagsEnabledProvider.overrideWith(
         () => _FakeTagsEnabledNotifier(tagsEnabled)),
     allProjectsStreamProvider.overrideWith(
@@ -518,6 +521,32 @@ void main() {
       c.read(projectsSearchProvider.notifier).setSearchText('luna');
 
       expect((await _readProjects(c)).map((p) => p.id), ['tagged']);
+    });
+
+    test('the search box finds a project by a custom field value', () async {
+      final c = _makeContainer(
+        customFields: const [CustomFieldDefinition(id: 'eng', name: 'Engineer')],
+        [
+          TestFactories.makeProject(id: 'hit', customFields: {'eng': 'Ana Souza'}),
+          TestFactories.makeProject(id: 'other'),
+        ],
+      );
+      addTearDown(c.dispose);
+      c.read(projectsSearchProvider.notifier).setSearchText('souza');
+
+      expect((await _readProjects(c)).map((p) => p.id), ['hit']);
+    });
+
+    test('leftover values of a deleted field do not match a search', () async {
+      // The values stay on the project (see MusicProject.customFields), but
+      // nothing shows them any more, so a match would be unexplainable.
+      final c = _makeContainer([
+        TestFactories.makeProject(id: 'p', customFields: {'gone': 'Ana Souza'}),
+      ]);
+      addTearDown(c.dispose);
+      c.read(projectsSearchProvider.notifier).setSearchText('souza');
+
+      expect(await _readProjects(c), isEmpty);
     });
   });
 

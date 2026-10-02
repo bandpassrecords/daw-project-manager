@@ -5844,5 +5844,114 @@
   "midiTempoResetAuto": "Back to each clip's own tempo",
   "@midiTempoResetAuto": {
     "description": "Tooltip on the button that goes back to playing each clip at its own project tempo"
+  },
+  "releaseTracksResizeHint": "Drag to resize · double-click to reset",
+  "@releaseTracksResizeHint": {
+    "description": "Release page: tooltip on the divider between the tracklist and the files panel"
+  },
+  "releaseTracksMaximize": "Show the whole tracklist",
+  "@releaseTracksMaximize": {
+    "description": "Release page: button that expands the tracklist over the files panel"
+  },
+  "releaseTracksRestoreFiles": "Show the files panel again",
+  "@releaseTracksRestoreFiles": {
+    "description": "Release page: button that brings the files panel back under the tracklist"
+  },
+  "columnsAndFieldsTabLabel": "Columns & fields",
+  "@columnsAndFieldsTabLabel": {
+    "description": "Settings: nav label for the table columns and custom fields section"
+  },
+  "projectsTableColumnsTitle": "Projects table columns",
+  "@projectsTableColumnsTitle": {
+    "description": "Settings: heading of the built-in projects table columns list"
+  },
+  "projectsTableColumnsDescription": "Choose which columns the projects table shows and drag them into the order you want. Name and actions are always shown. Applies to this device only.",
+  "@projectsTableColumnsDescription": {
+    "description": "Settings: explains the built-in columns list"
+  },
+  "customFieldsTitle": "Custom fields",
+  "@customFieldsTitle": {
+    "description": "Heading for the user-defined custom fields (Settings and project page)"
+  },
+  "customFieldsDescription": "Add your own fields to every project — loudness (LUFS), mastering engineer, ISRC, anything. A field can always be filled in on the project page; choose whether it also gets a column in the projects table or in release tracklists.",
+  "@customFieldsDescription": {
+    "description": "Settings: explains custom fields and where they can appear"
+  },
+  "addCustomField": "Add field",
+  "@addCustomField": {
+    "description": "Settings: button that adds a custom field"
+  },
+  "editCustomField": "Edit field",
+  "@editCustomField": {
+    "description": "Title of the dialog that edits a custom field"
+  },
+  "customFieldName": "Field name",
+  "@customFieldName": {
+    "description": "Custom field dialog: label of the name input"
+  },
+  "customFieldNameHint": "e.g. LUFS",
+  "@customFieldNameHint": {
+    "description": "Custom field dialog: example shown in the empty name input"
+  },
+  "customFieldNameRequired": "Enter a name",
+  "@customFieldNameRequired": {
+    "description": "Custom field dialog: error when the name is empty"
+  },
+  "customFieldNameDuplicate": "A field with this name already exists",
+  "@customFieldNameDuplicate": {
+    "description": "Custom field dialog: error when another field already has this name"
+  },
+  "customFieldType": "Type",
+  "@customFieldType": {
+    "description": "Custom field dialog: label of the type choice"
+  },
+  "customFieldTypeText": "Text",
+  "@customFieldTypeText": {
+    "description": "Custom field type: free text"
+  },
+  "customFieldTypeNumber": "Number",
+  "@customFieldTypeNumber": {
+    "description": "Custom field type: a number, sorted by value"
+  },
+  "customFieldTypeNumberHelp": "Numbers sort by value, so -9.8 comes after -14.2.",
+  "@customFieldTypeNumberHelp": {
+    "description": "Custom field dialog: explains what the Number type changes"
+  },
+  "customFieldShowInProjectsTable": "Column in the projects table",
+  "@customFieldShowInProjectsTable": {
+    "description": "Custom field: option to give the field a column in the projects table"
+  },
+  "customFieldShowInReleaseTracks": "Column in release tracklists",
+  "@customFieldShowInReleaseTracks": {
+    "description": "Custom field: option to give the field a column in a release's tracklist table"
+  },
+  "customFieldProjectPageOnly": "Project page only",
+  "@customFieldProjectPageOnly": {
+    "description": "Custom field: shown when the field has no column anywhere"
+  },
+  "noCustomFieldsYet": "No custom fields yet.",
+  "@noCustomFieldsYet": {
+    "description": "Settings: shown when the user has not added any custom field"
+  },
+  "deleteCustomFieldTitle": "Delete field?",
+  "@deleteCustomFieldTitle": {
+    "description": "Title of the confirmation before deleting a custom field"
+  },
+  "deleteCustomFieldMessage": "\"{name}\" and the values entered in it will no longer appear on any project, table or search.",
+  "@deleteCustomFieldMessage": {
+    "description": "Confirmation before deleting a custom field",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "customFieldInvalidNumber": "Enter a number",
+  "@customFieldInvalidNumber": {
+    "description": "Project page: error under a number custom field holding something that is not a number"
+  },
+  "customFieldsProjectPageHint": "Your own fields — add or change them in Settings > Columns & fields.",
+  "@customFieldsProjectPageHint": {
+    "description": "Project page: shown under the custom fields heading"
   }
 }

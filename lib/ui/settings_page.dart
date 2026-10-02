@@ -44,6 +44,9 @@ import 'notification_settings_page.dart' show WorkTimerSection;
 import 'onboarding_wizard_page.dart';
 import 'dialogs/color_picker_dialog.dart';
 import 'dialogs/theme_editor_dialog.dart';
+import 'dialogs/custom_field_dialog.dart';
+import 'widgets/columns_and_fields_settings.dart';
+import '../models/custom_field.dart';
 import 'theme_labels.dart';
 import 'widgets/parts_export_card.dart';
 import 'widgets/theme_preview_card.dart';
@@ -74,6 +77,7 @@ bool looksLikeFlatpakPortalPath(String path) =>
 enum SettingsSection {
   general,
   appearance,
+  columnsAndFields,
   projectFolders,
   // Desktop-only — see the MobileUtils.isDesktop() gate in _sectionOrder().
   dawLaunchCommands,
@@ -1070,6 +1074,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   List<SettingsSection> _sectionOrder() => [
         SettingsSection.general,
         SettingsSection.appearance,
+        SettingsSection.columnsAndFields,
         SettingsSection.projectFolders,
         // Desktop only. On Linux this is usually required (no dependable OS
         // file association for most DAWs); on Windows/macOS it's a fallback
@@ -1092,6 +1097,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return SectionNavItem(icon: Icons.tune_outlined, label: l10n.general);
       case SettingsSection.appearance:
         return SectionNavItem(icon: Icons.palette_outlined, label: l10n.appearanceTabLabel);
+      case SettingsSection.columnsAndFields:
+        return SectionNavItem(icon: Icons.view_column_outlined, label: l10n.columnsAndFieldsTabLabel);
       case SettingsSection.projectFolders:
         return SectionNavItem(icon: Icons.folder_outlined, label: l10n.roots);
       case SettingsSection.dawLaunchCommands:
@@ -1124,6 +1131,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return _buildGeneralSection;
       case SettingsSection.appearance:
         return _buildAppearanceSection;
+      case SettingsSection.columnsAndFields:
+        return _buildColumnsAndFieldsSection;
       case SettingsSection.projectFolders:
         return _buildProjectFoldersSection;
       case SettingsSection.dawLaunchCommands:
@@ -1169,6 +1178,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.appearance, Icons.tab_outlined, l10n.customizeTabs, l10n.customizeTabsDescription),
         _SearchEntry(SettingsSection.appearance, Icons.view_sidebar_outlined, l10n.tabPosition, null),
         _SearchEntry(SettingsSection.appearance, Icons.event_busy_outlined, l10n.hideDatesInNames, l10n.hideDatesInNamesDescription),
+        _SearchEntry(SettingsSection.columnsAndFields, Icons.view_column_outlined, l10n.projectsTableColumnsTitle, l10n.projectsTableColumnsDescription),
+        _SearchEntry(SettingsSection.columnsAndFields, Icons.dashboard_customize_outlined, l10n.customFieldsTitle, l10n.customFieldsDescription),
         _SearchEntry(SettingsSection.projectFolders, Icons.folder_outlined, l10n.projectFoldersSectionTitle, l10n.projectFoldersSectionSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.view_agenda_outlined, l10n.scanModeSectionTitle, l10n.scanModeSectionDescription),
         _SearchEntry(SettingsSection.projectFolders, Icons.sort, l10n.excludeSmartFoldersFromSort, l10n.excludeSmartFoldersFromSortDescription),
@@ -3040,6 +3051,86 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         await showThemeEditorDialog(context, draft: theme, isNew: false);
     if (saved == null) return;
     await ref.read(customThemesProvider.notifier).upsert(saved);
+  }
+
+  // --- Columns & fields ------------------------------------------------------
+
+  Widget _buildColumnsAndFieldsSection(AppLocalizations l10n) {
+    final columnsNotifier = ref.read(projectsTableColumnsProvider.notifier);
+    final fieldsNotifier = ref.read(customFieldDefinitionsProvider.notifier);
+    final fields = ref.watch(activeCustomFieldsProvider);
+    return ColumnsAndFieldsSettings(
+      columns: ref.watch(projectsTableColumnsProvider),
+      columnLabel: (id) => _builtInColumnLabel(id, l10n),
+      onColumnVisibleChanged: columnsNotifier.setVisible,
+      onColumnsReordered: columnsNotifier.reorder,
+      onResetColumns: columnsNotifier.reset,
+      fields: fields,
+      onAddField: () async {
+        final created = await showCustomFieldDialog(context, active: fields);
+        if (created != null) await fieldsNotifier.upsert(created);
+      },
+      onEditField: (field) async {
+        final edited = await showCustomFieldDialog(
+          context,
+          existing: field,
+          active: ref.read(activeCustomFieldsProvider),
+        );
+        if (edited != null) await fieldsNotifier.upsert(edited);
+      },
+      onDeleteField: (field) => _deleteCustomField(field, l10n),
+      onFieldChanged: fieldsNotifier.upsert,
+      onFieldsReordered: fieldsNotifier.reorder,
+    );
+  }
+
+  /// The name a built-in projects-table column goes by in the table header.
+  String _builtInColumnLabel(String id, AppLocalizations l10n) {
+    switch (id) {
+      case 'status':
+        return l10n.phase;
+      case 'dawType':
+        return l10n.daw;
+      case 'bpm':
+        return l10n.bpm;
+      case 'key':
+        // The same trim the table header does: "Key (e.g., C#m…)" → "Key".
+        return l10n.key.split(' ').first;
+      case 'tags':
+        return l10n.projectTags;
+      case 'lastModified':
+        return l10n.lastModifiedColumn;
+      case 'deadline':
+        return l10n.deadline;
+    }
+    return id;
+  }
+
+  Future<void> _deleteCustomField(
+      CustomFieldDefinition field, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteCustomFieldTitle),
+        content: Text(l10n.deleteCustomFieldMessage(field.name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await ref.read(customFieldDefinitionsProvider.notifier).delete(field.id);
   }
 
   Future<void> _deleteTheme(CustomTheme theme, AppLocalizations l10n) async {

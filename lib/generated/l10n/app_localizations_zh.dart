@@ -5910,4 +5910,86 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiTempoResetAuto => '恢复为各片段自身的速度';
+
+  @override
+  String get releaseTracksResizeHint => '拖动以调整大小 · 双击以重置';
+
+  @override
+  String get releaseTracksMaximize => '显示完整曲目列表';
+
+  @override
+  String get releaseTracksRestoreFiles => '重新显示文件面板';
+
+  @override
+  String get columnsAndFieldsTabLabel => '列与字段';
+
+  @override
+  String get projectsTableColumnsTitle => '项目表格的列';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      '选择项目表格显示哪些列，并拖动调整顺序。名称和操作列始终显示。仅对此设备生效。';
+
+  @override
+  String get customFieldsTitle => '自定义字段';
+
+  @override
+  String get customFieldsDescription =>
+      '为每个项目添加你自己的字段——响度（LUFS）、母带工程师、ISRC，任何内容都可以。字段始终可以在项目页面填写；你可以选择是否同时在项目表格或发行曲目列表中显示为一列。';
+
+  @override
+  String get addCustomField => '添加字段';
+
+  @override
+  String get editCustomField => '编辑字段';
+
+  @override
+  String get customFieldName => '字段名称';
+
+  @override
+  String get customFieldNameHint => '例如：LUFS';
+
+  @override
+  String get customFieldNameRequired => '请输入名称';
+
+  @override
+  String get customFieldNameDuplicate => '已存在同名字段';
+
+  @override
+  String get customFieldType => '类型';
+
+  @override
+  String get customFieldTypeText => '文本';
+
+  @override
+  String get customFieldTypeNumber => '数字';
+
+  @override
+  String get customFieldTypeNumberHelp => '数字按数值排序，因此 -9.8 排在 -14.2 之后。';
+
+  @override
+  String get customFieldShowInProjectsTable => '在项目表格中显示为列';
+
+  @override
+  String get customFieldShowInReleaseTracks => '在发行曲目列表中显示为列';
+
+  @override
+  String get customFieldProjectPageOnly => '仅在项目页面';
+
+  @override
+  String get noCustomFieldsYet => '还没有自定义字段。';
+
+  @override
+  String get deleteCustomFieldTitle => '删除字段？';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '“$name”及已填写的值将不再出现在任何项目、表格或搜索中。';
+  }
+
+  @override
+  String get customFieldInvalidNumber => '请输入数字';
+
+  @override
+  String get customFieldsProjectPageHint => '你自己的字段——可在 设置 > 列与字段 中添加或修改。';
 }

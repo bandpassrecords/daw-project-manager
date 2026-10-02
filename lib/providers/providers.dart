@@ -37,6 +37,9 @@ import '../models/project_detail_layout.dart';
 import '../models/dashboard_view_mode.dart';
 import '../utils/project_sort.dart';
 import '../utils/project_tags.dart';
+import '../utils/custom_fields.dart';
+import '../models/custom_field.dart';
+import '../services/custom_field_merge.dart';
 import '../models/waveform_style.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
@@ -619,11 +622,20 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
         // Hidden tags must not make a project match: the user would see a
         // result with nothing on screen explaining why.
         final searchTags = ref.watch(tagsEnabledProvider);
+        // Only fields that still exist: a deleted field's values stay on the
+        // project (see MusicProject.customFields) but nothing shows them.
+        final searchFieldIds = [
+          for (final f in ref.watch(activeCustomFieldsProvider)) f.id,
+        ];
         if (projectsSearch.trim().isNotEmpty) {
           projects = projects
               .where(
                 (p) => fuzzyMatchAny(
-                  projectSearchFields(p, includeTags: searchTags),
+                  projectSearchFields(
+                    p,
+                    includeTags: searchTags,
+                    customFieldIds: searchFieldIds,
+                  ),
                   projectsSearch,
                 ),
               )
@@ -2107,6 +2119,169 @@ final tagsEnabledProvider = NotifierProvider<TagsEnabledNotifier, bool>(
 );
 
 // ---------------------------------------------------------------------------
+// Custom fields + projects-table columns
+// ---------------------------------------------------------------------------
+
+/// Every custom field definition, tombstones included — the merge needs them
+/// (see `CustomFieldDefinition.deletedAt`). UI wants
+/// [activeCustomFieldsProvider].
+///
+/// Global user data, stored as a JSON array in `app_settings` beside the
+/// custom themes, which is what lets local backup and Drive sync carry it.
+/// The box is watched, so a restore or a sync writing the key shows up
+/// without a restart.
+class CustomFieldDefinitionsNotifier
+    extends Notifier<List<CustomFieldDefinition>> {
+  static const String boxName = 'app_settings';
+
+  StreamSubscription<BoxEvent>? _subscription;
+
+  @override
+  List<CustomFieldDefinition> build() {
+    ref.onDispose(() => _subscription?.cancel());
+    // No SchedulerBinding here: projectsProvider (search) watches this, and
+    // it is read from plain unit tests with no binding at all.
+    Future.microtask(load);
+    try {
+      if (Hive.isBoxOpen(boxName)) {
+        return decodeCustomFieldDefinitions(
+            Hive.box<String>(boxName).get(customFieldDefinitionsStorageKey));
+      }
+    } catch (_) {
+      // Fall through to the async load.
+    }
+    return const [];
+  }
+
+  @visibleForTesting
+  Future<void> load() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>(boxName);
+      if (!ref.mounted) return;
+      state = decodeCustomFieldDefinitions(
+          box.get(customFieldDefinitionsStorageKey));
+      _subscription ??= box
+          .watch(key: customFieldDefinitionsStorageKey)
+          .listen((event) {
+        if (!ref.mounted) return;
+        state = decodeCustomFieldDefinitions(event.value as String?);
+      });
+    } catch (_) {
+      // Keep the empty list if loading fails.
+    }
+  }
+
+  Future<void> _persist(List<CustomFieldDefinition> fields) async {
+    state = fields;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>(boxName);
+      await box.put(
+        customFieldDefinitionsStorageKey,
+        encodeCustomFieldDefinitions(fields),
+      );
+    } catch (e) {
+      if (kDebugMode) print('Failed to save custom fields: $e');
+    }
+  }
+
+  /// Adds [field] after every existing one, or replaces the one with its id.
+  /// Stamps `updatedAt` either way so the edit wins the next merge.
+  Future<void> upsert(CustomFieldDefinition field) async {
+    final now = DateTime.now();
+    final next = [...state];
+    final index = next.indexWhere((f) => f.id == field.id);
+    if (index >= 0) {
+      next[index] = field.copyWith(updatedAt: now);
+    } else {
+      next.add(field.copyWith(
+        order: activeCustomFields(state).length,
+        updatedAt: now,
+      ));
+    }
+    await _persist(next);
+  }
+
+  /// Leaves a tombstone rather than removing the entry, so a sync or restore
+  /// holding an older live copy can't bring the field back. Project values
+  /// are left alone (see `MusicProject.customFields`).
+  Future<void> delete(String id) async {
+    final now = DateTime.now();
+    await _persist([
+      for (final f in state)
+        f.id == id ? f.copyWith(deletedAt: now, updatedAt: now) : f,
+    ]);
+  }
+
+  /// Moves an active field, `ReorderableListView`-style indices.
+  Future<void> reorder(int oldIndex, int newIndex) async {
+    final active = activeCustomFields(state);
+    if (newIndex > oldIndex) newIndex--;
+    active.insert(newIndex, active.removeAt(oldIndex));
+    final renumbered = {
+      for (final f in renumberCustomFields(active, DateTime.now())) f.id: f,
+    };
+    await _persist([for (final f in state) renumbered[f.id] ?? f]);
+  }
+}
+
+final customFieldDefinitionsProvider = NotifierProvider<
+    CustomFieldDefinitionsNotifier, List<CustomFieldDefinition>>(
+  CustomFieldDefinitionsNotifier.new,
+);
+
+/// The fields the user can see: no tombstones, in their Settings order.
+final activeCustomFieldsProvider = Provider<List<CustomFieldDefinition>>(
+  (ref) => activeCustomFields(ref.watch(customFieldDefinitionsProvider)),
+);
+
+/// Which built-in columns the dashboard's projects table shows, and in what
+/// order (Settings > Columns & fields). Custom field columns follow them.
+///
+/// Device-local, in the `settings` box like the dashboard view mode: what
+/// fits is a question about this screen, so it is not synced or backed up.
+class ProjectsTableColumnsNotifier
+    extends Notifier<List<TableColumnSetting>> {
+  static const boxKey = 'projectsTableColumns';
+
+  @override
+  List<TableColumnSetting> build() {
+    try {
+      return decodeColumnLayout(Hive.box<String>('settings').get(boxKey));
+    } catch (_) {
+      return normalizeColumnLayout(const []);
+    }
+  }
+
+  Future<void> _persist(List<TableColumnSetting> layout) async {
+    state = layout;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      await box.put(boxKey, encodeColumnLayout(layout));
+    } catch (e) {
+      if (kDebugMode) print('Failed to save projectsTableColumns: $e');
+    }
+  }
+
+  Future<void> setVisible(String id, bool visible) => _persist([
+        for (final s in state) s.id == id ? s.withVisible(visible) : s,
+      ]);
+
+  Future<void> reorder(int oldIndex, int newIndex) =>
+      _persist(reorderColumnLayout(state, oldIndex, newIndex));
+
+  Future<void> reset() => _persist(normalizeColumnLayout(const []));
+}
+
+final projectsTableColumnsProvider =
+    NotifierProvider<ProjectsTableColumnsNotifier, List<TableColumnSetting>>(
+  ProjectsTableColumnsNotifier.new,
+);
+
+// ---------------------------------------------------------------------------
 // Tab Visibility
 // ---------------------------------------------------------------------------
 
@@ -3303,6 +3478,99 @@ class SectionRailWidthNotifier extends Notifier<double?> {
 final sectionRailWidthProvider =
     NotifierProvider<SectionRailWidthNotifier, double?>(
       SectionRailWidthNotifier.new,
+    );
+
+/// How much of the release page's right column the tracklist takes, as a
+/// fraction of the height it shares with the files panel. Null means "never
+/// resized" — the page default applies.
+///
+/// Device-local in the `settings` box, like [sectionRailWidthProvider]: it is
+/// about this machine's window, so not synced or backed up.
+class ReleaseTracksSplitNotifier extends Notifier<double?> {
+  static const boxKey = 'releaseTracksSplit';
+
+  @override
+  double? build() {
+    SchedulerBinding.instance.addPostFrameCallback((_) => load());
+    return null;
+  }
+
+  @visibleForTesting
+  Future<void> load() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      final saved = double.tryParse(box.get(boxKey) ?? '');
+      if (saved != null && saved > 0 && saved < 1) state = saved;
+    } catch (_) {
+      // Keep the page default if the box cannot be read.
+    }
+  }
+
+  /// Follows the pointer while dragging; nothing is written until [commit].
+  void preview(double fraction) => state = fraction;
+
+  Future<void> commit() async {
+    final fraction = state;
+    if (fraction == null) return;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.put(boxKey, fraction.toStringAsFixed(3));
+    } catch (e) {
+      debugPrint('[ReleaseTracksSplit] failed to save: $e');
+    }
+  }
+
+  Future<void> reset() async {
+    state = null;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.delete(boxKey);
+    } catch (e) {
+      debugPrint('[ReleaseTracksSplit] failed to reset: $e');
+    }
+  }
+}
+
+final releaseTracksSplitProvider =
+    NotifierProvider<ReleaseTracksSplitNotifier, double?>(
+      ReleaseTracksSplitNotifier.new,
+    );
+
+/// Whether the release page's tracklist is expanded over the files panel, so
+/// a long album reads top to bottom without scrolling. Remembered — someone
+/// who wants the whole tracklist wants it on every release. Device-local.
+class ReleaseTracksMaximizedNotifier extends Notifier<bool> {
+  static const boxKey = 'releaseTracksMaximized';
+
+  @override
+  bool build() {
+    try {
+      return Hive.box<String>('settings').get(boxKey) == 'true';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> set(bool value) async {
+    if (value == state) return;
+    state = value;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      await box.put(boxKey, value.toString());
+    } catch (e) {
+      debugPrint('[ReleaseTracksMaximized] failed to save: $e');
+    }
+  }
+}
+
+final releaseTracksMaximizedProvider =
+    NotifierProvider<ReleaseTracksMaximizedNotifier, bool>(
+      ReleaseTracksMaximizedNotifier.new,
     );
 
 // ─── Dashboard view mode ──────────────────────────────────────────────────────

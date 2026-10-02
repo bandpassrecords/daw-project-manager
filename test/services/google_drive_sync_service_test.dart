@@ -9,6 +9,7 @@ import 'package:googleapis_auth/auth_io.dart' as auth_io;
 import 'package:hive_ce/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:daw_project_manager/models/custom_field.dart';
 import 'package:daw_project_manager/models/part_template.dart';
 import 'package:daw_project_manager/models/profile.dart';
 import 'package:daw_project_manager/models/scan_mode.dart';
@@ -24,6 +25,7 @@ import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/todo_template.dart';
 import 'package:daw_project_manager/repository/profile_repository.dart';
 import 'package:daw_project_manager/repository/project_repository.dart';
+import 'package:daw_project_manager/services/custom_field_merge.dart';
 import 'package:daw_project_manager/services/google_drive_sync_service.dart';
 import '../helpers/hive_test_helper.dart';
 import '../helpers/test_factories.dart';
@@ -676,6 +678,42 @@ void main() {
       expect(service.deserializeProjectForTest(data).tags, isEmpty);
     });
 
+    test('preserves custom field values', () {
+      // User data: without this every Drive restore silently empties the
+      // user's own columns (the LUFS they measured, say).
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(
+        customFields: {'lufs-id': '-14.2', 'eng-id': 'Ana'},
+      );
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.customFields, {'lufs-id': '-14.2', 'eng-id': 'Ana'});
+    });
+
+    test('survives the JSON encoding a real upload goes through', () {
+      final service = GoogleDriveSyncService();
+      final encoded = jsonEncode(service.serializeProjectForTest(
+        TestFactories.makeProject(customFields: {'lufs-id': '-9'}),
+      ));
+
+      final restored = service.deserializeProjectForTest(
+        jsonDecode(encoded) as Map<String, dynamic>,
+      );
+
+      expect(restored.customFields, {'lufs-id': '-9'});
+    });
+
+    test('reads a backup written before custom fields existed as empty', () {
+      final service = GoogleDriveSyncService();
+      final data = service.serializeProjectForTest(TestFactories.makeProject())
+        ..remove('customFields');
+
+      expect(service.deserializeProjectForTest(data).customFields, isEmpty);
+    });
+
     test('preserves the archived state (#116)', () {
       // An archived project's files are deliberately gone from filePath. Drop
       // these on restore and it comes back looking merely missing, with no
@@ -938,6 +976,7 @@ void main() {
       List<Map<String, dynamic>>? parts,
       List<String>? tags,
       Map<String, dynamic>? stats,
+      Map<String, String>? customFields,
     }) {
       return {
         'id': id,
@@ -956,8 +995,80 @@ void main() {
         'parts': parts,
         'tags': tags,
         'stats': stats,
+        'customFields': customFields,
       };
     }
+
+    test('takes newer remote custom field values when they are the only change',
+        () async {
+      // Custom fields have to count in the "did the metadata change?" check,
+      // or a LUFS value typed on another device is never merged in.
+      final local = TestFactories.makeProject(
+        id: 'measured',
+        customFields: {'lufs-id': '-16'},
+        status: 'Mixing',
+        lastModifiedAt: DateTime(2025, 1, 1),
+        updatedAt: DateTime(2025, 6, 1, 8, 0),
+      );
+      await projectRepo.projectsBox.put(local.id, local);
+
+      final service = GoogleDriveSyncService();
+      await service.mergeData(
+        remoteData: {
+          'projects': [
+            remoteProjectMap(
+              id: 'measured',
+              updatedAt: DateTime(2025, 6, 1, 12, 0),
+              customFields: {'lufs-id': '-14.2'},
+            ),
+          ],
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      expect(
+        projectRepo.projectsBox.get('measured')!.customFields,
+        {'lufs-id': '-14.2'},
+      );
+    });
+
+    test('merges remote custom field definitions into the local ones',
+        () async {
+      final box = await Hive.openBox<String>('app_settings');
+      await box.put(
+        customFieldDefinitionsStorageKey,
+        encodeCustomFieldDefinitions([
+          CustomFieldDefinition(
+              id: 'local', name: 'Mastered by', updatedAt: DateTime(2026, 1, 1)),
+        ]),
+      );
+
+      final service = GoogleDriveSyncService();
+      await service.mergeData(
+        remoteData: {
+          'projects': const [],
+          'customFieldDefinitions': [
+            CustomFieldDefinition(
+              id: 'remote',
+              name: 'LUFS',
+              type: CustomFieldType.number,
+              updatedAt: DateTime(2026, 2, 1),
+            ).toJson(),
+          ],
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      final merged =
+          decodeCustomFieldDefinitions(box.get(customFieldDefinitionsStorageKey));
+      expect(merged.map((f) => f.id), containsAll(['local', 'remote']));
+      expect(merged.firstWhere((f) => f.id == 'remote').type,
+          CustomFieldType.number);
+    });
 
     test('takes newer remote tags when they are the only change (#109)', () async {
       // Tags have to count in the "did the metadata change?" check, or a

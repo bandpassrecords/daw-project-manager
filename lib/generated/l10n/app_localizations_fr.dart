@@ -6201,4 +6201,91 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get midiTempoResetAuto => 'Revenir au tempo propre de chaque clip';
+
+  @override
+  String get releaseTracksResizeHint =>
+      'Faites glisser pour redimensionner · double-cliquez pour réinitialiser';
+
+  @override
+  String get releaseTracksMaximize => 'Afficher toute la liste des pistes';
+
+  @override
+  String get releaseTracksRestoreFiles => 'Réafficher le panneau des fichiers';
+
+  @override
+  String get columnsAndFieldsTabLabel => 'Colonnes et champs';
+
+  @override
+  String get projectsTableColumnsTitle => 'Colonnes du tableau des projets';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      'Choisissez les colonnes affichées dans le tableau des projets et faites-les glisser dans l\'ordre voulu. Le nom et les actions sont toujours affichés. S\'applique à cet appareil uniquement.';
+
+  @override
+  String get customFieldsTitle => 'Champs personnalisés';
+
+  @override
+  String get customFieldsDescription =>
+      'Ajoutez vos propres champs à chaque projet : sonie (LUFS), ingénieur de mastering, ISRC, tout ce que vous voulez. Un champ se remplit toujours sur la page du projet ; choisissez s\'il a aussi une colonne dans le tableau des projets ou dans les listes de pistes des sorties.';
+
+  @override
+  String get addCustomField => 'Ajouter un champ';
+
+  @override
+  String get editCustomField => 'Modifier le champ';
+
+  @override
+  String get customFieldName => 'Nom du champ';
+
+  @override
+  String get customFieldNameHint => 'ex. : LUFS';
+
+  @override
+  String get customFieldNameRequired => 'Saisissez un nom';
+
+  @override
+  String get customFieldNameDuplicate => 'Un champ porte déjà ce nom';
+
+  @override
+  String get customFieldType => 'Type';
+
+  @override
+  String get customFieldTypeText => 'Texte';
+
+  @override
+  String get customFieldTypeNumber => 'Nombre';
+
+  @override
+  String get customFieldTypeNumberHelp =>
+      'Les nombres sont triés par valeur : -9,8 vient après -14,2.';
+
+  @override
+  String get customFieldShowInProjectsTable =>
+      'Colonne dans le tableau des projets';
+
+  @override
+  String get customFieldShowInReleaseTracks =>
+      'Colonne dans les listes de pistes des sorties';
+
+  @override
+  String get customFieldProjectPageOnly => 'Page du projet uniquement';
+
+  @override
+  String get noCustomFieldsYet => 'Aucun champ personnalisé pour le moment.';
+
+  @override
+  String get deleteCustomFieldTitle => 'Supprimer le champ ?';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '« $name » et les valeurs saisies n’apparaîtront plus dans aucun projet, tableau ni recherche.';
+  }
+
+  @override
+  String get customFieldInvalidNumber => 'Saisissez un nombre';
+
+  @override
+  String get customFieldsProjectPageHint =>
+      'Vos propres champs — ajoutez-les ou modifiez-les dans Paramètres > Colonnes et champs.';
 }

@@ -6130,4 +6130,90 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get midiTempoResetAuto => 'Back to each clip\'s own tempo';
+
+  @override
+  String get releaseTracksResizeHint =>
+      'Drag to resize · double-click to reset';
+
+  @override
+  String get releaseTracksMaximize => 'Show the whole tracklist';
+
+  @override
+  String get releaseTracksRestoreFiles => 'Show the files panel again';
+
+  @override
+  String get columnsAndFieldsTabLabel => 'Columns & fields';
+
+  @override
+  String get projectsTableColumnsTitle => 'Projects table columns';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      'Choose which columns the projects table shows and drag them into the order you want. Name and actions are always shown. Applies to this device only.';
+
+  @override
+  String get customFieldsTitle => 'Custom fields';
+
+  @override
+  String get customFieldsDescription =>
+      'Add your own fields to every project — loudness (LUFS), mastering engineer, ISRC, anything. A field can always be filled in on the project page; choose whether it also gets a column in the projects table or in release tracklists.';
+
+  @override
+  String get addCustomField => 'Add field';
+
+  @override
+  String get editCustomField => 'Edit field';
+
+  @override
+  String get customFieldName => 'Field name';
+
+  @override
+  String get customFieldNameHint => 'e.g. LUFS';
+
+  @override
+  String get customFieldNameRequired => 'Enter a name';
+
+  @override
+  String get customFieldNameDuplicate =>
+      'A field with this name already exists';
+
+  @override
+  String get customFieldType => 'Type';
+
+  @override
+  String get customFieldTypeText => 'Text';
+
+  @override
+  String get customFieldTypeNumber => 'Number';
+
+  @override
+  String get customFieldTypeNumberHelp =>
+      'Numbers sort by value, so -9.8 comes after -14.2.';
+
+  @override
+  String get customFieldShowInProjectsTable => 'Column in the projects table';
+
+  @override
+  String get customFieldShowInReleaseTracks => 'Column in release tracklists';
+
+  @override
+  String get customFieldProjectPageOnly => 'Project page only';
+
+  @override
+  String get noCustomFieldsYet => 'No custom fields yet.';
+
+  @override
+  String get deleteCustomFieldTitle => 'Delete field?';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '\"$name\" and the values entered in it will no longer appear on any project, table or search.';
+  }
+
+  @override
+  String get customFieldInvalidNumber => 'Enter a number';
+
+  @override
+  String get customFieldsProjectPageHint =>
+      'Your own fields — add or change them in Settings > Columns & fields.';
 }

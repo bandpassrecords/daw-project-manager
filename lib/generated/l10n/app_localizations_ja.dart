@@ -5978,4 +5978,87 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiTempoResetAuto => '各クリップ本来のテンポに戻す';
+
+  @override
+  String get releaseTracksResizeHint => 'ドラッグでサイズ変更 · ダブルクリックでリセット';
+
+  @override
+  String get releaseTracksMaximize => 'トラックリスト全体を表示';
+
+  @override
+  String get releaseTracksRestoreFiles => 'ファイルパネルを再表示';
+
+  @override
+  String get columnsAndFieldsTabLabel => '列とフィールド';
+
+  @override
+  String get projectsTableColumnsTitle => 'プロジェクト表の列';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      'プロジェクト表に表示する列を選び、ドラッグして並べ替えます。名前と操作は常に表示されます。このデバイスのみに適用されます。';
+
+  @override
+  String get customFieldsTitle => 'カスタムフィールド';
+
+  @override
+  String get customFieldsDescription =>
+      'すべてのプロジェクトに独自のフィールドを追加できます（ラウドネス（LUFS）、マスタリングエンジニア、ISRC など）。フィールドは常にプロジェクトページで入力でき、プロジェクト表やリリースのトラックリストに列として表示するかも選べます。';
+
+  @override
+  String get addCustomField => 'フィールドを追加';
+
+  @override
+  String get editCustomField => 'フィールドを編集';
+
+  @override
+  String get customFieldName => 'フィールド名';
+
+  @override
+  String get customFieldNameHint => '例: LUFS';
+
+  @override
+  String get customFieldNameRequired => '名前を入力してください';
+
+  @override
+  String get customFieldNameDuplicate => 'この名前のフィールドは既に存在します';
+
+  @override
+  String get customFieldType => '種類';
+
+  @override
+  String get customFieldTypeText => 'テキスト';
+
+  @override
+  String get customFieldTypeNumber => '数値';
+
+  @override
+  String get customFieldTypeNumberHelp => '数値は値で並べ替えられます（-9.8 は -14.2 の後）。';
+
+  @override
+  String get customFieldShowInProjectsTable => 'プロジェクト表に列を表示';
+
+  @override
+  String get customFieldShowInReleaseTracks => 'リリースのトラックリストに列を表示';
+
+  @override
+  String get customFieldProjectPageOnly => 'プロジェクトページのみ';
+
+  @override
+  String get noCustomFieldsYet => 'カスタムフィールドはまだありません。';
+
+  @override
+  String get deleteCustomFieldTitle => 'フィールドを削除しますか？';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '「$name」と入力済みの値は、プロジェクト・表・検索に表示されなくなります。';
+  }
+
+  @override
+  String get customFieldInvalidNumber => '数値を入力してください';
+
+  @override
+  String get customFieldsProjectPageHint =>
+      '独自のフィールドです。設定 > 列とフィールド で追加・変更できます。';
 }

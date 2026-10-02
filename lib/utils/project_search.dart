@@ -11,10 +11,13 @@ import '../models/project_part.dart';
 ///
 /// [includeTags] is false while tags are switched off: a hidden tag must not
 /// make a project match, or the user sees a result with nothing on screen
-/// explaining why.
+/// explaining why. [customFieldIds] are the custom fields that still exist —
+/// a deleted field's values stay on the project but nothing shows them, so
+/// they mustn't make it match either.
 Iterable<String?> projectSearchFields(
   MusicProject p, {
   required bool includeTags,
+  Iterable<String> customFieldIds = const [],
 }) sync* {
   yield p.displayName;
   yield p.notes;
@@ -27,6 +30,10 @@ Iterable<String?> projectSearchFields(
   if (p.parts.isNotEmpty) yield ProjectPart.searchableText(p.parts);
   yield* p.markers.map((m) => m.name);
   if (includeTags) yield* p.tags;
+  // Custom field values, one entry each like tags.
+  for (final id in customFieldIds) {
+    yield p.customFields[id];
+  }
   // So "serum" finds every song that loads it.
   final plugins = p.stats?.plugins;
   if (plugins != null) yield* plugins;

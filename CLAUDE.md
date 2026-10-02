@@ -131,6 +131,13 @@ Instructions for AI assistants working on this codebase.
 - The grid's Name column sets `cellPadding: EdgeInsets.zero` so the bleed can reach the cell's border and span the full row height; everything else in that cell re-applies `_kNameCellInset` itself.
 - In the grid, `ProjectCoverBleed` is anchored to the Name cell's **right** border and fades leftwards under the name (`_kNameCellBleedSide`); the name and its trailing badges stop before the solid square. It bleeds cover art, or — when there is none — the chosen accent colour (with its icon) at `kAccentBleedOpacity`. A project nobody decorated still draws nothing. Card covers (`ProjectCardGrid`) are masked by `cardCoverFade` so the action buttons along their foot stay visible.
 
+### Custom fields and table columns: definitions sync, column layout does not
+- A custom field (Settings > Columns & fields) is a `CustomFieldDefinition` (`lib/models/custom_field.dart`); a project's values live in `MusicProject.customFields`, keyed by the definition's **id** — renaming keeps the values. Values are stored as text even for number fields; parse with `parseCustomNumber` and sort with `compareCustomFieldValues` (`lib/utils/custom_fields.dart`), never `toString().compareTo`, or -9.8 sorts before -14.2.
+- Definitions *and* values are user data (Drive + local backup). Definitions are merged by `mergeCustomFieldDefinitions` (`lib/services/custom_field_merge.dart`), shared by both. Deletion is a **tombstone** (`deletedAt` + bumped `updatedAt`), never a removal — the union merge would otherwise resurrect it. UI reads `activeCustomFieldsProvider`, which drops tombstones; only merge code should see `customFieldDefinitionsProvider`'s full list. A deleted field's values stay on the projects, dormant.
+- Which built-in projects-table columns show, and their order, is `projectsTableColumnsProvider` — **device-local** (`settings` box), like the view mode. Hidden built-ins stay in the column list with `hide: true` so every row's cells still match a column; custom columns are appended after the built-ins by `arrangeTableColumns`. A grid whose column set can change must carry `encodeColumnLayout` / `customFieldColumnsSignature` in its key — Trina's columns are fixed once mounted.
+- Custom field columns are built by `customFieldTrinaColumn` (`lib/ui/widgets/custom_field_column.dart`), shared by the projects table and `ReleaseTracksTable`. The project detail page always shows every active field (`CustomFieldsEditor`); the two `showIn…` flags only add columns.
+- `MusicProject.customFields` is `@HiveField(49)`, next to project stats at 48 — the two were built on parallel branches that agreed the indices up front, which is the way to avoid the duplicated-index trap above.
+
 ### The dashboard has two views and exactly one filtered list
 - The desktop projects tab draws either the `TrinaGrid` table or `ProjectCardGrid` (`lib/ui/widgets/project_card_grid.dart`, #111). Both are handed the **same** `projectsProvider` output — the toggle in the filter bar chooses how that list is drawn, never what is in it. Never filter, search or re-sort inside a view; that belongs in `projectsProvider` so both views can't disagree.
 - **What is in the library** (version stacks collapsed, disabled folders and stale release-preserved projects dropped) is `buildLibraryProjects` in `lib/utils/library_projects.dart`, behind `libraryProjectsProvider`. `projectsProvider` applies display filters on top of it, and the dashboard's "Projects: N (M hidden)" counts it directly. Never re-derive that set elsewhere — a hand-copied version of it is how the counts drifted from the list.
@@ -206,6 +213,8 @@ Instructions for AI assistants working on this codebase.
 | Theme specs, builder and providers | `lib/providers/theme_provider.dart` |
 | Theme spec model (`CustomTheme`) | `lib/models/custom_theme.dart` |
 | Theme-derived values (grid colors, vivid-accent test) | `lib/utils/theme_derivations.dart` |
+| Custom fields: model, merge, parsing/sorting/column layout | `lib/models/custom_field.dart`, `lib/services/custom_field_merge.dart`, `lib/utils/custom_fields.dart` |
+| Settings > Columns & fields | `lib/ui/widgets/columns_and_fields_settings.dart`, `lib/ui/dialogs/custom_field_dialog.dart` |
 | Per-project accent color + icon resolution | `lib/utils/project_visuals.dart` |
 | Project cover art tile + grid-row bleed | `lib/ui/widgets/project_cover_avatar.dart` |
 | Project appearance editor (cover, color, icon) | `lib/ui/dialogs/project_appearance_dialog.dart` |

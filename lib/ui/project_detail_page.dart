@@ -54,6 +54,7 @@ import '../services/scanner_service.dart';
 import 'dialogs/attachment_edit_dialog.dart';
 import 'dialogs/save_as_template_dialog.dart';
 import 'dialogs/stack_version_picker_dialog.dart';
+import 'widgets/custom_fields_editor.dart';
 import 'widgets/project_detail_action_bar.dart';
 import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/conversion_progress_dialog.dart';
@@ -189,6 +190,24 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     if (identical(tags, project.tags)) return;
     await repo.updateProject(
       project.copyWith(tags: tags, updatedAt: DateTime.now()),
+    );
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
+
+  // --- Custom fields -------------------------------------------------------
+  //
+  // Saved directly, like tags, reading the project fresh from the box so the
+  // debounced autosave and this can't overwrite each other with stale copies.
+
+  Future<void> _setCustomField(
+      ProjectRepository repo, String fieldId, String value) async {
+    final project = repo.projectsBox.get(widget.projectId);
+    if (project == null) return;
+    if ((project.customFields[fieldId] ?? '') == value) return;
+    await repo.updateProject(
+      project
+          .setCustomFieldValue(fieldId, value)
+          .copyWith(updatedAt: DateTime.now()),
     );
     if (mounted) ref.invalidate(allProjectsStreamProvider);
   }
@@ -1713,6 +1732,28 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                               onAdd: (raw) => _addTag(repo, raw),
                               onRemove: (tag) => _removeTag(repo, tag),
                             ),
+                            ],
+                            // The user's own fields (Settings > Columns &
+                            // fields). Always editable here, whether or not
+                            // they also have a column somewhere.
+                            if (ref.watch(activeCustomFieldsProvider).isNotEmpty) ...[
+                              const SizedBox(height: 20),
+                              Text(
+                                l10n.customFieldsTitle,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.customFieldsProjectPageHint,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              const SizedBox(height: 12),
+                              CustomFieldsEditor(
+                                fields: ref.watch(activeCustomFieldsProvider),
+                                values: updatedProject.customFields,
+                                onChanged: (id, value) =>
+                                    _setCustomField(repo, id, value),
+                              ),
                             ],
 
                             const SizedBox(height: 24),

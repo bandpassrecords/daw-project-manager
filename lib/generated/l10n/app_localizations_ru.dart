@@ -6160,4 +6160,89 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiTempoResetAuto => 'Вернуть собственный темп каждого клипа';
+
+  @override
+  String get releaseTracksResizeHint =>
+      'Перетащите, чтобы изменить размер · двойной щелчок — сброс';
+
+  @override
+  String get releaseTracksMaximize => 'Показать весь трек-лист';
+
+  @override
+  String get releaseTracksRestoreFiles => 'Снова показать панель файлов';
+
+  @override
+  String get columnsAndFieldsTabLabel => 'Столбцы и поля';
+
+  @override
+  String get projectsTableColumnsTitle => 'Столбцы таблицы проектов';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      'Выберите, какие столбцы показывает таблица проектов, и перетащите их в нужном порядке. Название и действия показываются всегда. Только для этого устройства.';
+
+  @override
+  String get customFieldsTitle => 'Свои поля';
+
+  @override
+  String get customFieldsDescription =>
+      'Добавьте к каждому проекту свои поля — громкость (LUFS), инженер мастеринга, ISRC, что угодно. Поле всегда можно заполнить на странице проекта; выберите, будет ли у него ещё и столбец в таблице проектов или в трек-листах релизов.';
+
+  @override
+  String get addCustomField => 'Добавить поле';
+
+  @override
+  String get editCustomField => 'Изменить поле';
+
+  @override
+  String get customFieldName => 'Название поля';
+
+  @override
+  String get customFieldNameHint => 'например, LUFS';
+
+  @override
+  String get customFieldNameRequired => 'Введите название';
+
+  @override
+  String get customFieldNameDuplicate => 'Поле с таким названием уже есть';
+
+  @override
+  String get customFieldType => 'Тип';
+
+  @override
+  String get customFieldTypeText => 'Текст';
+
+  @override
+  String get customFieldTypeNumber => 'Число';
+
+  @override
+  String get customFieldTypeNumberHelp =>
+      'Числа сортируются по значению: -9,8 идёт после -14,2.';
+
+  @override
+  String get customFieldShowInProjectsTable => 'Столбец в таблице проектов';
+
+  @override
+  String get customFieldShowInReleaseTracks => 'Столбец в трек-листах релизов';
+
+  @override
+  String get customFieldProjectPageOnly => 'Только на странице проекта';
+
+  @override
+  String get noCustomFieldsYet => 'Своих полей пока нет.';
+
+  @override
+  String get deleteCustomFieldTitle => 'Удалить поле?';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '«$name» и введённые значения больше не будут отображаться в проектах, таблицах и поиске.';
+  }
+
+  @override
+  String get customFieldInvalidNumber => 'Введите число';
+
+  @override
+  String get customFieldsProjectPageHint =>
+      'Ваши собственные поля — добавить или изменить можно в Настройки > Столбцы и поля.';
 }

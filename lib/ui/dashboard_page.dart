@@ -107,6 +107,9 @@ import '../providers/providers.dart';
 import '../repository/project_repository.dart';
 import '../services/google_drive_sync_service.dart' show GoogleDriveSyncService;
 import '../utils/playback_todo_utils.dart';
+import '../utils/custom_fields.dart';
+import 'widgets/custom_field_column.dart';
+import '../models/custom_field.dart';
 import 'package:uuid/uuid.dart';
 
 /// App version embedded at build-time (CI passes `--dart-define=APP_VERSION=x.y.z`).
@@ -6459,11 +6462,16 @@ void applySortSnapshot(
   String field,
   TrinaColumnSort direction, {
   bool excludeGroupsFromSort = false,
+  int Function(dynamic a, dynamic b)? compareValues,
 }) {
   if (direction.isNone) return;
   int compare(TrinaRow a, TrinaRow b) {
     final av = a.cells[field]?.value;
     final bv = b.cells[field]?.value;
+    // A column whose type sorts differently from text (a number custom
+    // field) passes its own comparison, so the pre-sorted first frame and
+    // the grid's own sort agree.
+    if (compareValues != null) return compareValues(av, bv);
     if (av == null || bv == null) {
       return av == bv ? 0 : (av == null ? -1 : 1);
     }
@@ -6678,6 +6686,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
   String? _lastKnownSortField;
   TrinaColumnSort? _lastKnownSortDirection;
 
+  /// The custom fields that have a column in this table, as of the last
+  /// build. Rows get exactly these cells; the grid's key includes their
+  /// signature, so a change remounts it with rows rebuilt to match.
+  List<CustomFieldDefinition> _tableCustomFields = const [];
+
   @override
   void initState() {
     super.initState();
@@ -6840,6 +6853,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       row.cells['tags']?.value = updated.tags.join(', ');
       row.cells['lastModified']?.value = updated.lastModifiedAt;
       row.cells['deadline']?.value = updated.deadlineStatus ?? '';
+      for (final f in _tableCustomFields) {
+        row.cells[customFieldColumnField(f.id)]?.value =
+            customFieldValue(updated, f);
+      }
       // Update the launch cell's own value so TrinaGrid re-renders the action
       // column (play button) when preview song data changes.
       row.cells['launch']?.value =
@@ -7169,6 +7186,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         'tags': TrinaCell(value: p.tags.join(', ')),
         'lastModified': TrinaCell(value: p.lastModifiedAt),
         'deadline': TrinaCell(value: p.deadlineStatus ?? ''),
+        for (final f in _tableCustomFields)
+          customFieldColumnField(f.id): TrinaCell(value: customFieldValue(p, f)),
         'launch': TrinaCell(value: ''),
         'data': TrinaCell(value: p),
       },
@@ -7279,6 +7298,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
             'tags': TrinaCell(value: ''),
             'lastModified': TrinaCell(value: latestModified),
             'deadline': TrinaCell(value: ''),
+            for (final f in _tableCustomFields)
+              customFieldColumnField(f.id): TrinaCell(value: ''),
             'launch': TrinaCell(value: ''),
             'data': TrinaCell(value: null),
           },
@@ -7302,11 +7323,18 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     final sortField = _lastKnownSortField;
     final sortDirection = _lastKnownSortDirection;
     if (sortField != null && sortDirection != null) {
+      CustomFieldDefinition? sortedField;
+      for (final f in _tableCustomFields) {
+        if (customFieldColumnField(f.id) == sortField) sortedField = f;
+      }
       applySortSnapshot(
         rows,
         sortField,
         sortDirection,
         excludeGroupsFromSort: ref.read(excludeSmartFoldersFromSortProvider),
+        compareValues: sortedField == null
+            ? null
+            : (a, b) => compareCustomFieldValues(sortedField!.type, a, b),
       );
     }
 
@@ -7450,6 +7478,11 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         });
       }
     });
+    _tableCustomFields = [
+      for (final f in ref.watch(activeCustomFieldsProvider))
+        if (f.showInProjectsTable) f,
+    ];
+    final columnLayout = ref.watch(projectsTableColumnsProvider);
     final columns = [
       TrinaColumn(
         title: '',
@@ -8363,6 +8396,25 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       ),
     ]; // <-- Semicolon final do array de colunas
 
+    // Settings > Columns & fields: built-ins in the user's order, the hidden
+    // ones kept but hidden (so every row's cells still match a column), then
+    // a column per custom field that asked for one.
+    final visibleBuiltIns = visibleBuiltInColumns(
+      columnLayout,
+      tagsEnabled: ref.watch(tagsEnabledProvider),
+    );
+    for (final column in columns) {
+      if (kProjectsTableBuiltInColumns.contains(column.field)) {
+        column.hide = !visibleBuiltIns.contains(column.field);
+      }
+    }
+    final arrangedColumns = arrangeTableColumns<TrinaColumn>(
+      columns,
+      (c) => c.field,
+      [for (final s in columnLayout) s.id],
+      [for (final f in _tableCustomFields) customFieldTrinaColumn(f)],
+    );
+
     // Watched (not read) so toggling it rebuilds this widget and — via the
     // grid's key below — remounts the grid, reusing the same restore path
     // that already survives a theme/locale remount to reapply expand/sort
@@ -8458,10 +8510,13 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         // themeSpec.identityKey rather than just the theme id: editing a user
         // theme's colors keeps the same id, and TrinaGrid caches its renderer
         // colors, so the id alone would leave the old palette on screen.
-        'trina_grid_${l10n.localeName}_${themeSpec.identityKey}_${excludeFoldersFromSort}_${mergeFoldersByName}_${alwaysShowSmartFolders}_${ref.watch(nameDateStrippingProvider)}_${ref.watch(tagsEnabledProvider)}',
+        'trina_grid_${l10n.localeName}_${themeSpec.identityKey}_${excludeFoldersFromSort}_${mergeFoldersByName}_${alwaysShowSmartFolders}_${ref.watch(nameDateStrippingProvider)}_${ref.watch(tagsEnabledProvider)}'
+        // Columns are fixed once a grid mounts: a changed layout or custom
+        // field set needs a fresh one.
+        '_${encodeColumnLayout(columnLayout)}_${customFieldColumnsSignature(_tableCustomFields)}',
       ),
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
-      columns: columns,
+      columns: arrangedColumns,
       rows: initialRows,
       // Ctrl/cmd- and shift-click anywhere on a row extend the checkbox
       // selection, so building a multi-selection doesn't mean aiming at the

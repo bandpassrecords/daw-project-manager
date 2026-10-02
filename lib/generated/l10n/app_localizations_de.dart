@@ -6170,4 +6170,90 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiTempoResetAuto => 'Zurück zum eigenen Tempo jedes Clips';
+
+  @override
+  String get releaseTracksResizeHint =>
+      'Ziehen zum Ändern der Größe · Doppelklick zum Zurücksetzen';
+
+  @override
+  String get releaseTracksMaximize => 'Ganze Trackliste anzeigen';
+
+  @override
+  String get releaseTracksRestoreFiles => 'Dateibereich wieder anzeigen';
+
+  @override
+  String get columnsAndFieldsTabLabel => 'Spalten & Felder';
+
+  @override
+  String get projectsTableColumnsTitle => 'Spalten der Projekttabelle';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      'Wähle, welche Spalten die Projekttabelle zeigt, und ziehe sie in die gewünschte Reihenfolge. Name und Aktionen werden immer angezeigt. Gilt nur für dieses Gerät.';
+
+  @override
+  String get customFieldsTitle => 'Eigene Felder';
+
+  @override
+  String get customFieldsDescription =>
+      'Füge jedem Projekt eigene Felder hinzu – Lautheit (LUFS), Mastering-Engineer, ISRC, was du willst. Ein Feld lässt sich immer auf der Projektseite ausfüllen; wähle, ob es zusätzlich eine Spalte in der Projekttabelle oder in Release-Tracklisten bekommt.';
+
+  @override
+  String get addCustomField => 'Feld hinzufügen';
+
+  @override
+  String get editCustomField => 'Feld bearbeiten';
+
+  @override
+  String get customFieldName => 'Feldname';
+
+  @override
+  String get customFieldNameHint => 'z. B. LUFS';
+
+  @override
+  String get customFieldNameRequired => 'Gib einen Namen ein';
+
+  @override
+  String get customFieldNameDuplicate =>
+      'Ein Feld mit diesem Namen gibt es bereits';
+
+  @override
+  String get customFieldType => 'Typ';
+
+  @override
+  String get customFieldTypeText => 'Text';
+
+  @override
+  String get customFieldTypeNumber => 'Zahl';
+
+  @override
+  String get customFieldTypeNumberHelp =>
+      'Zahlen werden nach Wert sortiert, -9,8 kommt also nach -14,2.';
+
+  @override
+  String get customFieldShowInProjectsTable => 'Spalte in der Projekttabelle';
+
+  @override
+  String get customFieldShowInReleaseTracks => 'Spalte in Release-Tracklisten';
+
+  @override
+  String get customFieldProjectPageOnly => 'Nur Projektseite';
+
+  @override
+  String get noCustomFieldsYet => 'Noch keine eigenen Felder.';
+
+  @override
+  String get deleteCustomFieldTitle => 'Feld löschen?';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '„$name“ und die eingetragenen Werte erscheinen dann in keinem Projekt, keiner Tabelle und keiner Suche mehr.';
+  }
+
+  @override
+  String get customFieldInvalidNumber => 'Gib eine Zahl ein';
+
+  @override
+  String get customFieldsProjectPageHint =>
+      'Deine eigenen Felder – hinzufügen oder ändern unter Einstellungen > Spalten & Felder.';
 }

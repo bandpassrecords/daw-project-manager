@@ -6184,4 +6184,92 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get midiTempoResetAuto => 'Volver al tempo propio de cada clip';
+
+  @override
+  String get releaseTracksResizeHint =>
+      'Arrastra para cambiar el tamaño · doble clic para restablecer';
+
+  @override
+  String get releaseTracksMaximize => 'Mostrar toda la lista de pistas';
+
+  @override
+  String get releaseTracksRestoreFiles =>
+      'Volver a mostrar el panel de archivos';
+
+  @override
+  String get columnsAndFieldsTabLabel => 'Columnas y campos';
+
+  @override
+  String get projectsTableColumnsTitle => 'Columnas de la tabla de proyectos';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      'Elige qué columnas muestra la tabla de proyectos y arrástralas al orden que quieras. El nombre y las acciones siempre se muestran. Solo se aplica a este dispositivo.';
+
+  @override
+  String get customFieldsTitle => 'Campos personalizados';
+
+  @override
+  String get customFieldsDescription =>
+      'Añade tus propios campos a cada proyecto: sonoridad (LUFS), ingeniero de mastering, ISRC, lo que quieras. Un campo siempre se puede rellenar en la página del proyecto; elige si además tiene una columna en la tabla de proyectos o en las listas de pistas de los lanzamientos.';
+
+  @override
+  String get addCustomField => 'Añadir campo';
+
+  @override
+  String get editCustomField => 'Editar campo';
+
+  @override
+  String get customFieldName => 'Nombre del campo';
+
+  @override
+  String get customFieldNameHint => 'p. ej., LUFS';
+
+  @override
+  String get customFieldNameRequired => 'Escribe un nombre';
+
+  @override
+  String get customFieldNameDuplicate => 'Ya existe un campo con este nombre';
+
+  @override
+  String get customFieldType => 'Tipo';
+
+  @override
+  String get customFieldTypeText => 'Texto';
+
+  @override
+  String get customFieldTypeNumber => 'Número';
+
+  @override
+  String get customFieldTypeNumberHelp =>
+      'Los números se ordenan por valor, así que -9,8 va después de -14,2.';
+
+  @override
+  String get customFieldShowInProjectsTable =>
+      'Columna en la tabla de proyectos';
+
+  @override
+  String get customFieldShowInReleaseTracks =>
+      'Columna en las listas de pistas de lanzamientos';
+
+  @override
+  String get customFieldProjectPageOnly => 'Solo en la página del proyecto';
+
+  @override
+  String get noCustomFieldsYet => 'Todavía no hay campos personalizados.';
+
+  @override
+  String get deleteCustomFieldTitle => '¿Eliminar campo?';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '\"$name\" y los valores introducidos dejarán de aparecer en proyectos, tablas y búsquedas.';
+  }
+
+  @override
+  String get customFieldInvalidNumber => 'Escribe un número';
+
+  @override
+  String get customFieldsProjectPageHint =>
+      'Tus propios campos: añádelos o cámbialos en Ajustes > Columnas y campos.';
 }
