@@ -78,6 +78,7 @@ void main() {
     String? Function(int)? detailPrefixOf,
     bool openable = false,
     bool projectActions = false,
+    bool Function(int)? canOpenProjectOf,
   }) =>
       MaterialApp(
         home: Scaffold(
@@ -101,6 +102,7 @@ void main() {
               onRemove: collectionActions ? removed.add : null,
               onOpen: openable ? opened.add : null,
               onOpenProject: projectActions ? projectsOpened.add : null,
+              canOpenProjectOf: canOpenProjectOf,
               expandAllUpTo: expandAllUpTo,
               dragHandleBuilder: draggable
                   ? (context, index, handle) =>
@@ -357,6 +359,15 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Open project'));
     await tester.pumpAndSettle();
+    expect(projectsOpened, [0]);
+  });
+
+  testWidgets('a clip with no project (imported from a file) offers no Open project',
+      (tester) async {
+    await tester.pumpWidget(wrap([clip('A'), clip('B')],
+        projectActions: true, canOpenProjectOf: (i) => i == 0));
+    expect(find.byTooltip('Open project'), findsOneWidget);
+    await tester.tap(find.byTooltip('Open project'));
     expect(projectsOpened, [0]);
   });
 }

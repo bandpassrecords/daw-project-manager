@@ -51,6 +51,21 @@ void main() {
       expect(item.copyWith(voice: 'pad').musicalKey, 'F# minor');
     });
 
+    test('an imported item keeps the file it came from', () {
+      final item = MidiCollectionItem(
+        id: 'i9',
+        clip: _clip('Hook', 60),
+        addedAt: DateTime.utc(2026, 10, 2),
+        sourceFileName: 'Hook.mid',
+      );
+      final back = MidiCollectionItem.tryParse(jsonDecode(jsonEncode(item.toJson())))!;
+      expect(back.sourceFileName, 'Hook.mid');
+      expect(back.sourceProjectId, isNull);
+      expect(back.copyWith(voice: 'pad').sourceFileName, 'Hook.mid');
+      expect(_item('i1', _clip('Line', 36)).toJson().containsKey('sourceFile'),
+          isFalse);
+    });
+
     test('an item from before keys were kept reads with no key', () {
       final json = _item('i1', _clip('Line', 36)).toJson()..remove('key');
       expect(MidiCollectionItem.tryParse(json)!.musicalKey, isNull);

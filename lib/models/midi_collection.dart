@@ -15,6 +15,7 @@ class MidiCollectionItem {
     required this.addedAt,
     this.sourceProjectId,
     this.sourceProjectName,
+    this.sourceFileName,
     this.bpm,
     this.musicalKey,
     this.voice,
@@ -30,6 +31,10 @@ class MidiCollectionItem {
   /// That project's name when the clip was copied, so the collection can
   /// still say where it came from after the project is gone.
   final String? sourceProjectName;
+
+  /// For a clip imported from a `.mid` file rather than copied from a
+  /// project: that file's name. Such an item has no source project.
+  final String? sourceFileName;
 
   /// The source project's tempo at copy time — what the clip previews and
   /// exports at unless the user picks another.
@@ -50,6 +55,7 @@ class MidiCollectionItem {
         addedAt: addedAt,
         sourceProjectId: sourceProjectId,
         sourceProjectName: sourceProjectName,
+        sourceFileName: sourceFileName,
         bpm: bpm,
         musicalKey: musicalKey,
         voice: clearVoice ? null : (voice ?? this.voice),
@@ -61,6 +67,7 @@ class MidiCollectionItem {
         'addedAt': addedAt.toIso8601String(),
         if (sourceProjectId != null) 'sourceProjectId': sourceProjectId,
         if (sourceProjectName != null) 'sourceProjectName': sourceProjectName,
+        if (sourceFileName != null) 'sourceFile': sourceFileName,
         if (bpm != null) 'bpm': bpm,
         if (musicalKey != null) 'key': musicalKey,
         if (voice != null) 'voice': voice,
@@ -78,6 +85,7 @@ class MidiCollectionItem {
       addedAt: addedAt,
       sourceProjectId: json['sourceProjectId'] as String?,
       sourceProjectName: json['sourceProjectName'] as String?,
+      sourceFileName: json['sourceFile'] as String?,
       bpm: (json['bpm'] as num?)?.toDouble(),
       musicalKey: json['key'] as String?,
       voice: json['voice'] as String?,

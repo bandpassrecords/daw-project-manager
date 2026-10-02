@@ -2,9 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
+import 'package:daw_project_manager/models/midi_clip.dart';
+import 'package:daw_project_manager/services/midi/midi_file_import.dart';
 import 'package:daw_project_manager/ui/midi_collection_actions.dart';
 
 void main() {
+  test('imported clips become items from the file, with its tempo and key', () {
+    const clip = MidiClip(name: 'Hook', ppq: 480, lengthTicks: 1920, notes: [
+      MidiNote(startTick: 0, lengthTicks: 480, pitch: 60, velocity: 100),
+    ]);
+    final items = collectionItemsForImport(const ImportedMidiFile(
+      fileName: 'Hook.mid',
+      clips: [clip, clip],
+      bpm: 128,
+      musicalKey: 'A minor',
+    ));
+    expect(items, hasLength(2));
+    expect(items.map((i) => i.id).toSet(), hasLength(2), reason: 'own ids');
+    for (final i in items) {
+      expect(i.sourceFileName, 'Hook.mid');
+      expect(i.sourceProjectId, isNull);
+      expect(i.bpm, 128);
+      expect(i.musicalKey, 'A minor');
+    }
+  });
+
   late List<String?> results;
 
   setUp(() => results = []);

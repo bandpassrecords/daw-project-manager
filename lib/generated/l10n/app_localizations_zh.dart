@@ -6146,4 +6146,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiLibraryTempoUnknown => '速度未知';
+
+  @override
+  String get midiImportFiles => '导入 MIDI 文件';
+
+  @override
+  String get midiImportDialogTitle => '选择要导入的 MIDI 文件';
+
+  @override
+  String midiImportSkipped(String files) {
+    return '未导入（不是 MIDI 文件或其中没有音符）：$files';
+  }
 }

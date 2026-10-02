@@ -104,3 +104,19 @@ int _wrap(int fifths) {
   }
   return f;
 }
+
+const _majorNames = [
+  'Cb', 'Gb', 'Db', 'Ab', 'Eb', 'Bb', 'F', //
+  'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#',
+];
+const _minorNames = [
+  'Ab', 'Eb', 'Bb', 'F', 'C', 'G', 'D', //
+  'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#',
+];
+
+/// [signature] as a key name — "A minor", "Eb major" — the way the app
+/// writes keys elsewhere, for a key read out of an imported `.mid` file.
+String keyNameOf(MidiKeySignature signature) {
+  final i = signature.sharps.clamp(-7, 7) + 7;
+  return signature.minor ? '${_minorNames[i]} minor' : '${_majorNames[i]} major';
+}

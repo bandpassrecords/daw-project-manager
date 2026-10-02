@@ -88,6 +88,7 @@ class MidiClipList extends StatefulWidget {
     this.onRemove,
     this.onOpen,
     this.onOpenProject,
+    this.canOpenProjectOf,
     this.playingIndex,
     this.preparingIndex,
     this.dragHandleBuilder,
@@ -125,6 +126,14 @@ class MidiClipList extends StatefulWidget {
   /// Opens the project clip [index] came from. Null hides it — on that
   /// project's own page there is nowhere to go.
   final void Function(int index)? onOpenProject;
+
+  /// Whether clip [index] has a project to open — false for a clip imported
+  /// from a file. Null means every clip has one.
+  final bool Function(int index)? canOpenProjectOf;
+
+  /// Whether row [index] offers "Open project".
+  bool canOpenProject(int index) =>
+      onOpenProject != null && (canOpenProjectOf?.call(index) ?? true);
 
   /// The voice clip [index] plays with (inferred or picked).
   final SynthVoice Function(int index) voiceOf;
@@ -389,7 +398,7 @@ class _MidiClipListState extends State<MidiClipList> {
                 onPressed: () => widget.onShare(index, _rectOf(buttonContext)),
               ),
             ),
-            if (widget.onOpenProject != null)
+            if (widget.canOpenProject(index))
               IconButton(
                 tooltip: labels.openProject,
                 icon: const Icon(Icons.assignment),
@@ -466,7 +475,7 @@ class _MidiClipListState extends State<MidiClipList> {
             ),
           ),
           PopupMenuItem(value: _RowAction.share, child: Text(labels.share)),
-          if (widget.onOpenProject != null)
+          if (widget.canOpenProject(index))
             PopupMenuItem(
               value: _RowAction.openProject,
               child: Text(labels.openProject),

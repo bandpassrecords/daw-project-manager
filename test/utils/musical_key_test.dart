@@ -56,6 +56,18 @@ void main() {
       expect(keySignatureOf('Fb major'), major(4), reason: 'as E major');
     });
 
+    test('keyNameOf names every signature, and reads back the same', () {
+      expect(keyNameOf(minor(0)), 'A minor');
+      expect(keyNameOf(major(-3)), 'Eb major');
+      expect(keyNameOf(minor(3)), 'F# minor');
+      for (var s = -7; s <= 7; s++) {
+        for (final m in [true, false]) {
+          final sig = MidiKeySignature(s, minor: m);
+          expect(keySignatureOf(keyNameOf(sig)), sig, reason: '$sig');
+        }
+      }
+    });
+
     test('anything else is no key', () {
       expect(keySignatureOf(null), isNull);
       expect(keySignatureOf(''), isNull);

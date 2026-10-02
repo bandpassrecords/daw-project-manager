@@ -337,6 +337,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
                   item.clip.name,
                   item.clip.trackName,
                   item.sourceProjectName,
+                  item.sourceFileName,
                 ], q)) &&
             (_voiceFilter == null || _voiceOfItem(item) == _voiceFilter))
           _Entry(
@@ -346,7 +347,8 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
             musicalKey: item.musicalKey,
             voice: _voiceOfItem(item),
             projectId: item.sourceProjectId,
-            projectName: item.sourceProjectName,
+            // An imported clip says which file it came from instead.
+            projectName: item.sourceProjectName ?? item.sourceFileName,
             item: item,
           ),
     ];
@@ -516,6 +518,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       preparingIndex: indexOfKey(_player.preparingKey),
       onPlay: (i) => _play(entries[i]),
       onOpenProject: (i) => _openProject(entries[i]),
+      canOpenProjectOf: (i) => entries[i].projectId != null,
       onOpen: (i) {
         final e = entries[i];
         showMidiPianoRoll(
@@ -600,6 +603,12 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
             Text(l10n.midiLibraryAllClips, style: theme.textTheme.titleMedium),
             const SizedBox(width: 8),
             Text('${entries.length}', style: theme.textTheme.bodySmall),
+            const Spacer(),
+            TextButton.icon(
+              onPressed: () => importMidiFilesFlow(context, ref),
+              icon: const Icon(Icons.file_open_outlined, size: 18),
+              label: Text(l10n.midiImportFiles),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -642,6 +651,11 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
             const SizedBox(width: 8),
             Text('${c.items.length}', style: theme.textTheme.bodySmall),
             const Spacer(),
+            IconButton(
+              tooltip: l10n.midiImportFiles,
+              icon: const Icon(Icons.file_open_outlined),
+              onPressed: () => importMidiFilesFlow(context, ref, into: c),
+            ),
             IconButton(
               tooltip: l10n.midiCollectionRename,
               icon: const Icon(Icons.edit_outlined),

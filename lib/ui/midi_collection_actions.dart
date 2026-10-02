@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +10,7 @@ import '../models/midi_clip.dart';
 import '../models/midi_collection.dart';
 import '../providers/providers.dart';
 import '../repository/midi_collection_store.dart';
+import '../services/midi/midi_file_import.dart';
 import '../services/midi/synth_voice.dart';
 
 /// A copy of [clip] ready to go into a collection, remembering where it came
@@ -232,4 +237,74 @@ Future<bool> confirmDeleteCollection(
     ),
   );
   return ok ?? false;
+}
+
+/// Collection items for the clips of a `.mid` file imported from outside
+/// any project: no source project, the file's name instead, and the tempo
+/// and key the file declares.
+List<MidiCollectionItem> collectionItemsForImport(ImportedMidiFile file) => [
+      for (final clip in file.clips)
+        MidiCollectionItem(
+          id: MidiCollectionStore.newItemId(),
+          clip: clip,
+          addedAt: DateTime.now(),
+          sourceFileName: file.fileName,
+          bpm: file.bpm,
+          musicalKey: file.musicalKey,
+        ),
+    ];
+
+/// Lets the user pick `.mid` files from anywhere and adds their clips to
+/// [into], or — with no collection given — to one they choose, as "Add to
+/// collection" does. Files that aren't MIDI, or hold no notes, are named in
+/// a snackbar rather than failing the rest.
+Future<void> importMidiFilesFlow(
+  BuildContext context,
+  WidgetRef ref, {
+  MidiCollection? into,
+}) async {
+  final l10n = AppLocalizations.of(context)!;
+  final messenger = ScaffoldMessenger.of(context);
+  final picked = await FilePicker.pickFiles(
+    dialogTitle: l10n.midiImportDialogTitle,
+    allowMultiple: true,
+    type: FileType.custom,
+    allowedExtensions: const ['mid', 'midi'],
+  );
+  if (picked == null || picked.files.isEmpty || !context.mounted) return;
+
+  final items = <MidiCollectionItem>[];
+  final skipped = <String>[];
+  for (final f in picked.files) {
+    Uint8List? bytes = f.bytes;
+    if (bytes == null && f.path != null) {
+      try {
+        bytes = await File(f.path!).readAsBytes();
+      } catch (_) {}
+    }
+    final imported = bytes == null ? null : importMidiFile(bytes, f.name);
+    if (imported == null || imported.clips.isEmpty) {
+      skipped.add(f.name);
+    } else {
+      items.addAll(collectionItemsForImport(imported));
+    }
+  }
+  if (!context.mounted) return;
+  if (skipped.isNotEmpty) {
+    messenger.showSnackBar(
+        SnackBar(content: Text(l10n.midiImportSkipped(skipped.join(', ')))));
+  }
+  if (items.isEmpty) return;
+
+  if (into == null) {
+    await addToCollectionFlow(context, ref, items);
+    return;
+  }
+  final repo = await ref.read(repositoryProvider.future);
+  final added = await repo.midiCollections.addItems(into.id, items);
+  messenger.showSnackBar(SnackBar(
+    content: Text(added == 0
+        ? l10n.midiCollectionAlreadyIn(into.name)
+        : l10n.midiCollectionAdded(added, into.name)),
+  ));
 }

@@ -6216,4 +6216,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiLibraryTempoUnknown => 'テンポ不明';
+
+  @override
+  String get midiImportFiles => 'MIDI ファイルを読み込む';
+
+  @override
+  String get midiImportDialogTitle => '読み込む MIDI ファイルを選択';
+
+  @override
+  String midiImportSkipped(String files) {
+    return '読み込めませんでした (MIDI ファイルではないか、ノートがありません): $files';
+  }
 }

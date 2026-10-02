@@ -4022,5 +4022,8 @@
   "midiLibraryArrangeAdded": "按添加顺序",
   "midiLibraryArrangeTempo": "按速度 (BPM)",
   "midiLibraryTempoGroup": "{bpm} BPM",
-  "midiLibraryTempoUnknown": "速度未知"
+  "midiLibraryTempoUnknown": "速度未知",
+  "midiImportFiles": "导入 MIDI 文件",
+  "midiImportDialogTitle": "选择要导入的 MIDI 文件",
+  "midiImportSkipped": "未导入（不是 MIDI 文件或其中没有音符）：{files}"
 }

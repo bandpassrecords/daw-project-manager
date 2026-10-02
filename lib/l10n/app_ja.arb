@@ -4022,5 +4022,8 @@
   "midiLibraryArrangeAdded": "追加順",
   "midiLibraryArrangeTempo": "テンポ (BPM) 別",
   "midiLibraryTempoGroup": "{bpm} BPM",
-  "midiLibraryTempoUnknown": "テンポ不明"
+  "midiLibraryTempoUnknown": "テンポ不明",
+  "midiImportFiles": "MIDI ファイルを読み込む",
+  "midiImportDialogTitle": "読み込む MIDI ファイルを選択",
+  "midiImportSkipped": "読み込めませんでした (MIDI ファイルではないか、ノートがありません): {files}"
 }

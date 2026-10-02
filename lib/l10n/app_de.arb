@@ -4022,5 +4022,8 @@
   "midiLibraryArrangeAdded": "Wie hinzugefügt",
   "midiLibraryArrangeTempo": "Nach Tempo (BPM)",
   "midiLibraryTempoGroup": "{bpm} BPM",
-  "midiLibraryTempoUnknown": "Tempo unbekannt"
+  "midiLibraryTempoUnknown": "Tempo unbekannt",
+  "midiImportFiles": "MIDI-Dateien importieren",
+  "midiImportDialogTitle": "MIDI-Dateien zum Importieren auswählen",
+  "midiImportSkipped": "Nicht importiert (keine MIDI-Datei oder keine Noten darin): {files}"
 }

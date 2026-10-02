@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/services/midi/midi_file_reader.dart';
 import 'package:daw_project_manager/services/midi/midi_file_writer.dart';
+import 'package:daw_project_manager/utils/musical_key.dart';
 
 /// An SMF from raw track bodies, for shapes our own writer never produces.
 Uint8List _smf(List<List<int>> tracks, {int format = 1, int division = 96}) {
@@ -108,6 +109,21 @@ void main() {
       [0x00, 0xB0, 0x7B, 0x00, 0x00, 0xFF, 0x2F, 0x00],
     ], format: 0))!;
     expect(read.events, isEmpty);
+  });
+
+  test('track by track: names, and the file\'s tempo and key', () {
+    final bytes = encodeMidiClip(
+      const MidiClip(name: 'Keys', ppq: 480, lengthTicks: 960, notes: [
+        MidiNote(startTick: 0, lengthTicks: 480, pitch: 60, velocity: 100),
+      ]),
+      bpm: 140,
+      musicalKey: 'Bb minor',
+    );
+    final file = decodeMidiFileTracks(bytes)!;
+    expect(file.tracks.single.name, 'Keys');
+    expect(file.bpm, closeTo(140, 0.01));
+    expect(file.keySignature, const MidiKeySignature(-5, minor: true));
+    expect(file.lengthTicks, 960);
   });
 
   test('not a MIDI file, or SMPTE-timed: null', () {

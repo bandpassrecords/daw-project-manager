@@ -6415,4 +6415,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiLibraryTempoUnknown => 'Tempo unbekannt';
+
+  @override
+  String get midiImportFiles => 'MIDI-Dateien importieren';
+
+  @override
+  String get midiImportDialogTitle => 'MIDI-Dateien zum Importieren auswählen';
+
+  @override
+  String midiImportSkipped(String files) {
+    return 'Nicht importiert (keine MIDI-Datei oder keine Noten darin): $files';
+  }
 }

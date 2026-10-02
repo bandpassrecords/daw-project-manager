@@ -4046,5 +4046,8 @@
   "midiLibraryArrangeAdded": "Ordem em que foram adicionados",
   "midiLibraryArrangeTempo": "Por andamento (BPM)",
   "midiLibraryTempoGroup": "{bpm} BPM",
-  "midiLibraryTempoUnknown": "Andamento desconhecido"
+  "midiLibraryTempoUnknown": "Andamento desconhecido",
+  "midiImportFiles": "Importar arquivos MIDI",
+  "midiImportDialogTitle": "Escolha os arquivos MIDI para importar",
+  "midiImportSkipped": "Não importado (não é um arquivo MIDI ou não tem notas): {files}"
 }

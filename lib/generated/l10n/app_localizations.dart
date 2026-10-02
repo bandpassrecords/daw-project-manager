@@ -10648,6 +10648,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown tempo'**
   String get midiLibraryTempoUnknown;
+
+  /// MIDI tab button: add .mid files from anywhere on the computer to a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Import MIDI files'**
+  String get midiImportFiles;
+
+  /// Title of the file picker for importing .mid files
+  ///
+  /// In en, this message translates to:
+  /// **'Choose MIDI files to import'**
+  String get midiImportDialogTitle;
+
+  /// Snackbar: these picked files were not imported because they are not MIDI files or contain no notes
+  ///
+  /// In en, this message translates to:
+  /// **'Not imported (not a MIDI file, or no notes in it): {files}'**
+  String midiImportSkipped(String files);
 }
 
 class _AppLocalizationsDelegate

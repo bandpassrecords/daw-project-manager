@@ -4022,5 +4022,8 @@
   "midiLibraryArrangeAdded": "В порядке добавления",
   "midiLibraryArrangeTempo": "По темпу (BPM)",
   "midiLibraryTempoGroup": "{bpm} BPM",
-  "midiLibraryTempoUnknown": "Темп неизвестен"
+  "midiLibraryTempoUnknown": "Темп неизвестен",
+  "midiImportFiles": "Импортировать MIDI-файлы",
+  "midiImportDialogTitle": "Выберите MIDI-файлы для импорта",
+  "midiImportSkipped": "Не импортировано (не MIDI-файл или в нём нет нот): {files}"
 }

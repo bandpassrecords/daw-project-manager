@@ -6167,5 +6167,22 @@
   "midiLibraryTempoUnknown": "Unknown tempo",
   "@midiLibraryTempoUnknown": {
     "description": "MIDI tab heading over clips whose project has no known tempo"
+  },
+  "midiImportFiles": "Import MIDI files",
+  "@midiImportFiles": {
+    "description": "MIDI tab button: add .mid files from anywhere on the computer to a collection"
+  },
+  "midiImportDialogTitle": "Choose MIDI files to import",
+  "@midiImportDialogTitle": {
+    "description": "Title of the file picker for importing .mid files"
+  },
+  "midiImportSkipped": "Not imported (not a MIDI file, or no notes in it): {files}",
+  "@midiImportSkipped": {
+    "description": "Snackbar: these picked files were not imported because they are not MIDI files or contain no notes",
+    "placeholders": {
+      "files": {
+        "type": "String"
+      }
+    }
   }
 }

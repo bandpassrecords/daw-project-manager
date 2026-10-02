@@ -6404,4 +6404,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiLibraryTempoUnknown => 'Темп неизвестен';
+
+  @override
+  String get midiImportFiles => 'Импортировать MIDI-файлы';
+
+  @override
+  String get midiImportDialogTitle => 'Выберите MIDI-файлы для импорта';
+
+  @override
+  String midiImportSkipped(String files) {
+    return 'Не импортировано (не MIDI-файл или в нём нет нот): $files';
+  }
 }
