@@ -18,6 +18,7 @@ import '../models/profile.dart';
 import '../models/music_project.dart';
 import '../models/project_attachment.dart';
 import '../models/project_marker.dart';
+import '../models/project_stats.dart';
 import '../models/release.dart';
 import '../models/release_file.dart';
 import '../models/scan_root.dart';
@@ -3965,6 +3966,8 @@ class GoogleDriveSyncService {
         !_listEquals(remote.parts, local.parts) ||
         !_listEquals(remote.attachments, local.attachments) ||
         !_listEquals(remote.tags, local.tags) ||
+        // Read out of the file on a desktop; a phone only ever gets it here.
+        (remote.stats != null && remote.stats != local.stats) ||
         remote.bpm != local.bpm ||
         remote.musicalKey != local.musicalKey ||
         remote.status != local.status ||
@@ -4505,6 +4508,8 @@ class GoogleDriveSyncService {
                     parts: remoteProject.parts,
                     attachments: remoteProject.attachments,
                     tags: remoteProject.tags,
+                    // Null remote stats (never deep-scanned there) keep ours.
+                    stats: remoteProject.stats,
                     bpm: remoteProject.bpm,
                     musicalKey: remoteProject.musicalKey,
                     status: remoteProject.status,
@@ -5493,6 +5498,9 @@ class GoogleDriveSyncService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      // Read out of the project file, but synced anyway: a phone (or any
+      // device without the project folders) can't re-read it.
+      'stats': project.stats?.toMap(),
       // Attachments (#112) are user data — the reference track, the
       // stem-delivery link, the contract. Only the path/URL travels, never the
       // file itself, exactly as with `filePath` and `previewSongPath`.
@@ -5584,6 +5592,7 @@ class GoogleDriveSyncService {
               ?.map((e) => ProjectMarker.fromMap(e as Map))
               .toList() ??
           const [],
+      stats: ProjectStats.tryFromMap(data['stats']),
       attachments: (data['attachments'] as List?)
               ?.map((e) => ProjectAttachment.fromMap(e as Map))
               .toList() ??
@@ -5936,6 +5945,8 @@ class GoogleDriveSyncService {
         parts: remoteProject.parts,
         attachments: remoteProject.attachments,
         tags: remoteProject.tags,
+        // Null remote stats (never deep-scanned there) keep ours.
+        stats: remoteProject.stats,
         bpm: remoteProject.bpm,
         musicalKey: remoteProject.musicalKey,
         status: remoteProject.status,

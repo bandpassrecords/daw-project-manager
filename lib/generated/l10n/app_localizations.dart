@@ -9700,6 +9700,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Label projects with your own tags, then filter, search and sort by them. Turning this off only hides them — tags you\'ve added are kept.'**
   String get tagsSettingDescription;
+
+  /// Detail page heading for the track counts and plug-ins read out of the DAW project file
+  ///
+  /// In en, this message translates to:
+  /// **'Project Contents'**
+  String get projectContentsTitle;
+
+  /// Label for the total number of tracks in a DAW project; also a column heading on the metadata extraction page
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks'**
+  String get projectStatsTracks;
+
+  /// Label next to the number of audio tracks in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get projectStatsAudio;
+
+  /// Label next to the number of MIDI tracks in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI'**
+  String get projectStatsMidi;
+
+  /// Label next to the number of instrument tracks in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Instrument'**
+  String get projectStatsInstrument;
+
+  /// Label next to the number of sampler tracks/channels in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Sampler'**
+  String get projectStatsSampler;
+
+  /// Label next to the number of group, FX, return and bus channels in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Groups & FX'**
+  String get projectStatsBus;
+
+  /// Label next to the number of folder tracks in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Folders'**
+  String get projectStatsFolder;
+
+  /// Heading for the list of plug-ins a DAW project loads; also a column heading on the metadata extraction page
+  ///
+  /// In en, this message translates to:
+  /// **'Plug-ins'**
+  String get projectStatsPlugins;
+
+  /// Heading for the MIDI clips read out of a DAW project; also a column heading on the metadata extraction page
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI clips'**
+  String get midiClipsTitle;
+
+  /// Button that reads the MIDI clips out of the project file
+  ///
+  /// In en, this message translates to:
+  /// **'Load MIDI clips'**
+  String get midiClipsLoad;
+
+  /// Explains that MIDI clips are read from the project file only when asked and not stored
+  ///
+  /// In en, this message translates to:
+  /// **'Read from the project file when you ask. Nothing is copied or stored.'**
+  String get midiClipsLoadHint;
+
+  /// Shown while the MIDI clips are being read out of the project file
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the project file…'**
+  String get midiClipsLoading;
+
+  /// Shown when a project file contains no MIDI clips with notes
+  ///
+  /// In en, this message translates to:
+  /// **'No MIDI clips with notes in this project.'**
+  String get midiClipsNone;
+
+  /// Shown when reading MIDI clips from the project file failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read MIDI clips: {error}'**
+  String midiClipsError(String error);
+
+  /// Tooltip on the button that plays a MIDI clip through the built-in preview synth
+  ///
+  /// In en, this message translates to:
+  /// **'Preview with a simple synth'**
+  String get midiClipPlay;
+
+  /// Tooltip on the button that stops a MIDI clip preview
+  ///
+  /// In en, this message translates to:
+  /// **'Stop preview'**
+  String get midiClipStop;
+
+  /// Tooltip on the button that saves one MIDI clip as a .mid file
+  ///
+  /// In en, this message translates to:
+  /// **'Save as MIDI file'**
+  String get midiClipSave;
+
+  /// Button that saves every MIDI clip of a project as .mid files into a chosen folder
+  ///
+  /// In en, this message translates to:
+  /// **'Export all as MIDI…'**
+  String get midiClipsExportAll;
+
+  /// Snackbar after exporting MIDI clips to a folder
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Saved 1 MIDI file to {folder}} other{Saved {count} MIDI files to {folder}}}'**
+  String midiClipsExported(int count, String folder);
+
+  /// Snackbar after saving one MIDI clip as a .mid file
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {fileName}'**
+  String midiClipSaved(String fileName);
+
+  /// Tooltip on the handle that drags a MIDI clip out of the app as a .mid file
+  ///
+  /// In en, this message translates to:
+  /// **'Drag into your DAW or a folder'**
+  String get midiClipDragTooltip;
+
+  /// Length of a MIDI clip in bars (4/4), rounded up
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 bar} other{{count} bars}}'**
+  String midiClipBars(int count);
+
+  /// Number of notes in a MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 note} other{{count} notes}}'**
+  String midiClipNotes(int count);
+
+  /// How many places in the project use the same MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'Used {count}×'**
+  String midiClipUsedTimes(int count);
+
+  /// Snackbar when a MIDI clip preview could not be played
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t play the preview: {error}'**
+  String midiClipPreviewFailed(String error);
+
+  /// Snackbar when saving MIDI clips to disk failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the MIDI file: {error}'**
+  String midiClipSaveFailed(String error);
+
+  /// Title of the folder picker for exporting all MIDI clips
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a folder for the MIDI files'**
+  String get midiClipsExportFolderTitle;
+
+  /// Tooltip on a MIDI clip that other clips in the project turned out to be identical to; names is a comma-separated list of "Track – Clip" labels
+  ///
+  /// In en, this message translates to:
+  /// **'Also: {names}'**
+  String midiClipAlsoAs(String names);
+
+  /// Heading for MIDI clips whose project format did not say which track they are on
+  ///
+  /// In en, this message translates to:
+  /// **'Other clips'**
+  String get midiClipsNoTrack;
+
+  /// Tooltip on a collapsed track heading in the MIDI clips list
+  ///
+  /// In en, this message translates to:
+  /// **'Show this track\'s clips'**
+  String get midiClipsExpandTrack;
+
+  /// Tooltip on an expanded track heading in the MIDI clips list
+  ///
+  /// In en, this message translates to:
+  /// **'Hide this track\'s clips'**
+  String get midiClipsCollapseTrack;
+
+  /// Tooltip on the tempo control of the MIDI clips list
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo for previews and saved MIDI files'**
+  String get midiTempoTooltip;
+
+  /// Tooltip on the button that lowers the MIDI preview tempo by 1 BPM
+  ///
+  /// In en, this message translates to:
+  /// **'Slower'**
+  String get midiTempoSlower;
+
+  /// Tooltip on the button that raises the MIDI preview tempo by 1 BPM
+  ///
+  /// In en, this message translates to:
+  /// **'Faster'**
+  String get midiTempoFaster;
+
+  /// Tooltip on the button that puts the MIDI preview tempo back to the project tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the project tempo ({bpm} BPM)'**
+  String midiTempoReset(String bpm);
 }
 
 class _AppLocalizationsDelegate

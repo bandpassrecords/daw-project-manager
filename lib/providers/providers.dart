@@ -43,12 +43,12 @@ import '../models/profile.dart';
 import '../models/playlist.dart';
 import '../models/todo_template.dart';
 import '../models/part_template.dart';
-import '../models/project_part.dart';
 import '../models/project_template.dart';
 import '../models/template_root.dart';
 import '../models/project_event.dart';
 import '../repository/project_repository.dart';
 import '../utils/search_utils.dart';
+import '../utils/project_search.dart';
 import '../utils/section_rail_width.dart';
 import '../repository/profile_repository.dart';
 import '../services/google_drive_sync_service.dart';
@@ -621,26 +621,7 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
           projects = projects
               .where(
                 (p) => fuzzyMatchAny(
-                  [
-                    p.displayName,
-                    p.notes,
-                    // projectNotes are the read-only notes extracted from the
-                    // DAW file itself — real user content, so searchable too.
-                    p.projectNotes,
-                    // Instrumentation is searchable too, so "who played bass
-                    // on which song" is answerable from the projects list.
-                    // Guarded because this runs per project per keystroke and
-                    // searchableText builds a string.
-                    if (p.parts.isNotEmpty)
-                      ProjectPart.searchableText(p.parts),
-                    // Marker names go in one entry each rather than joined:
-                    // fuzzyMatchAny requires every query word to hit the *same*
-                    // entry, so a joined string would match words picked out of
-                    // two unrelated markers.
-                    ...p.markers.map((m) => m.name),
-                    // Tags one entry each, for the same reason (#109).
-                    if (searchTags) ...p.tags,
-                  ],
+                  projectSearchFields(p, includeTags: searchTags),
                   projectsSearch,
                 ),
               )

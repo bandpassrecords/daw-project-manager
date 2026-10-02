@@ -5829,4 +5829,157 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get tagsSettingDescription =>
       'Отмечайте проекты своими тегами и фильтруйте, ищите и сортируйте по ним. Выключение только скрывает теги — добавленные теги сохраняются.';
+
+  @override
+  String get projectContentsTitle => 'Содержимое проекта';
+
+  @override
+  String get projectStatsTracks => 'Дорожки';
+
+  @override
+  String get projectStatsAudio => 'Аудио';
+
+  @override
+  String get projectStatsMidi => 'MIDI';
+
+  @override
+  String get projectStatsInstrument => 'Инструмент';
+
+  @override
+  String get projectStatsSampler => 'Сэмплер';
+
+  @override
+  String get projectStatsBus => 'Группы и FX';
+
+  @override
+  String get projectStatsFolder => 'Папки';
+
+  @override
+  String get projectStatsPlugins => 'Плагины';
+
+  @override
+  String get midiClipsTitle => 'MIDI-клипы';
+
+  @override
+  String get midiClipsLoad => 'Загрузить MIDI-клипы';
+
+  @override
+  String get midiClipsLoadHint =>
+      'Читаются из файла проекта только по запросу. Ничего не копируется и не сохраняется.';
+
+  @override
+  String get midiClipsLoading => 'Чтение файла проекта…';
+
+  @override
+  String get midiClipsNone => 'В этом проекте нет MIDI-клипов с нотами.';
+
+  @override
+  String midiClipsError(String error) {
+    return 'Не удалось прочитать MIDI-клипы: $error';
+  }
+
+  @override
+  String get midiClipPlay => 'Прослушать простым синтезатором';
+
+  @override
+  String get midiClipStop => 'Остановить прослушивание';
+
+  @override
+  String get midiClipSave => 'Сохранить как MIDI-файл';
+
+  @override
+  String get midiClipsExportAll => 'Экспортировать всё в MIDI…';
+
+  @override
+  String midiClipsExported(int count, String folder) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Сохранено $count MIDI-файла в $folder',
+      many: 'Сохранено $count MIDI-файлов в $folder',
+      few: 'Сохранено $count MIDI-файла в $folder',
+      one: 'Сохранён $count MIDI-файл в $folder',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipSaved(String fileName) {
+    return 'Сохранено: $fileName';
+  }
+
+  @override
+  String get midiClipDragTooltip => 'Перетащите в DAW или в папку';
+
+  @override
+  String midiClipBars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count такта',
+      many: '$count тактов',
+      few: '$count такта',
+      one: '$count такт',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipNotes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ноты',
+      many: '$count нот',
+      few: '$count ноты',
+      one: '$count нота',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipUsedTimes(int count) {
+    return 'Используется $count×';
+  }
+
+  @override
+  String midiClipPreviewFailed(String error) {
+    return 'Не удалось воспроизвести: $error';
+  }
+
+  @override
+  String midiClipSaveFailed(String error) {
+    return 'Не удалось сохранить MIDI-файл: $error';
+  }
+
+  @override
+  String get midiClipsExportFolderTitle => 'Выберите папку для MIDI-файлов';
+
+  @override
+  String midiClipAlsoAs(String names) {
+    return 'Также: $names';
+  }
+
+  @override
+  String get midiClipsNoTrack => 'Другие клипы';
+
+  @override
+  String get midiClipsExpandTrack => 'Показать клипы этой дорожки';
+
+  @override
+  String get midiClipsCollapseTrack => 'Скрыть клипы этой дорожки';
+
+  @override
+  String get midiTempoTooltip => 'Темп прослушивания и сохраняемых MIDI-файлов';
+
+  @override
+  String get midiTempoSlower => 'Медленнее';
+
+  @override
+  String get midiTempoFaster => 'Быстрее';
+
+  @override
+  String midiTempoReset(String bpm) {
+    return 'Вернуть темп проекта ($bpm BPM)';
+  }
 }

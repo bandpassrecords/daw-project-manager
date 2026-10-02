@@ -78,6 +78,14 @@ Instructions for AI assistants working on this codebase.
 - **Tags are case-insensitive and only written through `lib/utils/project_tags.dart`** (#109). `canonicalTag` resolves typed text to the library's existing spelling, and `addTag`/`removeTag` refuse case-only duplicates. A hand-rolled `[...tags, x]` is how "Trap" and "trap" become two filters. `availableTagsProvider` is computed over the whole (stack-collapsed) library, never the filtered list, and `effectiveTagFilter` drops a filter on a tag nobody has any more. The whole feature sits behind the device-local `tagsEnabledProvider` (Settings > Appearance, **off by default**): off hides every tag surface and empties `availableTagsProvider`, but the tags stay on the projects and keep syncing.
 - **Markers over a row's cover-art bleed need an opaque backing.** Use `on_art_marker.dart`: `onArtCapsule` for text badges, `OnArtMarker` for status icons (a disc only on rows with artwork), and `onArtTextHalo` for the name. A translucent tint disappears into a busy cover.
 
+### What is inside a project: stats are stored, MIDI clips are not
+- `MusicProject.stats` (`ProjectStats`: track counts by kind, plug-in names, clip count) follows the **markers' null contract**: null means "never read", and a lightweight scan passes null so the last deep scan's value stands. It is scanned, yet it syncs and backs up — a phone or a Flatpak restore without the project folders cannot re-read the file.
+- MIDI clips are read **on demand** by `MidiClipService`, off the UI isolate, and never stored. The detail page loads them behind a button because the project may sit on a cloud drive where reading means downloading.
+- Per-format readers live in `lib/services/daw_parsers/` and return values for `MetadataExtractor` to merge — stats are a bonus there, so a parser failure costs the stats, never the tempo/key/notes.
+- **Cubase archives count by back-reference.** A class name is written once; every later object of that class is `0x80000000 | (definition offset − ARCH start)`. Counting names finds one audio track in a project with forty. The format notes are on `CubaseProjectParser`.
+- A clip holds only what plays: `windowMidiNotes` drops material trimmed off a part's edges and unrolls loops.
+- **Clips are unique by what they play, never by name.** `dedupeMidiClips` (every format goes through it) first shrinks a clip that only repeats a shorter whole-bar pattern to that pattern, then merges clips with equal `contentKey` — notes and length at a common 960 PPQ; name, track and channel excluded. Velocity and pitch stay in the key: a transposed or re-voiced copy exports as different MIDI, so it is a different clip.
+
 ### An archived project is not a missing one
 - Archiving (#116) zips a project out of the working library and sets `archivePath` / `archivedAt` / `archiveEntryPath`. `filePath` deliberately keeps naming the **original location** — it is what `fileExtension`, DAW launching and the containing-folder helpers read, and leaving it alone is what makes "restore to where it came from" free.
 - So `isMissingFileCandidate` is `!isVirtual && !isArchived`. Anything new that reads a non-resolving path as "the file was deleted" must gate on it, exactly as version stacks already require. Getting this wrong offers to delete the one row pointing at the archive holding the work.
@@ -172,6 +180,8 @@ Instructions for AI assistants working on this codebase.
 | Hive repository | `lib/repository/project_repository.dart` |
 | File scanner | `lib/services/scanner_service.dart` |
 | Metadata extractor (BPM, key, DAW version) | `lib/services/metadata_extractor.dart` |
+| Per-DAW readers for tracks, plug-ins and MIDI clips | `lib/services/daw_parsers/` |
+| MIDI clips: read on demand, `.mid` export, preview synth | `lib/services/midi/` |
 | Google Drive sync (not available inside Flatpak) | `lib/services/google_drive_sync_service.dart` |
 | Local backup/restore (Flatpak's only backup path) | `lib/services/backup_service.dart` |
 | Archive a project to a verified zip, and restore it | `lib/services/project_archive_service.dart` |

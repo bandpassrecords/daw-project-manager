@@ -4,6 +4,7 @@ import '../utils/name_date_parser.dart';
 import 'project_attachment.dart';
 import 'project_marker.dart';
 import 'project_part.dart';
+import 'project_stats.dart';
 import 'todo_item.dart';
 
 /// Converts a musical key (e.g. `'C#m'`, `'G#/Ab Major'`) to Camelot Wheel
@@ -349,6 +350,15 @@ class MusicProject {
   @HiveField(47)
   final List<String> tags;
 
+  /// What is inside the project file — track counts by kind, plug-ins, MIDI
+  /// clip count — as the last full-metadata extraction read it. Null when
+  /// it has never been read (lightweight scan, unsupported DAW, a stack).
+  ///
+  /// Scanned, not typed, but it still syncs and backs up: a phone, or a
+  /// Flatpak restore without the project folders, can't re-read the file.
+  @HiveField(48)
+  final ProjectStats? stats;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -398,6 +408,7 @@ class MusicProject {
     this.durationMs,
     this.autoDurationMs,
     this.tags = const [],
+    this.stats,
   });
 
   /// Whether this project's files have been zipped out to an archive (#116).
@@ -737,6 +748,7 @@ class MusicProject {
     int? autoDurationMs,
     bool clearArchiveEntryPath = false,
     List<String>? tags,
+    ProjectStats? stats,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -795,6 +807,7 @@ class MusicProject {
       durationMs: clearDurationMs ? null : (durationMs ?? this.durationMs),
       autoDurationMs: autoDurationMs ?? this.autoDurationMs,
       tags: tags ?? this.tags,
+      stats: stats ?? this.stats,
     );
   }
 
@@ -895,13 +908,15 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       tags: fields[47] is List
           ? List<String>.unmodifiable((fields[47] as List).whereType<String>())
           : const <String>[],
+      // Absent in every box written before project stats existed.
+      stats: ProjectStats.tryFromMap(fields[48]),
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(48) // 48 fields (0-47)
+      ..writeByte(49) // 49 fields (0-48)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -997,6 +1012,8 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(46)
       ..write(obj.autoDurationMs)
       ..writeByte(47)
-      ..write(obj.tags);
+      ..write(obj.tags)
+      ..writeByte(48)
+      ..write(obj.stats?.toMap());
   }
 }

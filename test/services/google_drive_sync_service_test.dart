@@ -14,6 +14,7 @@ import 'package:daw_project_manager/models/profile.dart';
 import 'package:daw_project_manager/models/scan_mode.dart';
 import 'package:daw_project_manager/models/scan_root.dart';
 import 'package:daw_project_manager/models/project_part.dart';
+import 'package:daw_project_manager/models/project_stats.dart';
 import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/todo_template.dart';
 import 'package:daw_project_manager/repository/profile_repository.dart';
@@ -931,6 +932,7 @@ void main() {
       String? ignoredNewerSongPath,
       List<Map<String, dynamic>>? parts,
       List<String>? tags,
+      Map<String, dynamic>? stats,
     }) {
       return {
         'id': id,
@@ -948,6 +950,7 @@ void main() {
         'ignoredNewerSongPath': ignoredNewerSongPath,
         'parts': parts,
         'tags': tags,
+        'stats': stats,
       };
     }
 
@@ -984,6 +987,67 @@ void main() {
         projectRepo.projectsBox.get('tagged')!.tags,
         ['trap', 'for the Luna EP'],
       );
+    });
+
+    test('takes stats a desktop read when they are the only change', () async {
+      // A phone never reads the project file itself; without stats in the
+      // change check and the merge, a project it already had never gets them.
+      final local = TestFactories.makeProject(
+        id: 'scanned',
+        status: 'Mixing',
+        lastModifiedAt: DateTime(2025, 1, 1),
+        updatedAt: DateTime(2025, 6, 1, 8, 0),
+      );
+      await projectRepo.projectsBox.put(local.id, local);
+
+      await GoogleDriveSyncService().mergeData(
+        remoteData: {
+          'projects': [
+            remoteProjectMap(
+              id: 'scanned',
+              updatedAt: DateTime(2025, 6, 1, 12, 0),
+              stats: const ProjectStats(audioTracks: 12, plugins: ['Serum']).toMap(),
+            ),
+          ],
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      final stats = projectRepo.projectsBox.get('scanned')!.stats!;
+      expect(stats.audioTracks, 12);
+      expect(stats.plugins, ['Serum']);
+    });
+
+    test('a remote copy that was never deep-scanned keeps local stats', () async {
+      const ours = ProjectStats(audioTracks: 3);
+      final local = TestFactories.makeProject(
+        id: 'kept',
+        notes: 'old',
+        stats: ours,
+        updatedAt: DateTime(2025, 6, 1, 8, 0),
+      );
+      await projectRepo.projectsBox.put(local.id, local);
+
+      await GoogleDriveSyncService().mergeData(
+        remoteData: {
+          'projects': [
+            remoteProjectMap(
+              id: 'kept',
+              updatedAt: DateTime(2025, 6, 1, 12, 0),
+              notes: 'new',
+            ),
+          ],
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      final merged = projectRepo.projectsBox.get('kept')!;
+      expect(merged.notes, 'new', reason: 'the merge did happen');
+      expect(merged.stats, ours);
     });
 
     test('keeps local edits when local was modified after the remote copy', () async {

@@ -23,6 +23,15 @@ class _DawExtractionInfo {
   /// it in a binary blob nobody has reverse engineered yet.
   final bool markers;
 
+  /// Track counts by kind (`ProjectStats`).
+  final bool tracks;
+
+  /// Plug-in names (`ProjectStats.plugins`).
+  final bool plugins;
+
+  /// MIDI clips you can preview, save and drag out (`MidiClipService`).
+  final bool midiClips;
+
   const _DawExtractionInfo(
     this.name, {
     required this.bpm,
@@ -30,35 +39,38 @@ class _DawExtractionInfo {
     required this.version,
     required this.notes,
     this.markers = false,
+    this.tracks = false,
+    this.plugins = false,
+    this.midiClips = false,
   });
 }
 
 const _dawExtractionInfo = [
-  _DawExtractionInfo('Ableton Live', bpm: true, key: true, version: true, notes: false),
+  _DawExtractionInfo('Ableton Live', bpm: true, key: true, version: true, notes: false, tracks: true, plugins: true, midiClips: true),
   _DawExtractionInfo('ACID Pro', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Adobe Audition', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Ardour', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Audacity', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Bitwig Studio', bpm: true, key: true, version: true, notes: false),
   _DawExtractionInfo('Cakewalk / Sonar', bpm: false, key: false, version: false, notes: false),
-  _DawExtractionInfo('Cubase', bpm: true, key: true, version: true, notes: true),
+  _DawExtractionInfo('Cubase', bpm: true, key: true, version: true, notes: true, tracks: true, plugins: true, midiClips: true),
   _DawExtractionInfo('Digital Performer', bpm: false, key: false, version: false, notes: false),
-  _DawExtractionInfo('FL Studio', bpm: true, key: false, version: true, notes: false),
+  _DawExtractionInfo('FL Studio', bpm: true, key: false, version: true, notes: false, tracks: true, plugins: true, midiClips: true),
   _DawExtractionInfo('GarageBand', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('LMMS', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Logic Pro', bpm: true, key: true, version: true, notes: false),
   _DawExtractionInfo('MAGDA', bpm: true, key: true, version: true, notes: false),
   _DawExtractionInfo('Maschine', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Mixcraft', bpm: false, key: false, version: false, notes: false),
-  _DawExtractionInfo('Nuendo', bpm: true, key: true, version: true, notes: true),
+  _DawExtractionInfo('Nuendo', bpm: true, key: true, version: true, notes: true, tracks: true, plugins: true, midiClips: true),
   _DawExtractionInfo('Pro Tools', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Qtractor', bpm: false, key: false, version: false, notes: false),
-  _DawExtractionInfo('Reaper', bpm: true, key: true, version: true, notes: true, markers: true),
+  _DawExtractionInfo('Reaper', bpm: true, key: true, version: true, notes: true, markers: true, tracks: true, plugins: true, midiClips: true),
   _DawExtractionInfo('Reason', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Renoise', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Rosegarden', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Samplitude / Sequoia', bpm: false, key: false, version: false, notes: false),
-  _DawExtractionInfo('Studio One', bpm: false, key: false, version: false, notes: false),
+  _DawExtractionInfo('Studio One', bpm: true, key: false, version: true, notes: false, tracks: true),
   _DawExtractionInfo('Tracktion Waveform', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Universal Audio LUNA', bpm: false, key: false, version: false, notes: false),
 ];
@@ -142,6 +154,9 @@ class MetadataExtractionInfoPage extends StatelessWidget {
                                 DataColumn(label: Text(l10n.metadataFieldVersion)),
                                 DataColumn(label: Text(l10n.notes)),
                                 DataColumn(label: Text(l10n.projectMarkers)),
+                                DataColumn(label: Text(l10n.projectStatsTracks)),
+                                DataColumn(label: Text(l10n.projectStatsPlugins)),
+                                DataColumn(label: Text(l10n.midiClipsTitle)),
                               ],
                               rows: [
                                 for (final daw in _dawExtractionInfo)
@@ -153,6 +168,9 @@ class MetadataExtractionInfoPage extends StatelessWidget {
                                       DataCell(statusIcon(daw.version)),
                                       DataCell(statusIcon(daw.notes)),
                                       DataCell(statusIcon(daw.markers)),
+                                      DataCell(statusIcon(daw.tracks)),
+                                      DataCell(statusIcon(daw.plugins)),
+                                      DataCell(statusIcon(daw.midiClips)),
                                     ],
                                   ),
                               ],

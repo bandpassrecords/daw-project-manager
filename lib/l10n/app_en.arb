@@ -5397,5 +5397,202 @@
   "tagsSettingDescription": "Label projects with your own tags, then filter, search and sort by them. Turning this off only hides them — tags you've added are kept.",
   "@tagsSettingDescription": {
     "description": "Settings: explains the tags switch, and that turning it off keeps existing tags"
+  },
+  "projectContentsTitle": "Project Contents",
+  "@projectContentsTitle": {
+    "description": "Detail page heading for the track counts and plug-ins read out of the DAW project file"
+  },
+  "projectStatsTracks": "Tracks",
+  "@projectStatsTracks": {
+    "description": "Label for the total number of tracks in a DAW project; also a column heading on the metadata extraction page"
+  },
+  "projectStatsAudio": "Audio",
+  "@projectStatsAudio": {
+    "description": "Label next to the number of audio tracks in a DAW project"
+  },
+  "projectStatsMidi": "MIDI",
+  "@projectStatsMidi": {
+    "description": "Label next to the number of MIDI tracks in a DAW project"
+  },
+  "projectStatsInstrument": "Instrument",
+  "@projectStatsInstrument": {
+    "description": "Label next to the number of instrument tracks in a DAW project"
+  },
+  "projectStatsSampler": "Sampler",
+  "@projectStatsSampler": {
+    "description": "Label next to the number of sampler tracks/channels in a DAW project"
+  },
+  "projectStatsBus": "Groups & FX",
+  "@projectStatsBus": {
+    "description": "Label next to the number of group, FX, return and bus channels in a DAW project"
+  },
+  "projectStatsFolder": "Folders",
+  "@projectStatsFolder": {
+    "description": "Label next to the number of folder tracks in a DAW project"
+  },
+  "projectStatsPlugins": "Plug-ins",
+  "@projectStatsPlugins": {
+    "description": "Heading for the list of plug-ins a DAW project loads; also a column heading on the metadata extraction page"
+  },
+  "midiClipsTitle": "MIDI clips",
+  "@midiClipsTitle": {
+    "description": "Heading for the MIDI clips read out of a DAW project; also a column heading on the metadata extraction page"
+  },
+  "midiClipsLoad": "Load MIDI clips",
+  "@midiClipsLoad": {
+    "description": "Button that reads the MIDI clips out of the project file"
+  },
+  "midiClipsLoadHint": "Read from the project file when you ask. Nothing is copied or stored.",
+  "@midiClipsLoadHint": {
+    "description": "Explains that MIDI clips are read from the project file only when asked and not stored"
+  },
+  "midiClipsLoading": "Reading the project file…",
+  "@midiClipsLoading": {
+    "description": "Shown while the MIDI clips are being read out of the project file"
+  },
+  "midiClipsNone": "No MIDI clips with notes in this project.",
+  "@midiClipsNone": {
+    "description": "Shown when a project file contains no MIDI clips with notes"
+  },
+  "midiClipsError": "Couldn't read MIDI clips: {error}",
+  "@midiClipsError": {
+    "description": "Shown when reading MIDI clips from the project file failed",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipPlay": "Preview with a simple synth",
+  "@midiClipPlay": {
+    "description": "Tooltip on the button that plays a MIDI clip through the built-in preview synth"
+  },
+  "midiClipStop": "Stop preview",
+  "@midiClipStop": {
+    "description": "Tooltip on the button that stops a MIDI clip preview"
+  },
+  "midiClipSave": "Save as MIDI file",
+  "@midiClipSave": {
+    "description": "Tooltip on the button that saves one MIDI clip as a .mid file"
+  },
+  "midiClipsExportAll": "Export all as MIDI…",
+  "@midiClipsExportAll": {
+    "description": "Button that saves every MIDI clip of a project as .mid files into a chosen folder"
+  },
+  "midiClipsExported": "{count, plural, =1{Saved 1 MIDI file to {folder}} other{Saved {count} MIDI files to {folder}}}",
+  "@midiClipsExported": {
+    "description": "Snackbar after exporting MIDI clips to a folder",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipSaved": "Saved {fileName}",
+  "@midiClipSaved": {
+    "description": "Snackbar after saving one MIDI clip as a .mid file",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipDragTooltip": "Drag into your DAW or a folder",
+  "@midiClipDragTooltip": {
+    "description": "Tooltip on the handle that drags a MIDI clip out of the app as a .mid file"
+  },
+  "midiClipBars": "{count, plural, =1{1 bar} other{{count} bars}}",
+  "@midiClipBars": {
+    "description": "Length of a MIDI clip in bars (4/4), rounded up",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiClipNotes": "{count, plural, =1{1 note} other{{count} notes}}",
+  "@midiClipNotes": {
+    "description": "Number of notes in a MIDI clip",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiClipUsedTimes": "Used {count}×",
+  "@midiClipUsedTimes": {
+    "description": "How many places in the project use the same MIDI clip",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiClipPreviewFailed": "Couldn't play the preview: {error}",
+  "@midiClipPreviewFailed": {
+    "description": "Snackbar when a MIDI clip preview could not be played",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipSaveFailed": "Couldn't save the MIDI file: {error}",
+  "@midiClipSaveFailed": {
+    "description": "Snackbar when saving MIDI clips to disk failed",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsExportFolderTitle": "Choose a folder for the MIDI files",
+  "@midiClipsExportFolderTitle": {
+    "description": "Title of the folder picker for exporting all MIDI clips"
+  },
+  "midiClipAlsoAs": "Also: {names}",
+  "@midiClipAlsoAs": {
+    "description": "Tooltip on a MIDI clip that other clips in the project turned out to be identical to; names is a comma-separated list of \"Track – Clip\" labels",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsNoTrack": "Other clips",
+  "@midiClipsNoTrack": {
+    "description": "Heading for MIDI clips whose project format did not say which track they are on"
+  },
+  "midiClipsExpandTrack": "Show this track's clips",
+  "@midiClipsExpandTrack": {
+    "description": "Tooltip on a collapsed track heading in the MIDI clips list"
+  },
+  "midiClipsCollapseTrack": "Hide this track's clips",
+  "@midiClipsCollapseTrack": {
+    "description": "Tooltip on an expanded track heading in the MIDI clips list"
+  },
+  "midiTempoTooltip": "Tempo for previews and saved MIDI files",
+  "@midiTempoTooltip": {
+    "description": "Tooltip on the tempo control of the MIDI clips list"
+  },
+  "midiTempoSlower": "Slower",
+  "@midiTempoSlower": {
+    "description": "Tooltip on the button that lowers the MIDI preview tempo by 1 BPM"
+  },
+  "midiTempoFaster": "Faster",
+  "@midiTempoFaster": {
+    "description": "Tooltip on the button that raises the MIDI preview tempo by 1 BPM"
+  },
+  "midiTempoReset": "Back to the project tempo ({bpm} BPM)",
+  "@midiTempoReset": {
+    "description": "Tooltip on the button that puts the MIDI preview tempo back to the project tempo",
+    "placeholders": {
+      "bpm": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -5848,4 +5848,152 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get tagsSettingDescription =>
       'Aggiungi i tuoi tag ai progetti, poi filtra, cerca e ordina in base a essi. Disattivandoli vengono solo nascosti: i tag già aggiunti restano.';
+
+  @override
+  String get projectContentsTitle => 'Contenuto del progetto';
+
+  @override
+  String get projectStatsTracks => 'Tracce';
+
+  @override
+  String get projectStatsAudio => 'Audio';
+
+  @override
+  String get projectStatsMidi => 'MIDI';
+
+  @override
+  String get projectStatsInstrument => 'Strumento';
+
+  @override
+  String get projectStatsSampler => 'Sampler';
+
+  @override
+  String get projectStatsBus => 'Gruppi e FX';
+
+  @override
+  String get projectStatsFolder => 'Cartelle';
+
+  @override
+  String get projectStatsPlugins => 'Plug-in';
+
+  @override
+  String get midiClipsTitle => 'Clip MIDI';
+
+  @override
+  String get midiClipsLoad => 'Carica clip MIDI';
+
+  @override
+  String get midiClipsLoadHint =>
+      'Letti dal file del progetto solo quando lo chiedi. Nulla viene copiato o salvato.';
+
+  @override
+  String get midiClipsLoading => 'Lettura del file del progetto…';
+
+  @override
+  String get midiClipsNone => 'Nessuna clip MIDI con note in questo progetto.';
+
+  @override
+  String midiClipsError(String error) {
+    return 'Impossibile leggere le clip MIDI: $error';
+  }
+
+  @override
+  String get midiClipPlay => 'Ascolta con un synth semplice';
+
+  @override
+  String get midiClipStop => 'Interrompi l\'ascolto';
+
+  @override
+  String get midiClipSave => 'Salva come file MIDI';
+
+  @override
+  String get midiClipsExportAll => 'Esporta tutto come MIDI…';
+
+  @override
+  String midiClipsExported(int count, String folder) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count file MIDI salvati in $folder',
+      one: '1 file MIDI salvato in $folder',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipSaved(String fileName) {
+    return '$fileName salvato';
+  }
+
+  @override
+  String get midiClipDragTooltip => 'Trascina nella tua DAW o in una cartella';
+
+  @override
+  String midiClipBars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count battute',
+      one: '1 battuta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipNotes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count note',
+      one: '1 nota',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipUsedTimes(int count) {
+    return 'Usata $count×';
+  }
+
+  @override
+  String midiClipPreviewFailed(String error) {
+    return 'Impossibile riprodurre l\'anteprima: $error';
+  }
+
+  @override
+  String midiClipSaveFailed(String error) {
+    return 'Impossibile salvare il file MIDI: $error';
+  }
+
+  @override
+  String get midiClipsExportFolderTitle =>
+      'Scegli una cartella per i file MIDI';
+
+  @override
+  String midiClipAlsoAs(String names) {
+    return 'Anche: $names';
+  }
+
+  @override
+  String get midiClipsNoTrack => 'Altre clip';
+
+  @override
+  String get midiClipsExpandTrack => 'Mostra le clip di questa traccia';
+
+  @override
+  String get midiClipsCollapseTrack => 'Nascondi le clip di questa traccia';
+
+  @override
+  String get midiTempoTooltip => 'Tempo per l\'ascolto e i file MIDI salvati';
+
+  @override
+  String get midiTempoSlower => 'Più lento';
+
+  @override
+  String get midiTempoFaster => 'Più veloce';
+
+  @override
+  String midiTempoReset(String bpm) {
+    return 'Torna al tempo del progetto ($bpm BPM)';
+  }
 }

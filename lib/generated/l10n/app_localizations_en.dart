@@ -5807,4 +5807,151 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tagsSettingDescription =>
       'Label projects with your own tags, then filter, search and sort by them. Turning this off only hides them — tags you\'ve added are kept.';
+
+  @override
+  String get projectContentsTitle => 'Project Contents';
+
+  @override
+  String get projectStatsTracks => 'Tracks';
+
+  @override
+  String get projectStatsAudio => 'Audio';
+
+  @override
+  String get projectStatsMidi => 'MIDI';
+
+  @override
+  String get projectStatsInstrument => 'Instrument';
+
+  @override
+  String get projectStatsSampler => 'Sampler';
+
+  @override
+  String get projectStatsBus => 'Groups & FX';
+
+  @override
+  String get projectStatsFolder => 'Folders';
+
+  @override
+  String get projectStatsPlugins => 'Plug-ins';
+
+  @override
+  String get midiClipsTitle => 'MIDI clips';
+
+  @override
+  String get midiClipsLoad => 'Load MIDI clips';
+
+  @override
+  String get midiClipsLoadHint =>
+      'Read from the project file when you ask. Nothing is copied or stored.';
+
+  @override
+  String get midiClipsLoading => 'Reading the project file…';
+
+  @override
+  String get midiClipsNone => 'No MIDI clips with notes in this project.';
+
+  @override
+  String midiClipsError(String error) {
+    return 'Couldn\'t read MIDI clips: $error';
+  }
+
+  @override
+  String get midiClipPlay => 'Preview with a simple synth';
+
+  @override
+  String get midiClipStop => 'Stop preview';
+
+  @override
+  String get midiClipSave => 'Save as MIDI file';
+
+  @override
+  String get midiClipsExportAll => 'Export all as MIDI…';
+
+  @override
+  String midiClipsExported(int count, String folder) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Saved $count MIDI files to $folder',
+      one: 'Saved 1 MIDI file to $folder',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipSaved(String fileName) {
+    return 'Saved $fileName';
+  }
+
+  @override
+  String get midiClipDragTooltip => 'Drag into your DAW or a folder';
+
+  @override
+  String midiClipBars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bars',
+      one: '1 bar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipNotes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count notes',
+      one: '1 note',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipUsedTimes(int count) {
+    return 'Used $count×';
+  }
+
+  @override
+  String midiClipPreviewFailed(String error) {
+    return 'Couldn\'t play the preview: $error';
+  }
+
+  @override
+  String midiClipSaveFailed(String error) {
+    return 'Couldn\'t save the MIDI file: $error';
+  }
+
+  @override
+  String get midiClipsExportFolderTitle => 'Choose a folder for the MIDI files';
+
+  @override
+  String midiClipAlsoAs(String names) {
+    return 'Also: $names';
+  }
+
+  @override
+  String get midiClipsNoTrack => 'Other clips';
+
+  @override
+  String get midiClipsExpandTrack => 'Show this track\'s clips';
+
+  @override
+  String get midiClipsCollapseTrack => 'Hide this track\'s clips';
+
+  @override
+  String get midiTempoTooltip => 'Tempo for previews and saved MIDI files';
+
+  @override
+  String get midiTempoSlower => 'Slower';
+
+  @override
+  String get midiTempoFaster => 'Faster';
+
+  @override
+  String midiTempoReset(String bpm) {
+    return 'Back to the project tempo ($bpm BPM)';
+  }
 }

@@ -46,6 +46,7 @@ import '../services/attachment_export_service.dart';
 import 'dialogs/project_appearance_dialog.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
+import '../services/midi/midi_clip_service.dart';
 import '../services/metadata_sidecar_service.dart';
 import '../services/mixdown_detector_service.dart';
 import '../services/project_text_export_service.dart';
@@ -61,6 +62,8 @@ import 'widgets/project_attachments_section.dart';
 import 'widgets/project_tags_editor.dart';
 import 'widgets/project_detail_header.dart';
 import 'widgets/project_markers_section.dart';
+import 'widgets/project_stats_section.dart';
+import 'widgets/midi_clips_section.dart';
 import 'widgets/project_versions_section.dart';
 import 'widgets/section_nav_rail.dart';
 import 'widgets/resizable_text_field.dart';
@@ -1910,6 +1913,47 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             const SizedBox(height: 24),
                           ],
                         ),
+                        // What is inside the project file: track counts,
+                        // plug-ins (from the last metadata extraction) and
+                        // the MIDI clips, read on request. Absent for a DAW
+                        // we can't read and for a project never deep-scanned.
+                        if (updatedProject.stats != null ||
+                            _canReadMidiClips(updatedProject))
+                          _DetailSection(
+                            icon: Icons.inventory_2_outlined,
+                            label: l10n.projectContentsTitle,
+                            children: [
+                              if (updatedProject.stats != null) ...[
+                                const SizedBox(height: 12),
+                                ProjectStatsSection(
+                                  stats: updatedProject.stats!,
+                                  labels: ProjectStatsLabels(
+                                    tracks: l10n.projectStatsTracks,
+                                    audio: l10n.projectStatsAudio,
+                                    midi: l10n.projectStatsMidi,
+                                    instrument: l10n.projectStatsInstrument,
+                                    sampler: l10n.projectStatsSampler,
+                                    bus: l10n.projectStatsBus,
+                                    folder: l10n.projectStatsFolder,
+                                    plugins: l10n.projectStatsPlugins,
+                                    showAll: l10n.showAll,
+                                    collapse: l10n.collapse,
+                                  ),
+                                ),
+                              ],
+                              if (_canReadMidiClips(updatedProject)) ...[
+                                const SizedBox(height: 20),
+                                MidiClipsSection(
+                                  key: ValueKey(updatedProject.filePath),
+                                  projectFilePath: updatedProject.filePath,
+                                  bpm: updatedProject.bpm,
+                                  knownClipCount:
+                                      updatedProject.stats?.midiClipCount,
+                                ),
+                              ],
+                              const SizedBox(height: 24),
+                            ],
+                          ),
                         _DetailSection(
                           icon: Icons.attach_file_outlined,
                           label: l10n.projectAttachments,
@@ -4556,6 +4600,15 @@ class _EditSessionDialogState extends State<_EditSessionDialog> {
 /// sectioned layout renders one at a time with the nav rail choosing. Keeping
 /// them as data rather than as separate widgets means both layouts are fed by
 /// exactly the same children, so the two cannot drift apart.
+/// Whether the detail page offers to read MIDI clips for [project]: a real
+/// file (not a stack, not zipped away in an archive) in a format we parse,
+/// on a desktop — where the project folders actually are.
+bool _canReadMidiClips(MusicProject project) =>
+    !MobileUtils.isMobile() &&
+    !project.isVirtual &&
+    !project.isArchived &&
+    MidiClipService.supports(project.filePath);
+
 class _DetailSection {
   const _DetailSection({
     required this.icon,

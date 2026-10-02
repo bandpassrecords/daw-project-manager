@@ -5597,4 +5597,147 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get tagsSettingDescription =>
       '为项目添加自定义标签，并按标签筛选、搜索和排序。关闭后只是隐藏标签，已添加的标签会保留。';
+
+  @override
+  String get projectContentsTitle => '项目内容';
+
+  @override
+  String get projectStatsTracks => '轨道';
+
+  @override
+  String get projectStatsAudio => '音频';
+
+  @override
+  String get projectStatsMidi => 'MIDI';
+
+  @override
+  String get projectStatsInstrument => '乐器';
+
+  @override
+  String get projectStatsSampler => '采样器';
+
+  @override
+  String get projectStatsBus => '编组与效果';
+
+  @override
+  String get projectStatsFolder => '文件夹';
+
+  @override
+  String get projectStatsPlugins => '插件';
+
+  @override
+  String get midiClipsTitle => 'MIDI 片段';
+
+  @override
+  String get midiClipsLoad => '加载 MIDI 片段';
+
+  @override
+  String get midiClipsLoadHint => '仅在你需要时从项目文件读取，不会复制或保存任何内容。';
+
+  @override
+  String get midiClipsLoading => '正在读取项目文件…';
+
+  @override
+  String get midiClipsNone => '此项目中没有包含音符的 MIDI 片段。';
+
+  @override
+  String midiClipsError(String error) {
+    return '无法读取 MIDI 片段：$error';
+  }
+
+  @override
+  String get midiClipPlay => '用简易合成器试听';
+
+  @override
+  String get midiClipStop => '停止试听';
+
+  @override
+  String get midiClipSave => '另存为 MIDI 文件';
+
+  @override
+  String get midiClipsExportAll => '全部导出为 MIDI…';
+
+  @override
+  String midiClipsExported(int count, String folder) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已将 $count 个 MIDI 文件保存到 $folder',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipSaved(String fileName) {
+    return '已保存 $fileName';
+  }
+
+  @override
+  String get midiClipDragTooltip => '拖到你的 DAW 或文件夹中';
+
+  @override
+  String midiClipBars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 小节',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipNotes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个音符',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipUsedTimes(int count) {
+    return '使用 $count 次';
+  }
+
+  @override
+  String midiClipPreviewFailed(String error) {
+    return '无法播放试听：$error';
+  }
+
+  @override
+  String midiClipSaveFailed(String error) {
+    return '无法保存 MIDI 文件：$error';
+  }
+
+  @override
+  String get midiClipsExportFolderTitle => '选择 MIDI 文件的保存文件夹';
+
+  @override
+  String midiClipAlsoAs(String names) {
+    return '也出现在：$names';
+  }
+
+  @override
+  String get midiClipsNoTrack => '其他片段';
+
+  @override
+  String get midiClipsExpandTrack => '显示此轨道的片段';
+
+  @override
+  String get midiClipsCollapseTrack => '隐藏此轨道的片段';
+
+  @override
+  String get midiTempoTooltip => '试听和保存的 MIDI 文件所用的速度';
+
+  @override
+  String get midiTempoSlower => '减慢';
+
+  @override
+  String get midiTempoFaster => '加快';
+
+  @override
+  String midiTempoReset(String bpm) {
+    return '恢复为项目速度（$bpm BPM）';
+  }
 }

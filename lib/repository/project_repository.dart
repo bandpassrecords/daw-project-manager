@@ -1038,6 +1038,9 @@ class ProjectRepository {
             dawVersion: extractedMetadata?.dawVersion,
             projectNotes: extractedMetadata?.projectNotes,
             markers: extractedMetadata?.markers,
+            // Same null contract as markers: a lightweight scan leaves it
+            // null and the last deep scan's stats stand.
+            stats: extractedMetadata?.stats,
             // DAW type is derived from the extension, so it always comes from
             // the file; a failed extraction clears it rather than leaving a
             // stale one behind.
@@ -1063,6 +1066,7 @@ class ProjectRepository {
             dawVersion: dawVersion,
             projectNotes: projectNotes,
             markers: markers,
+            stats: extractedMetadata?.stats,
             fileCreatedAt: fileCreatedAt,
             parentProjectId: parentProjectId,
             metadataScanned: fullMetadata,
@@ -1482,6 +1486,7 @@ class ProjectRepository {
         dawVersion: extractedMetadata.dawVersion ?? project.dawVersion,
         projectNotes: extractedMetadata.projectNotes ?? project.projectNotes,
         markers: extractedMetadata.markers ?? project.markers,
+        stats: extractedMetadata.stats ?? project.stats,
         updatedAt: DateTime.now(),
       );
 
