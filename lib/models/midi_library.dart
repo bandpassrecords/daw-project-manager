@@ -11,6 +11,7 @@ class LibraryClip {
     required this.projectId,
     required this.projectName,
     this.bpm,
+    this.musicalKey,
     this.otherProjectIds = const [],
     this.otherProjectNames = const [],
   });
@@ -25,6 +26,9 @@ class LibraryClip {
 
   /// That project's tempo, which the clip previews and exports at by default.
   final double? bpm;
+
+  /// That project's key, written into the clip's exported `.mid` file.
+  final String? musicalKey;
 
   /// Other projects holding the same notes — typically other versions of the
   /// same song.
@@ -63,6 +67,7 @@ List<LibraryClip> buildMidiLibrary(
           projectId: id,
           projectName: project.displayName,
           bpm: project.bpm,
+          musicalKey: _keyOf(project),
         );
         continue;
       }
@@ -76,12 +81,18 @@ List<LibraryClip> buildMidiLibrary(
         projectId: existing.projectId,
         projectName: existing.projectName,
         bpm: existing.bpm,
+        musicalKey: existing.musicalKey,
         otherProjectIds: [...existing.otherProjectIds, id],
         otherProjectNames: [...existing.otherProjectNames, project.displayName],
       );
     }
   }
   return byKey.values.toList();
+}
+
+String? _keyOf(MusicProject project) {
+  final key = project.musicalKey?.trim();
+  return key == null || key.isEmpty ? null : key;
 }
 
 /// The library narrowed by the search box and the instrument filter.
@@ -109,4 +120,25 @@ List<LibraryClip> filterMidiLibrary(
               ], q)))
         item,
   ];
+}
+
+/// How the MIDI tab arranges its clips: under the project each came from,
+/// or by tempo — the way to pick loops for a track at a given BPM (#143).
+enum MidiLibraryArrangement { project, tempo }
+
+/// [items] slowest first, those with no known tempo last. Stable: clips at
+/// one tempo keep the order they had (by project, then as found).
+List<T> sortByTempo<T>(List<T> items, double? Function(T) bpmOf) {
+  final indexed = [for (var i = 0; i < items.length; i++) (i, items[i])];
+  indexed.sort((a, b) {
+    final x = bpmOf(a.$2), y = bpmOf(b.$2);
+    if (x != y) {
+      if (x == null) return 1;
+      if (y == null) return -1;
+      final c = x.compareTo(y);
+      if (c != 0) return c;
+    }
+    return a.$1.compareTo(b.$1);
+  });
+  return [for (final e in indexed) e.$2];
 }

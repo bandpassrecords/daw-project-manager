@@ -11,6 +11,7 @@ import '../daw_parsers/cubase_project_parser.dart';
 import '../daw_parsers/flp_project_parser.dart';
 import '../daw_parsers/reaper_project_parser.dart';
 import 'midi_clip_synth.dart';
+import 'midi_file_reader.dart';
 import 'midi_file_writer.dart';
 import 'synth_voice.dart';
 
@@ -53,7 +54,11 @@ class MidiClipService {
         final doc = XmlDocument.parse(utf8.decode(xml, allowMalformed: true));
         return AbletonProjectParser(doc).readMidiClips();
       case '.rpp':
-        return ReaperProjectParser(file.readAsStringSync()).readMidiClips();
+        return ReaperProjectParser(
+          file.readAsStringSync(),
+          projectDir: p.dirname(filePath),
+          readFile: readBytesIfExists,
+        ).readMidiClips();
       case '.flp':
         return FlpProjectParser(file.readAsBytesSync()).readMidiClips();
     }
@@ -79,26 +84,22 @@ class MidiClipService {
     return out.path;
   }
 
-  /// Writes [clip] as a `.mid` file at [path].
-  static Future<File> writeMidiFile(MidiClip clip, String path, {double? bpm}) =>
-      File(path).writeAsBytes(encodeMidiClip(clip, bpm: bpm), flush: true);
+  /// Writes [export] as a `.mid` file at [path].
+  static Future<File> writeMidiFile(MidiExport export, String path) =>
+      File(path).writeAsBytes(export.encode(), flush: true);
 
-  /// Writes every clip into [directory] with unique, filesystem-safe names.
-  /// Returns the files written.
+  /// Writes every clip into [directory] with unique, filesystem-safe names,
+  /// each with its own tempo and key. Returns the files written.
   static Future<List<File>> exportAll(
-    List<MidiClip> clips,
-    Directory directory, {
-    double? bpm,
-  }) async {
+    List<MidiExport> exports,
+    Directory directory,
+  ) async {
     await directory.create(recursive: true);
-    final names = uniqueFileNames(clips.map(midiClipFileName).toList());
+    final names = uniqueFileNames([for (final e in exports) e.fileName]);
     final written = <File>[];
-    for (var i = 0; i < clips.length; i++) {
-      written.add(await writeMidiFile(
-        clips[i],
-        p.join(directory.path, names[i]),
-        bpm: bpm,
-      ));
+    for (var i = 0; i < exports.length; i++) {
+      written.add(
+          await writeMidiFile(exports[i], p.join(directory.path, names[i])));
     }
     return written;
   }

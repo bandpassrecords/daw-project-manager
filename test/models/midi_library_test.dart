@@ -24,6 +24,39 @@ void main() {
   final songA = TestFactories.makeProject(id: 'a', fileName: 'A Song.als', bpm: 145);
   final songAv2 = TestFactories.makeProject(id: 'a2', fileName: 'A Song v2.als', bpm: 145);
 
+  group('sortByTempo', () {
+    test('slowest first, unknown tempo last, ties in their order', () {
+      final items = [
+        ('a', 140.0),
+        ('b', null),
+        ('c', 87.5),
+        ('d', 140.0),
+        ('e', null),
+      ];
+      expect(sortByTempo(items, (i) => i.$2).map((i) => i.$1),
+          ['c', 'a', 'd', 'b', 'e']);
+    });
+
+    test('nothing to sort, nothing back', () {
+      expect(sortByTempo(<double?>[], (b) => b), isEmpty);
+    });
+  });
+
+  test('a library clip carries its project\'s key for export', () {
+    final keyed = TestFactories.makeProject(
+        id: 'k', fileName: 'Keyed.als', bpm: 120, musicalKey: ' A minor ');
+    final blank = TestFactories.makeProject(
+        id: 'z', fileName: 'Zed.als', bpm: 120, musicalKey: '');
+    final lib = buildMidiLibrary(
+      {
+        'k': _stored([_clip('One', 40)]),
+        'z': _stored([_clip('Two', 41)]),
+      },
+      {'k': keyed, 'z': blank},
+    );
+    expect(lib.map((l) => l.musicalKey), ['A minor', null]);
+  });
+
   group('buildMidiLibrary', () {
     test('lists every project\'s clips, projects by name', () {
       final lib = buildMidiLibrary(

@@ -1,5 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:path/path.dart' as p;
+
 import '../../models/midi_clip.dart';
 import '../../models/project_stats.dart';
+import '../midi/midi_file_reader.dart';
 
 /// Reads tracks, plug-ins and MIDI items out of a REAPER `.rpp`.
 ///
@@ -22,14 +27,26 @@ import '../../models/project_stats.dart';
 ///   Controller, pitch-bend, aftertouch and program-change lines become the
 ///   clip's events; `Em`/`em` lines are muted and skipped, and so is the
 ///   All Notes Off (CC 123) REAPER closes every source with.
+/// * An item can instead reference a `.mid` file (`FILE "…"` and no
+///   `HASDATA`), relative to the project folder unless absolute; it is read
+///   through [ReaperProjectParser.readFile] and windowed the same way. One
+///   that can't be found or read is reported in `missingFiles`.
 ///   The item plays `LENGTH` seconds from `SOFFS` into the source, looping
 ///   the source when `LOOP 1` is set. Seconds are converted with the
 ///   project's `TEMPO`, so items in projects with tempo changes are
 ///   approximate.
 class ReaperProjectParser {
-  ReaperProjectParser(this.content);
+  ReaperProjectParser(this.content, {this.projectDir, this.readFile});
 
   final String content;
+
+  /// The folder the project file is in, which relative `FILE` paths of
+  /// referenced `.mid` files start from.
+  final String? projectDir;
+
+  /// Reads a referenced `.mid` file's bytes, or null when it isn't there.
+  /// Injected so the parser itself never touches the filesystem.
+  final Uint8List? Function(String path)? readFile;
 
   late final _RppChunk _root = _RppChunk.parse(content);
 
@@ -57,7 +74,7 @@ class ReaperProjectParser {
           .any((l) => l.key == 'ISBUS' && l.arg(0) == '1');
       final items = track.children.where((c) => c.name == 'ITEM').toList();
       final hasMidi = items.any((i) => i
-          .descendants((c) => c.name == 'SOURCE' && c.header.arg(0) == 'MIDI')
+          .descendants(_isMidiSource)
           .isNotEmpty);
       final hasInstrument = track
           .descendants(_isPluginChunk)
@@ -88,26 +105,58 @@ class ReaperProjectParser {
     );
   }
 
-  List<MidiClip> readMidiClips() {
+  List<MidiClip> readMidiClips() => readMidi().clips;
+
+  /// The project's unique MIDI clips — from MIDI stored in the project and
+  /// from `.mid` files its items reference — and the referenced files that
+  /// couldn't be found or read, as the project names them.
+  ///
+  /// Referenced files are only looked for when the parser was given a
+  /// [readFile] (and a [projectDir] for relative paths); without them those
+  /// items are skipped, not reported.
+  ({List<MidiClip> clips, List<String> missingFiles}) readMidi() {
     final bpm = _bpm;
     final clips = <MidiClip>[];
+    final missing = <String>[];
     for (final track in _root.children.where((c) => c.name == 'TRACK')) {
       final trackName = track.value('NAME');
       for (final item in track.children.where((c) => c.name == 'ITEM')) {
         final source = item.children.firstWhere(
-          (c) => c.name == 'SOURCE' && c.header.arg(0) == 'MIDI',
+          _isMidiSource,
           orElse: () => _RppChunk.empty,
         );
         if (identical(source, _RppChunk.empty)) continue;
-        final clip = _parseItem(item, source, bpm, trackName);
+        final content = _sourceContent(source, missing);
+        if (content == null) continue;
+        final clip = _windowItem(item, content, bpm, trackName);
         if (clip != null) clips.add(clip);
       }
     }
-    return dedupeMidiClips(clips);
+    return (clips: dedupeMidiClips(clips), missingFiles: missing);
   }
 
-  MidiClip? _parseItem(
-      _RppChunk item, _RppChunk source, double bpm, String? trackName) {
+  /// `<SOURCE MIDI` holds MIDI in the project or names a `.mid` file;
+  /// `<SOURCE MIDIPOOL` is pooled MIDI, stored the same way.
+  static bool _isMidiSource(_RppChunk c) =>
+      c.name == 'SOURCE' &&
+      (c.header.arg(0) == 'MIDI' || c.header.arg(0) == 'MIDIPOOL');
+
+  MidiFileContent? _sourceContent(_RppChunk source, List<String> missing) {
+    final file = source.value('FILE')?.trim() ?? '';
+    final embedded = source.lines.any((l) => l.key == 'HASDATA');
+    if (embedded || file.isEmpty) return _embedded(source);
+    final read = readFile;
+    if (read == null) return null;
+    final path = p.isAbsolute(file) || projectDir == null
+        ? file
+        : p.join(projectDir!, file);
+    final bytes = read(path);
+    final content = bytes == null ? null : decodeMidiFile(bytes);
+    if (content == null && !missing.contains(file)) missing.add(file);
+    return content;
+  }
+
+  MidiFileContent? _embedded(_RppChunk source) {
     final hasData = source.lines.firstWhere((l) => l.key == 'HASDATA',
         orElse: () => const _RppLine('', []));
     final ppq = int.tryParse(hasData.arg(1) ?? '') ?? 960;
@@ -167,8 +216,20 @@ class ReaperProjectParser {
         if (!event.isChannelMode) events.add(event);
       }
     }
-    final sourceLength = tick;
+    return MidiFileContent(
+      ppq: ppq,
+      notes: notes,
+      events: events,
+      lengthTicks: tick,
+    );
+  }
 
+  MidiClip? _windowItem(_RppChunk item, MidiFileContent source, double bpm,
+      String? trackName) {
+    final ppq = source.ppq;
+    final sourceLength = source.lengthTicks;
+    final notes = source.notes;
+    final events = source.events;
     final ticksPerSecond = bpm / 60 * ppq;
     final itemLength = double.tryParse(item.value('LENGTH') ?? '');
     final offset = double.tryParse(item.value('SOFFS') ?? '') ?? 0;

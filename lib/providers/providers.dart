@@ -53,6 +53,7 @@ import '../models/template_root.dart';
 import '../models/project_event.dart';
 import '../repository/project_repository.dart';
 import '../utils/search_utils.dart';
+import '../utils/project_midi.dart';
 import '../utils/project_search.dart';
 import '../utils/section_rail_width.dart';
 import '../repository/profile_repository.dart';
@@ -599,6 +600,12 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
           }
         }
 
+        // --- Filter: only projects with MIDI (#143) ---
+        if (ref.watch(hasMidiFilterProvider)) {
+          final all = allProjectsAsync.value ?? const <MusicProject>[];
+          projects = projects.where((p) => projectHasMidi(p, all)).toList();
+        }
+
         // --- Filter finished projects ---
         final finishedMode = ref.watch(showFinishedProjectsProvider);
         final finishedPhases = ref.watch(finishedPhaseProvider);
@@ -1136,6 +1143,20 @@ final finishedPhaseProvider = Provider<Set<String>>((ref) {
   final repo = ref.watch(repositoryProvider).asData?.value;
   return repo?.getFinishedPhases() ?? {'Finished'};
 });
+
+/// Shows only projects holding MIDI (see `projectHasMidi`). Session-only,
+/// like the other dashboard filters.
+final hasMidiFilterProvider =
+    NotifierProvider<HasMidiFilterNotifier, bool>(HasMidiFilterNotifier.new);
+
+class HasMidiFilterNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void toggle() => state = !state;
+
+  void set(bool value) => state = value;
+}
 
 // Deadline Filter Enum
 enum DeadlineFilter {

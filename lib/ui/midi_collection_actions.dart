@@ -9,12 +9,14 @@ import '../repository/midi_collection_store.dart';
 import '../services/midi/synth_voice.dart';
 
 /// A copy of [clip] ready to go into a collection, remembering where it came
-/// from and the tempo and instrument it was being heard with.
+/// from, its project's tempo and key, and the instrument it was being heard
+/// with.
 MidiCollectionItem collectionItemFor(
   MidiClip clip, {
   String? projectId,
   String? projectName,
   double? bpm,
+  String? musicalKey,
   SynthVoice? pickedVoice,
 }) =>
     MidiCollectionItem(
@@ -24,6 +26,7 @@ MidiCollectionItem collectionItemFor(
       sourceProjectId: projectId,
       sourceProjectName: projectName,
       bpm: bpm,
+      musicalKey: musicalKey,
       voice: pickedVoice?.name,
     );
 

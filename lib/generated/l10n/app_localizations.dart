@@ -10606,6 +10606,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chorus'**
   String get midiCcChorus;
+
+  /// Dashboard filter toggle: show only projects that contain MIDI clips
+  ///
+  /// In en, this message translates to:
+  /// **'Only projects with MIDI'**
+  String get filterHasMidi;
+
+  /// Warning on a project page: .mid files the project references were not found or could not be read
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{A referenced MIDI file couldn\'t be found or read: {files}} other{{count} referenced MIDI files couldn\'t be found or read: {files}}}'**
+  String midiClipsMissingFiles(int count, String files);
+
+  /// MIDI tab arrangement: clips grouped under their project
+  ///
+  /// In en, this message translates to:
+  /// **'By project'**
+  String get midiLibraryArrangeProject;
+
+  /// MIDI tab arrangement inside a collection: clips in the order they were added
+  ///
+  /// In en, this message translates to:
+  /// **'As added'**
+  String get midiLibraryArrangeAdded;
+
+  /// MIDI tab arrangement: clips grouped and sorted by their project tempo
+  ///
+  /// In en, this message translates to:
+  /// **'By tempo (BPM)'**
+  String get midiLibraryArrangeTempo;
+
+  /// MIDI tab heading over the clips at one tempo
+  ///
+  /// In en, this message translates to:
+  /// **'{bpm} BPM'**
+  String midiLibraryTempoGroup(String bpm);
+
+  /// MIDI tab heading over clips whose project has no known tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown tempo'**
+  String get midiLibraryTempoUnknown;
 }
 
 class _AppLocalizationsDelegate

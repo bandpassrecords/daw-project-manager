@@ -70,6 +70,21 @@ void main() {
       expect(viaJson.contentKey, c.contentKey);
     });
 
+    test('missing referenced files are kept, and left out when there are none',
+        () {
+      final withMissing = StoredMidiClips(
+        extractedAt: DateTime.utc(2026),
+        clips: const [],
+        missingFiles: const ['MIDI/gone.mid'],
+      );
+      expect(StoredMidiClips.tryParse(jsonDecode(jsonEncode(withMissing.toJson())))!
+              .missingFiles,
+          ['MIDI/gone.mid']);
+      final none = StoredMidiClips(extractedAt: DateTime.utc(2026), clips: const []);
+      expect(none.toJson().containsKey('missingFiles'), isFalse);
+      expect(StoredMidiClips.tryParse(none.toMap())!.missingFiles, isEmpty);
+    });
+
     test('a clip without events writes no events key, as before', () {
       final c = MidiClip(name: 'A', ppq: 480, lengthTicks: 960, notes: _notes);
       final map = midiClipToMap(c, bytes: base64Encode);

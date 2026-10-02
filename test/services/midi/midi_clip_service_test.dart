@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/services/midi/midi_clip_service.dart';
+import 'package:daw_project_manager/services/midi/midi_file_writer.dart';
 import 'package:daw_project_manager/services/midi/synth_voice.dart';
 
 const _rpp = '''
@@ -58,6 +59,41 @@ void main() {
         isEmpty);
   });
 
+  test('a REAPER item\'s referenced .mid is read from beside the project',
+      () {
+    final midi = Directory(p.join(tempDir.path, 'MIDI'))..createSync();
+    File(p.join(midi.path, 'riff.mid')).writeAsBytesSync(encodeMidiClip(
+      const MidiClip(
+        name: 'riff',
+        ppq: 960,
+        lengthTicks: 3840,
+        notes: [
+          MidiNote(startTick: 0, lengthTicks: 480, pitch: 48, velocity: 100),
+        ],
+      ),
+    ));
+    final rpp = File(p.join(tempDir.path, 'song.rpp'))
+      ..writeAsStringSync('''
+<REAPER_PROJECT 0.1 "7.0/win64" 0
+  TEMPO 120 4 4
+  <TRACK
+    NAME Bass
+    <ITEM
+      LENGTH 2
+      NAME riff.mid
+      <SOURCE MIDI
+        FILE "MIDI/riff.mid"
+      >
+    >
+  >
+>
+''');
+    final clip = MidiClipService.readClipsSync(rpp.path).single;
+    expect(clip.trackName, 'Bass');
+    expect(clip.notes.single.pitch, 48);
+    expect(clip.lengthTicks, 3840, reason: '2 s at 120 BPM, at the file PPQ');
+  });
+
   test('a file that is not really a Cubase project reads as no clips', () {
     final file = File(p.join(tempDir.path, 'fake.cpr'))
       ..writeAsStringSync('hello');
@@ -74,12 +110,20 @@ void main() {
     );
     final out = Directory(p.join(tempDir.path, 'export'));
     final written = await MidiClipService.exportAll(
-      [clip, clip.copyWith(), clip],
+      [
+        MidiExport(clip, bpm: 128),
+        MidiExport(clip.copyWith(), bpm: 128),
+        MidiExport(clip, bpm: 128),
+        MidiExport(clip, bpm: 140, musicalKey: 'Am'),
+      ],
       out,
-      bpm: 128,
     );
-    expect(written.map((f) => p.basename(f.path)),
-        ['Synth - Riff.mid', 'Synth - Riff (2).mid', 'Synth - Riff (3).mid']);
+    expect(written.map((f) => p.basename(f.path)), [
+      'Synth - Riff.mid',
+      'Synth - Riff (2).mid',
+      'Synth - Riff (3).mid',
+      'Synth - Riff (Am).mid',
+    ]);
     for (final f in written) {
       expect(f.readAsBytesSync().sublist(0, 4), 'MThd'.codeUnits);
     }

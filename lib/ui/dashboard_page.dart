@@ -1813,6 +1813,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       availableTags,
     );
     final deadlineFilter = ref.watch(deadlineFilterProvider);
+    final hasMidiFilter = ref.watch(hasMidiFilterProvider);
     final initialScanning = ref.watch(initialScanStateProvider);
     final isProfileSwitching = ref.watch(profileSwitchingProvider);
     final isScanning = _scanning || initialScanning;
@@ -2884,6 +2885,27 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                               .setFilter(value);
                                                         }
                                                       },
+                                                ),
+                                              // Only projects with MIDI (#143)
+                                              if (!MobileUtils.isMobile())
+                                                IconButton(
+                                                  tooltip: AppLocalizations.of(
+                                                    context,
+                                                  )!.filterHasMidi,
+                                                  isSelected: hasMidiFilter,
+                                                  iconSize: 18,
+                                                  icon: const Icon(
+                                                    Icons.piano_outlined,
+                                                  ),
+                                                  selectedIcon: const Icon(
+                                                    Icons.piano,
+                                                  ),
+                                                  onPressed: () => ref
+                                                      .read(
+                                                        hasMidiFilterProvider
+                                                            .notifier,
+                                                      )
+                                                      .toggle(),
                                                 ),
                                             ],
                                           ),

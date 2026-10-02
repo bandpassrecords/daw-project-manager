@@ -6126,5 +6126,46 @@
   "midiCcChorus": "Chorus",
   "@midiCcChorus": {
     "description": "Usual name of MIDI CC 93"
+  },
+  "filterHasMidi": "Only projects with MIDI",
+  "@filterHasMidi": {
+    "description": "Dashboard filter toggle: show only projects that contain MIDI clips"
+  },
+  "midiClipsMissingFiles": "{count, plural, =1{A referenced MIDI file couldn't be found or read: {files}} other{{count} referenced MIDI files couldn't be found or read: {files}}}",
+  "@midiClipsMissingFiles": {
+    "description": "Warning on a project page: .mid files the project references were not found or could not be read",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "files": {
+        "type": "String"
+      }
+    }
+  },
+  "midiLibraryArrangeProject": "By project",
+  "@midiLibraryArrangeProject": {
+    "description": "MIDI tab arrangement: clips grouped under their project"
+  },
+  "midiLibraryArrangeAdded": "As added",
+  "@midiLibraryArrangeAdded": {
+    "description": "MIDI tab arrangement inside a collection: clips in the order they were added"
+  },
+  "midiLibraryArrangeTempo": "By tempo (BPM)",
+  "@midiLibraryArrangeTempo": {
+    "description": "MIDI tab arrangement: clips grouped and sorted by their project tempo"
+  },
+  "midiLibraryTempoGroup": "{bpm} BPM",
+  "@midiLibraryTempoGroup": {
+    "description": "MIDI tab heading over the clips at one tempo",
+    "placeholders": {
+      "bpm": {
+        "type": "String"
+      }
+    }
+  },
+  "midiLibraryTempoUnknown": "Unknown tempo",
+  "@midiLibraryTempoUnknown": {
+    "description": "MIDI tab heading over clips whose project has no known tempo"
   }
 }

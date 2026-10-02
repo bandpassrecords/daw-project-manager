@@ -6385,4 +6385,37 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get midiCcChorus => 'Chorus';
+
+  @override
+  String get filterHasMidi => 'Solo progetti con MIDI';
+
+  @override
+  String midiClipsMissingFiles(int count, String files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count file MIDI referenziati non sono stati trovati o non sono leggibili: $files',
+      one:
+          'Un file MIDI referenziato non è stato trovato o non è leggibile: $files',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiLibraryArrangeProject => 'Per progetto';
+
+  @override
+  String get midiLibraryArrangeAdded => 'Ordine di aggiunta';
+
+  @override
+  String get midiLibraryArrangeTempo => 'Per tempo (BPM)';
+
+  @override
+  String midiLibraryTempoGroup(String bpm) {
+    return '$bpm BPM';
+  }
+
+  @override
+  String get midiLibraryTempoUnknown => 'Tempo sconosciuto';
 }

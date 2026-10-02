@@ -4015,5 +4015,12 @@
   "midiCcAttack": "アタック",
   "midiCcCutoff": "カットオフ",
   "midiCcReverb": "リバーブ",
-  "midiCcChorus": "コーラス"
+  "midiCcChorus": "コーラス",
+  "filterHasMidi": "MIDIを含むプロジェクトのみ",
+  "midiClipsMissingFiles": "{count, plural, other{参照されている MIDI ファイル {count} 個が見つからないか読み込めません: {files}}}",
+  "midiLibraryArrangeProject": "プロジェクト別",
+  "midiLibraryArrangeAdded": "追加順",
+  "midiLibraryArrangeTempo": "テンポ (BPM) 別",
+  "midiLibraryTempoGroup": "{bpm} BPM",
+  "midiLibraryTempoUnknown": "テンポ不明"
 }

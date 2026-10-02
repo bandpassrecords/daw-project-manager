@@ -24,6 +24,7 @@ MidiCollectionItem _item(String id, MidiClip clip) => MidiCollectionItem(
       sourceProjectId: 'p1',
       sourceProjectName: 'Song',
       bpm: 145,
+      musicalKey: 'F# minor',
       voice: 'bass',
     );
 
@@ -45,7 +46,14 @@ void main() {
       expect(item.clip.contentKey, c.items.single.clip.contentKey);
       expect(item.sourceProjectName, 'Song');
       expect(item.bpm, 145);
+      expect(item.musicalKey, 'F# minor');
       expect(item.voice, 'bass');
+      expect(item.copyWith(voice: 'pad').musicalKey, 'F# minor');
+    });
+
+    test('an item from before keys were kept reads with no key', () {
+      final json = _item('i1', _clip('Line', 36)).toJson()..remove('key');
+      expect(MidiCollectionItem.tryParse(json)!.musicalKey, isNull);
     });
 
     test('a tombstone round-trips as deleted', () {

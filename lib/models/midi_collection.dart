@@ -16,6 +16,7 @@ class MidiCollectionItem {
     this.sourceProjectId,
     this.sourceProjectName,
     this.bpm,
+    this.musicalKey,
     this.voice,
   });
 
@@ -34,6 +35,10 @@ class MidiCollectionItem {
   /// exports at unless the user picks another.
   final double? bpm;
 
+  /// The source project's key at copy time ("A minor", "F#m"…), written
+  /// into the clip's exported `.mid` file and its name.
+  final String? musicalKey;
+
   /// The preview instrument chosen for this clip (a `SynthVoice` name), or
   /// null to infer one from the clip's names.
   final String? voice;
@@ -46,6 +51,7 @@ class MidiCollectionItem {
         sourceProjectId: sourceProjectId,
         sourceProjectName: sourceProjectName,
         bpm: bpm,
+        musicalKey: musicalKey,
         voice: clearVoice ? null : (voice ?? this.voice),
       );
 
@@ -56,6 +62,7 @@ class MidiCollectionItem {
         if (sourceProjectId != null) 'sourceProjectId': sourceProjectId,
         if (sourceProjectName != null) 'sourceProjectName': sourceProjectName,
         if (bpm != null) 'bpm': bpm,
+        if (musicalKey != null) 'key': musicalKey,
         if (voice != null) 'voice': voice,
       };
 
@@ -72,6 +79,7 @@ class MidiCollectionItem {
       sourceProjectId: json['sourceProjectId'] as String?,
       sourceProjectName: json['sourceProjectName'] as String?,
       bpm: (json['bpm'] as num?)?.toDouble(),
+      musicalKey: json['key'] as String?,
       voice: json['voice'] as String?,
     );
   }

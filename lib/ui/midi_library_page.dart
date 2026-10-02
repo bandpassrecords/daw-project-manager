@@ -36,6 +36,7 @@ class _Entry {
     required this.clip,
     required this.bpm,
     required this.voice,
+    this.musicalKey,
     this.projectId,
     this.projectName,
     this.item,
@@ -48,6 +49,9 @@ class _Entry {
   final MidiClip clip;
   final double? bpm;
   final SynthVoice voice;
+
+  /// The source project's key, for exported files.
+  final String? musicalKey;
   final String? projectId;
   final String? projectName;
   final MidiCollectionItem? item;
@@ -74,6 +78,15 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
   /// The collection on show; null for "All clips".
   String? _collectionId;
   SynthVoice? _voiceFilter;
+
+  /// By project (or, in a collection, as added) or by tempo. Session-only,
+  /// like the instrument filter.
+  MidiLibraryArrangement _arrangement = MidiLibraryArrangement.project;
+
+  bool get _byTempo => _arrangement == MidiLibraryArrangement.tempo;
+
+  List<_Entry> _arranged(List<_Entry> entries) =>
+      _byTempo ? sortByTempo(entries, (e) => e.bpm) : entries;
 
   /// One tempo for every preview and export; null plays each clip at its own
   /// project's tempo.
@@ -115,6 +128,16 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
 
   double _bpmOf(_Entry e) => _tempo ?? e.bpm ?? 120;
 
+  MidiExport _exportOf(_Entry e) =>
+      MidiExport(e.clip, bpm: _bpmOf(e), musicalKey: e.musicalKey);
+
+  /// A collection's clips each at their own project's tempo and key, unless
+  /// the user set one tempo for all of them.
+  List<MidiExport> _collectionExports(MidiCollection c) => [
+        for (final i in c.items)
+          MidiExport(i.clip, bpm: _tempo ?? i.bpm, musicalKey: i.musicalKey),
+      ];
+
   void _snack(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
@@ -142,16 +165,17 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
 
   Future<void> _save(_Entry e) async {
     final l10n = AppLocalizations.of(context)!;
+    final export = _exportOf(e);
     try {
       final path = await FilePicker.saveFile(
         dialogTitle: l10n.midiClipSave,
-        fileName: midiClipFileName(e.clip),
+        fileName: export.fileName,
         type: FileType.custom,
         allowedExtensions: ['mid'],
       );
       if (path == null) return;
       final target = p.extension(path).isEmpty ? '$path.mid' : path;
-      await MidiClipService.writeMidiFile(e.clip, target, bpm: _bpmOf(e));
+      await MidiClipService.writeMidiFile(export, target);
       _snack(l10n.midiClipSaved(p.basename(target)));
     } catch (err) {
       _snack(l10n.midiClipSaveFailed(err.toString()));
@@ -178,8 +202,9 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     final dir = Directory(p.join(base.path, 'daw_project_manager', 'midi_drag',
         DateTime.now().microsecondsSinceEpoch.toString()));
     await dir.create(recursive: true);
-    final path = p.join(dir.path, midiClipFileName(e.clip));
-    await MidiClipService.writeMidiFile(e.clip, path, bpm: _bpmOf(e));
+    final export = _exportOf(e);
+    final path = p.join(dir.path, export.fileName);
+    await MidiClipService.writeMidiFile(export, path);
     return path;
   }
 
@@ -187,11 +212,10 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     final l10n = AppLocalizations.of(context)!;
     await shareMidiClips(
       context,
-      [e.clip],
+      [_exportOf(e)],
       text: e.projectName == null
           ? e.clip.label
           : l10n.midiClipShareText(e.clip.label, e.projectName!),
-      bpm: _bpmOf(e),
       origin: origin,
     );
   }
@@ -200,10 +224,8 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     final l10n = AppLocalizations.of(context)!;
     await shareMidiClips(
       context,
-      [for (final i in c.items) i.clip],
+      _collectionExports(c),
       text: l10n.midiCollectionShareText(c.name),
-      // A collection mixes tempos; one shared tempo only if the user set it.
-      bpm: _tempo,
       origin: origin,
     );
   }
@@ -212,9 +234,8 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     final l10n = AppLocalizations.of(context)!;
     await shareMidiClips(
       context,
-      [for (final i in c.items) i.clip],
+      _collectionExports(c),
       text: l10n.midiCollectionShareText(c.name),
-      bpm: _tempo,
       origin: origin,
       zipName: c.name,
     );
@@ -228,17 +249,9 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       );
       if (folder == null) return;
       final dir = Directory(p.join(folder, _safeFolderName(c.name)));
-      final names = uniqueFileNames(c.items.map((i) => midiClipFileName(i.clip)).toList());
-      await dir.create(recursive: true);
-      for (var i = 0; i < c.items.length; i++) {
-        final item = c.items[i];
-        await MidiClipService.writeMidiFile(
-          item.clip,
-          p.join(dir.path, names[i]),
-          bpm: _tempo ?? item.bpm,
-        );
-      }
-      _snack(l10n.midiClipsExported(c.items.length, dir.path));
+      final written =
+          await MidiClipService.exportAll(_collectionExports(c), dir);
+      _snack(l10n.midiClipsExported(written.length, dir.path));
     } catch (err) {
       _snack(l10n.midiClipSaveFailed(err.toString()));
     }
@@ -308,6 +321,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
             key: l.clip.contentKey,
             clip: l.clip,
             bpm: l.bpm,
+            musicalKey: l.musicalKey,
             voice: _libraryVoices[l.clip.contentKey] ?? inferSynthVoice(l.clip),
             projectId: l.projectId,
             projectName: l.projectName,
@@ -329,6 +343,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
             key: item.id,
             clip: item.clip,
             bpm: item.bpm,
+            musicalKey: item.musicalKey,
             voice: _voiceOfItem(item),
             projectId: item.sourceProjectId,
             projectName: item.sourceProjectName,
@@ -396,13 +411,34 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     );
   }
 
-  Widget _toolbar(BuildContext context, List<_Entry> entries) {
+  Widget _toolbar(BuildContext context, List<_Entry> entries,
+      {bool inCollection = false}) {
     final l10n = AppLocalizations.of(context)!;
     return Wrap(
       spacing: 12,
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
+        DropdownButton<MidiLibraryArrangement>(
+          key: const ValueKey('midi-library-arrangement'),
+          value: _arrangement,
+          underline: const SizedBox.shrink(),
+          items: [
+            DropdownMenuItem(
+              value: MidiLibraryArrangement.project,
+              child: Text(inCollection
+                  ? l10n.midiLibraryArrangeAdded
+                  : l10n.midiLibraryArrangeProject),
+            ),
+            DropdownMenuItem(
+              value: MidiLibraryArrangement.tempo,
+              child: Text(l10n.midiLibraryArrangeTempo),
+            ),
+          ],
+          onChanged: (a) {
+            if (a != null) setState(() => _arrangement = a);
+          },
+        ),
         DropdownButton<SynthVoice?>(
           value: _voiceFilter,
           underline: const SizedBox.shrink(),
@@ -454,14 +490,23 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     }
 
     final labels = midiClipListLabelsOf(l10n);
+    // By tempo, every view is grouped under its BPM, and each row names
+    // its project since the heading no longer does.
+    final byProject = grouped && !_byTempo;
     return MidiClipList(
       clips: clips,
       labels: labels,
       compact: isMobile,
-      grouped: grouped,
+      grouped: grouped || _byTempo,
       expandAllUpTo: 40,
-      groupLabelOf: (i) => entries[i].projectName,
-      detailPrefixOf: (i) => grouped
+      groupLabelOf: (i) {
+        if (!_byTempo) return entries[i].projectName;
+        final bpm = entries[i].bpm;
+        return bpm == null
+            ? l10n.midiLibraryTempoUnknown
+            : l10n.midiLibraryTempoGroup(formatPreviewBpm(bpm));
+      },
+      detailPrefixOf: (i) => byProject
           ? entries[i].clip.trackName
           : [entries[i].projectName, entries[i].clip.trackName]
               .whereType<String>()
@@ -513,6 +558,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
                     projectId: e.projectId,
                     projectName: e.projectName,
                     bpm: e.bpm,
+                    musicalKey: e.musicalKey,
                     pickedVoice: _libraryVoices[e.key],
                   ),
                 ],
@@ -545,7 +591,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
   ) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final entries = _libraryEntries(library, query);
+    final entries = _arranged(_libraryEntries(library, query));
     return ListView(
       padding: MobileUtils.getResponsivePadding(context),
       children: [
@@ -577,7 +623,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
   Widget _buildCollection(BuildContext context, MidiCollection c, String query) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final entries = _collectionEntries(c, query);
+    final entries = _arranged(_collectionEntries(c, query));
     return ListView(
       padding: MobileUtils.getResponsivePadding(context),
       children: [
@@ -637,7 +683,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
             ],
           ),
         const SizedBox(height: 8),
-        _toolbar(context, entries),
+        _toolbar(context, entries, inCollection: true),
         const SizedBox(height: 8),
         if (c.items.isEmpty)
           _empty(context, l10n.midiCollectionEmpty)

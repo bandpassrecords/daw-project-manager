@@ -7,8 +7,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../generated/l10n/app_localizations.dart';
-import '../models/midi_clip.dart';
 import '../services/midi/midi_clip_service.dart';
+import '../services/midi/midi_file_writer.dart';
 import '../utils/file_launcher.dart';
 
 /// Whether to try the OS share sheet for files on this platform. Mobile,
@@ -65,15 +65,14 @@ Future<File> zipMidiFiles(List<File> files, Directory dir, String zipName) async
 /// with [zipName], as a single `.zip` of them.
 ///
 /// Files are written to a fresh temp folder per share (named after the
-/// clips, carrying [bpm]), then handed to the OS share sheet. Where there is
+/// clips, each carrying its tempo and key), then handed to the OS share sheet. Where there is
 /// certainly no share sheet the folder is opened with a hint to drag the
 /// files into a chat; where we can't tell, a snackbar offers it instead (see
 /// [shareFollowUp]).
 Future<void> shareMidiClips(
   BuildContext context,
-  List<MidiClip> clips, {
+  List<MidiExport> clips, {
   required String text,
-  double? bpm,
   Rect? origin,
   String? zipName,
 }) async {
@@ -88,7 +87,7 @@ Future<void> shareMidiClips(
       'midi_share',
       DateTime.now().microsecondsSinceEpoch.toString(),
     ));
-    var files = await MidiClipService.exportAll(clips, dir, bpm: bpm);
+    var files = await MidiClipService.exportAll(clips, dir);
     if (zipName != null) {
       final zipDir = Directory(p.join(dir.path, 'zip'));
       await zipDir.create();

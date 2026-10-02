@@ -153,6 +153,31 @@ void main() {
     ]);
   });
 
+  test('writes the project key as a key signature when it reads as one', () {
+    final clip = _clip(const [
+      MidiNote(startTick: 0, lengthTicks: 240, pitch: 60, velocity: 100),
+    ]);
+    // F# minor: three sharps (0x03), minor (1).
+    expect(_Smf(encodeMidiClip(clip, musicalKey: 'F#m')).meta[0x59], [3, 1]);
+    // E♭ major: three flats, as a signed byte.
+    expect(_Smf(encodeMidiClip(clip, musicalKey: 'Eb major')).meta[0x59],
+        [0xFD, 0]);
+    expect(_Smf(encodeMidiClip(clip, musicalKey: 'C Blues')).meta[0x59], isNull);
+    expect(_Smf(encodeMidiClip(clip)).meta.containsKey(0x59), isFalse);
+  });
+
+  test('MidiExport carries tempo and key into the bytes and the name', () {
+    final clip = _clip(const [
+      MidiNote(startTick: 0, lengthTicks: 240, pitch: 60, velocity: 100),
+    ]);
+    final export = MidiExport(clip, bpm: 140, musicalKey: 'A minor');
+    expect(export.fileName, 'Bass - Riff (A minor).mid');
+    final smf = _Smf(export.encode());
+    final us = smf.meta[0x51]!;
+    expect((us[0] << 16) | (us[1] << 8) | us[2], (60000000 / 140).round());
+    expect(smf.meta[0x59], [0, 1]);
+  });
+
   test('midiEventBytes clamps values to what the kind can hold', () {
     expect(
         midiEventBytes(const MidiEvent(
@@ -185,6 +210,16 @@ void main() {
     test('replaces characters Windows rejects and trailing dots', () {
       final c = MidiClip(name: 'a/b:c*?"<>|.', ppq: 480, lengthTicks: 1, notes: const []);
       expect(midiClipFileName(c), 'a_b_c______.mid');
+    });
+
+    test('adds the project key in brackets, made safe and kept short', () {
+      final c = _clip(const []);
+      expect(midiClipFileName(c, musicalKey: 'F#m'), 'Bass - Riff (F#m).mid');
+      expect(midiClipFileName(c, musicalKey: '  '), 'Bass - Riff.mid');
+      expect(midiClipFileName(c, musicalKey: 'C/D'), 'Bass - Riff (C_D).mid');
+      expect(
+          midiClipFileName(c, musicalKey: 'A very long scale name indeed, really'),
+          'Bass - Riff (A very long scale name i).mid');
     });
 
     test('never produces an empty name', () {

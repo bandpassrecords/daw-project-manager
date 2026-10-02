@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'dart:typed_data';
+
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/services/daw_parsers/reaper_project_parser.dart';
+import 'package:daw_project_manager/services/midi/midi_file_writer.dart';
 
 /// Shaped like a real .rpp: nested chunks, quoted names, base64 plug-in
 /// state, and MIDI as tick-delta `E` lines.
@@ -234,6 +237,84 @@ void main() {
         (0, 11, 0x40),
         (240, 11, 0x7f),
       ]);
+    });
+
+    group('referenced .mid files', () {
+      const rpp = '''
+<REAPER_PROJECT 0.1 "7.0/win64" 0
+  TEMPO 120 4 4
+  <TRACK
+    NAME "Keys"
+    <ITEM
+      LENGTH 1
+      NAME "Here"
+      <SOURCE MIDI
+        FILE "MIDI/here.mid"
+      >
+    >
+    <ITEM
+      LENGTH 1
+      NAME "Gone"
+      <SOURCE MIDI
+        FILE "MIDI/gone.mid"
+      >
+    >
+    <ITEM
+      LENGTH 1
+      NAME "Pooled"
+      <SOURCE MIDIPOOL
+        HASDATA 1 960 QN
+        E 0 90 30 64
+        E 480 80 30 00
+      >
+    >
+  >
+>
+''';
+      final here = encodeMidiClip(const MidiClip(
+        name: 'here',
+        ppq: 480,
+        lengthTicks: 960,
+        notes: [MidiNote(startTick: 0, lengthTicks: 240, pitch: 72, velocity: 90)],
+        events: [
+          MidiEvent(tick: 120, kind: MidiEventKind.controller, number: 1, value: 50),
+        ],
+      ));
+      final asked = <String>[];
+      Uint8List? reader(String path) {
+        asked.add(path);
+        return path.endsWith('here.mid') ? here : null;
+      }
+
+      test('are read relative to the project, events and all', () {
+        final midi = ReaperProjectParser(rpp,
+                projectDir: '/songs/demo', readFile: reader)
+            .readMidi();
+        final clip = midi.clips.firstWhere((c) => c.name == 'Here');
+        expect(clip.ppq, 480);
+        expect(clip.notes.single.pitch, 72);
+        expect(clip.events.single.value, 50);
+        expect(asked.first, endsWith('here.mid'));
+        expect(asked.first, contains('demo'));
+      });
+
+      test('a missing one is reported as the project names it', () {
+        final midi = ReaperProjectParser(rpp,
+                projectDir: '/songs/demo', readFile: reader)
+            .readMidi();
+        expect(midi.missingFiles, ['MIDI/gone.mid']);
+        expect(midi.clips.map((c) => c.name), containsAll(['Here', 'Pooled']));
+      });
+
+      test('without a file reader they are skipped, not reported', () {
+        final midi = ReaperProjectParser(rpp).readMidi();
+        expect(midi.missingFiles, isEmpty);
+        expect(midi.clips.map((c) => c.name), ['Pooled']);
+      });
+
+      test('pooled MIDI counts as a MIDI track', () {
+        expect(ReaperProjectParser(rpp).readStats().midiTracks, 1);
+      });
     });
 
     test('a clip of notes alone has no events and keeps its old identity', () {

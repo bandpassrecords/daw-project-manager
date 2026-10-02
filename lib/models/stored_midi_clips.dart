@@ -15,6 +15,7 @@ class StoredMidiClips {
     required this.extractedAt,
     required this.clips,
     this.sourceModifiedAt,
+    this.missingFiles = const [],
   });
 
   /// When the clips were read. A Drive or backup merge keeps the newer read.
@@ -25,6 +26,11 @@ class StoredMidiClips {
   final DateTime? sourceModifiedAt;
 
   final List<MidiClip> clips;
+
+  /// `.mid` files the project references that couldn't be found or read at
+  /// that extraction, as the project names them — so the page can say so
+  /// rather than quietly show fewer clips.
+  final List<String> missingFiles;
 
   /// For Hive: notes as raw bytes.
   Map<String, dynamic> toMap() => _toMap((bytes) => bytes);
@@ -37,6 +43,7 @@ class StoredMidiClips {
         if (sourceModifiedAt != null)
           'sourceModifiedAt': sourceModifiedAt!.toIso8601String(),
         'clips': [for (final c in clips) midiClipToMap(c, bytes: bytes)],
+        if (missingFiles.isNotEmpty) 'missingFiles': missingFiles,
       };
 
   /// Reads either form ([toMap] or [toJson]). Null when [value] isn't a
@@ -54,6 +61,10 @@ class StoredMidiClips {
       sourceModifiedAt:
           DateTime.tryParse(value['sourceModifiedAt'] as String? ?? ''),
       clips: clips,
+      missingFiles: [
+        for (final f in (value['missingFiles'] as List?) ?? const [])
+          if (f is String) f,
+      ],
     );
   }
 

@@ -4015,5 +4015,12 @@
   "midiCcAttack": "Attack",
   "midiCcCutoff": "Cutoff",
   "midiCcReverb": "Hall",
-  "midiCcChorus": "Chorus"
+  "midiCcChorus": "Chorus",
+  "filterHasMidi": "Nur Projekte mit MIDI",
+  "midiClipsMissingFiles": "{count, plural, =1{Eine referenzierte MIDI-Datei wurde nicht gefunden oder ist nicht lesbar: {files}} other{{count} referenzierte MIDI-Dateien wurden nicht gefunden oder sind nicht lesbar: {files}}}",
+  "midiLibraryArrangeProject": "Nach Projekt",
+  "midiLibraryArrangeAdded": "Wie hinzugefügt",
+  "midiLibraryArrangeTempo": "Nach Tempo (BPM)",
+  "midiLibraryTempoGroup": "{bpm} BPM",
+  "midiLibraryTempoUnknown": "Tempo unbekannt"
 }

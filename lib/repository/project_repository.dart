@@ -1124,6 +1124,7 @@ class ProjectRepository {
               extractedAt: DateTime.now(),
               sourceModifiedAt: lastModified,
               clips: clips,
+              missingFiles: extractedMetadata?.missingMidiFiles ?? const [],
             ),
     );
   }
@@ -1538,6 +1539,7 @@ class ProjectRepository {
             extractedAt: DateTime.now(),
             sourceModifiedAt: modified,
             clips: clips,
+            missingFiles: extractedMetadata.missingMidiFiles ?? const [],
           ),
         );
       }

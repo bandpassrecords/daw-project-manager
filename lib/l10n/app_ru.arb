@@ -4015,5 +4015,12 @@
   "midiCcAttack": "Атака",
   "midiCcCutoff": "Срез",
   "midiCcReverb": "Реверберация",
-  "midiCcChorus": "Хорус"
+  "midiCcChorus": "Хорус",
+  "filterHasMidi": "Только проекты с MIDI",
+  "midiClipsMissingFiles": "{count, plural, =1{Связанный MIDI-файл не найден или не читается: {files}} few{{count} связанных MIDI-файла не найдены или не читаются: {files}} many{{count} связанных MIDI-файлов не найдены или не читаются: {files}} other{{count} связанных MIDI-файла не найдены или не читаются: {files}}}",
+  "midiLibraryArrangeProject": "По проектам",
+  "midiLibraryArrangeAdded": "В порядке добавления",
+  "midiLibraryArrangeTempo": "По темпу (BPM)",
+  "midiLibraryTempoGroup": "{bpm} BPM",
+  "midiLibraryTempoUnknown": "Темп неизвестен"
 }

@@ -4015,5 +4015,12 @@
   "midiCcAttack": "起音",
   "midiCcCutoff": "截止频率",
   "midiCcReverb": "混响",
-  "midiCcChorus": "合唱"
+  "midiCcChorus": "合唱",
+  "filterHasMidi": "仅显示含 MIDI 的项目",
+  "midiClipsMissingFiles": "{count, plural, other{有 {count} 个引用的 MIDI 文件找不到或无法读取：{files}}}",
+  "midiLibraryArrangeProject": "按项目",
+  "midiLibraryArrangeAdded": "按添加顺序",
+  "midiLibraryArrangeTempo": "按速度 (BPM)",
+  "midiLibraryTempoGroup": "{bpm} BPM",
+  "midiLibraryTempoUnknown": "速度未知"
 }

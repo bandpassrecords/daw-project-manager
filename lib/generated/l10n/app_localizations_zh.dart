@@ -6116,4 +6116,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiCcChorus => '合唱';
+
+  @override
+  String get filterHasMidi => '仅显示含 MIDI 的项目';
+
+  @override
+  String midiClipsMissingFiles(int count, String files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 个引用的 MIDI 文件找不到或无法读取：$files',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiLibraryArrangeProject => '按项目';
+
+  @override
+  String get midiLibraryArrangeAdded => '按添加顺序';
+
+  @override
+  String get midiLibraryArrangeTempo => '按速度 (BPM)';
+
+  @override
+  String midiLibraryTempoGroup(String bpm) {
+    return '$bpm BPM';
+  }
+
+  @override
+  String get midiLibraryTempoUnknown => '速度未知';
 }

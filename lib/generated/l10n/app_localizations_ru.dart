@@ -6371,4 +6371,37 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiCcChorus => 'Хорус';
+
+  @override
+  String get filterHasMidi => 'Только проекты с MIDI';
+
+  @override
+  String midiClipsMissingFiles(int count, String files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count связанных MIDI-файла не найдены или не читаются: $files',
+      many: '$count связанных MIDI-файлов не найдены или не читаются: $files',
+      few: '$count связанных MIDI-файла не найдены или не читаются: $files',
+      one: 'Связанный MIDI-файл не найден или не читается: $files',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiLibraryArrangeProject => 'По проектам';
+
+  @override
+  String get midiLibraryArrangeAdded => 'В порядке добавления';
+
+  @override
+  String get midiLibraryArrangeTempo => 'По темпу (BPM)';
+
+  @override
+  String midiLibraryTempoGroup(String bpm) {
+    return '$bpm BPM';
+  }
+
+  @override
+  String get midiLibraryTempoUnknown => 'Темп неизвестен';
 }

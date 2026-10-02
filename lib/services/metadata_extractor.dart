@@ -13,6 +13,7 @@ import 'daw_parsers/cubase_project_parser.dart';
 import 'daw_parsers/flp_project_parser.dart';
 import 'daw_parsers/reaper_project_parser.dart';
 import 'daw_parsers/studio_one_project_parser.dart';
+import 'midi/midi_file_reader.dart';
 
 /// Represents a scale pair (root note and scale type)
 class _ScalePair {
@@ -75,6 +76,11 @@ class ProjectMetadata {
   /// a clip reader, a parse failure); empty when it read them and found none.
   final List<MidiClip>? midiClips;
 
+  /// `.mid` files the project references that couldn't be found or read, as
+  /// the project names them. Read alongside [midiClips], so null when they
+  /// weren't read; empty when every referenced file was there.
+  final List<String>? missingMidiFiles;
+
   ProjectMetadata({
     this.bpm,
     this.key,
@@ -84,6 +90,7 @@ class ProjectMetadata {
     this.markers,
     this.stats,
     this.midiClips,
+    this.missingMidiFiles,
   });
 }
 
@@ -139,6 +146,7 @@ class MetadataExtractor {
     List<ProjectMarker>? markers;
     ProjectStats? stats;
     List<MidiClip>? midiClips;
+    List<String>? missingMidiFiles;
 
     // Try to extract from project file first
     if (ext == '.als' || ext == '.alp') {
@@ -176,6 +184,7 @@ class MetadataExtractor {
       markers = metadata.markers;
       stats = metadata.stats;
       midiClips = metadata.midiClips;
+      missingMidiFiles = metadata.missingMidiFiles;
     } else if (ext == '.mgd') {
       final metadata = await _extractFromMagdaFile(filePath);
       bpm = metadata.bpm ?? bpm;
@@ -220,6 +229,7 @@ class MetadataExtractor {
       markers: markers,
       stats: stats,
       midiClips: midiClips,
+      missingMidiFiles: missingMidiFiles,
     );
   }
 
@@ -806,13 +816,22 @@ class MetadataExtractor {
       final markers = extractReaperMarkers(content);
       ProjectStats? stats;
       List<MidiClip>? clips;
+      List<String>? missing;
+      final projectDir = p.dirname(filePath);
       try {
-        (stats, clips) = await Isolate.run(() {
-          final parser = ReaperProjectParser(content);
-          final clips = parser.readMidiClips();
+        (stats, clips, missing) = await Isolate.run(() {
+          final parser = ReaperProjectParser(
+            content,
+            projectDir: projectDir,
+            readFile: readBytesIfExists,
+          );
+          final midi = parser.readMidi();
           return (
-            parser.readStats(countMidiClips: false).withMidiClipCount(clips.length),
-            clips,
+            parser
+                .readStats(countMidiClips: false)
+                .withMidiClipCount(midi.clips.length),
+            midi.clips,
+            midi.missingFiles,
           );
         });
       } catch (_) {
@@ -827,6 +846,7 @@ class MetadataExtractor {
         markers: markers,
         stats: stats,
         midiClips: clips,
+        missingMidiFiles: missing,
       );
     } catch (_) {
       return ProjectMetadata();

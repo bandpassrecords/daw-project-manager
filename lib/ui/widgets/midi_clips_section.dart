@@ -213,19 +213,29 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     }
   }
 
+  /// The project's key, which exported files carry in their name and as a
+  /// key signature.
+  String? get _projectKey {
+    final key = widget.project.musicalKey?.trim();
+    return key == null || key.isEmpty ? null : key;
+  }
+
+  MidiExport _export(MidiClip clip) =>
+      MidiExport(clip, bpm: _tempo, musicalKey: _projectKey);
+
   Future<void> _save(int index) async {
     final l10n = AppLocalizations.of(context)!;
-    final clip = _clips[index];
+    final export = _export(_clips[index]);
     try {
       final path = await FilePicker.saveFile(
         dialogTitle: l10n.midiClipSave,
-        fileName: midiClipFileName(clip),
+        fileName: export.fileName,
         type: FileType.custom,
         allowedExtensions: ['mid'],
       );
       if (path == null) return;
       final target = p.extension(path).isEmpty ? '$path.mid' : path;
-      await MidiClipService.writeMidiFile(clip, target, bpm: _tempo);
+      await MidiClipService.writeMidiFile(export, target);
       _snack(l10n.midiClipSaved(p.basename(target)));
     } catch (e) {
       _snack(l10n.midiClipSaveFailed(e.toString()));
@@ -241,9 +251,8 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
       );
       if (folder == null) return;
       final written = await MidiClipService.exportAll(
-        _clips,
+        [for (final c in _clips) _export(c)],
         Directory(folder),
-        bpm: _tempo,
       );
       _snack(l10n.midiClipsExported(written.length, folder));
     } catch (e) {
@@ -256,9 +265,8 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     final clip = _clips[index];
     await shareMidiClips(
       context,
-      [clip],
+      [_export(clip)],
       text: l10n.midiClipShareText(clip.label, widget.project.displayName),
-      bpm: _tempo,
       origin: origin,
     );
   }
@@ -267,9 +275,8 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     final l10n = AppLocalizations.of(context)!;
     await shareMidiClips(
       context,
-      _clips,
+      [for (final c in _clips) _export(c)],
       text: l10n.midiClipsShareAllText(widget.project.displayName),
-      bpm: _tempo,
       origin: origin,
     );
   }
@@ -283,10 +290,16 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
       p.join('midi_drag', DateTime.now().microsecondsSinceEpoch.toString()),
     );
     await dir.create(recursive: true);
-    final path = p.join(dir.path, midiClipFileName(clip));
-    await MidiClipService.writeMidiFile(clip, path, bpm: _tempo);
+    final export = _export(clip);
+    final path = p.join(dir.path, export.fileName);
+    await MidiClipService.writeMidiFile(export, path);
     return path;
   }
+
+  /// The last part of a path, whichever separator the project was saved
+  /// with — a REAPER project from Windows names its files with backslashes.
+  static String _fileNameOf(String path) =>
+      path.split(RegExp(r'[\\/]')).last;
 
   void _snack(String message) {
     if (!mounted) return;
@@ -383,6 +396,32 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
               ],
             ),
           ),
+        // Referenced .mid files that weren't there at the last read (#143):
+        // said out loud, so fewer clips than expected has a reason.
+        if (stored != null && stored.missingFiles.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Tooltip(
+              message: stored.missingFiles.join('\n'),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.warning_amber_rounded,
+                      size: 16, color: theme.colorScheme.error),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      l10n.midiClipsMissingFiles(
+                        stored.missingFiles.length,
+                        stored.missingFiles.map(_fileNameOf).join(', '),
+                      ),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         if (clips.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 4),
@@ -475,6 +514,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
                   // this page — the same thing the MIDI tab saves, so a
                   // collection clip plays at its project's BPM either way.
                   bpm: _projectBpm,
+                  musicalKey: _projectKey,
                   pickedVoice: _voiceOverrides[_clips[index].contentKey],
                 ),
               ],
