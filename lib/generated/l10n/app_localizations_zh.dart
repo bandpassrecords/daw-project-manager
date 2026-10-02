@@ -6036,4 +6036,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiCollectionShareZip => '以 ZIP 分享';
+
+  @override
+  String get midiCollectionOpen => '打开';
+
+  @override
+  String get midiPreviewVolume => '试听音量';
 }

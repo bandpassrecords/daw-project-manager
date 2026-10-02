@@ -409,7 +409,8 @@ class _RollColors {
       blackKey: cs.onSurface.withValues(alpha: 0.75),
       keyText: cs.onSurfaceVariant,
       ruler: cs.surfaceContainerHigh,
-      playhead: cs.error,
+      // The app's own accent, so the line belongs to whichever theme is on.
+      playhead: cs.primary,
     );
   }
 }

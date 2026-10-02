@@ -2808,6 +2808,25 @@ final midiLibraryProvider = StreamProvider<List<LibraryClip>>((ref) {
   return controller.stream;
 });
 
+/// A request to show one MIDI collection — from the "Added to …" snackbar's
+/// Open action, which can fire on any page. The dashboard answers by
+/// switching to the MIDI tab; the MIDI tab answers by selecting the
+/// collection and calling [MidiCollectionRequestNotifier.consumed], so a
+/// request is acted on once even if the tab is only built afterwards.
+class MidiCollectionRequestNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void open(String collectionId) => state = collectionId;
+
+  void consumed() => state = null;
+}
+
+final midiCollectionToOpenProvider =
+    NotifierProvider<MidiCollectionRequestNotifier, String?>(
+  MidiCollectionRequestNotifier.new,
+);
+
 /// The current profile's MIDI collections, live.
 final midiCollectionsProvider = StreamProvider<List<MidiCollection>>((
   ref,
@@ -3204,6 +3223,26 @@ class DesktopPlayerVolumeNotifier extends Notifier<double> {
     if (clamped != state) state = clamped;
   }
 }
+
+/// The MIDI clip preview volume, shared by every MIDI player in the app (a
+/// project's clips, the MIDI tab, the piano roll) and remembered across
+/// launches by [MidiPreviewVolumeStore].
+class MidiPreviewVolumeNotifier extends Notifier<double> {
+  @override
+  double build() => MidiPreviewVolumeStore.current;
+
+  void set(double volume) {
+    final clamped = clampVolume(volume);
+    if (clamped == state) return;
+    state = clamped;
+    MidiPreviewVolumeStore.save(clamped);
+  }
+}
+
+final midiPreviewVolumeProvider =
+    NotifierProvider<MidiPreviewVolumeNotifier, double>(
+  MidiPreviewVolumeNotifier.new,
+);
 
 final desktopPlayerVolumeProvider =
     NotifierProvider<DesktopPlayerVolumeNotifier, double>(

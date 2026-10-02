@@ -10450,6 +10450,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share as ZIP'**
   String get midiCollectionShareZip;
+
+  /// Snackbar action after adding clips to a collection: go to the MIDI tab with that collection open
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get midiCollectionOpen;
+
+  /// Label and tooltip of the volume slider for MIDI clip previews
+  ///
+  /// In en, this message translates to:
+  /// **'Preview volume'**
+  String get midiPreviewVolume;
 }
 
 class _AppLocalizationsDelegate

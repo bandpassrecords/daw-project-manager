@@ -3989,5 +3989,7 @@
   "midiClipCopyUnavailable": "Копирование файлов здесь недоступно.",
   "midiOpenSourceProject": "Открыть проект",
   "midiSourceProjectGone": "Проекта, из которого взят этот клип, больше нет в библиотеке.",
-  "midiCollectionShareZip": "Поделиться ZIP-архивом"
+  "midiCollectionShareZip": "Поделиться ZIP-архивом",
+  "midiCollectionOpen": "Открыть",
+  "midiPreviewVolume": "Громкость прослушивания"
 }

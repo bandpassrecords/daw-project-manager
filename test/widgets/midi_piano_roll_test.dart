@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
@@ -213,7 +214,8 @@ void main() {
       final player = MidiPreviewPlayer();
       addTearDown(player.dispose);
       var toggles = 0;
-      await tester.pumpWidget(MaterialApp(
+      // The window reads the shared preview volume, so it needs a scope.
+      await tester.pumpWidget(ProviderScope(child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
@@ -233,11 +235,12 @@ void main() {
             ),
           ),
         ),
-      ));
+      )));
 
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
       expect(find.text('Bass – Riff'), findsOneWidget);
+      expect(find.byType(Slider), findsWidgets, reason: 'the volume control');
       expect(find.text('Night Drive'), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.play_circle_outline));

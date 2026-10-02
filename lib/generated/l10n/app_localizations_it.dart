@@ -6305,4 +6305,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get midiCollectionShareZip => 'Condividi come ZIP';
+
+  @override
+  String get midiCollectionOpen => 'Apri';
+
+  @override
+  String get midiPreviewVolume => 'Volume dell\'anteprima';
 }

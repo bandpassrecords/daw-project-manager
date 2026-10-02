@@ -6106,4 +6106,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiCollectionShareZip => 'ZIPで共有';
+
+  @override
+  String get midiCollectionOpen => '開く';
+
+  @override
+  String get midiPreviewVolume => 'プレビュー音量';
 }

@@ -3989,5 +3989,7 @@
   "midiClipCopyUnavailable": "Copiar archivos no está disponible aquí.",
   "midiOpenSourceProject": "Abrir proyecto",
   "midiSourceProjectGone": "El proyecto de origen de este clip ya no está en tu biblioteca.",
-  "midiCollectionShareZip": "Compartir como ZIP"
+  "midiCollectionShareZip": "Compartir como ZIP",
+  "midiCollectionOpen": "Abrir",
+  "midiPreviewVolume": "Volumen de la escucha"
 }

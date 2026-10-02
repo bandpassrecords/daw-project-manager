@@ -6335,4 +6335,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get midiCollectionShareZip => 'Partager en ZIP';
+
+  @override
+  String get midiCollectionOpen => 'Ouvrir';
+
+  @override
+  String get midiPreviewVolume => 'Volume de l’aperçu';
 }

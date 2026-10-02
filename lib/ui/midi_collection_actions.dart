@@ -38,6 +38,9 @@ Future<void> addToCollectionFlow(
   if (items.isEmpty) return;
   final l10n = AppLocalizations.of(context)!;
   final messenger = ScaffoldMessenger.of(context);
+  // Captured now: by the time the snackbar's Open is pressed this context
+  // may be gone (a closed dialog, a page popped).
+  final navigator = Navigator.of(context, rootNavigator: true);
   final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
   final repo = await ref.read(repositoryProvider.future);
   final collections = await repo.midiCollections.all();
@@ -94,12 +97,26 @@ Future<void> addToCollectionFlow(
   }
 
   final added = await repo.midiCollections.addItems(target.id, items);
+  final collectionId = target.id;
+  // Only when there is a MIDI tab to open it in (the user may hide it).
+  final canOpen = ref.read(visibleTabsProvider).contains(AppTab.midi);
   messenger.showSnackBar(SnackBar(
     content: Text(
       added == 0
           ? l10n.midiCollectionAlreadyIn(target.name)
           : l10n.midiCollectionAdded(added, target.name),
     ),
+    action: canOpen
+        ? SnackBarAction(
+            label: l10n.midiCollectionOpen,
+            onPressed: () {
+              // Back to the dashboard (from a project page, say), then let
+              // it and the MIDI tab take the request.
+              navigator.popUntil((route) => route.isFirst);
+              ref.read(midiCollectionToOpenProvider.notifier).open(collectionId);
+            },
+          )
+        : null,
   ));
 }
 

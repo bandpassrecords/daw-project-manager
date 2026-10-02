@@ -1768,6 +1768,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       if (mounted) setState(() => _updateVisibleTabs(next));
     });
 
+    // "Open" on an "Added to collection" snackbar: show the MIDI tab. The tab
+    // itself selects the collection (see midiCollectionToOpenProvider).
+    ref.listen<String?>(midiCollectionToOpenProvider, (_, next) {
+      if (next == null) return;
+      final i = _currentVisibleTabs.indexOf(AppTab.midi);
+      if (i >= 0 && _tabController.index != i) _tabController.animateTo(i);
+    });
+
     // The background initial scan at app launch also drives the Rescan
     // button's icon (see isScanning below), so flash the same success
     // checkmark when it finishes as a manual rescan gets.

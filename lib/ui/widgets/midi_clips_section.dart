@@ -24,6 +24,7 @@ import 'midi_clip_list.dart';
 import '../midi_piano_roll_dialog.dart';
 import '../midi_preview_player.dart';
 import 'midi_tempo_control.dart';
+import 'midi_volume_control.dart';
 
 /// A project's MIDI clips: the ones stored by the last extraction (see
 /// `MidiClipStore`), previewed through the built-in synth, saved, shared or
@@ -92,6 +93,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
   void initState() {
     super.initState();
     _player.addListener(_onPlayer);
+    _player.volume = ref.read(midiPreviewVolumeProvider);
     _attach();
   }
 
@@ -312,6 +314,9 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     final clips = _clips;
     final isMobile = MobileUtils.isMobile();
     final count = stored?.clips.length ?? widget.project.stats?.midiClipCount;
+    // One volume for every MIDI preview in the app; follow it live.
+    ref.listen<double>(midiPreviewVolumeProvider, (_, v) => _player.setVolume(v));
+    final volume = ref.watch(midiPreviewVolumeProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,16 +399,28 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
         if (clips.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: MidiTempoControl(
-              bpm: _tempo,
-              onChanged: _setTempo,
-              onReset: (_tempoOverride != null && _projectBpm != null)
-                  ? () => _setTempo(_projectBpm!)
-                  : null,
-              resetTooltip: _projectBpm == null
-                  ? null
-                  : l10n.midiTempoReset(formatPreviewBpm(_projectBpm!)),
-              labels: midiTempoLabelsOf(l10n),
+            child: Wrap(
+              spacing: 16,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                MidiTempoControl(
+                  bpm: _tempo,
+                  onChanged: _setTempo,
+                  onReset: (_tempoOverride != null && _projectBpm != null)
+                      ? () => _setTempo(_projectBpm!)
+                      : null,
+                  resetTooltip: _projectBpm == null
+                      ? null
+                      : l10n.midiTempoReset(formatPreviewBpm(_projectBpm!)),
+                  labels: midiTempoLabelsOf(l10n),
+                ),
+                MidiVolumeControl(
+                  volume: volume,
+                  onChanged: ref.read(midiPreviewVolumeProvider.notifier).set,
+                  labels: midiVolumeLabelsOf(l10n),
+                ),
+              ],
             ),
           ),
         const SizedBox(height: 8),
@@ -498,6 +515,12 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     );
   }
 }
+
+MidiVolumeLabels midiVolumeLabelsOf(AppLocalizations l10n) => MidiVolumeLabels(
+      volume: l10n.midiPreviewVolume,
+      mute: l10n.volumeMute,
+      unmute: l10n.volumeUnmute,
+    );
 
 MidiTempoLabels midiTempoLabelsOf(AppLocalizations l10n) => MidiTempoLabels(
       unit: l10n.bpm,

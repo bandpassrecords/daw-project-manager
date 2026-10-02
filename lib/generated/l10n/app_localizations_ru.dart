@@ -6291,4 +6291,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiCollectionShareZip => 'Поделиться ZIP-архивом';
+
+  @override
+  String get midiCollectionOpen => 'Открыть';
+
+  @override
+  String get midiPreviewVolume => 'Громкость прослушивания';
 }

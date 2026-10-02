@@ -23,7 +23,9 @@ import 'midi_piano_roll_dialog.dart';
 import 'project_detail_page.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_clip_list.dart';
-import 'widgets/midi_clips_section.dart' show midiClipListLabelsOf, midiTempoLabelsOf, synthVoiceName;
+import 'widgets/midi_clips_section.dart'
+    show midiClipListLabelsOf, midiTempoLabelsOf, midiVolumeLabelsOf, synthVoiceName;
+import 'widgets/midi_volume_control.dart';
 import 'widgets/midi_tempo_control.dart';
 
 /// One row the page shows, whichever view it comes from: a library clip or a
@@ -85,6 +87,19 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
   void initState() {
     super.initState();
     _player.addListener(_onPlayer);
+    _player.volume = ref.read(midiPreviewVolumeProvider);
+    // A request made before this tab was built (the Open action switched to
+    // it) is waiting in the provider.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final pending = ref.read(midiCollectionToOpenProvider);
+      if (pending != null) _showRequested(pending);
+    });
+  }
+
+  void _showRequested(String collectionId) {
+    setState(() => _collectionId = collectionId);
+    ref.read(midiCollectionToOpenProvider.notifier).consumed();
   }
 
   void _onPlayer() {
@@ -342,6 +357,10 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isMobile = MobileUtils.isMobile();
+    ref.listen<String?>(midiCollectionToOpenProvider, (_, next) {
+      if (next != null) _showRequested(next);
+    });
+    ref.listen<double>(midiPreviewVolumeProvider, (_, v) => _player.setVolume(v));
     final libraryAsync = ref.watch(midiLibraryProvider);
     final collections = ref.watch(midiCollectionsProvider).value ?? const [];
     final query = ref.watch(midiLibrarySearchProvider);
@@ -421,6 +440,11 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
                 },
           resetTooltip: l10n.midiTempoResetAuto,
           labels: midiTempoLabelsOf(l10n),
+        ),
+        MidiVolumeControl(
+          volume: ref.watch(midiPreviewVolumeProvider),
+          onChanged: ref.read(midiPreviewVolumeProvider.notifier).set,
+          labels: midiVolumeLabelsOf(l10n),
         ),
       ],
     );

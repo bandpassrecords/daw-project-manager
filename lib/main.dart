@@ -778,6 +778,7 @@ Future<void> _main(List<String> args) async {
   // Read the remembered playback volume before any player can be built, so
   // the first one opens at the user's level rather than at full volume.
   await PlayerVolumeStore.load();
+  await MidiPreviewVolumeStore.load();
 
   // Decided now, before this run writes a single setting: an empty settings
   // box means a first-ever launch. An install that has run before, but on a

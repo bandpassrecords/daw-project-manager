@@ -6303,4 +6303,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiCollectionShareZip => 'Als ZIP teilen';
+
+  @override
+  String get midiCollectionOpen => 'Öffnen';
+
+  @override
+  String get midiPreviewVolume => 'Vorhör-Lautstärke';
 }

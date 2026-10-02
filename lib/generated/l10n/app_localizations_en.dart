@@ -6262,4 +6262,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get midiCollectionShareZip => 'Share as ZIP';
+
+  @override
+  String get midiCollectionOpen => 'Open';
+
+  @override
+  String get midiPreviewVolume => 'Preview volume';
 }

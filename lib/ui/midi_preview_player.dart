@@ -40,6 +40,15 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// The clip being rendered, if any.
   String? preparingKey;
 
+  /// Playback volume, 0…1, applied to every preview this player plays.
+  double volume = 1.0;
+
+  /// Sets [volume], live on whatever is playing now.
+  Future<void> setVolume(double value) async {
+    volume = value.clamp(0.0, 1.0);
+    await _player?.setVolume(volume);
+  }
+
   /// Whether the playing clip ([playingKey]) is paused. Only the piano roll
   /// pauses; list rows play and stop.
   bool paused = false;
@@ -78,6 +87,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
         _lastPositionAt = DateTime.now();
       });
       await player.stop();
+      await player.setVolume(volume);
       _lastPosition = Duration.zero;
       _lastPositionAt = DateTime.now();
       await player.play(DeviceFileSource(path));

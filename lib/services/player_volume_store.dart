@@ -63,6 +63,44 @@ class PlayerVolumeStore {
   }
 }
 
+/// The MIDI clip preview volume, remembered across launches — separate from
+/// [PlayerVolumeStore], because a synth sketch of a clip and a finished
+/// mixdown sit at very different loudness, and one shared level would always
+/// be wrong for one of them.
+///
+/// Device-local, like [PlayerVolumeStore]: in neither Drive sync nor backup.
+class MidiPreviewVolumeStore {
+  const MidiPreviewVolumeStore._();
+
+  static const String key = 'midi_preview_volume';
+  static double _cached = PlayerVolumeStore.defaultVolume;
+
+  static double get current => _cached;
+
+  @visibleForTesting
+  static set cachedForTest(double value) => _cached = value;
+
+  static Future<double> load() async {
+    try {
+      final box = await Hive.openBox<String>(PlayerVolumeStore.boxName);
+      _cached = parseVolume(box.get(key));
+    } catch (e) {
+      debugPrint('[MidiPreviewVolume] failed to load: $e');
+    }
+    return _cached;
+  }
+
+  static Future<void> save(double volume) async {
+    _cached = clampVolume(volume);
+    try {
+      final box = await Hive.openBox<String>(PlayerVolumeStore.boxName);
+      await box.put(key, _cached.toString());
+    } catch (e) {
+      debugPrint('[MidiPreviewVolume] failed to save: $e');
+    }
+  }
+}
+
 /// [volume] held inside 0…1.
 double clampVolume(double volume) => volume.clamp(0.0, 1.0);
 

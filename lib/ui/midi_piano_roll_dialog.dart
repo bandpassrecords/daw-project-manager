@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/midi_clip.dart';
+import '../providers/providers.dart';
 import '../utils/mobile_utils.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_piano_roll.dart';
+import 'widgets/midi_volume_control.dart';
 
 /// Opens [clip] in a large piano roll, with transport wired to [player].
 ///
@@ -54,17 +57,37 @@ Future<void> showMidiPianoRoll(
       openProject: l10n.midiOpenSourceProject,
     ),
   );
+  // The shared preview volume, live: the window's slider and the list's move
+  // together, and either one changes what is playing.
+  final withVolume = Consumer(
+    builder: (context, ref, _) {
+      final volume = ref.watch(midiPreviewVolumeProvider);
+      return MidiPianoRollWindow.copyOf(
+        body,
+        volume: volume,
+        onVolumeChanged: (v) {
+          ref.read(midiPreviewVolumeProvider.notifier).set(v);
+          player.setVolume(v);
+        },
+        volumeLabels: MidiVolumeLabels(
+          volume: l10n.midiPreviewVolume,
+          mute: l10n.volumeMute,
+          unmute: l10n.volumeUnmute,
+        ),
+      );
+    },
+  );
   return showDialog<void>(
     context: context,
     builder: (context) {
-      if (MobileUtils.isMobile()) return Dialog.fullscreen(child: body);
+      if (MobileUtils.isMobile()) return Dialog.fullscreen(child: withVolume);
       final size = MediaQuery.sizeOf(context);
       return Dialog(
         insetPadding: const EdgeInsets.all(24),
         child: SizedBox(
           width: size.width * 0.9,
           height: size.height * 0.85,
-          child: body,
+          child: withVolume,
         ),
       );
     },
@@ -101,7 +124,39 @@ class MidiPianoRollWindow extends StatelessWidget {
     required this.labels,
     this.onCopy,
     this.onOpenProject,
+    this.volume,
+    this.onVolumeChanged,
+    this.volumeLabels,
   });
+
+  /// [base] with a volume control added.
+  factory MidiPianoRollWindow.copyOf(
+    MidiPianoRollWindow base, {
+    required double volume,
+    required ValueChanged<double> onVolumeChanged,
+    required MidiVolumeLabels volumeLabels,
+  }) =>
+      MidiPianoRollWindow(
+        clip: base.clip,
+        title: base.title,
+        subtitle: base.subtitle,
+        player: base.player,
+        playerKey: base.playerKey,
+        bpm: base.bpm,
+        onPlay: base.onPlay,
+        labels: base.labels,
+        onCopy: base.onCopy,
+        onOpenProject: base.onOpenProject,
+        volume: volume,
+        onVolumeChanged: onVolumeChanged,
+        volumeLabels: volumeLabels,
+      );
+
+  /// The shared preview volume; the control shows only when all three of
+  /// [volume], [onVolumeChanged] and [volumeLabels] are given.
+  final double? volume;
+  final ValueChanged<double>? onVolumeChanged;
+  final MidiVolumeLabels? volumeLabels;
 
   final MidiClip clip;
   final String title;
@@ -203,6 +258,15 @@ class MidiPianoRollWindow extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (volume != null &&
+                      onVolumeChanged != null &&
+                      volumeLabels != null)
+                    MidiVolumeControl(
+                      volume: volume!,
+                      onChanged: onVolumeChanged!,
+                      labels: volumeLabels!,
+                      sliderWidth: 90,
+                    ),
                   if (onCopy != null)
                     IconButton(
                       tooltip: labels.copy,

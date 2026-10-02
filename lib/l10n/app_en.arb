@@ -6014,5 +6014,13 @@
   "midiCollectionShareZip": "Share as ZIP",
   "@midiCollectionShareZip": {
     "description": "Shares a whole MIDI collection as a single .zip of .mid files"
+  },
+  "midiCollectionOpen": "Open",
+  "@midiCollectionOpen": {
+    "description": "Snackbar action after adding clips to a collection: go to the MIDI tab with that collection open"
+  },
+  "midiPreviewVolume": "Preview volume",
+  "@midiPreviewVolume": {
+    "description": "Label and tooltip of the volume slider for MIDI clip previews"
   }
 }

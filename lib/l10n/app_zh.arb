@@ -3989,5 +3989,7 @@
   "midiClipCopyUnavailable": "此处无法复制文件。",
   "midiOpenSourceProject": "打开项目",
   "midiSourceProjectGone": "此片段的来源项目已不在你的资料库中。",
-  "midiCollectionShareZip": "以 ZIP 分享"
+  "midiCollectionShareZip": "以 ZIP 分享",
+  "midiCollectionOpen": "打开",
+  "midiPreviewVolume": "试听音量"
 }

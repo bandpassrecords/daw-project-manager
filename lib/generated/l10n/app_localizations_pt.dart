@@ -6287,4 +6287,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get midiCollectionShareZip => 'Compartilhar como ZIP';
+
+  @override
+  String get midiCollectionOpen => 'Abrir';
+
+  @override
+  String get midiPreviewVolume => 'Volume da prévia';
 }

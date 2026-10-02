@@ -3989,5 +3989,7 @@
   "midiClipCopyUnavailable": "ここではファイルをコピーできません。",
   "midiOpenSourceProject": "プロジェクトを開く",
   "midiSourceProjectGone": "このクリップの元のプロジェクトはライブラリにありません。",
-  "midiCollectionShareZip": "ZIPで共有"
+  "midiCollectionShareZip": "ZIPで共有",
+  "midiCollectionOpen": "開く",
+  "midiPreviewVolume": "プレビュー音量"
 }

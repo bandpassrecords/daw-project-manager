@@ -6319,4 +6319,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get midiCollectionShareZip => 'Compartir como ZIP';
+
+  @override
+  String get midiCollectionOpen => 'Abrir';
+
+  @override
+  String get midiPreviewVolume => 'Volumen de la escucha';
 }
