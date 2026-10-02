@@ -203,6 +203,36 @@ void main() {
       expect(player.playingKey, isNull);
     });
 
+    testWidgets('Esc stops a playing clip first, then closes the window',
+        (tester) async {
+      await open(tester);
+      player.playingKey = 'k';
+      await player.pause(); // paused still counts as this clip's playback
+      await tester.pump();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      expect(player.playingKey, isNull);
+      expect(find.byType(MidiPianoRollWindow), findsOneWidget,
+          reason: 'stopping is all the first Esc does');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      expect(find.byType(MidiPianoRollWindow), findsNothing);
+    });
+
+    testWidgets('Esc leaves another clip\'s playback alone and just closes',
+        (tester) async {
+      await open(tester);
+      player.playingKey = 'other';
+      await player.pause();
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      expect(find.byType(MidiPianoRollWindow), findsNothing);
+      expect(player.playingKey, 'other');
+      await player.stop();
+    });
+
     testWidgets('open project closes the window first', (tester) async {
       await open(tester);
       await tester.tap(find.byTooltip('Open project'));

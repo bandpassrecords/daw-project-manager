@@ -16,7 +16,9 @@ import 'widgets/midi_volume_control.dart';
 /// clip row's play button calls — so the instrument, tempo and error
 /// handling are exactly what the list uses; pause, resume and stop go to
 /// [player] directly. Space plays and pauses; clicking the bar ruler jumps
-/// playback there, or starts it from there when stopped.
+/// playback there, or starts it from there when stopped. Esc stops the
+/// clip, or closes the window when nothing is playing — and however the
+/// window closes, the clip it was playing stops with it.
 ///
 /// [onOpenProject] adds its button when given. Opening the project closes
 /// this window and stops the preview first.
@@ -92,7 +94,12 @@ Future<void> showMidiPianoRoll(
         ),
       );
     },
-  );
+  ).whenComplete(() {
+    // Sound with nothing on screen to stop it is the bug this prevents.
+    if (player.playingKey == playerKey || player.preparingKey == playerKey) {
+      player.stop();
+    }
+  });
 }
 
 /// A lane's name in the piano roll's picker: "Velocity", "Pitch bend",
@@ -219,6 +226,16 @@ class MidiPianoRollWindow extends StatelessWidget {
     }
   }
 
+  /// Esc: stop this clip if it is playing (or paused, or still rendering),
+  /// otherwise close the window.
+  void _escape(BuildContext context) {
+    if (_isOurs || player.preparingKey == playerKey) {
+      player.stop();
+    } else {
+      Navigator.of(context).maybePop();
+    }
+  }
+
   /// Space: start, pause, or resume.
   void _playPause() {
     if (!_isOurs) {
@@ -236,6 +253,7 @@ class MidiPianoRollWindow extends StatelessWidget {
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.space): _playPause,
+        const SingleActivator(LogicalKeyboardKey.escape): () => _escape(context),
       },
       // Autofocus so Space works the moment the window opens, before anything
       // inside it has been clicked.

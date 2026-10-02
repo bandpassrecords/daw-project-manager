@@ -366,6 +366,42 @@ void main() {
   });
 
   group('showMidiPianoRoll', () {
+    testWidgets('closing the window stops the clip it was playing',
+        (tester) async {
+      final player = MidiPreviewPlayer();
+      addTearDown(player.dispose);
+      await tester.pumpWidget(ProviderScope(child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showMidiPianoRoll(
+                context,
+                clip: _clip(),
+                title: 'Riff',
+                player: player,
+                playerKey: 'k',
+                bpm: 120,
+                onPlay: () {},
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      )));
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      player.playingKey = 'k';
+      await player.pause();
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.close));
+      await tester.pumpAndSettle();
+      expect(find.byType(MidiPianoRoll), findsNothing);
+      expect(player.playingKey, isNull);
+    });
+
     testWidgets('shows the clip, plays through the caller, and closes', (tester) async {
       final player = MidiPreviewPlayer();
       addTearDown(player.dispose);
