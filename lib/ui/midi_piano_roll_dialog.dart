@@ -15,7 +15,8 @@ import 'widgets/midi_volume_control.dart';
 /// Starting playback is the caller's own [onPlay] — the same function the
 /// clip row's play button calls — so the instrument, tempo and error
 /// handling are exactly what the list uses; pause, resume and stop go to
-/// [player] directly. Space plays and pauses.
+/// [player] directly. Space plays and pauses; clicking the bar ruler jumps
+/// playback there, or starts it from there when stopped.
 ///
 /// [onOpenProject] adds its button when given. Opening the project closes
 /// this window and stops the preview first.
@@ -207,6 +208,17 @@ class MidiPianoRollWindow extends StatelessWidget {
 
   bool get _isOurs => player.playingKey == playerKey;
 
+  /// The ruler was clicked: jump there, or — with this clip not playing —
+  /// start playback from there.
+  void _seek(Duration position) {
+    if (_isOurs) {
+      player.seek(playerKey, position);
+    } else {
+      player.startAt(playerKey, position);
+      onPlay();
+    }
+  }
+
   /// Space: start, pause, or resume.
   void _playPause() {
     if (!_isOurs) {
@@ -323,6 +335,7 @@ class MidiPianoRollWindow extends StatelessWidget {
                   labels: labels.roll,
                   positionOf: () => player.positionOf(playerKey),
                   playback: player,
+                  onSeek: _seek,
                 ),
               ),
             ],

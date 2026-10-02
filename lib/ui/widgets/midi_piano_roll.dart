@@ -37,6 +37,10 @@ bool isBlackKey(int pitch) => const {1, 3, 6, 8, 10}.contains(pitch % 12);
 double ticksAt(Duration elapsed, double bpm, int ppq) =>
     elapsed.inMicroseconds / 1e6 * bpm / 60 * ppq;
 
+/// How long a preview at [bpm] takes to reach [tick] — [ticksAt] reversed.
+Duration durationAtTick(double tick, double bpm, int ppq) => Duration(
+    microseconds: bpm <= 0 || ppq <= 0 ? 0 : (tick / ppq * 60 / bpm * 1e6).round());
+
 /// The horizontal scroll that follows a playhead at [playheadX] (content
 /// pixels) by keeping it in the middle of the view: the line walks right
 /// until it reaches the centre, then the notes scroll smoothly under it,
@@ -165,6 +169,9 @@ class MidiPianoRollLabels {
 /// pointer); scroll with the wheel (Shift+wheel sideways) or by dragging.
 /// Dragging or scrolling sideways turns following off; the follow button, or
 /// the next start of playback, turns it back on.
+///
+/// Clicking the bar ruler — or dragging along it and letting go — jumps
+/// playback there through [onSeek], like a DAW's ruler.
 class MidiPianoRoll extends StatefulWidget {
   const MidiPianoRoll({
     super.key,
@@ -173,6 +180,7 @@ class MidiPianoRoll extends StatefulWidget {
     this.bpm = 120,
     this.positionOf,
     this.playback,
+    this.onSeek,
   });
 
   final MidiClip clip;
@@ -189,6 +197,10 @@ class MidiPianoRoll extends StatefulWidget {
   /// only ticks frames while [positionOf] says the clip is playing, so an
   /// open piano roll costs nothing while silent.
   final Listenable? playback;
+
+  /// Called with a time into the clip when the ruler is clicked, or let go
+  /// of after dragging along it. Null leaves the ruler inert.
+  final ValueChanged<Duration>? onSeek;
 
   @override
   State<MidiPianoRoll> createState() => _MidiPianoRollState();
@@ -299,8 +311,11 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       _syncTicker();
       return;
     }
-    final tick = ticksAt(position, widget.bpm, widget.clip.ppq)
-        .clamp(0.0, widget.clip.lengthTicks.toDouble());
+    // While the ruler is being dragged the line follows the pointer, not
+    // the audio, until the drag lets go and the player jumps there.
+    final tick = _scrubTick ??
+        ticksAt(position, widget.bpm, widget.clip.ppq)
+            .clamp(0.0, widget.clip.lengthTicks.toDouble());
     _playhead.value = tick;
     if (_follow) {
       final next = followScroll(
@@ -310,6 +325,23 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       );
       if (next != _scrollX) setState(() => _scrollX = next);
     }
+  }
+
+  /// The tick under the ruler at [x] (ruler-relative pixels), in the clip.
+  double _tickAtRulerX(double x) =>
+      ((_scrollX + x) / _px).clamp(0.0, widget.clip.lengthTicks.toDouble());
+
+  double? _scrubTick;
+
+  void _scrubTo(double x) {
+    _scrubTick = _tickAtRulerX(x);
+    _playhead.value = _scrubTick;
+  }
+
+  void _seekTo(double tick) {
+    _scrubTick = null;
+    _playhead.value = tick;
+    widget.onSeek?.call(durationAtTick(tick, widget.bpm, widget.clip.ppq));
   }
 
   void _fit() => setState(() {
@@ -482,6 +514,31 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                           ),
                         ),
                       ),
+                      if (widget.onSeek != null)
+                        Positioned(
+                          left: _keyboardWidth,
+                          top: 0,
+                          right: 0,
+                          height: _rulerHeight,
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              key: const ValueKey('midi-piano-roll-ruler'),
+                              behavior: HitTestBehavior.opaque,
+                              onTapUp: (d) =>
+                                  _seekTo(_tickAtRulerX(d.localPosition.dx)),
+                              onHorizontalDragStart: (d) =>
+                                  _scrubTo(d.localPosition.dx),
+                              onHorizontalDragUpdate: (d) =>
+                                  _scrubTo(d.localPosition.dx),
+                              onHorizontalDragEnd: (_) {
+                                final tick = _scrubTick;
+                                if (tick != null) _seekTo(tick);
+                              },
+                              onHorizontalDragCancel: () => _scrubTick = null,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),

@@ -38,6 +38,38 @@ const _labels = MidiPianoRollWindowLabels(
 );
 
 void main() {
+  group('MidiPreviewPlayer seek', () {
+    test('jumps the playing clip, paused or not', () async {
+      final player = MidiPreviewPlayer()..playingKey = 'k';
+      addTearDown(player.dispose);
+      await player.seek('k', const Duration(seconds: 3));
+      expect(player.positionOf('k')!.inMilliseconds, closeTo(3000, 50));
+
+      await player.pause();
+      await player.seek('k', const Duration(milliseconds: 500));
+      expect(player.positionOf('k'), const Duration(milliseconds: 500));
+      await player.seek('k', const Duration(seconds: -1));
+      expect(player.positionOf('k'), Duration.zero);
+    });
+
+    test('ignores a clip that is not the one playing', () async {
+      final player = MidiPreviewPlayer()..playingKey = 'k';
+      addTearDown(player.dispose);
+      await player.pause();
+      final before = player.positionOf('k');
+      await player.seek('other', const Duration(seconds: 3));
+      expect(player.positionOf('k'), before);
+    });
+
+    test('startAt is remembered for that clip only', () {
+      final player = MidiPreviewPlayer();
+      addTearDown(player.dispose);
+      player.startAt('k', const Duration(seconds: 2));
+      expect(player.pendingStartFor('k'), const Duration(seconds: 2));
+      expect(player.pendingStartFor('other'), isNull);
+    });
+  });
+
   group('MidiPreviewPlayer pause', () {
     // The audio player is only created by play(), so these drive the state
     // machine without any sound.
@@ -129,6 +161,32 @@ void main() {
       await tester.pump();
       expect(player.paused, isFalse);
       expect(plays, 1);
+      await player.stop();
+      await tester.pumpAndSettle();
+    });
+
+    // The clip is one 4/4 bar at 120 BPM: the ruler's middle is 1 second.
+    Offset rulerMiddle(WidgetTester tester) =>
+        tester.getCenter(find.byKey(const ValueKey('midi-piano-roll-ruler')));
+
+    testWidgets('clicking the ruler while stopped starts playback there',
+        (tester) async {
+      await open(tester);
+      await tester.tapAt(rulerMiddle(tester));
+      await tester.pump();
+      expect(plays, 1);
+      expect(player.pendingStartFor('k')!.inMilliseconds, closeTo(1000, 5));
+    });
+
+    testWidgets('clicking the ruler while playing jumps there', (tester) async {
+      await open(tester);
+      player.playingKey = 'k';
+      await player.pause();
+      await tester.pump();
+      await tester.tapAt(rulerMiddle(tester));
+      await tester.pump();
+      expect(plays, 0, reason: 'already playing: no restart');
+      expect(player.positionOf('k')!.inMilliseconds, closeTo(1000, 5));
       await player.stop();
       await tester.pumpAndSettle();
     });

@@ -53,6 +53,33 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// pauses; list rows play and stop.
   bool paused = false;
 
+  /// Where the next [play] of a clip should start, set by [startAt].
+  (String, Duration)? _startAt;
+
+  @visibleForTesting
+  Duration? pendingStartFor(String key) =>
+      _startAt?.$1 == key ? _startAt!.$2 : null;
+
+  /// Makes the next [play] of clip [key] start [position] in instead of at
+  /// the beginning — clicking the piano roll's ruler while it is stopped.
+  /// A [play] of any other clip forgets it.
+  void startAt(String key, Duration position) {
+    _startAt = (key, position.isNegative ? Duration.zero : position);
+  }
+
+  /// Jumps clip [key]'s playback to [position], playing or paused. Does
+  /// nothing when [key] isn't the clip playing.
+  Future<void> seek(String key, Duration position) async {
+    if (playingKey != key) return;
+    final to = position.isNegative ? Duration.zero : position;
+    // Set before the player answers, so the playhead is there on the next
+    // frame rather than gliding on from the old position first.
+    _lastPosition = to;
+    _lastPositionAt = DateTime.now();
+    _notify();
+    await _player?.seek(to);
+  }
+
   /// Plays [clip] — or stops it, when [key] is already the one playing.
   Future<void> toggle(String key, MidiClip clip,
       {double? bpm, required SynthVoice voice}) async {
@@ -65,6 +92,8 @@ class MidiPreviewPlayer extends ChangeNotifier {
   Future<void> play(String key, MidiClip clip,
       {double? bpm, required SynthVoice voice}) async {
     final generation = ++_generation;
+    final startAt = pendingStartFor(key);
+    _startAt = null;
     preparingKey = key;
     paused = false;
     _notify();
@@ -92,7 +121,11 @@ class MidiPreviewPlayer extends ChangeNotifier {
       _lastPositionAt = DateTime.now();
       await player.play(DeviceFileSource(path));
       if (generation != _generation || _disposed) return;
-      _lastPosition = Duration.zero;
+      if (startAt != null && startAt > Duration.zero) {
+        await player.seek(startAt);
+        if (generation != _generation || _disposed) return;
+      }
+      _lastPosition = startAt ?? Duration.zero;
       _lastPositionAt = DateTime.now();
       playingKey = key;
     } finally {

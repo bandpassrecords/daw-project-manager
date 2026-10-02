@@ -94,6 +94,12 @@ void main() {
       expect(pianoRollRange(const []).high - pianoRollRange(const []).low + 1, 24);
     });
 
+    test('time from ticks reverses ticksAt', () {
+      expect(durationAtTick(960, 120, 480), const Duration(seconds: 1));
+      expect(ticksAt(durationAtTick(1234, 97, 960), 97, 960), closeTo(1234, 0.01));
+      expect(durationAtTick(960, 0, 480), Duration.zero);
+    });
+
     test('ticks from playback time at a tempo', () {
       // 1 s at 120 BPM is 2 beats.
       expect(ticksAt(const Duration(seconds: 1), 120, 480), 960);
@@ -192,7 +198,10 @@ void main() {
   });
 
   group('MidiPianoRoll', () {
-    Widget wrap(MidiClip clip, {Duration? Function()? positionOf, Listenable? playback}) =>
+    Widget wrap(MidiClip clip,
+            {Duration? Function()? positionOf,
+            Listenable? playback,
+            ValueChanged<Duration>? onSeek}) =>
         MaterialApp(
           home: Scaffold(
             body: SizedBox(
@@ -204,6 +213,7 @@ void main() {
                 bpm: 120,
                 positionOf: positionOf,
                 playback: playback,
+                onSeek: onSeek,
               ),
             ),
           ),
@@ -267,6 +277,48 @@ void main() {
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: '$lane');
       }
+    });
+
+    group('the ruler', () {
+      final ruler = find.byKey(const ValueKey('midi-piano-roll-ruler'));
+
+      testWidgets('a click seeks to the time under it', (tester) async {
+        final seeks = <Duration>[];
+        // Four bars at 120 BPM: 8 seconds across the fitted ruler.
+        await tester.pumpWidget(wrap(_clip(), onSeek: seeks.add));
+        final box = tester.getRect(ruler);
+        await tester.tapAt(box.centerLeft + Offset(box.width / 4, 0));
+        expect(seeks.single.inMilliseconds, closeTo(2000, 5));
+      });
+
+      testWidgets('a drag seeks once, where it is let go', (tester) async {
+        final seeks = <Duration>[];
+        await tester.pumpWidget(wrap(_clip(), onSeek: seeks.add));
+        final box = tester.getRect(ruler);
+        final drag = await tester.startGesture(box.centerLeft + const Offset(5, 0));
+        await drag.moveBy(Offset(box.width / 4, 0));
+        await tester.pump();
+        await drag.moveBy(Offset(box.width / 4, 0));
+        await tester.pump();
+        expect(seeks, isEmpty, reason: 'nothing jumps while still dragging');
+        await drag.up();
+        expect(seeks.single.inMilliseconds, closeTo(4000 + 8000 * 5 / box.width, 5));
+      });
+
+      testWidgets('past the clip end it seeks to the end', (tester) async {
+        final seeks = <Duration>[];
+        await tester.pumpWidget(wrap(_clip(), onSeek: seeks.add));
+        await tester.tap(find.byTooltip('Zoom out'));
+        await tester.pump();
+        final box = tester.getRect(ruler);
+        await tester.tapAt(box.centerRight - const Offset(2, 0));
+        expect(seeks.single, const Duration(seconds: 8));
+      });
+
+      testWidgets('without onSeek the ruler is just a ruler', (tester) async {
+        await tester.pumpWidget(wrap(_clip()));
+        expect(ruler, findsNothing);
+      });
     });
 
     testWidgets('an empty clip still lays out', (tester) async {
