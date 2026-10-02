@@ -46,6 +46,7 @@ import '../services/attachment_export_service.dart';
 import 'dialogs/project_appearance_dialog.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
+import '../services/midi/midi_clip_service.dart';
 import '../services/metadata_sidecar_service.dart';
 import '../services/mixdown_detector_service.dart';
 import '../services/project_text_export_service.dart';
@@ -53,6 +54,7 @@ import '../services/scanner_service.dart';
 import 'dialogs/attachment_edit_dialog.dart';
 import 'dialogs/save_as_template_dialog.dart';
 import 'dialogs/stack_version_picker_dialog.dart';
+import 'widgets/custom_fields_editor.dart';
 import 'widgets/project_detail_action_bar.dart';
 import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/conversion_progress_dialog.dart';
@@ -61,6 +63,8 @@ import 'widgets/project_attachments_section.dart';
 import 'widgets/project_tags_editor.dart';
 import 'widgets/project_detail_header.dart';
 import 'widgets/project_markers_section.dart';
+import 'widgets/project_stats_section.dart';
+import 'widgets/midi_clips_section.dart';
 import 'widgets/project_versions_section.dart';
 import 'widgets/section_nav_rail.dart';
 import 'widgets/resizable_text_field.dart';
@@ -186,6 +190,24 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     if (identical(tags, project.tags)) return;
     await repo.updateProject(
       project.copyWith(tags: tags, updatedAt: DateTime.now()),
+    );
+    if (mounted) ref.invalidate(allProjectsStreamProvider);
+  }
+
+  // --- Custom fields -------------------------------------------------------
+  //
+  // Saved directly, like tags, reading the project fresh from the box so the
+  // debounced autosave and this can't overwrite each other with stale copies.
+
+  Future<void> _setCustomField(
+      ProjectRepository repo, String fieldId, String value) async {
+    final project = repo.projectsBox.get(widget.projectId);
+    if (project == null) return;
+    if ((project.customFields[fieldId] ?? '') == value) return;
+    await repo.updateProject(
+      project
+          .setCustomFieldValue(fieldId, value)
+          .copyWith(updatedAt: DateTime.now()),
     );
     if (mounted) ref.invalidate(allProjectsStreamProvider);
   }
@@ -1711,6 +1733,28 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                               onRemove: (tag) => _removeTag(repo, tag),
                             ),
                             ],
+                            // The user's own fields (Settings > Columns &
+                            // fields). Always editable here, whether or not
+                            // they also have a column somewhere.
+                            if (ref.watch(activeCustomFieldsProvider).isNotEmpty) ...[
+                              const SizedBox(height: 20),
+                              Text(
+                                l10n.customFieldsTitle,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.customFieldsProjectPageHint,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              const SizedBox(height: 12),
+                              CustomFieldsEditor(
+                                fields: ref.watch(activeCustomFieldsProvider),
+                                values: updatedProject.customFields,
+                                onChanged: (id, value) =>
+                                    _setCustomField(repo, id, value),
+                              ),
+                            ],
 
                             const SizedBox(height: 24),
                           ],
@@ -1910,6 +1954,46 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             const SizedBox(height: 24),
                           ],
                         ),
+                        // What is inside the project file: track counts,
+                        // plug-ins (from the last metadata extraction) and
+                        // the MIDI clips, read on request. Absent for a DAW
+                        // we can't read and for a project never deep-scanned.
+                        if (updatedProject.stats != null ||
+                            _showMidiClips(updatedProject))
+                          _DetailSection(
+                            icon: Icons.inventory_2_outlined,
+                            label: l10n.projectContentsTitle,
+                            children: [
+                              if (updatedProject.stats != null) ...[
+                                const SizedBox(height: 12),
+                                ProjectStatsSection(
+                                  stats: updatedProject.stats!,
+                                  labels: ProjectStatsLabels(
+                                    tracks: l10n.projectStatsTracks,
+                                    audio: l10n.projectStatsAudio,
+                                    midi: l10n.projectStatsMidi,
+                                    instrument: l10n.projectStatsInstrument,
+                                    sampler: l10n.projectStatsSampler,
+                                    bus: l10n.projectStatsBus,
+                                    folder: l10n.projectStatsFolder,
+                                    plugins: l10n.projectStatsPlugins,
+                                    showAll: l10n.showAll,
+                                    collapse: l10n.collapse,
+                                  ),
+                                ),
+                              ],
+                              if (_showMidiClips(updatedProject)) ...[
+                                const SizedBox(height: 20),
+                                MidiClipsSection(
+                                  key: ValueKey(updatedProject.id),
+                                  project: updatedProject,
+                                  canReadFile:
+                                      _canReadMidiClips(updatedProject),
+                                ),
+                              ],
+                              const SizedBox(height: 24),
+                            ],
+                          ),
                         _DetailSection(
                           icon: Icons.attach_file_outlined,
                           label: l10n.projectAttachments,
@@ -4556,6 +4640,24 @@ class _EditSessionDialogState extends State<_EditSessionDialog> {
 /// sectioned layout renders one at a time with the nav rail choosing. Keeping
 /// them as data rather than as separate widgets means both layouts are fed by
 /// exactly the same children, so the two cannot drift apart.
+/// Whether the detail page shows the MIDI clips section at all: wherever
+/// clips could exist — a format we read clips from, or stats saying the last
+/// extraction found some (which is what a phone has to go on). Never for a
+/// stack: it owns no file.
+bool _showMidiClips(MusicProject project) =>
+    !project.isVirtual &&
+    (MidiClipService.supports(project.filePath) ||
+        (project.stats?.midiClipCount ?? 0) > 0);
+
+/// Whether this device can (re)read [project]'s clips from its file: a real
+/// file (not a stack, not zipped away in an archive) in a format we parse,
+/// on a desktop — where the project folders actually are.
+bool _canReadMidiClips(MusicProject project) =>
+    !MobileUtils.isMobile() &&
+    !project.isVirtual &&
+    !project.isArchived &&
+    MidiClipService.supports(project.filePath);
+
 class _DetailSection {
   const _DetailSection({
     required this.icon,

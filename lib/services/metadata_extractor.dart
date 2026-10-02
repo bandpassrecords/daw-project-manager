@@ -1,10 +1,19 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:typed_data';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
+import '../models/midi_clip.dart';
 import '../models/project_marker.dart';
+import '../models/project_stats.dart';
+import 'daw_parsers/ableton_project_parser.dart';
+import 'daw_parsers/cubase_project_parser.dart';
+import 'daw_parsers/flp_project_parser.dart';
+import 'daw_parsers/reaper_project_parser.dart';
+import 'daw_parsers/studio_one_project_parser.dart';
+import 'midi/midi_file_reader.dart';
 
 /// Represents a scale pair (root note and scale type)
 class _ScalePair {
@@ -58,6 +67,20 @@ class ProjectMetadata {
   /// or markers deleted in the DAW would live on in the app forever.
   final List<ProjectMarker>? markers;
 
+  /// Track counts, plug-ins and MIDI clip count. Same null contract as
+  /// [markers]: null means "didn't look", and callers keep what they had.
+  final ProjectStats? stats;
+
+  /// The project's unique MIDI clips, read in the same pass as [stats]. Null
+  /// when this extraction didn't read clips (lightweight scan, a DAW without
+  /// a clip reader, a parse failure); empty when it read them and found none.
+  final List<MidiClip>? midiClips;
+
+  /// `.mid` files the project references that couldn't be found or read, as
+  /// the project names them. Read alongside [midiClips], so null when they
+  /// weren't read; empty when every referenced file was there.
+  final List<String>? missingMidiFiles;
+
   ProjectMetadata({
     this.bpm,
     this.key,
@@ -65,6 +88,9 @@ class ProjectMetadata {
     this.dawVersion,
     this.projectNotes,
     this.markers,
+    this.stats,
+    this.midiClips,
+    this.missingMidiFiles,
   });
 }
 
@@ -81,6 +107,7 @@ class MetadataExtractor {
     '.mgd',
     '.flp',
     '.logicx',
+    '.song',
   };
 
   /// Whether [extractMetadata] has a real implementation for this project's
@@ -117,6 +144,9 @@ class MetadataExtractor {
     String? dawVersion;
     String? projectNotes;
     List<ProjectMarker>? markers;
+    ProjectStats? stats;
+    List<MidiClip>? midiClips;
+    List<String>? missingMidiFiles;
 
     // Try to extract from project file first
     if (ext == '.als' || ext == '.alp') {
@@ -124,6 +154,8 @@ class MetadataExtractor {
       bpm = metadata.bpm ?? bpm;
       key = metadata.key ?? key;
       dawVersion = metadata.dawVersion ?? dawVersion;
+      stats = metadata.stats;
+      midiClips = metadata.midiClips;
     } else if (ext == '.cpr' || ext == '.npr') {
       // Nuendo uses similar format to Cubase
       final metadata = await _extractFromCubaseFile(filePath);
@@ -131,6 +163,13 @@ class MetadataExtractor {
       key = metadata.key ?? key;
       dawVersion = metadata.dawVersion ?? dawVersion;
       projectNotes = metadata.projectNotes;
+      stats = metadata.stats;
+      midiClips = metadata.midiClips;
+    } else if (ext == '.song') {
+      final metadata = await _extractFromStudioOneFile(filePath);
+      bpm = metadata.bpm ?? bpm;
+      dawVersion = metadata.dawVersion ?? dawVersion;
+      stats = metadata.stats;
     } else if (ext == '.bwproject') {
       final metadata = await _extractFromBitwigFile(filePath);
       bpm = metadata.bpm ?? bpm;
@@ -143,6 +182,9 @@ class MetadataExtractor {
       dawVersion = metadata.dawVersion ?? dawVersion;
       projectNotes = metadata.projectNotes;
       markers = metadata.markers;
+      stats = metadata.stats;
+      midiClips = metadata.midiClips;
+      missingMidiFiles = metadata.missingMidiFiles;
     } else if (ext == '.mgd') {
       final metadata = await _extractFromMagdaFile(filePath);
       bpm = metadata.bpm ?? bpm;
@@ -153,6 +195,8 @@ class MetadataExtractor {
       bpm = metadata.bpm ?? bpm;
       key = metadata.key ?? key;
       dawVersion = metadata.dawVersion ?? dawVersion;
+      stats = metadata.stats;
+      midiClips = metadata.midiClips;
     } else if (ext == '.logicx') {
       final metadata = await _extractFromLogicFile(filePath);
       bpm = metadata.bpm ?? bpm;
@@ -183,6 +227,9 @@ class MetadataExtractor {
       dawVersion: dawVersion,
       projectNotes: projectNotes,
       markers: markers,
+      stats: stats,
+      midiClips: midiClips,
+      missingMidiFiles: missingMidiFiles,
     );
   }
 
@@ -267,14 +314,19 @@ class MetadataExtractor {
   /// Extracts BPM and key from Ableton Live .als file
   /// .als files are gzipped XML files (or uncompressed XML in older versions)
   static Future<ProjectMetadata> _extractFromAbletonFile(String filePath) async {
+    if (!await File(filePath).exists()) return ProjectMetadata();
+    // A large set decompresses to tens of MB of XML; parsing that on the UI
+    // isolate froze the app for over a second per project during a scan.
     try {
-      final file = File(filePath);
-      if (!await file.exists()) {
-        return ProjectMetadata();
-      }
+      return await Isolate.run(() => _extractFromAbletonFileSync(filePath));
+    } catch (_) {
+      return ProjectMetadata();
+    }
+  }
 
-      // Read the file as bytes
-      final bytes = await file.readAsBytes();
+  static ProjectMetadata _extractFromAbletonFileSync(String filePath) {
+    try {
+      final bytes = File(filePath).readAsBytesSync();
       
       // Try to decompress as gzip first, fallback to direct UTF-8 if it fails
       String xmlString;
@@ -456,13 +508,45 @@ class MetadataExtractor {
         }
       }
 
+      ProjectStats? stats;
+      List<MidiClip>? clips;
+      try {
+        final parser = AbletonProjectParser(document);
+        clips = parser.readMidiClips();
+        stats = parser
+            .readStats(countMidiClips: false)
+            .withMidiClipCount(clips.length);
+      } catch (_) {
+        // Stats are a bonus; never let them cost the tempo and key.
+      }
+
       return ProjectMetadata(
         bpm: bpm,
         key: key?.trim().isEmpty == true ? null : key?.trim(),
         dawVersion: dawVersion,
+        stats: stats,
+        midiClips: clips,
       );
     } catch (e) {
       // If parsing fails, return empty metadata
+      return ProjectMetadata();
+    }
+  }
+
+  /// Extracts tempo, version and track counts from a Studio One `.song`.
+  /// See [StudioOneProjectParser].
+  static Future<ProjectMetadata> _extractFromStudioOneFile(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (!await file.exists()) return ProjectMetadata();
+      final bytes = await file.readAsBytes();
+      final info = await Isolate.run(() => StudioOneProjectParser(bytes).read());
+      return ProjectMetadata(
+        bpm: info.bpm,
+        dawVersion: info.dawVersion,
+        stats: info.stats,
+      );
+    } catch (_) {
       return ProjectMetadata();
     }
   }
@@ -552,7 +636,24 @@ class MetadataExtractor {
 
       final bpm = fineTempo != null ? fineTempo / 1000.0 : tempoWord?.toDouble();
 
-      return ProjectMetadata(bpm: bpm, dawVersion: dawVersion);
+      ProjectStats? stats;
+      List<MidiClip>? clips;
+      try {
+        final parser = FlpProjectParser(bytes);
+        clips = parser.readMidiClips();
+        stats = parser
+            .readStats(countMidiClips: false)
+            .withMidiClipCount(clips.length);
+      } catch (_) {
+        // Stats are a bonus; never let them cost the tempo and version.
+      }
+
+      return ProjectMetadata(
+        bpm: bpm,
+        dawVersion: dawVersion,
+        stats: stats,
+        midiClips: clips,
+      );
     } catch (e) {
       return ProjectMetadata();
     }
@@ -713,6 +814,29 @@ class MetadataExtractor {
 
       final projectNotes = _extractReaperNotes(content);
       final markers = extractReaperMarkers(content);
+      ProjectStats? stats;
+      List<MidiClip>? clips;
+      List<String>? missing;
+      final projectDir = p.dirname(filePath);
+      try {
+        (stats, clips, missing) = await Isolate.run(() {
+          final parser = ReaperProjectParser(
+            content,
+            projectDir: projectDir,
+            readFile: readBytesIfExists,
+          );
+          final midi = parser.readMidi();
+          return (
+            parser
+                .readStats(countMidiClips: false)
+                .withMidiClipCount(midi.clips.length),
+            midi.clips,
+            midi.missingFiles,
+          );
+        });
+      } catch (_) {
+        // Stats are a bonus; never let them cost the rest.
+      }
 
       return ProjectMetadata(
         bpm: bpm,
@@ -720,6 +844,9 @@ class MetadataExtractor {
         dawVersion: dawVersion,
         projectNotes: projectNotes,
         markers: markers,
+        stats: stats,
+        midiClips: clips,
+        missingMidiFiles: missing,
       );
     } catch (_) {
       return ProjectMetadata();
@@ -1490,7 +1617,30 @@ class MetadataExtractor {
       // === Extract Project Notes from the Notepad panel ===
       final projectNotes = _extractCubaseNotes(bytes);
 
-      return ProjectMetadata(bpm: bpm, key: key, dawVersion: dawVersion, projectNotes: projectNotes);
+      ProjectStats? stats;
+      List<MidiClip>? clips;
+      try {
+        (stats, clips) = await Isolate.run(() {
+          final parser = CubaseProjectParser(bytes);
+          if (!parser.isCubaseFile) return (null, null);
+          final clips = parser.readMidiClips();
+          return (
+            parser.readStats(countMidiClips: false).withMidiClipCount(clips.length),
+            clips,
+          );
+        });
+      } catch (_) {
+        // Stats are a bonus; never let them cost the tempo, key and notes.
+      }
+
+      return ProjectMetadata(
+        bpm: bpm,
+        key: key,
+        dawVersion: dawVersion,
+        projectNotes: projectNotes,
+        stats: stats,
+        midiClips: clips,
+      );
     } catch (e) {
       // If parsing fails, return empty metadata
       return ProjectMetadata();

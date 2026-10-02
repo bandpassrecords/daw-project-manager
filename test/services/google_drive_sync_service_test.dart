@@ -9,15 +9,23 @@ import 'package:googleapis_auth/auth_io.dart' as auth_io;
 import 'package:hive_ce/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:daw_project_manager/models/custom_field.dart';
 import 'package:daw_project_manager/models/part_template.dart';
 import 'package:daw_project_manager/models/profile.dart';
 import 'package:daw_project_manager/models/scan_mode.dart';
 import 'package:daw_project_manager/models/scan_root.dart';
 import 'package:daw_project_manager/models/project_part.dart';
+import 'package:daw_project_manager/models/midi_clip.dart';
+import 'package:daw_project_manager/models/project_stats.dart';
+import 'package:daw_project_manager/models/stored_midi_clips.dart';
+import 'package:daw_project_manager/repository/midi_clip_store.dart';
+import 'package:daw_project_manager/repository/midi_collection_store.dart';
+import 'package:daw_project_manager/models/midi_collection.dart';
 import 'package:daw_project_manager/models/release.dart';
 import 'package:daw_project_manager/models/todo_template.dart';
 import 'package:daw_project_manager/repository/profile_repository.dart';
 import 'package:daw_project_manager/repository/project_repository.dart';
+import 'package:daw_project_manager/services/custom_field_merge.dart';
 import 'package:daw_project_manager/services/google_drive_sync_service.dart';
 import '../helpers/hive_test_helper.dart';
 import '../helpers/test_factories.dart';
@@ -670,6 +678,42 @@ void main() {
       expect(service.deserializeProjectForTest(data).tags, isEmpty);
     });
 
+    test('preserves custom field values', () {
+      // User data: without this every Drive restore silently empties the
+      // user's own columns (the LUFS they measured, say).
+      final service = GoogleDriveSyncService();
+      final original = TestFactories.makeProject(
+        customFields: {'lufs-id': '-14.2', 'eng-id': 'Ana'},
+      );
+
+      final restored = service.deserializeProjectForTest(
+        service.serializeProjectForTest(original),
+      );
+
+      expect(restored.customFields, {'lufs-id': '-14.2', 'eng-id': 'Ana'});
+    });
+
+    test('survives the JSON encoding a real upload goes through', () {
+      final service = GoogleDriveSyncService();
+      final encoded = jsonEncode(service.serializeProjectForTest(
+        TestFactories.makeProject(customFields: {'lufs-id': '-9'}),
+      ));
+
+      final restored = service.deserializeProjectForTest(
+        jsonDecode(encoded) as Map<String, dynamic>,
+      );
+
+      expect(restored.customFields, {'lufs-id': '-9'});
+    });
+
+    test('reads a backup written before custom fields existed as empty', () {
+      final service = GoogleDriveSyncService();
+      final data = service.serializeProjectForTest(TestFactories.makeProject())
+        ..remove('customFields');
+
+      expect(service.deserializeProjectForTest(data).customFields, isEmpty);
+    });
+
     test('preserves the archived state (#116)', () {
       // An archived project's files are deliberately gone from filePath. Drop
       // these on restore and it comes back looking merely missing, with no
@@ -931,6 +975,8 @@ void main() {
       String? ignoredNewerSongPath,
       List<Map<String, dynamic>>? parts,
       List<String>? tags,
+      Map<String, dynamic>? stats,
+      Map<String, String>? customFields,
     }) {
       return {
         'id': id,
@@ -948,8 +994,81 @@ void main() {
         'ignoredNewerSongPath': ignoredNewerSongPath,
         'parts': parts,
         'tags': tags,
+        'stats': stats,
+        'customFields': customFields,
       };
     }
+
+    test('takes newer remote custom field values when they are the only change',
+        () async {
+      // Custom fields have to count in the "did the metadata change?" check,
+      // or a LUFS value typed on another device is never merged in.
+      final local = TestFactories.makeProject(
+        id: 'measured',
+        customFields: {'lufs-id': '-16'},
+        status: 'Mixing',
+        lastModifiedAt: DateTime(2025, 1, 1),
+        updatedAt: DateTime(2025, 6, 1, 8, 0),
+      );
+      await projectRepo.projectsBox.put(local.id, local);
+
+      final service = GoogleDriveSyncService();
+      await service.mergeData(
+        remoteData: {
+          'projects': [
+            remoteProjectMap(
+              id: 'measured',
+              updatedAt: DateTime(2025, 6, 1, 12, 0),
+              customFields: {'lufs-id': '-14.2'},
+            ),
+          ],
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      expect(
+        projectRepo.projectsBox.get('measured')!.customFields,
+        {'lufs-id': '-14.2'},
+      );
+    });
+
+    test('merges remote custom field definitions into the local ones',
+        () async {
+      final box = await Hive.openBox<String>('app_settings');
+      await box.put(
+        customFieldDefinitionsStorageKey,
+        encodeCustomFieldDefinitions([
+          CustomFieldDefinition(
+              id: 'local', name: 'Mastered by', updatedAt: DateTime(2026, 1, 1)),
+        ]),
+      );
+
+      final service = GoogleDriveSyncService();
+      await service.mergeData(
+        remoteData: {
+          'projects': const [],
+          'customFieldDefinitions': [
+            CustomFieldDefinition(
+              id: 'remote',
+              name: 'LUFS',
+              type: CustomFieldType.number,
+              updatedAt: DateTime(2026, 2, 1),
+            ).toJson(),
+          ],
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      final merged =
+          decodeCustomFieldDefinitions(box.get(customFieldDefinitionsStorageKey));
+      expect(merged.map((f) => f.id), containsAll(['local', 'remote']));
+      expect(merged.firstWhere((f) => f.id == 'remote').type,
+          CustomFieldType.number);
+    });
 
     test('takes newer remote tags when they are the only change (#109)', () async {
       // Tags have to count in the "did the metadata change?" check, or a
@@ -984,6 +1103,154 @@ void main() {
         projectRepo.projectsBox.get('tagged')!.tags,
         ['trap', 'for the Luna EP'],
       );
+    });
+
+    test('takes stats a desktop read when they are the only change', () async {
+      // A phone never reads the project file itself; without stats in the
+      // change check and the merge, a project it already had never gets them.
+      final local = TestFactories.makeProject(
+        id: 'scanned',
+        status: 'Mixing',
+        lastModifiedAt: DateTime(2025, 1, 1),
+        updatedAt: DateTime(2025, 6, 1, 8, 0),
+      );
+      await projectRepo.projectsBox.put(local.id, local);
+
+      await GoogleDriveSyncService().mergeData(
+        remoteData: {
+          'projects': [
+            remoteProjectMap(
+              id: 'scanned',
+              updatedAt: DateTime(2025, 6, 1, 12, 0),
+              stats: const ProjectStats(audioTracks: 12, plugins: ['Serum']).toMap(),
+            ),
+          ],
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      final stats = projectRepo.projectsBox.get('scanned')!.stats!;
+      expect(stats.audioTracks, 12);
+      expect(stats.plugins, ['Serum']);
+    });
+
+    test('stored MIDI clips arrive with their project, the newer read winning',
+        () async {
+      final local = TestFactories.makeProject(
+        id: 'with-clips',
+        updatedAt: DateTime(2025, 6, 1, 8, 0),
+      );
+      await projectRepo.projectsBox.put(local.id, local);
+      final store = MidiClipStore(projectRepo.profileId);
+      await store.put('with-clips', StoredMidiClips(
+        extractedAt: DateTime.utc(2026, 1, 1),
+        clips: const [
+          MidiClip(name: 'old', ppq: 480, lengthTicks: 480, notes: [
+            MidiNote(startTick: 0, lengthTicks: 1, pitch: 60, velocity: 1),
+          ]),
+        ],
+      ));
+
+      StoredMidiClips remoteClips(String name, DateTime at) => StoredMidiClips(
+            extractedAt: at,
+            clips: [
+              MidiClip(name: name, ppq: 480, lengthTicks: 480, notes: const [
+                MidiNote(startTick: 0, lengthTicks: 1, pitch: 62, velocity: 1),
+              ]),
+            ],
+          );
+
+      await GoogleDriveSyncService().mergeData(
+        remoteData: {
+          'projects': [
+            remoteProjectMap(id: 'with-clips', updatedAt: DateTime(2025, 6, 1, 12)),
+          ],
+          'midiClips': storedMidiClipsToJson({
+            'with-clips': remoteClips('new', DateTime.utc(2026, 2, 1)),
+            // A project nobody here has: nowhere to put its clips.
+            'unknown': remoteClips('stray', DateTime.utc(2026, 2, 1)),
+          }),
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      expect((await store.get('with-clips'))!.clips.single.name, 'new');
+      expect(await store.get('unknown'), isNull);
+    });
+
+    test('MIDI collections merge per profile, deletions included', () async {
+      final store = MidiCollectionStore(projectRepo.profileId);
+      final kept = await store.create('Kept here');
+      final doomed = await store.create('Deleted elsewhere');
+
+      MidiCollection remote(MidiCollection c, {bool deleted = false, String? name}) =>
+          MidiCollection(
+            id: c.id,
+            name: name ?? c.name,
+            createdAt: c.createdAt,
+            updatedAt: DateTime.now().add(const Duration(hours: 1)),
+            deleted: deleted,
+          );
+
+      await GoogleDriveSyncService().mergeData(
+        remoteData: {
+          'midiCollectionsByProfile': {
+            projectRepo.profileId: [
+              remote(doomed, deleted: true).toJson(),
+              MidiCollection(
+                id: 'from-laptop',
+                name: 'From the laptop',
+                createdAt: DateTime.utc(2026),
+                updatedAt: DateTime.utc(2026),
+              ).toJson(),
+            ],
+            'a-profile-not-on-this-device': [
+              remote(kept, name: 'Should not land anywhere').toJson(),
+            ],
+          },
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      final names = (await store.all()).map((c) => c.name);
+      expect(names, containsAll(['Kept here', 'From the laptop']));
+      expect(names, isNot(contains('Deleted elsewhere')));
+    });
+
+    test('a remote copy that was never deep-scanned keeps local stats', () async {
+      const ours = ProjectStats(audioTracks: 3);
+      final local = TestFactories.makeProject(
+        id: 'kept',
+        notes: 'old',
+        stats: ours,
+        updatedAt: DateTime(2025, 6, 1, 8, 0),
+      );
+      await projectRepo.projectsBox.put(local.id, local);
+
+      await GoogleDriveSyncService().mergeData(
+        remoteData: {
+          'projects': [
+            remoteProjectMap(
+              id: 'kept',
+              updatedAt: DateTime(2025, 6, 1, 12, 0),
+              notes: 'new',
+            ),
+          ],
+        },
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        downloadPreviewSongs: false,
+      );
+
+      final merged = projectRepo.projectsBox.get('kept')!;
+      expect(merged.notes, 'new', reason: 'the merge did happen');
+      expect(merged.stats, ours);
     });
 
     test('keeps local edits when local was modified after the remote copy', () async {

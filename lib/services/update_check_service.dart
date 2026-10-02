@@ -25,6 +25,21 @@ class UpdateCheckService {
   /// --share=network entirely — see flatpak/README.md.
   static bool get isSupported => !Platform.isLinux || AppImageUpdateService.isRunningAsAppImage;
 
+  /// Whether the check that runs by itself at startup should run for this
+  /// build. It never does in a debug build, nor in any build still carrying
+  /// the `0.0.0` placeholder version — a local `flutter build` without
+  /// `--dart-define=APP_VERSION` — since every published release is newer
+  /// than that and a developer would get the "update available" popup on
+  /// every launch. Release CI always sets the real version, so shipped
+  /// builds are unaffected; the manual "Check now" in Settings still works
+  /// everywhere.
+  static bool shouldCheckAtStartup(String currentVersion, {bool isDebug = kDebugMode}) =>
+      !isDebug && !isDevelopmentVersion(currentVersion);
+
+  /// True for the `0.0.0` placeholder (with or without a `+build` suffix).
+  static bool isDevelopmentVersion(String version) =>
+      _parse(version.split('+').first).every((n) => n == 0);
+
   /// Returns the latest tag name (e.g. "v1.2.3") if it is strictly newer than
   /// [currentVersion], or null if the app is up-to-date or the check fails.
   static Future<String?> checkForUpdate(String currentVersion) async {

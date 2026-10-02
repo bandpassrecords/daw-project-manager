@@ -1,0 +1,247 @@
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:daw_project_manager/models/custom_field.dart';
+import 'package:daw_project_manager/utils/custom_fields.dart';
+
+import '../helpers/test_factories.dart';
+
+void main() {
+  group('parseCustomNumber', () {
+    test('reads plain, negative and decimal numbers', () {
+      expect(parseCustomNumber('-14.2'), -14.2);
+      expect(parseCustomNumber('9'), 9);
+      expect(parseCustomNumber('+3.5'), 3.5);
+      expect(parseCustomNumber('.5'), 0.5);
+      expect(parseCustomNumber('  -8  '), -8);
+    });
+
+    test('reads a comma decimal, as most of the app locales write one', () {
+      expect(parseCustomNumber('-14,2'), -14.2);
+    });
+
+    test('reads a typographic minus pasted from a meter', () {
+      expect(parseCustomNumber('−14.2'), -14.2);
+    });
+
+    test('rejects anything that is not just a number', () {
+      expect(parseCustomNumber(null), isNull);
+      expect(parseCustomNumber(''), isNull);
+      expect(parseCustomNumber('-'), isNull);
+      expect(parseCustomNumber('-14 LUFS'), isNull);
+      expect(parseCustomNumber('1.2.3'), isNull);
+      expect(parseCustomNumber('abc'), isNull);
+    });
+  });
+
+  test('isValidCustomFieldValue: blank is always fine, text anything', () {
+    expect(isValidCustomFieldValue(CustomFieldType.number, ''), isTrue);
+    expect(isValidCustomFieldValue(CustomFieldType.number, '-14'), isTrue);
+    expect(isValidCustomFieldValue(CustomFieldType.number, '-1x'), isFalse);
+    expect(isValidCustomFieldValue(CustomFieldType.text, '-1x'), isTrue);
+  });
+
+  group('compareCustomFieldValues', () {
+    List<String> sorted(CustomFieldType type, List<String> values) =>
+        [...values]..sort((a, b) => compareCustomFieldValues(type, a, b));
+
+    test('numbers sort by value, not alphabetically', () {
+      // The exact case from the request: equalising an album's loudness.
+      expect(
+        sorted(CustomFieldType.number, ['-9.8', '-14.2', '-11', '-14,0']),
+        ['-14.2', '-14,0', '-11', '-9.8'],
+      );
+    });
+
+    test('blank sorts lowest, and unparseable after every number', () {
+      expect(
+        sorted(CustomFieldType.number, ['oops', '-9', '', '-14']),
+        ['', '-14', '-9', 'oops'],
+      );
+    });
+
+    test('text sorts case-insensitively', () {
+      expect(
+        sorted(CustomFieldType.text, ['bob', 'Ana', 'carla']),
+        ['Ana', 'bob', 'carla'],
+      );
+    });
+
+    test('null counts as blank', () {
+      expect(compareCustomFieldValues(CustomFieldType.number, null, ''), 0);
+      expect(compareCustomFieldValues(CustomFieldType.number, null, '1'), -1);
+    });
+  });
+
+  group('activeCustomFields', () {
+    test('drops tombstones and follows the user order, name breaking ties', () {
+      final fields = activeCustomFields([
+        const CustomFieldDefinition(id: 'c', name: 'Zed', order: 1),
+        CustomFieldDefinition(
+            id: 'gone', name: 'Gone', deletedAt: DateTime(2026, 1, 1)),
+        const CustomFieldDefinition(id: 'b', name: 'beta', order: 0),
+        const CustomFieldDefinition(id: 'a', name: 'Alpha', order: 0),
+      ]);
+
+      expect(fields.map((f) => f.id), ['a', 'b', 'c']);
+    });
+
+    test('renumber rewrites positions densely and stamps only what moved', () {
+      final now = DateTime(2026, 9, 1);
+      final renumbered = renumberCustomFields([
+        const CustomFieldDefinition(id: 'a', name: 'A', order: 0),
+        const CustomFieldDefinition(id: 'b', name: 'B', order: 5),
+      ], now);
+
+      expect(renumbered.map((f) => f.order), [0, 1]);
+      expect(renumbered.first.updatedAt, isNull);
+      expect(renumbered.last.updatedAt, now);
+    });
+  });
+
+  group('validateCustomFieldName', () {
+    const lufs = CustomFieldDefinition(id: 'lufs', name: 'LUFS');
+
+    test('a blank name is refused', () {
+      expect(validateCustomFieldName('  ', const []),
+          CustomFieldNameProblem.empty);
+    });
+
+    test('a name another field has is refused, ignoring case', () {
+      expect(validateCustomFieldName(' lufs ', const [lufs]),
+          CustomFieldNameProblem.duplicate);
+    });
+
+    test('a field may keep its own name when edited', () {
+      expect(validateCustomFieldName('LUFS', const [lufs], ownId: 'lufs'),
+          isNull);
+    });
+
+    test('a new name is fine', () {
+      expect(validateCustomFieldName('ISRC', const [lufs]), isNull);
+    });
+  });
+
+  test('customFieldValue reads the stored value or blank', () {
+    const field = CustomFieldDefinition(id: 'lufs', name: 'LUFS');
+
+    expect(
+      customFieldValue(
+          TestFactories.makeProject(customFields: {'lufs': '-14'}), field),
+      '-14',
+    );
+    expect(customFieldValue(TestFactories.makeProject(), field), '');
+  });
+
+  test('column field names are prefixed so they cannot hit a built-in', () {
+    expect(customFieldColumnField('bpm'), 'cf_bpm');
+  });
+
+  test('the column signature changes with name, type and membership', () {
+    const a = CustomFieldDefinition(id: 'a', name: 'LUFS');
+    final base = customFieldColumnsSignature([a]);
+
+    expect(customFieldColumnsSignature([a.copyWith(name: 'Loudness')]),
+        isNot(base));
+    expect(
+        customFieldColumnsSignature([a.copyWith(type: CustomFieldType.number)]),
+        isNot(base));
+    expect(customFieldColumnsSignature(const []), isNot(base));
+    expect(customFieldColumnsSignature([a]), base);
+  });
+
+  group('projects table column layout', () {
+    test('an empty store is every built-in, visible, in default order', () {
+      expect(decodeColumnLayout(null).map((s) => s.id),
+          kProjectsTableBuiltInColumns);
+      expect(decodeColumnLayout(null).every((s) => s.visible), isTrue);
+      expect(decodeColumnLayout('garbage').map((s) => s.id),
+          kProjectsTableBuiltInColumns);
+    });
+
+    test('round-trips order and visibility', () {
+      final layout = [
+        const TableColumnSetting('bpm', visible: false),
+        ...normalizeColumnLayout(const [])
+            .where((s) => s.id != 'bpm'),
+      ];
+
+      expect(decodeColumnLayout(encodeColumnLayout(layout)), layout);
+    });
+
+    test('drops unknown and repeated ids, appends built-ins it lacks', () {
+      final layout = normalizeColumnLayout(const [
+        TableColumnSetting('deadline'),
+        TableColumnSetting('retired-column'),
+        TableColumnSetting('deadline', visible: false),
+      ]);
+
+      expect(layout.first, const TableColumnSetting('deadline'));
+      expect(layout.map((s) => s.id).toSet(),
+          kProjectsTableBuiltInColumns.toSet());
+      expect(layout, hasLength(kProjectsTableBuiltInColumns.length));
+    });
+
+    test('reorder follows ReorderableListView indices', () {
+      final layout = normalizeColumnLayout(const []);
+
+      final moved = reorderColumnLayout(layout, 0, 3);
+
+      expect(moved.map((s) => s.id).take(3), ['dawType', 'bpm', 'status']);
+    });
+
+    test('the tags column also needs the tags feature switched on', () {
+      final layout = normalizeColumnLayout(const []);
+
+      expect(visibleBuiltInColumns(layout, tagsEnabled: false),
+          isNot(contains('tags')));
+      expect(visibleBuiltInColumns(layout, tagsEnabled: true),
+          contains('tags'));
+    });
+
+    test('a hidden column is not drawn', () {
+      final layout = [
+        for (final s in normalizeColumnLayout(const []))
+          s.id == 'bpm' ? s.withVisible(false) : s,
+      ];
+
+      expect(visibleBuiltInColumns(layout, tagsEnabled: true),
+          isNot(contains('bpm')));
+    });
+  });
+
+  group('arrangeTableColumns', () {
+    String id(String s) => s;
+
+    test('built-ins follow the layout, custom columns follow them, '
+        'fixed columns keep their ends', () {
+      final arranged = arrangeTableColumns<String>(
+        ['checkbox', 'name', 'status', 'bpm', 'key', 'launch', 'data'],
+        id,
+        ['key', 'status', 'bpm'],
+        ['cf_lufs'],
+      );
+
+      expect(arranged, [
+        'checkbox',
+        'name',
+        'key',
+        'status',
+        'bpm',
+        'cf_lufs',
+        'launch',
+        'data',
+      ]);
+    });
+
+    test('skips layout ids the table does not have', () {
+      final arranged = arrangeTableColumns<String>(
+        ['name', 'bpm', 'launch'],
+        id,
+        ['tags', 'bpm'],
+        const [],
+      );
+
+      expect(arranged, ['name', 'bpm', 'launch']);
+    });
+  });
+}

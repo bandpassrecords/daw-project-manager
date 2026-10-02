@@ -5848,4 +5848,585 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get tagsSettingDescription =>
       'Aggiungi i tuoi tag ai progetti, poi filtra, cerca e ordina in base a essi. Disattivandoli vengono solo nascosti: i tag già aggiunti restano.';
+
+  @override
+  String get projectContentsTitle => 'Contenuto del progetto';
+
+  @override
+  String get projectStatsTracks => 'Tracce';
+
+  @override
+  String get projectStatsAudio => 'Audio';
+
+  @override
+  String get projectStatsMidi => 'MIDI';
+
+  @override
+  String get projectStatsInstrument => 'Strumento';
+
+  @override
+  String get projectStatsSampler => 'Sampler';
+
+  @override
+  String get projectStatsBus => 'Gruppi e FX';
+
+  @override
+  String get projectStatsFolder => 'Cartelle';
+
+  @override
+  String get projectStatsPlugins => 'Plug-in';
+
+  @override
+  String get midiClipsTitle => 'Clip MIDI';
+
+  @override
+  String get midiClipsLoad => 'Carica clip MIDI';
+
+  @override
+  String get midiClipsLoadHint =>
+      'Letti dal file del progetto e conservati con il progetto, così si sincronizzano sugli altri tuoi dispositivi.';
+
+  @override
+  String get midiClipsLoading => 'Lettura del file del progetto…';
+
+  @override
+  String get midiClipsNone => 'Nessuna clip MIDI con note in questo progetto.';
+
+  @override
+  String midiClipsError(String error) {
+    return 'Impossibile leggere le clip MIDI: $error';
+  }
+
+  @override
+  String get midiClipPlay => 'Ascolta con un synth semplice';
+
+  @override
+  String get midiClipStop => 'Interrompi l\'ascolto';
+
+  @override
+  String get midiClipSave => 'Salva come file MIDI';
+
+  @override
+  String get midiClipsExportAll => 'Esporta tutto come MIDI…';
+
+  @override
+  String midiClipsExported(int count, String folder) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count file MIDI salvati in $folder',
+      one: '1 file MIDI salvato in $folder',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipSaved(String fileName) {
+    return '$fileName salvato';
+  }
+
+  @override
+  String get midiClipDragTooltip => 'Trascina nella tua DAW o in una cartella';
+
+  @override
+  String midiClipBars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count battute',
+      one: '1 battuta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipNotes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count note',
+      one: '1 nota',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipUsedTimes(int count) {
+    return 'Usata $count×';
+  }
+
+  @override
+  String midiClipPreviewFailed(String error) {
+    return 'Impossibile riprodurre l\'anteprima: $error';
+  }
+
+  @override
+  String midiClipSaveFailed(String error) {
+    return 'Impossibile salvare il file MIDI: $error';
+  }
+
+  @override
+  String get midiClipsExportFolderTitle =>
+      'Scegli una cartella per i file MIDI';
+
+  @override
+  String midiClipAlsoAs(String names) {
+    return 'Anche: $names';
+  }
+
+  @override
+  String get midiClipsNoTrack => 'Altre clip';
+
+  @override
+  String get midiClipsExpandTrack => 'Mostra le clip di questa traccia';
+
+  @override
+  String get midiClipsCollapseTrack => 'Nascondi le clip di questa traccia';
+
+  @override
+  String get midiTempoTooltip => 'Tempo per l\'ascolto e i file MIDI salvati';
+
+  @override
+  String get midiTempoSlower => 'Più lento';
+
+  @override
+  String get midiTempoFaster => 'Più veloce';
+
+  @override
+  String midiTempoReset(String bpm) {
+    return 'Torna al tempo del progetto ($bpm BPM)';
+  }
+
+  @override
+  String get midiClipShare => 'Condividi';
+
+  @override
+  String get midiClipsShareAll => 'Condividi tutto';
+
+  @override
+  String midiClipShareText(String clip, String project) {
+    return 'Clip MIDI \"$clip\" da $project';
+  }
+
+  @override
+  String midiClipsShareAllText(String project) {
+    return 'Clip MIDI da $project';
+  }
+
+  @override
+  String get midiClipsShareFallback =>
+      'La condivisione non è disponibile qui, quindi i file sono nella cartella appena aperta. Trascinali nella tua app di chat.';
+
+  @override
+  String midiClipShareFailed(String error) {
+    return 'Impossibile condividere: $error';
+  }
+
+  @override
+  String get midiClipsRefresh => 'Rileggi dal file del progetto';
+
+  @override
+  String get midiClipsStale =>
+      'Il file del progetto è cambiato da quando queste clip sono state lette.';
+
+  @override
+  String get midiClipsNoneStored =>
+      'Nessuna clip MIDI salvata per questo progetto. Estrai i suoi metadati sul computer che ha il file del progetto.';
+
+  @override
+  String midiClipInstrumentTooltip(String name) {
+    return 'Strumento: $name';
+  }
+
+  @override
+  String get synthVoiceSynth => 'Synth';
+
+  @override
+  String get synthVoiceLead => 'Lead';
+
+  @override
+  String get synthVoiceBass => 'Basso';
+
+  @override
+  String get synthVoicePad => 'Pad';
+
+  @override
+  String get synthVoicePluck => 'Pluck';
+
+  @override
+  String get synthVoiceKeys => 'Tastiera';
+
+  @override
+  String get synthVoiceOrgan => 'Organo';
+
+  @override
+  String get synthVoiceStrings => 'Archi';
+
+  @override
+  String get synthVoiceBrass => 'Ottoni';
+
+  @override
+  String get synthVoiceBell => 'Campana';
+
+  @override
+  String get synthVoiceDrumKit => 'Batteria';
+
+  @override
+  String get synthVoiceKick => 'Cassa';
+
+  @override
+  String get synthVoiceSnare => 'Rullante';
+
+  @override
+  String get synthVoiceClap => 'Clap';
+
+  @override
+  String get synthVoiceHiHat => 'Hi-hat';
+
+  @override
+  String get synthVoicePercussion => 'Percussioni';
+
+  @override
+  String get midiLibraryTab => 'MIDI';
+
+  @override
+  String get midiLibrarySearchHint => 'Cerca clip MIDI';
+
+  @override
+  String get midiLibraryAllClips => 'Tutte le clip';
+
+  @override
+  String get midiCollectionsTitle => 'Raccolte';
+
+  @override
+  String get midiCollectionNew => 'Nuova raccolta';
+
+  @override
+  String get midiCollectionNameHint => 'Nome della raccolta';
+
+  @override
+  String get midiCollectionCreate => 'Crea';
+
+  @override
+  String get midiCollectionRename => 'Rinomina';
+
+  @override
+  String get midiCollectionDelete => 'Elimina raccolta';
+
+  @override
+  String midiCollectionDeleteConfirm(String name) {
+    return 'Eliminare \"$name\"? Le sue clip sono copie, quindi i progetti di origine non vengono toccati.';
+  }
+
+  @override
+  String get midiCollectionAddTo => 'Aggiungi a una raccolta';
+
+  @override
+  String get midiCollectionRemoveFrom => 'Rimuovi dalla raccolta';
+
+  @override
+  String midiCollectionAdded(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count clip aggiunte a $name',
+      one: 'Aggiunta a $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiCollectionAlreadyIn(String name) {
+    return 'Già in $name';
+  }
+
+  @override
+  String midiCollectionRemoved(String clip, String name) {
+    return '$clip rimossa da $name';
+  }
+
+  @override
+  String get midiCollectionEmpty =>
+      'Questa raccolta è vuota. Aggiungi clip da Tutte le clip o dalla pagina di un progetto.';
+
+  @override
+  String midiCollectionShareText(String name) {
+    return 'Raccolta MIDI \"$name\"';
+  }
+
+  @override
+  String get midiLibraryEmpty =>
+      'Ancora nessuna clip MIDI. Estrai i metadati di un progetto per leggerne le clip.';
+
+  @override
+  String get midiLibraryNoMatches => 'Nessuna clip corrisponde.';
+
+  @override
+  String get midiLibraryAllInstruments => 'Tutti gli strumenti';
+
+  @override
+  String get midiClipMoreActions => 'Altro';
+
+  @override
+  String get midiTempoAuto => 'Auto';
+
+  @override
+  String get midiTempoResetAuto => 'Torna al tempo di ogni clip';
+
+  @override
+  String get releaseTracksResizeHint =>
+      'Trascina per ridimensionare · doppio clic per ripristinare';
+
+  @override
+  String get releaseTracksMaximize => 'Mostra l\'intera tracklist';
+
+  @override
+  String get releaseTracksRestoreFiles =>
+      'Mostra di nuovo il pannello dei file';
+
+  @override
+  String get columnsAndFieldsTabLabel => 'Colonne e campi';
+
+  @override
+  String get projectsTableColumnsTitle => 'Colonne della tabella progetti';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      'Scegli quali colonne mostra la tabella progetti e trascinale nell\'ordine che preferisci. Nome e azioni sono sempre visibili. Vale solo per questo dispositivo.';
+
+  @override
+  String get customFieldsTitle => 'Campi personalizzati';
+
+  @override
+  String get customFieldsDescription =>
+      'Aggiungi campi tuoi a ogni progetto: loudness (LUFS), tecnico di mastering, ISRC, qualsiasi cosa. Un campo si compila sempre nella pagina del progetto; scegli se ha anche una colonna nella tabella progetti o nelle tracklist delle uscite.';
+
+  @override
+  String get addCustomField => 'Aggiungi campo';
+
+  @override
+  String get editCustomField => 'Modifica campo';
+
+  @override
+  String get customFieldName => 'Nome del campo';
+
+  @override
+  String get customFieldNameHint => 'es. LUFS';
+
+  @override
+  String get customFieldNameRequired => 'Inserisci un nome';
+
+  @override
+  String get customFieldNameDuplicate => 'Esiste già un campo con questo nome';
+
+  @override
+  String get customFieldType => 'Tipo';
+
+  @override
+  String get customFieldTypeText => 'Testo';
+
+  @override
+  String get customFieldTypeNumber => 'Numero';
+
+  @override
+  String get customFieldTypeNumberHelp =>
+      'I numeri sono ordinati per valore, quindi -9,8 viene dopo -14,2.';
+
+  @override
+  String get customFieldShowInProjectsTable => 'Colonna nella tabella progetti';
+
+  @override
+  String get customFieldShowInReleaseTracks =>
+      'Colonna nelle tracklist delle uscite';
+
+  @override
+  String get customFieldProjectPageOnly => 'Solo pagina del progetto';
+
+  @override
+  String get noCustomFieldsYet => 'Ancora nessun campo personalizzato.';
+
+  @override
+  String get deleteCustomFieldTitle => 'Eliminare il campo?';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '\"$name\" e i valori inseriti non compariranno più in nessun progetto, tabella o ricerca.';
+  }
+
+  @override
+  String get customFieldInvalidNumber => 'Inserisci un numero';
+
+  @override
+  String get customFieldsProjectPageHint =>
+      'I tuoi campi: aggiungili o modificali in Impostazioni > Colonne e campi.';
+
+  @override
+  String get midiPianoRollOpen => 'Apri piano roll';
+
+  @override
+  String get midiPianoRollZoomIn => 'Ingrandisci';
+
+  @override
+  String get midiPianoRollZoomOut => 'Riduci';
+
+  @override
+  String get midiPianoRollFit => 'Adatta alla finestra';
+
+  @override
+  String get midiPianoRollFollow => 'Segui la riproduzione';
+
+  @override
+  String get midiClipsShareOfferFolder =>
+      'Se non è comparsa la finestra di condivisione, i file sono pronti in una cartella.';
+
+  @override
+  String get midiClipsShowInFolder => 'Mostra nella cartella';
+
+  @override
+  String get midiPianoRollPause => 'Pausa';
+
+  @override
+  String get midiOpenSourceProject => 'Apri progetto';
+
+  @override
+  String get midiSourceProjectGone =>
+      'Il progetto da cui proviene questa clip non è più nella tua libreria.';
+
+  @override
+  String get midiCollectionShareZip => 'Condividi come ZIP';
+
+  @override
+  String get midiCollectionOpen => 'Apri';
+
+  @override
+  String get midiPreviewVolume => 'Volume dell\'anteprima';
+
+  @override
+  String get midiLanePicker => 'Parametro mostrato sotto le note';
+
+  @override
+  String get midiLaneNone => 'Nessuno';
+
+  @override
+  String get midiLaneVelocity => 'Velocity';
+
+  @override
+  String get midiLanePitchBend => 'Pitch bend';
+
+  @override
+  String get midiLaneChannelPressure => 'Aftertouch';
+
+  @override
+  String get midiLanePolyPressure => 'Aftertouch polifonico';
+
+  @override
+  String get midiLaneProgram => 'Cambio programma';
+
+  @override
+  String midiLaneController(int number) {
+    return 'CC $number';
+  }
+
+  @override
+  String midiLaneControllerNamed(int number, String name) {
+    return 'CC $number · $name';
+  }
+
+  @override
+  String get midiCcModulation => 'Modulazione';
+
+  @override
+  String get midiCcBreath => 'Fiato';
+
+  @override
+  String get midiCcFoot => 'Pedale';
+
+  @override
+  String get midiCcPortamentoTime => 'Tempo di portamento';
+
+  @override
+  String get midiCcVolume => 'Volume';
+
+  @override
+  String get midiCcBalance => 'Bilanciamento';
+
+  @override
+  String get midiCcPan => 'Pan';
+
+  @override
+  String get midiCcExpression => 'Espressione';
+
+  @override
+  String get midiCcSustain => 'Pedale sustain';
+
+  @override
+  String get midiCcPortamento => 'Portamento';
+
+  @override
+  String get midiCcSostenuto => 'Sostenuto';
+
+  @override
+  String get midiCcSoftPedal => 'Pedale soft';
+
+  @override
+  String get midiCcResonance => 'Risonanza';
+
+  @override
+  String get midiCcRelease => 'Rilascio';
+
+  @override
+  String get midiCcAttack => 'Attacco';
+
+  @override
+  String get midiCcCutoff => 'Cutoff';
+
+  @override
+  String get midiCcReverb => 'Riverbero';
+
+  @override
+  String get midiCcChorus => 'Chorus';
+
+  @override
+  String get filterHasMidi => 'Solo progetti con MIDI';
+
+  @override
+  String midiClipsMissingFiles(int count, String files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count file MIDI referenziati non sono stati trovati o non sono leggibili: $files',
+      one:
+          'Un file MIDI referenziato non è stato trovato o non è leggibile: $files',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiLibraryArrangeProject => 'Per progetto';
+
+  @override
+  String get midiLibraryArrangeAdded => 'Ordine di aggiunta';
+
+  @override
+  String get midiLibraryArrangeTempo => 'Per tempo (BPM)';
+
+  @override
+  String midiLibraryTempoGroup(String bpm) {
+    return '$bpm BPM';
+  }
+
+  @override
+  String get midiLibraryTempoUnknown => 'Tempo sconosciuto';
+
+  @override
+  String get midiImportFiles => 'Importa file MIDI';
+
+  @override
+  String get midiImportDialogTitle => 'Scegli i file MIDI da importare';
+
+  @override
+  String midiImportSkipped(String files) {
+    return 'Non importato (non è un file MIDI o non contiene note): $files';
+  }
 }

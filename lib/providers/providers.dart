@@ -27,6 +27,8 @@ import '../utils/library_projects.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
+import '../models/midi_collection.dart';
+import '../models/midi_library.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/player_volume_store.dart';
 import '../services/thumbnail_toolbar_service.dart';
@@ -35,6 +37,9 @@ import '../models/project_detail_layout.dart';
 import '../models/dashboard_view_mode.dart';
 import '../utils/project_sort.dart';
 import '../utils/project_tags.dart';
+import '../utils/custom_fields.dart';
+import '../models/custom_field.dart';
+import '../services/custom_field_merge.dart';
 import '../models/waveform_style.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
@@ -43,12 +48,13 @@ import '../models/profile.dart';
 import '../models/playlist.dart';
 import '../models/todo_template.dart';
 import '../models/part_template.dart';
-import '../models/project_part.dart';
 import '../models/project_template.dart';
 import '../models/template_root.dart';
 import '../models/project_event.dart';
 import '../repository/project_repository.dart';
 import '../utils/search_utils.dart';
+import '../utils/project_midi.dart';
+import '../utils/project_search.dart';
 import '../utils/section_rail_width.dart';
 import '../repository/profile_repository.dart';
 import '../services/google_drive_sync_service.dart';
@@ -594,6 +600,12 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
           }
         }
 
+        // --- Filter: only projects with MIDI (#143) ---
+        if (ref.watch(hasMidiFilterProvider)) {
+          final all = allProjectsAsync.value ?? const <MusicProject>[];
+          projects = projects.where((p) => projectHasMidi(p, all)).toList();
+        }
+
         // --- Filter finished projects ---
         final finishedMode = ref.watch(showFinishedProjectsProvider);
         final finishedPhases = ref.watch(finishedPhaseProvider);
@@ -617,30 +629,20 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
         // Hidden tags must not make a project match: the user would see a
         // result with nothing on screen explaining why.
         final searchTags = ref.watch(tagsEnabledProvider);
+        // Only fields that still exist: a deleted field's values stay on the
+        // project (see MusicProject.customFields) but nothing shows them.
+        final searchFieldIds = [
+          for (final f in ref.watch(activeCustomFieldsProvider)) f.id,
+        ];
         if (projectsSearch.trim().isNotEmpty) {
           projects = projects
               .where(
                 (p) => fuzzyMatchAny(
-                  [
-                    p.displayName,
-                    p.notes,
-                    // projectNotes are the read-only notes extracted from the
-                    // DAW file itself — real user content, so searchable too.
-                    p.projectNotes,
-                    // Instrumentation is searchable too, so "who played bass
-                    // on which song" is answerable from the projects list.
-                    // Guarded because this runs per project per keystroke and
-                    // searchableText builds a string.
-                    if (p.parts.isNotEmpty)
-                      ProjectPart.searchableText(p.parts),
-                    // Marker names go in one entry each rather than joined:
-                    // fuzzyMatchAny requires every query word to hit the *same*
-                    // entry, so a joined string would match words picked out of
-                    // two unrelated markers.
-                    ...p.markers.map((m) => m.name),
-                    // Tags one entry each, for the same reason (#109).
-                    if (searchTags) ...p.tags,
-                  ],
+                  projectSearchFields(
+                    p,
+                    includeTags: searchTags,
+                    customFieldIds: searchFieldIds,
+                  ),
                   projectsSearch,
                 ),
               )
@@ -1141,6 +1143,20 @@ final finishedPhaseProvider = Provider<Set<String>>((ref) {
   final repo = ref.watch(repositoryProvider).asData?.value;
   return repo?.getFinishedPhases() ?? {'Finished'};
 });
+
+/// Shows only projects holding MIDI (see `projectHasMidi`). Session-only,
+/// like the other dashboard filters.
+final hasMidiFilterProvider =
+    NotifierProvider<HasMidiFilterNotifier, bool>(HasMidiFilterNotifier.new);
+
+class HasMidiFilterNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void toggle() => state = !state;
+
+  void set(bool value) => state = value;
+}
 
 // Deadline Filter Enum
 enum DeadlineFilter {
@@ -2124,10 +2140,173 @@ final tagsEnabledProvider = NotifierProvider<TagsEnabledNotifier, bool>(
 );
 
 // ---------------------------------------------------------------------------
+// Custom fields + projects-table columns
+// ---------------------------------------------------------------------------
+
+/// Every custom field definition, tombstones included — the merge needs them
+/// (see `CustomFieldDefinition.deletedAt`). UI wants
+/// [activeCustomFieldsProvider].
+///
+/// Global user data, stored as a JSON array in `app_settings` beside the
+/// custom themes, which is what lets local backup and Drive sync carry it.
+/// The box is watched, so a restore or a sync writing the key shows up
+/// without a restart.
+class CustomFieldDefinitionsNotifier
+    extends Notifier<List<CustomFieldDefinition>> {
+  static const String boxName = 'app_settings';
+
+  StreamSubscription<BoxEvent>? _subscription;
+
+  @override
+  List<CustomFieldDefinition> build() {
+    ref.onDispose(() => _subscription?.cancel());
+    // No SchedulerBinding here: projectsProvider (search) watches this, and
+    // it is read from plain unit tests with no binding at all.
+    Future.microtask(load);
+    try {
+      if (Hive.isBoxOpen(boxName)) {
+        return decodeCustomFieldDefinitions(
+            Hive.box<String>(boxName).get(customFieldDefinitionsStorageKey));
+      }
+    } catch (_) {
+      // Fall through to the async load.
+    }
+    return const [];
+  }
+
+  @visibleForTesting
+  Future<void> load() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>(boxName);
+      if (!ref.mounted) return;
+      state = decodeCustomFieldDefinitions(
+          box.get(customFieldDefinitionsStorageKey));
+      _subscription ??= box
+          .watch(key: customFieldDefinitionsStorageKey)
+          .listen((event) {
+        if (!ref.mounted) return;
+        state = decodeCustomFieldDefinitions(event.value as String?);
+      });
+    } catch (_) {
+      // Keep the empty list if loading fails.
+    }
+  }
+
+  Future<void> _persist(List<CustomFieldDefinition> fields) async {
+    state = fields;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>(boxName);
+      await box.put(
+        customFieldDefinitionsStorageKey,
+        encodeCustomFieldDefinitions(fields),
+      );
+    } catch (e) {
+      if (kDebugMode) print('Failed to save custom fields: $e');
+    }
+  }
+
+  /// Adds [field] after every existing one, or replaces the one with its id.
+  /// Stamps `updatedAt` either way so the edit wins the next merge.
+  Future<void> upsert(CustomFieldDefinition field) async {
+    final now = DateTime.now();
+    final next = [...state];
+    final index = next.indexWhere((f) => f.id == field.id);
+    if (index >= 0) {
+      next[index] = field.copyWith(updatedAt: now);
+    } else {
+      next.add(field.copyWith(
+        order: activeCustomFields(state).length,
+        updatedAt: now,
+      ));
+    }
+    await _persist(next);
+  }
+
+  /// Leaves a tombstone rather than removing the entry, so a sync or restore
+  /// holding an older live copy can't bring the field back. Project values
+  /// are left alone (see `MusicProject.customFields`).
+  Future<void> delete(String id) async {
+    final now = DateTime.now();
+    await _persist([
+      for (final f in state)
+        f.id == id ? f.copyWith(deletedAt: now, updatedAt: now) : f,
+    ]);
+  }
+
+  /// Moves an active field, `ReorderableListView`-style indices.
+  Future<void> reorder(int oldIndex, int newIndex) async {
+    final active = activeCustomFields(state);
+    if (newIndex > oldIndex) newIndex--;
+    active.insert(newIndex, active.removeAt(oldIndex));
+    final renumbered = {
+      for (final f in renumberCustomFields(active, DateTime.now())) f.id: f,
+    };
+    await _persist([for (final f in state) renumbered[f.id] ?? f]);
+  }
+}
+
+final customFieldDefinitionsProvider = NotifierProvider<
+    CustomFieldDefinitionsNotifier, List<CustomFieldDefinition>>(
+  CustomFieldDefinitionsNotifier.new,
+);
+
+/// The fields the user can see: no tombstones, in their Settings order.
+final activeCustomFieldsProvider = Provider<List<CustomFieldDefinition>>(
+  (ref) => activeCustomFields(ref.watch(customFieldDefinitionsProvider)),
+);
+
+/// Which built-in columns the dashboard's projects table shows, and in what
+/// order (Settings > Columns & fields). Custom field columns follow them.
+///
+/// Device-local, in the `settings` box like the dashboard view mode: what
+/// fits is a question about this screen, so it is not synced or backed up.
+class ProjectsTableColumnsNotifier
+    extends Notifier<List<TableColumnSetting>> {
+  static const boxKey = 'projectsTableColumns';
+
+  @override
+  List<TableColumnSetting> build() {
+    try {
+      return decodeColumnLayout(Hive.box<String>('settings').get(boxKey));
+    } catch (_) {
+      return normalizeColumnLayout(const []);
+    }
+  }
+
+  Future<void> _persist(List<TableColumnSetting> layout) async {
+    state = layout;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      await box.put(boxKey, encodeColumnLayout(layout));
+    } catch (e) {
+      if (kDebugMode) print('Failed to save projectsTableColumns: $e');
+    }
+  }
+
+  Future<void> setVisible(String id, bool visible) => _persist([
+        for (final s in state) s.id == id ? s.withVisible(visible) : s,
+      ]);
+
+  Future<void> reorder(int oldIndex, int newIndex) =>
+      _persist(reorderColumnLayout(state, oldIndex, newIndex));
+
+  Future<void> reset() => _persist(normalizeColumnLayout(const []));
+}
+
+final projectsTableColumnsProvider =
+    NotifierProvider<ProjectsTableColumnsNotifier, List<TableColumnSetting>>(
+  ProjectsTableColumnsNotifier.new,
+);
+
+// ---------------------------------------------------------------------------
 // Tab Visibility
 // ---------------------------------------------------------------------------
 
-enum AppTab { projects, releases, playlists, queue, statistics, player }
+enum AppTab { projects, releases, playlists, midi, queue, statistics, player }
 
 class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
   static const _key = 'visibleTabs';
@@ -2137,6 +2316,7 @@ class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
     AppTab.projects,
     AppTab.releases,
     AppTab.playlists,
+    AppTab.midi,
     AppTab.queue,
     AppTab.statistics,
     AppTab.player,
@@ -2149,6 +2329,7 @@ class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
       AppTab.projects,
       AppTab.releases,
       AppTab.playlists,
+      AppTab.midi,
       AppTab.queue,
       AppTab.statistics,
       AppTab.player,
@@ -2593,6 +2774,91 @@ final queueSearchProvider = NotifierProvider<QueueSearchNotifier, String>(
   QueueSearchNotifier.new,
 );
 
+class MidiLibrarySearchNotifier extends Notifier<String> {
+  @override
+  String build() => '';
+  void set(String text) => state = text;
+  void clear() => state = '';
+}
+
+/// What the dashboard search box holds while the MIDI tab is showing.
+final midiLibrarySearchProvider =
+    NotifierProvider<MidiLibrarySearchNotifier, String>(
+  MidiLibrarySearchNotifier.new,
+);
+
+// ---------------------------------------------------------------------------
+// MIDI library
+// ---------------------------------------------------------------------------
+
+/// The current profile's unique MIDI clips across all projects (see
+/// [buildMidiLibrary]), rebuilt when stored clips or projects change.
+///
+/// Store events are debounced: a deep scan writes one project's clips at a
+/// time, and rebuilding the whole library after each would decode every
+/// project's notes over and over.
+final midiLibraryProvider = StreamProvider<List<LibraryClip>>((ref) {
+  final controller = StreamController<List<LibraryClip>>();
+  Timer? debounce;
+  StreamSubscription<String>? sub;
+
+  Future<void> start() async {
+    final repo = await ref.watch(repositoryProvider.future);
+    final projects = await ref.watch(allProjectsStreamProvider.future);
+    final byId = {for (final p in projects) p.id: p};
+    Future<void> rebuild() async {
+      final stored = await repo.midiClips.getAll();
+      if (!controller.isClosed) controller.add(buildMidiLibrary(stored, byId));
+    }
+
+    await rebuild();
+    sub = repo.midiClips.watch().listen((_) {
+      debounce?.cancel();
+      debounce = Timer(const Duration(milliseconds: 400), rebuild);
+    });
+  }
+
+  start().catchError((Object e, StackTrace st) {
+    if (!controller.isClosed) controller.addError(e, st);
+  });
+  ref.onDispose(() {
+    debounce?.cancel();
+    sub?.cancel();
+    controller.close();
+  });
+  return controller.stream;
+});
+
+/// A request to show one MIDI collection — from the "Added to …" snackbar's
+/// Open action, which can fire on any page. The dashboard answers by
+/// switching to the MIDI tab; the MIDI tab answers by selecting the
+/// collection and calling [MidiCollectionRequestNotifier.consumed], so a
+/// request is acted on once even if the tab is only built afterwards.
+class MidiCollectionRequestNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void open(String collectionId) => state = collectionId;
+
+  void consumed() => state = null;
+}
+
+final midiCollectionToOpenProvider =
+    NotifierProvider<MidiCollectionRequestNotifier, String?>(
+  MidiCollectionRequestNotifier.new,
+);
+
+/// The current profile's MIDI collections, live.
+final midiCollectionsProvider = StreamProvider<List<MidiCollection>>((
+  ref,
+) async* {
+  final repo = await ref.watch(repositoryProvider.future);
+  yield await repo.midiCollections.all();
+  await for (final _ in repo.midiCollections.watch()) {
+    yield await repo.midiCollections.all();
+  }
+});
+
 /// Which due dates the Task Queue is currently narrowed to. Session state, on
 /// purpose — like the tab's search text, it isn't worth persisting.
 class QueueDueFilterNotifier extends Notifier<QueueDueFilter> {
@@ -2979,6 +3245,26 @@ class DesktopPlayerVolumeNotifier extends Notifier<double> {
   }
 }
 
+/// The MIDI clip preview volume, shared by every MIDI player in the app (a
+/// project's clips, the MIDI tab, the piano roll) and remembered across
+/// launches by [MidiPreviewVolumeStore].
+class MidiPreviewVolumeNotifier extends Notifier<double> {
+  @override
+  double build() => MidiPreviewVolumeStore.current;
+
+  void set(double volume) {
+    final clamped = clampVolume(volume);
+    if (clamped == state) return;
+    state = clamped;
+    MidiPreviewVolumeStore.save(clamped);
+  }
+}
+
+final midiPreviewVolumeProvider =
+    NotifierProvider<MidiPreviewVolumeNotifier, double>(
+  MidiPreviewVolumeNotifier.new,
+);
+
 final desktopPlayerVolumeProvider =
     NotifierProvider<DesktopPlayerVolumeNotifier, double>(
       DesktopPlayerVolumeNotifier.new,
@@ -3252,6 +3538,99 @@ class SectionRailWidthNotifier extends Notifier<double?> {
 final sectionRailWidthProvider =
     NotifierProvider<SectionRailWidthNotifier, double?>(
       SectionRailWidthNotifier.new,
+    );
+
+/// How much of the release page's right column the tracklist takes, as a
+/// fraction of the height it shares with the files panel. Null means "never
+/// resized" — the page default applies.
+///
+/// Device-local in the `settings` box, like [sectionRailWidthProvider]: it is
+/// about this machine's window, so not synced or backed up.
+class ReleaseTracksSplitNotifier extends Notifier<double?> {
+  static const boxKey = 'releaseTracksSplit';
+
+  @override
+  double? build() {
+    SchedulerBinding.instance.addPostFrameCallback((_) => load());
+    return null;
+  }
+
+  @visibleForTesting
+  Future<void> load() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      final saved = double.tryParse(box.get(boxKey) ?? '');
+      if (saved != null && saved > 0 && saved < 1) state = saved;
+    } catch (_) {
+      // Keep the page default if the box cannot be read.
+    }
+  }
+
+  /// Follows the pointer while dragging; nothing is written until [commit].
+  void preview(double fraction) => state = fraction;
+
+  Future<void> commit() async {
+    final fraction = state;
+    if (fraction == null) return;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.put(boxKey, fraction.toStringAsFixed(3));
+    } catch (e) {
+      debugPrint('[ReleaseTracksSplit] failed to save: $e');
+    }
+  }
+
+  Future<void> reset() async {
+    state = null;
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('settings');
+      await box.delete(boxKey);
+    } catch (e) {
+      debugPrint('[ReleaseTracksSplit] failed to reset: $e');
+    }
+  }
+}
+
+final releaseTracksSplitProvider =
+    NotifierProvider<ReleaseTracksSplitNotifier, double?>(
+      ReleaseTracksSplitNotifier.new,
+    );
+
+/// Whether the release page's tracklist is expanded over the files panel, so
+/// a long album reads top to bottom without scrolling. Remembered — someone
+/// who wants the whole tracklist wants it on every release. Device-local.
+class ReleaseTracksMaximizedNotifier extends Notifier<bool> {
+  static const boxKey = 'releaseTracksMaximized';
+
+  @override
+  bool build() {
+    try {
+      return Hive.box<String>('settings').get(boxKey) == 'true';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> set(bool value) async {
+    if (value == state) return;
+    state = value;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      await box.put(boxKey, value.toString());
+    } catch (e) {
+      debugPrint('[ReleaseTracksMaximized] failed to save: $e');
+    }
+  }
+}
+
+final releaseTracksMaximizedProvider =
+    NotifierProvider<ReleaseTracksMaximizedNotifier, bool>(
+      ReleaseTracksMaximizedNotifier.new,
     );
 
 // ─── Dashboard view mode ──────────────────────────────────────────────────────

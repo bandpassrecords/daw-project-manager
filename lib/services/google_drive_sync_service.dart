@@ -18,6 +18,7 @@ import '../models/profile.dart';
 import '../models/music_project.dart';
 import '../models/project_attachment.dart';
 import '../models/project_marker.dart';
+import '../models/project_stats.dart';
 import '../models/release.dart';
 import '../models/release_file.dart';
 import '../models/scan_root.dart';
@@ -30,7 +31,11 @@ import '../models/template_root.dart';
 import '../models/backup_progress.dart';
 import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
+import '../repository/midi_clip_store.dart';
+import '../repository/midi_collection_store.dart';
+import '../models/midi_collection.dart';
 import 'custom_theme_merge.dart';
+import 'custom_field_merge.dart';
 import '../utils/app_paths.dart'
     show
         appDataDirName,
@@ -3399,6 +3404,12 @@ class GoogleDriveSyncService {
         }
       }
 
+      // Collect custom field definitions (global user data, not per-profile).
+      // Tombstones go too, so a deletion here reaches the other devices.
+      final customFieldDefinitions = decodeCustomFieldDefinitions(
+        appSettingsBox.get(customFieldDefinitionsStorageKey),
+      );
+
       // Collect per-DAW custom mixdown folders (global preference, not per-profile)
       Map<String, dynamic> customMixdownFoldersByDaw = {};
       try {
@@ -3415,11 +3426,51 @@ class GoogleDriveSyncService {
         }
       }
 
+      // Stored MIDI clips, one box per profile keyed by project id. Read out
+      // of project files on a desktop; synced so a phone has them without
+      // the file (and can play and share them).
+      final Map<String, dynamic> midiClipsByProject = {};
+      for (final profile in allProfiles) {
+        try {
+          midiClipsByProject.addAll(
+            storedMidiClipsToJson(await MidiClipStore(profile.id).getAll()),
+          );
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error collecting MIDI clips for ${profile.id}: $e');
+          }
+        }
+      }
+
+      // MIDI collections, per profile (they hold copies of clips, so they
+      // follow the profile, not any one project).
+      final Map<String, dynamic> midiCollectionsByProfile = {};
+      for (final profile in allProfiles) {
+        try {
+          // Tombstones included: that is how a deletion reaches the others.
+          final collections =
+              await MidiCollectionStore(profile.id).all(includeDeleted: true);
+          if (collections.isNotEmpty) {
+            midiCollectionsByProfile[profile.id] = [
+              for (final c in collections) c.toJson(),
+            ];
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error collecting MIDI collections for ${profile.id}: $e');
+          }
+        }
+      }
+
       final data = {
         'timestamp': DateTime.now().toIso8601String(),
         'version': '1.7', // Incremented to include custom themes
         'profiles': allProfiles.map((p) => _serializeProfile(p)).toList(),
         'projects': allProjects.map((p) => _serializeProject(p)).toList(),
+        // project id -> StoredMidiClips.toJson(). Absent on older backups.
+        'midiClips': midiClipsByProject,
+        // profile id -> [MidiCollection.toJson()]. Absent on older backups.
+        'midiCollectionsByProfile': midiCollectionsByProfile,
         'releases': allReleases.map((r) => _serializeRelease(r)).toList(),
         'roots': allRoots.map((r) => _serializeRoot(r)).toList(),
         'templates': allTemplates.map((t) => _serializeTemplate(t)).toList(),
@@ -3433,6 +3484,10 @@ class GoogleDriveSyncService {
         // NEW: User-authored themes (global preference, not per-profile).
         // Definitions only — the selected theme stays device-local.
         'customThemes': customThemes,
+        // The user's own fields (Settings > Columns & fields); each project
+        // carries its values in 'customFields'.
+        'customFieldDefinitions':
+            customFieldDefinitions.map((f) => f.toJson()).toList(),
         // NEW: Per-profile phase customization (custom phase names, colors, finished set)
         'phaseSettingsByProfile': phaseSettingsByProfile,
         // NEW: Profile mappings to restore correct associations
@@ -3939,6 +3994,15 @@ class GoogleDriveSyncService {
     return true;
   }
 
+  /// Helper to compare string maps by content.
+  bool _mapEquals(Map<String, String> a, Map<String, String> b) {
+    if (a.length != b.length) return false;
+    for (final entry in a.entries) {
+      if (b[entry.key] != entry.value) return false;
+    }
+    return true;
+  }
+
   /// Compare todos lists (by content, not just reference)
   bool _todosEqual(List<TodoItem> a, List<TodoItem> b) {
     if (a.length != b.length) return false;
@@ -3965,6 +4029,9 @@ class GoogleDriveSyncService {
         !_listEquals(remote.parts, local.parts) ||
         !_listEquals(remote.attachments, local.attachments) ||
         !_listEquals(remote.tags, local.tags) ||
+        // Read out of the file on a desktop; a phone only ever gets it here.
+        (remote.stats != null && remote.stats != local.stats) ||
+        !_mapEquals(remote.customFields, local.customFields) ||
         remote.bpm != local.bpm ||
         remote.musicalKey != local.musicalKey ||
         remote.status != local.status ||
@@ -4505,6 +4572,9 @@ class GoogleDriveSyncService {
                     parts: remoteProject.parts,
                     attachments: remoteProject.attachments,
                     tags: remoteProject.tags,
+                    // Null remote stats (never deep-scanned there) keep ours.
+                    stats: remoteProject.stats,
+                    customFields: remoteProject.customFields,
                     bpm: remoteProject.bpm,
                     musicalKey: remoteProject.musicalKey,
                     status: remoteProject.status,
@@ -4914,6 +4984,19 @@ class GoogleDriveSyncService {
       }
     }
 
+    // Merge stored MIDI clips into whichever profile holds each project, the
+    // newer extraction winning. Runs after the projects merge so a project
+    // that just arrived gets its clips too.
+    if (remoteData['midiClips'] != null) {
+      await _mergeMidiClips(remoteData['midiClips'], allProfiles);
+    }
+    if (remoteData['midiCollectionsByProfile'] is Map) {
+      await _mergeMidiCollections(
+        remoteData['midiCollectionsByProfile'] as Map,
+        allProfiles,
+      );
+    }
+
     // Merge releases - distribute to CORRECT profiles (or ALL if no mappings)
     if (remoteData['releases'] != null) {
       final remoteReleases = (remoteData['releases'] as List)
@@ -5157,6 +5240,29 @@ class GoogleDriveSyncService {
         }
       } catch (e) {
         if (kDebugMode) print('Error merging custom themes: $e');
+      }
+    }
+
+    // Merge custom field definitions — the same union / newer-wins rules as
+    // the themes above, shared with local backup restore.
+    if (remoteData['customFieldDefinitions'] != null) {
+      try {
+        final remoteFields = customFieldDefinitionsFromJson(
+            remoteData['customFieldDefinitions'] as List);
+        if (remoteFields.isNotEmpty) {
+          final appSettingsBox = await Hive.openBox<String>('app_settings');
+          final merged = mergeCustomFieldDefinitions(
+            decodeCustomFieldDefinitions(
+                appSettingsBox.get(customFieldDefinitionsStorageKey)),
+            remoteFields,
+          );
+          await appSettingsBox.put(
+            customFieldDefinitionsStorageKey,
+            encodeCustomFieldDefinitions(merged),
+          );
+        }
+      } catch (e) {
+        if (kDebugMode) print('Error merging custom fields: $e');
       }
     }
 
@@ -5493,6 +5599,9 @@ class GoogleDriveSyncService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      // Read out of the project file, but synced anyway: a phone (or any
+      // device without the project folders) can't re-read it.
+      'stats': project.stats?.toMap(),
       // Attachments (#112) are user data — the reference track, the
       // stem-delivery link, the contract. Only the path/URL travels, never the
       // file itself, exactly as with `filePath` and `previewSongPath`.
@@ -5518,6 +5627,7 @@ class GoogleDriveSyncService {
       'autoDurationMs': project.autoDurationMs,
       // User data (#109) — lost on every restore if left out.
       'tags': project.tags,
+      'customFields': project.customFields,
     };
   }
 
@@ -5584,6 +5694,7 @@ class GoogleDriveSyncService {
               ?.map((e) => ProjectMarker.fromMap(e as Map))
               .toList() ??
           const [],
+      stats: ProjectStats.tryFromMap(data['stats']),
       attachments: (data['attachments'] as List?)
               ?.map((e) => ProjectAttachment.fromMap(e as Map))
               .toList() ??
@@ -5602,12 +5713,47 @@ class GoogleDriveSyncService {
         for (final tag in (data['tags'] as List?) ?? const [])
           if (tag is String) tag,
       ],
+      customFields: MusicProject.customFieldsFromRaw(data['customFields']),
     );
   }
 
   /// Test-only accessors for the private serialize/deserialize pair above —
   /// mirrors the pattern in BackupService so round-trip tests don't need to
   /// go through a full Drive upload/download cycle.
+  /// Merges a payload's `midiClips` section into each profile whose projects
+  /// box holds the project. Never deletes (see [MidiClipStore.mergeNewer]).
+  Future<void> _mergeMidiClips(Object? json, List<Profile> profiles) async {
+    try {
+      final incoming = storedMidiClipsFromJson(json);
+      if (incoming.isEmpty) return;
+      for (final profile in profiles) {
+        final projects =
+            await Hive.openBox<MusicProject>('${profile.id}_projects');
+        final mine = {
+          for (final e in incoming.entries)
+            if (projects.containsKey(e.key)) e.key: e.value,
+        };
+        if (mine.isNotEmpty) await MidiClipStore(profile.id).mergeNewer(mine);
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error merging MIDI clips: $e');
+    }
+  }
+
+  /// Merges each profile's collections into that profile's store, for the
+  /// profiles that exist here. See [MidiCollectionStore.mergeIncoming].
+  Future<void> _mergeMidiCollections(Map byProfile, List<Profile> profiles) async {
+    for (final profile in profiles) {
+      try {
+        final incoming = midiCollectionsFromJson(byProfile[profile.id]);
+        if (incoming.isEmpty) continue;
+        await MidiCollectionStore(profile.id).mergeIncoming(incoming);
+      } catch (e) {
+        if (kDebugMode) print('Error merging MIDI collections: $e');
+      }
+    }
+  }
+
   @visibleForTesting
   Map<String, dynamic> serializeProjectForTest(MusicProject project) =>
       _serializeProject(project);
@@ -5936,6 +6082,9 @@ class GoogleDriveSyncService {
         parts: remoteProject.parts,
         attachments: remoteProject.attachments,
         tags: remoteProject.tags,
+        // Null remote stats (never deep-scanned there) keep ours.
+        stats: remoteProject.stats,
+        customFields: remoteProject.customFields,
         bpm: remoteProject.bpm,
         musicalKey: remoteProject.musicalKey,
         status: remoteProject.status,

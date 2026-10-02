@@ -9700,6 +9700,972 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Label projects with your own tags, then filter, search and sort by them. Turning this off only hides them — tags you\'ve added are kept.'**
   String get tagsSettingDescription;
+
+  /// Detail page heading for the track counts and plug-ins read out of the DAW project file
+  ///
+  /// In en, this message translates to:
+  /// **'Project Contents'**
+  String get projectContentsTitle;
+
+  /// Label for the total number of tracks in a DAW project; also a column heading on the metadata extraction page
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks'**
+  String get projectStatsTracks;
+
+  /// Label next to the number of audio tracks in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get projectStatsAudio;
+
+  /// Label next to the number of MIDI tracks in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI'**
+  String get projectStatsMidi;
+
+  /// Label next to the number of instrument tracks in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Instrument'**
+  String get projectStatsInstrument;
+
+  /// Label next to the number of sampler tracks/channels in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Sampler'**
+  String get projectStatsSampler;
+
+  /// Label next to the number of group, FX, return and bus channels in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Groups & FX'**
+  String get projectStatsBus;
+
+  /// Label next to the number of folder tracks in a DAW project
+  ///
+  /// In en, this message translates to:
+  /// **'Folders'**
+  String get projectStatsFolder;
+
+  /// Heading for the list of plug-ins a DAW project loads; also a column heading on the metadata extraction page
+  ///
+  /// In en, this message translates to:
+  /// **'Plug-ins'**
+  String get projectStatsPlugins;
+
+  /// Heading for the MIDI clips read out of a DAW project; also a column heading on the metadata extraction page
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI clips'**
+  String get midiClipsTitle;
+
+  /// Button that reads the MIDI clips out of the project file
+  ///
+  /// In en, this message translates to:
+  /// **'Load MIDI clips'**
+  String get midiClipsLoad;
+
+  /// Explains, next to the button that first reads them, that MIDI clips are read from the project file and then stored and synced
+  ///
+  /// In en, this message translates to:
+  /// **'Read from the project file and kept with the project, so they sync to your other devices.'**
+  String get midiClipsLoadHint;
+
+  /// Shown while the MIDI clips are being read out of the project file
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the project file…'**
+  String get midiClipsLoading;
+
+  /// Shown when a project file contains no MIDI clips with notes
+  ///
+  /// In en, this message translates to:
+  /// **'No MIDI clips with notes in this project.'**
+  String get midiClipsNone;
+
+  /// Shown when reading MIDI clips from the project file failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read MIDI clips: {error}'**
+  String midiClipsError(String error);
+
+  /// Tooltip on the button that plays a MIDI clip through the built-in preview synth
+  ///
+  /// In en, this message translates to:
+  /// **'Preview with a simple synth'**
+  String get midiClipPlay;
+
+  /// Tooltip on the button that stops a MIDI clip preview
+  ///
+  /// In en, this message translates to:
+  /// **'Stop preview'**
+  String get midiClipStop;
+
+  /// Tooltip on the button that saves one MIDI clip as a .mid file
+  ///
+  /// In en, this message translates to:
+  /// **'Save as MIDI file'**
+  String get midiClipSave;
+
+  /// Button that saves every MIDI clip of a project as .mid files into a chosen folder
+  ///
+  /// In en, this message translates to:
+  /// **'Export all as MIDI…'**
+  String get midiClipsExportAll;
+
+  /// Snackbar after exporting MIDI clips to a folder
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Saved 1 MIDI file to {folder}} other{Saved {count} MIDI files to {folder}}}'**
+  String midiClipsExported(int count, String folder);
+
+  /// Snackbar after saving one MIDI clip as a .mid file
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {fileName}'**
+  String midiClipSaved(String fileName);
+
+  /// Tooltip on the handle that drags a MIDI clip out of the app as a .mid file
+  ///
+  /// In en, this message translates to:
+  /// **'Drag into your DAW or a folder'**
+  String get midiClipDragTooltip;
+
+  /// Length of a MIDI clip in bars (4/4), rounded up
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 bar} other{{count} bars}}'**
+  String midiClipBars(int count);
+
+  /// Number of notes in a MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 note} other{{count} notes}}'**
+  String midiClipNotes(int count);
+
+  /// How many places in the project use the same MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'Used {count}×'**
+  String midiClipUsedTimes(int count);
+
+  /// Snackbar when a MIDI clip preview could not be played
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t play the preview: {error}'**
+  String midiClipPreviewFailed(String error);
+
+  /// Snackbar when saving MIDI clips to disk failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the MIDI file: {error}'**
+  String midiClipSaveFailed(String error);
+
+  /// Title of the folder picker for exporting all MIDI clips
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a folder for the MIDI files'**
+  String get midiClipsExportFolderTitle;
+
+  /// Tooltip on a MIDI clip that other clips in the project turned out to be identical to; names is a comma-separated list of "Track – Clip" labels
+  ///
+  /// In en, this message translates to:
+  /// **'Also: {names}'**
+  String midiClipAlsoAs(String names);
+
+  /// Heading for MIDI clips whose project format did not say which track they are on
+  ///
+  /// In en, this message translates to:
+  /// **'Other clips'**
+  String get midiClipsNoTrack;
+
+  /// Tooltip on a collapsed track heading in the MIDI clips list
+  ///
+  /// In en, this message translates to:
+  /// **'Show this track\'s clips'**
+  String get midiClipsExpandTrack;
+
+  /// Tooltip on an expanded track heading in the MIDI clips list
+  ///
+  /// In en, this message translates to:
+  /// **'Hide this track\'s clips'**
+  String get midiClipsCollapseTrack;
+
+  /// Tooltip on the tempo control of the MIDI clips list
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo for previews and saved MIDI files'**
+  String get midiTempoTooltip;
+
+  /// Tooltip on the button that lowers the MIDI preview tempo by 1 BPM
+  ///
+  /// In en, this message translates to:
+  /// **'Slower'**
+  String get midiTempoSlower;
+
+  /// Tooltip on the button that raises the MIDI preview tempo by 1 BPM
+  ///
+  /// In en, this message translates to:
+  /// **'Faster'**
+  String get midiTempoFaster;
+
+  /// Tooltip on the button that puts the MIDI preview tempo back to the project tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the project tempo ({bpm} BPM)'**
+  String midiTempoReset(String bpm);
+
+  /// Tooltip on the button that shares one MIDI clip as a .mid file
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get midiClipShare;
+
+  /// Button that shares every MIDI clip of a project as .mid files
+  ///
+  /// In en, this message translates to:
+  /// **'Share all'**
+  String get midiClipsShareAll;
+
+  /// Message sent along with one shared MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI clip \"{clip}\" from {project}'**
+  String midiClipShareText(String clip, String project);
+
+  /// Message sent along with all of a project's shared MIDI clips
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI clips from {project}'**
+  String midiClipsShareAllText(String project);
+
+  /// Shown when the system has no share sheet for files, so the folder with the .mid files was opened instead
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing isn\'t available here, so the files are in the folder that just opened. Drag them into your chat app.'**
+  String get midiClipsShareFallback;
+
+  /// Snackbar when sharing MIDI clips failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share: {error}'**
+  String midiClipShareFailed(String error);
+
+  /// Tooltip on the button that re-reads the MIDI clips (and the rest of the metadata) from the project file
+  ///
+  /// In en, this message translates to:
+  /// **'Read again from the project file'**
+  String get midiClipsRefresh;
+
+  /// Shown above stored MIDI clips when the project file was modified after they were read
+  ///
+  /// In en, this message translates to:
+  /// **'The project file has changed since these clips were read.'**
+  String get midiClipsStale;
+
+  /// Shown on a device that cannot read the project file when no MIDI clips have been stored for the project yet
+  ///
+  /// In en, this message translates to:
+  /// **'No MIDI clips stored for this project yet. Extract its metadata on the computer that has the project file.'**
+  String get midiClipsNoneStored;
+
+  /// Tooltip on the button that picks which built-in instrument previews a MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'Instrument: {name}'**
+  String midiClipInstrumentTooltip(String name);
+
+  /// Built-in preview instrument name: Generic synth
+  ///
+  /// In en, this message translates to:
+  /// **'Synth'**
+  String get synthVoiceSynth;
+
+  /// Built-in preview instrument name: Lead synth
+  ///
+  /// In en, this message translates to:
+  /// **'Lead'**
+  String get synthVoiceLead;
+
+  /// Built-in preview instrument name: Bass
+  ///
+  /// In en, this message translates to:
+  /// **'Bass'**
+  String get synthVoiceBass;
+
+  /// Built-in preview instrument name: Pad synth
+  ///
+  /// In en, this message translates to:
+  /// **'Pad'**
+  String get synthVoicePad;
+
+  /// Built-in preview instrument name: Plucked synth
+  ///
+  /// In en, this message translates to:
+  /// **'Pluck'**
+  String get synthVoicePluck;
+
+  /// Built-in preview instrument name: Piano / keyboard
+  ///
+  /// In en, this message translates to:
+  /// **'Keys'**
+  String get synthVoiceKeys;
+
+  /// Built-in preview instrument name: Organ
+  ///
+  /// In en, this message translates to:
+  /// **'Organ'**
+  String get synthVoiceOrgan;
+
+  /// Built-in preview instrument name: String section
+  ///
+  /// In en, this message translates to:
+  /// **'Strings'**
+  String get synthVoiceStrings;
+
+  /// Built-in preview instrument name: Brass section
+  ///
+  /// In en, this message translates to:
+  /// **'Brass'**
+  String get synthVoiceBrass;
+
+  /// Built-in preview instrument name: Bell / mallet
+  ///
+  /// In en, this message translates to:
+  /// **'Bell'**
+  String get synthVoiceBell;
+
+  /// Built-in preview instrument name: Full drum kit following the General MIDI drum map
+  ///
+  /// In en, this message translates to:
+  /// **'Drum kit'**
+  String get synthVoiceDrumKit;
+
+  /// Built-in preview instrument name: Kick drum
+  ///
+  /// In en, this message translates to:
+  /// **'Kick'**
+  String get synthVoiceKick;
+
+  /// Built-in preview instrument name: Snare drum
+  ///
+  /// In en, this message translates to:
+  /// **'Snare'**
+  String get synthVoiceSnare;
+
+  /// Built-in preview instrument name: Hand clap
+  ///
+  /// In en, this message translates to:
+  /// **'Clap'**
+  String get synthVoiceClap;
+
+  /// Built-in preview instrument name: Hi-hat / cymbals
+  ///
+  /// In en, this message translates to:
+  /// **'Hi-hat'**
+  String get synthVoiceHiHat;
+
+  /// Built-in preview instrument name: Percussion
+  ///
+  /// In en, this message translates to:
+  /// **'Percussion'**
+  String get synthVoicePercussion;
+
+  /// Dashboard tab with every MIDI clip across projects and the user's collections
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI'**
+  String get midiLibraryTab;
+
+  /// Search box hint on the MIDI tab
+  ///
+  /// In en, this message translates to:
+  /// **'Search MIDI clips'**
+  String get midiLibrarySearchHint;
+
+  /// MIDI tab: the view listing every unique clip across all projects
+  ///
+  /// In en, this message translates to:
+  /// **'All clips'**
+  String get midiLibraryAllClips;
+
+  /// MIDI tab: heading over the user's collections of clips
+  ///
+  /// In en, this message translates to:
+  /// **'Collections'**
+  String get midiCollectionsTitle;
+
+  /// Button and dialog title for making a new MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'New collection'**
+  String get midiCollectionNew;
+
+  /// Placeholder in the MIDI collection name field
+  ///
+  /// In en, this message translates to:
+  /// **'Collection name'**
+  String get midiCollectionNameHint;
+
+  /// Confirm button when creating a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get midiCollectionCreate;
+
+  /// Button and dialog title for renaming a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get midiCollectionRename;
+
+  /// Button and dialog title for deleting a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'Delete collection'**
+  String get midiCollectionDelete;
+
+  /// Confirmation when deleting a MIDI collection; its clips are copies so projects are unaffected
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? Its clips are copies, so the projects they came from are not affected.'**
+  String midiCollectionDeleteConfirm(String name);
+
+  /// Action that copies a MIDI clip into a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Add to collection'**
+  String get midiCollectionAddTo;
+
+  /// Action that removes a MIDI clip from the collection on show
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from collection'**
+  String get midiCollectionRemoveFrom;
+
+  /// Snackbar after adding MIDI clips to a collection
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Added to {name}} other{Added {count} clips to {name}}}'**
+  String midiCollectionAdded(int count, String name);
+
+  /// Snackbar when the clip being added is already in that collection
+  ///
+  /// In en, this message translates to:
+  /// **'Already in {name}'**
+  String midiCollectionAlreadyIn(String name);
+
+  /// Snackbar after removing a clip from a collection, with an undo action
+  ///
+  /// In en, this message translates to:
+  /// **'Removed {clip} from {name}'**
+  String midiCollectionRemoved(String clip, String name);
+
+  /// Shown in an empty MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'This collection is empty. Add clips from All clips or from a project\'s page.'**
+  String get midiCollectionEmpty;
+
+  /// Message sent along with a shared MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI collection \"{name}\"'**
+  String midiCollectionShareText(String name);
+
+  /// MIDI tab when no project has stored clips yet
+  ///
+  /// In en, this message translates to:
+  /// **'No MIDI clips yet. Extract a project\'s metadata to read its clips.'**
+  String get midiLibraryEmpty;
+
+  /// MIDI tab when the search or instrument filter matches nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No clips match.'**
+  String get midiLibraryNoMatches;
+
+  /// Instrument filter option on the MIDI tab that shows every clip
+  ///
+  /// In en, this message translates to:
+  /// **'All instruments'**
+  String get midiLibraryAllInstruments;
+
+  /// Tooltip on the overflow menu of a MIDI clip row on phones
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get midiClipMoreActions;
+
+  /// Placeholder in the tempo field while each clip plays at its own project tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get midiTempoAuto;
+
+  /// Tooltip on the button that goes back to playing each clip at its own project tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Back to each clip\'s own tempo'**
+  String get midiTempoResetAuto;
+
+  /// Release page: tooltip on the divider between the tracklist and the files panel
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to resize · double-click to reset'**
+  String get releaseTracksResizeHint;
+
+  /// Release page: button that expands the tracklist over the files panel
+  ///
+  /// In en, this message translates to:
+  /// **'Show the whole tracklist'**
+  String get releaseTracksMaximize;
+
+  /// Release page: button that brings the files panel back under the tracklist
+  ///
+  /// In en, this message translates to:
+  /// **'Show the files panel again'**
+  String get releaseTracksRestoreFiles;
+
+  /// Settings: nav label for the table columns and custom fields section
+  ///
+  /// In en, this message translates to:
+  /// **'Columns & fields'**
+  String get columnsAndFieldsTabLabel;
+
+  /// Settings: heading of the built-in projects table columns list
+  ///
+  /// In en, this message translates to:
+  /// **'Projects table columns'**
+  String get projectsTableColumnsTitle;
+
+  /// Settings: explains the built-in columns list
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which columns the projects table shows and drag them into the order you want. Name and actions are always shown. Applies to this device only.'**
+  String get projectsTableColumnsDescription;
+
+  /// Heading for the user-defined custom fields (Settings and project page)
+  ///
+  /// In en, this message translates to:
+  /// **'Custom fields'**
+  String get customFieldsTitle;
+
+  /// Settings: explains custom fields and where they can appear
+  ///
+  /// In en, this message translates to:
+  /// **'Add your own fields to every project — loudness (LUFS), mastering engineer, ISRC, anything. A field can always be filled in on the project page; choose whether it also gets a column in the projects table or in release tracklists.'**
+  String get customFieldsDescription;
+
+  /// Settings: button that adds a custom field
+  ///
+  /// In en, this message translates to:
+  /// **'Add field'**
+  String get addCustomField;
+
+  /// Title of the dialog that edits a custom field
+  ///
+  /// In en, this message translates to:
+  /// **'Edit field'**
+  String get editCustomField;
+
+  /// Custom field dialog: label of the name input
+  ///
+  /// In en, this message translates to:
+  /// **'Field name'**
+  String get customFieldName;
+
+  /// Custom field dialog: example shown in the empty name input
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. LUFS'**
+  String get customFieldNameHint;
+
+  /// Custom field dialog: error when the name is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get customFieldNameRequired;
+
+  /// Custom field dialog: error when another field already has this name
+  ///
+  /// In en, this message translates to:
+  /// **'A field with this name already exists'**
+  String get customFieldNameDuplicate;
+
+  /// Custom field dialog: label of the type choice
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get customFieldType;
+
+  /// Custom field type: free text
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get customFieldTypeText;
+
+  /// Custom field type: a number, sorted by value
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get customFieldTypeNumber;
+
+  /// Custom field dialog: explains what the Number type changes
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers sort by value, so -9.8 comes after -14.2.'**
+  String get customFieldTypeNumberHelp;
+
+  /// Custom field: option to give the field a column in the projects table
+  ///
+  /// In en, this message translates to:
+  /// **'Column in the projects table'**
+  String get customFieldShowInProjectsTable;
+
+  /// Custom field: option to give the field a column in a release's tracklist table
+  ///
+  /// In en, this message translates to:
+  /// **'Column in release tracklists'**
+  String get customFieldShowInReleaseTracks;
+
+  /// Custom field: shown when the field has no column anywhere
+  ///
+  /// In en, this message translates to:
+  /// **'Project page only'**
+  String get customFieldProjectPageOnly;
+
+  /// Settings: shown when the user has not added any custom field
+  ///
+  /// In en, this message translates to:
+  /// **'No custom fields yet.'**
+  String get noCustomFieldsYet;
+
+  /// Title of the confirmation before deleting a custom field
+  ///
+  /// In en, this message translates to:
+  /// **'Delete field?'**
+  String get deleteCustomFieldTitle;
+
+  /// Confirmation before deleting a custom field
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" and the values entered in it will no longer appear on any project, table or search.'**
+  String deleteCustomFieldMessage(String name);
+
+  /// Project page: error under a number custom field holding something that is not a number
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number'**
+  String get customFieldInvalidNumber;
+
+  /// Project page: shown under the custom fields heading
+  ///
+  /// In en, this message translates to:
+  /// **'Your own fields — add or change them in Settings > Columns & fields.'**
+  String get customFieldsProjectPageHint;
+
+  /// Tooltip on a MIDI clip thumbnail, and menu item, that opens the clip in a large piano roll
+  ///
+  /// In en, this message translates to:
+  /// **'Open piano roll'**
+  String get midiPianoRollOpen;
+
+  /// Piano roll: zoom in horizontally
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get midiPianoRollZoomIn;
+
+  /// Piano roll: zoom out horizontally
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get midiPianoRollZoomOut;
+
+  /// Piano roll: zoom so the whole clip fits the window
+  ///
+  /// In en, this message translates to:
+  /// **'Fit to window'**
+  String get midiPianoRollFit;
+
+  /// Piano roll: toggle the view following the playback line
+  ///
+  /// In en, this message translates to:
+  /// **'Follow playback'**
+  String get midiPianoRollFollow;
+
+  /// Snackbar after sharing MIDI files on a system that cannot report whether its share window appeared
+  ///
+  /// In en, this message translates to:
+  /// **'If no share window appeared, the files are ready in a folder.'**
+  String get midiClipsShareOfferFolder;
+
+  /// Snackbar action that opens the folder holding the shared MIDI files
+  ///
+  /// In en, this message translates to:
+  /// **'Show in folder'**
+  String get midiClipsShowInFolder;
+
+  /// Piano roll: pause the playing preview
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get midiPianoRollPause;
+
+  /// Opens the detail page of the project a MIDI clip came from
+  ///
+  /// In en, this message translates to:
+  /// **'Open project'**
+  String get midiOpenSourceProject;
+
+  /// Snackbar when the project a collection clip was copied from is no longer in the library
+  ///
+  /// In en, this message translates to:
+  /// **'The project this clip came from is no longer in your library.'**
+  String get midiSourceProjectGone;
+
+  /// Shares a whole MIDI collection as a single .zip of .mid files
+  ///
+  /// In en, this message translates to:
+  /// **'Share as ZIP'**
+  String get midiCollectionShareZip;
+
+  /// Snackbar action after adding clips to a collection: go to the MIDI tab with that collection open
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get midiCollectionOpen;
+
+  /// Label and tooltip of the volume slider for MIDI clip previews
+  ///
+  /// In en, this message translates to:
+  /// **'Preview volume'**
+  String get midiPreviewVolume;
+
+  /// Tooltip on the piano roll dropdown that picks what the lane under the notes shows
+  ///
+  /// In en, this message translates to:
+  /// **'Parameter shown below the notes'**
+  String get midiLanePicker;
+
+  /// Piano roll lane picker entry that hides the lane
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get midiLaneNone;
+
+  /// Piano roll lane: how hard each note is played
+  ///
+  /// In en, this message translates to:
+  /// **'Velocity'**
+  String get midiLaneVelocity;
+
+  /// Piano roll lane: MIDI pitch bend
+  ///
+  /// In en, this message translates to:
+  /// **'Pitch bend'**
+  String get midiLanePitchBend;
+
+  /// Piano roll lane: MIDI channel aftertouch
+  ///
+  /// In en, this message translates to:
+  /// **'Aftertouch'**
+  String get midiLaneChannelPressure;
+
+  /// Piano roll lane: MIDI polyphonic (per-key) aftertouch
+  ///
+  /// In en, this message translates to:
+  /// **'Poly aftertouch'**
+  String get midiLanePolyPressure;
+
+  /// Piano roll lane: MIDI program (patch) changes
+  ///
+  /// In en, this message translates to:
+  /// **'Program change'**
+  String get midiLaneProgram;
+
+  /// Piano roll lane: a MIDI controller with no common name, by number
+  ///
+  /// In en, this message translates to:
+  /// **'CC {number}'**
+  String midiLaneController(int number);
+
+  /// Piano roll lane: a MIDI controller by number and its usual name
+  ///
+  /// In en, this message translates to:
+  /// **'CC {number} · {name}'**
+  String midiLaneControllerNamed(int number, String name);
+
+  /// Usual name of MIDI CC 1
+  ///
+  /// In en, this message translates to:
+  /// **'Modulation'**
+  String get midiCcModulation;
+
+  /// Usual name of MIDI CC 2
+  ///
+  /// In en, this message translates to:
+  /// **'Breath'**
+  String get midiCcBreath;
+
+  /// Usual name of MIDI CC 4
+  ///
+  /// In en, this message translates to:
+  /// **'Foot pedal'**
+  String get midiCcFoot;
+
+  /// Usual name of MIDI CC 5
+  ///
+  /// In en, this message translates to:
+  /// **'Portamento time'**
+  String get midiCcPortamentoTime;
+
+  /// Usual name of MIDI CC 7
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get midiCcVolume;
+
+  /// Usual name of MIDI CC 8
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get midiCcBalance;
+
+  /// Usual name of MIDI CC 10
+  ///
+  /// In en, this message translates to:
+  /// **'Pan'**
+  String get midiCcPan;
+
+  /// Usual name of MIDI CC 11
+  ///
+  /// In en, this message translates to:
+  /// **'Expression'**
+  String get midiCcExpression;
+
+  /// Usual name of MIDI CC 64
+  ///
+  /// In en, this message translates to:
+  /// **'Sustain pedal'**
+  String get midiCcSustain;
+
+  /// Usual name of MIDI CC 65
+  ///
+  /// In en, this message translates to:
+  /// **'Portamento'**
+  String get midiCcPortamento;
+
+  /// Usual name of MIDI CC 66
+  ///
+  /// In en, this message translates to:
+  /// **'Sostenuto'**
+  String get midiCcSostenuto;
+
+  /// Usual name of MIDI CC 67
+  ///
+  /// In en, this message translates to:
+  /// **'Soft pedal'**
+  String get midiCcSoftPedal;
+
+  /// Usual name of MIDI CC 71
+  ///
+  /// In en, this message translates to:
+  /// **'Resonance'**
+  String get midiCcResonance;
+
+  /// Usual name of MIDI CC 72 (envelope release time)
+  ///
+  /// In en, this message translates to:
+  /// **'Release'**
+  String get midiCcRelease;
+
+  /// Usual name of MIDI CC 73 (envelope attack time)
+  ///
+  /// In en, this message translates to:
+  /// **'Attack'**
+  String get midiCcAttack;
+
+  /// Usual name of MIDI CC 74 (filter cutoff)
+  ///
+  /// In en, this message translates to:
+  /// **'Cutoff'**
+  String get midiCcCutoff;
+
+  /// Usual name of MIDI CC 91
+  ///
+  /// In en, this message translates to:
+  /// **'Reverb'**
+  String get midiCcReverb;
+
+  /// Usual name of MIDI CC 93
+  ///
+  /// In en, this message translates to:
+  /// **'Chorus'**
+  String get midiCcChorus;
+
+  /// Dashboard filter toggle: show only projects that contain MIDI clips
+  ///
+  /// In en, this message translates to:
+  /// **'Only projects with MIDI'**
+  String get filterHasMidi;
+
+  /// Warning on a project page: .mid files the project references were not found or could not be read
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{A referenced MIDI file couldn\'t be found or read: {files}} other{{count} referenced MIDI files couldn\'t be found or read: {files}}}'**
+  String midiClipsMissingFiles(int count, String files);
+
+  /// MIDI tab arrangement: clips grouped under their project
+  ///
+  /// In en, this message translates to:
+  /// **'By project'**
+  String get midiLibraryArrangeProject;
+
+  /// MIDI tab arrangement inside a collection: clips in the order they were added
+  ///
+  /// In en, this message translates to:
+  /// **'As added'**
+  String get midiLibraryArrangeAdded;
+
+  /// MIDI tab arrangement: clips grouped and sorted by their project tempo
+  ///
+  /// In en, this message translates to:
+  /// **'By tempo (BPM)'**
+  String get midiLibraryArrangeTempo;
+
+  /// MIDI tab heading over the clips at one tempo
+  ///
+  /// In en, this message translates to:
+  /// **'{bpm} BPM'**
+  String midiLibraryTempoGroup(String bpm);
+
+  /// MIDI tab heading over clips whose project has no known tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown tempo'**
+  String get midiLibraryTempoUnknown;
+
+  /// MIDI tab button: add .mid files from anywhere on the computer to a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Import MIDI files'**
+  String get midiImportFiles;
+
+  /// Title of the file picker for importing .mid files
+  ///
+  /// In en, this message translates to:
+  /// **'Choose MIDI files to import'**
+  String get midiImportDialogTitle;
+
+  /// Snackbar: these picked files were not imported because they are not MIDI files or contain no notes
+  ///
+  /// In en, this message translates to:
+  /// **'Not imported (not a MIDI file, or no notes in it): {files}'**
+  String midiImportSkipped(String files);
 }
 
 class _AppLocalizationsDelegate

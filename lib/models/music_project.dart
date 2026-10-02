@@ -4,6 +4,7 @@ import '../utils/name_date_parser.dart';
 import 'project_attachment.dart';
 import 'project_marker.dart';
 import 'project_part.dart';
+import 'project_stats.dart';
 import 'todo_item.dart';
 
 /// Converts a musical key (e.g. `'C#m'`, `'G#/Ab Major'`) to Camelot Wheel
@@ -349,6 +350,27 @@ class MusicProject {
   @HiveField(47)
   final List<String> tags;
 
+  /// What is inside the project file — track counts by kind, plug-ins, MIDI
+  /// clip count — as the last full-metadata extraction read it. Null when
+  /// it has never been read (lightweight scan, unsupported DAW, a stack).
+  ///
+  /// Scanned, not typed, but it still syncs and backs up: a phone, or a
+  /// Flatpak restore without the project folders, can't re-read the file.
+  @HiveField(48)
+  final ProjectStats? stats;
+
+  /// Values of the user's own fields (Settings > Custom fields) — "LUFS",
+  /// "Mastered by", anything the built-in columns don't cover — keyed by
+  /// `CustomFieldDefinition.id`.
+  ///
+  /// Stored as typed text even for number fields; `custom_fields.dart` parses
+  /// on read, so a value never gets lost to a format change. A key whose
+  /// definition was deleted is kept, dormant: restoring the field (or a sync
+  /// bringing it back) brings its values back with it. An empty value is never
+  /// stored — [setCustomFieldValue] removes the key instead.
+  @HiveField(49)
+  final Map<String, String> customFields;
+
   const MusicProject({
     required this.id,
     required this.filePath,
@@ -398,6 +420,8 @@ class MusicProject {
     this.durationMs,
     this.autoDurationMs,
     this.tags = const [],
+    this.stats,
+    this.customFields = const {},
   });
 
   /// Whether this project's files have been zipped out to an archive (#116).
@@ -431,6 +455,7 @@ class MusicProject {
       parts.isNotEmpty ||
       attachments.isNotEmpty ||
       tags.isNotEmpty ||
+      customFields.isNotEmpty ||
       totalWorkSeconds > 0;
 
   /// Whether the user has given this project a look of its own: cover art, an
@@ -737,6 +762,8 @@ class MusicProject {
     int? autoDurationMs,
     bool clearArchiveEntryPath = false,
     List<String>? tags,
+    ProjectStats? stats,
+    Map<String, String>? customFields,
   }) {
     return MusicProject(
       id: id ?? this.id,
@@ -795,7 +822,36 @@ class MusicProject {
       durationMs: clearDurationMs ? null : (durationMs ?? this.durationMs),
       autoDurationMs: autoDurationMs ?? this.autoDurationMs,
       tags: tags ?? this.tags,
+      stats: stats ?? this.stats,
+      customFields: customFields ?? this.customFields,
     );
+  }
+
+  /// A copy with custom field [fieldId] set to [value]; a blank value removes
+  /// the key, so "cleared" and "never set" are the same thing.
+  MusicProject setCustomFieldValue(String fieldId, String? value) {
+    final trimmed = value?.trim() ?? '';
+    final next = Map<String, String>.of(customFields);
+    if (trimmed.isEmpty) {
+      next.remove(fieldId);
+    } else {
+      next[fieldId] = trimmed;
+    }
+    return copyWith(customFields: Map.unmodifiable(next));
+  }
+
+  /// Reads a stored custom-field map, keeping only string keys with
+  /// non-blank string values. Never throws: a malformed entry costs that
+  /// entry, not the project.
+  static Map<String, String> customFieldsFromRaw(Object? raw) {
+    if (raw is! Map) return const {};
+    final result = <String, String>{};
+    raw.forEach((key, value) {
+      if (key is String && value is String && value.trim().isNotEmpty) {
+        result[key] = value;
+      }
+    });
+    return Map.unmodifiable(result);
   }
 
   /// Recording progress across [parts]: how many are on their final take.
@@ -895,13 +951,17 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       tags: fields[47] is List
           ? List<String>.unmodifiable((fields[47] as List).whereType<String>())
           : const <String>[],
+      // Absent in every box written before project stats existed.
+      stats: ProjectStats.tryFromMap(fields[48]),
+      // Absent in every box written before custom fields existed.
+      customFields: MusicProject.customFieldsFromRaw(fields[49]),
     );
   }
 
   @override
   void write(BinaryWriter writer, MusicProject obj) {
     writer
-      ..writeByte(48) // 48 fields (0-47)
+      ..writeByte(50) // 50 fields (0-49)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -997,6 +1057,10 @@ class MusicProjectAdapter extends TypeAdapter<MusicProject> {
       ..writeByte(46)
       ..write(obj.autoDurationMs)
       ..writeByte(47)
-      ..write(obj.tags);
+      ..write(obj.tags)
+      ..writeByte(48)
+      ..write(obj.stats?.toMap())
+      ..writeByte(49)
+      ..write(obj.customFields);
   }
 }

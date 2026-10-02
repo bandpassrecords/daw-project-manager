@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daw_project_manager/services/metadata_extractor.dart';
 
@@ -840,13 +841,13 @@ TEMPO 120 4 4 0
   });
 
   group('MetadataExtractor.supportsFullExtraction', () {
-    for (final ext in ['.als', '.alp', '.cpr', '.npr', '.bwproject', '.rpp', '.mgd', '.flp', '.logicx']) {
+    for (final ext in ['.als', '.alp', '.cpr', '.npr', '.bwproject', '.rpp', '.mgd', '.flp', '.logicx', '.song']) {
       test('$ext is supported', () {
         expect(MetadataExtractor.supportsFullExtraction('/fake/project$ext'), isTrue);
       });
     }
 
-    for (final ext in ['.ptx', '.pts', '.song', '.cwp', '.ardour', '.band', '.aup3']) {
+    for (final ext in ['.ptx', '.pts', '.cwp', '.ardour', '.band', '.aup3']) {
       test('$ext is not supported', () {
         expect(MetadataExtractor.supportsFullExtraction('/fake/project$ext'), isFalse);
       });
@@ -854,6 +855,105 @@ TEMPO 120 4 4 0
 
     test('extension check is case-insensitive', () {
       expect(MetadataExtractor.supportsFullExtraction('/fake/Project.RPP'), isTrue);
+    });
+  });
+
+  // The stats parsers have their own tests under test/services/daw_parsers;
+  // these check that extractMetadata actually hands their result back, for
+  // each format, through the real file + isolate path.
+  group('MetadataExtractor — project stats', () {
+    late Directory tempDir;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('stats_extract_');
+    });
+
+    tearDown(() async {
+      await tempDir.delete(recursive: true);
+    });
+
+    test('Ableton: tracks and plug-ins, alongside tempo', () async {
+      const xml = '''<?xml version="1.0" encoding="UTF-8"?>
+<Ableton Creator="Ableton Live 12.1">
+  <LiveSet>
+    <Tracks>
+      <AudioTrack Id="1" />
+      <MidiTrack Id="2">
+        <DeviceChain><DeviceChain><Devices>
+          <PluginDevice Id="0"><PluginDesc>
+            <VstPluginInfo Id="0"><PlugName Value="Sylenth1" /></VstPluginInfo>
+          </PluginDesc></PluginDevice>
+        </Devices></DeviceChain></DeviceChain>
+      </MidiTrack>
+      <ReturnTrack Id="3" />
+    </Tracks>
+    <MainTrack><DeviceChain><Mixer><Tempo><Manual Value="128" /></Tempo></Mixer></DeviceChain></MainTrack>
+  </LiveSet>
+</Ableton>''';
+      final file = File('${tempDir.path}/set.als')
+        ..writeAsBytesSync(gzip.encode(utf8.encode(xml)));
+
+      final m = await MetadataExtractor.extractMetadata(file.path);
+
+      expect(m.bpm, 128);
+      expect(m.dawVersion, '12.1');
+      expect(m.stats!.audioTracks, 1);
+      expect(m.stats!.midiTracks, 1);
+      expect(m.stats!.busTracks, 1);
+      expect(m.stats!.plugins, ['Sylenth1']);
+    });
+
+    test('Reaper: stats come back with the markers and notes', () async {
+      final file = File('${tempDir.path}/song.rpp')..writeAsStringSync('''
+<REAPER_PROJECT 0.1 "7.0/win64" 0
+  TEMPO 140 4 4
+  <TRACK
+    NAME "Drums"
+    ISBUS 1 1
+  >
+>
+''');
+      final m = await MetadataExtractor.extractMetadata(file.path);
+      expect(m.bpm, 140);
+      expect(m.markers, isEmpty);
+      expect(m.stats!.folderTracks, 1);
+    });
+
+    test('Studio One: tempo, version and tracks from the .song zip', () async {
+      final archive = Archive();
+      void add(String name, String content) {
+        final bytes = utf8.encode(content);
+        archive.addFile(ArchiveFile(name, bytes.length, bytes));
+      }
+
+      add('metainfo.xml', '''<MetaInformation>
+  <Attribute id="Media:Tempo" value="95"/>
+  <Attribute id="Document:Generator" value="Studio One/7.0.1.1234"/>
+</MetaInformation>''');
+      add('Song/song.xml', '''<Song><List>
+  <MediaTrack mediaType="Audio"/><MediaTrack mediaType="Music"/>
+</List></Song>''');
+      final file = File('${tempDir.path}/song.song')
+        ..writeAsBytesSync(ZipEncoder().encode(archive));
+
+      final m = await MetadataExtractor.extractMetadata(file.path);
+
+      expect(m.dawType, 'Studio One');
+      expect(m.bpm, 95);
+      expect(m.dawVersion, '7.0');
+      expect(m.stats!.audioTracks, 1);
+      expect(m.stats!.instrumentTracks, 1);
+    });
+
+    test('a .cpr that is not really a Cubase project yields no stats', () async {
+      final file = File('${tempDir.path}/fake.cpr')..writeAsStringSync('nope');
+      final m = await MetadataExtractor.extractMetadata(file.path);
+      expect(m.stats, isNull);
+    });
+
+    test('a lightweight extraction never reads stats', () async {
+      final m = await MetadataExtractor.extractLightweightMetadata('/fake/x.cpr');
+      expect(m.stats, isNull);
     });
   });
 }

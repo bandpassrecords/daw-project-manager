@@ -4,10 +4,13 @@ import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:file_picker/file_picker.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:path/path.dart' as p;
+import '../models/custom_field.dart';
+import 'custom_field_merge.dart';
 import '../models/custom_theme.dart';
 import '../models/music_project.dart';
 import '../models/project_attachment.dart';
 import '../models/project_marker.dart';
+import '../models/project_stats.dart';
 import '../models/scan_root.dart';
 import '../models/ignored_path.dart';
 import '../models/release.dart';
@@ -20,6 +23,8 @@ import '../models/project_part.dart';
 import '../models/project_template.dart';
 import '../models/template_root.dart';
 import '../repository/project_repository.dart';
+import '../repository/midi_clip_store.dart';
+import '../models/midi_collection.dart';
 import '../repository/profile_repository.dart';
 import 'custom_theme_merge.dart';
 import '../utils/app_paths.dart';
@@ -52,23 +57,35 @@ class BackupService {
       final customMixdownFoldersByDaw = await _readCustomMixdownFoldersByDaw();
       final dawLaunchCommands = await _readDawLaunchCommands();
       final customThemes = await _readCustomThemes();
+      final customFieldDefinitions = await _readCustomFieldDefinitions();
       // Unlike Drive (which stores a byProfile map for every profile), a local
       // backup covers a single profile, so only that profile's phase settings
       // are relevant here.
       final phaseSettings = await _readPhaseSettings(profileId);
+      final midiCollections =
+          await projectRepo.midiCollections.all(includeDeleted: true);
+      final midiClips = await projectRepo.midiClips.getAll(
+        onlyProjects: projects.map((p) => p.id).toSet(),
+      );
 
       // Create backup data structure
       final backupData = {
         // 1.1 added templates/projectTemplates/templateRoots/
         // customMixdownFolders/phaseSettings. 1.2 added partTemplates (and, on
-        // each project, its parts). 1.3 added customThemes. Importing an older
-        // file still works — every new key is read with a null check on the
-        // way back in.
-        'version': '1.3',
+        // each project, its parts). 1.3 added customThemes. 1.4 added
+        // customFieldDefinitions (and, on each project, customFields),
+        // midiClips and midiCollections. Importing an older file still works —
+        // every new key is read with a null check on the way back in.
+        'version': '1.4',
         'exportDate': DateTime.now().toIso8601String(),
         'profileId': profileId,
         'profile': profile != null ? await _profileToJson(profile) : null,
         'projects': await Future.wait(projects.map(_projectToJsonWithCoverArt)),
+        // 1.4: project id -> stored MIDI clips. Flatpak's only way to keep
+        // them, since Drive sync isn't offered there.
+        'midiClips': storedMidiClipsToJson(midiClips),
+        // 1.4: this profile's MIDI collections (copies of clips).
+        'midiCollections': [for (final c in midiCollections) c.toJson()],
         'roots': roots.map((r) => _rootToJson(r)).toList(),
         'ignoredPaths': ignoredPaths.map((ip) => _ignoredPathToJson(ip)).toList(),
         'releases': await Future.wait(releases.map((r) => _releaseToJson(r))),
@@ -84,6 +101,11 @@ class BackupService {
         // users could never back a theme up at all. The *selected* theme is
         // deliberately absent: that is a device-local preference.
         'customThemes': customThemes.map((t) => t.toJson()).toList(),
+        // The user's own fields — global user data, same reasoning as the
+        // themes. Tombstones included, so a restore can't revive a field
+        // deleted since (see CustomFieldDefinition.deletedAt).
+        'customFieldDefinitions':
+            customFieldDefinitions.map((f) => f.toJson()).toList(),
         'phaseSettings': phaseSettings,
       };
 
@@ -276,6 +298,11 @@ class BackupService {
         backupData['customThemes'] as List?,
       );
 
+      // Absent before 1.4: no custom fields to restore.
+      final importedCustomFieldDefinitions = customFieldDefinitionsFromJson(
+        backupData['customFieldDefinitions'] as List?,
+      );
+
       final importedPhaseSettings =
           (backupData['phaseSettings'] as Map?)?.cast<String, dynamic>() ?? const <String, dynamic>{};
 
@@ -319,6 +346,11 @@ class BackupService {
       for (final project in importedProjects) {
         await targetRepo.restoreProject(project);
       }
+      // Absent before backup 1.4. Merged, never replacing a newer read.
+      await targetRepo.midiClips
+          .mergeNewer(storedMidiClipsFromJson(backupData['midiClips']));
+      await targetRepo.midiCollections
+          .mergeIncoming(midiCollectionsFromJson(backupData['midiCollections']));
       for (final root in importedRoots) {
         // restoreRoot, not addRoot: addRoot builds a *new* root from a path
         // alone, which threw away the label, scan mode and enabled flag that
@@ -362,6 +394,7 @@ class BackupService {
       await _writeCustomMixdownFoldersByDaw(importedCustomMixdownFoldersByDaw);
       await _writeDawLaunchCommands(importedDawLaunchCommands);
       await _writeCustomThemes(importedCustomThemes);
+      await _writeCustomFieldDefinitions(importedCustomFieldDefinitions);
       await _writePhaseSettings(targetProfileId, importedPhaseSettings);
 
       // Restore profile photo if embedded in backup
@@ -518,6 +551,38 @@ class BackupService {
       await box.put(
         _customThemesKey,
         jsonEncode(merged.map((t) => t.toJson()).toList()),
+      );
+    } catch (_) {}
+  }
+
+  /// The user's custom field definitions. Global (not per-profile), stored
+  /// like the custom themes.
+  static Future<List<CustomFieldDefinition>>
+      _readCustomFieldDefinitions() async {
+    try {
+      final box = await Hive.openBox<String>(_appSettingsBoxName);
+      return decodeCustomFieldDefinitions(
+          box.get(customFieldDefinitionsStorageKey));
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Merges [fields] into the stored ones with the same
+  /// [mergeCustomFieldDefinitions] Drive sync uses — union, newer edit wins.
+  static Future<void> _writeCustomFieldDefinitions(
+      List<CustomFieldDefinition> fields) async {
+    if (fields.isEmpty) return;
+    try {
+      final box = await Hive.openBox<String>(_appSettingsBoxName);
+      final merged = mergeCustomFieldDefinitions(
+        decodeCustomFieldDefinitions(
+            box.get(customFieldDefinitionsStorageKey)),
+        fields,
+      );
+      await box.put(
+        customFieldDefinitionsStorageKey,
+        encodeCustomFieldDefinitions(merged),
       );
     } catch (_) {}
   }
@@ -752,6 +817,13 @@ class BackupService {
       _writeGlobalTemplates(templates, mode);
 
   @visibleForTesting
+  static Future<List<CustomFieldDefinition>>
+      readCustomFieldDefinitionsForTest() => _readCustomFieldDefinitions();
+  @visibleForTesting
+  static Future<void> writeCustomFieldDefinitionsForTest(
+          List<CustomFieldDefinition> fields) =>
+      _writeCustomFieldDefinitions(fields);
+  @visibleForTesting
   static Future<List<CustomTheme>> readCustomThemesForTest() =>
       _readCustomThemes();
   @visibleForTesting
@@ -957,6 +1029,7 @@ class BackupService {
       'defaultLaunchMemberId': project.defaultLaunchMemberId,
       'stackId': project.stackId,
       'markers': project.markers.map((m) => m.toMap()).toList(),
+      'stats': project.stats?.toMap(),
       'attachments': project.attachments.map((a) => a.toMap()).toList(),
       // Per-project appearance (#110). Overrides only — null means "derive
       // from the id", which needs nothing stored to survive a restore.
@@ -974,6 +1047,8 @@ class BackupService {
       'autoDurationMs': project.autoDurationMs,
       // User data (#109) — see the Drive serializer.
       'tags': project.tags,
+      // User data: values the user typed into their own fields.
+      'customFields': project.customFields,
     };
   }
 
@@ -1028,6 +1103,7 @@ class BackupService {
               ?.map((e) => ProjectMarker.fromMap(e as Map))
               .toList() ??
           const [],
+      stats: ProjectStats.tryFromMap(json['stats']),
       attachments: (json['attachments'] as List?)
               ?.map((e) => ProjectAttachment.fromMap(e as Map))
               .toList() ??
@@ -1046,6 +1122,7 @@ class BackupService {
         for (final tag in (json['tags'] as List?) ?? const [])
           if (tag is String) tag,
       ],
+      customFields: MusicProject.customFieldsFromRaw(json['customFields']),
     );
   }
 

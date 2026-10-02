@@ -5597,4 +5597,564 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get tagsSettingDescription =>
       '为项目添加自定义标签，并按标签筛选、搜索和排序。关闭后只是隐藏标签，已添加的标签会保留。';
+
+  @override
+  String get projectContentsTitle => '项目内容';
+
+  @override
+  String get projectStatsTracks => '轨道';
+
+  @override
+  String get projectStatsAudio => '音频';
+
+  @override
+  String get projectStatsMidi => 'MIDI';
+
+  @override
+  String get projectStatsInstrument => '乐器';
+
+  @override
+  String get projectStatsSampler => '采样器';
+
+  @override
+  String get projectStatsBus => '编组与效果';
+
+  @override
+  String get projectStatsFolder => '文件夹';
+
+  @override
+  String get projectStatsPlugins => '插件';
+
+  @override
+  String get midiClipsTitle => 'MIDI 片段';
+
+  @override
+  String get midiClipsLoad => '加载 MIDI 片段';
+
+  @override
+  String get midiClipsLoadHint => '从项目文件读取并随项目保存，以便同步到你的其他设备。';
+
+  @override
+  String get midiClipsLoading => '正在读取项目文件…';
+
+  @override
+  String get midiClipsNone => '此项目中没有包含音符的 MIDI 片段。';
+
+  @override
+  String midiClipsError(String error) {
+    return '无法读取 MIDI 片段：$error';
+  }
+
+  @override
+  String get midiClipPlay => '用简易合成器试听';
+
+  @override
+  String get midiClipStop => '停止试听';
+
+  @override
+  String get midiClipSave => '另存为 MIDI 文件';
+
+  @override
+  String get midiClipsExportAll => '全部导出为 MIDI…';
+
+  @override
+  String midiClipsExported(int count, String folder) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已将 $count 个 MIDI 文件保存到 $folder',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipSaved(String fileName) {
+    return '已保存 $fileName';
+  }
+
+  @override
+  String get midiClipDragTooltip => '拖到你的 DAW 或文件夹中';
+
+  @override
+  String midiClipBars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 小节',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipNotes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个音符',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiClipUsedTimes(int count) {
+    return '使用 $count 次';
+  }
+
+  @override
+  String midiClipPreviewFailed(String error) {
+    return '无法播放试听：$error';
+  }
+
+  @override
+  String midiClipSaveFailed(String error) {
+    return '无法保存 MIDI 文件：$error';
+  }
+
+  @override
+  String get midiClipsExportFolderTitle => '选择 MIDI 文件的保存文件夹';
+
+  @override
+  String midiClipAlsoAs(String names) {
+    return '也出现在：$names';
+  }
+
+  @override
+  String get midiClipsNoTrack => '其他片段';
+
+  @override
+  String get midiClipsExpandTrack => '显示此轨道的片段';
+
+  @override
+  String get midiClipsCollapseTrack => '隐藏此轨道的片段';
+
+  @override
+  String get midiTempoTooltip => '试听和保存的 MIDI 文件所用的速度';
+
+  @override
+  String get midiTempoSlower => '减慢';
+
+  @override
+  String get midiTempoFaster => '加快';
+
+  @override
+  String midiTempoReset(String bpm) {
+    return '恢复为项目速度（$bpm BPM）';
+  }
+
+  @override
+  String get midiClipShare => '分享';
+
+  @override
+  String get midiClipsShareAll => '全部分享';
+
+  @override
+  String midiClipShareText(String clip, String project) {
+    return '来自 $project 的 MIDI 片段“$clip”';
+  }
+
+  @override
+  String midiClipsShareAllText(String project) {
+    return '来自 $project 的 MIDI 片段';
+  }
+
+  @override
+  String get midiClipsShareFallback => '此处无法直接分享，文件已放在刚打开的文件夹中。请将它们拖到聊天应用里。';
+
+  @override
+  String midiClipShareFailed(String error) {
+    return '无法分享：$error';
+  }
+
+  @override
+  String get midiClipsRefresh => '从项目文件重新读取';
+
+  @override
+  String get midiClipsStale => '读取这些片段后，项目文件已更改。';
+
+  @override
+  String get midiClipsNoneStored => '此项目尚未保存 MIDI 片段。请在存有项目文件的电脑上提取其元数据。';
+
+  @override
+  String midiClipInstrumentTooltip(String name) {
+    return '乐器：$name';
+  }
+
+  @override
+  String get synthVoiceSynth => '合成器';
+
+  @override
+  String get synthVoiceLead => '主音';
+
+  @override
+  String get synthVoiceBass => '贝斯';
+
+  @override
+  String get synthVoicePad => '铺底';
+
+  @override
+  String get synthVoicePluck => '拨弦音色';
+
+  @override
+  String get synthVoiceKeys => '键盘';
+
+  @override
+  String get synthVoiceOrgan => '风琴';
+
+  @override
+  String get synthVoiceStrings => '弦乐';
+
+  @override
+  String get synthVoiceBrass => '铜管';
+
+  @override
+  String get synthVoiceBell => '钟琴';
+
+  @override
+  String get synthVoiceDrumKit => '架子鼓';
+
+  @override
+  String get synthVoiceKick => '底鼓';
+
+  @override
+  String get synthVoiceSnare => '军鼓';
+
+  @override
+  String get synthVoiceClap => '拍手';
+
+  @override
+  String get synthVoiceHiHat => '踩镲';
+
+  @override
+  String get synthVoicePercussion => '打击乐';
+
+  @override
+  String get midiLibraryTab => 'MIDI';
+
+  @override
+  String get midiLibrarySearchHint => '搜索 MIDI 片段';
+
+  @override
+  String get midiLibraryAllClips => '全部片段';
+
+  @override
+  String get midiCollectionsTitle => '合集';
+
+  @override
+  String get midiCollectionNew => '新建合集';
+
+  @override
+  String get midiCollectionNameHint => '合集名称';
+
+  @override
+  String get midiCollectionCreate => '创建';
+
+  @override
+  String get midiCollectionRename => '重命名';
+
+  @override
+  String get midiCollectionDelete => '删除合集';
+
+  @override
+  String midiCollectionDeleteConfirm(String name) {
+    return '删除“$name”？其中的片段都是副本，不会影响来源项目。';
+  }
+
+  @override
+  String get midiCollectionAddTo => '添加到合集';
+
+  @override
+  String get midiCollectionRemoveFrom => '从合集中移除';
+
+  @override
+  String midiCollectionAdded(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已添加到 $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiCollectionAlreadyIn(String name) {
+    return '已在 $name 中';
+  }
+
+  @override
+  String midiCollectionRemoved(String clip, String name) {
+    return '已从 $name 中移除 $clip';
+  }
+
+  @override
+  String get midiCollectionEmpty => '此合集为空。可从“全部片段”或项目页面添加片段。';
+
+  @override
+  String midiCollectionShareText(String name) {
+    return 'MIDI 合集“$name”';
+  }
+
+  @override
+  String get midiLibraryEmpty => '还没有 MIDI 片段。提取项目元数据即可读取其片段。';
+
+  @override
+  String get midiLibraryNoMatches => '没有匹配的片段。';
+
+  @override
+  String get midiLibraryAllInstruments => '全部乐器';
+
+  @override
+  String get midiClipMoreActions => '更多';
+
+  @override
+  String get midiTempoAuto => '自动';
+
+  @override
+  String get midiTempoResetAuto => '恢复为各片段自身的速度';
+
+  @override
+  String get releaseTracksResizeHint => '拖动以调整大小 · 双击以重置';
+
+  @override
+  String get releaseTracksMaximize => '显示完整曲目列表';
+
+  @override
+  String get releaseTracksRestoreFiles => '重新显示文件面板';
+
+  @override
+  String get columnsAndFieldsTabLabel => '列与字段';
+
+  @override
+  String get projectsTableColumnsTitle => '项目表格的列';
+
+  @override
+  String get projectsTableColumnsDescription =>
+      '选择项目表格显示哪些列，并拖动调整顺序。名称和操作列始终显示。仅对此设备生效。';
+
+  @override
+  String get customFieldsTitle => '自定义字段';
+
+  @override
+  String get customFieldsDescription =>
+      '为每个项目添加你自己的字段——响度（LUFS）、母带工程师、ISRC，任何内容都可以。字段始终可以在项目页面填写；你可以选择是否同时在项目表格或发行曲目列表中显示为一列。';
+
+  @override
+  String get addCustomField => '添加字段';
+
+  @override
+  String get editCustomField => '编辑字段';
+
+  @override
+  String get customFieldName => '字段名称';
+
+  @override
+  String get customFieldNameHint => '例如：LUFS';
+
+  @override
+  String get customFieldNameRequired => '请输入名称';
+
+  @override
+  String get customFieldNameDuplicate => '已存在同名字段';
+
+  @override
+  String get customFieldType => '类型';
+
+  @override
+  String get customFieldTypeText => '文本';
+
+  @override
+  String get customFieldTypeNumber => '数字';
+
+  @override
+  String get customFieldTypeNumberHelp => '数字按数值排序，因此 -9.8 排在 -14.2 之后。';
+
+  @override
+  String get customFieldShowInProjectsTable => '在项目表格中显示为列';
+
+  @override
+  String get customFieldShowInReleaseTracks => '在发行曲目列表中显示为列';
+
+  @override
+  String get customFieldProjectPageOnly => '仅在项目页面';
+
+  @override
+  String get noCustomFieldsYet => '还没有自定义字段。';
+
+  @override
+  String get deleteCustomFieldTitle => '删除字段？';
+
+  @override
+  String deleteCustomFieldMessage(String name) {
+    return '“$name”及已填写的值将不再出现在任何项目、表格或搜索中。';
+  }
+
+  @override
+  String get customFieldInvalidNumber => '请输入数字';
+
+  @override
+  String get customFieldsProjectPageHint => '你自己的字段——可在 设置 > 列与字段 中添加或修改。';
+
+  @override
+  String get midiPianoRollOpen => '打开钢琴卷帘';
+
+  @override
+  String get midiPianoRollZoomIn => '放大';
+
+  @override
+  String get midiPianoRollZoomOut => '缩小';
+
+  @override
+  String get midiPianoRollFit => '适应窗口';
+
+  @override
+  String get midiPianoRollFollow => '跟随播放';
+
+  @override
+  String get midiClipsShareOfferFolder => '如果没有出现分享窗口，文件已在文件夹中准备好。';
+
+  @override
+  String get midiClipsShowInFolder => '在文件夹中显示';
+
+  @override
+  String get midiPianoRollPause => '暂停';
+
+  @override
+  String get midiOpenSourceProject => '打开项目';
+
+  @override
+  String get midiSourceProjectGone => '此片段的来源项目已不在你的资料库中。';
+
+  @override
+  String get midiCollectionShareZip => '以 ZIP 分享';
+
+  @override
+  String get midiCollectionOpen => '打开';
+
+  @override
+  String get midiPreviewVolume => '试听音量';
+
+  @override
+  String get midiLanePicker => '音符下方显示的参数';
+
+  @override
+  String get midiLaneNone => '无';
+
+  @override
+  String get midiLaneVelocity => '力度';
+
+  @override
+  String get midiLanePitchBend => '弯音';
+
+  @override
+  String get midiLaneChannelPressure => '触后';
+
+  @override
+  String get midiLanePolyPressure => '复音触后';
+
+  @override
+  String get midiLaneProgram => '音色切换';
+
+  @override
+  String midiLaneController(int number) {
+    return 'CC $number';
+  }
+
+  @override
+  String midiLaneControllerNamed(int number, String name) {
+    return 'CC $number · $name';
+  }
+
+  @override
+  String get midiCcModulation => '调制';
+
+  @override
+  String get midiCcBreath => '呼吸';
+
+  @override
+  String get midiCcFoot => '踏板';
+
+  @override
+  String get midiCcPortamentoTime => '滑音时间';
+
+  @override
+  String get midiCcVolume => '音量';
+
+  @override
+  String get midiCcBalance => '平衡';
+
+  @override
+  String get midiCcPan => '声像';
+
+  @override
+  String get midiCcExpression => '表情';
+
+  @override
+  String get midiCcSustain => '延音踏板';
+
+  @override
+  String get midiCcPortamento => '滑音';
+
+  @override
+  String get midiCcSostenuto => '选择延音';
+
+  @override
+  String get midiCcSoftPedal => '弱音踏板';
+
+  @override
+  String get midiCcResonance => '共振';
+
+  @override
+  String get midiCcRelease => '释放';
+
+  @override
+  String get midiCcAttack => '起音';
+
+  @override
+  String get midiCcCutoff => '截止频率';
+
+  @override
+  String get midiCcReverb => '混响';
+
+  @override
+  String get midiCcChorus => '合唱';
+
+  @override
+  String get filterHasMidi => '仅显示含 MIDI 的项目';
+
+  @override
+  String midiClipsMissingFiles(int count, String files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 个引用的 MIDI 文件找不到或无法读取：$files',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiLibraryArrangeProject => '按项目';
+
+  @override
+  String get midiLibraryArrangeAdded => '按添加顺序';
+
+  @override
+  String get midiLibraryArrangeTempo => '按速度 (BPM)';
+
+  @override
+  String midiLibraryTempoGroup(String bpm) {
+    return '$bpm BPM';
+  }
+
+  @override
+  String get midiLibraryTempoUnknown => '速度未知';
+
+  @override
+  String get midiImportFiles => '导入 MIDI 文件';
+
+  @override
+  String get midiImportDialogTitle => '选择要导入的 MIDI 文件';
+
+  @override
+  String midiImportSkipped(String files) {
+    return '未导入（不是 MIDI 文件或其中没有音符）：$files';
+  }
 }

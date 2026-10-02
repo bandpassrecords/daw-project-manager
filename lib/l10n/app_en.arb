@@ -5397,5 +5397,792 @@
   "tagsSettingDescription": "Label projects with your own tags, then filter, search and sort by them. Turning this off only hides them — tags you've added are kept.",
   "@tagsSettingDescription": {
     "description": "Settings: explains the tags switch, and that turning it off keeps existing tags"
+  },
+  "projectContentsTitle": "Project Contents",
+  "@projectContentsTitle": {
+    "description": "Detail page heading for the track counts and plug-ins read out of the DAW project file"
+  },
+  "projectStatsTracks": "Tracks",
+  "@projectStatsTracks": {
+    "description": "Label for the total number of tracks in a DAW project; also a column heading on the metadata extraction page"
+  },
+  "projectStatsAudio": "Audio",
+  "@projectStatsAudio": {
+    "description": "Label next to the number of audio tracks in a DAW project"
+  },
+  "projectStatsMidi": "MIDI",
+  "@projectStatsMidi": {
+    "description": "Label next to the number of MIDI tracks in a DAW project"
+  },
+  "projectStatsInstrument": "Instrument",
+  "@projectStatsInstrument": {
+    "description": "Label next to the number of instrument tracks in a DAW project"
+  },
+  "projectStatsSampler": "Sampler",
+  "@projectStatsSampler": {
+    "description": "Label next to the number of sampler tracks/channels in a DAW project"
+  },
+  "projectStatsBus": "Groups & FX",
+  "@projectStatsBus": {
+    "description": "Label next to the number of group, FX, return and bus channels in a DAW project"
+  },
+  "projectStatsFolder": "Folders",
+  "@projectStatsFolder": {
+    "description": "Label next to the number of folder tracks in a DAW project"
+  },
+  "projectStatsPlugins": "Plug-ins",
+  "@projectStatsPlugins": {
+    "description": "Heading for the list of plug-ins a DAW project loads; also a column heading on the metadata extraction page"
+  },
+  "midiClipsTitle": "MIDI clips",
+  "@midiClipsTitle": {
+    "description": "Heading for the MIDI clips read out of a DAW project; also a column heading on the metadata extraction page"
+  },
+  "midiClipsLoad": "Load MIDI clips",
+  "@midiClipsLoad": {
+    "description": "Button that reads the MIDI clips out of the project file"
+  },
+  "midiClipsLoadHint": "Read from the project file and kept with the project, so they sync to your other devices.",
+  "@midiClipsLoadHint": {
+    "description": "Explains, next to the button that first reads them, that MIDI clips are read from the project file and then stored and synced"
+  },
+  "midiClipsLoading": "Reading the project file…",
+  "@midiClipsLoading": {
+    "description": "Shown while the MIDI clips are being read out of the project file"
+  },
+  "midiClipsNone": "No MIDI clips with notes in this project.",
+  "@midiClipsNone": {
+    "description": "Shown when a project file contains no MIDI clips with notes"
+  },
+  "midiClipsError": "Couldn't read MIDI clips: {error}",
+  "@midiClipsError": {
+    "description": "Shown when reading MIDI clips from the project file failed",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipPlay": "Preview with a simple synth",
+  "@midiClipPlay": {
+    "description": "Tooltip on the button that plays a MIDI clip through the built-in preview synth"
+  },
+  "midiClipStop": "Stop preview",
+  "@midiClipStop": {
+    "description": "Tooltip on the button that stops a MIDI clip preview"
+  },
+  "midiClipSave": "Save as MIDI file",
+  "@midiClipSave": {
+    "description": "Tooltip on the button that saves one MIDI clip as a .mid file"
+  },
+  "midiClipsExportAll": "Export all as MIDI…",
+  "@midiClipsExportAll": {
+    "description": "Button that saves every MIDI clip of a project as .mid files into a chosen folder"
+  },
+  "midiClipsExported": "{count, plural, =1{Saved 1 MIDI file to {folder}} other{Saved {count} MIDI files to {folder}}}",
+  "@midiClipsExported": {
+    "description": "Snackbar after exporting MIDI clips to a folder",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipSaved": "Saved {fileName}",
+  "@midiClipSaved": {
+    "description": "Snackbar after saving one MIDI clip as a .mid file",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipDragTooltip": "Drag into your DAW or a folder",
+  "@midiClipDragTooltip": {
+    "description": "Tooltip on the handle that drags a MIDI clip out of the app as a .mid file"
+  },
+  "midiClipBars": "{count, plural, =1{1 bar} other{{count} bars}}",
+  "@midiClipBars": {
+    "description": "Length of a MIDI clip in bars (4/4), rounded up",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiClipNotes": "{count, plural, =1{1 note} other{{count} notes}}",
+  "@midiClipNotes": {
+    "description": "Number of notes in a MIDI clip",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiClipUsedTimes": "Used {count}×",
+  "@midiClipUsedTimes": {
+    "description": "How many places in the project use the same MIDI clip",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiClipPreviewFailed": "Couldn't play the preview: {error}",
+  "@midiClipPreviewFailed": {
+    "description": "Snackbar when a MIDI clip preview could not be played",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipSaveFailed": "Couldn't save the MIDI file: {error}",
+  "@midiClipSaveFailed": {
+    "description": "Snackbar when saving MIDI clips to disk failed",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsExportFolderTitle": "Choose a folder for the MIDI files",
+  "@midiClipsExportFolderTitle": {
+    "description": "Title of the folder picker for exporting all MIDI clips"
+  },
+  "midiClipAlsoAs": "Also: {names}",
+  "@midiClipAlsoAs": {
+    "description": "Tooltip on a MIDI clip that other clips in the project turned out to be identical to; names is a comma-separated list of \"Track – Clip\" labels",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsNoTrack": "Other clips",
+  "@midiClipsNoTrack": {
+    "description": "Heading for MIDI clips whose project format did not say which track they are on"
+  },
+  "midiClipsExpandTrack": "Show this track's clips",
+  "@midiClipsExpandTrack": {
+    "description": "Tooltip on a collapsed track heading in the MIDI clips list"
+  },
+  "midiClipsCollapseTrack": "Hide this track's clips",
+  "@midiClipsCollapseTrack": {
+    "description": "Tooltip on an expanded track heading in the MIDI clips list"
+  },
+  "midiTempoTooltip": "Tempo for previews and saved MIDI files",
+  "@midiTempoTooltip": {
+    "description": "Tooltip on the tempo control of the MIDI clips list"
+  },
+  "midiTempoSlower": "Slower",
+  "@midiTempoSlower": {
+    "description": "Tooltip on the button that lowers the MIDI preview tempo by 1 BPM"
+  },
+  "midiTempoFaster": "Faster",
+  "@midiTempoFaster": {
+    "description": "Tooltip on the button that raises the MIDI preview tempo by 1 BPM"
+  },
+  "midiTempoReset": "Back to the project tempo ({bpm} BPM)",
+  "@midiTempoReset": {
+    "description": "Tooltip on the button that puts the MIDI preview tempo back to the project tempo",
+    "placeholders": {
+      "bpm": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipShare": "Share",
+  "@midiClipShare": {
+    "description": "Tooltip on the button that shares one MIDI clip as a .mid file"
+  },
+  "midiClipsShareAll": "Share all",
+  "@midiClipsShareAll": {
+    "description": "Button that shares every MIDI clip of a project as .mid files"
+  },
+  "midiClipShareText": "MIDI clip \"{clip}\" from {project}",
+  "@midiClipShareText": {
+    "description": "Message sent along with one shared MIDI clip",
+    "placeholders": {
+      "clip": {
+        "type": "String"
+      },
+      "project": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsShareAllText": "MIDI clips from {project}",
+  "@midiClipsShareAllText": {
+    "description": "Message sent along with all of a project's shared MIDI clips",
+    "placeholders": {
+      "project": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsShareFallback": "Sharing isn't available here, so the files are in the folder that just opened. Drag them into your chat app.",
+  "@midiClipsShareFallback": {
+    "description": "Shown when the system has no share sheet for files, so the folder with the .mid files was opened instead"
+  },
+  "midiClipShareFailed": "Couldn't share: {error}",
+  "@midiClipShareFailed": {
+    "description": "Snackbar when sharing MIDI clips failed",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "midiClipsRefresh": "Read again from the project file",
+  "@midiClipsRefresh": {
+    "description": "Tooltip on the button that re-reads the MIDI clips (and the rest of the metadata) from the project file"
+  },
+  "midiClipsStale": "The project file has changed since these clips were read.",
+  "@midiClipsStale": {
+    "description": "Shown above stored MIDI clips when the project file was modified after they were read"
+  },
+  "midiClipsNoneStored": "No MIDI clips stored for this project yet. Extract its metadata on the computer that has the project file.",
+  "@midiClipsNoneStored": {
+    "description": "Shown on a device that cannot read the project file when no MIDI clips have been stored for the project yet"
+  },
+  "midiClipInstrumentTooltip": "Instrument: {name}",
+  "@midiClipInstrumentTooltip": {
+    "description": "Tooltip on the button that picks which built-in instrument previews a MIDI clip",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "synthVoiceSynth": "Synth",
+  "@synthVoiceSynth": {
+    "description": "Built-in preview instrument name: Generic synth"
+  },
+  "synthVoiceLead": "Lead",
+  "@synthVoiceLead": {
+    "description": "Built-in preview instrument name: Lead synth"
+  },
+  "synthVoiceBass": "Bass",
+  "@synthVoiceBass": {
+    "description": "Built-in preview instrument name: Bass"
+  },
+  "synthVoicePad": "Pad",
+  "@synthVoicePad": {
+    "description": "Built-in preview instrument name: Pad synth"
+  },
+  "synthVoicePluck": "Pluck",
+  "@synthVoicePluck": {
+    "description": "Built-in preview instrument name: Plucked synth"
+  },
+  "synthVoiceKeys": "Keys",
+  "@synthVoiceKeys": {
+    "description": "Built-in preview instrument name: Piano / keyboard"
+  },
+  "synthVoiceOrgan": "Organ",
+  "@synthVoiceOrgan": {
+    "description": "Built-in preview instrument name: Organ"
+  },
+  "synthVoiceStrings": "Strings",
+  "@synthVoiceStrings": {
+    "description": "Built-in preview instrument name: String section"
+  },
+  "synthVoiceBrass": "Brass",
+  "@synthVoiceBrass": {
+    "description": "Built-in preview instrument name: Brass section"
+  },
+  "synthVoiceBell": "Bell",
+  "@synthVoiceBell": {
+    "description": "Built-in preview instrument name: Bell / mallet"
+  },
+  "synthVoiceDrumKit": "Drum kit",
+  "@synthVoiceDrumKit": {
+    "description": "Built-in preview instrument name: Full drum kit following the General MIDI drum map"
+  },
+  "synthVoiceKick": "Kick",
+  "@synthVoiceKick": {
+    "description": "Built-in preview instrument name: Kick drum"
+  },
+  "synthVoiceSnare": "Snare",
+  "@synthVoiceSnare": {
+    "description": "Built-in preview instrument name: Snare drum"
+  },
+  "synthVoiceClap": "Clap",
+  "@synthVoiceClap": {
+    "description": "Built-in preview instrument name: Hand clap"
+  },
+  "synthVoiceHiHat": "Hi-hat",
+  "@synthVoiceHiHat": {
+    "description": "Built-in preview instrument name: Hi-hat / cymbals"
+  },
+  "synthVoicePercussion": "Percussion",
+  "@synthVoicePercussion": {
+    "description": "Built-in preview instrument name: Percussion"
+  },
+  "midiLibraryTab": "MIDI",
+  "@midiLibraryTab": {
+    "description": "Dashboard tab with every MIDI clip across projects and the user's collections"
+  },
+  "midiLibrarySearchHint": "Search MIDI clips",
+  "@midiLibrarySearchHint": {
+    "description": "Search box hint on the MIDI tab"
+  },
+  "midiLibraryAllClips": "All clips",
+  "@midiLibraryAllClips": {
+    "description": "MIDI tab: the view listing every unique clip across all projects"
+  },
+  "midiCollectionsTitle": "Collections",
+  "@midiCollectionsTitle": {
+    "description": "MIDI tab: heading over the user's collections of clips"
+  },
+  "midiCollectionNew": "New collection",
+  "@midiCollectionNew": {
+    "description": "Button and dialog title for making a new MIDI collection"
+  },
+  "midiCollectionNameHint": "Collection name",
+  "@midiCollectionNameHint": {
+    "description": "Placeholder in the MIDI collection name field"
+  },
+  "midiCollectionCreate": "Create",
+  "@midiCollectionCreate": {
+    "description": "Confirm button when creating a MIDI collection"
+  },
+  "midiCollectionRename": "Rename",
+  "@midiCollectionRename": {
+    "description": "Button and dialog title for renaming a MIDI collection"
+  },
+  "midiCollectionDelete": "Delete collection",
+  "@midiCollectionDelete": {
+    "description": "Button and dialog title for deleting a MIDI collection"
+  },
+  "midiCollectionDeleteConfirm": "Delete \"{name}\"? Its clips are copies, so the projects they came from are not affected.",
+  "@midiCollectionDeleteConfirm": {
+    "description": "Confirmation when deleting a MIDI collection; its clips are copies so projects are unaffected",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCollectionAddTo": "Add to collection",
+  "@midiCollectionAddTo": {
+    "description": "Action that copies a MIDI clip into a collection"
+  },
+  "midiCollectionRemoveFrom": "Remove from collection",
+  "@midiCollectionRemoveFrom": {
+    "description": "Action that removes a MIDI clip from the collection on show"
+  },
+  "midiCollectionAdded": "{count, plural, =1{Added to {name}} other{Added {count} clips to {name}}}",
+  "@midiCollectionAdded": {
+    "description": "Snackbar after adding MIDI clips to a collection",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCollectionAlreadyIn": "Already in {name}",
+  "@midiCollectionAlreadyIn": {
+    "description": "Snackbar when the clip being added is already in that collection",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCollectionRemoved": "Removed {clip} from {name}",
+  "@midiCollectionRemoved": {
+    "description": "Snackbar after removing a clip from a collection, with an undo action",
+    "placeholders": {
+      "clip": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCollectionEmpty": "This collection is empty. Add clips from All clips or from a project's page.",
+  "@midiCollectionEmpty": {
+    "description": "Shown in an empty MIDI collection"
+  },
+  "midiCollectionShareText": "MIDI collection \"{name}\"",
+  "@midiCollectionShareText": {
+    "description": "Message sent along with a shared MIDI collection",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiLibraryEmpty": "No MIDI clips yet. Extract a project's metadata to read its clips.",
+  "@midiLibraryEmpty": {
+    "description": "MIDI tab when no project has stored clips yet"
+  },
+  "midiLibraryNoMatches": "No clips match.",
+  "@midiLibraryNoMatches": {
+    "description": "MIDI tab when the search or instrument filter matches nothing"
+  },
+  "midiLibraryAllInstruments": "All instruments",
+  "@midiLibraryAllInstruments": {
+    "description": "Instrument filter option on the MIDI tab that shows every clip"
+  },
+  "midiClipMoreActions": "More",
+  "@midiClipMoreActions": {
+    "description": "Tooltip on the overflow menu of a MIDI clip row on phones"
+  },
+  "midiTempoAuto": "Auto",
+  "@midiTempoAuto": {
+    "description": "Placeholder in the tempo field while each clip plays at its own project tempo"
+  },
+  "midiTempoResetAuto": "Back to each clip's own tempo",
+  "@midiTempoResetAuto": {
+    "description": "Tooltip on the button that goes back to playing each clip at its own project tempo"
+  },
+  "releaseTracksResizeHint": "Drag to resize · double-click to reset",
+  "@releaseTracksResizeHint": {
+    "description": "Release page: tooltip on the divider between the tracklist and the files panel"
+  },
+  "releaseTracksMaximize": "Show the whole tracklist",
+  "@releaseTracksMaximize": {
+    "description": "Release page: button that expands the tracklist over the files panel"
+  },
+  "releaseTracksRestoreFiles": "Show the files panel again",
+  "@releaseTracksRestoreFiles": {
+    "description": "Release page: button that brings the files panel back under the tracklist"
+  },
+  "columnsAndFieldsTabLabel": "Columns & fields",
+  "@columnsAndFieldsTabLabel": {
+    "description": "Settings: nav label for the table columns and custom fields section"
+  },
+  "projectsTableColumnsTitle": "Projects table columns",
+  "@projectsTableColumnsTitle": {
+    "description": "Settings: heading of the built-in projects table columns list"
+  },
+  "projectsTableColumnsDescription": "Choose which columns the projects table shows and drag them into the order you want. Name and actions are always shown. Applies to this device only.",
+  "@projectsTableColumnsDescription": {
+    "description": "Settings: explains the built-in columns list"
+  },
+  "customFieldsTitle": "Custom fields",
+  "@customFieldsTitle": {
+    "description": "Heading for the user-defined custom fields (Settings and project page)"
+  },
+  "customFieldsDescription": "Add your own fields to every project — loudness (LUFS), mastering engineer, ISRC, anything. A field can always be filled in on the project page; choose whether it also gets a column in the projects table or in release tracklists.",
+  "@customFieldsDescription": {
+    "description": "Settings: explains custom fields and where they can appear"
+  },
+  "addCustomField": "Add field",
+  "@addCustomField": {
+    "description": "Settings: button that adds a custom field"
+  },
+  "editCustomField": "Edit field",
+  "@editCustomField": {
+    "description": "Title of the dialog that edits a custom field"
+  },
+  "customFieldName": "Field name",
+  "@customFieldName": {
+    "description": "Custom field dialog: label of the name input"
+  },
+  "customFieldNameHint": "e.g. LUFS",
+  "@customFieldNameHint": {
+    "description": "Custom field dialog: example shown in the empty name input"
+  },
+  "customFieldNameRequired": "Enter a name",
+  "@customFieldNameRequired": {
+    "description": "Custom field dialog: error when the name is empty"
+  },
+  "customFieldNameDuplicate": "A field with this name already exists",
+  "@customFieldNameDuplicate": {
+    "description": "Custom field dialog: error when another field already has this name"
+  },
+  "customFieldType": "Type",
+  "@customFieldType": {
+    "description": "Custom field dialog: label of the type choice"
+  },
+  "customFieldTypeText": "Text",
+  "@customFieldTypeText": {
+    "description": "Custom field type: free text"
+  },
+  "customFieldTypeNumber": "Number",
+  "@customFieldTypeNumber": {
+    "description": "Custom field type: a number, sorted by value"
+  },
+  "customFieldTypeNumberHelp": "Numbers sort by value, so -9.8 comes after -14.2.",
+  "@customFieldTypeNumberHelp": {
+    "description": "Custom field dialog: explains what the Number type changes"
+  },
+  "customFieldShowInProjectsTable": "Column in the projects table",
+  "@customFieldShowInProjectsTable": {
+    "description": "Custom field: option to give the field a column in the projects table"
+  },
+  "customFieldShowInReleaseTracks": "Column in release tracklists",
+  "@customFieldShowInReleaseTracks": {
+    "description": "Custom field: option to give the field a column in a release's tracklist table"
+  },
+  "customFieldProjectPageOnly": "Project page only",
+  "@customFieldProjectPageOnly": {
+    "description": "Custom field: shown when the field has no column anywhere"
+  },
+  "noCustomFieldsYet": "No custom fields yet.",
+  "@noCustomFieldsYet": {
+    "description": "Settings: shown when the user has not added any custom field"
+  },
+  "deleteCustomFieldTitle": "Delete field?",
+  "@deleteCustomFieldTitle": {
+    "description": "Title of the confirmation before deleting a custom field"
+  },
+  "deleteCustomFieldMessage": "\"{name}\" and the values entered in it will no longer appear on any project, table or search.",
+  "@deleteCustomFieldMessage": {
+    "description": "Confirmation before deleting a custom field",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "customFieldInvalidNumber": "Enter a number",
+  "@customFieldInvalidNumber": {
+    "description": "Project page: error under a number custom field holding something that is not a number"
+  },
+  "customFieldsProjectPageHint": "Your own fields — add or change them in Settings > Columns & fields.",
+  "@customFieldsProjectPageHint": {
+    "description": "Project page: shown under the custom fields heading"
+  },
+  "midiPianoRollOpen": "Open piano roll",
+  "@midiPianoRollOpen": {
+    "description": "Tooltip on a MIDI clip thumbnail, and menu item, that opens the clip in a large piano roll"
+  },
+  "midiPianoRollZoomIn": "Zoom in",
+  "@midiPianoRollZoomIn": {
+    "description": "Piano roll: zoom in horizontally"
+  },
+  "midiPianoRollZoomOut": "Zoom out",
+  "@midiPianoRollZoomOut": {
+    "description": "Piano roll: zoom out horizontally"
+  },
+  "midiPianoRollFit": "Fit to window",
+  "@midiPianoRollFit": {
+    "description": "Piano roll: zoom so the whole clip fits the window"
+  },
+  "midiPianoRollFollow": "Follow playback",
+  "@midiPianoRollFollow": {
+    "description": "Piano roll: toggle the view following the playback line"
+  },
+  "midiClipsShareOfferFolder": "If no share window appeared, the files are ready in a folder.",
+  "@midiClipsShareOfferFolder": {
+    "description": "Snackbar after sharing MIDI files on a system that cannot report whether its share window appeared"
+  },
+  "midiClipsShowInFolder": "Show in folder",
+  "@midiClipsShowInFolder": {
+    "description": "Snackbar action that opens the folder holding the shared MIDI files"
+  },
+  "midiPianoRollPause": "Pause",
+  "@midiPianoRollPause": {
+    "description": "Piano roll: pause the playing preview"
+  },
+  "midiOpenSourceProject": "Open project",
+  "@midiOpenSourceProject": {
+    "description": "Opens the detail page of the project a MIDI clip came from"
+  },
+  "midiSourceProjectGone": "The project this clip came from is no longer in your library.",
+  "@midiSourceProjectGone": {
+    "description": "Snackbar when the project a collection clip was copied from is no longer in the library"
+  },
+  "midiCollectionShareZip": "Share as ZIP",
+  "@midiCollectionShareZip": {
+    "description": "Shares a whole MIDI collection as a single .zip of .mid files"
+  },
+  "midiCollectionOpen": "Open",
+  "@midiCollectionOpen": {
+    "description": "Snackbar action after adding clips to a collection: go to the MIDI tab with that collection open"
+  },
+  "midiPreviewVolume": "Preview volume",
+  "@midiPreviewVolume": {
+    "description": "Label and tooltip of the volume slider for MIDI clip previews"
+  },
+  "midiLanePicker": "Parameter shown below the notes",
+  "@midiLanePicker": {
+    "description": "Tooltip on the piano roll dropdown that picks what the lane under the notes shows"
+  },
+  "midiLaneNone": "None",
+  "@midiLaneNone": {
+    "description": "Piano roll lane picker entry that hides the lane"
+  },
+  "midiLaneVelocity": "Velocity",
+  "@midiLaneVelocity": {
+    "description": "Piano roll lane: how hard each note is played"
+  },
+  "midiLanePitchBend": "Pitch bend",
+  "@midiLanePitchBend": {
+    "description": "Piano roll lane: MIDI pitch bend"
+  },
+  "midiLaneChannelPressure": "Aftertouch",
+  "@midiLaneChannelPressure": {
+    "description": "Piano roll lane: MIDI channel aftertouch"
+  },
+  "midiLanePolyPressure": "Poly aftertouch",
+  "@midiLanePolyPressure": {
+    "description": "Piano roll lane: MIDI polyphonic (per-key) aftertouch"
+  },
+  "midiLaneProgram": "Program change",
+  "@midiLaneProgram": {
+    "description": "Piano roll lane: MIDI program (patch) changes"
+  },
+  "midiLaneController": "CC {number}",
+  "@midiLaneController": {
+    "description": "Piano roll lane: a MIDI controller with no common name, by number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "midiLaneControllerNamed": "CC {number} · {name}",
+  "@midiLaneControllerNamed": {
+    "description": "Piano roll lane: a MIDI controller by number and its usual name",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCcModulation": "Modulation",
+  "@midiCcModulation": {
+    "description": "Usual name of MIDI CC 1"
+  },
+  "midiCcBreath": "Breath",
+  "@midiCcBreath": {
+    "description": "Usual name of MIDI CC 2"
+  },
+  "midiCcFoot": "Foot pedal",
+  "@midiCcFoot": {
+    "description": "Usual name of MIDI CC 4"
+  },
+  "midiCcPortamentoTime": "Portamento time",
+  "@midiCcPortamentoTime": {
+    "description": "Usual name of MIDI CC 5"
+  },
+  "midiCcVolume": "Volume",
+  "@midiCcVolume": {
+    "description": "Usual name of MIDI CC 7"
+  },
+  "midiCcBalance": "Balance",
+  "@midiCcBalance": {
+    "description": "Usual name of MIDI CC 8"
+  },
+  "midiCcPan": "Pan",
+  "@midiCcPan": {
+    "description": "Usual name of MIDI CC 10"
+  },
+  "midiCcExpression": "Expression",
+  "@midiCcExpression": {
+    "description": "Usual name of MIDI CC 11"
+  },
+  "midiCcSustain": "Sustain pedal",
+  "@midiCcSustain": {
+    "description": "Usual name of MIDI CC 64"
+  },
+  "midiCcPortamento": "Portamento",
+  "@midiCcPortamento": {
+    "description": "Usual name of MIDI CC 65"
+  },
+  "midiCcSostenuto": "Sostenuto",
+  "@midiCcSostenuto": {
+    "description": "Usual name of MIDI CC 66"
+  },
+  "midiCcSoftPedal": "Soft pedal",
+  "@midiCcSoftPedal": {
+    "description": "Usual name of MIDI CC 67"
+  },
+  "midiCcResonance": "Resonance",
+  "@midiCcResonance": {
+    "description": "Usual name of MIDI CC 71"
+  },
+  "midiCcRelease": "Release",
+  "@midiCcRelease": {
+    "description": "Usual name of MIDI CC 72 (envelope release time)"
+  },
+  "midiCcAttack": "Attack",
+  "@midiCcAttack": {
+    "description": "Usual name of MIDI CC 73 (envelope attack time)"
+  },
+  "midiCcCutoff": "Cutoff",
+  "@midiCcCutoff": {
+    "description": "Usual name of MIDI CC 74 (filter cutoff)"
+  },
+  "midiCcReverb": "Reverb",
+  "@midiCcReverb": {
+    "description": "Usual name of MIDI CC 91"
+  },
+  "midiCcChorus": "Chorus",
+  "@midiCcChorus": {
+    "description": "Usual name of MIDI CC 93"
+  },
+  "filterHasMidi": "Only projects with MIDI",
+  "@filterHasMidi": {
+    "description": "Dashboard filter toggle: show only projects that contain MIDI clips"
+  },
+  "midiClipsMissingFiles": "{count, plural, =1{A referenced MIDI file couldn't be found or read: {files}} other{{count} referenced MIDI files couldn't be found or read: {files}}}",
+  "@midiClipsMissingFiles": {
+    "description": "Warning on a project page: .mid files the project references were not found or could not be read",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "files": {
+        "type": "String"
+      }
+    }
+  },
+  "midiLibraryArrangeProject": "By project",
+  "@midiLibraryArrangeProject": {
+    "description": "MIDI tab arrangement: clips grouped under their project"
+  },
+  "midiLibraryArrangeAdded": "As added",
+  "@midiLibraryArrangeAdded": {
+    "description": "MIDI tab arrangement inside a collection: clips in the order they were added"
+  },
+  "midiLibraryArrangeTempo": "By tempo (BPM)",
+  "@midiLibraryArrangeTempo": {
+    "description": "MIDI tab arrangement: clips grouped and sorted by their project tempo"
+  },
+  "midiLibraryTempoGroup": "{bpm} BPM",
+  "@midiLibraryTempoGroup": {
+    "description": "MIDI tab heading over the clips at one tempo",
+    "placeholders": {
+      "bpm": {
+        "type": "String"
+      }
+    }
+  },
+  "midiLibraryTempoUnknown": "Unknown tempo",
+  "@midiLibraryTempoUnknown": {
+    "description": "MIDI tab heading over clips whose project has no known tempo"
+  },
+  "midiImportFiles": "Import MIDI files",
+  "@midiImportFiles": {
+    "description": "MIDI tab button: add .mid files from anywhere on the computer to a collection"
+  },
+  "midiImportDialogTitle": "Choose MIDI files to import",
+  "@midiImportDialogTitle": {
+    "description": "Title of the file picker for importing .mid files"
+  },
+  "midiImportSkipped": "Not imported (not a MIDI file, or no notes in it): {files}",
+  "@midiImportSkipped": {
+    "description": "Snackbar: these picked files were not imported because they are not MIDI files or contain no notes",
+    "placeholders": {
+      "files": {
+        "type": "String"
+      }
+    }
   }
 }

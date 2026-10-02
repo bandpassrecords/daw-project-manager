@@ -17,6 +17,7 @@ import '../models/release.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/mixdown_detector_service.dart';
 import '../services/scanner_service.dart';
+import 'widgets/resizable_split_pane.dart';
 import 'widgets/desktop_title_bar.dart';
 import '../models/release_file.dart';
 import '../models/music_project.dart';
@@ -768,14 +769,21 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                   // row actions crowding the border and the scrollbar.
                   child: Padding(
                     padding: const EdgeInsets.only(right: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildDesktopTracksSection(context, release, releaseProjects),
-                        const Divider(height: 2),
-                        _buildDesktopFilesSection(context, release),
-                      ],
-                    ),
+                    // The user drags the divider to give the tracklist more
+                    // room, or maximizes it over the files panel outright —
+                    // a fixed half meant scrolling through any real album.
+                    child: ref.watch(releaseTracksMaximizedProvider)
+                        ? _buildDesktopTracksSection(context, release, releaseProjects)
+                        : ResizableVerticalSplit(
+                            fraction: ref.watch(releaseTracksSplitProvider),
+                            defaultFraction: 0.6,
+                            onResize: ref.read(releaseTracksSplitProvider.notifier).preview,
+                            onResizeEnd: ref.read(releaseTracksSplitProvider.notifier).commit,
+                            onReset: ref.read(releaseTracksSplitProvider.notifier).reset,
+                            handleTooltip: AppLocalizations.of(context)!.releaseTracksResizeHint,
+                            top: _buildDesktopTracksSection(context, release, releaseProjects),
+                            bottom: _buildDesktopFilesSection(context, release),
+                          ),
                   ),
                 ),
               ],
@@ -1007,9 +1015,8 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
     // Reads each track's length off its preview file. Safe on every build —
     // it latches after the first non-empty list (see _scheduleDurationFill).
     _scheduleDurationFill(releaseProjects);
-    return Expanded(
-      flex: 1,
-      child: Column(
+    final maximized = ref.watch(releaseTracksMaximizedProvider);
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
@@ -1049,6 +1056,17 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                   ),
                   const SizedBox(width: 12),
                 ],
+                // Folds the files panel away so the whole tracklist fits.
+                IconButton(
+                  icon: Icon(maximized ? Icons.unfold_less : Icons.unfold_more),
+                  tooltip: maximized
+                      ? l10n.releaseTracksRestoreFiles
+                      : l10n.releaseTracksMaximize,
+                  onPressed: () => ref
+                      .read(releaseTracksMaximizedProvider.notifier)
+                      .set(!maximized),
+                ),
+                const SizedBox(width: 8),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.add),
                   label: Text(l10n.addTracks),
@@ -1076,7 +1094,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
           const Divider(height: 1),
           ReleaseTotalLengthFooter(projects: releaseProjects),
         ],
-      ),
     );
   }
 
@@ -1182,9 +1199,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
     final primaryColor = Theme.of(context).colorScheme.primary;
     final dimColor = Theme.of(context).textTheme.bodySmall?.color;
 
-    return Flexible(
-      flex: 1,
-      child: DropTarget(
+    return DropTarget(
         enable: dropTargetEnabled,
         onDragDone: (detail) async {
           setState(() => _isDraggingFiles = false);
@@ -1235,10 +1250,9 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                     ),
                   ),
                   const Divider(),
-                  Flexible(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 400),
-                      child: release.files.isEmpty
+                  // Takes whatever height the split gives the panel.
+                  Expanded(
+                    child: release.files.isEmpty
                           ? Center(
                               child: Text(
                                 l10n.noFilesAddedYet,
@@ -1246,9 +1260,9 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                                 style: TextStyle(color: dimColor),
                               ),
                             )
-                          // The box is height-capped, so a file sitting just
-                          // past the fold otherwise looks like the end of the
-                          // list — see ScrollMoreHint.
+                          // The panel is height-limited, so a file sitting
+                          // just past the fold otherwise looks like the end of
+                          // the list — see ScrollMoreHint.
                           : ScrollMoreHint(
                               builder: (context, controller) => _FilesSection(
                                 files: release.files,
@@ -1256,7 +1270,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                                 controller: controller,
                               ),
                             ),
-                    ),
                   ),
                 ],
               ),
@@ -1286,7 +1299,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
             ],
           ),
         ),
-      ),
     );
   }
 
@@ -1603,12 +1615,10 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                     ],
                   ),
             const Divider(),
-            // Tracks List
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: 400,
-              ),
-              child: releaseProjects.isEmpty
+            // Tracks List — every track, at full height: the page itself
+            // scrolls, and a capped inner list meant scrolling inside a scroll
+            // to see a whole album.
+            releaseProjects.isEmpty
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.all(32.0),
@@ -1620,7 +1630,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                     )
                   : ReorderableListView.builder(
                       shrinkWrap: true,
-                      physics: const AlwaysScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       buildDefaultDragHandles: false,
                       itemCount: releaseProjects.length,
@@ -1659,7 +1669,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                         );
                       },
                     ),
-            ),
             // Total running time, under the tracklist like on a sleeve.
             ReleaseTotalLengthFooter(projects: releaseProjects),
           ],

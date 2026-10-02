@@ -206,13 +206,16 @@ Future<void> _showAlreadyRunningMessage() async {
 /// for a newer release in the background.
 Future<void> _runStartupUpdateCheck(ProviderContainer container) async {
   if (!UpdateCheckService.isSupported) return;
+  const current = String.fromEnvironment(
+    'APP_VERSION',
+    defaultValue: '0.0.0',
+  );
+  // Debug and local 0.0.0 builds: don't greet a developer with an update
+  // popup on every launch (see UpdateCheckService.shouldCheckAtStartup).
+  if (!UpdateCheckService.shouldCheckAtStartup(current)) return;
   try {
     final box = await Hive.openBox<String>('app_settings');
     if (box.get('checkForUpdates') != 'true') return;
-    const current = String.fromEnvironment(
-      'APP_VERSION',
-      defaultValue: '0.0.0',
-    );
     final newer = await UpdateCheckService.checkForUpdate(current);
     if (newer != null) {
       container.read(availableUpdateProvider.notifier).set(newer);
@@ -775,6 +778,7 @@ Future<void> _main(List<String> args) async {
   // Read the remembered playback volume before any player can be built, so
   // the first one opens at the user's level rather than at full volume.
   await PlayerVolumeStore.load();
+  await MidiPreviewVolumeStore.load();
 
   // Decided now, before this run writes a single setting: an empty settings
   // box means a first-ever launch. An install that has run before, but on a
