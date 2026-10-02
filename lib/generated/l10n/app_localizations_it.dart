@@ -263,14 +263,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get deepScanConfirm =>
-      'La Scansione Approfondita estrae metadati completi dai file di progetto:\n• BPM (Battiti Per Minuto)\n• Tonalità Musicale\n• Versione del DAW\n• Note del Progetto (dove supportato)\n\nÈ più lenta di una scansione normale e potrebbe richiedere del tempo. Continuare?';
+      'La Scansione Approfondita estrae metadati completi dai file di progetto:\n• BPM (Battiti Per Minuto)\n• Tonalità Musicale\n• Versione del DAW\n• Note del Progetto (dove supportato)\n• Tracce, plugin e clip MIDI (dove supportato)\n\nÈ più lenta di una scansione normale e potrebbe richiedere del tempo. Continuare?';
 
   @override
   String get deepScanViewSupportedDaws => 'Visualizza DAW e campi supportati';
 
   @override
   String get deepScanOnlyUnscanned =>
-      'Scansiona solo i progetti senza metadati';
+      'Scansiona solo i progetti non ancora letti completamente';
 
   @override
   String get metadataExtractionTitle => 'Estrazione Metadati';

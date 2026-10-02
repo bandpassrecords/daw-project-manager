@@ -39,6 +39,7 @@ import 'widgets/startup_dialog.dart';
 import 'widgets/tab_customization_dialog.dart';
 import '../services/dock_menu_service.dart';
 import '../utils/daw_logo.dart';
+import '../utils/deep_scan.dart';
 import '../utils/grid_current_cell_parking.dart';
 import '../utils/library_projects.dart';
 import '../utils/mobile_utils.dart';
@@ -871,8 +872,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             entities,
             fullMetadataFor: (entity) =>
                 fullMetadata &&
-                (!onlyUnscanned ||
-                    repo.getByPath(entity.path)?.metadataScanned != true),
+                (!onlyUnscanned || needsDeepScan(repo.getByPath(entity.path))),
             onProgress: (processed, total) {
               if (mounted) {
                 setState(
