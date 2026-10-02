@@ -6076,4 +6076,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiPianoRollFollow => '再生位置を追従';
+
+  @override
+  String get midiClipsShareOfferFolder =>
+      '共有ウィンドウが表示されなかった場合、ファイルはフォルダに用意されています。';
+
+  @override
+  String get midiClipsShowInFolder => 'フォルダで表示';
 }

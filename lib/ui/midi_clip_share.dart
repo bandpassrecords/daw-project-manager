@@ -10,24 +10,44 @@ import '../models/midi_clip.dart';
 import '../services/midi/midi_clip_service.dart';
 import '../utils/file_launcher.dart';
 
-/// Whether to try the OS share sheet for files on this platform. Mobile and
-/// macOS have one that takes files. Windows only does when the app is
-/// MSIX-packaged, which can't be told apart up front, so it is tried and
-/// falls back on `unavailable`. Linux's share_plus can only send text.
+/// Whether to try the OS share sheet for files on this platform. Mobile,
+/// macOS and Windows have one that takes files; Linux's share_plus can only
+/// send text.
 @visibleForTesting
 bool shareSheetWorthTrying({required bool isLinux}) => !isLinux;
 
-/// Whether a share attempt needs the reveal-in-folder fallback.
+/// What to do after a share attempt.
+enum ShareFollowUp {
+  /// The share sheet answered (shared or dismissed): nothing more.
+  none,
+
+  /// We can't tell whether a share sheet appeared — Windows reports
+  /// `unavailable` both when its share window opens and when it can't (an
+  /// unpackaged build). Opening the folder then put a second window up next
+  /// to the share sheet, so the folder is only *offered*.
+  offerFolder,
+
+  /// There was certainly no share sheet (Linux, or the call failed): open
+  /// the folder so the files can be dragged into a chat.
+  openFolder,
+}
+
+/// [tried] is whether the share sheet was attempted; [status] its result, or
+/// null when the call threw.
 @visibleForTesting
-bool shareFellThrough(ShareResultStatus? status) =>
-    status == null || status == ShareResultStatus.unavailable;
+ShareFollowUp shareFollowUp({required bool tried, ShareResultStatus? status}) {
+  if (!tried || status == null) return ShareFollowUp.openFolder;
+  if (status == ShareResultStatus.unavailable) return ShareFollowUp.offerFolder;
+  return ShareFollowUp.none;
+}
 
 /// Shares [clips] as `.mid` files — one clip, or all of a project's.
 ///
 /// Files are written to a fresh temp folder per share (named after the
 /// clips, carrying [bpm]), then handed to the OS share sheet. Where there is
-/// no share sheet for files, that folder is opened instead with a hint to
-/// drag the files into a chat — the same fallback the diagnostic log uses.
+/// certainly no share sheet the folder is opened with a hint to drag the
+/// files into a chat; where we can't tell, a snackbar offers it instead (see
+/// [shareFollowUp]).
 Future<void> shareMidiClips(
   BuildContext context,
   List<MidiClip> clips, {
@@ -48,8 +68,9 @@ Future<void> shareMidiClips(
     ));
     final files = await MidiClipService.exportAll(clips, dir, bpm: bpm);
 
+    final tried = shareSheetWorthTrying(isLinux: Platform.isLinux);
     ShareResultStatus? status;
-    if (shareSheetWorthTrying(isLinux: Platform.isLinux)) {
+    if (tried) {
       try {
         final result = await SharePlus.instance.share(ShareParams(
           files: [
@@ -64,11 +85,22 @@ Future<void> shareMidiClips(
         status = null;
       }
     }
-    if (shareFellThrough(status)) {
-      await FileLauncher.openFolder(dir.path);
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.midiClipsShareFallback)),
-      );
+    switch (shareFollowUp(tried: tried, status: status)) {
+      case ShareFollowUp.none:
+        break;
+      case ShareFollowUp.offerFolder:
+        messenger.showSnackBar(SnackBar(
+          content: Text(l10n.midiClipsShareOfferFolder),
+          action: SnackBarAction(
+            label: l10n.midiClipsShowInFolder,
+            onPressed: () => FileLauncher.openFolder(dir.path),
+          ),
+        ));
+      case ShareFollowUp.openFolder:
+        await FileLauncher.openFolder(dir.path);
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.midiClipsShareFallback)),
+        );
     }
   } catch (e) {
     messenger.showSnackBar(

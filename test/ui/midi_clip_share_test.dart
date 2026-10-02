@@ -5,17 +5,32 @@ import 'package:daw_project_manager/ui/midi_clip_share.dart';
 
 void main() {
   test('the share sheet is tried everywhere but Linux', () {
-    // Mobile, macOS and MSIX-packaged Windows have a file share sheet;
-    // share_plus on Linux can only send text.
+    // Mobile, macOS and Windows have a file share sheet; share_plus on Linux
+    // can only send text.
     expect(shareSheetWorthTrying(isLinux: false), isTrue);
     expect(shareSheetWorthTrying(isLinux: true), isFalse);
   });
 
-  test('falls back to the folder when there was no share sheet', () {
-    expect(shareFellThrough(null), isTrue);
-    expect(shareFellThrough(ShareResultStatus.unavailable), isTrue);
-    expect(shareFellThrough(ShareResultStatus.success), isFalse);
-    expect(shareFellThrough(ShareResultStatus.dismissed), isFalse,
-        reason: 'the user closed the sheet; nothing to fall back to');
+  group('shareFollowUp', () {
+    test('a share sheet that answered needs nothing more', () {
+      expect(shareFollowUp(tried: true, status: ShareResultStatus.success),
+          ShareFollowUp.none);
+      expect(shareFollowUp(tried: true, status: ShareResultStatus.dismissed),
+          ShareFollowUp.none);
+    });
+
+    // Regression: Windows reports `unavailable` even when its share window
+    // did open, and opening the folder too put two windows up at once.
+    test('an unknown outcome only offers the folder', () {
+      expect(shareFollowUp(tried: true, status: ShareResultStatus.unavailable),
+          ShareFollowUp.offerFolder);
+    });
+
+    test('opens the folder when there certainly was no share sheet', () {
+      expect(shareFollowUp(tried: false), ShareFollowUp.openFolder,
+          reason: 'Linux: never attempted');
+      expect(shareFollowUp(tried: true, status: null), ShareFollowUp.openFolder,
+          reason: 'the share call threw');
+    });
   });
 }

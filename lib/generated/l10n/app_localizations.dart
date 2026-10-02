@@ -10396,6 +10396,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Follow playback'**
   String get midiPianoRollFollow;
+
+  /// Snackbar after sharing MIDI files on a system that cannot report whether its share window appeared
+  ///
+  /// In en, this message translates to:
+  /// **'If no share window appeared, the files are ready in a folder.'**
+  String get midiClipsShareOfferFolder;
+
+  /// Snackbar action that opens the folder holding the shared MIDI files
+  ///
+  /// In en, this message translates to:
+  /// **'Show in folder'**
+  String get midiClipsShowInFolder;
 }
 
 class _AppLocalizationsDelegate

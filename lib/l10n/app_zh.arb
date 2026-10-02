@@ -3980,5 +3980,7 @@
   "midiPianoRollZoomIn": "放大",
   "midiPianoRollZoomOut": "缩小",
   "midiPianoRollFit": "适应窗口",
-  "midiPianoRollFollow": "跟随播放"
+  "midiPianoRollFollow": "跟随播放",
+  "midiClipsShareOfferFolder": "如果没有出现分享窗口，文件已在文件夹中准备好。",
+  "midiClipsShowInFolder": "在文件夹中显示"
 }

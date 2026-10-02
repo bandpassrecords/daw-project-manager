@@ -3980,5 +3980,7 @@
   "midiPianoRollZoomIn": "ズームイン",
   "midiPianoRollZoomOut": "ズームアウト",
   "midiPianoRollFit": "ウィンドウに合わせる",
-  "midiPianoRollFollow": "再生位置を追従"
+  "midiPianoRollFollow": "再生位置を追従",
+  "midiClipsShareOfferFolder": "共有ウィンドウが表示されなかった場合、ファイルはフォルダに用意されています。",
+  "midiClipsShowInFolder": "フォルダで表示"
 }

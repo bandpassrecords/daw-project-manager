@@ -6007,4 +6007,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiPianoRollFollow => '跟随播放';
+
+  @override
+  String get midiClipsShareOfferFolder => '如果没有出现分享窗口，文件已在文件夹中准备好。';
+
+  @override
+  String get midiClipsShowInFolder => '在文件夹中显示';
 }

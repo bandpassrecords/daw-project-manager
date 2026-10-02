@@ -5973,5 +5973,13 @@
   "midiPianoRollFollow": "Follow playback",
   "@midiPianoRollFollow": {
     "description": "Piano roll: toggle the view following the playback line"
+  },
+  "midiClipsShareOfferFolder": "If no share window appeared, the files are ready in a folder.",
+  "@midiClipsShareOfferFolder": {
+    "description": "Snackbar after sharing MIDI files on a system that cannot report whether its share window appeared"
+  },
+  "midiClipsShowInFolder": "Show in folder",
+  "@midiClipsShowInFolder": {
+    "description": "Snackbar action that opens the folder holding the shared MIDI files"
   }
 }

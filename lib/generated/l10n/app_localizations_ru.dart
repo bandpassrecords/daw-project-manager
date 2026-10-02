@@ -6260,4 +6260,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiPianoRollFollow => 'Следовать за воспроизведением';
+
+  @override
+  String get midiClipsShareOfferFolder =>
+      'Если окно «Поделиться» не появилось, файлы готовы в папке.';
+
+  @override
+  String get midiClipsShowInFolder => 'Показать в папке';
 }

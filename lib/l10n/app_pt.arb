@@ -4004,5 +4004,7 @@
   "midiPianoRollZoomIn": "Aproximar",
   "midiPianoRollZoomOut": "Afastar",
   "midiPianoRollFit": "Ajustar à janela",
-  "midiPianoRollFollow": "Acompanhar a reprodução"
+  "midiPianoRollFollow": "Acompanhar a reprodução",
+  "midiClipsShareOfferFolder": "Se a janela de compartilhamento não apareceu, os arquivos estão prontos em uma pasta.",
+  "midiClipsShowInFolder": "Mostrar na pasta"
 }

@@ -3980,5 +3980,7 @@
   "midiPianoRollZoomIn": "Увеличить",
   "midiPianoRollZoomOut": "Уменьшить",
   "midiPianoRollFit": "Вписать в окно",
-  "midiPianoRollFollow": "Следовать за воспроизведением"
+  "midiPianoRollFollow": "Следовать за воспроизведением",
+  "midiClipsShareOfferFolder": "Если окно «Поделиться» не появилось, файлы готовы в папке.",
+  "midiClipsShowInFolder": "Показать в папке"
 }

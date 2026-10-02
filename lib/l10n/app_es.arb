@@ -3980,5 +3980,7 @@
   "midiPianoRollZoomIn": "Acercar",
   "midiPianoRollZoomOut": "Alejar",
   "midiPianoRollFit": "Ajustar a la ventana",
-  "midiPianoRollFollow": "Seguir la reproducción"
+  "midiPianoRollFollow": "Seguir la reproducción",
+  "midiClipsShareOfferFolder": "Si no apareció la ventana para compartir, los archivos están listos en una carpeta.",
+  "midiClipsShowInFolder": "Mostrar en la carpeta"
 }

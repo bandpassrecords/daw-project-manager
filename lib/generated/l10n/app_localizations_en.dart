@@ -6231,4 +6231,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get midiPianoRollFollow => 'Follow playback';
+
+  @override
+  String get midiClipsShareOfferFolder =>
+      'If no share window appeared, the files are ready in a folder.';
+
+  @override
+  String get midiClipsShowInFolder => 'Show in folder';
 }
