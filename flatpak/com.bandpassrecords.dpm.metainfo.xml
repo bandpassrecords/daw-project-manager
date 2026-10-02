@@ -34,7 +34,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Dashboard overview with projects across multiple DAWs</caption>
-      <image>https://raw.githubusercontent.com/bandpassrecords/daw-project-manager/v2.9.1/resources/screenshots/dashboard/dashboard-overview.png</image>
+      <image>https://raw.githubusercontent.com/bandpassrecords/daw-project-manager/v2.9.2/resources/screenshots/dashboard/dashboard-overview.png</image>
     </screenshot>
   </screenshots>
 
@@ -58,6 +58,19 @@
       this one for each shipped version instead of overwriting it, so the
       changelog accumulates.
     -->
+    <release version="2.9.2" date="2026-10-03">
+      <description>
+        <ul>
+          <li>See what's inside a project — track counts, the plug-ins it loads and its MIDI clips — for Ableton Live, Cubase, Nuendo, REAPER and FL Studio (tracks for Studio One).</li>
+          <li>Play a project's MIDI clips with a built-in synth: 16 instruments picked from the track name, at the project tempo or your own, on a seamless loop if you like.</li>
+          <li>Open any clip in a zoomable piano roll with a playback line, a lane for velocity, pitch bend and controllers, and a ruler you can click to jump.</li>
+          <li>A new MIDI tab gathers every unique clip across your projects, arrangeable by tempo, with collections of your favourites that sync and back up.</li>
+          <li>Save, share or drag clips into your DAW as .mid files carrying the project's tempo and key, or import .mid files from anywhere into a collection.</li>
+          <li>Add your own project fields, show them as columns, and choose which columns the projects table shows.</li>
+        </ul>
+      </description>
+      <url>https://github.com/bandpassrecords/daw-project-manager/releases/tag/v2.9.2</url>
+    </release>
     <release version="2.9.1" date="2026-09-29">
       <description>
         <ul>
