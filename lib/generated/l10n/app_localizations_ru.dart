@@ -6415,4 +6415,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String midiImportSkipped(String files) {
     return 'Не импортировано (не MIDI-файл или в нём нет нот): $files';
   }
+
+  @override
+  String get midiPreviewLoop => 'Воспроизведение по кругу';
 }

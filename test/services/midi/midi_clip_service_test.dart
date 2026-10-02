@@ -152,5 +152,10 @@ void main() {
     final asBell = await MidiClipService.renderPreview(clip,
         bpm: 120, voice: SynthVoice.bell, directory: tempDir);
     expect(asBell, isNot(first), reason: 'so is the instrument');
+
+    final looped = await MidiClipService.renderPreview(clip,
+        bpm: 120, loop: true, directory: tempDir);
+    expect(looped, isNot(first), reason: 'and whether it loops');
+    expect(looped, endsWith('_loop.wav'));
   });
 }

@@ -66,19 +66,23 @@ class MidiClipService {
   }
 
   /// Renders [clip] with [voice] to a WAV in [directory] and returns its
-  /// path. Reuses an earlier render of the same clip, tempo and voice.
+  /// path — one seamless pass when [loop] is set (see
+  /// [MidiClipSynth.renderWav]). Reuses an earlier render of the same clip,
+  /// tempo, voice and loop setting.
   static Future<String> renderPreview(
     MidiClip clip, {
     double? bpm,
     SynthVoice voice = SynthVoice.synth,
+    bool loop = false,
     required Directory directory,
   }) async {
     final name = 'preview_${_fnv1a(clip.contentKey)}'
-        '_${(bpm ?? 120).toStringAsFixed(2)}_${voice.name}.wav';
+        '_${(bpm ?? 120).toStringAsFixed(2)}_${voice.name}'
+        '${loop ? '_loop' : ''}.wav';
     final out = File(p.join(directory.path, name));
     if (await out.exists()) return out.path;
-    final bytes = await Isolate.run(
-        () => const MidiClipSynth().renderWav(clip, bpm: bpm, voice: voice));
+    final bytes = await Isolate.run(() => const MidiClipSynth()
+        .renderWav(clip, bpm: bpm, voice: voice, loop: loop));
     await directory.create(recursive: true);
     await out.writeAsBytes(bytes, flush: true);
     return out.path;

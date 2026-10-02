@@ -24,6 +24,7 @@ import 'midi_clip_list.dart';
 import '../midi_piano_roll_dialog.dart';
 import '../midi_preview_player.dart';
 import 'midi_tempo_control.dart';
+import 'midi_loop_toggle.dart';
 import 'midi_volume_control.dart';
 
 /// A project's MIDI clips: the ones stored by the last extraction (see
@@ -94,6 +95,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     super.initState();
     _player.addListener(_onPlayer);
     _player.volume = ref.read(midiPreviewVolumeProvider);
+    _player.loop = ref.read(midiPreviewLoopProvider);
     _attach();
   }
 
@@ -316,6 +318,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     final count = stored?.clips.length ?? widget.project.stats?.midiClipCount;
     // One volume for every MIDI preview in the app; follow it live.
     ref.listen<double>(midiPreviewVolumeProvider, (_, v) => _player.setVolume(v));
+    ref.listen<bool>(midiPreviewLoopProvider, (_, v) => _player.setLoop(v));
     final volume = ref.watch(midiPreviewVolumeProvider);
 
     return Column(
@@ -441,10 +444,20 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
                       : l10n.midiTempoReset(formatPreviewBpm(_projectBpm!)),
                   labels: midiTempoLabelsOf(l10n),
                 ),
-                MidiVolumeControl(
-                  volume: volume,
-                  onChanged: ref.read(midiPreviewVolumeProvider.notifier).set,
-                  labels: midiVolumeLabelsOf(l10n),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    MidiLoopToggle(
+                      loop: ref.watch(midiPreviewLoopProvider),
+                      onChanged: ref.read(midiPreviewLoopProvider.notifier).set,
+                      tooltip: l10n.midiPreviewLoop,
+                    ),
+                    MidiVolumeControl(
+                      volume: volume,
+                      onChanged: ref.read(midiPreviewVolumeProvider.notifier).set,
+                      labels: midiVolumeLabelsOf(l10n),
+                    ),
+                  ],
                 ),
               ],
             ),

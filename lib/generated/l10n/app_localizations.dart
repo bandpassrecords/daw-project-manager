@@ -10666,6 +10666,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not imported (not a MIDI file, or no notes in it): {files}'**
   String midiImportSkipped(String files);
+
+  /// Tooltip of the toggle that makes MIDI clip previews repeat until stopped
+  ///
+  /// In en, this message translates to:
+  /// **'Loop playback'**
+  String get midiPreviewLoop;
 }
 
 class _AppLocalizationsDelegate

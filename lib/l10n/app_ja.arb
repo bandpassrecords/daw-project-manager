@@ -4025,5 +4025,6 @@
   "midiLibraryTempoUnknown": "テンポ不明",
   "midiImportFiles": "MIDI ファイルを読み込む",
   "midiImportDialogTitle": "読み込む MIDI ファイルを選択",
-  "midiImportSkipped": "読み込めませんでした (MIDI ファイルではないか、ノートがありません): {files}"
+  "midiImportSkipped": "読み込めませんでした (MIDI ファイルではないか、ノートがありません): {files}",
+  "midiPreviewLoop": "ループ再生"
 }

@@ -8,6 +8,7 @@ import '../providers/providers.dart';
 import '../utils/mobile_utils.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_piano_roll.dart';
+import 'widgets/midi_loop_toggle.dart';
 import 'widgets/midi_volume_control.dart';
 
 /// Opens [clip] in a large piano roll, with transport wired to [player].
@@ -60,8 +61,8 @@ Future<void> showMidiPianoRoll(
       openProject: l10n.midiOpenSourceProject,
     ),
   );
-  // The shared preview volume, live: the window's slider and the list's move
-  // together, and either one changes what is playing.
+  // The shared preview volume and loop setting, live: the window's controls
+  // and the list's move together, and either one changes what is playing.
   final withVolume = Consumer(
     builder: (context, ref, _) {
       final volume = ref.watch(midiPreviewVolumeProvider);
@@ -77,6 +78,12 @@ Future<void> showMidiPianoRoll(
           mute: l10n.volumeMute,
           unmute: l10n.volumeUnmute,
         ),
+        loop: ref.watch(midiPreviewLoopProvider),
+        onLoopChanged: (v) {
+          ref.read(midiPreviewLoopProvider.notifier).set(v);
+          player.setLoop(v);
+        },
+        loopTooltip: l10n.midiPreviewLoop,
       );
     },
   );
@@ -173,6 +180,9 @@ class MidiPianoRollWindow extends StatelessWidget {
     this.volume,
     this.onVolumeChanged,
     this.volumeLabels,
+    this.loop,
+    this.onLoopChanged,
+    this.loopTooltip,
   });
 
   /// [base] with a volume control added.
@@ -181,6 +191,9 @@ class MidiPianoRollWindow extends StatelessWidget {
     required double volume,
     required ValueChanged<double> onVolumeChanged,
     required MidiVolumeLabels volumeLabels,
+    bool? loop,
+    ValueChanged<bool>? onLoopChanged,
+    String? loopTooltip,
   }) =>
       MidiPianoRollWindow(
         clip: base.clip,
@@ -195,6 +208,9 @@ class MidiPianoRollWindow extends StatelessWidget {
         volume: volume,
         onVolumeChanged: onVolumeChanged,
         volumeLabels: volumeLabels,
+        loop: loop,
+        onLoopChanged: onLoopChanged,
+        loopTooltip: loopTooltip,
       );
 
   /// The shared preview volume; the control shows only when all three of
@@ -202,6 +218,12 @@ class MidiPianoRollWindow extends StatelessWidget {
   final double? volume;
   final ValueChanged<double>? onVolumeChanged;
   final MidiVolumeLabels? volumeLabels;
+
+  /// The shared loop setting; the toggle shows only when all three of
+  /// [loop], [onLoopChanged] and [loopTooltip] are given.
+  final bool? loop;
+  final ValueChanged<bool>? onLoopChanged;
+  final String? loopTooltip;
 
   final MidiClip clip;
   final String title;
@@ -320,6 +342,14 @@ class MidiPianoRollWindow extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (loop != null &&
+                      onLoopChanged != null &&
+                      loopTooltip != null)
+                    MidiLoopToggle(
+                      loop: loop!,
+                      onChanged: onLoopChanged!,
+                      tooltip: loopTooltip!,
+                    ),
                   if (volume != null &&
                       onVolumeChanged != null &&
                       volumeLabels != null)

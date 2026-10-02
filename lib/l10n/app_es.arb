@@ -4025,5 +4025,6 @@
   "midiLibraryTempoUnknown": "Tempo desconocido",
   "midiImportFiles": "Importar archivos MIDI",
   "midiImportDialogTitle": "Elige los archivos MIDI que quieres importar",
-  "midiImportSkipped": "No importado (no es un archivo MIDI o no tiene notas): {files}"
+  "midiImportSkipped": "No importado (no es un archivo MIDI o no tiene notas): {files}",
+  "midiPreviewLoop": "Reproducir en bucle"
 }

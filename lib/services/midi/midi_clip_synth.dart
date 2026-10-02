@@ -40,15 +40,28 @@ class MidiClipSynth {
     return math.min(seconds, maxSeconds.toDouble());
   }
 
+  /// Seconds one pass of [clip] lasts at [bpm] — its length, no tail —
+  /// capped at [maxSeconds]: the length of a looped preview.
+  double loopSeconds(MidiClip clip, double bpm) {
+    final tempo = bpm <= 0 ? 120.0 : bpm;
+    final seconds = clip.lengthTicks * 60 / tempo / clip.ppq;
+    return math.min(seconds, maxSeconds.toDouble());
+  }
+
   /// Renders [clip] at [bpm] (120 when unknown) with [voice] to 16-bit mono
   /// PCM WAV bytes.
+  ///
+  /// With [loop] the WAV is exactly one pass of the clip ([loopSeconds]), and
+  /// the sound ringing past its end — release tails, a held pedal — is
+  /// folded back onto its start, the way it would ring into the next pass.
+  /// Played on repeat, it loops seamlessly, in time.
   Uint8List renderWav(MidiClip clip,
-      {double? bpm, SynthVoice voice = SynthVoice.synth}) {
+      {double? bpm, SynthVoice voice = SynthVoice.synth, bool loop = false}) {
     final tempo = (bpm == null || bpm <= 0) ? 120.0 : bpm;
     final secondsPerTick = 60 / tempo / clip.ppq;
     final totalSeconds = durationSeconds(clip, tempo, voice: voice);
-    final frames = math.max(1, (totalSeconds * sampleRate).ceil());
-    final mix = Float64List(frames);
+    var frames = math.max(1, (totalSeconds * sampleRate).ceil());
+    var mix = Float64List(frames);
     final framesPerTick = secondsPerTick * sampleRate;
     final controls = ClipControls(clip);
     final bendsByChannel = <int, List<(int, double)>>{};
@@ -77,6 +90,17 @@ class MidiClipSynth {
         _renderTone(mix, start, held, note.pitch, gain, _patches[voice]!,
             bends: bends);
       }
+    }
+
+    if (loop) {
+      final loopFrames =
+          math.max(1, (loopSeconds(clip, tempo) * sampleRate).round());
+      final folded = Float64List(loopFrames);
+      for (var i = 0; i < mix.length; i++) {
+        folded[i % loopFrames] += mix[i];
+      }
+      mix = folded;
+      frames = loopFrames;
     }
 
     // Normalise only downwards: a sparse clip stays at its natural level

@@ -3265,6 +3265,23 @@ final midiPreviewVolumeProvider =
   MidiPreviewVolumeNotifier.new,
 );
 
+/// Whether MIDI previews loop; one setting for every preview in the app,
+/// remembered on this device ([MidiPreviewLoopStore]).
+class MidiPreviewLoopNotifier extends Notifier<bool> {
+  @override
+  bool build() => MidiPreviewLoopStore.current;
+
+  void set(bool loop) {
+    if (loop == state) return;
+    state = loop;
+    MidiPreviewLoopStore.save(loop);
+  }
+}
+
+final midiPreviewLoopProvider = NotifierProvider<MidiPreviewLoopNotifier, bool>(
+  MidiPreviewLoopNotifier.new,
+);
+
 final desktopPlayerVolumeProvider =
     NotifierProvider<DesktopPlayerVolumeNotifier, double>(
       DesktopPlayerVolumeNotifier.new,

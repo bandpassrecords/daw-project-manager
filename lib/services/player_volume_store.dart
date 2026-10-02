@@ -101,6 +101,41 @@ class MidiPreviewVolumeStore {
   }
 }
 
+/// Whether MIDI clip previews loop (see `MidiPreviewPlayer.setLoop`).
+/// Device-local, like the preview volume beside it: how this machine likes
+/// to audition clips, not user data — neither synced nor backed up.
+class MidiPreviewLoopStore {
+  const MidiPreviewLoopStore._();
+
+  static const String key = 'midi_preview_loop';
+  static bool _cached = false;
+
+  static bool get current => _cached;
+
+  @visibleForTesting
+  static set cachedForTest(bool value) => _cached = value;
+
+  static Future<bool> load() async {
+    try {
+      final box = await Hive.openBox<String>(PlayerVolumeStore.boxName);
+      _cached = box.get(key) == 'true';
+    } catch (e) {
+      debugPrint('[MidiPreviewLoop] failed to load: $e');
+    }
+    return _cached;
+  }
+
+  static Future<void> save(bool loop) async {
+    _cached = loop;
+    try {
+      final box = await Hive.openBox<String>(PlayerVolumeStore.boxName);
+      await box.put(key, loop.toString());
+    } catch (e) {
+      debugPrint('[MidiPreviewLoop] failed to save: $e');
+    }
+  }
+}
+
 /// [volume] held inside 0…1.
 double clampVolume(double volume) => volume.clamp(0.0, 1.0);
 

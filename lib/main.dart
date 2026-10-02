@@ -779,6 +779,7 @@ Future<void> _main(List<String> args) async {
   // the first one opens at the user's level rather than at full volume.
   await PlayerVolumeStore.load();
   await MidiPreviewVolumeStore.load();
+  await MidiPreviewLoopStore.load();
 
   // Decided now, before this run writes a single setting: an empty settings
   // box means a first-ever launch. An install that has run before, but on a

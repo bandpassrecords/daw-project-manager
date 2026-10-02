@@ -6184,5 +6184,9 @@
         "type": "String"
       }
     }
+  },
+  "midiPreviewLoop": "Loop playback",
+  "@midiPreviewLoop": {
+    "description": "Tooltip of the toggle that makes MIDI clip previews repeat until stopped"
   }
 }
