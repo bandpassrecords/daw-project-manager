@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/models/project_stats.dart';
+import 'package:daw_project_manager/models/stored_midi_clips.dart';
 import 'package:daw_project_manager/repository/project_repository.dart';
 
 import '../helpers/hive_test_helper.dart';
@@ -111,7 +112,14 @@ void main() {
       final stored = (await repo.midiClips.get(project.id))!;
       expect(stored.clips.single.name, 'Line');
       expect(stored.clips.single.trackName, 'Bass');
-      expect(stored.sourceModifiedAt, file.lastModifiedSync());
+      // Whole seconds on Linux (stat), milliseconds elsewhere — so compare
+      // the way the staleness check does, not to the millisecond.
+      expect(
+        stored.sourceModifiedAt!.difference(file.lastModifiedSync()).abs(),
+        lessThan(StoredMidiClips.staleTolerance),
+      );
+      expect(stored.isStaleFor(file.lastModifiedSync()), isFalse,
+          reason: 'a file just read must not show as changed');
     });
 
     test('the batched scan stores clips too', () async {

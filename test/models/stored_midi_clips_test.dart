@@ -93,6 +93,16 @@ void main() {
       expect(value.isStaleFor(DateTime.utc(2026, 9, 1)), isFalse);
       expect(value.isStaleFor(null), isFalse);
     });
+
+    test('sub-second and FAT-rounding differences are not a change', () {
+      // Regression: on Linux the scan's stat() time is whole seconds and the
+      // page's lastModified() keeps milliseconds, so every freshly read
+      // project showed "the project file has changed".
+      final at = DateTime.utc(2026, 9, 1);
+      expect(value.isStaleFor(at.add(const Duration(milliseconds: 50))), isFalse);
+      expect(value.isStaleFor(at.add(const Duration(milliseconds: 1999))), isFalse);
+      expect(value.isStaleFor(at.add(const Duration(seconds: 2))), isTrue);
+    });
   });
 
   group('MidiClipStore', () {

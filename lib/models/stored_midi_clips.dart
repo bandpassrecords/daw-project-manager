@@ -59,10 +59,18 @@ class StoredMidiClips {
 
   /// Whether the project file has been modified since these clips were read.
   /// False when either time is unknown — nothing to warn about then.
+  ///
+  /// Differences under [staleTolerance] don't count. The two times come
+  /// from different calls (a scan's `stat()`, the page's `lastModified()`),
+  /// and on Linux the first is whole seconds while the second keeps the
+  /// milliseconds — so a file read a moment ago looked changed. FAT/exFAT
+  /// drives only store times to 2 seconds anyway.
   bool isStaleFor(DateTime? fileModifiedAt) =>
       sourceModifiedAt != null &&
       fileModifiedAt != null &&
-      fileModifiedAt.isAfter(sourceModifiedAt!);
+      fileModifiedAt.difference(sourceModifiedAt!) >= staleTolerance;
+
+  static const staleTolerance = Duration(seconds: 2);
 }
 
 /// One clip as a map. [bytes] turns the packed notes into what the target
