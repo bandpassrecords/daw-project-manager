@@ -259,13 +259,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get deepScanConfirm =>
-      '詳細スキャンは、プロジェクトファイルから完全なメタデータを抽出します：\n• BPM（1分あたりのビート数）\n• 音楽キー\n• DAWバージョン\n• プロジェクトノート（対応DAWのみ）\n\n通常のスキャンより時間がかかります。続行しますか？';
+      '詳細スキャンは、プロジェクトファイルから完全なメタデータを抽出します：\n• BPM（1分あたりのビート数）\n• 音楽キー\n• DAWバージョン\n• プロジェクトノート（対応DAWのみ）\n• トラック、プラグイン、MIDIクリップ（対応DAWのみ）\n\n通常のスキャンより時間がかかります。続行しますか？';
 
   @override
   String get deepScanViewSupportedDaws => '対応DAWとフィールドを見る';
 
   @override
-  String get deepScanOnlyUnscanned => 'メタデータのないプロジェクトのみスキャン';
+  String get deepScanOnlyUnscanned => 'まだ完全に読み込まれていないプロジェクトのみスキャン';
 
   @override
   String get metadataExtractionTitle => 'メタデータ抽出';

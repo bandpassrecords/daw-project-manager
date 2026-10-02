@@ -110,6 +110,24 @@ class MetadataExtractor {
     '.song',
   };
 
+  /// Formats whose full extraction also reads what is inside the project:
+  /// track counts, plug-ins and — all but Studio One — MIDI clips.
+  static const _contentsExtensions = {
+    '.als',
+    '.alp',
+    '.cpr',
+    '.npr',
+    '.rpp',
+    '.flp',
+    '.song',
+  };
+
+  /// Whether a full extraction reads this project's contents (tracks,
+  /// plug-ins, MIDI clips), so a project whose stats were never read still
+  /// has something a deep scan would add.
+  static bool readsProjectContents(String filePath) =>
+      _contentsExtensions.contains(p.extension(filePath).toLowerCase());
+
   /// Whether [extractMetadata] has a real implementation for this project's
   /// DAW, as opposed to just returning nulls. Used to disable "Extract
   /// Metadata" UI for DAWs we can't yet parse.

@@ -263,13 +263,14 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get deepScanConfirm =>
-      'A Varredura Profunda extrai metadados completos dos arquivos de projeto:\n• BPM (Batidas Por Minuto)\n• Tom Musical\n• Versão do DAW\n• Notas do Projeto (quando suportado)\n\nIsso é mais lento que uma varredura comum e pode levar um tempo. Continuar?';
+      'A Varredura Profunda extrai metadados completos dos arquivos de projeto:\n• BPM (Batidas Por Minuto)\n• Tom Musical\n• Versão do DAW\n• Notas do Projeto (quando suportado)\n• Faixas, plugins e clipes MIDI (quando suportado)\n\nIsso é mais lento que uma varredura comum e pode levar um tempo. Continuar?';
 
   @override
   String get deepScanViewSupportedDaws => 'Ver DAWs e campos suportados';
 
   @override
-  String get deepScanOnlyUnscanned => 'Escanear apenas projetos sem metadados';
+  String get deepScanOnlyUnscanned =>
+      'Escanear apenas projetos ainda não lidos por completo';
 
   @override
   String get metadataExtractionTitle => 'Extração de Metadados';

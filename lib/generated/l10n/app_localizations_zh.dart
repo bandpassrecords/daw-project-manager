@@ -255,13 +255,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deepScanConfirm =>
-      '深度扫描从项目文件中提取完整的元数据：\n• BPM（每分钟节拍数）\n• 音乐调性\n• DAW版本\n• 项目备注（视DAW支持情况而定）\n\n这比常规扫描慢，可能需要一些时间。继续吗？';
+      '深度扫描从项目文件中提取完整的元数据：\n• BPM（每分钟节拍数）\n• 音乐调性\n• DAW版本\n• 项目备注（视DAW支持情况而定）\n• 轨道、插件和 MIDI 片段（视DAW支持情况而定）\n\n这比常规扫描慢，可能需要一些时间。继续吗？';
 
   @override
   String get deepScanViewSupportedDaws => '查看支持的DAW和字段';
 
   @override
-  String get deepScanOnlyUnscanned => '仅扫描没有元数据的项目';
+  String get deepScanOnlyUnscanned => '仅扫描尚未完整读取的项目';
 
   @override
   String get metadataExtractionTitle => '元数据提取';
