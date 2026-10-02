@@ -5992,4 +5992,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get customFieldsProjectPageHint => '你自己的字段——可在 设置 > 列与字段 中添加或修改。';
+
+  @override
+  String get midiPianoRollOpen => '打开钢琴卷帘';
+
+  @override
+  String get midiPianoRollZoomIn => '放大';
+
+  @override
+  String get midiPianoRollZoomOut => '缩小';
+
+  @override
+  String get midiPianoRollFit => '适应窗口';
+
+  @override
+  String get midiPianoRollFollow => '跟随播放';
 }

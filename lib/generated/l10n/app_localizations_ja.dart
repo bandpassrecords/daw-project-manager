@@ -6061,4 +6061,19 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get customFieldsProjectPageHint =>
       '独自のフィールドです。設定 > 列とフィールド で追加・変更できます。';
+
+  @override
+  String get midiPianoRollOpen => 'ピアノロールを開く';
+
+  @override
+  String get midiPianoRollZoomIn => 'ズームイン';
+
+  @override
+  String get midiPianoRollZoomOut => 'ズームアウト';
+
+  @override
+  String get midiPianoRollFit => 'ウィンドウに合わせる';
+
+  @override
+  String get midiPianoRollFollow => '再生位置を追従';
 }

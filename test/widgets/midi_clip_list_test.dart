@@ -27,6 +27,7 @@ void main() {
     addToCollection: 'Add to collection',
     removeFromCollection: 'Remove',
     more: 'More',
+    openPianoRoll: 'Open piano roll',
   );
 
   MidiClip clip(String name, {String? track, int occurrences = 1, int beats = 16}) =>
@@ -48,8 +49,10 @@ void main() {
   late List<(int, SynthVoice)> voiceChanges;
   late List<int> added;
   late List<int> removed;
+  late List<int> opened;
 
   setUp(() {
+    opened = [];
     added = [];
     removed = [];
     played = [];
@@ -70,6 +73,7 @@ void main() {
     bool collectionActions = false,
     String? Function(int)? groupLabelOf,
     String? Function(int)? detailPrefixOf,
+    bool openable = false,
   }) =>
       MaterialApp(
         home: Scaffold(
@@ -91,6 +95,7 @@ void main() {
               onAddToCollection:
                   collectionActions ? (i, _) => added.add(i) : null,
               onRemove: collectionActions ? removed.add : null,
+              onOpen: openable ? opened.add : null,
               expandAllUpTo: expandAllUpTo,
               dragHandleBuilder: draggable
                   ? (context, index, handle) =>
@@ -310,5 +315,25 @@ void main() {
     await tester.tap(find.text('organ'));
     await tester.pumpAndSettle();
     expect(voiceChanges, [(0, SynthVoice.organ)]);
+  });
+
+  testWidgets('tapping a thumbnail opens that clip', (tester) async {
+    await tester.pumpWidget(wrap([clip('A'), clip('B')], openable: true));
+    await tester.tap(find.byType(MidiClipThumbnail).last);
+    expect(opened, [1]);
+  });
+
+  testWidgets('without onOpen the thumbnail is just a picture', (tester) async {
+    await tester.pumpWidget(wrap([clip('A')]));
+    expect(find.byTooltip('Open piano roll'), findsNothing);
+  });
+
+  testWidgets('compact rows open the piano roll from More', (tester) async {
+    await tester.pumpWidget(wrap([clip('A')], compact: true, openable: true));
+    await tester.tap(find.byTooltip('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open piano roll'));
+    await tester.pumpAndSettle();
+    expect(opened, [0]);
   });
 }

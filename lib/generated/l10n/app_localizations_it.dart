@@ -6259,4 +6259,19 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get customFieldsProjectPageHint =>
       'I tuoi campi: aggiungili o modificali in Impostazioni > Colonne e campi.';
+
+  @override
+  String get midiPianoRollOpen => 'Apri piano roll';
+
+  @override
+  String get midiPianoRollZoomIn => 'Ingrandisci';
+
+  @override
+  String get midiPianoRollZoomOut => 'Riduci';
+
+  @override
+  String get midiPianoRollFit => 'Adatta alla finestra';
+
+  @override
+  String get midiPianoRollFollow => 'Segui la riproduzione';
 }

@@ -6245,4 +6245,19 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get customFieldsProjectPageHint =>
       'Ваши собственные поля — добавить или изменить можно в Настройки > Столбцы и поля.';
+
+  @override
+  String get midiPianoRollOpen => 'Открыть пиано-ролл';
+
+  @override
+  String get midiPianoRollZoomIn => 'Увеличить';
+
+  @override
+  String get midiPianoRollZoomOut => 'Уменьшить';
+
+  @override
+  String get midiPianoRollFit => 'Вписать в окно';
+
+  @override
+  String get midiPianoRollFollow => 'Следовать за воспроизведением';
 }

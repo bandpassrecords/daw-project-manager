@@ -3975,5 +3975,10 @@
   "deleteCustomFieldTitle": "Supprimer le champ ?",
   "deleteCustomFieldMessage": "« {name} » et les valeurs saisies n’apparaîtront plus dans aucun projet, tableau ni recherche.",
   "customFieldInvalidNumber": "Saisissez un nombre",
-  "customFieldsProjectPageHint": "Vos propres champs — ajoutez-les ou modifiez-les dans Paramètres > Colonnes et champs."
+  "customFieldsProjectPageHint": "Vos propres champs — ajoutez-les ou modifiez-les dans Paramètres > Colonnes et champs.",
+  "midiPianoRollOpen": "Ouvrir le piano roll",
+  "midiPianoRollZoomIn": "Zoom avant",
+  "midiPianoRollZoomOut": "Zoom arrière",
+  "midiPianoRollFit": "Ajuster à la fenêtre",
+  "midiPianoRollFollow": "Suivre la lecture"
 }

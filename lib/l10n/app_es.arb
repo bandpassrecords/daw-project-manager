@@ -3975,5 +3975,10 @@
   "deleteCustomFieldTitle": "¿Eliminar campo?",
   "deleteCustomFieldMessage": "\"{name}\" y los valores introducidos dejarán de aparecer en proyectos, tablas y búsquedas.",
   "customFieldInvalidNumber": "Escribe un número",
-  "customFieldsProjectPageHint": "Tus propios campos: añádelos o cámbialos en Ajustes > Columnas y campos."
+  "customFieldsProjectPageHint": "Tus propios campos: añádelos o cámbialos en Ajustes > Columnas y campos.",
+  "midiPianoRollOpen": "Abrir piano roll",
+  "midiPianoRollZoomIn": "Acercar",
+  "midiPianoRollZoomOut": "Alejar",
+  "midiPianoRollFit": "Ajustar a la ventana",
+  "midiPianoRollFollow": "Seguir la reproducción"
 }

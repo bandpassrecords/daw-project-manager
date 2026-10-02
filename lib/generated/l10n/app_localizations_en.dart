@@ -6216,4 +6216,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get customFieldsProjectPageHint =>
       'Your own fields — add or change them in Settings > Columns & fields.';
+
+  @override
+  String get midiPianoRollOpen => 'Open piano roll';
+
+  @override
+  String get midiPianoRollZoomIn => 'Zoom in';
+
+  @override
+  String get midiPianoRollZoomOut => 'Zoom out';
+
+  @override
+  String get midiPianoRollFit => 'Fit to window';
+
+  @override
+  String get midiPianoRollFollow => 'Follow playback';
 }

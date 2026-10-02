@@ -5953,5 +5953,25 @@
   "customFieldsProjectPageHint": "Your own fields — add or change them in Settings > Columns & fields.",
   "@customFieldsProjectPageHint": {
     "description": "Project page: shown under the custom fields heading"
+  },
+  "midiPianoRollOpen": "Open piano roll",
+  "@midiPianoRollOpen": {
+    "description": "Tooltip on a MIDI clip thumbnail, and menu item, that opens the clip in a large piano roll"
+  },
+  "midiPianoRollZoomIn": "Zoom in",
+  "@midiPianoRollZoomIn": {
+    "description": "Piano roll: zoom in horizontally"
+  },
+  "midiPianoRollZoomOut": "Zoom out",
+  "@midiPianoRollZoomOut": {
+    "description": "Piano roll: zoom out horizontally"
+  },
+  "midiPianoRollFit": "Fit to window",
+  "@midiPianoRollFit": {
+    "description": "Piano roll: zoom so the whole clip fits the window"
+  },
+  "midiPianoRollFollow": "Follow playback",
+  "@midiPianoRollFollow": {
+    "description": "Piano roll: toggle the view following the playback line"
   }
 }

@@ -10366,6 +10366,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your own fields — add or change them in Settings > Columns & fields.'**
   String get customFieldsProjectPageHint;
+
+  /// Tooltip on a MIDI clip thumbnail, and menu item, that opens the clip in a large piano roll
+  ///
+  /// In en, this message translates to:
+  /// **'Open piano roll'**
+  String get midiPianoRollOpen;
+
+  /// Piano roll: zoom in horizontally
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get midiPianoRollZoomIn;
+
+  /// Piano roll: zoom out horizontally
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get midiPianoRollZoomOut;
+
+  /// Piano roll: zoom so the whole clip fits the window
+  ///
+  /// In en, this message translates to:
+  /// **'Fit to window'**
+  String get midiPianoRollFit;
+
+  /// Piano roll: toggle the view following the playback line
+  ///
+  /// In en, this message translates to:
+  /// **'Follow playback'**
+  String get midiPianoRollFollow;
 }
 
 class _AppLocalizationsDelegate

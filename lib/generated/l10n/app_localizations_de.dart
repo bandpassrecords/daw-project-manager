@@ -6256,4 +6256,19 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get customFieldsProjectPageHint =>
       'Deine eigenen Felder – hinzufügen oder ändern unter Einstellungen > Spalten & Felder.';
+
+  @override
+  String get midiPianoRollOpen => 'Piano-Roll öffnen';
+
+  @override
+  String get midiPianoRollZoomIn => 'Vergrößern';
+
+  @override
+  String get midiPianoRollZoomOut => 'Verkleinern';
+
+  @override
+  String get midiPianoRollFit => 'An Fenster anpassen';
+
+  @override
+  String get midiPianoRollFollow => 'Wiedergabe folgen';
 }

@@ -3975,5 +3975,10 @@
   "deleteCustomFieldTitle": "删除字段？",
   "deleteCustomFieldMessage": "“{name}”及已填写的值将不再出现在任何项目、表格或搜索中。",
   "customFieldInvalidNumber": "请输入数字",
-  "customFieldsProjectPageHint": "你自己的字段——可在 设置 > 列与字段 中添加或修改。"
+  "customFieldsProjectPageHint": "你自己的字段——可在 设置 > 列与字段 中添加或修改。",
+  "midiPianoRollOpen": "打开钢琴卷帘",
+  "midiPianoRollZoomIn": "放大",
+  "midiPianoRollZoomOut": "缩小",
+  "midiPianoRollFit": "适应窗口",
+  "midiPianoRollFollow": "跟随播放"
 }

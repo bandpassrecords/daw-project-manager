@@ -24,6 +24,13 @@ import '../services/midi/synth_voice.dart';
 class MidiPreviewPlayer extends ChangeNotifier {
   AudioPlayer? _player;
   StreamSubscription<void>? _completeSub;
+  StreamSubscription<Duration>? _positionSub;
+
+  /// The last position the player reported, and when. Players report a few
+  /// times a second; [positionOf] extrapolates between reports so a playhead
+  /// moves smoothly.
+  Duration _lastPosition = Duration.zero;
+  DateTime _lastPositionAt = DateTime.now();
   int _generation = 0;
   bool _disposed = false;
 
@@ -60,14 +67,29 @@ class MidiPreviewPlayer extends ChangeNotifier {
         playingKey = null;
         _notify();
       });
+      _positionSub ??= player.onPositionChanged.listen((p) {
+        _lastPosition = p;
+        _lastPositionAt = DateTime.now();
+      });
       await player.stop();
+      _lastPosition = Duration.zero;
+      _lastPositionAt = DateTime.now();
       await player.play(DeviceFileSource(path));
       if (generation != _generation || _disposed) return;
+      _lastPosition = Duration.zero;
+      _lastPositionAt = DateTime.now();
       playingKey = key;
     } finally {
       if (generation == _generation && preparingKey == key) preparingKey = null;
       _notify();
     }
+  }
+
+  /// How far into clip [key]'s preview playback is, or null when that clip
+  /// isn't the one playing. Extrapolated from the player's last report.
+  Duration? positionOf(String key) {
+    if (playingKey != key) return null;
+    return extrapolatePosition(_lastPosition, _lastPositionAt, DateTime.now());
   }
 
   Future<void> stop() async {
@@ -92,7 +114,21 @@ class MidiPreviewPlayer extends ChangeNotifier {
     _disposed = true;
     _generation++;
     _completeSub?.cancel();
+    _positionSub?.cancel();
     _player?.dispose();
     super.dispose();
   }
+}
+
+/// The playback position at [now], given the player last reported
+/// [reported] at [reportedAt]. Players report a few times a second; moving
+/// on by the wall-clock time since gives a playhead that glides instead of
+/// jumping. Capped at a second past the report, so a stalled player can't
+/// send the playhead running off.
+@visibleForTesting
+Duration extrapolatePosition(Duration reported, DateTime reportedAt, DateTime now) {
+  var elapsed = now.difference(reportedAt);
+  if (elapsed.isNegative) elapsed = Duration.zero;
+  if (elapsed > const Duration(seconds: 1)) elapsed = const Duration(seconds: 1);
+  return reported + elapsed;
 }

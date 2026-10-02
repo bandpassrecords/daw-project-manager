@@ -3975,5 +3975,10 @@
   "deleteCustomFieldTitle": "Удалить поле?",
   "deleteCustomFieldMessage": "«{name}» и введённые значения больше не будут отображаться в проектах, таблицах и поиске.",
   "customFieldInvalidNumber": "Введите число",
-  "customFieldsProjectPageHint": "Ваши собственные поля — добавить или изменить можно в Настройки > Столбцы и поля."
+  "customFieldsProjectPageHint": "Ваши собственные поля — добавить или изменить можно в Настройки > Столбцы и поля.",
+  "midiPianoRollOpen": "Открыть пиано-ролл",
+  "midiPianoRollZoomIn": "Увеличить",
+  "midiPianoRollZoomOut": "Уменьшить",
+  "midiPianoRollFit": "Вписать в окно",
+  "midiPianoRollFollow": "Следовать за воспроизведением"
 }

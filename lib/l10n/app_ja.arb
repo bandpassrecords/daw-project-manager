@@ -3975,5 +3975,10 @@
   "deleteCustomFieldTitle": "フィールドを削除しますか？",
   "deleteCustomFieldMessage": "「{name}」と入力済みの値は、プロジェクト・表・検索に表示されなくなります。",
   "customFieldInvalidNumber": "数値を入力してください",
-  "customFieldsProjectPageHint": "独自のフィールドです。設定 > 列とフィールド で追加・変更できます。"
+  "customFieldsProjectPageHint": "独自のフィールドです。設定 > 列とフィールド で追加・変更できます。",
+  "midiPianoRollOpen": "ピアノロールを開く",
+  "midiPianoRollZoomIn": "ズームイン",
+  "midiPianoRollZoomOut": "ズームアウト",
+  "midiPianoRollFit": "ウィンドウに合わせる",
+  "midiPianoRollFollow": "再生位置を追従"
 }

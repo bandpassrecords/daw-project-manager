@@ -3975,5 +3975,10 @@
   "deleteCustomFieldTitle": "Feld löschen?",
   "deleteCustomFieldMessage": "„{name}“ und die eingetragenen Werte erscheinen dann in keinem Projekt, keiner Tabelle und keiner Suche mehr.",
   "customFieldInvalidNumber": "Gib eine Zahl ein",
-  "customFieldsProjectPageHint": "Deine eigenen Felder – hinzufügen oder ändern unter Einstellungen > Spalten & Felder."
+  "customFieldsProjectPageHint": "Deine eigenen Felder – hinzufügen oder ändern unter Einstellungen > Spalten & Felder.",
+  "midiPianoRollOpen": "Piano-Roll öffnen",
+  "midiPianoRollZoomIn": "Vergrößern",
+  "midiPianoRollZoomOut": "Verkleinern",
+  "midiPianoRollFit": "An Fenster anpassen",
+  "midiPianoRollFollow": "Wiedergabe folgen"
 }

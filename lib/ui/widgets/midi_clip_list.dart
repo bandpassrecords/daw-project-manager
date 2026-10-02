@@ -23,6 +23,7 @@ class MidiClipListLabels {
     this.addToCollection = '',
     this.removeFromCollection = '',
     this.more = '',
+    this.openPianoRoll = '',
   });
 
   final String play;
@@ -50,6 +51,9 @@ class MidiClipListLabels {
 
   /// Tooltip on the compact layout's overflow menu.
   final String more;
+
+  /// Tooltip on the thumbnail when tapping it opens the piano roll.
+  final String openPianoRoll;
 }
 
 /// A list of MIDI clips: per clip a piano-roll thumbnail, its name, length
@@ -80,6 +84,7 @@ class MidiClipList extends StatefulWidget {
     this.onSave,
     this.onAddToCollection,
     this.onRemove,
+    this.onOpen,
     this.playingIndex,
     this.preparingIndex,
     this.dragHandleBuilder,
@@ -109,6 +114,10 @@ class MidiClipList extends StatefulWidget {
 
   /// Null hides "Remove from collection".
   final void Function(int index)? onRemove;
+
+  /// Opens clip [index] in a large piano roll; the thumbnail becomes the way
+  /// in. Null leaves the thumbnail inert.
+  final void Function(int index)? onOpen;
 
   /// The voice clip [index] plays with (inferred or picked).
   final SynthVoice Function(int index) voiceOf;
@@ -301,13 +310,16 @@ class _MidiClipListState extends State<MidiClipList> {
                 ),
               ),
             ),
-          MidiClipThumbnail(
-            clip: clip,
-            width: compact ? 44 : 72,
-            height: compact ? 28 : 32,
-            color: playing
-                ? theme.colorScheme.secondary
-                : theme.colorScheme.primary,
+          _openable(
+            index,
+            MidiClipThumbnail(
+              clip: clip,
+              width: compact ? 44 : 72,
+              height: compact ? 28 : 32,
+              color: playing
+                  ? theme.colorScheme.secondary
+                  : theme.colorScheme.primary,
+            ),
           ),
           SizedBox(width: compact ? 8 : 12),
           Expanded(
@@ -382,6 +394,19 @@ class _MidiClipListState extends State<MidiClipList> {
     );
   }
 
+  Widget _openable(int index, Widget thumbnail) {
+    final onOpen = widget.onOpen;
+    if (onOpen == null) return thumbnail;
+    return Tooltip(
+      message: widget.labels.openPianoRoll,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(4),
+        onTap: () => onOpen(index),
+        child: thumbnail,
+      ),
+    );
+  }
+
   /// Phones: instrument, collection, share and save behind one button.
   Widget _overflowMenu(BuildContext context, int index) {
     final labels = widget.labels;
@@ -409,9 +434,16 @@ class _MidiClipListState extends State<MidiClipList> {
               widget.onRemove?.call(index);
             case _RowAction.save:
               widget.onSave?.call(index);
+            case _RowAction.open:
+              widget.onOpen?.call(index);
           }
         },
         itemBuilder: (context) => [
+          if (widget.onOpen != null)
+            PopupMenuItem(
+              value: _RowAction.open,
+              child: Text(labels.openPianoRoll),
+            ),
           PopupMenuItem(
             value: _RowAction.instrument,
             child: Text(
@@ -437,7 +469,7 @@ class _MidiClipListState extends State<MidiClipList> {
   }
 }
 
-enum _RowAction { instrument, share, add, remove, save }
+enum _RowAction { open, instrument, share, add, remove, save }
 
 Rect? _rectOf(BuildContext context) {
   final box = context.findRenderObject();

@@ -21,6 +21,7 @@ import '../../utils/mobile_utils.dart';
 import '../midi_clip_share.dart';
 import '../midi_collection_actions.dart';
 import 'midi_clip_list.dart';
+import '../midi_piano_roll_dialog.dart';
 import '../midi_preview_player.dart';
 import 'midi_tempo_control.dart';
 
@@ -432,6 +433,19 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
             onShare: _share,
             onSave: isMobile ? null : _save,
             compact: isMobile,
+            onOpen: (index) {
+              final clip = _clips[index];
+              showMidiPianoRoll(
+                context,
+                clip: clip,
+                title: clip.label,
+                subtitle: widget.project.displayName,
+                player: _player,
+                playerKey: clip.contentKey,
+                bpm: _tempo,
+                onTogglePlay: () => _togglePlay(index),
+              );
+            },
             onAddToCollection: (index, origin) => addToCollectionFlow(
               context,
               ref,
@@ -498,6 +512,7 @@ MidiClipListLabels midiClipListLabelsOf(AppLocalizations l10n) =>
       addToCollection: l10n.midiCollectionAddTo,
       removeFromCollection: l10n.midiCollectionRemoveFrom,
       more: l10n.midiClipMoreActions,
+      openPianoRoll: l10n.midiPianoRollOpen,
     );
 
 String synthVoiceName(AppLocalizations l10n, SynthVoice v) => switch (v) {

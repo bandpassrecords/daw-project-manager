@@ -19,6 +19,7 @@ import '../utils/mobile_utils.dart';
 import '../utils/search_utils.dart';
 import 'midi_clip_share.dart';
 import 'midi_collection_actions.dart';
+import 'midi_piano_roll_dialog.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_clip_list.dart';
 import 'widgets/midi_clips_section.dart' show midiClipListLabelsOf, midiTempoLabelsOf, synthVoiceName;
@@ -417,6 +418,19 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       playingIndex: indexOfKey(_player.playingKey),
       preparingIndex: indexOfKey(_player.preparingKey),
       onPlay: (i) => _play(entries[i]),
+      onOpen: (i) {
+        final e = entries[i];
+        showMidiPianoRoll(
+          context,
+          clip: e.clip,
+          title: e.clip.label,
+          subtitle: e.projectName,
+          player: _player,
+          playerKey: e.key,
+          bpm: _bpmOf(e),
+          onTogglePlay: () => _play(e),
+        );
+      },
       onShare: (i, origin) => _share(entries[i], origin),
       onSave: isMobile ? null : (i) => _save(entries[i]),
       voiceOf: (i) => entries[i].voice,
