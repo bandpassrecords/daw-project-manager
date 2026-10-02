@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:daw_project_manager/providers/providers.dart';
 import 'package:daw_project_manager/services/player_volume_store.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
+import 'package:daw_project_manager/ui/widgets/midi_loop_toggle.dart';
 import 'package:daw_project_manager/ui/widgets/midi_volume_control.dart';
 
 const _labels = MidiVolumeLabels(volume: 'Volume', mute: 'Mute', unmute: 'Unmute');
@@ -65,6 +66,66 @@ void main() {
       await tester.sendEventToBinding(pointer.scroll(const Offset(0, -100)));
       await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
       expect(changes.single, closeTo(0.55, 1e-9));
+    });
+  });
+
+  group('midiPreviewLoopProvider', () {
+    test('starts at the remembered setting and follows set', () {
+      MidiPreviewLoopStore.cachedForTest = true;
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      expect(container.read(midiPreviewLoopProvider), isTrue);
+      container.read(midiPreviewLoopProvider.notifier).set(false);
+      expect(container.read(midiPreviewLoopProvider), isFalse);
+      MidiPreviewLoopStore.cachedForTest = false;
+    });
+  });
+
+  group('MidiLoopToggle', () {
+    testWidgets('shows the setting and flips it', (tester) async {
+      final changes = <bool>[];
+      Widget wrap(bool loop) => MaterialApp(
+            home: Scaffold(
+              body: MidiLoopToggle(
+                  loop: loop, onChanged: changes.add, tooltip: 'Loop'),
+            ),
+          );
+      await tester.pumpWidget(wrap(false));
+      expect(tester.widget<IconButton>(find.byType(IconButton)).isSelected,
+          isFalse);
+      await tester.tap(find.byTooltip('Loop'));
+      await tester.pumpWidget(wrap(true));
+      expect(tester.widget<IconButton>(find.byType(IconButton)).isSelected,
+          isTrue);
+      await tester.tap(find.byTooltip('Loop'));
+      expect(changes, [true, false]);
+    });
+  });
+
+  group('MidiPreviewPlayer loop', () {
+    test('switching it with nothing playing just changes the setting', () async {
+      final player = MidiPreviewPlayer();
+      addTearDown(player.dispose);
+      var notified = 0;
+      player.addListener(() => notified++);
+      await player.setLoop(true);
+      expect(player.loop, isTrue);
+      expect(player.playingKey, isNull);
+      expect(player.preparingKey, isNull, reason: 'nothing was started');
+      expect(notified, 1);
+      await player.setLoop(true);
+      expect(notified, 1, reason: 'no change, no notification');
+    });
+
+    test('a looping position wraps round each pass', () {
+      const pass = Duration(seconds: 2);
+      expect(wrapLoopPosition(const Duration(milliseconds: 2500), pass),
+          const Duration(milliseconds: 500));
+      expect(wrapLoopPosition(const Duration(seconds: 4), pass), Duration.zero);
+      expect(wrapLoopPosition(const Duration(milliseconds: 2500), null),
+          const Duration(milliseconds: 2500), reason: 'not looping');
+      expect(wrapLoopPosition(const Duration(seconds: 1), Duration.zero),
+          const Duration(seconds: 1));
     });
   });
 

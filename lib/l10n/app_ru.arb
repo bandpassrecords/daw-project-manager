@@ -4025,5 +4025,6 @@
   "midiLibraryTempoUnknown": "Темп неизвестен",
   "midiImportFiles": "Импортировать MIDI-файлы",
   "midiImportDialogTitle": "Выберите MIDI-файлы для импорта",
-  "midiImportSkipped": "Не импортировано (не MIDI-файл или в нём нет нот): {files}"
+  "midiImportSkipped": "Не импортировано (не MIDI-файл или в нём нет нот): {files}",
+  "midiPreviewLoop": "Воспроизведение по кругу"
 }

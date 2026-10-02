@@ -6157,4 +6157,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String midiImportSkipped(String files) {
     return '未导入（不是 MIDI 文件或其中没有音符）：$files';
   }
+
+  @override
+  String get midiPreviewLoop => '循环播放';
 }

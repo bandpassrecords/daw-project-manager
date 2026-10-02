@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../models/midi_clip.dart';
 import '../services/midi/midi_clip_service.dart';
+import '../services/midi/midi_clip_synth.dart';
 import '../services/midi/synth_voice.dart';
 
 /// Plays MIDI clip previews — renders through the built-in synth, then plays
@@ -53,6 +54,44 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// pauses; list rows play and stop.
   bool paused = false;
 
+  /// Whether previews play on repeat until stopped. Set with [setLoop].
+  bool loop = false;
+
+  /// What [play] was last asked to play, so [setLoop] can carry on with it.
+  (String, MidiClip, double?, SynthVoice)? _current;
+
+  /// One pass of the playing preview, when it is looping; null otherwise.
+  Duration? _loopLength;
+
+  /// [setLoop] was changed while paused: the audio is switched on resume.
+  bool _loopChangedWhilePaused = false;
+
+  /// Turns looping on or off — live: a clip that is playing carries on from
+  /// where it is, re-rendered as a seamless loop or as a single pass.
+  Future<void> setLoop(bool value) async {
+    if (loop == value) return;
+    loop = value;
+    _notify();
+    final current = _current;
+    // A clip still rendering is restarted too, or it would start in the
+    // mode that was just switched away from.
+    final key = playingKey ?? preparingKey;
+    if (key == null || current == null || current.$1 != key) return;
+    if (paused) {
+      _loopChangedWhilePaused = true;
+      return;
+    }
+    await _restartFrom(positionOf(key) ?? Duration.zero);
+  }
+
+  Future<void> _restartFrom(Duration position) async {
+    final current = _current;
+    if (current == null) return;
+    final (key, clip, bpm, voice) = current;
+    startAt(key, position);
+    await play(key, clip, bpm: bpm, voice: voice);
+  }
+
   /// Where the next [play] of a clip should start, set by [startAt].
   (String, Duration)? _startAt;
 
@@ -71,7 +110,8 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// nothing when [key] isn't the clip playing.
   Future<void> seek(String key, Duration position) async {
     if (playingKey != key) return;
-    final to = position.isNegative ? Duration.zero : position;
+    final to = wrapLoopPosition(
+        position.isNegative ? Duration.zero : position, _loopLength);
     // Set before the player answers, so the playhead is there on the next
     // frame rather than gliding on from the old position first.
     _lastPosition = to;
@@ -92,8 +132,19 @@ class MidiPreviewPlayer extends ChangeNotifier {
   Future<void> play(String key, MidiClip clip,
       {double? bpm, required SynthVoice voice}) async {
     final generation = ++_generation;
-    final startAt = pendingStartFor(key);
+    final looping = loop;
+    final loopLength = looping
+        ? Duration(
+            microseconds:
+                (const MidiClipSynth().loopSeconds(clip, bpm ?? 120) * 1e6)
+                    .round())
+        : null;
+    final requested = pendingStartFor(key);
+    final startAt =
+        requested == null ? null : wrapLoopPosition(requested, loopLength);
     _startAt = null;
+    _current = (key, clip, bpm, voice);
+    _loopChangedWhilePaused = false;
     preparingKey = key;
     paused = false;
     _notify();
@@ -102,6 +153,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
         clip,
         bpm: bpm,
         voice: voice,
+        loop: looping,
         directory: await _previewDir(),
       );
       if (generation != _generation || _disposed) return;
@@ -117,6 +169,9 @@ class MidiPreviewPlayer extends ChangeNotifier {
       });
       await player.stop();
       await player.setVolume(volume);
+      await player
+          .setReleaseMode(looping ? ReleaseMode.loop : ReleaseMode.stop);
+      _loopLength = loopLength;
       _lastPosition = Duration.zero;
       _lastPositionAt = DateTime.now();
       await player.play(DeviceFileSource(path));
@@ -139,8 +194,11 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// frozen while paused.
   Duration? positionOf(String key) {
     if (playingKey != key) return null;
-    if (paused) return _lastPosition;
-    return extrapolatePosition(_lastPosition, _lastPositionAt, DateTime.now());
+    if (paused) return wrapLoopPosition(_lastPosition, _loopLength);
+    return wrapLoopPosition(
+      extrapolatePosition(_lastPosition, _lastPositionAt, DateTime.now()),
+      _loopLength,
+    );
   }
 
   /// Pauses the playing clip where it is.
@@ -156,6 +214,12 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// Carries on from where [pause] left off.
   Future<void> resume() async {
     if (playingKey == null || !paused) return;
+    if (_loopChangedWhilePaused) {
+      // Looping was switched while paused: carry on in the new mode.
+      _loopChangedWhilePaused = false;
+      await _restartFrom(_lastPosition);
+      return;
+    }
     paused = false;
     _lastPositionAt = DateTime.now();
     _notify();
@@ -189,6 +253,15 @@ class MidiPreviewPlayer extends ChangeNotifier {
     _player?.dispose();
     super.dispose();
   }
+}
+
+/// [position] within one pass of a loop [length] long — where a looping
+/// preview really is. Unchanged when not looping ([length] null or zero).
+@visibleForTesting
+Duration wrapLoopPosition(Duration position, Duration? length) {
+  if (length == null || length <= Duration.zero) return position;
+  return Duration(
+      microseconds: position.inMicroseconds % length.inMicroseconds);
 }
 
 /// The playback position at [now], given the player last reported

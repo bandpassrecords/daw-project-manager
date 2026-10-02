@@ -6426,4 +6426,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String midiImportSkipped(String files) {
     return 'Nicht importiert (keine MIDI-Datei oder keine Noten darin): $files';
   }
+
+  @override
+  String get midiPreviewLoop => 'Wiedergabe in Schleife';
 }

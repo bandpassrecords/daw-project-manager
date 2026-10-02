@@ -6457,4 +6457,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String midiImportSkipped(String files) {
     return 'Non importé (pas un fichier MIDI, ou aucune note) : $files';
   }
+
+  @override
+  String get midiPreviewLoop => 'Lecture en boucle';
 }

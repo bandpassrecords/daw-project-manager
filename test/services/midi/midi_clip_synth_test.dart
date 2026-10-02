@@ -160,6 +160,51 @@ void main() {
     });
   });
 
+  group('loop', () {
+    // One 4/4 bar at 480 PPQ, 120 BPM: exactly 2 seconds.
+    MidiClip bar(List<MidiNote> notes) =>
+        MidiClip(name: 'x', ppq: 480, lengthTicks: 1920, notes: notes);
+
+    test('loopSeconds is one pass of the clip, with no tail', () {
+      expect(synth.loopSeconds(bar(const []), 120), 2.0);
+      expect(synth.loopSeconds(bar(const []), 60), 4.0);
+      const capped = MidiClipSynth(sampleRate: 8000, maxSeconds: 3);
+      expect(capped.loopSeconds(bar(const []), 30), 3.0);
+    });
+
+    test('a loop render is exactly one pass long', () {
+      final clip = bar(const [
+        MidiNote(startTick: 0, lengthTicks: 480, pitch: 60, velocity: 100),
+      ]);
+      expect(_samples(synth.renderWav(clip, bpm: 120, loop: true)).length,
+          2 * 8000);
+      expect(_samples(synth.renderWav(clip, bpm: 120)).length,
+          greaterThan(2 * 8000), reason: 'a single pass keeps its tail');
+    });
+
+    test('the tail ringing past the end comes round to the start', () {
+      // A long note right at the end, with a pad's long release.
+      final clip = bar(const [
+        MidiNote(startTick: 1440, lengthTicks: 480, pitch: 60, velocity: 127),
+      ]);
+      final once =
+          _samples(synth.renderWav(clip, bpm: 120, voice: SynthVoice.pad));
+      final looped = _samples(
+          synth.renderWav(clip, bpm: 120, voice: SynthVoice.pad, loop: true));
+      int peak(Int16List s, int from, int to) {
+        var p = 0;
+        for (var i = from; i < to; i++) {
+          if (s[i].abs() > p) p = s[i].abs();
+        }
+        return p;
+      }
+
+      expect(peak(once, 0, 2000), 0, reason: 'nothing plays at the start');
+      expect(peak(looped, 0, 2000), greaterThan(0),
+          reason: 'the release wraps into the next pass');
+    });
+  });
+
   test('a very long clip is capped instead of allocating minutes of audio', () {
     const capped = MidiClipSynth(sampleRate: 8000, maxSeconds: 3);
     final clip = _clip(const [

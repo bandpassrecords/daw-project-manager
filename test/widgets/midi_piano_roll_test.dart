@@ -433,6 +433,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Bass – Riff'), findsOneWidget);
       expect(find.byType(Slider), findsWidgets, reason: 'the volume control');
+      expect(find.byTooltip('Loop playback'), findsOneWidget,
+          reason: 'the loop toggle, beside the volume');
       expect(find.text('Night Drive'), findsOneWidget);
       expect(find.text('Velocity'), findsOneWidget,
           reason: 'the lane picker, named through the app\'s strings');

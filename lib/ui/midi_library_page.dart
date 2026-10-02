@@ -25,6 +25,7 @@ import 'midi_preview_player.dart';
 import 'widgets/midi_clip_list.dart';
 import 'widgets/midi_clips_section.dart'
     show midiClipListLabelsOf, midiTempoLabelsOf, midiVolumeLabelsOf, synthVoiceName;
+import 'widgets/midi_loop_toggle.dart';
 import 'widgets/midi_volume_control.dart';
 import 'widgets/midi_tempo_control.dart';
 
@@ -101,6 +102,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     super.initState();
     _player.addListener(_onPlayer);
     _player.volume = ref.read(midiPreviewVolumeProvider);
+    _player.loop = ref.read(midiPreviewLoopProvider);
     // A request made before this tab was built (the Open action switched to
     // it) is waiting in the provider.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -366,6 +368,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       if (next != null) _showRequested(next);
     });
     ref.listen<double>(midiPreviewVolumeProvider, (_, v) => _player.setVolume(v));
+    ref.listen<bool>(midiPreviewLoopProvider, (_, v) => _player.setLoop(v));
     final libraryAsync = ref.watch(midiLibraryProvider);
     final collections = ref.watch(midiCollectionsProvider).value ?? const [];
     final query = ref.watch(midiLibrarySearchProvider);
@@ -467,10 +470,20 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
           resetTooltip: l10n.midiTempoResetAuto,
           labels: midiTempoLabelsOf(l10n),
         ),
-        MidiVolumeControl(
-          volume: ref.watch(midiPreviewVolumeProvider),
-          onChanged: ref.read(midiPreviewVolumeProvider.notifier).set,
-          labels: midiVolumeLabelsOf(l10n),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            MidiLoopToggle(
+              loop: ref.watch(midiPreviewLoopProvider),
+              onChanged: ref.read(midiPreviewLoopProvider.notifier).set,
+              tooltip: l10n.midiPreviewLoop,
+            ),
+            MidiVolumeControl(
+              volume: ref.watch(midiPreviewVolumeProvider),
+              onChanged: ref.read(midiPreviewVolumeProvider.notifier).set,
+              labels: midiVolumeLabelsOf(l10n),
+            ),
+          ],
         ),
       ],
     );

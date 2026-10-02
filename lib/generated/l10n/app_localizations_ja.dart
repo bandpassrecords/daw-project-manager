@@ -6227,4 +6227,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String midiImportSkipped(String files) {
     return '読み込めませんでした (MIDI ファイルではないか、ノートがありません): $files';
   }
+
+  @override
+  String get midiPreviewLoop => 'ループ再生';
 }
