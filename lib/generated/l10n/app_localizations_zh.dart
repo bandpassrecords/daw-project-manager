@@ -6018,17 +6018,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiPianoRollPause => '暂停';
 
   @override
-  String get midiClipCopy => '复制为 MIDI 文件';
-
-  @override
-  String midiClipCopied(String fileName) {
-    return '已复制 $fileName。可粘贴到文件夹、聊天或支持粘贴文件的 DAW 中。';
-  }
-
-  @override
-  String get midiClipCopyUnavailable => '此处无法复制文件。';
-
-  @override
   String get midiOpenSourceProject => '打开项目';
 
   @override

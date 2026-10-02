@@ -10415,24 +10415,6 @@ abstract class AppLocalizations {
   /// **'Pause'**
   String get midiPianoRollPause;
 
-  /// Copies a MIDI clip to the clipboard as a .mid file
-  ///
-  /// In en, this message translates to:
-  /// **'Copy as MIDI file'**
-  String get midiClipCopy;
-
-  /// Snackbar after copying a MIDI clip to the clipboard as a file
-  ///
-  /// In en, this message translates to:
-  /// **'Copied {fileName}. Paste it into a folder, a chat, or a DAW that accepts pasted files.'**
-  String midiClipCopied(String fileName);
-
-  /// Snackbar when the system clipboard cannot hold files on this device
-  ///
-  /// In en, this message translates to:
-  /// **'Copying files isn\'t available here.'**
-  String get midiClipCopyUnavailable;
-
   /// Opens the detail page of the project a MIDI clip came from
   ///
   /// In en, this message translates to:

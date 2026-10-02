@@ -15,10 +15,10 @@ import 'widgets/midi_volume_control.dart';
 /// Starting playback is the caller's own [onPlay] — the same function the
 /// clip row's play button calls — so the instrument, tempo and error
 /// handling are exactly what the list uses; pause, resume and stop go to
-/// [player] directly. Space plays and pauses, Ctrl/Cmd+C copies.
+/// [player] directly. Space plays and pauses.
 ///
-/// [onCopy] and [onOpenProject] add their buttons when given. Opening the
-/// project closes this window and stops the preview first.
+/// [onOpenProject] adds its button when given. Opening the project closes
+/// this window and stops the preview first.
 Future<void> showMidiPianoRoll(
   BuildContext context, {
   required MidiClip clip,
@@ -28,7 +28,6 @@ Future<void> showMidiPianoRoll(
   required String playerKey,
   required double bpm,
   required VoidCallback onPlay,
-  VoidCallback? onCopy,
   VoidCallback? onOpenProject,
 }) {
   final l10n = AppLocalizations.of(context)!;
@@ -40,7 +39,6 @@ Future<void> showMidiPianoRoll(
     playerKey: playerKey,
     bpm: bpm,
     onPlay: onPlay,
-    onCopy: onCopy,
     onOpenProject: onOpenProject,
     labels: MidiPianoRollWindowLabels(
       roll: MidiPianoRollLabels(
@@ -53,7 +51,6 @@ Future<void> showMidiPianoRoll(
       play: l10n.midiClipPlay,
       pause: l10n.midiPianoRollPause,
       stop: l10n.midiClipStop,
-      copy: l10n.midiClipCopy,
       openProject: l10n.midiOpenSourceProject,
     ),
   );
@@ -101,12 +98,11 @@ class MidiPianoRollWindowLabels {
     required this.play,
     required this.pause,
     required this.stop,
-    required this.copy,
     required this.openProject,
   });
 
   final MidiPianoRollLabels roll;
-  final String close, play, pause, stop, copy, openProject;
+  final String close, play, pause, stop, openProject;
 }
 
 /// The contents of [showMidiPianoRoll]'s window — public so it can be tested
@@ -122,7 +118,6 @@ class MidiPianoRollWindow extends StatelessWidget {
     required this.bpm,
     required this.onPlay,
     required this.labels,
-    this.onCopy,
     this.onOpenProject,
     this.volume,
     this.onVolumeChanged,
@@ -145,7 +140,6 @@ class MidiPianoRollWindow extends StatelessWidget {
         bpm: base.bpm,
         onPlay: base.onPlay,
         labels: base.labels,
-        onCopy: base.onCopy,
         onOpenProject: base.onOpenProject,
         volume: volume,
         onVolumeChanged: onVolumeChanged,
@@ -165,7 +159,6 @@ class MidiPianoRollWindow extends StatelessWidget {
   final String playerKey;
   final double bpm;
   final VoidCallback onPlay;
-  final VoidCallback? onCopy;
   final VoidCallback? onOpenProject;
   final MidiPianoRollWindowLabels labels;
 
@@ -188,10 +181,6 @@ class MidiPianoRollWindow extends StatelessWidget {
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.space): _playPause,
-        if (onCopy != null) ...{
-          const SingleActivator(LogicalKeyboardKey.keyC, control: true): onCopy!,
-          const SingleActivator(LogicalKeyboardKey.keyC, meta: true): onCopy!,
-        },
       },
       // Autofocus so Space works the moment the window opens, before anything
       // inside it has been clicked.
@@ -266,12 +255,6 @@ class MidiPianoRollWindow extends StatelessWidget {
                       onChanged: onVolumeChanged!,
                       labels: volumeLabels!,
                       sliderWidth: 90,
-                    ),
-                  if (onCopy != null)
-                    IconButton(
-                      tooltip: labels.copy,
-                      icon: const Icon(Icons.copy),
-                      onPressed: onCopy,
                     ),
                   if (onOpenProject != null)
                     IconButton(

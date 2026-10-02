@@ -24,7 +24,6 @@ const _labels = MidiPianoRollWindowLabels(
   play: 'Play',
   pause: 'Pause',
   stop: 'Stop',
-  copy: 'Copy',
   openProject: 'Open project',
 );
 
@@ -60,11 +59,11 @@ void main() {
 
   group('MidiPianoRollWindow', () {
     late MidiPreviewPlayer player;
-    late int plays, copies, opens;
+    late int plays, opens;
 
     setUp(() {
       player = MidiPreviewPlayer();
-      plays = copies = opens = 0;
+      plays = opens = 0;
     });
 
     tearDown(() => player.dispose());
@@ -88,7 +87,6 @@ void main() {
                         bpm: 120,
                         labels: _labels,
                         onPlay: () => plays++,
-                        onCopy: withActions ? () => copies++ : null,
                         onOpenProject: withActions ? () => opens++ : null,
                       ),
                     ),
@@ -137,15 +135,6 @@ void main() {
       expect(player.playingKey, isNull);
     });
 
-    testWidgets('Ctrl+C and the button copy', (tester) async {
-      await open(tester);
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
-      await tester.sendKeyEvent(LogicalKeyboardKey.keyC);
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
-      await tester.tap(find.byTooltip('Copy'));
-      expect(copies, 2);
-    });
-
     testWidgets('open project closes the window first', (tester) async {
       await open(tester);
       await tester.tap(find.byTooltip('Open project'));
@@ -154,9 +143,8 @@ void main() {
       expect(find.byType(MidiPianoRollWindow), findsNothing);
     });
 
-    testWidgets('copy and open project are hidden when not offered', (tester) async {
+    testWidgets('open project is hidden when not offered', (tester) async {
       await open(tester, withActions: false);
-      expect(find.byTooltip('Copy'), findsNothing);
       expect(find.byTooltip('Open project'), findsNothing);
     });
   });

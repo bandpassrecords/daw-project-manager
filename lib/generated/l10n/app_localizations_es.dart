@@ -6299,18 +6299,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get midiPianoRollPause => 'Pausa';
 
   @override
-  String get midiClipCopy => 'Copiar como archivo MIDI';
-
-  @override
-  String midiClipCopied(String fileName) {
-    return '$fileName copiado. Pégalo en una carpeta, un chat o una DAW que acepte archivos pegados.';
-  }
-
-  @override
-  String get midiClipCopyUnavailable =>
-      'Copiar archivos no está disponible aquí.';
-
-  @override
   String get midiOpenSourceProject => 'Abrir proyecto';
 
   @override

@@ -24,7 +24,6 @@ class MidiClipListLabels {
     this.removeFromCollection = '',
     this.more = '',
     this.openPianoRoll = '',
-    this.copy = '',
     this.openProject = '',
   });
 
@@ -56,7 +55,6 @@ class MidiClipListLabels {
 
   /// Tooltip on the thumbnail when tapping it opens the piano roll.
   final String openPianoRoll;
-  final String copy;
   final String openProject;
 }
 
@@ -89,7 +87,6 @@ class MidiClipList extends StatefulWidget {
     this.onAddToCollection,
     this.onRemove,
     this.onOpen,
-    this.onCopy,
     this.onOpenProject,
     this.playingIndex,
     this.preparingIndex,
@@ -124,9 +121,6 @@ class MidiClipList extends StatefulWidget {
   /// Opens clip [index] in a large piano roll; the thumbnail becomes the way
   /// in. Null leaves the thumbnail inert.
   final void Function(int index)? onOpen;
-
-  /// Copies clip [index] to the clipboard as a `.mid` file. Null hides it.
-  final void Function(int index)? onCopy;
 
   /// Opens the project clip [index] came from. Null hides it — on that
   /// project's own page there is nowhere to go.
@@ -395,12 +389,6 @@ class _MidiClipListState extends State<MidiClipList> {
                 onPressed: () => widget.onShare(index, _rectOf(buttonContext)),
               ),
             ),
-            if (widget.onCopy != null)
-              IconButton(
-                tooltip: labels.copy,
-                icon: const Icon(Icons.copy),
-                onPressed: () => widget.onCopy!(index),
-              ),
             if (widget.onOpenProject != null)
               IconButton(
                 tooltip: labels.openProject,
@@ -461,8 +449,6 @@ class _MidiClipListState extends State<MidiClipList> {
               widget.onSave?.call(index);
             case _RowAction.open:
               widget.onOpen?.call(index);
-            case _RowAction.copy:
-              widget.onCopy?.call(index);
             case _RowAction.openProject:
               widget.onOpenProject?.call(index);
           }
@@ -480,8 +466,6 @@ class _MidiClipListState extends State<MidiClipList> {
             ),
           ),
           PopupMenuItem(value: _RowAction.share, child: Text(labels.share)),
-          if (widget.onCopy != null)
-            PopupMenuItem(value: _RowAction.copy, child: Text(labels.copy)),
           if (widget.onOpenProject != null)
             PopupMenuItem(
               value: _RowAction.openProject,
@@ -505,7 +489,7 @@ class _MidiClipListState extends State<MidiClipList> {
   }
 }
 
-enum _RowAction { open, instrument, share, copy, openProject, add, remove, save }
+enum _RowAction { open, instrument, share, openProject, add, remove, save }
 
 Rect? _rectOf(BuildContext context) {
   final box = context.findRenderObject();

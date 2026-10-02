@@ -6272,17 +6272,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get midiPianoRollPause => 'Пауза';
 
   @override
-  String get midiClipCopy => 'Копировать как MIDI-файл';
-
-  @override
-  String midiClipCopied(String fileName) {
-    return '$fileName скопирован. Вставьте его в папку, чат или DAW, которая принимает вставленные файлы.';
-  }
-
-  @override
-  String get midiClipCopyUnavailable => 'Копирование файлов здесь недоступно.';
-
-  @override
   String get midiOpenSourceProject => 'Открыть проект';
 
   @override

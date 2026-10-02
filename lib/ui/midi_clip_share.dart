@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:super_clipboard/super_clipboard.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../models/midi_clip.dart';
 import '../services/midi/midi_clip_service.dart';
-import '../services/midi/midi_file_writer.dart';
 import '../utils/file_launcher.dart';
 
 /// Whether to try the OS share sheet for files on this platform. Mobile,
@@ -150,29 +148,5 @@ Rect? shareOriginOf(BuildContext context) {
   final box = context.findRenderObject();
   if (box is! RenderBox || !box.hasSize) return null;
   return box.localToGlobal(Offset.zero) & box.size;
-}
-
-/// Puts [clip] on the system clipboard as a `.mid` *file*, the way Ctrl+C on
-/// a file in Explorer or Finder does.
-///
-/// There is no clipboard format DAWs share for MIDI notes — each keeps its
-/// own private one — so a file is the most a clipboard can carry. It pastes
-/// into folders, chat apps and DAWs that accept pasted files; dragging the
-/// clip remains the dependable way into the rest. Returns false where there
-/// is no system clipboard to write to.
-Future<bool> copyMidiClipToClipboard(MidiClip clip, {double? bpm}) async {
-  final clipboard = SystemClipboard.instance;
-  if (clipboard == null) return false;
-  final base = await getTemporaryDirectory();
-  // A folder per copy: whatever pasted the last one may still read it.
-  final dir = Directory(p.join(base.path, 'daw_project_manager', 'midi_copy',
-      DateTime.now().microsecondsSinceEpoch.toString()));
-  await dir.create(recursive: true);
-  final path = p.join(dir.path, midiClipFileName(clip));
-  await MidiClipService.writeMidiFile(clip, path, bpm: bpm);
-  final item = DataWriterItem(suggestedName: p.basename(path))
-    ..add(Formats.fileUri(Uri.file(path)));
-  await clipboard.write([item]);
-  return true;
 }
 

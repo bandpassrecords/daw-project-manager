@@ -28,7 +28,6 @@ void main() {
     removeFromCollection: 'Remove',
     more: 'More',
     openPianoRoll: 'Open piano roll',
-    copy: 'Copy',
     openProject: 'Open project',
   );
 
@@ -52,11 +51,9 @@ void main() {
   late List<int> added;
   late List<int> removed;
   late List<int> opened;
-  late List<int> copied;
   late List<int> projectsOpened;
 
   setUp(() {
-    copied = [];
     projectsOpened = [];
     opened = [];
     added = [];
@@ -103,7 +100,6 @@ void main() {
                   collectionActions ? (i, _) => added.add(i) : null,
               onRemove: collectionActions ? removed.add : null,
               onOpen: openable ? opened.add : null,
-              onCopy: projectActions ? copied.add : null,
               onOpenProject: projectActions ? projectsOpened.add : null,
               expandAllUpTo: expandAllUpTo,
               dragHandleBuilder: draggable
@@ -346,15 +342,16 @@ void main() {
     expect(opened, [0]);
   });
 
-  testWidgets('copy and open project report the clip', (tester) async {
+  testWidgets('open project reports the clip, and there is no copy', (tester) async {
     await tester.pumpWidget(wrap([clip('A'), clip('B')], projectActions: true));
-    await tester.tap(find.byTooltip('Copy').last);
-    await tester.tap(find.byTooltip('Open project').first);
-    expect(copied, [1]);
-    expect(projectsOpened, [0]);
+    await tester.tap(find.byTooltip('Open project').last);
+    expect(projectsOpened, [1]);
+    // Copying a clip as a .mid file was dropped: too few DAWs accept a
+    // pasted file. Dragging and sharing are the ways out.
+    expect(find.byTooltip('Copy'), findsNothing);
   });
 
-  testWidgets('compact rows offer copy and open project in More', (tester) async {
+  testWidgets('compact rows offer open project in More', (tester) async {
     await tester.pumpWidget(wrap([clip('A')], compact: true, projectActions: true));
     await tester.tap(find.byTooltip('More'));
     await tester.pumpAndSettle();

@@ -158,18 +158,6 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     }
   }
 
-  Future<void> _copy(_Entry e) async {
-    final l10n = AppLocalizations.of(context)!;
-    try {
-      final ok = await copyMidiClipToClipboard(e.clip, bpm: _bpmOf(e));
-      _snack(ok
-          ? l10n.midiClipCopied(midiClipFileName(e.clip))
-          : l10n.midiClipCopyUnavailable);
-    } catch (err) {
-      _snack(l10n.midiClipSaveFailed(err.toString()));
-    }
-  }
-
   /// Opens the project [e] came from — gone for a collection copy whose
   /// project has since been deleted, which is said rather than failed.
   void _openProject(_Entry e) {
@@ -482,7 +470,6 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       playingIndex: indexOfKey(_player.playingKey),
       preparingIndex: indexOfKey(_player.preparingKey),
       onPlay: (i) => _play(entries[i]),
-      onCopy: isMobile ? null : (i) => _copy(entries[i]),
       onOpenProject: (i) => _openProject(entries[i]),
       onOpen: (i) {
         final e = entries[i];
@@ -495,7 +482,6 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
           playerKey: e.key,
           bpm: _bpmOf(e),
           onPlay: () => _play(e),
-          onCopy: MobileUtils.isMobile() ? null : () => _copy(e),
           onOpenProject: e.projectId == null ? null : () => _openProject(e),
         );
       },

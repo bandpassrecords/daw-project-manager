@@ -106,9 +106,6 @@ dependencies:
   fl_chart: ^1.2.0
   windows_taskbar: ^1.1.2
   super_drag_and_drop: ^0.9.1
-  # Already compiled in through super_drag_and_drop; listed directly for
-  # SystemClipboard (copying a clip as a .mid file).
-  super_clipboard: ^0.9.1
   win32: ^5.15.0
   ffi: ^2.1.4
   launch_at_startup: ^0.5.1
