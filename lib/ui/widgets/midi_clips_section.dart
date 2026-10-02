@@ -440,7 +440,10 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
                   _clips[index],
                   projectId: widget.project.id,
                   projectName: widget.project.displayName,
-                  bpm: _tempo,
+                  // The project's own tempo, not an audition tempo picked on
+                  // this page — the same thing the MIDI tab saves, so a
+                  // collection clip plays at its project's BPM either way.
+                  bpm: _projectBpm,
                   pickedVoice: _voiceOverrides[_clips[index].contentKey],
                 ),
               ],
