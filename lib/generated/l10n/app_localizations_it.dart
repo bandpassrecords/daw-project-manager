@@ -6300,4 +6300,89 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get midiPreviewVolume => 'Volume dell\'anteprima';
+
+  @override
+  String get midiLanePicker => 'Parametro mostrato sotto le note';
+
+  @override
+  String get midiLaneNone => 'Nessuno';
+
+  @override
+  String get midiLaneVelocity => 'Velocity';
+
+  @override
+  String get midiLanePitchBend => 'Pitch bend';
+
+  @override
+  String get midiLaneChannelPressure => 'Aftertouch';
+
+  @override
+  String get midiLanePolyPressure => 'Aftertouch polifonico';
+
+  @override
+  String get midiLaneProgram => 'Cambio programma';
+
+  @override
+  String midiLaneController(int number) {
+    return 'CC $number';
+  }
+
+  @override
+  String midiLaneControllerNamed(int number, String name) {
+    return 'CC $number · $name';
+  }
+
+  @override
+  String get midiCcModulation => 'Modulazione';
+
+  @override
+  String get midiCcBreath => 'Fiato';
+
+  @override
+  String get midiCcFoot => 'Pedale';
+
+  @override
+  String get midiCcPortamentoTime => 'Tempo di portamento';
+
+  @override
+  String get midiCcVolume => 'Volume';
+
+  @override
+  String get midiCcBalance => 'Bilanciamento';
+
+  @override
+  String get midiCcPan => 'Pan';
+
+  @override
+  String get midiCcExpression => 'Espressione';
+
+  @override
+  String get midiCcSustain => 'Pedale sustain';
+
+  @override
+  String get midiCcPortamento => 'Portamento';
+
+  @override
+  String get midiCcSostenuto => 'Sostenuto';
+
+  @override
+  String get midiCcSoftPedal => 'Pedale soft';
+
+  @override
+  String get midiCcResonance => 'Risonanza';
+
+  @override
+  String get midiCcRelease => 'Rilascio';
+
+  @override
+  String get midiCcAttack => 'Attacco';
+
+  @override
+  String get midiCcCutoff => 'Cutoff';
+
+  @override
+  String get midiCcReverb => 'Riverbero';
+
+  @override
+  String get midiCcChorus => 'Chorus';
 }

@@ -12,6 +12,12 @@ import 'synth_voice.dart';
 /// envelope, a little detune or vibrato — and the drum voices are classic
 /// analogue-style recipes (pitched-down sine kick, noise snare and hats).
 /// Enough to hear what a part is and how it moves, not to mix with.
+///
+/// Of a clip's events it plays the ones that change how a part sounds at a
+/// glance: pitch bend (±2 semitones, the General MIDI default range), the
+/// sustain pedal (CC 64) and volume × expression (CC 7 × CC 11) taken at
+/// each note's start. Other controllers mean something different on every
+/// instrument and are left to the DAW.
 class MidiClipSynth {
   const MidiClipSynth({this.sampleRate = 44100, this.maxSeconds = 180});
 
@@ -43,18 +49,33 @@ class MidiClipSynth {
     final totalSeconds = durationSeconds(clip, tempo, voice: voice);
     final frames = math.max(1, (totalSeconds * sampleRate).ceil());
     final mix = Float64List(frames);
+    final framesPerTick = secondsPerTick * sampleRate;
+    final controls = ClipControls(clip);
+    final bendsByChannel = <int, List<(int, double)>>{};
 
     for (final note in clip.notes) {
-      final start = (note.startTick * secondsPerTick * sampleRate).round();
+      final start = (note.startTick * framesPerTick).round();
       if (start >= frames || start < 0) continue;
-      final held = math.max(
-          1, (note.lengthTicks * secondsPerTick * sampleRate).round());
+      // A note let go while the pedal is down rings until the pedal lifts.
+      final heldTicks =
+          controls.sustainedUntil(note.channel, note.endTick) - note.startTick;
+      final held = math.max(1, (heldTicks * framesPerTick).round());
       // Gentle velocity curve; headroom per voice before normalising.
-      final gain = 0.25 * math.pow(note.velocity / 127, 1.5).toDouble();
+      final gain = 0.25 *
+          math.pow(note.velocity / 127, 1.5).toDouble() *
+          controls.loudnessAt(note.channel, note.startTick);
       if (voice.isDrum) {
         _renderDrum(mix, start, _drumFor(voice, note.pitch), gain, note.pitch);
       } else {
-        _renderTone(mix, start, held, note.pitch, gain, _patches[voice]!);
+        final bends = bendsByChannel.putIfAbsent(
+          note.channel,
+          () => [
+            for (final (tick, ratio) in controls.bendRatios(note.channel))
+              ((tick * framesPerTick).round(), ratio),
+          ],
+        );
+        _renderTone(mix, start, held, note.pitch, gain, _patches[voice]!,
+            bends: bends);
       }
     }
 
@@ -77,8 +98,10 @@ class MidiClipSynth {
 
   // --- tonal voices --------------------------------------------------------
 
+  /// [bends] are (frame, frequency ratio) steps, sorted; empty for none.
   void _renderTone(Float64List mix, int start, int held, int pitch,
-      double gain, _Patch patch) {
+      double gain, _Patch patch,
+      {List<(int, double)> bends = const []}) {
     final sr = sampleRate.toDouble();
     final release = math.max(1, (patch.release * sr).round());
     final end = math.min(mix.length, start + held + release);
@@ -95,8 +118,17 @@ class MidiClipSynth {
     final decay = math.max(1.0, patch.decay * sr);
     final perVoice = gain / voices;
     var levelAtRelease = 0.0;
+    // The bend in force at the note's start, then walked forward with it.
+    var bendIndex = -1;
+    while (bendIndex + 1 < bends.length && bends[bendIndex + 1].$1 <= start) {
+      bendIndex++;
+    }
+    var bend = bendIndex < 0 ? 1.0 : bends[bendIndex].$2;
 
     for (var f = start; f < end; f++) {
+      while (bendIndex + 1 < bends.length && bends[bendIndex + 1].$1 <= f) {
+        bend = bends[++bendIndex].$2;
+      }
       final t = f - start;
       double env;
       if (t < held) {
@@ -132,7 +164,7 @@ class MidiClipSynth {
         final ph = phases[v];
         final i = ph.floor();
         sample += table[i] + (table[i + 1] - table[i]) * (ph - i);
-        var next = ph + steps[v] * pitchMod;
+        var next = ph + steps[v] * pitchMod * bend;
         if (next >= size) next -= size;
         phases[v] = next;
       }
@@ -449,4 +481,83 @@ Uint8List _wav(Uint8List pcm, int sampleRate) {
         ..add(header.buffer.asUint8List())
         ..add(pcm))
       .toBytes();
+}
+
+
+/// The handful of a clip's events [MidiClipSynth] plays, per channel, looked
+/// up by tick.
+class ClipControls {
+  ClipControls(this.clip) {
+    for (final e in clip.events) {
+      final lane = switch (e.kind) {
+        MidiEventKind.pitchBend => _bend,
+        MidiEventKind.controller => switch (e.number) {
+            7 => _volume,
+            11 => _expression,
+            64 => _sustain,
+            _ => null,
+          },
+        _ => null,
+      };
+      if (lane != null) (lane[e.channel] ??= []).add(e);
+    }
+  }
+
+  final MidiClip clip;
+  final _bend = <int, List<MidiEvent>>{};
+  final _volume = <int, List<MidiEvent>>{};
+  final _expression = <int, List<MidiEvent>>{};
+  final _sustain = <int, List<MidiEvent>>{};
+
+  /// Semitones the wheel bends at full throw.
+  static const bendRangeSemitones = 2.0;
+
+  /// The value [lane] holds on [channel] at [tick], or null before it has
+  /// any. Events are sorted by tick, so this is a binary search.
+  static int? _valueAt(Map<int, List<MidiEvent>> lane, int channel, int tick) {
+    final events = lane[channel];
+    if (events == null || events.isEmpty) return null;
+    var lo = 0, hi = events.length - 1, found = -1;
+    while (lo <= hi) {
+      final mid = (lo + hi) >> 1;
+      if (events[mid].tick <= tick) {
+        found = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
+      }
+    }
+    return found < 0 ? null : events[found].value;
+  }
+
+  /// Amplitude factor from volume and expression at [tick]: each follows
+  /// General MIDI's curve (value/127)², and an unset one counts as full.
+  double loudnessAt(int channel, int tick) {
+    double curve(int? v) => v == null ? 1.0 : math.pow(v / 127, 2).toDouble();
+    return curve(_valueAt(_volume, channel, tick)) *
+        curve(_valueAt(_expression, channel, tick));
+  }
+
+  /// When a note released at [tick] actually stops: [tick] itself, or —
+  /// with the sustain pedal down (64 and up) — the next time the pedal
+  /// lifts, or the end of the clip if it never does.
+  int sustainedUntil(int channel, int tick) {
+    final value = _valueAt(_sustain, channel, tick);
+    if (value == null || value < 64) return tick;
+    for (final e in _sustain[channel]!) {
+      if (e.tick > tick && e.value < 64) return e.tick;
+    }
+    return math.max(tick, clip.lengthTicks);
+  }
+
+  /// The channel's pitch bend as (tick, frequency ratio) steps.
+  List<(int, double)> bendRatios(int channel) => [
+        for (final e in _bend[channel] ?? const <MidiEvent>[])
+          (
+            e.tick,
+            math
+                .pow(2, (e.value - 8192) / 8192 * bendRangeSemitones / 12)
+                .toDouble(),
+          ),
+      ];
 }

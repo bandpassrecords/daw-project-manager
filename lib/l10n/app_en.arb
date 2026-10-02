@@ -6005,5 +6005,126 @@
   "midiPreviewVolume": "Preview volume",
   "@midiPreviewVolume": {
     "description": "Label and tooltip of the volume slider for MIDI clip previews"
+  },
+  "midiLanePicker": "Parameter shown below the notes",
+  "@midiLanePicker": {
+    "description": "Tooltip on the piano roll dropdown that picks what the lane under the notes shows"
+  },
+  "midiLaneNone": "None",
+  "@midiLaneNone": {
+    "description": "Piano roll lane picker entry that hides the lane"
+  },
+  "midiLaneVelocity": "Velocity",
+  "@midiLaneVelocity": {
+    "description": "Piano roll lane: how hard each note is played"
+  },
+  "midiLanePitchBend": "Pitch bend",
+  "@midiLanePitchBend": {
+    "description": "Piano roll lane: MIDI pitch bend"
+  },
+  "midiLaneChannelPressure": "Aftertouch",
+  "@midiLaneChannelPressure": {
+    "description": "Piano roll lane: MIDI channel aftertouch"
+  },
+  "midiLanePolyPressure": "Poly aftertouch",
+  "@midiLanePolyPressure": {
+    "description": "Piano roll lane: MIDI polyphonic (per-key) aftertouch"
+  },
+  "midiLaneProgram": "Program change",
+  "@midiLaneProgram": {
+    "description": "Piano roll lane: MIDI program (patch) changes"
+  },
+  "midiLaneController": "CC {number}",
+  "@midiLaneController": {
+    "description": "Piano roll lane: a MIDI controller with no common name, by number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "midiLaneControllerNamed": "CC {number} · {name}",
+  "@midiLaneControllerNamed": {
+    "description": "Piano roll lane: a MIDI controller by number and its usual name",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiCcModulation": "Modulation",
+  "@midiCcModulation": {
+    "description": "Usual name of MIDI CC 1"
+  },
+  "midiCcBreath": "Breath",
+  "@midiCcBreath": {
+    "description": "Usual name of MIDI CC 2"
+  },
+  "midiCcFoot": "Foot pedal",
+  "@midiCcFoot": {
+    "description": "Usual name of MIDI CC 4"
+  },
+  "midiCcPortamentoTime": "Portamento time",
+  "@midiCcPortamentoTime": {
+    "description": "Usual name of MIDI CC 5"
+  },
+  "midiCcVolume": "Volume",
+  "@midiCcVolume": {
+    "description": "Usual name of MIDI CC 7"
+  },
+  "midiCcBalance": "Balance",
+  "@midiCcBalance": {
+    "description": "Usual name of MIDI CC 8"
+  },
+  "midiCcPan": "Pan",
+  "@midiCcPan": {
+    "description": "Usual name of MIDI CC 10"
+  },
+  "midiCcExpression": "Expression",
+  "@midiCcExpression": {
+    "description": "Usual name of MIDI CC 11"
+  },
+  "midiCcSustain": "Sustain pedal",
+  "@midiCcSustain": {
+    "description": "Usual name of MIDI CC 64"
+  },
+  "midiCcPortamento": "Portamento",
+  "@midiCcPortamento": {
+    "description": "Usual name of MIDI CC 65"
+  },
+  "midiCcSostenuto": "Sostenuto",
+  "@midiCcSostenuto": {
+    "description": "Usual name of MIDI CC 66"
+  },
+  "midiCcSoftPedal": "Soft pedal",
+  "@midiCcSoftPedal": {
+    "description": "Usual name of MIDI CC 67"
+  },
+  "midiCcResonance": "Resonance",
+  "@midiCcResonance": {
+    "description": "Usual name of MIDI CC 71"
+  },
+  "midiCcRelease": "Release",
+  "@midiCcRelease": {
+    "description": "Usual name of MIDI CC 72 (envelope release time)"
+  },
+  "midiCcAttack": "Attack",
+  "@midiCcAttack": {
+    "description": "Usual name of MIDI CC 73 (envelope attack time)"
+  },
+  "midiCcCutoff": "Cutoff",
+  "@midiCcCutoff": {
+    "description": "Usual name of MIDI CC 74 (filter cutoff)"
+  },
+  "midiCcReverb": "Reverb",
+  "@midiCcReverb": {
+    "description": "Usual name of MIDI CC 91"
+  },
+  "midiCcChorus": "Chorus",
+  "@midiCcChorus": {
+    "description": "Usual name of MIDI CC 93"
   }
 }

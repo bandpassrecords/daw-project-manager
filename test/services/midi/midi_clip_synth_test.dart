@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show listEquals;
@@ -88,6 +89,75 @@ void main() {
     }
 
     expect(peakFor(127), greaterThan(peakFor(40)));
+  });
+
+  group('events', () {
+    const note = MidiNote(startTick: 0, lengthTicks: 480, pitch: 60, velocity: 100);
+    MidiClip withEvents(List<MidiEvent> events) => MidiClip(
+        name: 'x', ppq: 480, lengthTicks: 1920, notes: const [note], events: events);
+    MidiEvent cc(int tick, int number, int value) => MidiEvent(
+        tick: tick, kind: MidiEventKind.controller, number: number, value: value);
+
+    int peak(Int16List s, [int from = 0, int? to]) {
+      var p = 0;
+      for (var i = from; i < (to ?? s.length); i++) {
+        if (s[i].abs() > p) p = s[i].abs();
+      }
+      return p;
+    }
+
+    test('ClipControls: loudness follows volume × expression, squared', () {
+      final c = ClipControls(withEvents([cc(0, 7, 127), cc(480, 11, 64)]));
+      expect(c.loudnessAt(0, 0), 1.0);
+      expect(c.loudnessAt(0, 480), closeTo(math.pow(64 / 127, 2), 1e-9));
+      expect(c.loudnessAt(1, 480), 1.0, reason: 'another channel is untouched');
+    });
+
+    test('ClipControls: a note let go under the pedal rings to pedal-up', () {
+      final c = ClipControls(withEvents([cc(0, 64, 127), cc(1440, 64, 0)]));
+      expect(c.sustainedUntil(0, 480), 1440);
+      expect(c.sustainedUntil(0, 1500), 1500, reason: 'pedal is up by then');
+      final held = ClipControls(withEvents([cc(0, 64, 127)]));
+      expect(held.sustainedUntil(0, 480), 1920,
+          reason: 'a pedal never lifted holds to the end of the clip');
+    });
+
+    test('ClipControls: bends are ratios over ±2 semitones', () {
+      final c = ClipControls(withEvents(const [
+        MidiEvent(tick: 0, kind: MidiEventKind.pitchBend, value: 8192),
+        MidiEvent(tick: 240, kind: MidiEventKind.pitchBend, value: 16383),
+        MidiEvent(tick: 480, kind: MidiEventKind.pitchBend, value: 0),
+      ]));
+      final ratios = c.bendRatios(0);
+      expect(ratios[0], (0, 1.0));
+      expect(ratios[1].$2, closeTo(math.pow(2, 2 / 12), 1e-3));
+      expect(ratios[2].$2, closeTo(math.pow(2, -2 / 12), 1e-9));
+    });
+
+    test('a bend changes what is heard; a clip without events is unchanged', () {
+      final plain = synth.renderWav(_clip(const [note]), bpm: 120);
+      expect(synth.renderWav(withEvents(const []), bpm: 120), plain);
+      final bent = synth.renderWav(withEvents(const [
+        MidiEvent(tick: 240, kind: MidiEventKind.pitchBend, value: 16383),
+      ]), bpm: 120);
+      expect(listEquals(bent, plain), isFalse);
+    });
+
+    test('the sustain pedal keeps a released note sounding', () {
+      // 480 ticks at 120 BPM = 0.5 s = 4000 frames; look well after release.
+      final dry = _samples(synth.renderWav(withEvents(const []), bpm: 120));
+      final pedalled = _samples(synth.renderWav(
+          withEvents([cc(0, 64, 127), cc(1440, 64, 0)]),
+          bpm: 120));
+      expect(peak(pedalled, 9000, 11000), greaterThan(peak(dry, 9000, 11000)));
+    });
+
+    test('volume turned down plays quieter', () {
+      final full = _samples(synth.renderWav(withEvents(const []), bpm: 120));
+      final quiet =
+          _samples(synth.renderWav(withEvents([cc(0, 7, 40)]), bpm: 120));
+      expect(peak(quiet), lessThan(peak(full)));
+    });
   });
 
   test('a very long clip is capped instead of allocating minutes of audio', () {

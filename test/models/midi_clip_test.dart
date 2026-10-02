@@ -242,4 +242,180 @@ void main() {
       expect(groupMidiClipsByTrack(const []), isEmpty);
     });
   });
+
+  group('MidiEventKind', () {
+    test('is read from a status byte on any channel', () {
+      expect(MidiEventKind.ofStatus(0xB3), MidiEventKind.controller);
+      expect(MidiEventKind.ofStatus(0xE0), MidiEventKind.pitchBend);
+      expect(MidiEventKind.ofStatus(0xDF), MidiEventKind.channelPressure);
+      expect(MidiEventKind.ofStatus(0xA1), MidiEventKind.polyPressure);
+      expect(MidiEventKind.ofStatus(0xC9), MidiEventKind.program);
+      expect(MidiEventKind.ofStatus(0x90), isNull, reason: 'notes are notes');
+      expect(MidiEventKind.ofStatus(0xF0), isNull);
+    });
+
+    test('pitch bend has 14 bits, the rest 7', () {
+      expect(MidiEventKind.pitchBend.maxValue, 16383);
+      expect(MidiEventKind.controller.maxValue, 127);
+    });
+
+    test('CC 120 and up are channel-mode housekeeping', () {
+      expect(cc(0, 123, 0).isChannelMode, isTrue);
+      expect(cc(0, 119, 0).isChannelMode, isFalse);
+      expect(
+          const MidiEvent(tick: 0, kind: MidiEventKind.program, value: 123)
+              .isChannelMode,
+          isFalse);
+    });
+  });
+
+  group('normalizeMidiEvents', () {
+    test('sorts by tick and keeps the order within a tick', () {
+      final out = normalizeMidiEvents([cc(10, 1, 5), cc(0, 7, 100), cc(0, 1, 2)]);
+      expect(out, [cc(0, 7, 100), cc(0, 1, 2), cc(10, 1, 5)]);
+    });
+
+    test('of two values on one lane at one tick the later wins', () {
+      expect(normalizeMidiEvents([cc(0, 64, 0), cc(0, 64, 127)]),
+          [cc(0, 64, 127)]);
+    });
+
+    test('drops events that repeat the value a lane already has', () {
+      expect(
+        normalizeMidiEvents([cc(0, 7, 100), cc(480, 7, 100), cc(960, 7, 90)]),
+        [cc(0, 7, 100), cc(960, 7, 90)],
+      );
+    });
+
+    test('lanes are separate per controller and per channel', () {
+      final events = [
+        cc(0, 7, 100),
+        cc(0, 7, 100, channel: 1),
+        cc(10, 11, 100),
+      ];
+      expect(normalizeMidiEvents(events), events);
+    });
+  });
+
+  group('windowMidiEvents', () {
+    test('restates each lane\'s value where a trimmed window starts', () {
+      final out = windowMidiEvents(
+        [cc(0, 1, 10), cc(100, 1, 20), cc(150, 7, 90), cc(600, 1, 30)],
+        windowStart: 400,
+        windowLength: 400,
+      );
+      expect(out, [cc(0, 1, 20), cc(0, 7, 90), cc(200, 1, 30)]);
+    });
+
+    test('an event exactly at the window start is not doubled', () {
+      final out = windowMidiEvents(
+        [cc(0, 1, 10), cc(400, 1, 50)],
+        windowStart: 400,
+        windowLength: 400,
+      );
+      expect(out, [cc(0, 1, 50)]);
+    });
+
+    test('a loop returns to the loop-start values on every pass', () {
+      // Source: mod wheel 0 at the start, up to 100 halfway through.
+      final out = windowMidiEvents(
+        [cc(0, 1, 0), cc(240, 1, 100)],
+        windowStart: 0,
+        windowLength: 1440,
+        loop: true,
+        loopStart: 0,
+        loopEnd: 480,
+      );
+      expect(out.map((e) => (e.tick, e.value)), [
+        (0, 0),
+        (240, 100),
+        (480, 0),
+        (720, 100),
+        (960, 0),
+        (1200, 100),
+      ]);
+    });
+
+    test('nothing in, nothing out', () {
+      expect(windowMidiEvents(const [], windowStart: 0, windowLength: 100),
+          isEmpty);
+      expect(windowMidiEvents([cc(0, 1, 1)], windowStart: 0, windowLength: 0),
+          isEmpty);
+    });
+  });
+
+  group('events and clip identity', () {
+    final notes = [n(0, 240), n(480, 240, 62)];
+
+    test('a clip without events keeps the key it always had', () {
+      // The pre-events key format: length|start,length,pitch,velocity;…
+      expect(clip('A', notes).contentKey, '3840|0,480,60,100;960,480,62,100;');
+    });
+
+    test('a bend makes it a different clip; channel does not', () {
+      final plain = clip('A', notes);
+      final bent = MidiClip(
+        name: 'A',
+        ppq: 480,
+        lengthTicks: 1920,
+        notes: notes,
+        events: const [
+          MidiEvent(tick: 240, kind: MidiEventKind.pitchBend, value: 12000),
+        ],
+      );
+      final bentOnTwo = bent.copyWith(events: const [
+        MidiEvent(
+            tick: 240, kind: MidiEventKind.pitchBend, value: 12000, channel: 2),
+      ]);
+      expect(bent.contentKey, isNot(plain.contentKey));
+      expect(bentOnTwo.contentKey, bent.contentKey);
+      expect(dedupeMidiClips([plain, bent, bentOnTwo]).map((c) => c.occurrences),
+          [1, 2]);
+    });
+
+    test('copyWith carries events along unless replaced', () {
+      final withEvents = clip('A', notes).copyWith(events: [cc(0, 1, 5)]);
+      expect(withEvents.copyWith(occurrences: 3).events, [cc(0, 1, 5)]);
+    });
+  });
+
+  group('reduceToRepeatingPattern with events', () {
+    // One bar at 480 PPQ is 1920 ticks; four bars of the same kick.
+    final kicks = [for (var b = 0; b < 4; b++) n(b * 1920, 240, 36)];
+
+    test('a held controller does not stop a clip shrinking', () {
+      final c = clip('Kick', kicks, length: 7680)
+          .copyWith(events: [cc(0, 7, 100)]);
+      final reduced = reduceToRepeatingPattern(c);
+      expect(reduced.lengthTicks, 1920);
+      expect(reduced.events, [cc(0, 7, 100)]);
+    });
+
+    test('a controller that repeats with the notes shrinks with them', () {
+      final c = clip('Kick', kicks, length: 7680).copyWith(events: [
+        for (var b = 0; b < 4; b++) ...[
+          cc(b * 1920, 1, 0),
+          cc(b * 1920 + 960, 1, 127),
+        ],
+      ]);
+      final reduced = reduceToRepeatingPattern(c);
+      expect(reduced.lengthTicks, 1920);
+      expect(reduced.events, [cc(0, 1, 0), cc(960, 1, 127)]);
+    });
+
+    test('a sweep across the bars keeps the clip whole', () {
+      final c = clip('Kick', kicks, length: 7680).copyWith(events: [
+        for (var b = 0; b < 4; b++) cc(b * 1920, 74, 20 + b * 30),
+      ]);
+      expect(reduceToRepeatingPattern(c).lengthTicks, 7680);
+    });
+  });
 }
+
+MidiEvent cc(int tick, int number, int value, {int channel = 0}) => MidiEvent(
+      tick: tick,
+      kind: MidiEventKind.controller,
+      number: number,
+      value: value,
+      channel: channel,
+    );

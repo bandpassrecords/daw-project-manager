@@ -6031,4 +6031,89 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiPreviewVolume => '试听音量';
+
+  @override
+  String get midiLanePicker => '音符下方显示的参数';
+
+  @override
+  String get midiLaneNone => '无';
+
+  @override
+  String get midiLaneVelocity => '力度';
+
+  @override
+  String get midiLanePitchBend => '弯音';
+
+  @override
+  String get midiLaneChannelPressure => '触后';
+
+  @override
+  String get midiLanePolyPressure => '复音触后';
+
+  @override
+  String get midiLaneProgram => '音色切换';
+
+  @override
+  String midiLaneController(int number) {
+    return 'CC $number';
+  }
+
+  @override
+  String midiLaneControllerNamed(int number, String name) {
+    return 'CC $number · $name';
+  }
+
+  @override
+  String get midiCcModulation => '调制';
+
+  @override
+  String get midiCcBreath => '呼吸';
+
+  @override
+  String get midiCcFoot => '踏板';
+
+  @override
+  String get midiCcPortamentoTime => '滑音时间';
+
+  @override
+  String get midiCcVolume => '音量';
+
+  @override
+  String get midiCcBalance => '平衡';
+
+  @override
+  String get midiCcPan => '声像';
+
+  @override
+  String get midiCcExpression => '表情';
+
+  @override
+  String get midiCcSustain => '延音踏板';
+
+  @override
+  String get midiCcPortamento => '滑音';
+
+  @override
+  String get midiCcSostenuto => '选择延音';
+
+  @override
+  String get midiCcSoftPedal => '弱音踏板';
+
+  @override
+  String get midiCcResonance => '共振';
+
+  @override
+  String get midiCcRelease => '释放';
+
+  @override
+  String get midiCcAttack => '起音';
+
+  @override
+  String get midiCcCutoff => '截止频率';
+
+  @override
+  String get midiCcReverb => '混响';
+
+  @override
+  String get midiCcChorus => '合唱';
 }

@@ -88,19 +88,24 @@ Map<String, dynamic> midiClipToMap(
       'occurrences': c.occurrences,
       if (c.otherNames.isNotEmpty) 'otherNames': c.otherNames,
       'notes': bytes(packMidiNotes(c.notes)),
+      // Only when there are any: most clips have none, and a build from
+      // before events existed simply ignores the key.
+      if (c.events.isNotEmpty) 'events': bytes(packMidiEvents(c.events)),
     };
+
+Uint8List _bytesOf(Object? raw) => raw is String
+    ? base64Decode(raw)
+    : raw is Uint8List
+        ? raw
+        : Uint8List.fromList((raw as List).cast<int>());
 
 /// Reads [midiClipToMap]'s output in either form. Null for anything that
 /// isn't a readable clip.
 MidiClip? midiClipFromMap(Object? raw) {
   if (raw is! Map) return null;
   try {
-    final notesRaw = raw['notes'];
-    final Uint8List notesBytes = notesRaw is String
-        ? base64Decode(notesRaw)
-        : notesRaw is Uint8List
-            ? notesRaw
-            : Uint8List.fromList((notesRaw as List).cast<int>());
+    final notesBytes = _bytesOf(raw['notes']);
+    final eventsRaw = raw['events'];
     final ppq = (raw['ppq'] as num).toInt();
     final length = (raw['length'] as num).toInt();
     if (ppq <= 0 || length < 0) return null;
@@ -115,6 +120,9 @@ MidiClip? midiClipFromMap(Object? raw) {
           if (n is String) n,
       ],
       notes: unpackMidiNotes(notesBytes),
+      events: eventsRaw == null
+          ? const []
+          : normalizeMidiEvents(unpackMidiEvents(_bytesOf(eventsRaw))),
     );
   } catch (_) {
     return null;
@@ -122,6 +130,76 @@ MidiClip? midiClipFromMap(Object? raw) {
 }
 
 const _packVersion = 1;
+const _eventsPackVersion = 1;
+
+void _writeVarint(BytesBuilder out, int v) {
+  var x = v < 0 ? 0 : v;
+  while (x >= 0x80) {
+    out.addByte((x & 0x7F) | 0x80);
+    x >>= 7;
+  }
+  out.addByte(x);
+}
+
+/// Events as compact bytes, like [packMidiNotes]: a version byte, then per
+/// event — sorted by tick — a varint tick delta, the status byte (kind and
+/// channel, as MIDI writes it), the number byte and a varint value.
+Uint8List packMidiEvents(List<MidiEvent> events) {
+  final sorted = normalizeMidiEvents(events);
+  final out = BytesBuilder()..addByte(_eventsPackVersion);
+  var previous = 0;
+  for (final e in sorted) {
+    final tick = e.tick < 0 ? 0 : e.tick;
+    _writeVarint(out, tick - previous);
+    out
+      ..addByte(e.kind.status | (e.channel & 0x0F))
+      ..addByte(e.number & 0x7F);
+    _writeVarint(out, e.value.clamp(0, e.kind.maxValue));
+    previous = tick;
+  }
+  return out.toBytes();
+}
+
+/// Reverses [packMidiEvents]. Like [unpackMidiNotes] it keeps what it read
+/// before a truncation, and skips an event of a kind it doesn't know.
+List<MidiEvent> unpackMidiEvents(Uint8List bytes) {
+  if (bytes.isEmpty || bytes[0] != _eventsPackVersion) return const [];
+  final events = <MidiEvent>[];
+  var pos = 1;
+  int? varint() {
+    var result = 0, shift = 0;
+    while (pos < bytes.length) {
+      final b = bytes[pos++];
+      result |= (b & 0x7F) << shift;
+      if (b & 0x80 == 0) return result;
+      shift += 7;
+      if (shift > 35) return null;
+    }
+    return null;
+  }
+
+  var tick = 0;
+  while (pos < bytes.length) {
+    final delta = varint();
+    if (delta == null || pos + 2 > bytes.length) break;
+    final status = bytes[pos];
+    final number = bytes[pos + 1];
+    pos += 2;
+    final value = varint();
+    if (value == null) break;
+    tick += delta;
+    final kind = MidiEventKind.ofStatus(status);
+    if (kind == null) continue;
+    events.add(MidiEvent(
+      tick: tick,
+      kind: kind,
+      number: number,
+      value: value.clamp(0, kind.maxValue),
+      channel: status & 0x0F,
+    ));
+  }
+  return events;
+}
 
 /// Notes as compact bytes: a version byte, then per note — sorted by start —
 /// unsigned LEB128 varints for the start delta from the previous note and the

@@ -19,6 +19,9 @@ import '../../models/project_stats.dart';
 ///   argument (`"VST3: Pro-Q 3 (FabFilter)"` → `Pro-Q 3`). Take FX count too.
 /// * A MIDI item's events are the `E`/`e` lines of its `<SOURCE MIDI`, each a
 ///   tick delta (at the `HASDATA 1 <ppq>` resolution) and three hex bytes.
+///   Controller, pitch-bend, aftertouch and program-change lines become the
+///   clip's events; `Em`/`em` lines are muted and skipped, and so is the
+///   All Notes Off (CC 123) REAPER closes every source with.
 ///   The item plays `LENGTH` seconds from `SOFFS` into the source, looping
 ///   the source when `LOOP 1` is set. Seconds are converted with the
 ///   project's `TEMPO`, so items in projects with tempo changes are
@@ -111,6 +114,7 @@ class ReaperProjectParser {
     if (ppq <= 0) return null;
 
     final notes = <MidiNote>[];
+    final events = <MidiEvent>[];
     final open = <int, (int, int)>{}; // channel<<8|pitch -> (start, velocity)
     var tick = 0;
     for (final line in source.lines) {
@@ -143,6 +147,24 @@ class ReaperProjectParser {
             channel: channel,
           ));
         }
+      } else if (MidiEventKind.ofStatus(status) case final kind?) {
+        final event = MidiEvent(
+          tick: tick,
+          kind: kind,
+          // Pitch bend is LSB then MSB; program and channel pressure carry
+          // their value in the first data byte.
+          number: kind == MidiEventKind.controller ||
+                  kind == MidiEventKind.polyPressure
+              ? d1 & 0x7F
+              : 0,
+          value: switch (kind) {
+            MidiEventKind.pitchBend => ((d2 & 0x7F) << 7) | (d1 & 0x7F),
+            MidiEventKind.program || MidiEventKind.channelPressure => d1 & 0x7F,
+            _ => d2 & 0x7F,
+          },
+          channel: channel,
+        );
+        if (!event.isChannelMode) events.add(event);
       }
     }
     final sourceLength = tick;
@@ -164,6 +186,14 @@ class ReaperProjectParser {
       loopStart: 0,
       loopEnd: sourceLength,
     );
+    final windowedEvents = windowMidiEvents(
+      events,
+      windowStart: windowStart,
+      windowLength: windowLength,
+      loop: loop && sourceLength > 0,
+      loopStart: 0,
+      loopEnd: sourceLength,
+    );
     // An item's NAME is its first take's name; the item chunk itself may also
     // carry one in older files.
     final name = item.value('NAME') ?? '';
@@ -173,6 +203,7 @@ class ReaperProjectParser {
       ppq: ppq,
       lengthTicks: windowLength,
       notes: windowed,
+      events: windowedEvents,
     );
   }
 

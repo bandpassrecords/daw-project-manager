@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:xml/xml.dart';
 
 import '../../models/midi_clip.dart';
@@ -18,6 +20,13 @@ import '../../models/project_stats.dart';
 ///   clip plays starts at `LoopStart + StartRelative` and lasts
 ///   `CurrentEnd − CurrentStart` beats, wrapping over the loop brace when
 ///   `LoopOn` is set.
+/// * A MIDI clip's controller data is in its clip envelopes
+///   (`Envelopes/Envelopes/ClipEnvelope`), each pointing (`PointeeId`) at
+///   one of its track's `MidiControllers/ControllerTargets.N`: N = 0 is
+///   pitch bend (−8192…8191), 1 channel pressure, and 2–129 CC 0–127 (of
+///   which the channel-mode ones, 120 and up, are skipped).
+///   Envelopes on device parameters aren't MIDI and are skipped. Points are
+///   joined by straight ramps, which are sampled into steps.
 class AbletonProjectParser {
   AbletonProjectParser(this.document);
 
@@ -120,13 +129,136 @@ class AbletonProjectParser {
       loopStart: _ticks(loopStart),
       loopEnd: _ticks(loopEnd),
     );
+    final events = windowMidiEvents(
+      _envelopeEvents(clip),
+      windowStart: _ticks(loopStart + startRelative),
+      windowLength: _ticks(currentEnd - currentStart),
+      loop: loopOn,
+      loopStart: _ticks(loopStart),
+      loopEnd: _ticks(loopEnd),
+    );
     return MidiClip(
       name: _value(clip.getElement('Name')) ?? '',
       trackName: _trackNameOf(clip),
       ppq: ppq,
       lengthTicks: _ticks(currentEnd - currentStart),
       notes: notes,
+      events: events,
     );
+  }
+
+  /// A clip's MIDI controller envelopes as events, in the same beat-based
+  /// time as its notes (before windowing).
+  List<MidiEvent> _envelopeEvents(XmlElement clip) {
+    final envelopes = clip
+        .getElement('Envelopes')
+        ?.getElement('Envelopes')
+        ?.findElements('ClipEnvelope');
+    if (envelopes == null || envelopes.isEmpty) return const [];
+    final targets = _controllerTargetsOf(clip);
+    if (targets.isEmpty) return const [];
+
+    final out = <MidiEvent>[];
+    for (final envelope in envelopes) {
+      final pointee = _value(envelope
+          .getElement('EnvelopeTarget')
+          ?.getElement('PointeeId'));
+      final target = targets[pointee];
+      if (target == null) continue;
+      final (kind, number) = target;
+      final points = <(double, double)>[];
+      for (final e in envelope
+              .getElement('Automation')
+              ?.getElement('Events')
+              ?.findElements('FloatEvent') ??
+          const <XmlElement>[]) {
+        final time = double.tryParse(e.getAttribute('Time') ?? '');
+        final value = double.tryParse(e.getAttribute('Value') ?? '');
+        if (time != null && value != null) points.add((time, value));
+      }
+      out.addAll(envelopeToEvents(points, kind: kind, number: number));
+    }
+    return out;
+  }
+
+  final _targetsByTrack = <XmlElement, Map<String, (MidiEventKind, int)>>{};
+
+  /// PointeeId → what it controls, for the MIDI track [clip] sits on.
+  Map<String, (MidiEventKind, int)> _controllerTargetsOf(XmlElement clip) {
+    XmlElement? track;
+    for (final a in clip.ancestorElements) {
+      if (a.name.local == 'MidiTrack') {
+        track = a;
+        break;
+      }
+    }
+    if (track == null) return const {};
+    return _targetsByTrack.putIfAbsent(track, () {
+      final controllers = track!
+          .getElement('DeviceChain')
+          ?.getElement('MainSequencer')
+          ?.getElement('MidiControllers');
+      final map = <String, (MidiEventKind, int)>{};
+      for (final t in controllers?.childElements ?? const <XmlElement>[]) {
+        final name = t.name.local;
+        if (!name.startsWith('ControllerTargets.')) continue;
+        final n = int.tryParse(name.substring('ControllerTargets.'.length));
+        final id = t.getAttribute('Id');
+        if (n == null || id == null) continue;
+        final target = switch (n) {
+          0 => (MidiEventKind.pitchBend, 0),
+          1 => (MidiEventKind.channelPressure, 0),
+          >= 2 && <= 121 => (MidiEventKind.controller, n - 2),
+          _ => null,
+        };
+        if (target != null) map[id] = target;
+      }
+      return map;
+    });
+  }
+
+  /// Turns an Ableton envelope's points — (beats, value), in the order Live
+  /// stores them — into MIDI events.
+  ///
+  /// Two points at one time are a step. Between two points at different
+  /// times Live ramps in a straight line, so the ramp is sampled every 1/32
+  /// of a beat (coarser on very long ramps) and each sample becomes an
+  /// event; [normalizeMidiEvents] later drops the samples that didn't change
+  /// the value. Live's first point sits at a huge negative time to say "the
+  /// value before anything else": it is never ramped from.
+  ///
+  /// Pitch bend arrives as −8192…8191 and is shifted to MIDI's 0…16383.
+  static List<MidiEvent> envelopeToEvents(
+    List<(double, double)> points, {
+    required MidiEventKind kind,
+    int number = 0,
+  }) {
+    int midiValue(double v) => kind == MidiEventKind.pitchBend
+        ? (v + 8192).round().clamp(0, 16383)
+        : v.round().clamp(0, 127);
+    MidiEvent event(double beats, double v) => MidiEvent(
+          tick: _ticks(beats),
+          kind: kind,
+          number: number,
+          value: midiValue(v),
+        );
+
+    final out = <MidiEvent>[];
+    for (var i = 0; i < points.length; i++) {
+      final (time, value) = points[i];
+      out.add(event(time, value));
+      if (i + 1 >= points.length) continue;
+      final (nextTime, nextValue) = points[i + 1];
+      if (time < 0 || nextTime <= time || midiValue(nextValue) == midiValue(value)) {
+        continue;
+      }
+      final span = nextTime - time;
+      final step = math.max(1 / 32, span / 512);
+      for (var t = time + step; t < nextTime; t += step) {
+        out.add(event(t, value + (nextValue - value) * (t - time) / span));
+      }
+    }
+    return out;
   }
 
   String? _trackNameOf(XmlElement clip) {

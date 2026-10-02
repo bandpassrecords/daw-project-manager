@@ -6101,4 +6101,89 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiPreviewVolume => 'プレビュー音量';
+
+  @override
+  String get midiLanePicker => 'ノートの下に表示するパラメーター';
+
+  @override
+  String get midiLaneNone => 'なし';
+
+  @override
+  String get midiLaneVelocity => 'ベロシティ';
+
+  @override
+  String get midiLanePitchBend => 'ピッチベンド';
+
+  @override
+  String get midiLaneChannelPressure => 'アフタータッチ';
+
+  @override
+  String get midiLanePolyPressure => 'ポリ・アフタータッチ';
+
+  @override
+  String get midiLaneProgram => 'プログラムチェンジ';
+
+  @override
+  String midiLaneController(int number) {
+    return 'CC $number';
+  }
+
+  @override
+  String midiLaneControllerNamed(int number, String name) {
+    return 'CC $number · $name';
+  }
+
+  @override
+  String get midiCcModulation => 'モジュレーション';
+
+  @override
+  String get midiCcBreath => 'ブレス';
+
+  @override
+  String get midiCcFoot => 'フットペダル';
+
+  @override
+  String get midiCcPortamentoTime => 'ポルタメントタイム';
+
+  @override
+  String get midiCcVolume => 'ボリューム';
+
+  @override
+  String get midiCcBalance => 'バランス';
+
+  @override
+  String get midiCcPan => 'パン';
+
+  @override
+  String get midiCcExpression => 'エクスプレッション';
+
+  @override
+  String get midiCcSustain => 'サステインペダル';
+
+  @override
+  String get midiCcPortamento => 'ポルタメント';
+
+  @override
+  String get midiCcSostenuto => 'ソステヌート';
+
+  @override
+  String get midiCcSoftPedal => 'ソフトペダル';
+
+  @override
+  String get midiCcResonance => 'レゾナンス';
+
+  @override
+  String get midiCcRelease => 'リリース';
+
+  @override
+  String get midiCcAttack => 'アタック';
+
+  @override
+  String get midiCcCutoff => 'カットオフ';
+
+  @override
+  String get midiCcReverb => 'リバーブ';
+
+  @override
+  String get midiCcChorus => 'コーラス';
 }

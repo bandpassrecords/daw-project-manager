@@ -18,8 +18,18 @@ const _clip = MidiClip(
   notes: [MidiNote(startTick: 0, lengthTicks: 240, pitch: 60, velocity: 100)],
 );
 
+String _laneName(MidiLane lane) => lane.toString();
+
 const _labels = MidiPianoRollWindowLabels(
-  roll: MidiPianoRollLabels(zoomIn: 'In', zoomOut: 'Out', fit: 'Fit', follow: 'Follow'),
+  roll: MidiPianoRollLabels(
+    zoomIn: 'In',
+    zoomOut: 'Out',
+    fit: 'Fit',
+    follow: 'Follow',
+    lane: 'Lane',
+    laneNone: 'None',
+    laneName: _laneName,
+  ),
   close: 'Close',
   play: 'Play',
   pause: 'Pause',

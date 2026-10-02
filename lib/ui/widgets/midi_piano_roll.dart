@@ -51,6 +51,77 @@ double followScroll({
   return (playheadX - viewWidth / 2).clamp(0.0, math.max(0.0, maxScroll));
 }
 
+/// What the lane under a piano roll shows: note velocities, or one stream
+/// of the clip's events — pitch bend, a controller, aftertouch, program
+/// changes.
+class MidiLane {
+  const MidiLane.velocity()
+      : kind = null,
+        number = 0;
+
+  /// [number] is the controller for [MidiEventKind.controller] and ignored
+  /// otherwise: poly aftertouch shows every key's pressure in one lane.
+  const MidiLane.of(MidiEventKind this.kind, [int number = 0])
+      : number = kind == MidiEventKind.controller ? number : 0;
+
+  /// Null for velocity.
+  final MidiEventKind? kind;
+  final int number;
+
+  bool get isVelocity => kind == null;
+
+  /// The highest value the lane draws, at the top of the lane.
+  int get maxValue => kind?.maxValue ?? 127;
+
+  bool shows(MidiEvent e) =>
+      e.kind == kind &&
+      (kind != MidiEventKind.controller || e.number == number);
+
+  @override
+  bool operator ==(Object other) =>
+      other is MidiLane && other.kind == kind && other.number == number;
+
+  @override
+  int get hashCode => Object.hash(kind, number);
+
+  @override
+  String toString() => 'MidiLane(${kind?.name ?? 'velocity'} $number)';
+}
+
+/// The lanes worth offering for [clip]: velocity always, then whatever its
+/// events hold — pitch bend, each controller it uses in number order,
+/// channel and poly aftertouch, program changes.
+List<MidiLane> availableMidiLanes(MidiClip clip) {
+  final controllers = <int>{};
+  final kinds = <MidiEventKind>{};
+  for (final e in clip.events) {
+    if (e.kind == MidiEventKind.controller) {
+      controllers.add(e.number);
+    } else {
+      kinds.add(e.kind);
+    }
+  }
+  return [
+    const MidiLane.velocity(),
+    if (kinds.contains(MidiEventKind.pitchBend))
+      const MidiLane.of(MidiEventKind.pitchBend),
+    for (final n in controllers.toList()..sort())
+      MidiLane.of(MidiEventKind.controller, n),
+    if (kinds.contains(MidiEventKind.channelPressure))
+      const MidiLane.of(MidiEventKind.channelPressure),
+    if (kinds.contains(MidiEventKind.polyPressure))
+      const MidiLane.of(MidiEventKind.polyPressure),
+    if (kinds.contains(MidiEventKind.program))
+      const MidiLane.of(MidiEventKind.program),
+  ];
+}
+
+/// The (tick, value) points [lane] draws for [clip], in tick order: each
+/// note's velocity at its start, or the lane's events.
+List<(int, int)> midiLanePoints(MidiClip clip, MidiLane lane) => lane.isVelocity
+    ? [for (final n in clip.notes) (n.startTick, n.velocity)]
+    : [for (final e in clip.events) if (lane.shows(e)) (e.tick, e.value)];
+
 // --- the view ----------------------------------------------------------------
 
 /// Strings for [MidiPianoRoll], resolved by the caller.
@@ -60,12 +131,24 @@ class MidiPianoRollLabels {
     required this.zoomOut,
     required this.fit,
     required this.follow,
+    required this.lane,
+    required this.laneNone,
+    required this.laneName,
   });
 
   final String zoomIn;
   final String zoomOut;
   final String fit;
   final String follow;
+
+  /// Tooltip on the lane picker.
+  final String lane;
+
+  /// The picker's "show no lane" entry.
+  final String laneNone;
+
+  /// "Velocity", "Pitch bend", "CC 1 · Modulation"…
+  final String Function(MidiLane lane) laneName;
 }
 
 /// A full piano roll of one [MidiClip]: a keyboard down the left (C's
@@ -73,6 +156,10 @@ class MidiPianoRollLabels {
 /// shaded by velocity, and — while [positionOf] returns a position — a
 /// playhead line the view scrolls smoothly to keep centred (see
 /// [followScroll]).
+///
+/// Under the notes, a lane like a DAW's controller lane shows note velocity
+/// or one of the clip's event streams (see [availableMidiLanes]), picked
+/// from a dropdown below — or nothing, to give the notes the room.
 ///
 /// Zoom with the buttons, Ctrl+wheel or a pinch (horizontal, around the
 /// pointer); scroll with the wheel (Shift+wheel sideways) or by dragging.
@@ -128,6 +215,23 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
   late ({int low, int high}) _range = pianoRollRange(widget.clip.notes);
 
+  /// The lane under the notes; null shows none.
+  MidiLane? _lane = const MidiLane.velocity();
+  late List<MidiLane> _lanes = availableMidiLanes(widget.clip);
+
+  // What the lane draws, kept between frames: playback rebuilds every frame
+  // while following, and the points only change with the clip or the lane.
+  (MidiClip, MidiLane, List<(int, int)>)? _pointsCache;
+  List<(int, int)> _lanePoints(MidiLane lane) {
+    final cached = _pointsCache;
+    if (cached != null && identical(cached.$1, widget.clip) && cached.$2 == lane) {
+      return cached.$3;
+    }
+    final points = midiLanePoints(widget.clip, lane);
+    _pointsCache = (widget.clip, lane, points);
+    return points;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -158,6 +262,10 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     }
     if (!identical(old.clip, widget.clip)) {
       _range = pianoRollRange(widget.clip.notes);
+      _lanes = availableMidiLanes(widget.clip);
+      if (_lane != null && !_lanes.contains(_lane)) {
+        _lane = const MidiLane.velocity();
+      }
       _pxPerTick = null;
       _scrollX = 0;
       _scrollY = 0;
@@ -284,7 +392,11 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         ),
         Expanded(
           child: LayoutBuilder(builder: (context, constraints) {
-            _view = constraints.biggest;
+            final total = constraints.biggest;
+            final laneHeight = _lane == null
+                ? 0.0
+                : (total.height * 0.22).clamp(48.0, 140.0).toDouble();
+            _view = Size(total.width, math.max(0, total.height - laneHeight));
             final fit = widget.clip.lengthTicks <= 0
                 ? 0.1
                 : _gridWidth / widget.clip.lengthTicks;
@@ -313,7 +425,11 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                   },
                   child: Stack(
                     children: [
-                      Positioned.fill(
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        height: _view.height,
                         child: CustomPaint(
                           painter: _RollPainter(
                             clip: widget.clip,
@@ -331,6 +447,28 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                           ),
                         ),
                       ),
+                      if (_lane != null)
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          height: laneHeight,
+                          child: CustomPaint(
+                            key: const ValueKey('midi-piano-roll-lane'),
+                            painter: _LanePainter(
+                              points: _lanePoints(_lane!),
+                              lane: _lane!,
+                              clipLength: widget.clip.lengthTicks,
+                              ppq: widget.clip.ppq,
+                              pxPerTick: _px,
+                              scrollX: _scrollX,
+                              keyboardWidth: _keyboardWidth,
+                              colors: colors,
+                              labelStyle: theme.textTheme.labelSmall ??
+                                  const TextStyle(fontSize: 10),
+                            ),
+                          ),
+                        ),
                       Positioned.fill(
                         child: IgnorePointer(
                           child: CustomPaint(
@@ -351,10 +489,34 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
             );
           }),
         ),
-        // Vertical zoom: row height.
+        // The lane picker, then vertical zoom (row height).
         Row(
-          mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            Tooltip(
+              message: labels.lane,
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<MidiLane?>(
+                  key: const ValueKey('midi-piano-roll-lane-picker'),
+                  value: _lane,
+                  isDense: true,
+                  icon: const Icon(Icons.arrow_drop_down),
+                  style: theme.textTheme.bodySmall,
+                  onChanged: (lane) => setState(() => _lane = lane),
+                  items: [
+                    for (final lane in _lanes)
+                      DropdownMenuItem(
+                        value: lane,
+                        child: Text(labels.laneName(lane)),
+                      ),
+                    DropdownMenuItem<MidiLane?>(
+                      value: null,
+                      child: Text(labels.laneNone),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const Spacer(),
             Icon(Icons.unfold_less, size: 16, color: theme.textTheme.bodySmall?.color),
             SizedBox(
               width: 140,
@@ -564,6 +726,148 @@ class _RollPainter extends CustomPainter {
       old.scrollY != scrollY ||
       old.low != low ||
       old.high != high ||
+      old.colors.note != colors.note;
+}
+
+/// The lane under the notes: velocity stems, a step graph for controllers
+/// and aftertouch (filled from the centre line for pitch bend), and marked
+/// stems for program changes and poly aftertouch. Shares the roll's
+/// horizontal zoom and scroll, so a point sits under its note.
+class _LanePainter extends CustomPainter {
+  _LanePainter({
+    required this.points,
+    required this.lane,
+    required this.clipLength,
+    required this.ppq,
+    required this.pxPerTick,
+    required this.scrollX,
+    required this.keyboardWidth,
+    required this.colors,
+    required this.labelStyle,
+  });
+
+  final List<(int, int)> points;
+  final MidiLane lane;
+  final int clipLength, ppq;
+  final double pxPerTick, scrollX, keyboardWidth;
+  final _RollColors colors;
+  final TextStyle labelStyle;
+
+  static const _pad = 4.0;
+
+  double _xOf(num tick) => keyboardWidth + tick * pxPerTick - scrollX;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(Offset.zero & size, Paint()..color = colors.ruler);
+    final area = Rect.fromLTRB(keyboardWidth, 0, size.width, size.height);
+    canvas.drawRect(area, Paint()..color = colors.background);
+    canvas.drawLine(Offset.zero, Offset(size.width, 0),
+        Paint()
+          ..color = colors.barLine
+          ..strokeWidth = 1);
+
+    final top = _pad, bottom = size.height - _pad;
+    final max = lane.maxValue;
+    double yOf(int value) => bottom - (bottom - top) * value / max;
+
+    // Scale down the keyboard column.
+    final pitchBend = lane.kind == MidiEventKind.pitchBend;
+    _text(canvas, pitchBend ? '+' : '$max', Offset(keyboardWidth - 4, top + 5));
+    _text(canvas, pitchBend ? '−' : '0', Offset(keyboardWidth - 4, bottom - 5));
+
+    canvas.save();
+    canvas.clipRect(area);
+
+    // Bar lines, like the grid above.
+    final barPaint = Paint()..color = colors.beatLine;
+    final firstBar = (scrollX / pxPerTick / ppq / 4).floor();
+    final lastBar = ((scrollX + size.width) / pxPerTick / ppq / 4).ceil();
+    for (var b = firstBar; b <= lastBar; b++) {
+      final x = _xOf(b * 4 * ppq);
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), barPaint);
+    }
+    final centre = yOf(8192);
+    if (pitchBend) {
+      canvas.drawLine(Offset(keyboardWidth, centre), Offset(size.width, centre),
+          Paint()..color = colors.barLine);
+    }
+
+    final firstTick = scrollX / pxPerTick;
+    final lastTick = (scrollX + size.width) / pxPerTick;
+    final stroke = Paint()
+      ..color = colors.note
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+    final fill = Paint()..color = colors.note.withValues(alpha: 0.25);
+
+    final stems = lane.isVelocity ||
+        lane.kind == MidiEventKind.polyPressure ||
+        lane.kind == MidiEventKind.program;
+    if (stems) {
+      final dot = Paint()..color = colors.note;
+      for (final (tick, value) in points) {
+        if (tick < firstTick - 1 || tick > lastTick) continue;
+        final x = _xOf(tick);
+        final y = yOf(value);
+        canvas.drawLine(Offset(x, bottom), Offset(x, y), stroke);
+        canvas.drawCircle(Offset(x, y), 3, dot);
+        if (lane.kind == MidiEventKind.program && size.height >= 40) {
+          // Programs are numbered from 1 in every DAW's patch list.
+          _text(canvas, '${value + 1}', Offset(x + 4, y + 6),
+              alignRight: false);
+        }
+      }
+    } else if (points.isNotEmpty) {
+      // A step graph: each value holds until the next, the last to the end.
+      final base = pitchBend ? centre : bottom;
+      final line = Path();
+      final filled = Path();
+      for (var i = 0; i < points.length; i++) {
+        final (tick, value) = points[i];
+        final end = i + 1 < points.length ? points[i + 1].$1 : clipLength;
+        if (end < firstTick || tick > lastTick) continue;
+        final x0 = _xOf(tick), x1 = _xOf(math.max(end, tick));
+        final y = yOf(value);
+        line
+          ..moveTo(x0, y)
+          ..lineTo(x1, y);
+        if (i + 1 < points.length) {
+          line.lineTo(x1, yOf(points[i + 1].$2));
+        }
+        filled.addRect(
+            Rect.fromLTRB(x0, math.min(y, base), x1, math.max(y, base)));
+      }
+      canvas.drawPath(filled, fill);
+      canvas.drawPath(line, stroke);
+    }
+
+    // Clip end.
+    final endX = _xOf(clipLength);
+    canvas.drawLine(Offset(endX, 0), Offset(endX, size.height),
+        Paint()
+          ..color = colors.barLine
+          ..strokeWidth = 2);
+    canvas.restore();
+  }
+
+  void _text(Canvas canvas, String text, Offset at, {bool alignRight = true}) {
+    final tp = TextPainter(
+      text: TextSpan(
+          text: text,
+          style: labelStyle.copyWith(color: colors.keyText, fontSize: 10)),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final dx = alignRight ? at.dx - tp.width : at.dx;
+    tp.paint(canvas, Offset(dx, at.dy - tp.height / 2));
+  }
+
+  @override
+  bool shouldRepaint(_LanePainter old) =>
+      !identical(old.points, points) ||
+      old.lane != lane ||
+      old.pxPerTick != pxPerTick ||
+      old.scrollX != scrollX ||
       old.colors.note != colors.note;
 }
 

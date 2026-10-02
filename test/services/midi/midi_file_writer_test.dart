@@ -34,6 +34,10 @@ class _Smf {
         meta[type] = bytes.sublist(pos, pos + len);
         if (type == 0x2F) endTick = tick;
         pos += len;
+      } else if (status & 0xF0 == 0xC0 || status & 0xF0 == 0xD0) {
+        // Program change and channel pressure carry one data byte.
+        events.add((tick, status, bytes[pos], 0));
+        pos += 1;
       } else {
         events.add((tick, status, bytes[pos], bytes[pos + 1]));
         pos += 2;
@@ -106,6 +110,58 @@ void main() {
       MidiNote(startTick: 0, lengthTicks: 240, pitch: 60, velocity: 100),
     ], length: 1920)));
     expect(smf.endTick, 1920);
+  });
+
+  test('writes the clip\'s events between the note-offs and note-ons', () {
+    final smf = _Smf(encodeMidiClip(MidiClip(
+      name: 'Lead',
+      ppq: 480,
+      lengthTicks: 1920,
+      notes: const [
+        MidiNote(startTick: 0, lengthTicks: 480, pitch: 60, velocity: 100),
+        MidiNote(startTick: 480, lengthTicks: 480, pitch: 62, velocity: 90),
+      ],
+      events: const [
+        MidiEvent(tick: 0, kind: MidiEventKind.program, value: 33),
+        MidiEvent(tick: 240, kind: MidiEventKind.pitchBend, value: 12288),
+        MidiEvent(
+            tick: 480, kind: MidiEventKind.controller, number: 1, value: 64),
+        MidiEvent(
+            tick: 600,
+            kind: MidiEventKind.channelPressure,
+            value: 70,
+            channel: 3),
+        MidiEvent(
+            tick: 700,
+            kind: MidiEventKind.polyPressure,
+            number: 62,
+            value: 50),
+      ],
+    )));
+    expect(smf.events, [
+      // A program change lands before the note it should sound with.
+      (0, 0xC0, 33, 0),
+      (0, 0x90, 60, 100),
+      // 12288 = 0x3000: LSB 0x00, MSB 0x60.
+      (240, 0xE0, 0x00, 0x60),
+      (480, 0x80, 60, 0x40),
+      (480, 0xB0, 1, 64),
+      (480, 0x90, 62, 90),
+      (600, 0xD3, 70, 0),
+      (700, 0xA0, 62, 50),
+      (960, 0x80, 62, 0x40),
+    ]);
+  });
+
+  test('midiEventBytes clamps values to what the kind can hold', () {
+    expect(
+        midiEventBytes(const MidiEvent(
+            tick: 0, kind: MidiEventKind.pitchBend, value: 99999)),
+        [0xE0, 0x7F, 0x7F]);
+    expect(
+        midiEventBytes(const MidiEvent(
+            tick: 0, kind: MidiEventKind.controller, number: 7, value: 300)),
+        [0xB0, 7, 127]);
   });
 
   test('long deltas use multi-byte variable-length quantities', () {

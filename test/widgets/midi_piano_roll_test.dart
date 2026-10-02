@@ -10,11 +10,40 @@ import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
 
+String _laneName(MidiLane lane) => lane.isVelocity
+    ? 'Velocity'
+    : lane.kind == MidiEventKind.controller
+        ? 'CC ${lane.number}'
+        : lane.kind!.name;
+
 const _labels = MidiPianoRollLabels(
   zoomIn: 'Zoom in',
   zoomOut: 'Zoom out',
   fit: 'Fit',
   follow: 'Follow',
+  lane: 'Lane',
+  laneNone: 'None',
+  laneName: _laneName,
+);
+
+const _expressive = MidiClip(
+  name: 'Lead',
+  ppq: 480,
+  lengthTicks: 1920,
+  notes: [
+    MidiNote(startTick: 0, lengthTicks: 480, pitch: 60, velocity: 100),
+    MidiNote(startTick: 960, lengthTicks: 480, pitch: 64, velocity: 70),
+  ],
+  events: [
+    MidiEvent(tick: 0, kind: MidiEventKind.program, value: 4),
+    MidiEvent(tick: 0, kind: MidiEventKind.controller, number: 74, value: 20),
+    MidiEvent(tick: 0, kind: MidiEventKind.controller, number: 1, value: 0),
+    MidiEvent(tick: 240, kind: MidiEventKind.pitchBend, value: 12000),
+    MidiEvent(tick: 480, kind: MidiEventKind.controller, number: 1, value: 90),
+    MidiEvent(tick: 500, kind: MidiEventKind.channelPressure, value: 30),
+    MidiEvent(
+        tick: 960, kind: MidiEventKind.polyPressure, number: 64, value: 50),
+  ],
 );
 
 MidiClip _clip({int bars = 4}) => MidiClip(
@@ -98,6 +127,43 @@ void main() {
     });
   });
 
+  group('lanes', () {
+    test('velocity first, then what the clip holds, controllers by number', () {
+      expect(availableMidiLanes(_expressive), const [
+        MidiLane.velocity(),
+        MidiLane.of(MidiEventKind.pitchBend),
+        MidiLane.of(MidiEventKind.controller, 1),
+        MidiLane.of(MidiEventKind.controller, 74),
+        MidiLane.of(MidiEventKind.channelPressure),
+        MidiLane.of(MidiEventKind.polyPressure),
+        MidiLane.of(MidiEventKind.program),
+      ]);
+    });
+
+    test('a clip of notes alone offers velocity only', () {
+      expect(availableMidiLanes(_clip()), const [MidiLane.velocity()]);
+    });
+
+    test('points are note velocities or the lane\'s own events', () {
+      expect(midiLanePoints(_expressive, const MidiLane.velocity()),
+          [(0, 100), (960, 70)]);
+      expect(
+          midiLanePoints(
+              _expressive, const MidiLane.of(MidiEventKind.controller, 1)),
+          [(0, 0), (480, 90)]);
+      expect(
+          midiLanePoints(_expressive, const MidiLane.of(MidiEventKind.pitchBend)),
+          [(240, 12000)]);
+    });
+
+    test('poly aftertouch is one lane for every key', () {
+      expect(const MidiLane.of(MidiEventKind.polyPressure, 64),
+          const MidiLane.of(MidiEventKind.polyPressure));
+      expect(const MidiLane.of(MidiEventKind.pitchBend).maxValue, 16383);
+      expect(const MidiLane.velocity().maxValue, 127);
+    });
+  });
+
   group('extrapolatePosition', () {
     final at = DateTime(2026, 1, 1, 12);
 
@@ -163,6 +229,44 @@ void main() {
       await tester.pump();
 
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('shows velocity by default; the picker switches or hides the lane',
+        (tester) async {
+      await tester.pumpWidget(wrap(_expressive));
+      final lane = find.byKey(const ValueKey('midi-piano-roll-lane'));
+      expect(lane, findsOneWidget);
+      expect(find.text('Velocity'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-lane-picker')));
+      await tester.pumpAndSettle();
+      for (final name in ['pitchBend', 'CC 1', 'CC 74', 'channelPressure',
+          'polyPressure', 'program', 'None']) {
+        expect(find.text(name), findsWidgets, reason: name);
+      }
+      await tester.tap(find.text('CC 74').last);
+      await tester.pumpAndSettle();
+      expect(lane, findsOneWidget);
+      expect(find.text('CC 74'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-lane-picker')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('None').last);
+      await tester.pumpAndSettle();
+      expect(lane, findsNothing, reason: 'the notes get the room back');
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('every lane paints without error', (tester) async {
+      await tester.pumpWidget(wrap(_expressive));
+      for (final lane in availableMidiLanes(_expressive).skip(1)) {
+        await tester
+            .tap(find.byKey(const ValueKey('midi-piano-roll-lane-picker')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(_laneName(lane)).last);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: '$lane');
+      }
     });
 
     testWidgets('an empty clip still lays out', (tester) async {
@@ -242,6 +346,8 @@ void main() {
       expect(find.text('Bass – Riff'), findsOneWidget);
       expect(find.byType(Slider), findsWidgets, reason: 'the volume control');
       expect(find.text('Night Drive'), findsOneWidget);
+      expect(find.text('Velocity'), findsOneWidget,
+          reason: 'the lane picker, named through the app\'s strings');
 
       await tester.tap(find.byIcon(Icons.play_circle_outline));
       expect(toggles, 1);

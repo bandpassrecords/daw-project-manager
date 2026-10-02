@@ -32,7 +32,52 @@ StoredMidiClips _stored(DateTime at, {String name = 'Riff'}) => StoredMidiClips(
       ],
     );
 
+const _events = [
+  MidiEvent(tick: 0, kind: MidiEventKind.program, value: 5, channel: 9),
+  MidiEvent(tick: 0, kind: MidiEventKind.controller, number: 64, value: 127),
+  MidiEvent(tick: 240, kind: MidiEventKind.pitchBend, value: 16383),
+  MidiEvent(tick: 480, kind: MidiEventKind.channelPressure, value: 40),
+  MidiEvent(
+      tick: 200000, kind: MidiEventKind.polyPressure, number: 60, value: 1),
+];
+
 void main() {
+  group('event packing', () {
+    test('round-trips every kind, 14-bit bends and large positions', () {
+      expect(unpackMidiEvents(packMidiEvents(_events)), _events);
+    });
+
+    test('a truncated record yields what came before the cut', () {
+      final bytes = packMidiEvents(_events);
+      final cut = unpackMidiEvents(
+          Uint8List.sublistView(bytes, 0, bytes.length - 2));
+      expect(cut, _events.sublist(0, 4));
+    });
+
+    test('an unknown version reads as no events', () {
+      expect(unpackMidiEvents(Uint8List.fromList([9, 0, 0xB0, 1, 1])), isEmpty);
+    });
+
+    test('a clip carries its events through Hive and JSON alike', () {
+      final c = MidiClip(
+          name: 'Lead', ppq: 480, lengthTicks: 3840, notes: _notes,
+          events: _events);
+      final viaHive = midiClipFromMap(midiClipToMap(c, bytes: (b) => b))!;
+      final viaJson = midiClipFromMap(jsonDecode(
+          jsonEncode(midiClipToMap(c, bytes: base64Encode))))!;
+      expect(viaHive.events, _events);
+      expect(viaJson.events, _events);
+      expect(viaJson.contentKey, c.contentKey);
+    });
+
+    test('a clip without events writes no events key, as before', () {
+      final c = MidiClip(name: 'A', ppq: 480, lengthTicks: 960, notes: _notes);
+      final map = midiClipToMap(c, bytes: base64Encode);
+      expect(map.containsKey('events'), isFalse);
+      expect(midiClipFromMap(map)!.events, isEmpty);
+    });
+  });
+
   group('note packing', () {
     test('round-trips every field, large positions included', () {
       expect(unpackMidiNotes(packMidiNotes(_notes)), _notes);

@@ -10444,6 +10444,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preview volume'**
   String get midiPreviewVolume;
+
+  /// Tooltip on the piano roll dropdown that picks what the lane under the notes shows
+  ///
+  /// In en, this message translates to:
+  /// **'Parameter shown below the notes'**
+  String get midiLanePicker;
+
+  /// Piano roll lane picker entry that hides the lane
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get midiLaneNone;
+
+  /// Piano roll lane: how hard each note is played
+  ///
+  /// In en, this message translates to:
+  /// **'Velocity'**
+  String get midiLaneVelocity;
+
+  /// Piano roll lane: MIDI pitch bend
+  ///
+  /// In en, this message translates to:
+  /// **'Pitch bend'**
+  String get midiLanePitchBend;
+
+  /// Piano roll lane: MIDI channel aftertouch
+  ///
+  /// In en, this message translates to:
+  /// **'Aftertouch'**
+  String get midiLaneChannelPressure;
+
+  /// Piano roll lane: MIDI polyphonic (per-key) aftertouch
+  ///
+  /// In en, this message translates to:
+  /// **'Poly aftertouch'**
+  String get midiLanePolyPressure;
+
+  /// Piano roll lane: MIDI program (patch) changes
+  ///
+  /// In en, this message translates to:
+  /// **'Program change'**
+  String get midiLaneProgram;
+
+  /// Piano roll lane: a MIDI controller with no common name, by number
+  ///
+  /// In en, this message translates to:
+  /// **'CC {number}'**
+  String midiLaneController(int number);
+
+  /// Piano roll lane: a MIDI controller by number and its usual name
+  ///
+  /// In en, this message translates to:
+  /// **'CC {number} · {name}'**
+  String midiLaneControllerNamed(int number, String name);
+
+  /// Usual name of MIDI CC 1
+  ///
+  /// In en, this message translates to:
+  /// **'Modulation'**
+  String get midiCcModulation;
+
+  /// Usual name of MIDI CC 2
+  ///
+  /// In en, this message translates to:
+  /// **'Breath'**
+  String get midiCcBreath;
+
+  /// Usual name of MIDI CC 4
+  ///
+  /// In en, this message translates to:
+  /// **'Foot pedal'**
+  String get midiCcFoot;
+
+  /// Usual name of MIDI CC 5
+  ///
+  /// In en, this message translates to:
+  /// **'Portamento time'**
+  String get midiCcPortamentoTime;
+
+  /// Usual name of MIDI CC 7
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get midiCcVolume;
+
+  /// Usual name of MIDI CC 8
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get midiCcBalance;
+
+  /// Usual name of MIDI CC 10
+  ///
+  /// In en, this message translates to:
+  /// **'Pan'**
+  String get midiCcPan;
+
+  /// Usual name of MIDI CC 11
+  ///
+  /// In en, this message translates to:
+  /// **'Expression'**
+  String get midiCcExpression;
+
+  /// Usual name of MIDI CC 64
+  ///
+  /// In en, this message translates to:
+  /// **'Sustain pedal'**
+  String get midiCcSustain;
+
+  /// Usual name of MIDI CC 65
+  ///
+  /// In en, this message translates to:
+  /// **'Portamento'**
+  String get midiCcPortamento;
+
+  /// Usual name of MIDI CC 66
+  ///
+  /// In en, this message translates to:
+  /// **'Sostenuto'**
+  String get midiCcSostenuto;
+
+  /// Usual name of MIDI CC 67
+  ///
+  /// In en, this message translates to:
+  /// **'Soft pedal'**
+  String get midiCcSoftPedal;
+
+  /// Usual name of MIDI CC 71
+  ///
+  /// In en, this message translates to:
+  /// **'Resonance'**
+  String get midiCcResonance;
+
+  /// Usual name of MIDI CC 72 (envelope release time)
+  ///
+  /// In en, this message translates to:
+  /// **'Release'**
+  String get midiCcRelease;
+
+  /// Usual name of MIDI CC 73 (envelope attack time)
+  ///
+  /// In en, this message translates to:
+  /// **'Attack'**
+  String get midiCcAttack;
+
+  /// Usual name of MIDI CC 74 (filter cutoff)
+  ///
+  /// In en, this message translates to:
+  /// **'Cutoff'**
+  String get midiCcCutoff;
+
+  /// Usual name of MIDI CC 91
+  ///
+  /// In en, this message translates to:
+  /// **'Reverb'**
+  String get midiCcReverb;
+
+  /// Usual name of MIDI CC 93
+  ///
+  /// In en, this message translates to:
+  /// **'Chorus'**
+  String get midiCcChorus;
 }
 
 class _AppLocalizationsDelegate

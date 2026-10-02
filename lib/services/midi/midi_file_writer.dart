@@ -10,7 +10,8 @@ import '../../models/midi_clip.dart';
 /// signature and — when [bpm] is given — the project's tempo, so dragging it
 /// into an empty project lands at the right speed. The end-of-track event
 /// sits at the clip's length rather than at the last note-off, so a clip
-/// ending in a rest keeps its rest.
+/// ending in a rest keeps its rest. The clip's events — controllers, pitch
+/// bend, aftertouch, program changes — are written alongside the notes.
 Uint8List encodeMidiClip(MidiClip clip, {double? bpm}) {
   final track = BytesBuilder();
 
@@ -36,28 +37,33 @@ Uint8List encodeMidiClip(MidiClip clip, {double? bpm}) {
   // 4/4, 24 MIDI clocks per click, 8 32nds per quarter.
   meta(0x58, [4, 2, 24, 8]);
 
-  // (tick, isOn, pitch, channel, velocity). Offs sort before ons at the same
-  // tick so a repeated note re-triggers instead of being cut off.
-  final events = <(int, bool, int, int, int)>[];
+  // (tick, order, bytes). At one tick note-offs go first so a repeated note
+  // re-triggers instead of being cut off, then controllers and program
+  // changes so they apply to the notes starting there, then note-ons.
+  final events = <(int, int, int, List<int>)>[];
+  var seq = 0;
   for (final n in clip.notes) {
-    events.add((n.startTick, true, n.pitch, n.channel, n.velocity));
-    events.add((n.endTick, false, n.pitch, n.channel, 0));
+    final ch = n.channel & 0x0F;
+    events.add((n.endTick, 0, seq++, [0x80 | ch, n.pitch & 0x7F, 0x40]));
+    events.add((n.startTick, 2, seq++,
+        [0x90 | ch, n.pitch & 0x7F, n.velocity.clamp(1, 127)]));
+  }
+  for (final e in clip.events) {
+    events.add((e.tick, 1, seq++, midiEventBytes(e)));
   }
   events.sort((a, b) {
-    final c = a.$1.compareTo(b.$1);
+    var c = a.$1.compareTo(b.$1);
     if (c != 0) return c;
-    if (a.$2 != b.$2) return a.$2 ? 1 : -1;
-    return a.$3.compareTo(b.$3);
+    c = a.$2.compareTo(b.$2);
+    return c != 0 ? c : a.$3.compareTo(b.$3);
   });
 
   var last = 0;
-  for (final (tick, isOn, pitch, channel, velocity) in events) {
+  for (final (tick, _, _, bytes) in events) {
     final t = tick < 0 ? 0 : tick;
     track
       ..add(_varLen(t - last))
-      ..addByte((isOn ? 0x90 : 0x80) | (channel & 0x0F))
-      ..addByte(pitch & 0x7F)
-      ..addByte(isOn ? velocity.clamp(1, 127) : 0x40);
+      ..add(bytes);
     last = t;
   }
   final end = clip.lengthTicks > last ? clip.lengthTicks : last;
@@ -76,6 +82,19 @@ Uint8List encodeMidiClip(MidiClip clip, {double? bpm}) {
     ..add(_u32(body.length))
     ..add(body);
   return out.toBytes();
+}
+
+/// [event] as the bytes of a MIDI channel message: status, then one data
+/// byte (program change, channel pressure) or two (the rest; pitch bend is
+/// least significant 7 bits first).
+List<int> midiEventBytes(MidiEvent event) {
+  final status = event.kind.status | (event.channel & 0x0F);
+  final value = event.value.clamp(0, event.kind.maxValue);
+  return switch (event.kind) {
+    MidiEventKind.pitchBend => [status, value & 0x7F, (value >> 7) & 0x7F],
+    MidiEventKind.program || MidiEventKind.channelPressure => [status, value],
+    _ => [status, event.number & 0x7F, value],
+  };
 }
 
 /// A file name for [clip] that is safe on every desktop filesystem:

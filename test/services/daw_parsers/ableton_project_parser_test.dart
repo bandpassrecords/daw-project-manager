@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xml/xml.dart';
 
+import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/services/daw_parsers/ableton_project_parser.dart';
 
 String _midiClip({
@@ -12,6 +13,7 @@ String _midiClip({
   double startRelative = 0,
   bool loopOn = false,
   String keyTracks = '',
+  String envelopes = '',
 }) =>
     '''
 <MidiClip Id="0" Time="$currentStart">
@@ -25,7 +27,23 @@ String _midiClip({
   </Loop>
   <Name Value="$name" />
   <Notes><KeyTracks>$keyTracks</KeyTracks></Notes>
+  <Envelopes><Envelopes>$envelopes</Envelopes></Envelopes>
 </MidiClip>''';
+
+/// A clip envelope on pointee [id] with (beats, value) [points].
+String _envelope(int id, List<(num, num)> points) => '''
+<ClipEnvelope Id="0">
+  <EnvelopeTarget><PointeeId Value="$id" /></EnvelopeTarget>
+  <Automation><Events>
+    ${[for (final (t, v) in points) '<FloatEvent Id="0" Time="$t" Value="$v" />'].join()}
+  </Events></Automation>
+</ClipEnvelope>''';
+
+/// A track's MIDI controller targets, as Live writes all 131 of them: index
+/// N gets pointee id 1000 + N.
+final _controllers = '<MidiControllers>'
+    '${[for (var n = 0; n <= 130; n++) '<ControllerTargets.$n Id="${1000 + n}"><LockEnvelope Value="0" /></ControllerTargets.$n>'].join()}'
+    '</MidiControllers>';
 
 String _keyTrack(int key, List<String> events) => '''
 <KeyTrack Id="0">
@@ -45,12 +63,14 @@ String _set({required String tracks}) => '''<?xml version="1.0" encoding="UTF-8"
   </LiveSet>
 </Ableton>''';
 
-String _midiTrack(String name, {String devices = '', String clips = ''}) => '''
+String _midiTrack(String name,
+        {String devices = '', String clips = '', String controllers = ''}) =>
+    '''
 <MidiTrack Id="1">
   <Name><EffectiveName Value="$name" /><UserName Value="$name" /></Name>
   <DeviceChain>
     <DeviceChain><Devices>$devices</Devices></DeviceChain>
-    <MainSequencer><ClipTimeable><ArrangerAutomation><Events>$clips</Events></ArrangerAutomation></ClipTimeable></MainSequencer>
+    <MainSequencer><ClipTimeable><ArrangerAutomation><Events>$clips</Events></ArrangerAutomation></ClipTimeable>$controllers</MainSequencer>
   </DeviceChain>
 </MidiTrack>''';
 
@@ -198,6 +218,90 @@ void main() {
         tracks: _midiTrack('Kick', clips: '$clip$clip$clip'),
       )).readMidiClips();
       expect(clips.single.occurrences, 3);
+    });
+  });
+
+  group('clip envelopes', () {
+    MidiClip read(String envelopes, {bool withControllers = true}) {
+      final clip = _midiClip(
+        name: 'Lead',
+        currentStart: 0,
+        currentEnd: 4,
+        keyTracks: _keyTrack(60, [_note(0, 1, 100)]),
+        envelopes: envelopes,
+      );
+      return _parse(_set(
+        tracks: _midiTrack('Lead',
+            clips: clip, controllers: withControllers ? _controllers : ''),
+      )).readMidiClips().single;
+    }
+
+    test('target N is pitch bend, channel pressure, then CC N − 2', () {
+      final clip = read([
+        _envelope(1000, [(-63072000, 0), (1, 4096)]),
+        _envelope(1001, [(-63072000, 0), (2, 90)]),
+        _envelope(1003, [(-63072000, 0), (1, 0), (1, 127)]), // CC 1
+        _envelope(1066, [(-63072000, 0), (3, 0), (3, 127)]), // CC 64
+      ].join());
+      expect(
+        clip.events.map((e) => (e.tick, e.kind, e.number, e.value)),
+        [
+          (0, MidiEventKind.pitchBend, 0, 8192),
+          (0, MidiEventKind.channelPressure, 0, 0),
+          (0, MidiEventKind.controller, 1, 0),
+          (0, MidiEventKind.controller, 64, 0),
+          (960, MidiEventKind.pitchBend, 0, 12288),
+          (960, MidiEventKind.controller, 1, 127),
+          (1920, MidiEventKind.channelPressure, 0, 90),
+          (2880, MidiEventKind.controller, 64, 127),
+        ],
+        reason: 'Live\'s start point holds until the first real one; two '
+            'points at one time are a step',
+      );
+    });
+
+    test('envelopes on anything but a MIDI controller are skipped', () {
+      // 5000 is a device parameter, not one of the track's controllers;
+      // 1127 would be CC 125, a channel-mode message.
+      final clip = read([
+        _envelope(5000, [(0, 0.5), (1, 0.7)]),
+        _envelope(1127, [(0, 127)]),
+      ].join());
+      expect(clip.events, isEmpty);
+    });
+
+    test('without the track\'s controller list nothing can be resolved', () {
+      final clip = read(_envelope(1003, [(0, 64)]), withControllers: false);
+      expect(clip.events, isEmpty);
+    });
+
+    test('envelopeToEvents samples ramps and keeps steps sharp', () {
+      final events = AbletonProjectParser.envelopeToEvents(
+        [(0, 0), (1, 127), (1, 0)],
+        kind: MidiEventKind.controller,
+        number: 74,
+      );
+      final normalized = normalizeMidiEvents(events);
+      expect(normalized.first.value, 0);
+      expect(normalized.first.tick, 0);
+      // Rising every 1/32 beat (30 ticks at 960 PPQ)…
+      expect(normalized[1].tick, 30);
+      expect(normalized[1].value, closeTo(127 / 32, 1));
+      final values = [for (final e in normalized) e.value];
+      for (var i = 1; i < values.length - 2; i++) {
+        expect(values[i], greaterThan(values[i - 1]));
+      }
+      // …then the step down at beat 1 is one event, not a ramp.
+      expect(normalized.last.tick, 960);
+      expect(normalized.last.value, 0);
+    });
+
+    test('pitch bend is shifted from Live\'s ±8192 to MIDI\'s 0–16383', () {
+      final events = AbletonProjectParser.envelopeToEvents(
+        [(0, -8192), (0, 0), (0, 8191)],
+        kind: MidiEventKind.pitchBend,
+      );
+      expect(events.map((e) => e.value), [0, 8192, 16383]);
     });
   });
 }

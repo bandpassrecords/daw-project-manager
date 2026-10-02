@@ -6286,4 +6286,89 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiPreviewVolume => 'Громкость прослушивания';
+
+  @override
+  String get midiLanePicker => 'Параметр под нотами';
+
+  @override
+  String get midiLaneNone => 'Нет';
+
+  @override
+  String get midiLaneVelocity => 'Скорость нажатия';
+
+  @override
+  String get midiLanePitchBend => 'Питч-бенд';
+
+  @override
+  String get midiLaneChannelPressure => 'Послекасание';
+
+  @override
+  String get midiLanePolyPressure => 'Полифоническое послекасание';
+
+  @override
+  String get midiLaneProgram => 'Смена программы';
+
+  @override
+  String midiLaneController(int number) {
+    return 'CC $number';
+  }
+
+  @override
+  String midiLaneControllerNamed(int number, String name) {
+    return 'CC $number · $name';
+  }
+
+  @override
+  String get midiCcModulation => 'Модуляция';
+
+  @override
+  String get midiCcBreath => 'Дыхание';
+
+  @override
+  String get midiCcFoot => 'Педаль';
+
+  @override
+  String get midiCcPortamentoTime => 'Время портаменто';
+
+  @override
+  String get midiCcVolume => 'Громкость';
+
+  @override
+  String get midiCcBalance => 'Баланс';
+
+  @override
+  String get midiCcPan => 'Панорама';
+
+  @override
+  String get midiCcExpression => 'Экспрессия';
+
+  @override
+  String get midiCcSustain => 'Педаль сустейна';
+
+  @override
+  String get midiCcPortamento => 'Портаменто';
+
+  @override
+  String get midiCcSostenuto => 'Состенуто';
+
+  @override
+  String get midiCcSoftPedal => 'Левая педаль';
+
+  @override
+  String get midiCcResonance => 'Резонанс';
+
+  @override
+  String get midiCcRelease => 'Затухание';
+
+  @override
+  String get midiCcAttack => 'Атака';
+
+  @override
+  String get midiCcCutoff => 'Срез';
+
+  @override
+  String get midiCcReverb => 'Реверберация';
+
+  @override
+  String get midiCcChorus => 'Хорус';
 }

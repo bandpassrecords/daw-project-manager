@@ -46,6 +46,9 @@ Future<void> showMidiPianoRoll(
         zoomOut: l10n.midiPianoRollZoomOut,
         fit: l10n.midiPianoRollFit,
         follow: l10n.midiPianoRollFollow,
+        lane: l10n.midiLanePicker,
+        laneNone: l10n.midiLaneNone,
+        laneName: (lane) => midiLaneName(l10n, lane),
       ),
       close: l10n.close,
       play: l10n.midiClipPlay,
@@ -90,6 +93,46 @@ Future<void> showMidiPianoRoll(
     },
   );
 }
+
+/// A lane's name in the piano roll's picker: "Velocity", "Pitch bend",
+/// "CC 1 · Modulation", "CC 20"…
+String midiLaneName(AppLocalizations l10n, MidiLane lane) {
+  final kind = lane.kind;
+  if (kind == null) return l10n.midiLaneVelocity;
+  return switch (kind) {
+    MidiEventKind.pitchBend => l10n.midiLanePitchBend,
+    MidiEventKind.channelPressure => l10n.midiLaneChannelPressure,
+    MidiEventKind.polyPressure => l10n.midiLanePolyPressure,
+    MidiEventKind.program => l10n.midiLaneProgram,
+    MidiEventKind.controller => switch (_controllerName(l10n, lane.number)) {
+        final name? => l10n.midiLaneControllerNamed(lane.number, name),
+        null => l10n.midiLaneController(lane.number),
+      },
+  };
+}
+
+/// The usual name of controller [number], for the ones every DAW names.
+String? _controllerName(AppLocalizations l10n, int number) => switch (number) {
+      1 => l10n.midiCcModulation,
+      2 => l10n.midiCcBreath,
+      4 => l10n.midiCcFoot,
+      5 => l10n.midiCcPortamentoTime,
+      7 => l10n.midiCcVolume,
+      8 => l10n.midiCcBalance,
+      10 => l10n.midiCcPan,
+      11 => l10n.midiCcExpression,
+      64 => l10n.midiCcSustain,
+      65 => l10n.midiCcPortamento,
+      66 => l10n.midiCcSostenuto,
+      67 => l10n.midiCcSoftPedal,
+      71 => l10n.midiCcResonance,
+      72 => l10n.midiCcRelease,
+      73 => l10n.midiCcAttack,
+      74 => l10n.midiCcCutoff,
+      91 => l10n.midiCcReverb,
+      93 => l10n.midiCcChorus,
+      _ => null,
+    };
 
 class MidiPianoRollWindowLabels {
   const MidiPianoRollWindowLabels({
