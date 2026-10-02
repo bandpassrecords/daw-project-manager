@@ -110,43 +110,77 @@ Future<String?> promptCollectionName(
   required String title,
   required String action,
   String initial = '',
-}) {
-  final l10n = AppLocalizations.of(context)!;
-  final controller = TextEditingController(text: initial);
-  return showDialog<String>(
-    context: context,
-    builder: (context) => StatefulBuilder(
-      builder: (context, setState) {
-        final valid = controller.text.trim().isNotEmpty;
-        void submit() {
-          if (controller.text.trim().isNotEmpty) {
-            Navigator.of(context).pop(controller.text.trim());
-          }
-        }
+}) =>
+    showDialog<String>(
+      context: context,
+      builder: (_) => CollectionNameDialog(
+        title: title,
+        action: action,
+        initial: initial,
+      ),
+    );
 
-        return AlertDialog(
-          title: Text(title),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: InputDecoration(hintText: l10n.midiCollectionNameHint),
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) => submit(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: valid ? submit : null,
-              child: Text(action),
-            ),
-          ],
-        );
-      },
-    ),
-  ).whenComplete(controller.dispose);
+/// The dialog behind [promptCollectionName].
+///
+/// A widget of its own so it owns its text controller: the dialog is still
+/// on screen for its closing animation after the result is returned, so a
+/// controller disposed by the caller on return was used after disposal.
+class CollectionNameDialog extends StatefulWidget {
+  const CollectionNameDialog({
+    super.key,
+    required this.title,
+    required this.action,
+    this.initial = '',
+  });
+
+  final String title;
+  final String action;
+  final String initial;
+
+  @override
+  State<CollectionNameDialog> createState() => _CollectionNameDialogState();
+}
+
+class _CollectionNameDialogState extends State<CollectionNameDialog> {
+  late final TextEditingController _controller =
+      TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  String get _name => _controller.text.trim();
+
+  void _submit() {
+    if (_name.isNotEmpty) Navigator.of(context).pop(_name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AlertDialog(
+      title: Text(widget.title),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(hintText: l10n.midiCollectionNameHint),
+        onChanged: (_) => setState(() {}),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: _name.isEmpty ? null : _submit,
+          child: Text(widget.action),
+        ),
+      ],
+    );
+  }
 }
 
 /// Confirms deleting [collection]. Its clips are copies, so nothing in any
