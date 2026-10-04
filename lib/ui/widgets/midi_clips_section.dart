@@ -303,6 +303,26 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
   static String _fileNameOf(String path) =>
       path.split(RegExp(r'[\\/]')).last;
 
+  /// The button that reads the project file — everything a full extraction
+  /// reads, clips included — with what it does beneath it.
+  Widget _readButton({
+    required IconData icon,
+    required String label,
+    required String hint,
+  }) =>
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          OutlinedButton.icon(
+            onPressed: _read,
+            icon: Icon(icon, size: 18),
+            label: Text(label),
+          ),
+          const SizedBox(height: 6),
+          Text(hint, style: Theme.of(context).textTheme.bodySmall),
+        ],
+      );
+
   void _snack(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
@@ -325,6 +345,10 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (showsMidiClipsHeading(
+          clipsStored: stored != null,
+          contentsRead: widget.project.stats != null,
+        ))
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -477,20 +501,29 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
             ],
           )
         else if (stored == null)
-          widget.canReadFile
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: _read,
-                      icon: const Icon(Icons.piano, size: 18),
-                      label: Text(l10n.midiClipsLoad),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(l10n.midiClipsLoadHint, style: theme.textTheme.bodySmall),
-                  ],
-                )
-              : Text(l10n.midiClipsNoneStored, style: theme.textTheme.bodySmall)
+          switch (midiClipsEmptyState(
+            contentsRead: widget.project.stats != null,
+            canReadFile: widget.canReadFile,
+          )) {
+            MidiClipsEmptyState.readContents => _readButton(
+                icon: Icons.inventory_2_outlined,
+                label: l10n.projectContentsRead,
+                hint: l10n.projectContentsReadHint,
+              ),
+            MidiClipsEmptyState.nothingReadYet => Text(
+                l10n.projectContentsNoneRead,
+                style: theme.textTheme.bodySmall,
+              ),
+            MidiClipsEmptyState.loadClips => _readButton(
+                icon: Icons.piano,
+                label: l10n.midiClipsLoad,
+                hint: l10n.midiClipsLoadHint,
+              ),
+            MidiClipsEmptyState.noClipsStored => Text(
+                l10n.midiClipsNoneStored,
+                style: theme.textTheme.bodySmall,
+              ),
+          }
         else if (clips.isEmpty)
           Text(l10n.midiClipsNone, style: theme.textTheme.bodySmall)
         else
@@ -610,3 +643,49 @@ String synthVoiceName(AppLocalizations l10n, SynthVoice v) => switch (v) {
       SynthVoice.hiHat => l10n.synthVoiceHiHat,
       SynthVoice.percussion => l10n.synthVoicePercussion,
     };
+
+
+/// What the section shows when no clips are stored for its project.
+enum MidiClipsEmptyState {
+  /// Nothing read from the file yet, and this device can read it: one button
+  /// for everything the project holds — tracks, plug-ins and MIDI clips.
+  readContents,
+
+  /// Nothing read yet, and no file here to read (a phone, an archived
+  /// project): say where it can be done.
+  nothingReadYet,
+
+  /// The contents were read but no clips came with them (an older read, or
+  /// clips not synced yet), and the file is here: read the clips.
+  loadClips,
+
+  /// As [loadClips], with no file here to read.
+  noClipsStored,
+}
+
+/// Picks the empty state. "Read" goes by the project's stats: they are
+/// written by every full extraction, so null means nothing has been read
+/// from the file at all — the empty state is then the whole of Project
+/// Contents, not a MIDI one.
+MidiClipsEmptyState midiClipsEmptyState({
+  required bool contentsRead,
+  required bool canReadFile,
+}) {
+  if (!contentsRead) {
+    return canReadFile
+        ? MidiClipsEmptyState.readContents
+        : MidiClipsEmptyState.nothingReadYet;
+  }
+  return canReadFile
+      ? MidiClipsEmptyState.loadClips
+      : MidiClipsEmptyState.noClipsStored;
+}
+
+/// Whether the section heads itself "MIDI clips". Not while nothing at all
+/// has been read: the empty state then speaks for all of Project Contents,
+/// and a "MIDI clips" heading over it would say it is about MIDI only.
+bool showsMidiClipsHeading({
+  required bool clipsStored,
+  required bool contentsRead,
+}) =>
+    clipsStored || contentsRead;

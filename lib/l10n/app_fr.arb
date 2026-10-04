@@ -4026,5 +4026,8 @@
   "midiImportFiles": "Importer des fichiers MIDI",
   "midiImportDialogTitle": "Choisir les fichiers MIDI à importer",
   "midiImportSkipped": "Non importé (pas un fichier MIDI, ou aucune note) : {files}",
-  "midiPreviewLoop": "Lecture en boucle"
+  "midiPreviewLoop": "Lecture en boucle",
+  "projectContentsRead": "Lire le contenu du projet",
+  "projectContentsReadHint": "Lit les pistes, les plug-ins et les clips MIDI du fichier du projet. Ils sont conservés avec le projet et synchronisés sur vos autres appareils.",
+  "projectContentsNoneRead": "Rien n’a encore été lu dans ce projet. Lancez un scan approfondi, ou extrayez ses métadonnées, sur l’ordinateur qui a le fichier du projet."
 }

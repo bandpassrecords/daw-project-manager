@@ -10672,6 +10672,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loop playback'**
   String get midiPreviewLoop;
+
+  /// Project page button that reads tracks, plug-ins and MIDI clips from the project file, shown while nothing has been read yet
+  ///
+  /// In en, this message translates to:
+  /// **'Read project contents'**
+  String get projectContentsRead;
+
+  /// Hint under the "Read project contents" button
+  ///
+  /// In en, this message translates to:
+  /// **'Reads the tracks, plug-ins and MIDI clips from the project file. They\'re kept with the project, so they sync to your other devices.'**
+  String get projectContentsReadHint;
+
+  /// Project page, when nothing has been read from the project file yet and this device cannot read it (a phone, an archived project)
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing has been read from this project yet. Run a deep scan, or extract its metadata, on the computer that has the project file.'**
+  String get projectContentsNoneRead;
 }
 
 class _AppLocalizationsDelegate

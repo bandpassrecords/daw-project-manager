@@ -6188,5 +6188,17 @@
   "midiPreviewLoop": "Loop playback",
   "@midiPreviewLoop": {
     "description": "Tooltip of the toggle that makes MIDI clip previews repeat until stopped"
+  },
+  "projectContentsRead": "Read project contents",
+  "@projectContentsRead": {
+    "description": "Project page button that reads tracks, plug-ins and MIDI clips from the project file, shown while nothing has been read yet"
+  },
+  "projectContentsReadHint": "Reads the tracks, plug-ins and MIDI clips from the project file. They're kept with the project, so they sync to your other devices.",
+  "@projectContentsReadHint": {
+    "description": "Hint under the \"Read project contents\" button"
+  },
+  "projectContentsNoneRead": "Nothing has been read from this project yet. Run a deep scan, or extract its metadata, on the computer that has the project file.",
+  "@projectContentsNoneRead": {
+    "description": "Project page, when nothing has been read from the project file yet and this device cannot read it (a phone, an archived project)"
   }
 }
