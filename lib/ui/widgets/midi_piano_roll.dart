@@ -17,6 +17,16 @@ String midiNoteName(int pitch) =>
 
 bool isBlackKey(int pitch) => const {1, 3, 6, 8, 10}.contains(pitch % 12);
 
+/// Row height from which every key on the keyboard is named, not just the
+/// C's: the names need about that much room to stay legible.
+const double kAllKeyNamesRowHeight = 18;
+
+/// Whether the keyboard names [pitch] at [rowHeight]. The C's are named from
+/// small rows up, so octaves can always be told apart; zoomed in vertically
+/// far enough ([kAllKeyNamesRowHeight]) every key is.
+bool showsKeyName(int pitch, double rowHeight) =>
+    rowHeight >= kAllKeyNamesRowHeight || (pitch % 12 == 0 && rowHeight >= 8);
+
 /// The rows a piano roll shows for [notes]: their range padded by a few
 /// semitones, widened to at least two octaves so a one-note clip doesn't
 /// fill the window with three fat rows.
@@ -546,45 +556,62 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
             );
           }),
         ),
-        // The lane picker, then vertical zoom (row height).
+        // The lane picker, then vertical zoom (row height). The picker gives
+        // way on a phone — long lane names are cut short — so the row never
+        // runs off the screen; the slider keeps its width at the right.
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Tooltip(
-              message: labels.lane,
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<MidiLane?>(
-                  key: const ValueKey('midi-piano-roll-lane-picker'),
-                  value: _lane,
-                  isDense: true,
-                  icon: const Icon(Icons.arrow_drop_down),
-                  style: theme.textTheme.bodySmall,
-                  onChanged: (lane) => setState(() => _lane = lane),
-                  items: [
-                    for (final lane in _lanes)
-                      DropdownMenuItem(
-                        value: lane,
-                        child: Text(labels.laneName(lane)),
-                      ),
-                    DropdownMenuItem<MidiLane?>(
-                      value: null,
-                      child: Text(labels.laneNone),
+            Flexible(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 240),
+                child: Tooltip(
+                  message: labels.lane,
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<MidiLane?>(
+                      key: const ValueKey('midi-piano-roll-lane-picker'),
+                      value: _lane,
+                      isDense: true,
+                      isExpanded: true,
+                      icon: const Icon(Icons.arrow_drop_down),
+                      style: theme.textTheme.bodySmall,
+                      onChanged: (lane) => setState(() => _lane = lane),
+                      items: [
+                        for (final lane in _lanes)
+                          DropdownMenuItem(
+                            value: lane,
+                            child: Text(labels.laneName(lane),
+                                maxLines: 1, overflow: TextOverflow.ellipsis),
+                          ),
+                        DropdownMenuItem<MidiLane?>(
+                          value: null,
+                          child: Text(labels.laneNone,
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-            const Spacer(),
-            Icon(Icons.unfold_less, size: 16, color: theme.textTheme.bodySmall?.color),
-            SizedBox(
-              width: 140,
-              child: Slider(
-                value: _rowHeight,
-                min: 6,
-                max: 28,
-                onChanged: (v) => setState(() => _rowHeight = v),
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.unfold_less,
+                    size: 16, color: theme.textTheme.bodySmall?.color),
+                SizedBox(
+                  width: 140,
+                  child: Slider(
+                    value: _rowHeight,
+                    min: 6,
+                    max: 28,
+                    onChanged: (v) => setState(() => _rowHeight = v),
+                  ),
+                ),
+                Icon(Icons.unfold_more,
+                    size: 16, color: theme.textTheme.bodySmall?.color),
+              ],
             ),
-            Icon(Icons.unfold_more, size: 16, color: theme.textTheme.bodySmall?.color),
           ],
         ),
       ],
@@ -741,9 +768,12 @@ class _RollPainter extends CustomPainter {
       );
       canvas.drawLine(Offset(0, y + rowHeight), Offset(keyboardWidth, y + rowHeight),
           Paint()..color = colors.beatLine);
-      if (pitch % 12 == 0 && rowHeight >= 8) {
+      if (showsKeyName(pitch, rowHeight)) {
+        // With every key named, the C's stay bold so octaves still stand out.
         _text(canvas, midiNoteName(pitch),
-            Offset(keyboardWidth - 4, y + rowHeight / 2), alignRight: true);
+            Offset(keyboardWidth - 4, y + rowHeight / 2),
+            alignRight: true,
+            bold: pitch % 12 == 0 && rowHeight >= kAllKeyNamesRowHeight);
       }
     }
     canvas.restore();
@@ -765,9 +795,15 @@ class _RollPainter extends CustomPainter {
     canvas.restore();
   }
 
-  void _text(Canvas canvas, String text, Offset at, {bool alignRight = false}) {
+  void _text(Canvas canvas, String text, Offset at,
+      {bool alignRight = false, bool bold = false}) {
     final tp = TextPainter(
-      text: TextSpan(text: text, style: labelStyle.copyWith(color: colors.keyText, fontSize: 10)),
+      text: TextSpan(
+          text: text,
+          style: labelStyle.copyWith(
+              color: colors.keyText,
+              fontSize: 10,
+              fontWeight: bold ? FontWeight.bold : null)),
       textDirection: TextDirection.ltr,
     )..layout();
     final dx = alignRight ? at.dx - tp.width : at.dx;

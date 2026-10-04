@@ -271,7 +271,6 @@ class MidiPianoRollWindow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.space): _playPause,
@@ -286,10 +285,36 @@ class MidiPianoRollWindow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ListenableBuilder(
+              LayoutBuilder(
+                builder: (context, constraints) => _header(
+                  context,
+                  stacked: pianoRollHeaderStacked(constraints.maxWidth),
+                ),
+              ),
+              Expanded(
+                child: MidiPianoRoll(
+                  clip: clip,
+                  bpm: bpm,
+                  labels: labels.roll,
+                  positionOf: () => player.positionOf(playerKey),
+                  playback: player,
+                  onSeek: _seek,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// The window's top: transport, title, loop, volume, open project, close.
+  /// Stacked on a narrow screen — the title on a line of its own, up to two
+  /// lines long, the controls in a row beneath — because squeezed into one
+  /// row with everything else a phone left the name a few letters wide.
+  Widget _header(BuildContext context, {required bool stacked}) {
+    final theme = Theme.of(context);
+    final transport = ListenableBuilder(
                     listenable: player,
                     builder: (context, _) {
                       if (player.preparingKey == playerKey) {
@@ -323,73 +348,93 @@ class MidiPianoRollWindow extends StatelessWidget {
                         ],
                       );
                     },
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(title,
-                            style: theme.textTheme.titleMedium,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
-                        if (subtitle != null && subtitle!.isNotEmpty)
-                          Text(subtitle!,
-                              style: theme.textTheme.bodySmall,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis),
-                      ],
-                    ),
-                  ),
-                  if (loop != null &&
-                      onLoopChanged != null &&
-                      loopTooltip != null)
-                    MidiLoopToggle(
-                      loop: loop!,
-                      onChanged: onLoopChanged!,
-                      tooltip: loopTooltip!,
-                    ),
-                  if (volume != null &&
-                      onVolumeChanged != null &&
-                      volumeLabels != null)
-                    MidiVolumeControl(
-                      volume: volume!,
-                      onChanged: onVolumeChanged!,
-                      labels: volumeLabels!,
-                      sliderWidth: 90,
-                    ),
-                  if (onOpenProject != null)
-                    IconButton(
-                      tooltip: labels.openProject,
-                      icon: const Icon(Icons.assignment),
-                      onPressed: () {
-                        player.stop();
-                        Navigator.of(context).pop();
-                        onOpenProject!();
-                      },
-                    ),
-                  IconButton(
-                    tooltip: labels.close,
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: MidiPianoRoll(
-                  clip: clip,
-                  bpm: bpm,
-                  labels: labels.roll,
-                  positionOf: () => player.positionOf(playerKey),
-                  playback: player,
-                  onSeek: _seek,
-                ),
-              ),
-            ],
+                  );
+    final lines = stacked ? 2 : 1;
+    final titleBlock = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(title,
+            key: const ValueKey('midi-piano-roll-title'),
+            style: theme.textTheme.titleMedium,
+            maxLines: lines,
+            overflow: TextOverflow.ellipsis),
+        if (subtitle != null && subtitle!.isNotEmpty)
+          Text(subtitle!,
+              style: theme.textTheme.bodySmall,
+              maxLines: lines,
+              overflow: TextOverflow.ellipsis),
+      ],
+    );
+    final controls = <Widget>[
+      if (loop != null && onLoopChanged != null && loopTooltip != null)
+        MidiLoopToggle(
+          loop: loop!,
+          onChanged: onLoopChanged!,
+          tooltip: loopTooltip!,
+        ),
+      if (volume != null && onVolumeChanged != null && volumeLabels != null)
+        MidiVolumeControl(
+          volume: volume!,
+          onChanged: onVolumeChanged!,
+          labels: volumeLabels!,
+          sliderWidth: 90,
+        ),
+      if (onOpenProject != null)
+        IconButton(
+          tooltip: labels.openProject,
+          icon: const Icon(Icons.assignment),
+          onPressed: () {
+            player.stop();
+            Navigator.of(context).pop();
+            onOpenProject!();
+          },
+        ),
+    ];
+    final close = IconButton(
+      tooltip: labels.close,
+      icon: const Icon(Icons.close),
+      onPressed: () => Navigator.of(context).pop(),
+    );
+
+    if (!stacked) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          transport,
+          const SizedBox(width: 8),
+          Expanded(child: titleBlock),
+          ...controls,
+          close,
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(width: 4),
+            Expanded(child: titleBlock),
+            close,
+          ],
+        ),
+        // Scrolls sideways rather than overflow on the narrowest phones.
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [transport, ...controls],
           ),
         ),
-      ),
+      ],
     );
   }
 }
+
+/// Whether the piano roll window's header stacks its title above the
+/// controls: below this width a single row leaves the clip's name a few
+/// letters wide.
+bool pianoRollHeaderStacked(double width) => width < 600;

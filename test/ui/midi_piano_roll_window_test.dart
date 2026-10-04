@@ -10,6 +10,7 @@ import 'package:daw_project_manager/ui/midi_clip_share.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
+import 'package:daw_project_manager/ui/widgets/midi_volume_control.dart';
 
 const _clip = MidiClip(
   name: 'Riff',
@@ -244,6 +245,80 @@ void main() {
     testWidgets('open project is hidden when not offered', (tester) async {
       await open(tester, withActions: false);
       expect(find.byTooltip('Open project'), findsNothing);
+    });
+  });
+
+  group('header layout', () {
+    test('stacks below 600 pixels wide', () {
+      expect(pianoRollHeaderStacked(360), isTrue);
+      expect(pianoRollHeaderStacked(599), isTrue);
+      expect(pianoRollHeaderStacked(600), isFalse);
+      expect(pianoRollHeaderStacked(1200), isFalse);
+    });
+
+    const longTitle = 'Lead Synth Arp – Chorus Variation With A Long Name';
+
+    Future<void> pumpAt(WidgetTester tester, double width) async {
+      tester.view.physicalSize = Size(width, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final player = MidiPreviewPlayer();
+      addTearDown(player.dispose);
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: MidiPianoRollWindow(
+            clip: _clip,
+            title: longTitle,
+            subtitle: 'Night Drive (Extended Mix) – Final Version',
+            player: player,
+            playerKey: 'k',
+            bpm: 120,
+            labels: _labels,
+            onPlay: () {},
+            onOpenProject: () {},
+            volume: 0.8,
+            onVolumeChanged: (_) {},
+            volumeLabels: const MidiVolumeLabels(
+                volume: 'Volume', mute: 'Mute', unmute: 'Unmute'),
+            loop: false,
+            onLoopChanged: (_) {},
+            loopTooltip: 'Loop',
+          ),
+        ),
+      ));
+    }
+
+    Text title(WidgetTester tester) =>
+        tester.widget<Text>(find.byKey(const ValueKey('midi-piano-roll-title')));
+
+    testWidgets('on a phone the title gets a line of its own, two lines deep',
+        (tester) async {
+      await pumpAt(tester, 360);
+      expect(title(tester).maxLines, 2);
+      final width =
+          tester.getSize(find.byKey(const ValueKey('midi-piano-roll-title'))).width;
+      expect(width, greaterThan(250),
+          reason: 'not squeezed between the controls any more');
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('even the narrowest phone does not overflow', (tester) async {
+      await pumpAt(tester, 320);
+      expect(tester.takeException(), isNull);
+      expect(find.byTooltip('Loop'), findsOneWidget);
+      expect(find.byTooltip('Open project'), findsOneWidget);
+    });
+
+    testWidgets('a wide window keeps the single row', (tester) async {
+      await pumpAt(tester, 1000);
+      expect(title(tester).maxLines, 1);
+      final titleTop =
+          tester.getTopLeft(find.byKey(const ValueKey('midi-piano-roll-title'))).dy;
+      final closeTop = tester.getTopLeft(find.byTooltip('Close')).dy;
+      final loopTop = tester.getTopLeft(find.byTooltip('Loop')).dy;
+      expect((loopTop - closeTop).abs(), lessThan(1),
+          reason: 'controls share the row with the close button');
+      expect(titleTop, lessThan(closeTop + 40));
     });
   });
 
