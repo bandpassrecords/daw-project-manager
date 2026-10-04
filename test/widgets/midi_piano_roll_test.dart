@@ -66,6 +66,17 @@ void main() {
       expect(midiNoteName(127), 'G8');
     });
 
+    test('key names: the C\'s always, every key once rows are tall enough', () {
+      // Default row height (14): only the C's.
+      expect([for (var p = 60; p < 72; p++) showsKeyName(p, 14)],
+          [true, ...List.filled(11, false)]);
+      // Zoomed in vertically: every key, black keys included.
+      expect([for (var p = 60; p < 72; p++) showsKeyName(p, kAllKeyNamesRowHeight)],
+          List.filled(12, true));
+      // Squeezed: not even the C's fit.
+      expect(showsKeyName(60, 6), isFalse);
+    });
+
     test('black keys', () {
       expect([for (var p = 60; p < 72; p++) isBlackKey(p)],
           [false, true, false, true, false, false, true, false, true, false, true, false]);
