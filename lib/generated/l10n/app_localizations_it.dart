@@ -6432,4 +6432,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'Riproduzione in loop';
+
+  @override
+  String get projectContentsRead => 'Leggi il contenuto del progetto';
+
+  @override
+  String get projectContentsReadHint =>
+      'Legge tracce, plugin e clip MIDI dal file del progetto. Vengono conservati con il progetto e sincronizzati sugli altri tuoi dispositivi.';
+
+  @override
+  String get projectContentsNoneRead =>
+      'Da questo progetto non è ancora stato letto nulla. Esegui una scansione approfondita, o estrai i suoi metadati, sul computer che ha il file del progetto.';
 }

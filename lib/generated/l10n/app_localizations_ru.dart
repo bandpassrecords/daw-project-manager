@@ -6418,4 +6418,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'Воспроизведение по кругу';
+
+  @override
+  String get projectContentsRead => 'Прочитать содержимое проекта';
+
+  @override
+  String get projectContentsReadHint =>
+      'Читает дорожки, плагины и MIDI-клипы из файла проекта. Они хранятся вместе с проектом и синхронизируются с другими устройствами.';
+
+  @override
+  String get projectContentsNoneRead =>
+      'Из этого проекта ещё ничего не прочитано. Выполните глубокое сканирование или извлеките метаданные на компьютере, где есть файл проекта.';
 }

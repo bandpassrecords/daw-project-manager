@@ -6160,4 +6160,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => '循环播放';
+
+  @override
+  String get projectContentsRead => '读取项目内容';
+
+  @override
+  String get projectContentsReadHint =>
+      '从项目文件读取轨道、插件和 MIDI 片段。它们随项目保存，并同步到你的其他设备。';
+
+  @override
+  String get projectContentsNoneRead =>
+      '尚未从此项目读取任何内容。请在存有项目文件的电脑上进行深度扫描或提取其元数据。';
 }

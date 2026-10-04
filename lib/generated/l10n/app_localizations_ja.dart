@@ -6230,4 +6230,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'ループ再生';
+
+  @override
+  String get projectContentsRead => 'プロジェクトの内容を読み込む';
+
+  @override
+  String get projectContentsReadHint =>
+      'プロジェクトファイルからトラック、プラグイン、MIDIクリップを読み込みます。プロジェクトと一緒に保存され、他のデバイスにも同期されます。';
+
+  @override
+  String get projectContentsNoneRead =>
+      'このプロジェクトからはまだ何も読み込まれていません。プロジェクトファイルのあるコンピューターで詳細スキャンを実行するか、メタデータを抽出してください。';
 }

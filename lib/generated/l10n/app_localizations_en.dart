@@ -6387,4 +6387,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'Loop playback';
+
+  @override
+  String get projectContentsRead => 'Read project contents';
+
+  @override
+  String get projectContentsReadHint =>
+      'Reads the tracks, plug-ins and MIDI clips from the project file. They\'re kept with the project, so they sync to your other devices.';
+
+  @override
+  String get projectContentsNoneRead =>
+      'Nothing has been read from this project yet. Run a deep scan, or extract its metadata, on the computer that has the project file.';
 }

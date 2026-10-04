@@ -4026,5 +4026,8 @@
   "midiImportFiles": "MIDI-Dateien importieren",
   "midiImportDialogTitle": "MIDI-Dateien zum Importieren auswählen",
   "midiImportSkipped": "Nicht importiert (keine MIDI-Datei oder keine Noten darin): {files}",
-  "midiPreviewLoop": "Wiedergabe in Schleife"
+  "midiPreviewLoop": "Wiedergabe in Schleife",
+  "projectContentsRead": "Projektinhalt lesen",
+  "projectContentsReadHint": "Liest Spuren, Plug-ins und MIDI-Clips aus der Projektdatei. Sie werden mit dem Projekt gespeichert und auf deine anderen Geräte synchronisiert.",
+  "projectContentsNoneRead": "Aus diesem Projekt wurde noch nichts gelesen. Führe auf dem Computer mit der Projektdatei einen Tiefenscan aus oder extrahiere seine Metadaten."
 }
