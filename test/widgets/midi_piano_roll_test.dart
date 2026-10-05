@@ -9,12 +9,15 @@ import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
+import 'package:daw_project_manager/utils/musical_scale.dart';
 
 String _laneName(MidiLane lane) => lane.isVelocity
     ? 'Velocity'
     : lane.kind == MidiEventKind.controller
         ? 'CC ${lane.number}'
         : lane.kind!.name;
+
+String _scaleTypeName(ScaleType type) => type.name;
 
 const _labels = MidiPianoRollLabels(
   zoomIn: 'Zoom in',
@@ -24,6 +27,11 @@ const _labels = MidiPianoRollLabels(
   lane: 'Lane',
   laneNone: 'None',
   laneName: _laneName,
+  scale: 'Scale',
+  scaleNone: 'No scale',
+  scaleRoot: 'Root',
+  scaleType: 'Type',
+  scaleTypeName: _scaleTypeName,
 );
 
 const _expressive = MidiClip(
@@ -332,6 +340,77 @@ void main() {
       });
     });
 
+    group('scale', () {
+      Widget withScale(MusicalScale? scale, List<MusicalScale?> changes) =>
+          MaterialApp(
+            home: Scaffold(
+              body: SizedBox(
+                width: 800,
+                height: 500,
+                child: MidiPianoRoll(
+                  clip: _clip(),
+                  labels: _labels,
+                  initialScale: scale,
+                  onScaleChanged: changes.add,
+                ),
+              ),
+            ),
+          );
+      final button = find.byKey(const ValueKey('midi-piano-roll-scale'));
+
+      testWidgets('opens on the given scale and says which', (tester) async {
+        await tester.pumpWidget(
+            withScale(const MusicalScale(9, ScaleType.minor), []));
+        expect(find.descendant(of: button, matching: find.text('A minor')),
+            findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('without one the button just says Scale', (tester) async {
+        await tester.pumpWidget(withScale(null, []));
+        expect(find.descendant(of: button, matching: find.text('Scale')),
+            findsOneWidget);
+      });
+
+      testWidgets('the chooser changes it, and No scale turns it off',
+          (tester) async {
+        final changes = <MusicalScale?>[];
+        await tester.pumpWidget(
+            withScale(const MusicalScale(9, ScaleType.minor), changes));
+
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('midi-scale-type')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('dorian').last);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('OK'));
+        await tester.pumpAndSettle();
+        expect(changes, [const MusicalScale(9, ScaleType.dorian)]);
+        expect(find.descendant(of: button, matching: find.text('A dorian')),
+            findsOneWidget);
+
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('No scale'));
+        await tester.pumpAndSettle();
+        expect(changes.last, isNull);
+        expect(find.descendant(of: button, matching: find.text('Scale')),
+            findsOneWidget);
+      });
+
+      testWidgets('cancelling the chooser changes nothing', (tester) async {
+        final changes = <MusicalScale?>[];
+        await tester.pumpWidget(
+            withScale(const MusicalScale(0, ScaleType.major), changes));
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+        expect(changes, isEmpty);
+      });
+    });
+
     testWidgets('an empty clip still lays out', (tester) async {
       await tester.pumpWidget(wrap(const MidiClip(name: 'x', ppq: 480, lengthTicks: 0, notes: [])));
       expect(tester.takeException(), isNull);
@@ -433,6 +512,7 @@ void main() {
                 playerKey: 'k',
                 bpm: 128,
                 onPlay: () => toggles++,
+                musicalKey: 'A minor',
               ),
               child: const Text('open'),
             ),
@@ -449,6 +529,8 @@ void main() {
       expect(find.text('Night Drive'), findsOneWidget);
       expect(find.text('Velocity'), findsOneWidget,
           reason: 'the lane picker, named through the app\'s strings');
+      expect(find.text('A Minor'), findsOneWidget,
+          reason: 'opens on the project key, named in the app strings');
 
       await tester.tap(find.byIcon(Icons.play_circle_outline));
       expect(toggles, 1);

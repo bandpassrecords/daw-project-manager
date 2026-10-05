@@ -10690,6 +10690,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nothing has been read from this project yet. Run a deep scan, or extract its metadata, on the computer that has the project file.'**
   String get projectContentsNoneRead;
+
+  /// Piano roll: the scale button (no scale set) and the scale chooser title
+  ///
+  /// In en, this message translates to:
+  /// **'Scale'**
+  String get midiScale;
+
+  /// Scale chooser action that turns scale highlighting off
+  ///
+  /// In en, this message translates to:
+  /// **'No scale'**
+  String get midiScaleNone;
+
+  /// Scale chooser field: the root note of the scale
+  ///
+  /// In en, this message translates to:
+  /// **'Root'**
+  String get midiScaleRoot;
+
+  /// Scale chooser field: which scale (major, minor, Dorian…)
+  ///
+  /// In en, this message translates to:
+  /// **'Scale type'**
+  String get midiScaleType;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Major'**
+  String get scaleMajor;
+
+  /// Scale name (natural minor)
+  ///
+  /// In en, this message translates to:
+  /// **'Minor'**
+  String get scaleMinor;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Harmonic minor'**
+  String get scaleHarmonicMinor;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Melodic minor'**
+  String get scaleMelodicMinor;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Dorian'**
+  String get scaleDorian;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Phrygian'**
+  String get scalePhrygian;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Lydian'**
+  String get scaleLydian;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Mixolydian'**
+  String get scaleMixolydian;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Locrian'**
+  String get scaleLocrian;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Major pentatonic'**
+  String get scaleMajorPentatonic;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Minor pentatonic'**
+  String get scaleMinorPentatonic;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Blues'**
+  String get scaleBlues;
 }
 
 class _AppLocalizationsDelegate

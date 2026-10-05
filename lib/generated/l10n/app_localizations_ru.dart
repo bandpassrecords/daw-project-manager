@@ -6429,4 +6429,52 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get projectContentsNoneRead =>
       'Из этого проекта ещё ничего не прочитано. Выполните глубокое сканирование или извлеките метаданные на компьютере, где есть файл проекта.';
+
+  @override
+  String get midiScale => 'Гамма';
+
+  @override
+  String get midiScaleNone => 'Без гаммы';
+
+  @override
+  String get midiScaleRoot => 'Тоника';
+
+  @override
+  String get midiScaleType => 'Тип гаммы';
+
+  @override
+  String get scaleMajor => 'Мажор';
+
+  @override
+  String get scaleMinor => 'Минор';
+
+  @override
+  String get scaleHarmonicMinor => 'Гармонический минор';
+
+  @override
+  String get scaleMelodicMinor => 'Мелодический минор';
+
+  @override
+  String get scaleDorian => 'Дорийский';
+
+  @override
+  String get scalePhrygian => 'Фригийский';
+
+  @override
+  String get scaleLydian => 'Лидийский';
+
+  @override
+  String get scaleMixolydian => 'Миксолидийский';
+
+  @override
+  String get scaleLocrian => 'Локрийский';
+
+  @override
+  String get scaleMajorPentatonic => 'Мажорная пентатоника';
+
+  @override
+  String get scaleMinorPentatonic => 'Минорная пентатоника';
+
+  @override
+  String get scaleBlues => 'Блюз';
 }

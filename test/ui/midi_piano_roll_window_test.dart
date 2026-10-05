@@ -10,6 +10,7 @@ import 'package:daw_project_manager/ui/midi_clip_share.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
+import 'package:daw_project_manager/utils/musical_scale.dart';
 import 'package:daw_project_manager/ui/widgets/midi_volume_control.dart';
 
 const _clip = MidiClip(
@@ -21,6 +22,8 @@ const _clip = MidiClip(
 
 String _laneName(MidiLane lane) => lane.toString();
 
+String _scaleTypeName(ScaleType type) => type.name;
+
 const _labels = MidiPianoRollWindowLabels(
   roll: MidiPianoRollLabels(
     zoomIn: 'In',
@@ -30,6 +33,11 @@ const _labels = MidiPianoRollWindowLabels(
     lane: 'Lane',
     laneNone: 'None',
     laneName: _laneName,
+    scale: 'Scale',
+    scaleNone: 'No scale',
+    scaleRoot: 'Root',
+    scaleType: 'Type',
+    scaleTypeName: _scaleTypeName,
   ),
   close: 'Close',
   play: 'Play',

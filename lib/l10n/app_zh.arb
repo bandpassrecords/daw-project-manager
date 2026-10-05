@@ -4029,5 +4029,21 @@
   "midiPreviewLoop": "循环播放",
   "projectContentsRead": "读取项目内容",
   "projectContentsReadHint": "从项目文件读取轨道、插件和 MIDI 片段。它们随项目保存，并同步到你的其他设备。",
-  "projectContentsNoneRead": "尚未从此项目读取任何内容。请在存有项目文件的电脑上进行深度扫描或提取其元数据。"
+  "projectContentsNoneRead": "尚未从此项目读取任何内容。请在存有项目文件的电脑上进行深度扫描或提取其元数据。",
+  "midiScale": "音阶",
+  "midiScaleNone": "无音阶",
+  "midiScaleRoot": "主音",
+  "midiScaleType": "音阶类型",
+  "scaleMajor": "大调",
+  "scaleMinor": "小调",
+  "scaleHarmonicMinor": "和声小调",
+  "scaleMelodicMinor": "旋律小调",
+  "scaleDorian": "多利亚",
+  "scalePhrygian": "弗里几亚",
+  "scaleLydian": "利底亚",
+  "scaleMixolydian": "混合利底亚",
+  "scaleLocrian": "洛克里亚",
+  "scaleMajorPentatonic": "大调五声",
+  "scaleMinorPentatonic": "小调五声",
+  "scaleBlues": "布鲁斯"
 }

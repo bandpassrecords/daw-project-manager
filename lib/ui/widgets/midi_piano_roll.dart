@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
 import '../../models/midi_clip.dart';
+import '../../utils/musical_scale.dart';
 
 // --- pure helpers ------------------------------------------------------------
 
@@ -148,6 +149,11 @@ class MidiPianoRollLabels {
     required this.lane,
     required this.laneNone,
     required this.laneName,
+    required this.scale,
+    required this.scaleNone,
+    required this.scaleRoot,
+    required this.scaleType,
+    required this.scaleTypeName,
   });
 
   final String zoomIn;
@@ -163,6 +169,24 @@ class MidiPianoRollLabels {
 
   /// "Velocity", "Pitch bend", "CC 1 · Modulation"…
   final String Function(MidiLane lane) laneName;
+
+  /// The scale button's label while no scale is set, and its chooser's
+  /// title.
+  final String scale;
+
+  /// The chooser's "no scale" action.
+  final String scaleNone;
+
+  /// The chooser's two field labels.
+  final String scaleRoot;
+  final String scaleType;
+
+  /// "Minor", "Dorian", "Minor pentatonic"…
+  final String Function(ScaleType type) scaleTypeName;
+
+  /// [scale] as the button shows it: "A Minor".
+  String scaleName(MusicalScale scale) =>
+      '${scaleRootNames[scale.root]} ${scaleTypeName(scale.type)}';
 }
 
 /// A full piano roll of one [MidiClip]: a keyboard down the left (C's
@@ -182,6 +206,10 @@ class MidiPianoRollLabels {
 ///
 /// Clicking the bar ruler — or dragging along it and letting go — jumps
 /// playback there through [onSeek], like a DAW's ruler.
+///
+/// With a scale set — [initialScale], usually the project's key, or one
+/// picked from the toolbar — rows outside it are shaded and the root's rows
+/// tinted, so the notes that belong stand out.
 class MidiPianoRoll extends StatefulWidget {
   const MidiPianoRoll({
     super.key,
@@ -191,7 +219,15 @@ class MidiPianoRoll extends StatefulWidget {
     this.positionOf,
     this.playback,
     this.onSeek,
+    this.initialScale,
+    this.onScaleChanged,
   });
+
+  /// The scale shown when the roll opens; null shows none.
+  final MusicalScale? initialScale;
+
+  /// Told when the user picks another scale (or none).
+  final ValueChanged<MusicalScale?>? onScaleChanged;
 
   final MidiClip clip;
   final MidiPianoRollLabels labels;
@@ -236,6 +272,18 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   Size _view = Size.zero;
 
   late ({int low, int high}) _range = pianoRollRange(widget.clip.notes);
+
+  late MusicalScale? _scale = widget.initialScale;
+
+  Future<void> _pickScale() async {
+    final choice = await showDialog<_ScaleChoice>(
+      context: context,
+      builder: (_) => _ScaleDialog(initial: _scale, labels: widget.labels),
+    );
+    if (choice == null || !mounted || choice.scale == _scale) return;
+    setState(() => _scale = choice.scale);
+    widget.onScaleChanged?.call(choice.scale);
+  }
 
   /// The lane under the notes; null shows none.
   MidiLane? _lane = const MidiLane.velocity();
@@ -407,22 +455,42 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       children: [
         Row(
           children: [
-            IconButton(
-              tooltip: labels.zoomOut,
-              icon: const Icon(Icons.zoom_out),
-              onPressed: () => _zoom(1 / 1.5),
+            // Scrolls sideways rather than overflow on a phone.
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    IconButton(
+                      tooltip: labels.zoomOut,
+                      icon: const Icon(Icons.zoom_out),
+                      onPressed: () => _zoom(1 / 1.5),
+                    ),
+                    IconButton(
+                      tooltip: labels.zoomIn,
+                      icon: const Icon(Icons.zoom_in),
+                      onPressed: () => _zoom(1.5),
+                    ),
+                    IconButton(
+                      tooltip: labels.fit,
+                      icon: const Icon(Icons.fit_screen_outlined),
+                      onPressed: _fit,
+                    ),
+                    Tooltip(
+                      message: labels.scale,
+                      child: TextButton.icon(
+                        key: const ValueKey('midi-piano-roll-scale'),
+                        onPressed: _pickScale,
+                        icon: const Icon(Icons.linear_scale, size: 18),
+                        label: Text(_scale == null
+                            ? labels.scale
+                            : labels.scaleName(_scale!)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            IconButton(
-              tooltip: labels.zoomIn,
-              icon: const Icon(Icons.zoom_in),
-              onPressed: () => _zoom(1.5),
-            ),
-            IconButton(
-              tooltip: labels.fit,
-              icon: const Icon(Icons.fit_screen_outlined),
-              onPressed: _fit,
-            ),
-            const Spacer(),
             IconButton(
               tooltip: labels.follow,
               isSelected: _follow,
@@ -475,6 +543,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                         child: CustomPaint(
                           painter: _RollPainter(
                             clip: widget.clip,
+                            scale: _scale,
                             low: _range.low,
                             high: _range.high,
                             pxPerTick: _px,
@@ -622,10 +691,86 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 const _noteGreen = Color(0xFF8FE3A0);
 const _noteGreenBorder = Color(0xFF3F8F55);
 
+/// What the scale chooser returns: the scale picked, or null for none.
+/// (A null *choice* means the chooser was dismissed.)
+class _ScaleChoice {
+  const _ScaleChoice(this.scale);
+  final MusicalScale? scale;
+}
+
+/// Picks a scale: its root and its type, or none at all.
+class _ScaleDialog extends StatefulWidget {
+  const _ScaleDialog({required this.initial, required this.labels});
+
+  final MusicalScale? initial;
+  final MidiPianoRollLabels labels;
+
+  @override
+  State<_ScaleDialog> createState() => _ScaleDialogState();
+}
+
+class _ScaleDialogState extends State<_ScaleDialog> {
+  late int _root = widget.initial?.root ?? 0;
+  late ScaleType _type = widget.initial?.type ?? ScaleType.major;
+
+  @override
+  Widget build(BuildContext context) {
+    final labels = widget.labels;
+    final material = MaterialLocalizations.of(context);
+    return AlertDialog(
+      title: Text(labels.scale),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          DropdownButtonFormField<int>(
+            key: const ValueKey('midi-scale-root'),
+            initialValue: _root,
+            decoration: InputDecoration(labelText: labels.scaleRoot),
+            items: [
+              for (var r = 0; r < 12; r++)
+                DropdownMenuItem(value: r, child: Text(scaleRootNames[r])),
+            ],
+            onChanged: (r) => setState(() => _root = r ?? _root),
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<ScaleType>(
+            key: const ValueKey('midi-scale-type'),
+            initialValue: _type,
+            decoration: InputDecoration(labelText: labels.scaleType),
+            items: [
+              for (final t in ScaleType.values)
+                DropdownMenuItem(value: t, child: Text(labels.scaleTypeName(t))),
+            ],
+            onChanged: (t) => setState(() => _type = t ?? _type),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(const _ScaleChoice(null)),
+          child: Text(labels.scaleNone),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(material.cancelButtonLabel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context)
+              .pop(_ScaleChoice(MusicalScale(_root, _type))),
+          child: Text(material.okButtonLabel),
+        ),
+      ],
+    );
+  }
+}
+
 class _RollColors {
   const _RollColors({
     required this.background,
     required this.blackRow,
+    required this.outOfScaleRow,
+    required this.scaleRootRow,
     required this.beatLine,
     required this.barLine,
     required this.note,
@@ -638,6 +783,7 @@ class _RollColors {
   });
 
   final Color background, blackRow, beatLine, barLine, note, noteBorder;
+  final Color outOfScaleRow, scaleRootRow;
   final Color whiteKey, blackKey, keyText, ruler, playhead;
 
   static _RollColors of(ThemeData theme) {
@@ -645,6 +791,10 @@ class _RollColors {
     return _RollColors(
       background: cs.surfaceContainerLowest,
       blackRow: cs.onSurface.withValues(alpha: 0.04),
+      // Out-of-scale rows a touch darker than a black key's, so the scale's
+      // own rows read as the lit lanes.
+      outOfScaleRow: cs.onSurface.withValues(alpha: 0.09),
+      scaleRootRow: cs.primary.withValues(alpha: 0.12),
       beatLine: cs.onSurface.withValues(alpha: 0.08),
       barLine: cs.onSurface.withValues(alpha: 0.22),
       // FL Studio's light green — fixed, not themed: it is the colour people
@@ -664,6 +814,7 @@ class _RollColors {
 class _RollPainter extends CustomPainter {
   _RollPainter({
     required this.clip,
+    this.scale,
     required this.low,
     required this.high,
     required this.pxPerTick,
@@ -677,6 +828,7 @@ class _RollPainter extends CustomPainter {
   });
 
   final MidiClip clip;
+  final MusicalScale? scale;
   final int low, high;
   final double pxPerTick, rowHeight, scrollX, scrollY;
   final double keyboardWidth, rulerHeight;
@@ -691,15 +843,27 @@ class _RollPainter extends CustomPainter {
     final grid = Rect.fromLTRB(keyboardWidth, rulerHeight, size.width, size.height);
     canvas.drawRect(Offset.zero & size, Paint()..color = colors.background);
 
-    // Rows: black-key rows shaded.
+    // Rows: with a scale, the rows outside it shaded and the root's rows
+    // tinted; without one, the black keys' rows shaded, like a keyboard.
     canvas.save();
     canvas.clipRect(grid);
     final rowPaint = Paint()..color = colors.blackRow;
+    final outPaint = Paint()..color = colors.outOfScaleRow;
+    final rootPaint = Paint()..color = colors.scaleRootRow;
+    final s = scale;
     for (var pitch = low; pitch <= high; pitch++) {
-      if (!isBlackKey(pitch)) continue;
+      final Paint? paint;
+      if (s == null) {
+        paint = isBlackKey(pitch) ? rowPaint : null;
+      } else if (s.isRoot(pitch)) {
+        paint = rootPaint;
+      } else {
+        paint = s.contains(pitch) ? null : outPaint;
+      }
+      if (paint == null) continue;
       final y = _yOf(pitch);
       if (y > size.height || y + rowHeight < rulerHeight) continue;
-      canvas.drawRect(Rect.fromLTWH(keyboardWidth, y, size.width, rowHeight), rowPaint);
+      canvas.drawRect(Rect.fromLTWH(keyboardWidth, y, size.width, rowHeight), paint);
     }
 
     // Beat and bar lines (4/4). Beats are skipped when they'd be under 6 px
@@ -819,6 +983,7 @@ class _RollPainter extends CustomPainter {
       old.scrollY != scrollY ||
       old.low != low ||
       old.high != high ||
+      old.scale != scale ||
       old.colors.note != colors.note;
 }
 

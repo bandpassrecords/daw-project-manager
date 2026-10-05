@@ -546,6 +546,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
                 playerKey: clip.contentKey,
                 bpm: _tempo,
                 onPlay: () => _play(index),
+                musicalKey: _projectKey,
               );
             },
             onAddToCollection: (index, origin) => addToCollectionFlow(

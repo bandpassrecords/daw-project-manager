@@ -6171,4 +6171,52 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get projectContentsNoneRead =>
       '尚未从此项目读取任何内容。请在存有项目文件的电脑上进行深度扫描或提取其元数据。';
+
+  @override
+  String get midiScale => '音阶';
+
+  @override
+  String get midiScaleNone => '无音阶';
+
+  @override
+  String get midiScaleRoot => '主音';
+
+  @override
+  String get midiScaleType => '音阶类型';
+
+  @override
+  String get scaleMajor => '大调';
+
+  @override
+  String get scaleMinor => '小调';
+
+  @override
+  String get scaleHarmonicMinor => '和声小调';
+
+  @override
+  String get scaleMelodicMinor => '旋律小调';
+
+  @override
+  String get scaleDorian => '多利亚';
+
+  @override
+  String get scalePhrygian => '弗里几亚';
+
+  @override
+  String get scaleLydian => '利底亚';
+
+  @override
+  String get scaleMixolydian => '混合利底亚';
+
+  @override
+  String get scaleLocrian => '洛克里亚';
+
+  @override
+  String get scaleMajorPentatonic => '大调五声';
+
+  @override
+  String get scaleMinorPentatonic => '小调五声';
+
+  @override
+  String get scaleBlues => '布鲁斯';
 }

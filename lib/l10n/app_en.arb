@@ -6200,5 +6200,69 @@
   "projectContentsNoneRead": "Nothing has been read from this project yet. Run a deep scan, or extract its metadata, on the computer that has the project file.",
   "@projectContentsNoneRead": {
     "description": "Project page, when nothing has been read from the project file yet and this device cannot read it (a phone, an archived project)"
+  },
+  "midiScale": "Scale",
+  "@midiScale": {
+    "description": "Piano roll: the scale button (no scale set) and the scale chooser title"
+  },
+  "midiScaleNone": "No scale",
+  "@midiScaleNone": {
+    "description": "Scale chooser action that turns scale highlighting off"
+  },
+  "midiScaleRoot": "Root",
+  "@midiScaleRoot": {
+    "description": "Scale chooser field: the root note of the scale"
+  },
+  "midiScaleType": "Scale type",
+  "@midiScaleType": {
+    "description": "Scale chooser field: which scale (major, minor, Dorian…)"
+  },
+  "scaleMajor": "Major",
+  "@scaleMajor": {
+    "description": "Scale name"
+  },
+  "scaleMinor": "Minor",
+  "@scaleMinor": {
+    "description": "Scale name (natural minor)"
+  },
+  "scaleHarmonicMinor": "Harmonic minor",
+  "@scaleHarmonicMinor": {
+    "description": "Scale name"
+  },
+  "scaleMelodicMinor": "Melodic minor",
+  "@scaleMelodicMinor": {
+    "description": "Scale name"
+  },
+  "scaleDorian": "Dorian",
+  "@scaleDorian": {
+    "description": "Scale name (mode)"
+  },
+  "scalePhrygian": "Phrygian",
+  "@scalePhrygian": {
+    "description": "Scale name (mode)"
+  },
+  "scaleLydian": "Lydian",
+  "@scaleLydian": {
+    "description": "Scale name (mode)"
+  },
+  "scaleMixolydian": "Mixolydian",
+  "@scaleMixolydian": {
+    "description": "Scale name (mode)"
+  },
+  "scaleLocrian": "Locrian",
+  "@scaleLocrian": {
+    "description": "Scale name (mode)"
+  },
+  "scaleMajorPentatonic": "Major pentatonic",
+  "@scaleMajorPentatonic": {
+    "description": "Scale name"
+  },
+  "scaleMinorPentatonic": "Minor pentatonic",
+  "@scaleMinorPentatonic": {
+    "description": "Scale name"
+  },
+  "scaleBlues": "Blues",
+  "@scaleBlues": {
+    "description": "Scale name"
   }
 }

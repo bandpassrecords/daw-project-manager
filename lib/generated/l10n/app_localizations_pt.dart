@@ -6425,4 +6425,52 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get projectContentsNoneRead =>
       'Nada foi lido deste projeto ainda. Faça uma varredura profunda ou extraia os metadados no computador que tem o arquivo do projeto.';
+
+  @override
+  String get midiScale => 'Escala';
+
+  @override
+  String get midiScaleNone => 'Sem escala';
+
+  @override
+  String get midiScaleRoot => 'Tônica';
+
+  @override
+  String get midiScaleType => 'Tipo de escala';
+
+  @override
+  String get scaleMajor => 'Maior';
+
+  @override
+  String get scaleMinor => 'Menor';
+
+  @override
+  String get scaleHarmonicMinor => 'Menor harmônica';
+
+  @override
+  String get scaleMelodicMinor => 'Menor melódica';
+
+  @override
+  String get scaleDorian => 'Dórico';
+
+  @override
+  String get scalePhrygian => 'Frígio';
+
+  @override
+  String get scaleLydian => 'Lídio';
+
+  @override
+  String get scaleMixolydian => 'Mixolídio';
+
+  @override
+  String get scaleLocrian => 'Lócrio';
+
+  @override
+  String get scaleMajorPentatonic => 'Pentatônica maior';
+
+  @override
+  String get scaleMinorPentatonic => 'Pentatônica menor';
+
+  @override
+  String get scaleBlues => 'Blues';
 }

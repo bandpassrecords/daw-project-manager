@@ -4029,5 +4029,21 @@
   "midiPreviewLoop": "ループ再生",
   "projectContentsRead": "プロジェクトの内容を読み込む",
   "projectContentsReadHint": "プロジェクトファイルからトラック、プラグイン、MIDIクリップを読み込みます。プロジェクトと一緒に保存され、他のデバイスにも同期されます。",
-  "projectContentsNoneRead": "このプロジェクトからはまだ何も読み込まれていません。プロジェクトファイルのあるコンピューターで詳細スキャンを実行するか、メタデータを抽出してください。"
+  "projectContentsNoneRead": "このプロジェクトからはまだ何も読み込まれていません。プロジェクトファイルのあるコンピューターで詳細スキャンを実行するか、メタデータを抽出してください。",
+  "midiScale": "スケール",
+  "midiScaleNone": "スケールなし",
+  "midiScaleRoot": "ルート",
+  "midiScaleType": "スケールの種類",
+  "scaleMajor": "メジャー",
+  "scaleMinor": "マイナー",
+  "scaleHarmonicMinor": "ハーモニック・マイナー",
+  "scaleMelodicMinor": "メロディック・マイナー",
+  "scaleDorian": "ドリアン",
+  "scalePhrygian": "フリジアン",
+  "scaleLydian": "リディアン",
+  "scaleMixolydian": "ミクソリディアン",
+  "scaleLocrian": "ロクリアン",
+  "scaleMajorPentatonic": "メジャー・ペンタトニック",
+  "scaleMinorPentatonic": "マイナー・ペンタトニック",
+  "scaleBlues": "ブルース"
 }

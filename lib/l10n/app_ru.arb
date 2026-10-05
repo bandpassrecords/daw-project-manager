@@ -4029,5 +4029,21 @@
   "midiPreviewLoop": "Воспроизведение по кругу",
   "projectContentsRead": "Прочитать содержимое проекта",
   "projectContentsReadHint": "Читает дорожки, плагины и MIDI-клипы из файла проекта. Они хранятся вместе с проектом и синхронизируются с другими устройствами.",
-  "projectContentsNoneRead": "Из этого проекта ещё ничего не прочитано. Выполните глубокое сканирование или извлеките метаданные на компьютере, где есть файл проекта."
+  "projectContentsNoneRead": "Из этого проекта ещё ничего не прочитано. Выполните глубокое сканирование или извлеките метаданные на компьютере, где есть файл проекта.",
+  "midiScale": "Гамма",
+  "midiScaleNone": "Без гаммы",
+  "midiScaleRoot": "Тоника",
+  "midiScaleType": "Тип гаммы",
+  "scaleMajor": "Мажор",
+  "scaleMinor": "Минор",
+  "scaleHarmonicMinor": "Гармонический минор",
+  "scaleMelodicMinor": "Мелодический минор",
+  "scaleDorian": "Дорийский",
+  "scalePhrygian": "Фригийский",
+  "scaleLydian": "Лидийский",
+  "scaleMixolydian": "Миксолидийский",
+  "scaleLocrian": "Локрийский",
+  "scaleMajorPentatonic": "Мажорная пентатоника",
+  "scaleMinorPentatonic": "Минорная пентатоника",
+  "scaleBlues": "Блюз"
 }

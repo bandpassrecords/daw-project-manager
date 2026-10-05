@@ -6443,4 +6443,52 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get projectContentsNoneRead =>
       'Da questo progetto non è ancora stato letto nulla. Esegui una scansione approfondita, o estrai i suoi metadati, sul computer che ha il file del progetto.';
+
+  @override
+  String get midiScale => 'Scala';
+
+  @override
+  String get midiScaleNone => 'Nessuna scala';
+
+  @override
+  String get midiScaleRoot => 'Tonica';
+
+  @override
+  String get midiScaleType => 'Tipo di scala';
+
+  @override
+  String get scaleMajor => 'Maggiore';
+
+  @override
+  String get scaleMinor => 'Minore';
+
+  @override
+  String get scaleHarmonicMinor => 'Minore armonica';
+
+  @override
+  String get scaleMelodicMinor => 'Minore melodica';
+
+  @override
+  String get scaleDorian => 'Dorica';
+
+  @override
+  String get scalePhrygian => 'Frigia';
+
+  @override
+  String get scaleLydian => 'Lidia';
+
+  @override
+  String get scaleMixolydian => 'Misolidia';
+
+  @override
+  String get scaleLocrian => 'Locria';
+
+  @override
+  String get scaleMajorPentatonic => 'Pentatonica maggiore';
+
+  @override
+  String get scaleMinorPentatonic => 'Pentatonica minore';
+
+  @override
+  String get scaleBlues => 'Blues';
 }

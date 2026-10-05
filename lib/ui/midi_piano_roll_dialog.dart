@@ -6,6 +6,7 @@ import '../generated/l10n/app_localizations.dart';
 import '../models/midi_clip.dart';
 import '../providers/providers.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/musical_scale.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_piano_roll.dart';
 import 'widgets/midi_loop_toggle.dart';
@@ -33,6 +34,7 @@ Future<void> showMidiPianoRoll(
   required double bpm,
   required VoidCallback onPlay,
   VoidCallback? onOpenProject,
+  String? musicalKey,
 }) {
   final l10n = AppLocalizations.of(context)!;
   final body = MidiPianoRollWindow(
@@ -44,6 +46,7 @@ Future<void> showMidiPianoRoll(
     bpm: bpm,
     onPlay: onPlay,
     onOpenProject: onOpenProject,
+    musicalKey: musicalKey,
     labels: MidiPianoRollWindowLabels(
       roll: MidiPianoRollLabels(
         zoomIn: l10n.midiPianoRollZoomIn,
@@ -53,6 +56,11 @@ Future<void> showMidiPianoRoll(
         lane: l10n.midiLanePicker,
         laneNone: l10n.midiLaneNone,
         laneName: (lane) => midiLaneName(l10n, lane),
+        scale: l10n.midiScale,
+        scaleNone: l10n.midiScaleNone,
+        scaleRoot: l10n.midiScaleRoot,
+        scaleType: l10n.midiScaleType,
+        scaleTypeName: (type) => scaleTypeName(l10n, type),
       ),
       close: l10n.close,
       play: l10n.midiClipPlay,
@@ -149,6 +157,22 @@ String? _controllerName(AppLocalizations l10n, int number) => switch (number) {
       _ => null,
     };
 
+/// A scale type's name in the piano roll's scale chooser.
+String scaleTypeName(AppLocalizations l10n, ScaleType type) => switch (type) {
+      ScaleType.major => l10n.scaleMajor,
+      ScaleType.minor => l10n.scaleMinor,
+      ScaleType.harmonicMinor => l10n.scaleHarmonicMinor,
+      ScaleType.melodicMinor => l10n.scaleMelodicMinor,
+      ScaleType.dorian => l10n.scaleDorian,
+      ScaleType.phrygian => l10n.scalePhrygian,
+      ScaleType.lydian => l10n.scaleLydian,
+      ScaleType.mixolydian => l10n.scaleMixolydian,
+      ScaleType.locrian => l10n.scaleLocrian,
+      ScaleType.majorPentatonic => l10n.scaleMajorPentatonic,
+      ScaleType.minorPentatonic => l10n.scaleMinorPentatonic,
+      ScaleType.blues => l10n.scaleBlues,
+    };
+
 class MidiPianoRollWindowLabels {
   const MidiPianoRollWindowLabels({
     required this.roll,
@@ -183,6 +207,7 @@ class MidiPianoRollWindow extends StatelessWidget {
     this.loop,
     this.onLoopChanged,
     this.loopTooltip,
+    this.musicalKey,
   });
 
   /// [base] with a volume control added.
@@ -211,6 +236,7 @@ class MidiPianoRollWindow extends StatelessWidget {
         loop: loop,
         onLoopChanged: onLoopChanged,
         loopTooltip: loopTooltip,
+        musicalKey: base.musicalKey,
       );
 
   /// The shared preview volume; the control shows only when all three of
@@ -224,6 +250,9 @@ class MidiPianoRollWindow extends StatelessWidget {
   final bool? loop;
   final ValueChanged<bool>? onLoopChanged;
   final String? loopTooltip;
+
+  /// The source project's key: the scale the piano roll opens with.
+  final String? musicalKey;
 
   final MidiClip clip;
   final String title;
@@ -299,6 +328,7 @@ class MidiPianoRollWindow extends StatelessWidget {
                   positionOf: () => player.positionOf(playerKey),
                   playback: player,
                   onSeek: _seek,
+                  initialScale: scaleFromKey(musicalKey),
                 ),
               ),
             ],

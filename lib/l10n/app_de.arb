@@ -4029,5 +4029,21 @@
   "midiPreviewLoop": "Wiedergabe in Schleife",
   "projectContentsRead": "Projektinhalt lesen",
   "projectContentsReadHint": "Liest Spuren, Plug-ins und MIDI-Clips aus der Projektdatei. Sie werden mit dem Projekt gespeichert und auf deine anderen Geräte synchronisiert.",
-  "projectContentsNoneRead": "Aus diesem Projekt wurde noch nichts gelesen. Führe auf dem Computer mit der Projektdatei einen Tiefenscan aus oder extrahiere seine Metadaten."
+  "projectContentsNoneRead": "Aus diesem Projekt wurde noch nichts gelesen. Führe auf dem Computer mit der Projektdatei einen Tiefenscan aus oder extrahiere seine Metadaten.",
+  "midiScale": "Skala",
+  "midiScaleNone": "Keine Skala",
+  "midiScaleRoot": "Grundton",
+  "midiScaleType": "Skalentyp",
+  "scaleMajor": "Dur",
+  "scaleMinor": "Moll",
+  "scaleHarmonicMinor": "Harmonisch Moll",
+  "scaleMelodicMinor": "Melodisch Moll",
+  "scaleDorian": "Dorisch",
+  "scalePhrygian": "Phrygisch",
+  "scaleLydian": "Lydisch",
+  "scaleMixolydian": "Mixolydisch",
+  "scaleLocrian": "Lokrisch",
+  "scaleMajorPentatonic": "Dur-Pentatonik",
+  "scaleMinorPentatonic": "Moll-Pentatonik",
+  "scaleBlues": "Blues"
 }

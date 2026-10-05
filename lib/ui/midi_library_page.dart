@@ -544,6 +544,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
           bpm: _bpmOf(e),
           onPlay: () => _play(e),
           onOpenProject: e.projectId == null ? null : () => _openProject(e),
+          musicalKey: e.musicalKey,
         );
       },
       onShare: (i, origin) => _share(entries[i], origin),

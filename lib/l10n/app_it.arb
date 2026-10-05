@@ -4029,5 +4029,21 @@
   "midiPreviewLoop": "Riproduzione in loop",
   "projectContentsRead": "Leggi il contenuto del progetto",
   "projectContentsReadHint": "Legge tracce, plugin e clip MIDI dal file del progetto. Vengono conservati con il progetto e sincronizzati sugli altri tuoi dispositivi.",
-  "projectContentsNoneRead": "Da questo progetto non è ancora stato letto nulla. Esegui una scansione approfondita, o estrai i suoi metadati, sul computer che ha il file del progetto."
+  "projectContentsNoneRead": "Da questo progetto non è ancora stato letto nulla. Esegui una scansione approfondita, o estrai i suoi metadati, sul computer che ha il file del progetto.",
+  "midiScale": "Scala",
+  "midiScaleNone": "Nessuna scala",
+  "midiScaleRoot": "Tonica",
+  "midiScaleType": "Tipo di scala",
+  "scaleMajor": "Maggiore",
+  "scaleMinor": "Minore",
+  "scaleHarmonicMinor": "Minore armonica",
+  "scaleMelodicMinor": "Minore melodica",
+  "scaleDorian": "Dorica",
+  "scalePhrygian": "Frigia",
+  "scaleLydian": "Lidia",
+  "scaleMixolydian": "Misolidia",
+  "scaleLocrian": "Locria",
+  "scaleMajorPentatonic": "Pentatonica maggiore",
+  "scaleMinorPentatonic": "Pentatonica minore",
+  "scaleBlues": "Blues"
 }

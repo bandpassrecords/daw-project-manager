@@ -6241,4 +6241,52 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get projectContentsNoneRead =>
       'このプロジェクトからはまだ何も読み込まれていません。プロジェクトファイルのあるコンピューターで詳細スキャンを実行するか、メタデータを抽出してください。';
+
+  @override
+  String get midiScale => 'スケール';
+
+  @override
+  String get midiScaleNone => 'スケールなし';
+
+  @override
+  String get midiScaleRoot => 'ルート';
+
+  @override
+  String get midiScaleType => 'スケールの種類';
+
+  @override
+  String get scaleMajor => 'メジャー';
+
+  @override
+  String get scaleMinor => 'マイナー';
+
+  @override
+  String get scaleHarmonicMinor => 'ハーモニック・マイナー';
+
+  @override
+  String get scaleMelodicMinor => 'メロディック・マイナー';
+
+  @override
+  String get scaleDorian => 'ドリアン';
+
+  @override
+  String get scalePhrygian => 'フリジアン';
+
+  @override
+  String get scaleLydian => 'リディアン';
+
+  @override
+  String get scaleMixolydian => 'ミクソリディアン';
+
+  @override
+  String get scaleLocrian => 'ロクリアン';
+
+  @override
+  String get scaleMajorPentatonic => 'メジャー・ペンタトニック';
+
+  @override
+  String get scaleMinorPentatonic => 'マイナー・ペンタトニック';
+
+  @override
+  String get scaleBlues => 'ブルース';
 }
