@@ -85,6 +85,24 @@ void main() {
       expect(showsKeyName(60, 6), isFalse);
     });
 
+    test('a note shows its name once there is room, across and down', () {
+      // "C#3" at the labels' size is about 20 px wide.
+      expect(noteLabelFits(noteWidth: 60, rowHeight: 18, labelWidth: 20), isTrue);
+      expect(noteLabelFits(noteWidth: 60, rowHeight: 12, labelWidth: 20), isFalse,
+          reason: 'too short a row: zoom in vertically');
+      expect(noteLabelFits(noteWidth: 24, rowHeight: 18, labelWidth: 20), isFalse,
+          reason: 'too short a note: zoom in horizontally');
+      expect(noteLabelFits(noteWidth: 26, rowHeight: 13, labelWidth: 20), isTrue,
+          reason: 'just fits: the label plus its padding on both sides');
+    });
+
+    test('the name is dark on a loud note, light on a quiet one', () {
+      expect(noteLabelColor(1.0), noteLabelColor(0.8));
+      expect(noteLabelColor(0.4), isNot(noteLabelColor(1.0)));
+      expect(noteLabelColor(0.4).computeLuminance(),
+          greaterThan(noteLabelColor(1.0).computeLuminance()));
+    });
+
     test('black keys', () {
       expect([for (var p = 60; p < 72; p++) isBlackKey(p)],
           [false, true, false, true, false, false, true, false, true, false, true, false]);
@@ -414,6 +432,19 @@ void main() {
         await tester.pumpAndSettle();
         expect(changes, isEmpty);
       });
+    });
+
+    testWidgets('zoomed right in, notes are drawn with their names',
+        (tester) async {
+      await tester.pumpWidget(wrap(_clip()));
+      // Tallest rows, and wide notes.
+      tester.widget<Slider>(find.byType(Slider)).onChanged!(28);
+      await tester.pump();
+      for (var i = 0; i < 4; i++) {
+        await tester.tap(find.byTooltip('Zoom in'));
+        await tester.pump();
+      }
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('an empty clip still lays out', (tester) async {

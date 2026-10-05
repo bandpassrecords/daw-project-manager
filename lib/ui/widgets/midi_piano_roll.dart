@@ -23,6 +23,30 @@ bool isBlackKey(int pitch) => const {1, 3, 6, 8, 10}.contains(pitch % 12);
 /// C's: the names need about that much room to stay legible.
 const double kAllKeyNamesRowHeight = 18;
 
+/// The smallest row height a note's own name fits inside it, at the size
+/// the keyboard's labels use.
+const double kNoteLabelMinRowHeight = 13;
+
+/// Space kept between a note's edge and its name.
+const double kNoteLabelPadding = 3;
+
+/// Whether a note drawn [noteWidth] × [rowHeight] pixels has room for its
+/// name ([labelWidth] wide) inside it — the user has zoomed in far enough,
+/// across and down, for the name to be read rather than squeezed.
+bool noteLabelFits({
+  required double noteWidth,
+  required double rowHeight,
+  required double labelWidth,
+}) =>
+    rowHeight >= kNoteLabelMinRowHeight &&
+    noteWidth >= labelWidth + 2 * kNoteLabelPadding;
+
+/// The colour a note's name is written in on a note filled at [fillAlpha]
+/// (its velocity): dark on a solid, loud note, light on a faded, quiet one
+/// that lets the dark background through.
+Color noteLabelColor(double fillAlpha) =>
+    fillAlpha >= 0.6 ? const Color(0xFF14361E) : const Color(0xFFE8F5EC);
+
 /// Whether the keyboard names [pitch] at [rowHeight]. The C's are named from
 /// small rows up, so octaves can always be told apart; zoomed in vertically
 /// far enough ([kAllKeyNamesRowHeight]) every key is.
@@ -1213,6 +1237,9 @@ class _RollPainter extends CustomPainter {
       ..color = colors.playhead
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
+    // Note names, laid out once per pitch and shade for this frame.
+    final darkLabels = <int, TextPainter>{};
+    final lightLabels = <int, TextPainter>{};
     for (var i = 0; i < clip.notes.length; i++) {
       final n = clip.notes[i];
       if (n.endTick < firstTick || n.startTick > lastTick) continue;
@@ -1225,7 +1252,8 @@ class _RollPainter extends CustomPainter {
         math.max(2.0, rowHeight - 2),
       );
       // Quiet notes fade, loud ones are solid — the velocity at a glance.
-      notePaint.color = colors.note.withValues(alpha: 0.35 + 0.65 * n.velocity / 127);
+      final fillAlpha = 0.35 + 0.65 * n.velocity / 127;
+      notePaint.color = colors.note.withValues(alpha: fillAlpha);
       final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(2));
       canvas.drawRRect(rrect, notePaint);
       if (i == selected) {
@@ -1233,6 +1261,26 @@ class _RollPainter extends CustomPainter {
         canvas.drawRRect(rrect, selectedBorder);
       } else if (rowHeight >= 8) {
         canvas.drawRRect(rrect, border);
+      }
+      // Zoomed in far enough, the note says which it is.
+      if (rowHeight >= kNoteLabelMinRowHeight) {
+        final light = noteLabelColor(fillAlpha) != noteLabelColor(1);
+        final label = (light ? lightLabels : darkLabels).putIfAbsent(
+            n.pitch, () => _noteLabel(midiNoteName(n.pitch), noteLabelColor(fillAlpha)));
+        if (noteLabelFits(
+          noteWidth: rect.width,
+          rowHeight: rowHeight,
+          labelWidth: label.width,
+        )) {
+          canvas.save();
+          canvas.clipRect(rect);
+          label.paint(
+            canvas,
+            Offset(rect.left + kNoteLabelPadding,
+                rect.center.dy - label.height / 2),
+          );
+          canvas.restore();
+        }
       }
     }
     canvas.restore();
@@ -1276,6 +1324,20 @@ class _RollPainter extends CustomPainter {
     }
     canvas.restore();
   }
+
+  /// A note's name, at the keyboard labels' size, in [color].
+  TextPainter _noteLabel(String name, Color color) => TextPainter(
+        text: TextSpan(
+          text: name,
+          style: labelStyle.copyWith(
+            color: color,
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+        maxLines: 1,
+      )..layout();
 
   void _text(Canvas canvas, String text, Offset at,
       {bool alignRight = false, bool bold = false}) {
