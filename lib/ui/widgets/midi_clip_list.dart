@@ -163,6 +163,19 @@ class MidiClipList extends StatefulWidget {
   State<MidiClipList> createState() => _MidiClipListState();
 }
 
+/// Whether [a] and [b] hold the same clips in the same order — the same
+/// objects, which is what a page rebuilding its list from the same data
+/// hands over. Cheap: no content keys are computed.
+@visibleForTesting
+bool sameClips(List<MidiClip> a, List<MidiClip> b) {
+  if (identical(a, b)) return true;
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (!identical(a[i], b[i])) return false;
+  }
+  return true;
+}
+
 class _MidiClipListState extends State<MidiClipList> {
   /// Groups the user toggled away from the default state.
   final Set<String?> _toggled = {};
@@ -175,7 +188,11 @@ class _MidiClipListState extends State<MidiClipList> {
   @override
   void didUpdateWidget(MidiClipList old) {
     super.didUpdateWidget(old);
-    if (!identical(old.clips, widget.clips)) _toggled.clear();
+    // A different set of clips (another collection, a new read) starts from
+    // the defaults again. The same clips in a new list do not: pages build
+    // the list afresh on every rebuild — starting playback is one — and
+    // resetting then folded up the group the user had just opened.
+    if (!sameClips(old.clips, widget.clips)) _toggled.clear();
   }
 
   @override
