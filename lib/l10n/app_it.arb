@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "Eliminare l'archivio?",
   "discardArchiveConfirmMessage": "Elimina lo zip e toglie il contrassegno di archiviato. I file del progetto restano dove sono.",
   "discardArchiveDone": "Archivio eliminato",
-
   "whatsNewTitle": "Novità",
   "whatsNewTitleWithVersion": "Novità nella versione {version}",
   "whatsNewIntro": "Ecco cosa è cambiato dalla tua versione precedente.",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "Nessuna copertina",
   "tracksViewList": "Vista elenco",
   "tracksViewTable": "Vista tabella",
-
   "partsColumn": "Parti",
   "partsNeededCount": "{count, plural, =1{1 parte ancora necessaria} other{{count} parti ancora necessarie}}",
-
   "songLength": "Durata",
   "songLengthColumn": "Durata",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Durata totale",
   "releaseLengthPartial": "{count, plural, =1{Totale parziale: 1 traccia non ha ancora una durata} other{Totale parziale: {count} tracce non hanno ancora una durata}}",
-
   "breadcrumbHome": "Home",
   "breadcrumbGoTo": "Vai a {label}",
-
   "scrollForMore": "Scorri per vedere altro",
-
   "shortcutPlayerMono": "Attiva/disattiva la riproduzione mono",
   "shortcutPlayerVolume": "Regola il volume",
   "shortcutMouseWheel": "Rotellina",
-
   "releaseTotalLengthLabel": "Durata totale",
   "releaseLengthNone": "Nessuna traccia ha ancora una durata: riproduci una traccia o inserisci la durata nella pagina del progetto",
-
   "songLengthHowItWorks": "Compilata automaticamente dall’anteprima: quando viene riprodotta o quando si apre una pubblicazione che contiene questa traccia. Puoi anche inserirla: 3:45, 1:02:03 o in secondi.",
-
   "changelogSectionSubtitle": "Tutto ciò che è cambiato in ogni versione, dalla più recente.",
-
   "changelogSearchHint": "Cerca nel changelog",
   "changelogNoMatches": "Nessuna modifica corrisponde a \"{query}\"",
-
   "projectFileMenu": "File",
   "moreActions": "Altre azioni",
-
   "sectionRailResizeHint": "Trascina per ridimensionare · doppio clic per ripristinare",
-
   "stackMetadataCoverArtLabel": "copertina",
   "stackMetadataColorLabel": "colore d'accento",
   "stackMetadataIconLabel": "icona",
@@ -4058,5 +4045,20 @@
   "midiDiscardEditsBody": "La clip modificata non è stata salvata. Salvala come nuova clip per tenerla.",
   "midiKeepEditing": "Continua a modificare",
   "midiDiscardEdits": "Scarta",
-  "midiEditHint": "Doppio clic per aggiungere una nota, o su una nota per eliminarla. Trascina su uno spazio vuoto per selezionare; Maiusc+clic aggiunge alla selezione. Trascina il bordo di una nota per cambiarne la durata. ↑/↓ sposta la selezione di un semitono, Maiusc+↑/↓ di un'ottava. Alt+trascina copia; tieni premuto Ctrl per ignorare la griglia."
+  "midiToolSelect": "Selezione (1)",
+  "midiToolPencil": "Matita (8)",
+  "midiAcousticFeedback": "Ascolta le note mentre le modifichi",
+  "midiHintGotIt": "Capito",
+  "midiHintPencil": "Scegli la matita per aggiungere note con un solo clic.",
+  "midiHintDoubleClick": "Doppio clic su uno spazio vuoto per aggiungere una nota, o su una nota per eliminarla.",
+  "midiHintBoxSelect": "Trascina su uno spazio vuoto per selezionare più note insieme.",
+  "midiHintPencilDraw": "Fai clic per aggiungere una nota; trascina a destra mentre fai clic per allungarla.",
+  "midiHintPencilErase": "Fai clic su una nota per cancellarla, o trascinala per spostarla.",
+  "midiHintResize": "Trascina il bordo di una nota per accorciarla o allungarla.",
+  "midiHintTranspose": "↑/↓ sposta le note selezionate di un semitono, Maiusc+↑/↓ di un’ottava.",
+  "midiHintAltCopy": "Tieni premuto {key} mentre trascini per copiare le note selezionate.",
+  "midiHintCtrlFree": "Tieni premuto {key} mentre trascini per muovere fuori dalla griglia.",
+  "midiHintVelocity": "Trascina sulle barre per impostare la velocity di ogni nota che attraversi.",
+  "midiHintLane": "Trascina per disegnare la curva.",
+  "midiHintPitchBend": "Trascina per disegnare il pitch bend; vicino alla linea centrale torna a zero."
 }

@@ -6518,6 +6518,63 @@ class AppLocalizationsRu extends AppLocalizations {
   String get midiDiscardEdits => 'Сбросить';
 
   @override
-  String get midiEditHint =>
-      'Двойной щелчок добавляет ноту, а по ноте — удаляет её. Перетаскивание по пустому месту выделяет; Shift+щелчок добавляет к выделению. Перетащите край ноты, чтобы изменить длительность. ↑/↓ сдвигает выделение на полутон, Shift+↑/↓ — на октаву. Alt+перетаскивание копирует; удерживайте Ctrl, чтобы не привязываться к сетке.';
+  String get midiToolSelect => 'Выделение (1)';
+
+  @override
+  String get midiToolPencil => 'Карандаш (8)';
+
+  @override
+  String get midiAcousticFeedback => 'Слышать ноты при редактировании';
+
+  @override
+  String get midiHintGotIt => 'Понятно';
+
+  @override
+  String get midiHintPencil =>
+      'Выберите карандаш, чтобы добавлять ноты одним щелчком.';
+
+  @override
+  String get midiHintDoubleClick =>
+      'Двойной щелчок по пустому месту добавляет ноту, по ноте — удаляет её.';
+
+  @override
+  String get midiHintBoxSelect =>
+      'Протащите по пустому месту, чтобы выделить сразу несколько нот.';
+
+  @override
+  String get midiHintPencilDraw =>
+      'Щёлкните, чтобы добавить ноту; потяните вправо, чтобы удлинить её.';
+
+  @override
+  String get midiHintPencilErase =>
+      'Щёлкните по ноте, чтобы стереть её, или перетащите, чтобы сдвинуть.';
+
+  @override
+  String get midiHintResize =>
+      'Потяните за край ноты, чтобы укоротить или удлинить её.';
+
+  @override
+  String get midiHintTranspose =>
+      '↑/↓ сдвигает выделенные ноты на полутон, Shift+↑/↓ — на октаву.';
+
+  @override
+  String midiHintAltCopy(String key) {
+    return 'Удерживайте $key при перетаскивании, чтобы скопировать выделенные ноты.';
+  }
+
+  @override
+  String midiHintCtrlFree(String key) {
+    return 'Удерживайте $key при перетаскивании, чтобы двигать без привязки к сетке.';
+  }
+
+  @override
+  String get midiHintVelocity =>
+      'Проведите по столбикам, чтобы задать громкость каждой ноты на пути.';
+
+  @override
+  String get midiHintLane => 'Протащите, чтобы нарисовать кривую.';
+
+  @override
+  String get midiHintPitchBend =>
+      'Протащите, чтобы нарисовать изгиб; у средней линии он возвращается к нулю.';
 }

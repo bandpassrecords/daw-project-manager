@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "¿Descartar el comprimido?",
   "discardArchiveConfirmMessage": "Elimina el zip y quita la marca de archivado. Los archivos del proyecto se quedan donde están.",
   "discardArchiveDone": "Comprimido descartado",
-
   "whatsNewTitle": "Novedades",
   "whatsNewTitleWithVersion": "Novedades en la versión {version}",
   "whatsNewIntro": "Esto es lo que cambió desde tu versión anterior.",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "Sin portada",
   "tracksViewList": "Vista de lista",
   "tracksViewTable": "Vista de tabla",
-
   "partsColumn": "Partes",
   "partsNeededCount": "{count, plural, =1{1 parte aún necesaria} other{{count} partes aún necesarias}}",
-
   "songLength": "Duración",
   "songLengthColumn": "Duración",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Duración total",
   "releaseLengthPartial": "{count, plural, =1{Total parcial: 1 pista aún sin duración} other{Total parcial: {count} pistas aún sin duración}}",
-
   "breadcrumbHome": "Inicio",
   "breadcrumbGoTo": "Ir a {label}",
-
   "scrollForMore": "Desplázate para ver más",
-
   "shortcutPlayerMono": "Alternar reproducción en mono",
   "shortcutPlayerVolume": "Ajustar el volumen",
   "shortcutMouseWheel": "Rueda",
-
   "releaseTotalLengthLabel": "Duración total",
   "releaseLengthNone": "Ninguna pista tiene duración todavía: reproduce una pista o escribe su duración en la página del proyecto",
-
   "songLengthHowItWorks": "Se rellena automáticamente a partir de la vista previa: al reproducirla o al abrir un lanzamiento que contenga esta pista. También puedes escribirla: 3:45, 1:02:03 o en segundos.",
-
   "changelogSectionSubtitle": "Todo lo que cambió en cada versión, de la más reciente a la más antigua.",
-
   "changelogSearchHint": "Buscar en el changelog",
   "changelogNoMatches": "Ningún cambio coincide con \"{query}\"",
-
   "projectFileMenu": "Archivo",
   "moreActions": "Más acciones",
-
   "sectionRailResizeHint": "Arrastra para cambiar el tamaño · doble clic para restablecer",
-
   "stackMetadataCoverArtLabel": "portada",
   "stackMetadataColorLabel": "color de acento",
   "stackMetadataIconLabel": "icono",
@@ -4058,5 +4045,20 @@
   "midiDiscardEditsBody": "El clip editado no se ha guardado. Guárdalo como clip nuevo para conservarlo.",
   "midiKeepEditing": "Seguir editando",
   "midiDiscardEdits": "Descartar",
-  "midiEditHint": "Doble clic para añadir una nota, o sobre una nota para borrarla. Arrastra en un espacio vacío para seleccionar; Mayús+clic añade a la selección. Arrastra el borde de una nota para cambiar su duración. ↑/↓ mueve la selección un semitono, Mayús+↑/↓ una octava. Alt+arrastrar copia; mantén Ctrl para ignorar la cuadrícula."
+  "midiToolSelect": "Seleccionar (1)",
+  "midiToolPencil": "Lápiz (8)",
+  "midiAcousticFeedback": "Escuchar las notas al editarlas",
+  "midiHintGotIt": "Entendido",
+  "midiHintPencil": "Elige el lápiz para añadir notas con un solo clic.",
+  "midiHintDoubleClick": "Doble clic en un espacio vacío para añadir una nota, o sobre una nota para borrarla.",
+  "midiHintBoxSelect": "Arrastra por un espacio vacío para seleccionar varias notas a la vez.",
+  "midiHintPencilDraw": "Haz clic para añadir una nota; arrastra a la derecha al hacer clic para alargarla.",
+  "midiHintPencilErase": "Haz clic en una nota para borrarla, o arrástrala para moverla.",
+  "midiHintResize": "Arrastra el borde de una nota para acortarla o alargarla.",
+  "midiHintTranspose": "↑/↓ mueve las notas seleccionadas un semitono, Mayús+↑/↓ una octava.",
+  "midiHintAltCopy": "Mantén {key} al arrastrar para copiar las notas seleccionadas.",
+  "midiHintCtrlFree": "Mantén {key} al arrastrar para mover fuera de la cuadrícula.",
+  "midiHintVelocity": "Arrastra sobre las barras para fijar la velocidad de cada nota por la que pases.",
+  "midiHintLane": "Arrastra para dibujar la curva.",
+  "midiHintPitchBend": "Arrastra para dibujar el pitch bend; cerca de la línea central vuelve a “sin bend”."
 }

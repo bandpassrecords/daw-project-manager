@@ -6560,6 +6560,63 @@ class AppLocalizationsFr extends AppLocalizations {
   String get midiDiscardEdits => 'Abandonner';
 
   @override
-  String get midiEditHint =>
-      'Double-cliquez pour ajouter une note, ou sur une note pour la supprimer. Faites glisser sur un espace vide pour sélectionner ; Maj+clic ajoute à la sélection. Faites glisser le bord d’une note pour changer sa durée. ↑/↓ déplace la sélection d’un demi-ton, Maj+↑/↓ d’une octave. Alt+glisser copie ; maintenez Ctrl pour ignorer la grille.';
+  String get midiToolSelect => 'Sélection (1)';
+
+  @override
+  String get midiToolPencil => 'Crayon (8)';
+
+  @override
+  String get midiAcousticFeedback => 'Entendre les notes pendant l’édition';
+
+  @override
+  String get midiHintGotIt => 'Compris';
+
+  @override
+  String get midiHintPencil =>
+      'Prenez le crayon pour ajouter des notes d’un seul clic.';
+
+  @override
+  String get midiHintDoubleClick =>
+      'Double-cliquez dans le vide pour ajouter une note, ou sur une note pour la supprimer.';
+
+  @override
+  String get midiHintBoxSelect =>
+      'Faites glisser dans le vide pour sélectionner plusieurs notes à la fois.';
+
+  @override
+  String get midiHintPencilDraw =>
+      'Cliquez pour ajouter une note — faites glisser vers la droite pour l’allonger.';
+
+  @override
+  String get midiHintPencilErase =>
+      'Cliquez sur une note pour l’effacer, ou faites-la glisser pour la déplacer.';
+
+  @override
+  String get midiHintResize =>
+      'Faites glisser le bord d’une note pour la raccourcir ou l’allonger.';
+
+  @override
+  String get midiHintTranspose =>
+      '↑/↓ déplace les notes sélectionnées d’un demi-ton, Maj+↑/↓ d’une octave.';
+
+  @override
+  String midiHintAltCopy(String key) {
+    return 'Maintenez $key en faisant glisser pour copier les notes sélectionnées.';
+  }
+
+  @override
+  String midiHintCtrlFree(String key) {
+    return 'Maintenez $key en faisant glisser pour sortir de la grille.';
+  }
+
+  @override
+  String get midiHintVelocity =>
+      'Faites glisser sur les barres pour régler la vélocité de chaque note survolée.';
+
+  @override
+  String get midiHintLane => 'Faites glisser pour dessiner la courbe.';
+
+  @override
+  String get midiHintPitchBend =>
+      'Faites glisser pour dessiner le pitch bend — près de la ligne centrale, il revient à zéro.';
 }

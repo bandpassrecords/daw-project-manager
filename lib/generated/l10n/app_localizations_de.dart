@@ -6530,6 +6530,63 @@ class AppLocalizationsDe extends AppLocalizations {
   String get midiDiscardEdits => 'Verwerfen';
 
   @override
-  String get midiEditHint =>
-      'Doppelklick fügt eine Note hinzu, auf einer Note löscht er sie. Auf freier Fläche ziehen wählt aus; Umschalt-Klick erweitert die Auswahl. Am Rand einer Note ziehen ändert ihre Länge. ↑/↓ verschiebt die Auswahl um einen Halbton, Umschalt+↑/↓ um eine Oktave. Alt-Ziehen kopiert; mit gedrückter Strg-Taste wird das Raster ignoriert.';
+  String get midiToolSelect => 'Auswählen (1)';
+
+  @override
+  String get midiToolPencil => 'Stift (8)';
+
+  @override
+  String get midiAcousticFeedback => 'Noten beim Bearbeiten hören';
+
+  @override
+  String get midiHintGotIt => 'Verstanden';
+
+  @override
+  String get midiHintPencil =>
+      'Wähle den Stift, um Noten mit einem einzigen Klick hinzuzufügen.';
+
+  @override
+  String get midiHintDoubleClick =>
+      'Doppelklick auf eine freie Stelle fügt eine Note hinzu, auf eine Note löscht sie.';
+
+  @override
+  String get midiHintBoxSelect =>
+      'Ziehe über eine freie Fläche, um mehrere Noten auf einmal auszuwählen.';
+
+  @override
+  String get midiHintPencilDraw =>
+      'Klicke, um eine Note hinzuzufügen – ziehe dabei nach rechts, um sie zu verlängern.';
+
+  @override
+  String get midiHintPencilErase =>
+      'Klicke auf eine Note, um sie zu löschen, oder ziehe sie, um sie zu verschieben.';
+
+  @override
+  String get midiHintResize =>
+      'Ziehe am Rand einer Note, um sie kürzer oder länger zu machen.';
+
+  @override
+  String get midiHintTranspose =>
+      '↑/↓ verschiebt die ausgewählten Noten um einen Halbton, Umschalt+↑/↓ um eine Oktave.';
+
+  @override
+  String midiHintAltCopy(String key) {
+    return 'Halte $key beim Ziehen gedrückt, um die ausgewählten Noten zu kopieren.';
+  }
+
+  @override
+  String midiHintCtrlFree(String key) {
+    return 'Halte $key beim Ziehen gedrückt, um frei vom Raster zu verschieben.';
+  }
+
+  @override
+  String get midiHintVelocity =>
+      'Ziehe über die Balken, um die Anschlagstärke jeder überstrichenen Note zu setzen.';
+
+  @override
+  String get midiHintLane => 'Ziehe, um die Kurve zu zeichnen.';
+
+  @override
+  String get midiHintPitchBend =>
+      'Ziehe, um das Pitchbending zu zeichnen – nahe der Mittellinie rastet es auf „kein Bend“ ein.';
 }

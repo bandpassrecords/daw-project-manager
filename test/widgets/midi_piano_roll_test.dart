@@ -141,6 +141,56 @@ void main() {
           reason: 'off the grid');
     });
 
+    test('a bend drawn near the middle snaps to no bend; nothing else snaps',
+        () {
+      const bend = MidiLane.of(MidiEventKind.pitchBend);
+      expect(snapLaneValue(bend, 8500), 8192);
+      expect(snapLaneValue(bend, 7800), 8192);
+      expect(snapLaneValue(bend, 9500), 9500);
+      expect(snapLaneValue(const MidiLane.of(MidiEventKind.controller, 1), 64),
+          64);
+    });
+
+    test('out of scale: only with a scale, by pitch class', () {
+      const aMinor = MusicalScale(9, ScaleType.minor);
+      expect(noteOutOfScale(aMinor, 69), isFalse); // A
+      expect(noteOutOfScale(aMinor, 70), isTrue); // A#
+      expect(noteOutOfScale(null, 70), isFalse);
+      const notes = [
+        MidiNote(startTick: 0, lengthTicks: 1, pitch: 60, velocity: 1),
+        MidiNote(startTick: 0, lengthTicks: 1, pitch: 61, velocity: 1),
+      ];
+      expect(outOfScaleFlags(notes, aMinor), [false, true]);
+      expect(outOfScaleFlags(notes, null), isNull);
+    });
+
+    test('vertical zoom keeps the row being looked at still', () {
+      // Row 20 (of 14 px) sits 80 px down the view at a scroll of 200.
+      const anchor = 20 * 14.0 - 200;
+      final scroll = verticalZoomScroll(
+          scrollY: 200, oldRow: 14, newRow: 28, anchorY: anchor);
+      expect(20 * 28 - scroll, anchor);
+      expect(
+          verticalZoomScroll(scrollY: 0, oldRow: 28, newRow: 6, anchorY: 10),
+          0,
+          reason: 'never above the top');
+    });
+
+    test('the keyboard parts white keys where a piano does', () {
+      // Under C and F: the two places white keys meet with no black key.
+      expect([for (var p = 60; p < 72; p++) if (!isBlackKey(p) && whiteKeySeamBelow(p)) p],
+          [60, 65]);
+      expect(kBlackKeyWidthFraction, inInclusiveRange(0.5, 0.7));
+    });
+
+    test('the snap grid draws its divisions between the beats', () {
+      expect(gridDivisionTicks(stepTicks: 120, ppq: 480, pxPerTick: 0.1), 120);
+      expect(gridDivisionTicks(stepTicks: 480, ppq: 480, pxPerTick: 1), isNull,
+          reason: 'a quarter-note grid is the beat lines');
+      expect(gridDivisionTicks(stepTicks: 60, ppq: 480, pxPerTick: 0.05), isNull,
+          reason: 'too close together to see');
+    });
+
     test('black keys', () {
       expect([for (var p = 60; p < 72; p++) isBlackKey(p)],
           [false, true, false, true, false, false, true, false, true, false, true, false]);
@@ -485,6 +535,36 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('selected and out-of-scale notes, stems and the snap grid '
+        'paint', (tester) async {
+      final editor = MidiClipEditController(_clip())
+        ..editing = true
+        ..selectAll()
+        ..snap = MidiSnap.thirtySecond;
+      addTearDown(editor.dispose);
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 800,
+            height: 500,
+            child: MidiPianoRoll(
+              clip: _clip(),
+              labels: _labels,
+              editor: editor,
+              initialScale: const MusicalScale(0, ScaleType.majorPentatonic),
+            ),
+          ),
+        ),
+      ));
+      tester.widget<Slider>(find.byType(Slider)).onChanged!(28);
+      await tester.pump();
+      for (var i = 0; i < 3; i++) {
+        await tester.tap(find.byTooltip('Zoom in'));
+        await tester.pump();
+      }
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('an empty clip still lays out', (tester) async {
       await tester.pumpWidget(wrap(const MidiClip(name: 'x', ppq: 480, lengthTicks: 0, notes: [])));
       expect(tester.takeException(), isNull);
@@ -556,7 +636,7 @@ void main() {
                 player: player,
                 playerKey: 'k',
                 bpm: 120,
-                onPlay: () {},
+                onPlay: (_) {},
               ),
               child: const Text('open'),
             ),
@@ -594,7 +674,7 @@ void main() {
                 player: player,
                 playerKey: 'k',
                 bpm: 128,
-                onPlay: () => toggles++,
+                onPlay: (_) => toggles++,
                 musicalKey: 'A minor',
               ),
               child: const Text('open'),

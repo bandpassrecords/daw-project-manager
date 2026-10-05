@@ -6532,6 +6532,63 @@ class AppLocalizationsIt extends AppLocalizations {
   String get midiDiscardEdits => 'Scarta';
 
   @override
-  String get midiEditHint =>
-      'Doppio clic per aggiungere una nota, o su una nota per eliminarla. Trascina su uno spazio vuoto per selezionare; Maiusc+clic aggiunge alla selezione. Trascina il bordo di una nota per cambiarne la durata. ↑/↓ sposta la selezione di un semitono, Maiusc+↑/↓ di un\'ottava. Alt+trascina copia; tieni premuto Ctrl per ignorare la griglia.';
+  String get midiToolSelect => 'Selezione (1)';
+
+  @override
+  String get midiToolPencil => 'Matita (8)';
+
+  @override
+  String get midiAcousticFeedback => 'Ascolta le note mentre le modifichi';
+
+  @override
+  String get midiHintGotIt => 'Capito';
+
+  @override
+  String get midiHintPencil =>
+      'Scegli la matita per aggiungere note con un solo clic.';
+
+  @override
+  String get midiHintDoubleClick =>
+      'Doppio clic su uno spazio vuoto per aggiungere una nota, o su una nota per eliminarla.';
+
+  @override
+  String get midiHintBoxSelect =>
+      'Trascina su uno spazio vuoto per selezionare più note insieme.';
+
+  @override
+  String get midiHintPencilDraw =>
+      'Fai clic per aggiungere una nota; trascina a destra mentre fai clic per allungarla.';
+
+  @override
+  String get midiHintPencilErase =>
+      'Fai clic su una nota per cancellarla, o trascinala per spostarla.';
+
+  @override
+  String get midiHintResize =>
+      'Trascina il bordo di una nota per accorciarla o allungarla.';
+
+  @override
+  String get midiHintTranspose =>
+      '↑/↓ sposta le note selezionate di un semitono, Maiusc+↑/↓ di un’ottava.';
+
+  @override
+  String midiHintAltCopy(String key) {
+    return 'Tieni premuto $key mentre trascini per copiare le note selezionate.';
+  }
+
+  @override
+  String midiHintCtrlFree(String key) {
+    return 'Tieni premuto $key mentre trascini per muovere fuori dalla griglia.';
+  }
+
+  @override
+  String get midiHintVelocity =>
+      'Trascina sulle barre per impostare la velocity di ogni nota che attraversi.';
+
+  @override
+  String get midiHintLane => 'Trascina per disegnare la curva.';
+
+  @override
+  String get midiHintPitchBend =>
+      'Trascina per disegnare il pitch bend; vicino alla linea centrale torna a zero.';
 }

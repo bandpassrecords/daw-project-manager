@@ -5154,7 +5154,6 @@
   "discardArchiveConfirmTitle": "Discard archive?",
   "discardArchiveConfirmMessage": "Deletes the zip and clears the archived flag. The project's own files stay where they are.",
   "discardArchiveDone": "Archive discarded",
-
   "whatsNewTitle": "What's New",
   "whatsNewTitleWithVersion": "What's New in {version}",
   "@whatsNewTitleWithVersion": {
@@ -5207,7 +5206,6 @@
   "releaseArtworkCarryOverSkip": "No artwork",
   "tracksViewList": "List view",
   "tracksViewTable": "Table view",
-
   "partsColumn": "Parts",
   "partsNeededCount": "{count, plural, =1{1 part still needed} other{{count} parts still needed}}",
   "@partsNeededCount": {
@@ -5218,7 +5216,6 @@
       }
     }
   },
-
   "songLength": "Length",
   "songLengthColumn": "Length",
   "songLengthHint": "3:45",
@@ -5243,7 +5240,6 @@
       }
     }
   },
-
   "breadcrumbHome": "Home",
   "breadcrumbGoTo": "Go to {label}",
   "@breadcrumbGoTo": {
@@ -5254,20 +5250,14 @@
       }
     }
   },
-
   "scrollForMore": "Scroll for more",
-
   "shortcutPlayerMono": "Toggle mono playback",
   "shortcutPlayerVolume": "Adjust volume",
   "shortcutMouseWheel": "Wheel",
-
   "releaseTotalLengthLabel": "Total length",
   "releaseLengthNone": "No track has a length yet — play a track or type its length on the project page",
-
   "songLengthHowItWorks": "Filled in automatically from the preview song — when it is played, or when a release containing this track is opened. You can also type it: 3:45, 1:02:03, or seconds.",
-
   "changelogSectionSubtitle": "Everything that changed in each version, newest first.",
-
   "changelogSearchHint": "Search the changelog",
   "changelogNoMatches": "No changes match \"{query}\"",
   "@changelogNoMatches": {
@@ -5278,12 +5268,9 @@
       }
     }
   },
-
   "projectFileMenu": "File",
   "moreActions": "More actions",
-
   "sectionRailResizeHint": "Drag to resize · double-click to reset",
-
   "stackMetadataCoverArtLabel": "cover art",
   "@stackMetadataCoverArtLabel": {
     "description": "Stack chooser: this version has its own cover art"
@@ -6318,8 +6305,78 @@
   "@midiDiscardEdits": {
     "description": "Answer that closes the piano roll and throws the unsaved edits away"
   },
-  "midiEditHint": "Double-click to add a note, or on a note to delete it. Drag on empty space to select; Shift-click adds to the selection. Drag a note's edge to change its length. ↑/↓ moves the selection a semitone, Shift+↑/↓ an octave. Alt-drag copies; hold Ctrl to ignore the grid.",
-  "@midiEditHint": {
-    "description": "Piano roll: how note editing works, shown in the edit toggle tooltip"
+  "midiToolSelect": "Select (1)",
+  "@midiToolSelect": {
+    "description": "Piano roll: the select tool button tooltip (key 1, as in Cubase)"
+  },
+  "midiToolPencil": "Pencil (8)",
+  "@midiToolPencil": {
+    "description": "Piano roll: the pencil (draw) tool button tooltip (key 8, as in Cubase)"
+  },
+  "midiAcousticFeedback": "Hear notes as you edit them",
+  "@midiAcousticFeedback": {
+    "description": "Piano roll: toggle that plays notes as they are added, clicked or moved"
+  },
+  "midiHintGotIt": "Got it",
+  "@midiHintGotIt": {
+    "description": "Piano roll hint: button that dismisses the hint for good"
+  },
+  "midiHintPencil": "Pick the pencil to add notes with a single click.",
+  "@midiHintPencil": {
+    "description": "Piano roll hint (select tool)"
+  },
+  "midiHintDoubleClick": "Double-click empty space to add a note, or a note to delete it.",
+  "@midiHintDoubleClick": {
+    "description": "Piano roll hint (select tool)"
+  },
+  "midiHintBoxSelect": "Drag across empty space to select several notes at once.",
+  "@midiHintBoxSelect": {
+    "description": "Piano roll hint (select tool)"
+  },
+  "midiHintPencilDraw": "Click to add a note — drag to the right as you click to make it longer.",
+  "@midiHintPencilDraw": {
+    "description": "Piano roll hint (pencil tool)"
+  },
+  "midiHintPencilErase": "Click a note to erase it, or drag it to move it.",
+  "@midiHintPencilErase": {
+    "description": "Piano roll hint (pencil tool, over a note)"
+  },
+  "midiHintResize": "Drag a note's edge to make it shorter or longer.",
+  "@midiHintResize": {
+    "description": "Piano roll hint (over a note edge)"
+  },
+  "midiHintTranspose": "↑/↓ moves the selected notes a semitone, Shift+↑/↓ an octave.",
+  "@midiHintTranspose": {
+    "description": "Piano roll hint (notes selected)"
+  },
+  "midiHintAltCopy": "Hold {key} while dragging to copy the selected notes.",
+  "@midiHintAltCopy": {
+    "description": "Piano roll hint (notes selected). {key} is the modifier key name, e.g. Alt",
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "midiHintCtrlFree": "Hold {key} while dragging to move off the grid.",
+  "@midiHintCtrlFree": {
+    "description": "Piano roll hint (over a note). {key} is the modifier key name, e.g. Ctrl",
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "midiHintVelocity": "Drag across the bars to set the velocity of every note you pass.",
+  "@midiHintVelocity": {
+    "description": "Piano roll hint (over the velocity lane)"
+  },
+  "midiHintLane": "Drag to draw the curve.",
+  "@midiHintLane": {
+    "description": "Piano roll hint (over a controller lane)"
+  },
+  "midiHintPitchBend": "Drag to draw the bend — near the middle line it snaps back to no bend.",
+  "@midiHintPitchBend": {
+    "description": "Piano roll hint (over the pitch bend lane)"
   }
 }

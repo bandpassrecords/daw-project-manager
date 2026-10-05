@@ -10859,11 +10859,101 @@ abstract class AppLocalizations {
   /// **'Discard'**
   String get midiDiscardEdits;
 
-  /// Piano roll: how note editing works, shown in the edit toggle tooltip
+  /// Piano roll: the select tool button tooltip (key 1, as in Cubase)
   ///
   /// In en, this message translates to:
-  /// **'Double-click to add a note, or on a note to delete it. Drag on empty space to select; Shift-click adds to the selection. Drag a note\'s edge to change its length. ↑/↓ moves the selection a semitone, Shift+↑/↓ an octave. Alt-drag copies; hold Ctrl to ignore the grid.'**
-  String get midiEditHint;
+  /// **'Select (1)'**
+  String get midiToolSelect;
+
+  /// Piano roll: the pencil (draw) tool button tooltip (key 8, as in Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'Pencil (8)'**
+  String get midiToolPencil;
+
+  /// Piano roll: toggle that plays notes as they are added, clicked or moved
+  ///
+  /// In en, this message translates to:
+  /// **'Hear notes as you edit them'**
+  String get midiAcousticFeedback;
+
+  /// Piano roll hint: button that dismisses the hint for good
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get midiHintGotIt;
+
+  /// Piano roll hint (select tool)
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the pencil to add notes with a single click.'**
+  String get midiHintPencil;
+
+  /// Piano roll hint (select tool)
+  ///
+  /// In en, this message translates to:
+  /// **'Double-click empty space to add a note, or a note to delete it.'**
+  String get midiHintDoubleClick;
+
+  /// Piano roll hint (select tool)
+  ///
+  /// In en, this message translates to:
+  /// **'Drag across empty space to select several notes at once.'**
+  String get midiHintBoxSelect;
+
+  /// Piano roll hint (pencil tool)
+  ///
+  /// In en, this message translates to:
+  /// **'Click to add a note — drag to the right as you click to make it longer.'**
+  String get midiHintPencilDraw;
+
+  /// Piano roll hint (pencil tool, over a note)
+  ///
+  /// In en, this message translates to:
+  /// **'Click a note to erase it, or drag it to move it.'**
+  String get midiHintPencilErase;
+
+  /// Piano roll hint (over a note edge)
+  ///
+  /// In en, this message translates to:
+  /// **'Drag a note\'s edge to make it shorter or longer.'**
+  String get midiHintResize;
+
+  /// Piano roll hint (notes selected)
+  ///
+  /// In en, this message translates to:
+  /// **'↑/↓ moves the selected notes a semitone, Shift+↑/↓ an octave.'**
+  String get midiHintTranspose;
+
+  /// Piano roll hint (notes selected). {key} is the modifier key name, e.g. Alt
+  ///
+  /// In en, this message translates to:
+  /// **'Hold {key} while dragging to copy the selected notes.'**
+  String midiHintAltCopy(String key);
+
+  /// Piano roll hint (over a note). {key} is the modifier key name, e.g. Ctrl
+  ///
+  /// In en, this message translates to:
+  /// **'Hold {key} while dragging to move off the grid.'**
+  String midiHintCtrlFree(String key);
+
+  /// Piano roll hint (over the velocity lane)
+  ///
+  /// In en, this message translates to:
+  /// **'Drag across the bars to set the velocity of every note you pass.'**
+  String get midiHintVelocity;
+
+  /// Piano roll hint (over a controller lane)
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to draw the curve.'**
+  String get midiHintLane;
+
+  /// Piano roll hint (over the pitch bend lane)
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to draw the bend — near the middle line it snaps back to no bend.'**
+  String get midiHintPitchBend;
 }
 
 class _AppLocalizationsDelegate

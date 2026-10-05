@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "要丢弃归档吗？",
   "discardArchiveConfirmMessage": "删除 zip 并清除归档标记。项目自身的文件会留在原处。",
   "discardArchiveDone": "已丢弃归档",
-
   "whatsNewTitle": "新增功能",
   "whatsNewTitleWithVersion": "{version} 版本的新增功能",
   "whatsNewIntro": "以下是自上一个版本以来的变化。",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "不使用封面",
   "tracksViewList": "列表视图",
   "tracksViewTable": "表格视图",
-
   "partsColumn": "声部",
   "partsNeededCount": "{count, plural, other{仍需 {count} 个声部}}",
-
   "songLength": "时长",
   "songLengthColumn": "时长",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "总时长",
   "releaseLengthPartial": "{count, plural, other{当前合计——仍有 {count} 首曲目没有时长}}",
-
   "breadcrumbHome": "主页",
   "breadcrumbGoTo": "前往{label}",
-
   "scrollForMore": "滚动查看更多",
-
   "shortcutPlayerMono": "切换单声道播放",
   "shortcutPlayerVolume": "调整音量",
   "shortcutMouseWheel": "滚轮",
-
   "releaseTotalLengthLabel": "总时长",
   "releaseLengthNone": "还没有曲目设置时长——播放曲目，或在项目页面输入时长",
-
   "songLengthHowItWorks": "根据预览歌曲自动填写——在播放时，或打开包含此曲目的发行时。也可以手动输入：3:45、1:02:03 或秒数。",
-
   "changelogSectionSubtitle": "每个版本的所有变更，按从新到旧排列。",
-
   "changelogSearchHint": "搜索更新日志",
   "changelogNoMatches": "没有与“{query}”匹配的变更",
-
   "projectFileMenu": "文件",
   "moreActions": "更多操作",
-
   "sectionRailResizeHint": "拖动调整宽度 · 双击恢复默认",
-
   "stackMetadataCoverArtLabel": "封面",
   "stackMetadataColorLabel": "强调色",
   "stackMetadataIconLabel": "图标",
@@ -4058,5 +4045,20 @@
   "midiDiscardEditsBody": "编辑后的片段尚未保存。将其另存为新片段即可保留。",
   "midiKeepEditing": "继续编辑",
   "midiDiscardEdits": "放弃",
-  "midiEditHint": "双击添加音符，在音符上双击则删除。在空白处拖动可框选；Shift+单击加入选择。拖动音符边缘可改变时值。↑/↓ 将所选音符移动一个半音，Shift+↑/↓ 移动一个八度。Alt+拖动可复制；按住 Ctrl 可忽略网格。"
+  "midiToolSelect": "选择 (1)",
+  "midiToolPencil": "铅笔 (8)",
+  "midiAcousticFeedback": "编辑时播放音符",
+  "midiHintGotIt": "知道了",
+  "midiHintPencil": "选择铅笔，单击即可添加音符。",
+  "midiHintDoubleClick": "双击空白处添加音符，双击音符将其删除。",
+  "midiHintBoxSelect": "在空白处拖动可一次选择多个音符。",
+  "midiHintPencilDraw": "单击添加音符；单击时向右拖动可延长它。",
+  "midiHintPencilErase": "单击音符将其擦除，拖动则移动它。",
+  "midiHintResize": "拖动音符的边缘可缩短或延长它。",
+  "midiHintTranspose": "↑/↓ 将所选音符移动一个半音，Shift+↑/↓ 移动一个八度。",
+  "midiHintAltCopy": "拖动时按住 {key} 可复制所选音符。",
+  "midiHintCtrlFree": "拖动时按住 {key} 可不受网格限制地移动。",
+  "midiHintVelocity": "在竖条上拖动，可设置经过的每个音符的力度。",
+  "midiHintLane": "拖动以绘制曲线。",
+  "midiHintPitchBend": "拖动以绘制弯音；靠近中线时会吸附回无弯音。"
 }

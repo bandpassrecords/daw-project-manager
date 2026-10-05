@@ -386,9 +386,10 @@ class _MidiClipListState extends State<MidiClipList> {
           if (compact)
             _overflowMenu(context, index)
           else ...[
-            _VoicePicker(
+            MidiVoicePicker(
               voice: widget.voiceOf(index),
-              labels: labels,
+              voiceName: labels.voiceName,
+              tooltip: labels.instrument,
               onChanged: (v) => widget.onVoiceChanged(index, v),
             ),
             if (widget.onAddToCollection != null)
@@ -534,22 +535,30 @@ IconData _voiceIcon(SynthVoice voice) => switch (voice) {
     };
 
 /// The instrument a clip previews with: an icon for its family, and a menu
-/// of every voice with the current one checked.
-class _VoicePicker extends StatelessWidget {
-  const _VoicePicker({
+/// of every voice with the current one checked. The clip list's rows and
+/// the piano roll window both use it.
+class MidiVoicePicker extends StatelessWidget {
+  const MidiVoicePicker({
+    super.key,
     required this.voice,
-    required this.labels,
+    required this.voiceName,
+    required this.tooltip,
     required this.onChanged,
   });
 
   final SynthVoice voice;
-  final MidiClipListLabels labels;
+
+  /// "Bass", "Pad"…
+  final String Function(SynthVoice voice) voiceName;
+
+  /// "Instrument: Bass", given the voice's name.
+  final String Function(String name) tooltip;
   final ValueChanged<SynthVoice> onChanged;
 
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<SynthVoice>(
-      tooltip: labels.instrument(labels.voiceName(voice)),
+      tooltip: tooltip(voiceName(voice)),
       icon: Icon(_voiceIcon(voice)),
       initialValue: voice,
       onSelected: onChanged,
@@ -559,7 +568,7 @@ class _VoicePicker extends StatelessWidget {
           CheckedPopupMenuItem<SynthVoice>(
             value: v,
             checked: v == voice,
-            child: Text(labels.voiceName(v)),
+            child: Text(voiceName(v)),
           ),
         ],
       ],
@@ -567,7 +576,7 @@ class _VoicePicker extends StatelessWidget {
   }
 }
 
-/// The phone layout's instrument chooser: the same voices as [_VoicePicker],
+/// The phone layout's instrument chooser: the same voices as [MidiVoicePicker],
 /// as a dialog (a 16-item popup out of an overflow menu is unwieldy).
 class _VoiceDialog extends StatelessWidget {
   const _VoiceDialog({required this.current, required this.labels});

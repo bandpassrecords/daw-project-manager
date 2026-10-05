@@ -6487,6 +6487,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get midiDiscardEdits => 'Discard';
 
   @override
-  String get midiEditHint =>
-      'Double-click to add a note, or on a note to delete it. Drag on empty space to select; Shift-click adds to the selection. Drag a note\'s edge to change its length. ↑/↓ moves the selection a semitone, Shift+↑/↓ an octave. Alt-drag copies; hold Ctrl to ignore the grid.';
+  String get midiToolSelect => 'Select (1)';
+
+  @override
+  String get midiToolPencil => 'Pencil (8)';
+
+  @override
+  String get midiAcousticFeedback => 'Hear notes as you edit them';
+
+  @override
+  String get midiHintGotIt => 'Got it';
+
+  @override
+  String get midiHintPencil =>
+      'Pick the pencil to add notes with a single click.';
+
+  @override
+  String get midiHintDoubleClick =>
+      'Double-click empty space to add a note, or a note to delete it.';
+
+  @override
+  String get midiHintBoxSelect =>
+      'Drag across empty space to select several notes at once.';
+
+  @override
+  String get midiHintPencilDraw =>
+      'Click to add a note — drag to the right as you click to make it longer.';
+
+  @override
+  String get midiHintPencilErase =>
+      'Click a note to erase it, or drag it to move it.';
+
+  @override
+  String get midiHintResize =>
+      'Drag a note\'s edge to make it shorter or longer.';
+
+  @override
+  String get midiHintTranspose =>
+      '↑/↓ moves the selected notes a semitone, Shift+↑/↓ an octave.';
+
+  @override
+  String midiHintAltCopy(String key) {
+    return 'Hold $key while dragging to copy the selected notes.';
+  }
+
+  @override
+  String midiHintCtrlFree(String key) {
+    return 'Hold $key while dragging to move off the grid.';
+  }
+
+  @override
+  String get midiHintVelocity =>
+      'Drag across the bars to set the velocity of every note you pass.';
+
+  @override
+  String get midiHintLane => 'Drag to draw the curve.';
+
+  @override
+  String get midiHintPitchBend =>
+      'Drag to draw the bend — near the middle line it snaps back to no bend.';
 }

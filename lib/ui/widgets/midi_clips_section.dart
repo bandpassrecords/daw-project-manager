@@ -200,7 +200,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     await _play(index);
   }
 
-  Future<void> _play(int index) async {
+  Future<void> _play(int index, {SynthVoice? voice}) async {
     final l10n = AppLocalizations.of(context)!;
     final clip = _clips[index];
     try {
@@ -208,7 +208,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
         clip.contentKey,
         clip,
         bpm: _tempo,
-        voice: _voiceOf(index),
+        voice: voice ?? _voiceOf(index),
       );
     } catch (e) {
       _snack(l10n.midiClipPreviewFailed(e.toString()));
@@ -545,12 +545,14 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
                 player: _player,
                 playerKey: clip.contentKey,
                 bpm: _tempo,
-                onPlay: () => _play(index),
+                onPlay: (voice) => _play(index, voice: voice),
                 musicalKey: _projectKey,
                 voice: _voiceOf(index),
+                onVoiceChanged: (v) => setState(
+                    () => _voiceOverrides[clip.contentKey] = v),
                 // An edit is saved as a new clip in a collection; the
                 // project's own clips are re-read from its file.
-                onSaveEdited: (edited, key) => addToCollectionFlow(
+                onSaveEdited: (edited, key, voice) => addToCollectionFlow(
                   context,
                   ref,
                   [
@@ -560,7 +562,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
                       projectName: widget.project.displayName,
                       bpm: _projectBpm,
                       musicalKey: key,
-                      pickedVoice: _voiceOverrides[clip.contentKey],
+                      pickedVoice: voice,
                     ),
                   ],
                 ),

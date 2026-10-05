@@ -28,6 +28,12 @@ enum MidiSnap {
 /// Which edge of a note a resize drags.
 enum NoteEdge { start, end }
 
+/// What a click on the notes does, as with Cubase's toolbox: [select]
+/// selects, moves and resizes (a double-click adds or deletes); [pencil]
+/// adds a note with a single click (a drag makes it longer) and erases one
+/// clicked on.
+enum MidiEditTool { select, pencil }
+
 /// Edits one MIDI clip in the piano roll the way Cubase's key editor does:
 /// notes added and deleted, a selection of any number of notes moved,
 /// transposed, resized from either edge and duplicated, velocities and
@@ -39,10 +45,11 @@ enum NoteEdge { start, end }
 ///
 /// A drag edits in three steps: [beginGesture] fixes the state it starts
 /// from (copying the selection first for an Alt-drag), preview calls
-/// ([moveSelection], [resizeSelection], [setVelocity], [drawLane]) change
+/// ([moveSelection], [resizeSelection], [drawVelocities], [drawLane]) change
 /// [clip] as the pointer moves — each from that starting state — and
 /// [endGesture] makes the result one undo step (or [cancelGesture] drops
-/// it). Single actions — [addNoteAt], [deleteNote], [deleteSelected],
+/// it). The pencil's [beginNote] starts a gesture of its own, so a note
+/// drawn and stretched is one step too. Single actions — [addNoteAt], [deleteNote], [deleteSelected],
 /// [transposeSelection] — are a step of their own.
 ///
 /// Notes keep their order while editing, so an index stays the same note;
@@ -68,6 +75,10 @@ class MidiClipEditController extends ChangeNotifier {
   /// never moved is dropped rather than left on top of its original.
   bool _duplicating = false;
 
+  /// The gesture under way is the pencil drawing a note ([beginNote]); the
+  /// note goes if the gesture is cancelled.
+  bool _adding = false;
+
   /// The clip as shown now, mid-gesture included.
   MidiClip get clip => _clip;
 
@@ -82,6 +93,14 @@ class MidiClipEditController extends ChangeNotifier {
     if (_editing == value) return;
     _editing = value;
     if (!value) _selection.clear();
+    notifyListeners();
+  }
+
+  MidiEditTool get tool => _tool;
+  MidiEditTool _tool = MidiEditTool.select;
+  set tool(MidiEditTool value) {
+    if (_tool == value) return;
+    _tool = value;
     notifyListeners();
   }
 
@@ -181,6 +200,14 @@ class MidiClipEditController extends ChangeNotifier {
     return (t / step).floor() * step;
   }
 
+  /// How finely a drag draws a controller, pitch bend or pressure lane: a
+  /// 128th note, whatever the note grid — drawn on the 1/16 grid, a bend
+  /// came out as a staircase.
+  int get laneStepTicks {
+    final step = _clip.ppq ~/ 32;
+    return step < 1 ? 1 : step;
+  }
+
   /// [ticks] (a distance) rounded to the nearest whole step — how far a drag
   /// moves a note — or, [free] (Ctrl held, as in Cubase), to the nearest
   /// tick.
@@ -195,19 +222,37 @@ class MidiClipEditController extends ChangeNotifier {
   /// Adds a note one step long at the grid step [tick] falls in, on
   /// [pitch], and selects it — a double-click on an empty spot.
   void addNoteAt(double tick, int pitch) {
-    final start = snapDown(tick);
-    final length = _snap == MidiSnap.off ? _clip.ppq ~/ 4 : stepTicks;
-    final note = MidiNote(
-      startTick: start,
-      lengthTicks: length < 1 ? 1 : length,
-      pitch: pitch.clamp(0, 127),
-      velocity: velocity.clamp(1, 127),
-    );
-    _apply(_committed.copyWith(notes: [..._committed.notes, note]));
+    _apply(_committed.copyWith(notes: [..._committed.notes, _newNote(tick, pitch)]));
     _selection
       ..clear()
       ..add(_clip.notes.length - 1);
     _commit();
+  }
+
+  /// The pencil: starts a gesture with a new note at the grid step [tick]
+  /// falls in, one step long and selected, for [resizeSelection] to
+  /// stretch as the pointer drags; [endGesture] keeps it as one undo step.
+  void beginNote(double tick, int pitch) {
+    _base = _committed.copyWith(
+        notes: [..._committed.notes, _newNote(tick, pitch)]);
+    _duplicating = false;
+    _adding = true;
+    _selection
+      ..clear()
+      ..add(_base.notes.length - 1);
+    _apply(_base);
+  }
+
+  /// A note one step long (a 16th with snapping off) at the grid step
+  /// [tick] falls in, at the velocity last used.
+  MidiNote _newNote(double tick, int pitch) {
+    final length = _snap == MidiSnap.off ? _clip.ppq ~/ 4 : stepTicks;
+    return MidiNote(
+      startTick: snapDown(tick),
+      lengthTicks: length < 1 ? 1 : length,
+      pitch: pitch.clamp(0, 127),
+      velocity: velocity.clamp(1, 127),
+    );
   }
 
   /// Deletes note [index] — a double-click on it.
@@ -270,6 +315,7 @@ class MidiClipEditController extends ChangeNotifier {
   void beginGesture({bool duplicate = false}) {
     _base = _committed;
     _duplicating = false;
+    _adding = false;
     if (duplicate && _selection.isNotEmpty) {
       final copies = [for (final i in _selection.toList()..sort()) _base.notes[i]];
       final first = _base.notes.length;
@@ -328,36 +374,75 @@ class MidiClipEditController extends ChangeNotifier {
     _apply(_base.copyWith(notes: notes));
   }
 
-  /// Sets note [index]'s velocity (1–127), from where it was when the
-  /// gesture started.
-  void setVelocity(int index, int value) {
-    if (index < 0 || index >= _base.notes.length) return;
-    final v = value.clamp(1, 127);
-    velocity = v;
-    final notes = [..._base.notes];
-    notes[index] = _note(notes[index], velocity: v);
-    _apply(_base.copyWith(notes: notes));
+  /// Sets the velocity of every note starting between [fromTick] and
+  /// [toTick] — the stretch of the velocity lane a drag just crossed — on
+  /// the line from [fromValue] to [toValue], like a pencil across the
+  /// stems. Notes starting together (a chord) all get the value there.
+  /// Repeated calls in one gesture shape a whole run of notes.
+  void drawVelocities(
+      double fromTick, int fromValue, double toTick, int toValue) {
+    final (t0, v0, t1, v1) = fromTick <= toTick
+        ? (fromTick, fromValue, toTick, toValue)
+        : (toTick, toValue, fromTick, fromValue);
+    final notes = [..._clip.notes];
+    var changed = false;
+    for (var i = 0; i < notes.length; i++) {
+      final n = notes[i];
+      if (n.startTick < t0 || n.startTick > t1) continue;
+      final f = t1 == t0 ? 1.0 : (n.startTick - t0) / (t1 - t0);
+      final v = (v0 + (v1 - v0) * f).round().clamp(1, 127);
+      velocity = v;
+      if (n.velocity == v) continue;
+      notes[i] = _note(n, velocity: v);
+      changed = true;
+    }
+    if (changed) _apply(_clip.copyWith(notes: notes));
   }
 
-  /// Sets the controller lane ([kind], [number]) to [value] over the grid
-  /// step [tick] falls in — what dragging across a lane draws. Repeated
-  /// calls in one gesture build up a curve.
-  void drawLane(MidiEventKind kind, int number, double tick, int value) {
-    final start = snapDown(tick);
-    final end = start + stepTicks;
-    final v = value.clamp(0, kind.maxValue);
+  /// Draws the lane ([kind], [number]) at [value] where [tick] falls — or,
+  /// given [fromTick] and [fromValue] (where the pointer last was), along
+  /// the line from there, so a fast drag leaves no gaps. Written every
+  /// [laneStepTicks], replacing what the lane held there; repeated calls in
+  /// one gesture build up a curve.
+  void drawLane(
+    MidiEventKind kind,
+    int number,
+    double tick,
+    int value, {
+    double? fromTick,
+    int? fromValue,
+  }) {
+    final (t0, v0, t1, v1) = fromTick == null || fromValue == null
+        ? (tick, value, tick, value)
+        : fromTick <= tick
+            ? (fromTick, fromValue, tick, value)
+            : (tick, value, fromTick, fromValue);
+    final step = laneStepTicks;
+    int stepOf(double t) => ((t < 0 ? 0 : t) / step).floor() * step;
+    final first = stepOf(t0), last = stepOf(t1);
+    // The steps the line starts and ends in hold exactly the values drawn
+    // there — so a bend snapped back to the middle ends on it — and the
+    // steps between follow the line.
+    int valueAt(int t) {
+      if (t == last) return v1.clamp(0, kind.maxValue);
+      if (t == first) return v0.clamp(0, kind.maxValue);
+      final f = ((t - t0) / (t1 - t0)).clamp(0.0, 1.0);
+      return (v0 + (v1 - v0) * f).round().clamp(0, kind.maxValue);
+    }
+
     bool sameLane(MidiEvent e) =>
         e.kind == kind &&
         (kind != MidiEventKind.controller || e.number == number);
     final events = [
       for (final e in _clip.events)
-        if (!(sameLane(e) && e.tick >= start && e.tick < end)) e,
-      MidiEvent(
-        tick: start,
-        kind: kind,
-        number: kind == MidiEventKind.controller ? number : 0,
-        value: v,
-      ),
+        if (!(sameLane(e) && e.tick >= first && e.tick < last + step)) e,
+      for (var t = first; t <= last; t += step)
+        MidiEvent(
+          tick: t,
+          kind: kind,
+          number: kind == MidiEventKind.controller ? number : 0,
+          value: valueAt(t),
+        ),
     ];
     _apply(_clip.copyWith(events: normalizeMidiEvents(events)));
   }
@@ -370,14 +455,16 @@ class MidiClipEditController extends ChangeNotifier {
       return;
     }
     _duplicating = false;
+    _adding = false;
     if (identical(_clip, _committed)) return;
     _commit();
   }
 
   /// Drops the gesture's changes — a second finger landing mid-drag, say.
   void cancelGesture() {
-    if (_duplicating) _selection.clear();
+    if (_duplicating || _adding) _selection.clear();
     _duplicating = false;
+    _adding = false;
     _base = _committed;
     if (identical(_clip, _committed)) return;
     _clip = _committed;

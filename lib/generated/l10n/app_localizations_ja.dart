@@ -6330,6 +6330,54 @@ class AppLocalizationsJa extends AppLocalizations {
   String get midiDiscardEdits => '破棄';
 
   @override
-  String get midiEditHint =>
-      'ダブルクリックでノートを追加、ノート上でダブルクリックすると削除します。空いている所をドラッグして選択、Shift+クリックで選択に追加。ノートの端をドラッグすると長さを変更。↑/↓ で選択範囲を半音、Shift+↑/↓ で1オクターブ移動。Alt+ドラッグでコピー、Ctrl を押しながらでグリッドを無視します。';
+  String get midiToolSelect => '選択 (1)';
+
+  @override
+  String get midiToolPencil => '鉛筆 (8)';
+
+  @override
+  String get midiAcousticFeedback => '編集中のノートを鳴らす';
+
+  @override
+  String get midiHintGotIt => 'OK';
+
+  @override
+  String get midiHintPencil => '鉛筆を選ぶと、1回のクリックでノートを追加できます。';
+
+  @override
+  String get midiHintDoubleClick => '空いている所をダブルクリックでノートを追加、ノートをダブルクリックで削除します。';
+
+  @override
+  String get midiHintBoxSelect => '空いている所をドラッグすると、複数のノートをまとめて選択できます。';
+
+  @override
+  String get midiHintPencilDraw => 'クリックでノートを追加。クリックしたまま右へドラッグすると長くなります。';
+
+  @override
+  String get midiHintPencilErase => 'ノートをクリックで消去、ドラッグで移動します。';
+
+  @override
+  String get midiHintResize => 'ノートの端をドラッグすると、短く・長くできます。';
+
+  @override
+  String get midiHintTranspose => '↑/↓ で選択したノートを半音、Shift+↑/↓ で1オクターブ移動します。';
+
+  @override
+  String midiHintAltCopy(String key) {
+    return '$key を押しながらドラッグすると、選択したノートをコピーします。';
+  }
+
+  @override
+  String midiHintCtrlFree(String key) {
+    return '$key を押しながらドラッグすると、グリッドに合わせずに動かせます。';
+  }
+
+  @override
+  String get midiHintVelocity => 'バーの上をドラッグすると、通ったノートすべてのベロシティを設定します。';
+
+  @override
+  String get midiHintLane => 'ドラッグしてカーブを描きます。';
+
+  @override
+  String get midiHintPitchBend => 'ドラッグでピッチベンドを描きます。中央の線の近くでは「ベンドなし」に吸着します。';
 }

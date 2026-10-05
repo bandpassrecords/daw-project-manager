@@ -6259,6 +6259,54 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiDiscardEdits => '放弃';
 
   @override
-  String get midiEditHint =>
-      '双击添加音符，在音符上双击则删除。在空白处拖动可框选；Shift+单击加入选择。拖动音符边缘可改变时值。↑/↓ 将所选音符移动一个半音，Shift+↑/↓ 移动一个八度。Alt+拖动可复制；按住 Ctrl 可忽略网格。';
+  String get midiToolSelect => '选择 (1)';
+
+  @override
+  String get midiToolPencil => '铅笔 (8)';
+
+  @override
+  String get midiAcousticFeedback => '编辑时播放音符';
+
+  @override
+  String get midiHintGotIt => '知道了';
+
+  @override
+  String get midiHintPencil => '选择铅笔，单击即可添加音符。';
+
+  @override
+  String get midiHintDoubleClick => '双击空白处添加音符，双击音符将其删除。';
+
+  @override
+  String get midiHintBoxSelect => '在空白处拖动可一次选择多个音符。';
+
+  @override
+  String get midiHintPencilDraw => '单击添加音符；单击时向右拖动可延长它。';
+
+  @override
+  String get midiHintPencilErase => '单击音符将其擦除，拖动则移动它。';
+
+  @override
+  String get midiHintResize => '拖动音符的边缘可缩短或延长它。';
+
+  @override
+  String get midiHintTranspose => '↑/↓ 将所选音符移动一个半音，Shift+↑/↓ 移动一个八度。';
+
+  @override
+  String midiHintAltCopy(String key) {
+    return '拖动时按住 $key 可复制所选音符。';
+  }
+
+  @override
+  String midiHintCtrlFree(String key) {
+    return '拖动时按住 $key 可不受网格限制地移动。';
+  }
+
+  @override
+  String get midiHintVelocity => '在竖条上拖动，可设置经过的每个音符的力度。';
+
+  @override
+  String get midiHintLane => '拖动以绘制曲线。';
+
+  @override
+  String get midiHintPitchBend => '拖动以绘制弯音；靠近中线时会吸附回无弯音。';
 }

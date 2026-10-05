@@ -6547,6 +6547,63 @@ class AppLocalizationsEs extends AppLocalizations {
   String get midiDiscardEdits => 'Descartar';
 
   @override
-  String get midiEditHint =>
-      'Doble clic para añadir una nota, o sobre una nota para borrarla. Arrastra en un espacio vacío para seleccionar; Mayús+clic añade a la selección. Arrastra el borde de una nota para cambiar su duración. ↑/↓ mueve la selección un semitono, Mayús+↑/↓ una octava. Alt+arrastrar copia; mantén Ctrl para ignorar la cuadrícula.';
+  String get midiToolSelect => 'Seleccionar (1)';
+
+  @override
+  String get midiToolPencil => 'Lápiz (8)';
+
+  @override
+  String get midiAcousticFeedback => 'Escuchar las notas al editarlas';
+
+  @override
+  String get midiHintGotIt => 'Entendido';
+
+  @override
+  String get midiHintPencil =>
+      'Elige el lápiz para añadir notas con un solo clic.';
+
+  @override
+  String get midiHintDoubleClick =>
+      'Doble clic en un espacio vacío para añadir una nota, o sobre una nota para borrarla.';
+
+  @override
+  String get midiHintBoxSelect =>
+      'Arrastra por un espacio vacío para seleccionar varias notas a la vez.';
+
+  @override
+  String get midiHintPencilDraw =>
+      'Haz clic para añadir una nota; arrastra a la derecha al hacer clic para alargarla.';
+
+  @override
+  String get midiHintPencilErase =>
+      'Haz clic en una nota para borrarla, o arrástrala para moverla.';
+
+  @override
+  String get midiHintResize =>
+      'Arrastra el borde de una nota para acortarla o alargarla.';
+
+  @override
+  String get midiHintTranspose =>
+      '↑/↓ mueve las notas seleccionadas un semitono, Mayús+↑/↓ una octava.';
+
+  @override
+  String midiHintAltCopy(String key) {
+    return 'Mantén $key al arrastrar para copiar las notas seleccionadas.';
+  }
+
+  @override
+  String midiHintCtrlFree(String key) {
+    return 'Mantén $key al arrastrar para mover fuera de la cuadrícula.';
+  }
+
+  @override
+  String get midiHintVelocity =>
+      'Arrastra sobre las barras para fijar la velocidad de cada nota por la que pases.';
+
+  @override
+  String get midiHintLane => 'Arrastra para dibujar la curva.';
+
+  @override
+  String get midiHintPitchBend =>
+      'Arrastra para dibujar el pitch bend; cerca de la línea central vuelve a “sin bend”.';
 }

@@ -84,7 +84,8 @@ void main() {
 
   test('velocity is set and remembered for the next note', () {
     final c = _editing();
-    c.setVelocity(0, 200);
+    c.beginGesture();
+    c.drawVelocities(0, 200, 0, 200);
     expect(c.clip.notes.single.velocity, 127);
     c.endGesture();
     c.addNoteAt(960, 60);
@@ -106,11 +107,12 @@ void main() {
     expect(c.clip.notes, hasLength(1));
   });
 
-  test('drawing a lane writes one value per grid step', () {
+  test('drawing a lane writes one value per 128th, whatever the grid', () {
     final c = _editing();
+    expect(c.laneStepTicks, 15, reason: '480 PPQ / 32');
     c.drawLane(MidiEventKind.controller, 1, 10, 20);
     c.drawLane(MidiEventKind.controller, 1, 130, 40);
-    c.drawLane(MidiEventKind.controller, 1, 100, 30); // same step as the first
+    c.drawLane(MidiEventKind.controller, 1, 5, 30); // same step as the first
     c.endGesture();
     expect(c.clip.events.map((e) => (e.tick, e.number, e.value)),
         [(0, 1, 30), (120, 1, 40)]);
@@ -364,6 +366,115 @@ void main() {
         ..toggleSelected(2);
       c.deleteSelected();
       expect(c.clip.notes.map((n) => n.pitch), [64]);
+    });
+  });
+
+  group('the pencil', () {
+    test('a drawn note is selected, stretched, and one undo step', () {
+      final c = editingChord();
+      c.beginNote(1450, 72);
+      expect(c.selection, {3});
+      expect(c.clip.notes.last,
+          const MidiNote(startTick: 1440, lengthTicks: 120, pitch: 72, velocity: 100));
+      c.resizeSelection(NoteEdge.end, 240);
+      c.endGesture();
+      expect(c.clip.notes.last.lengthTicks, 360);
+      expect(c.canUndo, isTrue);
+      c.undo();
+      expect(c.clip.notes, chord.notes, reason: 'drawing and stretching undo together');
+    });
+
+    test('a click without a drag keeps a one-step note', () {
+      final c = editingChord()..beginNote(0, 50);
+      c.endGesture();
+      expect(c.clip.notes, hasLength(4));
+    });
+
+    test('a cancelled drawing leaves nothing, not even a selection', () {
+      final c = editingChord()..beginNote(0, 50);
+      c.cancelGesture();
+      expect(c.clip.notes, chord.notes);
+      expect(c.selection, isEmpty);
+      expect(c.canUndo, isFalse);
+    });
+
+    test('the tool is select until changed, and says when it is', () {
+      final c = editingChord();
+      expect(c.tool, MidiEditTool.select);
+      var told = 0;
+      c.addListener(() => told++);
+      c.tool = MidiEditTool.pencil;
+      c.tool = MidiEditTool.pencil;
+      expect(told, 1);
+    });
+  });
+
+  group('drawing velocities', () {
+    test('a line across the stems sets every note it passes', () {
+      final c = editingChord();
+      c.beginGesture();
+      c.drawVelocities(0, 120, 960, 20);
+      c.endGesture();
+      expect(c.clip.notes.map((n) => n.velocity), [120, 70, 20]);
+      expect(c.velocity, 20, reason: 'the next note gets the last value');
+      c.undo();
+      expect(c.clip.notes, chord.notes, reason: 'one undo step');
+    });
+
+    test('drawn right to left all the same', () {
+      final c = editingChord();
+      c.drawVelocities(960, 20, 0, 120);
+      expect(c.clip.notes.map((n) => n.velocity), [120, 70, 20]);
+    });
+
+    test('a chord on one stem all takes the value', () {
+      final c = MidiClipEditController(const MidiClip(
+        name: 'Chord',
+        ppq: 480,
+        lengthTicks: 1920,
+        notes: [
+          MidiNote(startTick: 480, lengthTicks: 480, pitch: 60, velocity: 90),
+          MidiNote(startTick: 480, lengthTicks: 480, pitch: 64, velocity: 80),
+          MidiNote(startTick: 960, lengthTicks: 480, pitch: 67, velocity: 70),
+        ],
+      ))
+        ..editing = true;
+      c.drawVelocities(480, 30, 480, 30);
+      expect(c.clip.notes.map((n) => n.velocity), [30, 30, 70]);
+    });
+
+    test('only notes starting inside the stretch change', () {
+      final c = editingChord();
+      c.drawVelocities(400, 50, 900, 50);
+      expect(c.clip.notes.map((n) => n.velocity), [90, 50, 90]);
+    });
+  });
+
+  group('drawing a lane along a line', () {
+    test('a fast drag leaves no gaps: every step between is drawn', () {
+      final c = editingChord();
+      c.drawLane(MidiEventKind.controller, 1, 0, 0);
+      c.drawLane(MidiEventKind.controller, 1, 60, 100, fromTick: 0, fromValue: 0);
+      expect(c.clip.events.map((e) => (e.tick, e.value)),
+          [(0, 0), (15, 25), (30, 50), (45, 75), (60, 100)]);
+    });
+
+    test('drawing back over a stretch replaces it', () {
+      final c = editingChord();
+      c.drawLane(MidiEventKind.pitchBend, 0, 60, 16383, fromTick: 0, fromValue: 16383);
+      c.drawLane(MidiEventKind.pitchBend, 0, 0, 8192, fromTick: 60, fromValue: 8192);
+      expect(c.clip.events.map((e) => (e.tick, e.value)), [(0, 8192)]);
+    });
+
+    test('other lanes are left alone', () {
+      final c = editingChord();
+      c.drawLane(MidiEventKind.controller, 1, 0, 64);
+      c.drawLane(MidiEventKind.controller, 74, 30, 10, fromTick: 0, fromValue: 10);
+      expect(
+          c.clip.events
+              .where((e) => e.number == 1)
+              .map((e) => (e.tick, e.value)),
+          [(0, 64)]);
     });
   });
 }

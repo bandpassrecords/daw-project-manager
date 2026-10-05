@@ -145,10 +145,11 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Future<void> _play(_Entry e) async {
+  Future<void> _play(_Entry e, {SynthVoice? voice}) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      await _player.toggle(e.key, e.clip, bpm: _bpmOf(e), voice: e.voice);
+      await _player.toggle(e.key, e.clip,
+          bpm: _bpmOf(e), voice: voice ?? e.voice);
     } catch (err) {
       _snack(l10n.midiClipPreviewFailed(err.toString()));
     }
@@ -505,6 +506,18 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     }
 
     final labels = midiClipListLabelsOf(l10n);
+    // A clip's instrument, picked in its row or in its piano roll: kept on
+    // the collection item, or for this session in the library.
+    Future<void> setVoice(_Entry e, SynthVoice v) async {
+      if (collection != null && e.item != null) {
+        final repo = await ref.read(repositoryProvider.future);
+        await repo.midiCollections
+            .setItemVoice(collection.id, e.item!.id, v.name);
+      } else {
+        setState(() => _libraryVoices[e.key] = v);
+      }
+    }
+
     // By tempo, every view is grouped under its BPM, and each row names
     // its project since the heading no longer does.
     final byProject = grouped && !_byTempo;
@@ -542,11 +555,12 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
           player: _player,
           playerKey: e.key,
           bpm: _bpmOf(e),
-          onPlay: () => _play(e),
+          onPlay: (voice) => _play(e, voice: voice),
           onOpenProject: e.projectId == null ? null : () => _openProject(e),
           musicalKey: e.musicalKey,
           voice: e.voice,
-          onSaveEdited: (edited, key) => addToCollectionFlow(
+          onVoiceChanged: (v) => setVoice(e, v),
+          onSaveEdited: (edited, key, voice) => addToCollectionFlow(
             context,
             ref,
             [
@@ -556,7 +570,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
                 projectName: e.projectName,
                 bpm: e.bpm,
                 musicalKey: key,
-                pickedVoice: e.voice,
+                pickedVoice: voice,
               ),
             ],
           ),
@@ -567,12 +581,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       voiceOf: (i) => entries[i].voice,
       onVoiceChanged: (i, v) async {
         final e = entries[i];
-        if (collection != null && e.item != null) {
-          final repo = await ref.read(repositoryProvider.future);
-          await repo.midiCollections.setItemVoice(collection.id, e.item!.id, v.name);
-        } else {
-          setState(() => _libraryVoices[e.key] = v);
-        }
+        await setVoice(e, v);
         if (_player.playingKey == e.key) {
           await _player.play(e.key, e.clip, bpm: _bpmOf(e), voice: v);
         }

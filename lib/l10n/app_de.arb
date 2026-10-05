@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "Archiv verwerfen?",
   "discardArchiveConfirmMessage": "Löscht die ZIP-Datei und entfernt die Archiv-Markierung. Die Projektdateien selbst bleiben, wo sie sind.",
   "discardArchiveDone": "Archiv verworfen",
-
   "whatsNewTitle": "Neuigkeiten",
   "whatsNewTitleWithVersion": "Neuigkeiten in Version {version}",
   "whatsNewIntro": "Das hat sich seit Ihrer letzten Version geändert.",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "Kein Cover",
   "tracksViewList": "Listenansicht",
   "tracksViewTable": "Tabellenansicht",
-
   "partsColumn": "Parts",
   "partsNeededCount": "{count, plural, =1{1 Part fehlt noch} other{{count} Parts fehlen noch}}",
-
   "songLength": "Länge",
   "songLengthColumn": "Länge",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Gesamtlaufzeit",
   "releaseLengthPartial": "{count, plural, =1{Zwischensumme — 1 Titel hat noch keine Länge} other{Zwischensumme — {count} Titel haben noch keine Länge}}",
-
   "breadcrumbHome": "Start",
   "breadcrumbGoTo": "Zu {label}",
-
   "scrollForMore": "Zum Weiterlesen scrollen",
-
   "shortcutPlayerMono": "Mono-Wiedergabe umschalten",
   "shortcutPlayerVolume": "Lautstärke anpassen",
   "shortcutMouseWheel": "Mausrad",
-
   "releaseTotalLengthLabel": "Gesamtlänge",
   "releaseLengthNone": "Noch kein Titel hat eine Länge — spielen Sie einen Titel ab oder geben Sie die Länge auf der Projektseite ein",
-
   "songLengthHowItWorks": "Wird automatisch aus dem Vorschausong übernommen — beim Abspielen oder beim Öffnen eines Releases mit diesem Titel. Sie können sie auch eingeben: 3:45, 1:02:03 oder in Sekunden.",
-
   "changelogSectionSubtitle": "Alles, was sich in jeder Version geändert hat, neueste zuerst.",
-
   "changelogSearchHint": "Changelog durchsuchen",
   "changelogNoMatches": "Keine Änderungen passen zu „{query}“",
-
   "projectFileMenu": "Datei",
   "moreActions": "Weitere Aktionen",
-
   "sectionRailResizeHint": "Ziehen zum Ändern der Breite · Doppelklick zum Zurücksetzen",
-
   "stackMetadataCoverArtLabel": "Cover",
   "stackMetadataColorLabel": "Akzentfarbe",
   "stackMetadataIconLabel": "Symbol",
@@ -4058,5 +4045,20 @@
   "midiDiscardEditsBody": "Der bearbeitete Clip wurde nicht gespeichert. Speichere ihn als neuen Clip, um ihn zu behalten.",
   "midiKeepEditing": "Weiter bearbeiten",
   "midiDiscardEdits": "Verwerfen",
-  "midiEditHint": "Doppelklick fügt eine Note hinzu, auf einer Note löscht er sie. Auf freier Fläche ziehen wählt aus; Umschalt-Klick erweitert die Auswahl. Am Rand einer Note ziehen ändert ihre Länge. ↑/↓ verschiebt die Auswahl um einen Halbton, Umschalt+↑/↓ um eine Oktave. Alt-Ziehen kopiert; mit gedrückter Strg-Taste wird das Raster ignoriert."
+  "midiToolSelect": "Auswählen (1)",
+  "midiToolPencil": "Stift (8)",
+  "midiAcousticFeedback": "Noten beim Bearbeiten hören",
+  "midiHintGotIt": "Verstanden",
+  "midiHintPencil": "Wähle den Stift, um Noten mit einem einzigen Klick hinzuzufügen.",
+  "midiHintDoubleClick": "Doppelklick auf eine freie Stelle fügt eine Note hinzu, auf eine Note löscht sie.",
+  "midiHintBoxSelect": "Ziehe über eine freie Fläche, um mehrere Noten auf einmal auszuwählen.",
+  "midiHintPencilDraw": "Klicke, um eine Note hinzuzufügen – ziehe dabei nach rechts, um sie zu verlängern.",
+  "midiHintPencilErase": "Klicke auf eine Note, um sie zu löschen, oder ziehe sie, um sie zu verschieben.",
+  "midiHintResize": "Ziehe am Rand einer Note, um sie kürzer oder länger zu machen.",
+  "midiHintTranspose": "↑/↓ verschiebt die ausgewählten Noten um einen Halbton, Umschalt+↑/↓ um eine Oktave.",
+  "midiHintAltCopy": "Halte {key} beim Ziehen gedrückt, um die ausgewählten Noten zu kopieren.",
+  "midiHintCtrlFree": "Halte {key} beim Ziehen gedrückt, um frei vom Raster zu verschieben.",
+  "midiHintVelocity": "Ziehe über die Balken, um die Anschlagstärke jeder überstrichenen Note zu setzen.",
+  "midiHintLane": "Ziehe, um die Kurve zu zeichnen.",
+  "midiHintPitchBend": "Ziehe, um das Pitchbending zu zeichnen – nahe der Mittellinie rastet es auf „kein Bend“ ein."
 }

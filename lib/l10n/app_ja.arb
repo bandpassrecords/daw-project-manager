@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "アーカイブを破棄しますか？",
   "discardArchiveConfirmMessage": "zip を削除し、アーカイブ済みの印を外します。プロジェクト自体のファイルはそのまま残ります。",
   "discardArchiveDone": "アーカイブを破棄しました",
-
   "whatsNewTitle": "新着情報",
   "whatsNewTitleWithVersion": "バージョン {version} の新着情報",
   "whatsNewIntro": "前のバージョンからの変更点です。",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "アートワークなし",
   "tracksViewList": "リスト表示",
   "tracksViewTable": "テーブル表示",
-
   "partsColumn": "パート",
   "partsNeededCount": "{count, plural, other{未録音のパートが {count} 件}}",
-
   "songLength": "長さ",
   "songLengthColumn": "長さ",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "合計時間",
   "releaseLengthPartial": "{count, plural, other{暫定の合計 — 長さ未設定のトラックが {count} 件}}",
-
   "breadcrumbHome": "ホーム",
   "breadcrumbGoTo": "{label} へ移動",
-
   "scrollForMore": "スクロールするとさらに表示",
-
   "shortcutPlayerMono": "モノラル再生の切り替え",
   "shortcutPlayerVolume": "音量を調整",
   "shortcutMouseWheel": "ホイール",
-
   "releaseTotalLengthLabel": "合計の長さ",
   "releaseLengthNone": "長さが設定されたトラックはまだありません。トラックを再生するか、プロジェクトページで長さを入力してください",
-
   "songLengthHowItWorks": "プレビュー曲から自動で入力されます（再生したとき、またはこのトラックを含むリリースを開いたとき）。手入力も可能です：3:45、1:02:03、または秒数。",
-
   "changelogSectionSubtitle": "各バージョンの変更点（新しい順）。",
-
   "changelogSearchHint": "変更履歴を検索",
   "changelogNoMatches": "「{query}」に一致する変更はありません",
-
   "projectFileMenu": "ファイル",
   "moreActions": "その他の操作",
-
   "sectionRailResizeHint": "ドラッグで幅を変更 · ダブルクリックで元に戻す",
-
   "stackMetadataCoverArtLabel": "カバーアート",
   "stackMetadataColorLabel": "アクセントカラー",
   "stackMetadataIconLabel": "アイコン",
@@ -4058,5 +4045,20 @@
   "midiDiscardEditsBody": "編集したクリップは保存されていません。残すには新しいクリップとして保存してください。",
   "midiKeepEditing": "編集を続ける",
   "midiDiscardEdits": "破棄",
-  "midiEditHint": "ダブルクリックでノートを追加、ノート上でダブルクリックすると削除します。空いている所をドラッグして選択、Shift+クリックで選択に追加。ノートの端をドラッグすると長さを変更。↑/↓ で選択範囲を半音、Shift+↑/↓ で1オクターブ移動。Alt+ドラッグでコピー、Ctrl を押しながらでグリッドを無視します。"
+  "midiToolSelect": "選択 (1)",
+  "midiToolPencil": "鉛筆 (8)",
+  "midiAcousticFeedback": "編集中のノートを鳴らす",
+  "midiHintGotIt": "OK",
+  "midiHintPencil": "鉛筆を選ぶと、1回のクリックでノートを追加できます。",
+  "midiHintDoubleClick": "空いている所をダブルクリックでノートを追加、ノートをダブルクリックで削除します。",
+  "midiHintBoxSelect": "空いている所をドラッグすると、複数のノートをまとめて選択できます。",
+  "midiHintPencilDraw": "クリックでノートを追加。クリックしたまま右へドラッグすると長くなります。",
+  "midiHintPencilErase": "ノートをクリックで消去、ドラッグで移動します。",
+  "midiHintResize": "ノートの端をドラッグすると、短く・長くできます。",
+  "midiHintTranspose": "↑/↓ で選択したノートを半音、Shift+↑/↓ で1オクターブ移動します。",
+  "midiHintAltCopy": "{key} を押しながらドラッグすると、選択したノートをコピーします。",
+  "midiHintCtrlFree": "{key} を押しながらドラッグすると、グリッドに合わせずに動かせます。",
+  "midiHintVelocity": "バーの上をドラッグすると、通ったノートすべてのベロシティを設定します。",
+  "midiHintLane": "ドラッグしてカーブを描きます。",
+  "midiHintPitchBend": "ドラッグでピッチベンドを描きます。中央の線の近くでは「ベンドなし」に吸着します。"
 }

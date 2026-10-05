@@ -3744,7 +3744,6 @@
   "discardArchiveConfirmTitle": "Supprimer l'archive ?",
   "discardArchiveConfirmMessage": "Supprime le zip et retire l'indicateur d'archivage. Les fichiers du projet restent en place.",
   "discardArchiveDone": "Archive supprimée",
-
   "whatsNewTitle": "Nouveautés",
   "whatsNewTitleWithVersion": "Nouveautés de la version {version}",
   "whatsNewIntro": "Voici ce qui a changé depuis votre version précédente.",
@@ -3765,10 +3764,8 @@
   "releaseArtworkCarryOverSkip": "Aucune pochette",
   "tracksViewList": "Vue liste",
   "tracksViewTable": "Vue tableau",
-
   "partsColumn": "Parties",
   "partsNeededCount": "{count, plural, =1{1 partie encore nécessaire} other{{count} parties encore nécessaires}}",
-
   "songLength": "Durée",
   "songLengthColumn": "Durée",
   "songLengthHint": "3:45",
@@ -3777,31 +3774,21 @@
   "releaseLengthAtLeast": "{total}+",
   "releaseLengthComplete": "Durée totale",
   "releaseLengthPartial": "{count, plural, =1{Total partiel — 1 piste n’a pas encore de durée} other{Total partiel — {count} pistes n’ont pas encore de durée}}",
-
   "breadcrumbHome": "Accueil",
   "breadcrumbGoTo": "Aller à {label}",
-
   "scrollForMore": "Faites défiler pour en voir plus",
-
   "shortcutPlayerMono": "Activer/désactiver la lecture en mono",
   "shortcutPlayerVolume": "Régler le volume",
   "shortcutMouseWheel": "Molette",
-
   "releaseTotalLengthLabel": "Durée totale",
   "releaseLengthNone": "Aucune piste n’a encore de durée — lisez une piste ou saisissez sa durée sur la page du projet",
-
   "songLengthHowItWorks": "Renseignée automatiquement depuis l’aperçu — lorsqu’il est lu, ou à l’ouverture d’une sortie contenant cette piste. Vous pouvez aussi la saisir : 3:45, 1:02:03 ou en secondes.",
-
   "changelogSectionSubtitle": "Tout ce qui a changé dans chaque version, de la plus récente à la plus ancienne.",
-
   "changelogSearchHint": "Rechercher dans le journal",
   "changelogNoMatches": "Aucune modification ne correspond à « {query} »",
-
   "projectFileMenu": "Fichier",
   "moreActions": "Plus d'actions",
-
   "sectionRailResizeHint": "Faites glisser pour redimensionner · double-cliquez pour réinitialiser",
-
   "stackMetadataCoverArtLabel": "pochette",
   "stackMetadataColorLabel": "couleur d'accent",
   "stackMetadataIconLabel": "icône",
@@ -4058,5 +4045,20 @@
   "midiDiscardEditsBody": "Le clip modifié n’a pas été enregistré. Enregistrez-le comme nouveau clip pour le garder.",
   "midiKeepEditing": "Continuer à modifier",
   "midiDiscardEdits": "Abandonner",
-  "midiEditHint": "Double-cliquez pour ajouter une note, ou sur une note pour la supprimer. Faites glisser sur un espace vide pour sélectionner ; Maj+clic ajoute à la sélection. Faites glisser le bord d’une note pour changer sa durée. ↑/↓ déplace la sélection d’un demi-ton, Maj+↑/↓ d’une octave. Alt+glisser copie ; maintenez Ctrl pour ignorer la grille."
+  "midiToolSelect": "Sélection (1)",
+  "midiToolPencil": "Crayon (8)",
+  "midiAcousticFeedback": "Entendre les notes pendant l’édition",
+  "midiHintGotIt": "Compris",
+  "midiHintPencil": "Prenez le crayon pour ajouter des notes d’un seul clic.",
+  "midiHintDoubleClick": "Double-cliquez dans le vide pour ajouter une note, ou sur une note pour la supprimer.",
+  "midiHintBoxSelect": "Faites glisser dans le vide pour sélectionner plusieurs notes à la fois.",
+  "midiHintPencilDraw": "Cliquez pour ajouter une note — faites glisser vers la droite pour l’allonger.",
+  "midiHintPencilErase": "Cliquez sur une note pour l’effacer, ou faites-la glisser pour la déplacer.",
+  "midiHintResize": "Faites glisser le bord d’une note pour la raccourcir ou l’allonger.",
+  "midiHintTranspose": "↑/↓ déplace les notes sélectionnées d’un demi-ton, Maj+↑/↓ d’une octave.",
+  "midiHintAltCopy": "Maintenez {key} en faisant glisser pour copier les notes sélectionnées.",
+  "midiHintCtrlFree": "Maintenez {key} en faisant glisser pour sortir de la grille.",
+  "midiHintVelocity": "Faites glisser sur les barres pour régler la vélocité de chaque note survolée.",
+  "midiHintLane": "Faites glisser pour dessiner la courbe.",
+  "midiHintPitchBend": "Faites glisser pour dessiner le pitch bend — près de la ligne centrale, il revient à zéro."
 }

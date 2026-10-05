@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,11 +6,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../models/midi_clip.dart';
 import '../providers/providers.dart';
+import '../services/midi_editor_prefs_store.dart';
+import '../utils/midi_edit_hints.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/musical_scale.dart';
 import '../services/midi/synth_voice.dart';
+import 'midi_note_auditioner.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_clip_edit_controller.dart';
+import 'widgets/midi_clip_list.dart';
+import 'widgets/midi_clips_section.dart' show synthVoiceName;
 import 'widgets/midi_piano_roll.dart';
 import 'widgets/midi_loop_toggle.dart';
 import 'widgets/midi_volume_control.dart';
@@ -26,6 +32,9 @@ import 'widgets/midi_volume_control.dart';
 ///
 /// [onOpenProject] adds its button when given. Opening the project closes
 /// this window and stops the preview first.
+///
+/// The instrument can be changed from the window; [onVoiceChanged] tells
+/// the list it was opened from, so the clip keeps it there too.
 Future<void> showMidiPianoRoll(
   BuildContext context, {
   required MidiClip clip,
@@ -34,10 +43,11 @@ Future<void> showMidiPianoRoll(
   required MidiPreviewPlayer player,
   required String playerKey,
   required double bpm,
-  required VoidCallback onPlay,
+  required void Function(SynthVoice voice) onPlay,
   VoidCallback? onOpenProject,
   String? musicalKey,
   SynthVoice? voice,
+  ValueChanged<SynthVoice>? onVoiceChanged,
   SaveEditedMidiClip? onSaveEdited,
 }) {
   final l10n = AppLocalizations.of(context)!;
@@ -52,7 +62,13 @@ Future<void> showMidiPianoRoll(
     onOpenProject: onOpenProject,
     musicalKey: musicalKey,
     voice: voice,
+    onVoiceChanged: onVoiceChanged,
     onSaveEdited: onSaveEdited,
+    learnedHints: MidiEditHintsStore.current,
+    onHintsLearned: MidiEditHintsStore.save,
+    keyboardHints: !MobileUtils.isMobile(),
+    acousticFeedback: MidiAcousticFeedbackStore.current,
+    onAcousticFeedbackChanged: MidiAcousticFeedbackStore.save,
     labels: MidiPianoRollWindowLabels(
       roll: MidiPianoRollLabels(
         zoomIn: l10n.midiPianoRollZoomIn,
@@ -73,7 +89,11 @@ Future<void> showMidiPianoRoll(
         deleteNote: l10n.midiDeleteNote,
         snap: l10n.midiSnap,
         snapOff: l10n.midiSnapOff,
-        editHint: l10n.midiEditHint,
+        toolSelect: l10n.midiToolSelect,
+        toolPencil: l10n.midiToolPencil,
+        hintText: (hint) => midiEditHintText(l10n, hint),
+        hintDismiss: l10n.midiHintGotIt,
+        acousticFeedback: l10n.midiAcousticFeedback,
       ),
       close: l10n.close,
       play: l10n.midiClipPlay,
@@ -86,6 +106,8 @@ Future<void> showMidiPianoRoll(
       discardBody: l10n.midiDiscardEditsBody,
       keepEditing: l10n.midiKeepEditing,
       discard: l10n.midiDiscardEdits,
+      voiceName: (v) => synthVoiceName(l10n, v),
+      instrument: l10n.midiClipInstrumentTooltip,
     ),
   );
   // The shared preview volume and loop setting, live: the window's controls
@@ -177,6 +199,26 @@ String? _controllerName(AppLocalizations l10n, int number) => switch (number) {
       _ => null,
     };
 
+/// What an editing hint says. The modifier keys are named the way this
+/// platform's keyboard prints them.
+String midiEditHintText(AppLocalizations l10n, MidiEditHint hint) {
+  final mac = defaultTargetPlatform == TargetPlatform.macOS;
+  return switch (hint) {
+    MidiEditHint.pencil => l10n.midiHintPencil,
+    MidiEditHint.doubleClick => l10n.midiHintDoubleClick,
+    MidiEditHint.boxSelect => l10n.midiHintBoxSelect,
+    MidiEditHint.pencilDraw => l10n.midiHintPencilDraw,
+    MidiEditHint.pencilErase => l10n.midiHintPencilErase,
+    MidiEditHint.resize => l10n.midiHintResize,
+    MidiEditHint.transpose => l10n.midiHintTranspose,
+    MidiEditHint.altCopy => l10n.midiHintAltCopy(mac ? '⌥ Option' : 'Alt'),
+    MidiEditHint.ctrlFree => l10n.midiHintCtrlFree(mac ? '⌘ Cmd' : 'Ctrl'),
+    MidiEditHint.velocity => l10n.midiHintVelocity,
+    MidiEditHint.lane => l10n.midiHintLane,
+    MidiEditHint.pitchBend => l10n.midiHintPitchBend,
+  };
+}
+
 /// A scale type's name in the piano roll's scale chooser.
 String scaleTypeName(AppLocalizations l10n, ScaleType type) => switch (type) {
       ScaleType.major => l10n.scaleMajor,
@@ -207,9 +249,16 @@ class MidiPianoRollWindowLabels {
     this.discardBody = '',
     this.keepEditing = '',
     this.discard = '',
+    this.voiceName,
+    this.instrument,
   });
 
   final MidiPianoRollLabels roll;
+
+  /// The instrument picker's voice names and tooltip ("Instrument: Bass");
+  /// the picker shows when both are given.
+  final String Function(SynthVoice voice)? voiceName;
+  final String Function(String name)? instrument;
   final String close, play, pause, stop, openProject;
 
   /// Editing: the save button's tooltip, and the question asked before
@@ -221,10 +270,11 @@ class MidiPianoRollWindowLabels {
 }
 
 /// Saves a clip edited in the piano roll — as a new clip; the one opened is
-/// never changed — with the key it was being edited in. Resolves to whether
-/// it was saved (false: the user backed out, of a collection picker say).
+/// never changed — with the key it was being edited in and the instrument
+/// it was playing with. Resolves to whether it was saved (false: the user
+/// backed out, of a collection picker say).
 typedef SaveEditedMidiClip = Future<bool> Function(
-    MidiClip clip, String? musicalKey);
+    MidiClip clip, String? musicalKey, SynthVoice voice);
 
 /// The contents of [showMidiPianoRoll]'s window — public so it can be tested
 /// without a dialog route around it.
@@ -254,7 +304,14 @@ class MidiPianoRollWindow extends StatefulWidget {
     this.loopTooltip,
     this.musicalKey,
     this.voice,
+    this.onVoiceChanged,
     this.onSaveEdited,
+    this.learnedHints = const {},
+    this.onHintsLearned,
+    this.keyboardHints = true,
+    this.acousticFeedback = false,
+    this.onAcousticFeedbackChanged,
+    this.auditioner,
   });
 
   /// [base] with a volume control added.
@@ -285,7 +342,14 @@ class MidiPianoRollWindow extends StatefulWidget {
         loopTooltip: loopTooltip,
         musicalKey: base.musicalKey,
         voice: base.voice,
+        onVoiceChanged: base.onVoiceChanged,
         onSaveEdited: base.onSaveEdited,
+        learnedHints: base.learnedHints,
+        onHintsLearned: base.onHintsLearned,
+        keyboardHints: base.keyboardHints,
+        acousticFeedback: base.acousticFeedback,
+        onAcousticFeedbackChanged: base.onAcousticFeedbackChanged,
+        auditioner: base.auditioner,
       );
 
   /// The shared preview volume; the control shows only when all three of
@@ -303,8 +367,25 @@ class MidiPianoRollWindow extends StatefulWidget {
   /// The source project's key: the scale the piano roll opens with.
   final String? musicalKey;
 
-  /// The instrument an edited clip plays with; null infers one from it.
+  /// The instrument the clip plays with; null infers one from it.
   final SynthVoice? voice;
+
+  /// Told when the instrument is changed in the window.
+  final ValueChanged<SynthVoice>? onVoiceChanged;
+
+  /// The editing hints already learned, and where to remember new ones.
+  final Set<MidiEditHint> learnedHints;
+  final ValueChanged<Set<MidiEditHint>>? onHintsLearned;
+
+  /// Whether hints about keys are worth showing (not on a phone).
+  final bool keyboardHints;
+
+  /// Whether notes sound as they are edited, and where to remember it.
+  final bool acousticFeedback;
+  final ValueChanged<bool>? onAcousticFeedbackChanged;
+
+  /// Sounds keys and edited notes; the window makes its own when null.
+  final MidiNoteAuditioner? auditioner;
 
   /// Makes the window an editor, saving edits through it. Null: view only.
   final SaveEditedMidiClip? onSaveEdited;
@@ -315,7 +396,10 @@ class MidiPianoRollWindow extends StatefulWidget {
   final MidiPreviewPlayer player;
   final String playerKey;
   final double bpm;
-  final VoidCallback onPlay;
+
+  /// Plays the clip as opened with the given instrument — the list's own
+  /// play, so tempo and error handling match it.
+  final void Function(SynthVoice voice) onPlay;
   final VoidCallback? onOpenProject;
   final MidiPianoRollWindowLabels labels;
 
@@ -339,6 +423,64 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
 
   /// Set once the user agreed to throw unsaved edits away.
   bool _leaving = false;
+
+  /// The instrument both versions of the clip play with.
+  late SynthVoice _voice = widget.voice ?? inferSynthVoice(widget.clip);
+
+  late final MidiEditHints? _hints = _editor == null
+      ? null
+      : MidiEditHints(
+          learned: widget.learnedHints, onChanged: widget.onHintsLearned);
+
+  late bool _feedback = widget.acousticFeedback;
+
+  MidiNoteAuditioner? _ownAuditioner;
+  MidiNoteAuditioner get _auditioner =>
+      widget.auditioner ?? (_ownAuditioner ??= MidiNoteAuditioner());
+
+  /// Sounds one note in the clip's instrument, at the preview volume.
+  void _audition(int pitch, int velocity) {
+    _auditioner
+      ..voice = _voice
+      ..volume = widget.volume ?? _player.volume;
+    _auditioner.play(pitch, velocity: velocity);
+  }
+
+  /// A new instrument: the list hears of it, and a clip playing carries on
+  /// from where it is with it (a paused one starts there next time).
+  void _setVoice(SynthVoice voice) {
+    if (voice == _voice) return;
+    final key = _player.playingKey;
+    final position = key != null && _isOurs ? _player.positionOf(key) : null;
+    final running = position != null && !_player.paused;
+    setState(() => _voice = voice);
+    widget.onVoiceChanged?.call(voice);
+    if (key == null || position == null) return;
+    _player.stop();
+    _player.startAt(key, position);
+    if (!running) return;
+    if (key == _editKey) {
+      _playEdited();
+    } else {
+      widget.onPlay(voice);
+    }
+  }
+
+  /// ↑/↓ (Shift: an octave), sounding the moved notes with feedback on.
+  void _transpose(MidiClipEditController editor, int semitones) {
+    if (!editor.editing || editor.selection.isEmpty) return;
+    editor.transposeSelection(semitones);
+    _hints?.learn(MidiEditHint.transpose);
+    if (!_feedback) return;
+    for (final i in editor.selection.take(4)) {
+      final n = editor.clip.notes[i];
+      _audition(n.pitch, n.velocity);
+    }
+  }
+
+  void _setTool(MidiClipEditController editor, MidiEditTool tool) {
+    if (editor.editing) editor.tool = tool;
+  }
 
   MidiPreviewPlayer get _player => widget.player;
   MidiPianoRollWindowLabels get labels => widget.labels;
@@ -373,6 +515,8 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   void dispose() {
     _editor?.removeListener(_onEdit);
     _editor?.dispose();
+    _hints?.dispose();
+    _ownAuditioner?.dispose();
     super.dispose();
   }
 
@@ -393,12 +537,11 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     final clip = editor.finished;
     if (from != null) _player.startAt(_editKey, from);
     _player
-        .play(_editKey, clip,
-            bpm: widget.bpm, voice: widget.voice ?? inferSynthVoice(clip))
+        .play(_editKey, clip, bpm: widget.bpm, voice: _voice)
         .catchError((Object _) {});
   }
 
-  void _start() => _differs ? _playEdited() : widget.onPlay();
+  void _start() => _differs ? _playEdited() : widget.onPlay(_voice);
 
   /// The ruler was clicked: jump there, or — with this clip not playing —
   /// start playback from there.
@@ -410,7 +553,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
       _playEdited(from: position);
     } else {
       _player.startAt(widget.playerKey, position);
-      widget.onPlay();
+      widget.onPlay(_voice);
     }
   }
 
@@ -443,6 +586,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     final saved = await save(
       editor.finished.copyWith(name: name),
       _scale?.keyText ?? widget.musicalKey,
+      _voice,
     );
     if (saved && mounted) editor.markSaved();
   }
@@ -515,20 +659,23 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
             const SingleActivator(LogicalKeyboardKey.keyY, control: true):
                 editor.redo,
             // As in Cubase: ↑/↓ a semitone, Shift+↑/↓ an octave.
-            const SingleActivator(LogicalKeyboardKey.arrowUp): () {
-              if (editor.editing) editor.transposeSelection(1);
-            },
-            const SingleActivator(LogicalKeyboardKey.arrowDown): () {
-              if (editor.editing) editor.transposeSelection(-1);
-            },
+            const SingleActivator(LogicalKeyboardKey.arrowUp): () =>
+                _transpose(editor, 1),
+            const SingleActivator(LogicalKeyboardKey.arrowDown): () =>
+                _transpose(editor, -1),
             const SingleActivator(LogicalKeyboardKey.arrowUp, shift: true):
-                () {
-              if (editor.editing) editor.transposeSelection(12);
-            },
+                () => _transpose(editor, 12),
             const SingleActivator(LogicalKeyboardKey.arrowDown, shift: true):
-                () {
-              if (editor.editing) editor.transposeSelection(-12);
-            },
+                () => _transpose(editor, -12),
+            // Cubase's tool keys: 1 selects, 8 draws.
+            const SingleActivator(LogicalKeyboardKey.digit1): () =>
+                _setTool(editor, MidiEditTool.select),
+            const SingleActivator(LogicalKeyboardKey.numpad1): () =>
+                _setTool(editor, MidiEditTool.select),
+            const SingleActivator(LogicalKeyboardKey.digit8): () =>
+                _setTool(editor, MidiEditTool.pencil),
+            const SingleActivator(LogicalKeyboardKey.numpad8): () =>
+                _setTool(editor, MidiEditTool.pencil),
             const SingleActivator(LogicalKeyboardKey.keyA, control: true): () {
               if (editor.editing) editor.selectAll();
             },
@@ -566,6 +713,16 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                     onSeek: _seek,
                     initialScale: scaleFromKey(widget.musicalKey),
                     onScaleChanged: (s) => _scale = s,
+                    hints: _hints,
+                    keyboardHints: widget.keyboardHints,
+                    onAudition: _audition,
+                    acousticFeedback: _feedback,
+                    onAcousticFeedbackChanged: editor == null
+                        ? null
+                        : (on) {
+                            setState(() => _feedback = on);
+                            widget.onAcousticFeedbackChanged?.call(on);
+                          },
                   ),
                 ),
               ],
@@ -636,6 +793,14 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
       ],
     );
     final controls = <Widget>[
+      if (labels.voiceName != null && labels.instrument != null)
+        MidiVoicePicker(
+          key: const ValueKey('midi-piano-roll-voice'),
+          voice: _voice,
+          voiceName: labels.voiceName!,
+          tooltip: labels.instrument!,
+          onChanged: _setVoice,
+        ),
       if (widget.loop != null &&
           widget.onLoopChanged != null &&
           widget.loopTooltip != null)

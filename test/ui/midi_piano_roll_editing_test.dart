@@ -4,9 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/models/midi_clip.dart';
+import 'package:daw_project_manager/services/midi/synth_voice.dart';
+import 'package:daw_project_manager/ui/midi_note_auditioner.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
+import 'package:daw_project_manager/utils/midi_edit_hints.dart';
 import 'package:daw_project_manager/utils/musical_scale.dart';
 
 /// One bar at 480 PPQ with one note: C3 (60) on beat 1.
@@ -20,6 +23,30 @@ const _clip = MidiClip(
 String _laneName(MidiLane lane) => lane.toString();
 String _scaleTypeName(ScaleType type) => type.name;
 String _edited(String name) => '$name (edited)';
+String _hintText(MidiEditHint hint) => 'hint:${hint.name}';
+String _voiceName(SynthVoice voice) => voice.name;
+String _instrument(String name) => 'Instrument: $name';
+
+/// Four quarter notes on C3, all at velocity 100.
+const _fourNotes = MidiClip(
+  name: 'Four',
+  ppq: 480,
+  lengthTicks: 1920,
+  notes: [
+    MidiNote(startTick: 0, lengthTicks: 240, pitch: 60, velocity: 100),
+    MidiNote(startTick: 480, lengthTicks: 240, pitch: 60, velocity: 100),
+    MidiNote(startTick: 960, lengthTicks: 240, pitch: 60, velocity: 100),
+    MidiNote(startTick: 1440, lengthTicks: 240, pitch: 60, velocity: 100),
+  ],
+);
+
+/// Hears what the window sounds, instead of playing it.
+class _Ear extends MidiNoteAuditioner {
+  final heard = <int>[];
+
+  @override
+  Future<void> play(int pitch, {int velocity = 100}) async => heard.add(pitch);
+}
 
 const _labels = MidiPianoRollWindowLabels(
   roll: MidiPianoRollLabels(
@@ -41,6 +68,50 @@ const _labels = MidiPianoRollWindowLabels(
     deleteNote: 'Delete note',
     snap: 'Snap',
     snapOff: 'Off',
+    toolSelect: 'Select',
+    toolPencil: 'Pencil',
+    acousticFeedback: 'Feedback',
+  ),
+  close: 'Close',
+  play: 'Play',
+  pause: 'Pause',
+  stop: 'Stop',
+  openProject: 'Open project',
+  saveAsNew: 'Save as new clip',
+  editedName: _edited,
+  discardTitle: 'Discard?',
+  discardBody: 'Not saved.',
+  keepEditing: 'Keep editing',
+  discard: 'Discard',
+  voiceName: _voiceName,
+  instrument: _instrument,
+);
+
+/// [_labels] with the hints on.
+const _hintLabels = MidiPianoRollWindowLabels(
+  roll: MidiPianoRollLabels(
+    zoomIn: 'In',
+    zoomOut: 'Out',
+    fit: 'Fit',
+    follow: 'Follow',
+    lane: 'Lane',
+    laneNone: 'None',
+    laneName: _laneName,
+    scale: 'Scale',
+    scaleNone: 'No scale',
+    scaleRoot: 'Root',
+    scaleType: 'Type',
+    scaleTypeName: _scaleTypeName,
+    edit: 'Edit',
+    undo: 'Undo',
+    redo: 'Redo',
+    deleteNote: 'Delete note',
+    snap: 'Snap',
+    snapOff: 'Off',
+    toolSelect: 'Select',
+    toolPencil: 'Pencil',
+    hintText: _hintText,
+    hintDismiss: 'Got it',
   ),
   close: 'Close',
   play: 'Play',
@@ -58,15 +129,30 @@ const _labels = MidiPianoRollWindowLabels(
 void main() {
   late MidiPreviewPlayer player;
   late List<(MidiClip, String?)> saved;
+  late List<SynthVoice> savedVoices, voiceChanges;
+  late List<Set<MidiEditHint>> learned;
+  late List<bool> feedbackChanges;
+  late _Ear ear;
 
   setUp(() {
     player = MidiPreviewPlayer();
     saved = [];
+    savedVoices = [];
+    voiceChanges = [];
+    learned = [];
+    feedbackChanges = [];
+    ear = _Ear();
   });
   tearDown(() => player.dispose());
 
   /// The window in a dialog, so closing it has somewhere to go.
-  Future<void> open(WidgetTester tester, {bool editable = true}) async {
+  Future<void> open(
+    WidgetTester tester, {
+    bool editable = true,
+    MidiClip clip = _clip,
+    MidiPianoRollWindowLabels labels = _labels,
+    bool feedback = false,
+  }) async {
     tester.view.physicalSize = const Size(1000, 700);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -82,18 +168,25 @@ void main() {
                   width: 900,
                   height: 600,
                   child: MidiPianoRollWindow(
-                    clip: _clip,
+                    clip: clip,
                     title: 'Riff',
                     subtitle: 'Song',
                     player: player,
                     playerKey: 'k',
                     bpm: 120,
-                    labels: _labels,
-                    onPlay: () {},
+                    labels: labels,
+                    onPlay: (_) {},
                     musicalKey: 'A minor',
+                    voice: SynthVoice.keys,
+                    onVoiceChanged: voiceChanges.add,
+                    onHintsLearned: learned.add,
+                    acousticFeedback: feedback,
+                    onAcousticFeedbackChanged: feedbackChanges.add,
+                    auditioner: ear,
                     onSaveEdited: editable
-                        ? (clip, key) async {
+                        ? (clip, key, voice) async {
                             saved.add((clip, key));
+                            savedVoices.add(voice);
                             return true;
                           }
                         : null,
@@ -363,6 +456,220 @@ void main() {
     await save(tester);
     expect(saved.single.$1.notes.last.startTick, 1440);
   });
+
+  group('the pencil', () {
+    Future<void> pickPencil(WidgetTester tester) async {
+      // Cubase's key for the draw tool.
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.pumpAndSettle();
+      expect(
+          tester
+              .widget<IconButton>(
+                  find.byKey(const ValueKey('midi-piano-roll-tool-pencil')))
+              .isSelected,
+          isTrue);
+    }
+
+    testWidgets('one click adds a note', (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await pickPencil(tester);
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.76, g.center.dy));
+      await save(tester);
+      expect(saved.single.$1.notes.map((n) => (n.startTick, n.lengthTicks)),
+          [(0, 240), (1440, 120)]);
+    });
+
+    testWidgets('dragging as it adds makes the note longer, one undo step',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await pickPencil(tester);
+      final g = grid(tester);
+      await dragFrom(tester, Offset(g.left + g.width * 0.5 + 2, g.center.dy),
+          Offset(g.width / 8, 0));
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyZ);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsNothing,
+          reason: 'one undo took the whole note away');
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyY);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+      await tester.pumpAndSettle();
+      await save(tester);
+      final drawn = saved.single.$1.notes.last;
+      expect((drawn.startTick, drawn.lengthTicks), (960, 360));
+    });
+
+    testWidgets('a click on a note erases it', (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await pickPencil(tester);
+      await click(tester, noteMiddle(grid(tester)));
+      await save(tester);
+      expect(saved.single.$1.notes, isEmpty);
+    });
+
+    testWidgets('1 goes back to selecting: a click adds nothing',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await pickPencil(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit1);
+      await tester.pumpAndSettle();
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.76, g.center.dy));
+      expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsNothing);
+    });
+  });
+
+  testWidgets('a drag across the velocity lane sets every note it passes',
+      (tester) async {
+    await open(tester, clip: _fourNotes);
+    await startEditing(tester);
+    final lane =
+        tester.getRect(find.byKey(const ValueKey('midi-piano-roll-lane')));
+    final g = grid(tester);
+    // From the top at the first stem, down to the bottom past the last.
+    await dragFrom(tester, Offset(g.left + 2, lane.top + 4),
+        Offset(g.width * 0.8, lane.height - 8));
+    await save(tester);
+    final velocities = saved.single.$1.notes.map((n) => n.velocity).toList();
+    expect(velocities.first, greaterThan(110));
+    expect(velocities.last, lessThan(40));
+    for (var i = 1; i < velocities.length; i++) {
+      expect(velocities[i], lessThan(velocities[i - 1]),
+          reason: 'a sloped line across the stems: $velocities');
+    }
+  });
+
+  testWidgets('a bend is drawn finely, and snaps back to no bend mid-lane',
+      (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    await tester.tap(find.byKey(const ValueKey('midi-piano-roll-lane-picker')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('MidiLane(pitchBend 0)').last);
+    await tester.pumpAndSettle();
+    final lane =
+        tester.getRect(find.byKey(const ValueKey('midi-piano-roll-lane')));
+    final g = grid(tester);
+    await dragFrom(tester, Offset(g.left + 2, lane.top + 4),
+        Offset(g.width * 0.25, lane.center.dy + 1 - (lane.top + 4)));
+    await save(tester);
+    final bend = saved.single.$1.events
+        .where((e) => e.kind == MidiEventKind.pitchBend)
+        .toList();
+    expect(bend.length, greaterThan(10),
+        reason: 'a 128th-note resolution, not one value per 1/16');
+    expect(bend.every((e) => e.tick % 15 == 0), isTrue);
+    expect(bend.first.value, greaterThan(15000));
+    expect(bend.last.value, 8192, reason: 'snapped to no bend');
+  });
+
+  group('hints', () {
+    Finder hint(String name) => find.text('hint:$name');
+
+    testWidgets('one at a time, each gone once done or dismissed',
+        (tester) async {
+      await open(tester, labels: _hintLabels);
+      expect(find.byKey(const ValueKey('midi-piano-roll-hint')), findsNothing,
+          reason: 'only while editing');
+      await startEditing(tester);
+      expect(hint('pencil'), findsOneWidget);
+
+      await tester
+          .tap(find.byKey(const ValueKey('midi-piano-roll-hint-dismiss')));
+      await tester.pumpAndSettle();
+      expect(hint('pencil'), findsNothing);
+      expect(hint('doubleClick'), findsOneWidget, reason: 'the next one');
+      expect(learned.last, {MidiEditHint.pencil});
+
+      // With the pencil in hand, its own hint; drawing a note retires it.
+      await tester
+          .tap(find.byKey(const ValueKey('midi-piano-roll-tool-pencil')));
+      await tester.pumpAndSettle();
+      expect(hint('pencilDraw'), findsOneWidget);
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.5, g.center.dy - 60));
+      expect(hint('pencilDraw'), findsNothing);
+      expect(learned.last, contains(MidiEditHint.pencilDraw));
+    });
+
+    testWidgets('picking the pencil teaches the pencil hint', (tester) async {
+      await open(tester, labels: _hintLabels);
+      await startEditing(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.pumpAndSettle();
+      expect(learned.last, {MidiEditHint.pencil});
+    });
+  });
+
+  group('sound', () {
+    testWidgets('a key on the keyboard plays, editing or not',
+        (tester) async {
+      await open(tester);
+      final g = grid(tester);
+      await click(tester, Offset(g.left - 10, g.center.dy));
+      expect(ear.heard, [60]);
+    });
+
+    testWidgets('acoustic feedback: drawn, clicked and moved notes sound',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      final g = grid(tester);
+      await click(tester, noteMiddle(g));
+      expect(ear.heard, isEmpty, reason: 'feedback is off');
+
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-feedback')));
+      await tester.pumpAndSettle();
+      expect(feedbackChanges, [true]);
+
+      await click(tester, noteMiddle(g));
+      expect(ear.heard, [60], reason: 'a clicked note');
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      expect(ear.heard.last, 61, reason: 'a transposed note');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.pumpAndSettle();
+      await click(tester, Offset(g.left + g.width * 0.76, g.center.dy));
+      expect(ear.heard.last, 60, reason: 'a drawn note');
+    });
+
+    testWidgets('the instrument can be changed, and a saved edit keeps it',
+        (tester) async {
+      await open(tester);
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-voice')));
+      await tester.pumpAndSettle();
+      // The menu opens on the current instrument; bring the one wanted in.
+      await tester.ensureVisible(find.text('bass').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('bass').last);
+      await tester.pumpAndSettle();
+      expect(voiceChanges, [SynthVoice.bass]);
+
+      await startEditing(tester);
+      await doubleClick(tester, Offset(grid(tester).left + 300, grid(tester).center.dy));
+      await save(tester);
+      expect(savedVoices, [SynthVoice.bass]);
+    });
+  });
+
+  testWidgets('the vertical zoom stands upright on the right', (tester) async {
+    await open(tester);
+    final zoom = find.byKey(const ValueKey('midi-piano-roll-vertical-zoom'));
+    final box = tester.getRect(zoom);
+    expect(box.height, greaterThan(box.width * 4));
+    expect(box.left, greaterThan(grid(tester).right - 1));
+    expect(find.descendant(of: zoom, matching: find.byType(RotatedBox)),
+        findsOneWidget);
+  });
+
 
   testWidgets('with nothing changed, closing just closes', (tester) async {
     await open(tester);

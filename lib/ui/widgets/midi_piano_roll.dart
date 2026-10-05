@@ -7,6 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
 import '../../models/midi_clip.dart';
+import '../../utils/midi_edit_hints.dart';
 import '../../utils/musical_scale.dart';
 import 'midi_clip_edit_controller.dart';
 
@@ -105,6 +106,63 @@ bool isDoubleTap({
     previousAt != null &&
     time - previousTime <= kDoubleTapTimeout &&
     (at - previousAt).distance <= 12;
+
+/// [value] as drawn into [lane]: a pitch bend near the middle is pulled
+/// to it (8192, no bend) — a hand never lands there exactly, and a bend
+/// that doesn't come back to zero leaves the notes after it out of tune.
+int snapLaneValue(MidiLane lane, int value) {
+  if (lane.kind != MidiEventKind.pitchBend) return value;
+  return (value - 8192).abs() <= 16383 * 0.03 ? 8192 : value;
+}
+
+/// Whether [pitch] falls outside [scale] — drawn orange, note and velocity
+/// stem alike. Nothing is, with no scale set.
+bool noteOutOfScale(MusicalScale? scale, int pitch) =>
+    scale != null && !scale.contains(pitch);
+
+/// For each of [notes], whether it is out of [scale]; null with no scale.
+List<bool>? outOfScaleFlags(List<MidiNote> notes, MusicalScale? scale) =>
+    scale == null ? null : [for (final n in notes) !scale.contains(n.pitch)];
+
+/// The spacing, in ticks, of the faint lines a snap grid of [stepTicks]
+/// draws between the beats — null when there are none worth drawing: the
+/// grid is a beat or coarser (the beat lines show it), or its lines would
+/// sit under 5 px apart.
+int? gridDivisionTicks({
+  required int stepTicks,
+  required int ppq,
+  required double pxPerTick,
+}) {
+  if (stepTicks <= 0 || stepTicks >= ppq) return null;
+  if (stepTicks * pxPerTick < 5) return null;
+  return stepTicks;
+}
+
+/// How far across the keyboard a black key reaches, as on a piano.
+const kBlackKeyWidthFraction = 0.6;
+
+/// Whether a piano has a seam right under white key [pitch]: where two
+/// white keys meet with no black key between — under C (above B) and under
+/// F (above E). Every other white key is parted from the next under the
+/// middle of the black key between them.
+bool whiteKeySeamBelow(int pitch) {
+  final pc = pitch % 12;
+  return pc == 0 || pc == 5;
+}
+
+/// The vertical scroll that keeps the row at [anchorY] (pixels down from
+/// the top of the view) still while rows go from [oldRow] to [newRow]
+/// pixels tall — so zooming vertically closes in on the notes being looked
+/// at instead of on the top of the keyboard.
+double verticalZoomScroll({
+  required double scrollY,
+  required double oldRow,
+  required double newRow,
+  required double anchorY,
+}) {
+  final next = (scrollY + anchorY) / oldRow * newRow - anchorY;
+  return next < 0 ? 0 : next;
+}
 
 /// The x a zoom keeps still (grid-relative pixels): the pointer's, when it
 /// is over the grid, else the middle of the view.
@@ -225,15 +283,27 @@ class MidiPianoRollLabels {
     this.deleteNote = '',
     this.snap = '',
     this.snapOff = '',
-    this.editHint = '',
+    this.toolSelect = '',
+    this.toolPencil = '',
+    this.hintText,
+    this.hintDismiss = '',
+    this.acousticFeedback = '',
   });
+
+  /// The acoustic feedback toggle's tooltip: hear notes as they are edited.
+  final String acousticFeedback;
 
   /// Editing tools' tooltips; only shown with an editor.
   final String edit, undo, redo, deleteNote, snap, snapOff;
 
-  /// How editing works (double-click, selection box, arrows…), shown under
-  /// the edit toggle's name in its tooltip.
-  final String editHint;
+  /// The two tools' tooltips: "Select (1)", "Pencil (8)".
+  final String toolSelect, toolPencil;
+
+  /// What each editing hint says; null shows no hints.
+  final String Function(MidiEditHint hint)? hintText;
+
+  /// The button that retires the hint on show.
+  final String hintDismiss;
 
   final String zoomIn;
   final String zoomOut;
@@ -301,7 +371,32 @@ class MidiPianoRoll extends StatefulWidget {
     this.initialScale,
     this.onScaleChanged,
     this.editor,
+    this.hints,
+    this.keyboardHints = true,
+    this.onAudition,
+    this.acousticFeedback = false,
+    this.onAcousticFeedbackChanged,
   });
+
+  /// Sounds one note: a key pressed on the keyboard, always, and — with
+  /// [acousticFeedback] on — a note added, clicked or dragged to another
+  /// key while editing. Null: silent.
+  final void Function(int pitch, int velocity)? onAudition;
+
+  /// Cubase's "acoustic feedback": notes sound as they are edited.
+  final bool acousticFeedback;
+
+  /// Shows the acoustic feedback toggle while editing.
+  final ValueChanged<bool>? onAcousticFeedbackChanged;
+
+  /// The editing hints learned so far; the roll shows the next one that
+  /// fits (see [nextMidiEditHint]) while editing, and learns them as the
+  /// user does what they say. Null shows none.
+  final MidiEditHints? hints;
+
+  /// Whether hints about keys (arrows, Alt, Ctrl) are worth showing — not
+  /// on a phone.
+  final bool keyboardHints;
 
   /// Makes the roll an editor: shows and edits [MidiClipEditController.clip]
   /// instead of [clip], with an edit toggle and its tools in the toolbar.
@@ -363,6 +458,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
   bool get _editing => widget.editor?.editing ?? false;
 
+  bool get _pencil =>
+      _editing && widget.editor!.tool == MidiEditTool.pencil;
+
   /// Every key with an editor, so a note can go anywhere; otherwise the
   /// clip's range.
   ({int low, int high}) _rangeFor(MidiClip clip) => widget.editor != null
@@ -390,6 +488,19 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   // What the lane draws, kept between frames: playback rebuilds every frame
   // while following, and the points only change with the clip or the lane.
   (MidiClip, MidiLane, List<(int, int)>)? _pointsCache;
+  // The velocity stems' out-of-scale flags, kept like the points.
+  (MidiClip, MusicalScale?, List<bool>?)? _offScaleCache;
+  List<bool>? _laneOffScale(MidiLane lane) {
+    if (!lane.isVelocity) return null;
+    final cached = _offScaleCache;
+    if (cached != null && identical(cached.$1, _shown) && cached.$2 == _scale) {
+      return cached.$3;
+    }
+    final flags = outOfScaleFlags(_shown.notes, _scale);
+    _offScaleCache = (_shown, _scale, flags);
+    return flags;
+  }
+
   List<(int, int)> _lanePoints(MidiLane lane) {
     final cached = _pointsCache;
     if (cached != null && identical(cached.$1, _shown) && cached.$2 == lane) {
@@ -406,12 +517,31 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     _ticker = createTicker(_tick);
     widget.playback?.addListener(_syncTicker);
     widget.editor?.addListener(_onEdit);
+    widget.hints?.addListener(_onHints);
     _syncTicker();
   }
 
   void _onEdit() {
     if (!mounted) return;
     setState(() => _lanes = availableMidiLanes(_shown));
+    // Picking the pencil, by its button or its key, is what that hint asks.
+    if (_pencil) _learn(MidiEditHint.pencil);
+  }
+
+  void _onHints() {
+    if (mounted) setState(() {});
+  }
+
+  void _learn(MidiEditHint hint) => widget.hints?.learn(hint);
+
+  /// The key held down on the keyboard, drawn pressed.
+  int? _pressedKey;
+
+  /// Sounds [pitch] when acoustic feedback is on.
+  void _feedback(int pitch, [int? velocity]) {
+    if (!widget.acousticFeedback) return;
+    widget.onAudition
+        ?.call(pitch.clamp(0, 127), velocity ?? widget.editor?.velocity ?? 100);
   }
 
   /// Runs the frame ticker exactly while the clip is playing.
@@ -438,6 +568,10 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       old.editor?.removeListener(_onEdit);
       widget.editor?.addListener(_onEdit);
     }
+    if (old.hints != widget.hints) {
+      old.hints?.removeListener(_onHints);
+      widget.hints?.addListener(_onHints);
+    }
     if (!identical(old.clip, widget.clip)) {
       _range = _rangeFor(_shown);
       _lanes = availableMidiLanes(_shown);
@@ -454,6 +588,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   void dispose() {
     widget.playback?.removeListener(_syncTicker);
     widget.editor?.removeListener(_onEdit);
+    widget.hints?.removeListener(_onHints);
     _ticker.dispose();
     _playhead.dispose();
     super.dispose();
@@ -559,7 +694,49 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   void _onHover(PointerHoverEvent e) {
     final x = e.localPosition.dx - _keyboardWidth;
     if (x >= 0 && x <= _gridWidth) _lastPointerX = x;
-    _updateCursor(e.localPosition);
+    _updateHover(e.localPosition);
+  }
+
+  /// Vertical zoom (the row height slider) that keeps the notes being
+  /// looked at where they are, rather than closing in on the top row.
+  void _setRowHeight(double next) {
+    if (next == _rowHeight) return;
+    final anchor = _verticalFocusY();
+    setState(() {
+      _scrollY = verticalZoomScroll(
+        scrollY: _scrollY,
+        oldRow: _rowHeight,
+        newRow: next,
+        anchorY: anchor,
+      );
+      _rowHeight = next;
+      _scrollY = _scrollY.clamp(0.0, _maxScrollY);
+    });
+  }
+
+  /// Where the notes in focus sit, in pixels down from the top of the
+  /// note grid: the middle of the selection, or of the notes in view
+  /// across — or the middle of the view when none of them are on it.
+  double _verticalFocusY() {
+    final centre = _gridHeight / 2;
+    final notes = _shown.notes;
+    final selection = _editing ? widget.editor!.selection : const <int>{};
+    final firstTick = _scrollX / _px, lastTick = (_scrollX + _gridWidth) / _px;
+    var low = 128, high = -1;
+    for (var i = 0; i < notes.length; i++) {
+      final n = notes[i];
+      if (selection.isNotEmpty
+          ? !selection.contains(i)
+          : n.endTick < firstTick || n.startTick > lastTick) {
+        continue;
+      }
+      if (n.pitch < low) low = n.pitch;
+      if (n.pitch > high) high = n.pitch;
+    }
+    if (high < 0) return centre;
+    final y =
+        (_range.high - (low + high) / 2) * _rowHeight + _rowHeight / 2 - _scrollY;
+    return y < 0 || y > _gridHeight ? centre : y;
   }
 
   void _scrollBy(double dx, double dy, {bool manual = true}) {
@@ -697,6 +874,17 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
   void _onEditDown(PointerDownEvent e) {
     _pointers.add(e.pointer);
+    final k = e.localPosition;
+    if (_pointers.length == 1 &&
+        k.dx < _keyboardWidth &&
+        k.dy >= _rulerHeight &&
+        k.dy < _view.height) {
+      // The keyboard plays the key pressed, editing or not.
+      final pitch = _pitchAtY(k.dy);
+      setState(() => _pressedKey = pitch);
+      widget.onAudition?.call(pitch, 100);
+      return;
+    }
     final editor = widget.editor;
     if (editor == null || !editor.editing) return;
     if (_pointers.length > 1) {
@@ -708,6 +896,13 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     if (p.dx < _keyboardWidth || p.dy < _rulerHeight) return;
     if (p.dy < _view.height) {
       final hit = _noteAt(p);
+      if (hit == null && _pencil) {
+        // The pencil draws a note here, as long as the drag makes it.
+        editor.beginNote(_tickAtX(p.dx), _pitchAtY(p.dy));
+        _drag = _EditDrag(_DragKind.draw, p, null);
+        _feedback(_pitchAtY(p.dy));
+        return;
+      }
       if (hit == null) {
         // Empty space: a selection box from here (Shift adds to the
         // selection), or, on a double-click, a new note.
@@ -717,6 +912,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         return;
       }
       final (index, edge) = hit;
+      final note = _shown.notes[index];
+      // The pencil erases what it clicks; anything else plays the note.
+      if (!_pencil) _feedback(note.pitch, note.velocity);
       if (_keys.isShiftPressed) {
         editor.toggleSelected(index);
         _drag = _EditDrag(_DragKind.tapNote, p, index);
@@ -729,24 +927,34 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         _drag = _EditDrag(_DragKind.resize, p, index, edge: edge);
       } else {
         _drag = _EditDrag(_DragKind.move, p, index,
-            duplicate: _keys.isAltPressed);
+            duplicate: _keys.isAltPressed)
+          ..pitch = note.pitch;
       }
       return;
     }
     final lane = _lane;
     if (lane == null) return;
     if (lane.isVelocity) {
+      // A pencil across the stems: every note the drag passes takes the
+      // value under it. A click lands on the nearest stem (and the chord
+      // on it).
       final i = _stemAt(p.dx);
-      if (i == null) return;
-      editor.select(i);
+      final tick =
+          i == null ? _tickAtX(p.dx) : _shown.notes[i].startTick.toDouble();
+      final value = _laneValueAt(p.dy, lane);
       editor.beginGesture();
-      _drag = _EditDrag(_DragKind.velocity, p, i);
-      editor.setVelocity(i, _laneValueAt(p.dy, lane));
+      _drag = _EditDrag(_DragKind.velocity, p, null)
+        ..lastTick = tick
+        ..lastValue = value;
+      editor.drawVelocities(tick, value, tick, value);
     } else if (_drawable(lane)) {
+      final tick = _tickAtX(p.dx);
+      final value = snapLaneValue(lane, _laneValueAt(p.dy, lane));
       editor.beginGesture();
-      _drag = _EditDrag(_DragKind.lane, p, null);
-      editor.drawLane(
-          lane.kind!, lane.number, _tickAtX(p.dx), _laneValueAt(p.dy, lane));
+      _drag = _EditDrag(_DragKind.lane, p, null)
+        ..lastTick = tick
+        ..lastValue = value;
+      editor.drawLane(lane.kind!, lane.number, tick, value);
     }
   }
 
@@ -766,18 +974,37 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
           editor.beginGesture(duplicate: drag.duplicate);
           drag.begun = true;
         }
-        editor.moveSelection(d.dx / _px, -(d.dy / _rowHeight).round(),
-            free: _free);
+        final dp = -(d.dy / _rowHeight).round();
+        editor.moveSelection(d.dx / _px, dp, free: _free);
+        if (dp != drag.lastPitchDelta) {
+          // Dragged onto another key: hear where it landed.
+          drag.lastPitchDelta = dp;
+          _feedback(drag.pitch + dp);
+        }
       case _DragKind.resize:
         editor.resizeSelection(drag.edge!, d.dx / _px, free: _free);
+      case _DragKind.draw:
+        if (drag.moved) {
+          editor.resizeSelection(NoteEdge.end, d.dx / _px, free: _free);
+        }
       case _DragKind.velocity:
         if (lane != null) {
-          editor.setVelocity(drag.index!, _laneValueAt(p.dy, lane));
+          final tick = _tickAtX(p.dx);
+          final value = _laneValueAt(p.dy, lane);
+          editor.drawVelocities(drag.lastTick, drag.lastValue, tick, value);
+          drag
+            ..lastTick = tick
+            ..lastValue = value;
         }
       case _DragKind.lane:
         if (lane != null && lane.kind != null) {
-          editor.drawLane(
-              lane.kind!, lane.number, _tickAtX(p.dx), _laneValueAt(p.dy, lane));
+          final tick = _tickAtX(p.dx);
+          final value = snapLaneValue(lane, _laneValueAt(p.dy, lane));
+          editor.drawLane(lane.kind!, lane.number, tick, value,
+              fromTick: drag.lastTick, fromValue: drag.lastValue);
+          drag
+            ..lastTick = tick
+            ..lastValue = value;
         }
       case _DragKind.marquee:
         if (!drag.moved) return;
@@ -797,6 +1024,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
   void _onEditUp(PointerUpEvent e) {
     _pointers.remove(e.pointer);
+    if (_pressedKey != null) setState(() => _pressedKey = null);
     final drag = _drag;
     final editor = widget.editor;
     if (drag == null || editor == null) return;
@@ -804,28 +1032,50 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     switch (drag.kind) {
       case _DragKind.marquee:
         if (_marquee != null) setState(() => _marquee = null);
-        // A double-click on an empty spot adds a note there.
-        if (!drag.moved && _doubleTap(e.timeStamp, drag.start)) {
+        if (drag.moved) {
+          _learn(MidiEditHint.boxSelect);
+        } else if (_doubleTap(e.timeStamp, drag.start)) {
+          // A double-click on an empty spot adds a note there.
           editor.addNoteAt(_tickAtX(drag.start.dx), _pitchAtY(drag.start.dy));
+          _feedback(_pitchAtY(drag.start.dy));
+          _learn(MidiEditHint.doubleClick);
         }
+      case _DragKind.draw:
+        editor.endGesture();
+        _learn(MidiEditHint.pencilDraw);
       case _DragKind.move || _DragKind.tapNote || _DragKind.resize:
         if (drag.moved) {
           editor.endGesture();
+          if (drag.kind == _DragKind.resize) _learn(MidiEditHint.resize);
+          if (drag.duplicate) _learn(MidiEditHint.altCopy);
+          if (_free) _learn(MidiEditHint.ctrlFree);
         } else {
           editor.cancelGesture();
-          // A double-click on a note deletes it.
-          if (drag.kind != _DragKind.tapNote &&
-              _doubleTap(e.timeStamp, drag.start)) {
+          if (drag.kind == _DragKind.tapNote) break;
+          if (_pencil) {
+            // The pencil erases the note it clicks.
             editor.deleteNote(drag.index!);
+            _learn(MidiEditHint.pencilErase);
+          } else if (_doubleTap(e.timeStamp, drag.start)) {
+            // A double-click on a note deletes it.
+            editor.deleteNote(drag.index!);
+            _learn(MidiEditHint.doubleClick);
           }
         }
-      case _DragKind.velocity || _DragKind.lane:
+      case _DragKind.velocity:
         editor.endGesture();
+        _learn(MidiEditHint.velocity);
+      case _DragKind.lane:
+        editor.endGesture();
+        _learn(_lane?.kind == MidiEventKind.pitchBend
+            ? MidiEditHint.pitchBend
+            : MidiEditHint.lane);
     }
   }
 
   void _onEditCancel(PointerCancelEvent e) {
     _pointers.remove(e.pointer);
+    if (_pressedKey != null) setState(() => _pressedKey = null);
     final editor = widget.editor;
     if (editor != null) _abandonDrag(editor);
   }
@@ -837,22 +1087,120 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     if (_marquee != null) setState(() => _marquee = null);
   }
 
-  /// What the mouse pointer looks like over the grid while editing: a
-  /// resize arrow on a note's edge, so that edge is easy to find.
+  /// What the mouse pointer looks like while editing: a resize arrow on a
+  /// note's edge, so that edge is easy to find, and cross-hairs where the
+  /// pencil would draw.
   MouseCursor _cursor = MouseCursor.defer;
 
-  void _updateCursor(Offset local) {
-    final editing = _editing &&
-        local.dx >= _keyboardWidth &&
-        local.dy >= _rulerHeight &&
-        local.dy < _view.height;
-    final hit = editing ? _noteAt(local) : null;
-    final next = hit == null
-        ? MouseCursor.defer
-        : hit.$2 != null
-            ? SystemMouseCursors.resizeLeftRight
-            : SystemMouseCursors.click;
-    if (next != _cursor) setState(() => _cursor = next);
+  /// What the mouse is over, for the cursor and the hint that fits.
+  MidiHoverArea _hover = MidiHoverArea.none;
+
+  void _updateHover(Offset local) {
+    final area = _hoverAreaAt(local);
+    final cursor = switch (area) {
+      MidiHoverArea.noteEdge => SystemMouseCursors.resizeLeftRight,
+      MidiHoverArea.note => SystemMouseCursors.click,
+      MidiHoverArea.empty when _pencil => SystemMouseCursors.precise,
+      _ => MouseCursor.defer,
+    };
+    if (cursor == _cursor && area == _hover) return;
+    setState(() {
+      _cursor = cursor;
+      _hover = area;
+    });
+  }
+
+  MidiHoverArea _hoverAreaAt(Offset p) {
+    if (!_editing || p.dx < _keyboardWidth || p.dy < _rulerHeight) {
+      return MidiHoverArea.none;
+    }
+    if (p.dy < _view.height) {
+      final hit = _noteAt(p);
+      if (hit == null) return MidiHoverArea.empty;
+      return hit.$2 == null ? MidiHoverArea.note : MidiHoverArea.noteEdge;
+    }
+    final lane = _lane;
+    if (lane == null) return MidiHoverArea.none;
+    if (lane.isVelocity) return MidiHoverArea.velocityLane;
+    if (lane.kind == MidiEventKind.pitchBend) return MidiHoverArea.pitchBendLane;
+    return _drawable(lane) ? MidiHoverArea.controllerLane : MidiHoverArea.none;
+  }
+
+  /// The hint worth showing now, if any.
+  MidiEditHint? get _hint {
+    final hints = widget.hints;
+    if (!_editing || hints == null || widget.labels.hintText == null) {
+      return null;
+    }
+    return nextMidiEditHint(
+      pencil: _pencil,
+      hover: _hover,
+      hasSelection: widget.editor!.selection.isNotEmpty,
+      learned: hints.learned,
+      keyboard: widget.keyboardHints,
+    );
+  }
+
+  /// The row height slider, upright: drag up for taller rows.
+  Widget _verticalZoom(ThemeData theme) {
+    final color = theme.textTheme.bodySmall?.color;
+    return SizedBox(
+      key: const ValueKey('midi-piano-roll-vertical-zoom'),
+      width: 32,
+      child: Column(
+        children: [
+          Icon(Icons.unfold_more, size: 16, color: color),
+          Expanded(
+            child: RotatedBox(
+              quarterTurns: 3,
+              child: Slider(
+                value: _rowHeight,
+                min: 6,
+                max: 28,
+                onChanged: _setRowHeight,
+              ),
+            ),
+          ),
+          Icon(Icons.unfold_less, size: 16, color: color),
+        ],
+      ),
+    );
+  }
+
+  /// One short hint at a time, over the bottom of the notes, with a button
+  /// to retire it.
+  Widget _hintPill(ThemeData theme, MidiEditHint hint) {
+    final cs = theme.colorScheme;
+    return Material(
+      key: const ValueKey('midi-piano-roll-hint'),
+      color: cs.surfaceContainerHighest.withValues(alpha: 0.95),
+      elevation: 2,
+      borderRadius: BorderRadius.circular(18),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 2, 2, 2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.lightbulb_outline, size: 16, color: cs.primary),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                widget.labels.hintText!(hint),
+                style: theme.textTheme.bodySmall,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            TextButton(
+              key: const ValueKey('midi-piano-roll-hint-dismiss'),
+              onPressed: () => _learn(hint),
+              child: Text(widget.labels.hintDismiss),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   /// The edit toggle, and while editing: undo, redo, delete and snap.
@@ -861,15 +1209,39 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     return [
       IconButton(
         key: const ValueKey('midi-piano-roll-edit'),
-        tooltip: labels.editHint.isEmpty
-            ? labels.edit
-            : '${labels.edit}\n${labels.editHint}',
+        tooltip: labels.edit,
         isSelected: editor.editing,
-        icon: const Icon(Icons.edit_outlined),
-        selectedIcon: const Icon(Icons.edit),
+        icon: const Icon(Icons.edit_note_outlined),
+        selectedIcon: const Icon(Icons.edit_note),
         onPressed: () => editor.editing = !editor.editing,
       ),
       if (editor.editing) ...[
+        IconButton(
+          key: const ValueKey('midi-piano-roll-tool-select'),
+          tooltip: labels.toolSelect,
+          isSelected: editor.tool == MidiEditTool.select,
+          icon: const Icon(Icons.highlight_alt),
+          onPressed: () => editor.tool = MidiEditTool.select,
+        ),
+        IconButton(
+          key: const ValueKey('midi-piano-roll-tool-pencil'),
+          tooltip: labels.toolPencil,
+          isSelected: editor.tool == MidiEditTool.pencil,
+          icon: const Icon(Icons.edit_outlined),
+          selectedIcon: const Icon(Icons.edit),
+          onPressed: () => editor.tool = MidiEditTool.pencil,
+        ),
+        if (widget.onAcousticFeedbackChanged != null)
+          IconButton(
+            key: const ValueKey('midi-piano-roll-feedback'),
+            tooltip: labels.acousticFeedback,
+            isSelected: widget.acousticFeedback,
+            icon: const Icon(Icons.hearing_disabled_outlined),
+            selectedIcon: const Icon(Icons.hearing),
+            onPressed: () => widget
+                .onAcousticFeedbackChanged!(!widget.acousticFeedback),
+          ),
+        const SizedBox(height: 24, child: VerticalDivider(width: 12)),
         IconButton(
           tooltip: labels.undo,
           icon: const Icon(Icons.undo),
@@ -966,6 +1338,10 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
           ],
         ),
         Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
           child: LayoutBuilder(builder: (context, constraints) {
             final total = constraints.biggest;
             final laneHeight = _lane == null
@@ -985,9 +1361,17 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
             _scrollY = _scrollY.clamp(0.0, _maxScrollY);
 
             final colors = _RollColors.of(theme);
-            return ClipRect(
+            final hint = _hint;
+            return Stack(
+              children: [
+                Positioned.fill(child: ClipRect(
               child: MouseRegion(
                 cursor: _cursor,
+                onExit: (_) {
+                  if (_hover != MidiHoverArea.none) {
+                    setState(() => _hover = MidiHoverArea.none);
+                  }
+                },
                 child: Listener(
                 onPointerSignal: _onPointerSignal,
                 onPointerHover: _onHover,
@@ -1023,6 +1407,11 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                                 ? widget.editor!.selection
                                 : const {},
                             marquee: _marquee,
+                            pressedKey: _pressedKey,
+                            gridStepTicks: _editing &&
+                                    widget.editor!.snap != MidiSnap.off
+                                ? widget.editor!.stepTicks
+                                : null,
                             scale: _scale,
                             low: _range.low,
                             high: _range.high,
@@ -1048,6 +1437,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                             key: const ValueKey('midi-piano-roll-lane'),
                             painter: _LanePainter(
                               points: _lanePoints(_lane!),
+                              offScale: _laneOffScale(_lane!),
                               lane: _lane!,
                               clipLength: _shown.lengthTicks,
                               ppq: _shown.ppq,
@@ -1104,8 +1494,28 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                 ),
                 ),
               ),
+                )),
+                // Over the notes, outside the gesture listeners, so its
+                // button never starts an edit.
+                if (hint != null)
+                  Positioned(
+                    left: _keyboardWidth + 8,
+                    right: 8,
+                    bottom: laneHeight + 8,
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: _hintPill(theme, hint),
+                    ),
+                  ),
+              ],
             );
           }),
+              ),
+              // Vertical zoom stands up the right side, the way it zooms:
+              // taller rows at the top.
+              _verticalZoom(theme),
+            ],
+          ),
         ),
         // The lane picker, then vertical zoom (row height). The picker gives
         // way on a phone — long lane names are cut short — so the row never
@@ -1145,24 +1555,6 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                 ),
               ),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.unfold_less,
-                    size: 16, color: theme.textTheme.bodySmall?.color),
-                SizedBox(
-                  width: 140,
-                  child: Slider(
-                    value: _rowHeight,
-                    min: 6,
-                    max: 28,
-                    onChanged: (v) => setState(() => _rowHeight = v),
-                  ),
-                ),
-                Icon(Icons.unfold_more,
-                    size: 16, color: theme.textTheme.bodySmall?.color),
-              ],
-            ),
           ],
         ),
       ],
@@ -1170,10 +1562,20 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   }
 }
 
-const _noteGreen = Color(0xFF8FE3A0);
-const _noteGreenBorder = Color(0xFF3F8F55);
+// A real keyboard's colours, whatever the theme: it reads as a piano.
+const _ivory = Color(0xFFF3EFE6);
+const _ebony = Color(0xFF1B1A19);
+const _keySeam = Color(0xFFA9A397);
+const _keyLabel = Color(0xFF5B564C);
 
-enum _DragKind { marquee, tapNote, move, resize, velocity, lane }
+const _noteGreen = Color(0xFF8FE3A0);
+const _noteOrange = Color(0xFFFFA24C);
+
+/// Every note's outline, and a selected note's fill — selecting inverts a
+/// note: black inside, its colour on the outline and the name.
+const _noteBorder = Color(0xFF101010);
+
+enum _DragKind { marquee, tapNote, move, resize, draw, velocity, lane }
 
 /// One editing gesture under way: what it does, where it started, on which
 /// note, and how.
@@ -1196,6 +1598,15 @@ class _EditDrag {
 
   /// The editor's gesture has been started (a move starts it on moving).
   bool begun = false;
+
+  /// Where a lane drag last drew, to draw on from there.
+  double lastTick = 0;
+  int lastValue = 0;
+
+  /// A moved note's key when the drag began, and how many keys it has
+  /// been moved since — to sound each new key once.
+  int pitch = 0;
+  int lastPitchDelta = 0;
 }
 
 /// What the scale chooser returns: the scale picked, or null for none.
@@ -1282,6 +1693,7 @@ class _RollColors {
     required this.barLine,
     required this.note,
     required this.noteBorder,
+    required this.offScaleNote,
     required this.whiteKey,
     required this.blackKey,
     required this.keyText,
@@ -1290,6 +1702,9 @@ class _RollColors {
   });
 
   final Color background, blackRow, beatLine, barLine, note, noteBorder;
+
+  /// A note outside the scale, and its velocity stem.
+  final Color offScaleNote;
   final Color outOfScaleRow, scaleRootRow;
   final Color whiteKey, blackKey, keyText, ruler, playhead;
 
@@ -1307,7 +1722,8 @@ class _RollColors {
       // FL Studio's light green — fixed, not themed: it is the colour people
       // read a piano roll in, and it stays legible on every dark theme.
       note: _noteGreen,
-      noteBorder: _noteGreenBorder,
+      noteBorder: _noteBorder,
+      offScaleNote: _noteOrange,
       whiteKey: cs.surfaceContainerHighest,
       blackKey: cs.onSurface.withValues(alpha: 0.75),
       keyText: cs.onSurfaceVariant,
@@ -1323,6 +1739,8 @@ class _RollPainter extends CustomPainter {
     required this.clip,
     this.selected = const {},
     this.marquee,
+    this.pressedKey,
+    this.gridStepTicks,
     this.scale,
     required this.low,
     required this.high,
@@ -1338,11 +1756,18 @@ class _RollPainter extends CustomPainter {
 
   final MidiClip clip;
 
-  /// The selected note's index, outlined; null when none.
+  /// The selected notes' indices, drawn inverted.
   final Set<int> selected;
 
   /// The selection box being drawn, if one is.
   final Rect? marquee;
+
+  /// The keyboard key held down, drawn pressed.
+  final int? pressedKey;
+
+  /// The snap grid's step, drawn as faint lines between the beats; null
+  /// draws beats and bars only.
+  final int? gridStepTicks;
   final MusicalScale? scale;
   final int low, high;
   final double pxPerTick, rowHeight, scrollX, scrollY;
@@ -1393,6 +1818,26 @@ class _RollPainter extends CustomPainter {
     final barPaint = Paint()
       ..color = colors.barLine
       ..strokeWidth = 1;
+    // The snap grid's own divisions, fainter, so the 1/16 or 1/32 a note
+    // will land on can be seen.
+    final division = gridStepTicks == null
+        ? null
+        : gridDivisionTicks(
+            stepTicks: gridStepTicks!, ppq: ppq, pxPerTick: pxPerTick);
+    if (division != null) {
+      final divisionPaint = Paint()
+        ..color = colors.beatLine.withValues(alpha: colors.beatLine.a * 0.55)
+        ..strokeWidth = 1;
+      final first = (scrollX / pxPerTick / division).floor();
+      final last = ((scrollX + size.width) / pxPerTick / division).ceil();
+      for (var d = first; d <= last; d++) {
+        final tick = d * division;
+        if (tick % ppq == 0) continue; // a beat line goes there
+        final x = _xOf(tick);
+        canvas.drawLine(
+            Offset(x, rulerHeight), Offset(x, size.height), divisionPaint);
+      }
+    }
     for (var b = firstBeat; b <= lastBeat; b++) {
       final isBar = b % 4 == 0;
       if (!isBar && beatPx < 6) continue;
@@ -1417,12 +1862,11 @@ class _RollPainter extends CustomPainter {
     final firstTick = scrollX / pxPerTick;
     final lastTick = (scrollX + size.width) / pxPerTick;
     final selectedBorder = Paint()
-      ..color = colors.playhead
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-    // Note names, laid out once per pitch and shade for this frame.
-    final darkLabels = <int, TextPainter>{};
-    final lightLabels = <int, TextPainter>{};
+      ..strokeWidth = 1.5;
+    final selectedFill = Paint()..color = _noteBorder;
+    // Note names, laid out once per pitch and colour for this frame.
+    final labels = <(int, Color), TextPainter>{};
     for (var i = 0; i < clip.notes.length; i++) {
       final n = clip.notes[i];
       if (n.endTick < firstTick || n.startTick > lastTick) continue;
@@ -1434,22 +1878,30 @@ class _RollPainter extends CustomPainter {
         math.max(2.0, n.lengthTicks * pxPerTick),
         math.max(2.0, rowHeight - 2),
       );
+      // Green in the scale (or with none), orange outside it.
+      final hue =
+          noteOutOfScale(scale, n.pitch) ? colors.offScaleNote : colors.note;
       // Quiet notes fade, loud ones are solid — the velocity at a glance.
       final fillAlpha = 0.35 + 0.65 * n.velocity / 127;
-      notePaint.color = colors.note.withValues(alpha: fillAlpha);
       final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(2));
-      canvas.drawRRect(rrect, notePaint);
-      if (selected.contains(i)) {
-        // The note being edited, outlined in the theme's accent.
-        canvas.drawRRect(rrect, selectedBorder);
-      } else if (rowHeight >= 8) {
-        canvas.drawRRect(rrect, border);
+      final isSelected = selected.contains(i);
+      final Color labelColor;
+      if (isSelected) {
+        // Inverted: black inside, the note's colour around it and on its
+        // name.
+        canvas.drawRRect(rrect, selectedFill);
+        canvas.drawRRect(rrect, selectedBorder..color = hue);
+        labelColor = hue;
+      } else {
+        notePaint.color = hue.withValues(alpha: fillAlpha);
+        canvas.drawRRect(rrect, notePaint);
+        if (rowHeight >= 8) canvas.drawRRect(rrect, border);
+        labelColor = noteLabelColor(fillAlpha);
       }
       // Zoomed in far enough, the note says which it is.
       if (rowHeight >= kNoteLabelMinRowHeight) {
-        final light = noteLabelColor(fillAlpha) != noteLabelColor(1);
-        final label = (light ? lightLabels : darkLabels).putIfAbsent(
-            n.pitch, () => _noteLabel(midiNoteName(n.pitch), noteLabelColor(fillAlpha)));
+        final label = labels.putIfAbsent((n.pitch, labelColor),
+            () => _noteLabel(midiNoteName(n.pitch), labelColor));
         if (noteLabelFits(
           noteWidth: rect.width,
           rowHeight: rowHeight,
@@ -1480,26 +1932,69 @@ class _RollPainter extends CustomPainter {
     }
     canvas.restore();
 
-    // Keyboard.
+    // Keyboard, drawn like a piano's: ivory keys the full width, parted
+    // where a real keyboard's are (between E and F, B and C, and under the
+    // middle of each black key), shorter black keys on top, and the key
+    // being played lit.
     canvas.save();
     canvas.clipRect(Rect.fromLTRB(0, rulerHeight, keyboardWidth, size.height));
+    canvas.drawRect(Rect.fromLTRB(0, rulerHeight, keyboardWidth, size.height),
+        Paint()..color = _ivory);
+    final pressedPaint = Paint()..color = colors.playhead.withValues(alpha: 0.6);
+    final seam = Paint()
+      ..color = _keySeam
+      ..strokeWidth = 1;
+    final blackWidth = keyboardWidth * kBlackKeyWidthFraction;
+    bool visible(double y) => y <= size.height && y + rowHeight >= rulerHeight;
+    // The white keys' lit faces and the seams between them first…
     for (var pitch = low; pitch <= high; pitch++) {
       final y = _yOf(pitch);
-      if (y > size.height || y + rowHeight < rulerHeight) continue;
-      final black = isBlackKey(pitch);
-      canvas.drawRect(
-        Rect.fromLTWH(0, y, black ? keyboardWidth * 0.62 : keyboardWidth, rowHeight),
-        Paint()..color = black ? colors.blackKey : colors.whiteKey,
-      );
-      canvas.drawLine(Offset(0, y + rowHeight), Offset(keyboardWidth, y + rowHeight),
-          Paint()..color = colors.beatLine);
-      if (showsKeyName(pitch, rowHeight)) {
-        // With every key named, the C's stay bold so octaves still stand out.
-        _text(canvas, midiNoteName(pitch),
-            Offset(keyboardWidth - 4, y + rowHeight / 2),
-            alignRight: true,
-            bold: pitch % 12 == 0 && rowHeight >= kAllKeyNamesRowHeight);
+      if (!visible(y)) continue;
+      if (isBlackKey(pitch)) {
+        final mid = y + rowHeight / 2;
+        canvas.drawLine(Offset(blackWidth, mid), Offset(keyboardWidth, mid), seam);
+        continue;
       }
+      if (pitch == pressedKey) {
+        canvas.drawRect(Rect.fromLTWH(0, y, keyboardWidth, rowHeight), pressedPaint);
+      }
+      if (whiteKeySeamBelow(pitch)) {
+        final bottom = y + rowHeight;
+        canvas.drawLine(Offset(0, bottom), Offset(keyboardWidth, bottom), seam);
+      }
+    }
+    // …then the black keys over them, lit along the top like the real
+    // thing, and rounded where they end.
+    final blackPaint = Paint()..color = _ebony;
+    final shine = Paint()..color = const Color(0x33FFFFFF);
+    for (var pitch = low; pitch <= high; pitch++) {
+      if (!isBlackKey(pitch)) continue;
+      final y = _yOf(pitch);
+      if (!visible(y)) continue;
+      final key = RRect.fromRectAndCorners(
+        Rect.fromLTWH(0, y + 0.5, blackWidth, rowHeight - 1),
+        topRight: const Radius.circular(2),
+        bottomRight: const Radius.circular(2),
+      );
+      canvas.drawRRect(key, pitch == pressedKey ? pressedPaint : blackPaint);
+      if (rowHeight >= 6) {
+        canvas.drawRect(
+            Rect.fromLTWH(0, y + 1, blackWidth - 2, rowHeight * 0.25), shine);
+      }
+    }
+    // A shadow where the keys meet the notes.
+    canvas.drawLine(Offset(keyboardWidth - 0.5, rulerHeight),
+        Offset(keyboardWidth - 0.5, size.height), seam);
+    for (var pitch = low; pitch <= high; pitch++) {
+      final y = _yOf(pitch);
+      if (!visible(y) || !showsKeyName(pitch, rowHeight)) continue;
+      // With every key named, the C's stay bold so octaves still stand out.
+      // Black keys are shorter, so every name sits on ivory.
+      _text(canvas, midiNoteName(pitch),
+          Offset(keyboardWidth - 4, y + rowHeight / 2),
+          alignRight: true,
+          bold: pitch % 12 == 0 && rowHeight >= kAllKeyNamesRowHeight,
+          color: _keyLabel);
     }
     canvas.restore();
 
@@ -1535,12 +2030,12 @@ class _RollPainter extends CustomPainter {
       )..layout();
 
   void _text(Canvas canvas, String text, Offset at,
-      {bool alignRight = false, bool bold = false}) {
+      {bool alignRight = false, bool bold = false, Color? color}) {
     final tp = TextPainter(
       text: TextSpan(
           text: text,
           style: labelStyle.copyWith(
-              color: colors.keyText,
+              color: color ?? colors.keyText,
               fontSize: 10,
               fontWeight: bold ? FontWeight.bold : null)),
       textDirection: TextDirection.ltr,
@@ -1561,6 +2056,8 @@ class _RollPainter extends CustomPainter {
       old.scale != scale ||
       !setEquals(old.selected, selected) ||
       old.marquee != marquee ||
+      old.pressedKey != pressedKey ||
+      old.gridStepTicks != gridStepTicks ||
       old.colors.note != colors.note;
 }
 
@@ -1571,6 +2068,7 @@ class _RollPainter extends CustomPainter {
 class _LanePainter extends CustomPainter {
   _LanePainter({
     required this.points,
+    this.offScale,
     required this.lane,
     required this.clipLength,
     required this.ppq,
@@ -1582,6 +2080,10 @@ class _LanePainter extends CustomPainter {
   });
 
   final List<(int, int)> points;
+
+  /// For velocity, which stems belong to notes out of the scale — drawn
+  /// orange like their notes. Null: none.
+  final List<bool>? offScale;
   final MidiLane lane;
   final int clipLength, ppq;
   final double pxPerTick, scrollX, keyboardWidth;
@@ -1641,12 +2143,20 @@ class _LanePainter extends CustomPainter {
         lane.kind == MidiEventKind.program;
     if (stems) {
       final dot = Paint()..color = colors.note;
-      for (final (tick, value) in points) {
+      final offStroke = Paint()
+        ..color = colors.offScaleNote
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke;
+      final offDot = Paint()..color = colors.offScaleNote;
+      final off = offScale;
+      for (var i = 0; i < points.length; i++) {
+        final (tick, value) = points[i];
         if (tick < firstTick - 1 || tick > lastTick) continue;
         final x = _xOf(tick);
         final y = yOf(value);
-        canvas.drawLine(Offset(x, bottom), Offset(x, y), stroke);
-        canvas.drawCircle(Offset(x, y), 3, dot);
+        final out = off != null && i < off.length && off[i];
+        canvas.drawLine(Offset(x, bottom), Offset(x, y), out ? offStroke : stroke);
+        canvas.drawCircle(Offset(x, y), 3, out ? offDot : dot);
         if (lane.kind == MidiEventKind.program && size.height >= 40) {
           // Programs are numbered from 1 in every DAW's patch list.
           _text(canvas, '${value + 1}', Offset(x + 4, y + 6),
@@ -1700,6 +2210,7 @@ class _LanePainter extends CustomPainter {
   @override
   bool shouldRepaint(_LanePainter old) =>
       !identical(old.points, points) ||
+      !identical(old.offScale, offScale) ||
       old.lane != lane ||
       old.pxPerTick != pxPerTick ||
       old.scrollX != scrollX ||
