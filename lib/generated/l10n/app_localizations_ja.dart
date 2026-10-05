@@ -6289,4 +6289,43 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scaleBlues => 'ブルース';
+
+  @override
+  String get midiEditNotes => 'ノートを編集';
+
+  @override
+  String get midiUndo => '元に戻す';
+
+  @override
+  String get midiRedo => 'やり直す';
+
+  @override
+  String get midiDeleteNote => 'ノートを削除';
+
+  @override
+  String get midiSnap => 'グリッドにスナップ';
+
+  @override
+  String get midiSnapOff => 'オフ';
+
+  @override
+  String get midiSaveAsNewClip => '新しいクリップとして保存';
+
+  @override
+  String midiClipEditedName(String name) {
+    return '$name（編集済み）';
+  }
+
+  @override
+  String get midiDiscardEditsTitle => '変更を破棄しますか？';
+
+  @override
+  String get midiDiscardEditsBody =>
+      '編集したクリップは保存されていません。残すには新しいクリップとして保存してください。';
+
+  @override
+  String get midiKeepEditing => '編集を続ける';
+
+  @override
+  String get midiDiscardEdits => '破棄';
 }

@@ -10786,6 +10786,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Blues'**
   String get scaleBlues;
+
+  /// Piano roll: toggle that turns note editing on and off
+  ///
+  /// In en, this message translates to:
+  /// **'Edit notes'**
+  String get midiEditNotes;
+
+  /// Piano roll editing: undo the last edit
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get midiUndo;
+
+  /// Piano roll editing: redo the edit just undone
+  ///
+  /// In en, this message translates to:
+  /// **'Redo'**
+  String get midiRedo;
+
+  /// Piano roll editing: delete the selected note
+  ///
+  /// In en, this message translates to:
+  /// **'Delete note'**
+  String get midiDeleteNote;
+
+  /// Piano roll editing: the grid notes snap to (tooltip of the 1/4, 1/8, 1/16… picker)
+  ///
+  /// In en, this message translates to:
+  /// **'Snap to grid'**
+  String get midiSnap;
+
+  /// Piano roll editing: the snap picker entry that turns snapping off
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get midiSnapOff;
+
+  /// Piano roll: save the edited clip as a new clip in a collection (the original is kept)
+  ///
+  /// In en, this message translates to:
+  /// **'Save as new clip'**
+  String get midiSaveAsNewClip;
+
+  /// Name given to an edited copy of a MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (edited)'**
+  String midiClipEditedName(String name);
+
+  /// Title of the question asked before closing the piano roll with unsaved edits
+  ///
+  /// In en, this message translates to:
+  /// **'Discard your changes?'**
+  String get midiDiscardEditsTitle;
+
+  /// Body of the question asked before closing the piano roll with unsaved edits
+  ///
+  /// In en, this message translates to:
+  /// **'The edited clip hasn\'t been saved. Save it as a new clip to keep it.'**
+  String get midiDiscardEditsBody;
+
+  /// Answer that keeps the piano roll open with its unsaved edits
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get midiKeepEditing;
+
+  /// Answer that closes the piano roll and throws the unsaved edits away
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get midiDiscardEdits;
 }
 
 class _AppLocalizationsDelegate

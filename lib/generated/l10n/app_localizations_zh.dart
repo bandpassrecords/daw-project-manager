@@ -6219,4 +6219,42 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scaleBlues => '布鲁斯';
+
+  @override
+  String get midiEditNotes => '编辑音符';
+
+  @override
+  String get midiUndo => '撤销';
+
+  @override
+  String get midiRedo => '重做';
+
+  @override
+  String get midiDeleteNote => '删除音符';
+
+  @override
+  String get midiSnap => '吸附到网格';
+
+  @override
+  String get midiSnapOff => '关';
+
+  @override
+  String get midiSaveAsNewClip => '另存为新片段';
+
+  @override
+  String midiClipEditedName(String name) {
+    return '$name（已编辑）';
+  }
+
+  @override
+  String get midiDiscardEditsTitle => '放弃更改？';
+
+  @override
+  String get midiDiscardEditsBody => '编辑后的片段尚未保存。将其另存为新片段即可保留。';
+
+  @override
+  String get midiKeepEditing => '继续编辑';
+
+  @override
+  String get midiDiscardEdits => '放弃';
 }

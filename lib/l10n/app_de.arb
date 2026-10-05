@@ -4045,5 +4045,17 @@
   "scaleLocrian": "Lokrisch",
   "scaleMajorPentatonic": "Dur-Pentatonik",
   "scaleMinorPentatonic": "Moll-Pentatonik",
-  "scaleBlues": "Blues"
+  "scaleBlues": "Blues",
+  "midiEditNotes": "Noten bearbeiten",
+  "midiUndo": "Rückgängig",
+  "midiRedo": "Wiederholen",
+  "midiDeleteNote": "Note löschen",
+  "midiSnap": "Am Raster ausrichten",
+  "midiSnapOff": "Aus",
+  "midiSaveAsNewClip": "Als neuen Clip speichern",
+  "midiClipEditedName": "{name} (bearbeitet)",
+  "midiDiscardEditsTitle": "Änderungen verwerfen?",
+  "midiDiscardEditsBody": "Der bearbeitete Clip wurde nicht gespeichert. Speichere ihn als neuen Clip, um ihn zu behalten.",
+  "midiKeepEditing": "Weiter bearbeiten",
+  "midiDiscardEdits": "Verwerfen"
 }

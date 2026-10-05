@@ -545,6 +545,21 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
           onPlay: () => _play(e),
           onOpenProject: e.projectId == null ? null : () => _openProject(e),
           musicalKey: e.musicalKey,
+          voice: e.voice,
+          onSaveEdited: (edited, key) => addToCollectionFlow(
+            context,
+            ref,
+            [
+              collectionItemFor(
+                edited,
+                projectId: e.projectId,
+                projectName: e.projectName,
+                bpm: e.bpm,
+                musicalKey: key,
+                pickedVoice: e.voice,
+              ),
+            ],
+          ),
         );
       },
       onShare: (i, origin) => _share(entries[i], origin),

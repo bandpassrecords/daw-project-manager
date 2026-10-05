@@ -4045,5 +4045,17 @@
   "scaleLocrian": "Локрийский",
   "scaleMajorPentatonic": "Мажорная пентатоника",
   "scaleMinorPentatonic": "Минорная пентатоника",
-  "scaleBlues": "Блюз"
+  "scaleBlues": "Блюз",
+  "midiEditNotes": "Редактировать ноты",
+  "midiUndo": "Отменить",
+  "midiRedo": "Повторить",
+  "midiDeleteNote": "Удалить ноту",
+  "midiSnap": "Привязка к сетке",
+  "midiSnapOff": "Выкл.",
+  "midiSaveAsNewClip": "Сохранить как новый клип",
+  "midiClipEditedName": "{name} (изменён)",
+  "midiDiscardEditsTitle": "Сбросить изменения?",
+  "midiDiscardEditsBody": "Изменённый клип не сохранён. Сохраните его как новый клип, чтобы не потерять.",
+  "midiKeepEditing": "Продолжить редактирование",
+  "midiDiscardEdits": "Сбросить"
 }

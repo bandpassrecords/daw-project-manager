@@ -165,8 +165,13 @@ void main() {
       ]);
     });
 
-    test('a clip of notes alone offers velocity only', () {
-      expect(availableMidiLanes(_clip()), const [MidiLane.velocity()]);
+    test('a clip of notes alone still offers pitch bend and the mod wheel', () {
+      // Empty, but there to look at — and to draw in while editing.
+      expect(availableMidiLanes(_clip()), const [
+        MidiLane.velocity(),
+        MidiLane.of(MidiEventKind.pitchBend),
+        MidiLane.of(MidiEventKind.controller, 1),
+      ]);
     });
 
     test('points are note velocities or the lane\'s own events', () {

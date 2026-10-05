@@ -236,6 +236,7 @@ class MidiClip {
   }
 
   MidiClip copyWith({
+    String? name,
     int? occurrences,
     int? lengthTicks,
     List<MidiNote>? notes,
@@ -243,7 +244,7 @@ class MidiClip {
     List<String>? otherNames,
   }) =>
       MidiClip(
-        name: name,
+        name: name ?? this.name,
         trackName: trackName,
         ppq: ppq,
         lengthTicks: lengthTicks ?? this.lengthTicks,

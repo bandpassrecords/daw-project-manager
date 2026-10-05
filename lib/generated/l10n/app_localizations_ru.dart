@@ -6477,4 +6477,43 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scaleBlues => 'Блюз';
+
+  @override
+  String get midiEditNotes => 'Редактировать ноты';
+
+  @override
+  String get midiUndo => 'Отменить';
+
+  @override
+  String get midiRedo => 'Повторить';
+
+  @override
+  String get midiDeleteNote => 'Удалить ноту';
+
+  @override
+  String get midiSnap => 'Привязка к сетке';
+
+  @override
+  String get midiSnapOff => 'Выкл.';
+
+  @override
+  String get midiSaveAsNewClip => 'Сохранить как новый клип';
+
+  @override
+  String midiClipEditedName(String name) {
+    return '$name (изменён)';
+  }
+
+  @override
+  String get midiDiscardEditsTitle => 'Сбросить изменения?';
+
+  @override
+  String get midiDiscardEditsBody =>
+      'Изменённый клип не сохранён. Сохраните его как новый клип, чтобы не потерять.';
+
+  @override
+  String get midiKeepEditing => 'Продолжить редактирование';
+
+  @override
+  String get midiDiscardEdits => 'Сбросить';
 }

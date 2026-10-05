@@ -6264,5 +6264,58 @@
   "scaleBlues": "Blues",
   "@scaleBlues": {
     "description": "Scale name"
+  },
+  "midiEditNotes": "Edit notes",
+  "@midiEditNotes": {
+    "description": "Piano roll: toggle that turns note editing on and off"
+  },
+  "midiUndo": "Undo",
+  "@midiUndo": {
+    "description": "Piano roll editing: undo the last edit"
+  },
+  "midiRedo": "Redo",
+  "@midiRedo": {
+    "description": "Piano roll editing: redo the edit just undone"
+  },
+  "midiDeleteNote": "Delete note",
+  "@midiDeleteNote": {
+    "description": "Piano roll editing: delete the selected note"
+  },
+  "midiSnap": "Snap to grid",
+  "@midiSnap": {
+    "description": "Piano roll editing: the grid notes snap to (tooltip of the 1/4, 1/8, 1/16… picker)"
+  },
+  "midiSnapOff": "Off",
+  "@midiSnapOff": {
+    "description": "Piano roll editing: the snap picker entry that turns snapping off"
+  },
+  "midiSaveAsNewClip": "Save as new clip",
+  "@midiSaveAsNewClip": {
+    "description": "Piano roll: save the edited clip as a new clip in a collection (the original is kept)"
+  },
+  "midiClipEditedName": "{name} (edited)",
+  "@midiClipEditedName": {
+    "description": "Name given to an edited copy of a MIDI clip",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiDiscardEditsTitle": "Discard your changes?",
+  "@midiDiscardEditsTitle": {
+    "description": "Title of the question asked before closing the piano roll with unsaved edits"
+  },
+  "midiDiscardEditsBody": "The edited clip hasn't been saved. Save it as a new clip to keep it.",
+  "@midiDiscardEditsBody": {
+    "description": "Body of the question asked before closing the piano roll with unsaved edits"
+  },
+  "midiKeepEditing": "Keep editing",
+  "@midiKeepEditing": {
+    "description": "Answer that keeps the piano roll open with its unsaved edits"
+  },
+  "midiDiscardEdits": "Discard",
+  "@midiDiscardEdits": {
+    "description": "Answer that closes the piano roll and throws the unsaved edits away"
   }
 }

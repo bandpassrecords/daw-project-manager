@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 
 import '../../models/midi_clip.dart';
 import '../../utils/musical_scale.dart';
+import 'midi_clip_edit_controller.dart';
 
 // --- pure helpers ------------------------------------------------------------
 
@@ -103,9 +104,11 @@ class MidiLane {
   String toString() => 'MidiLane(${kind?.name ?? 'velocity'} $number)';
 }
 
-/// The lanes worth offering for [clip]: velocity always, then whatever its
-/// events hold — pitch bend, each controller it uses in number order,
-/// channel and poly aftertouch, program changes.
+/// The lanes worth offering for [clip]: velocity, pitch bend and the
+/// modulation wheel (CC 1) always — the ones every keyboard has, offered
+/// even when empty so they can be drawn in — then whatever else its events
+/// hold: each other controller in number order, channel and poly
+/// aftertouch, program changes.
 List<MidiLane> availableMidiLanes(MidiClip clip) {
   final controllers = <int>{};
   final kinds = <MidiEventKind>{};
@@ -116,10 +119,11 @@ List<MidiLane> availableMidiLanes(MidiClip clip) {
       kinds.add(e.kind);
     }
   }
+  controllers.remove(1);
   return [
     const MidiLane.velocity(),
-    if (kinds.contains(MidiEventKind.pitchBend))
-      const MidiLane.of(MidiEventKind.pitchBend),
+    const MidiLane.of(MidiEventKind.pitchBend),
+    const MidiLane.of(MidiEventKind.controller, 1),
     for (final n in controllers.toList()..sort())
       MidiLane.of(MidiEventKind.controller, n),
     if (kinds.contains(MidiEventKind.channelPressure))
@@ -154,7 +158,16 @@ class MidiPianoRollLabels {
     required this.scaleRoot,
     required this.scaleType,
     required this.scaleTypeName,
+    this.edit = '',
+    this.undo = '',
+    this.redo = '',
+    this.deleteNote = '',
+    this.snap = '',
+    this.snapOff = '',
   });
+
+  /// Editing tools' tooltips; only shown with an editor.
+  final String edit, undo, redo, deleteNote, snap, snapOff;
 
   final String zoomIn;
   final String zoomOut;
@@ -221,7 +234,15 @@ class MidiPianoRoll extends StatefulWidget {
     this.onSeek,
     this.initialScale,
     this.onScaleChanged,
+    this.editor,
   });
+
+  /// Makes the roll an editor: shows and edits [MidiClipEditController.clip]
+  /// instead of [clip], with an edit toggle and its tools in the toolbar.
+  /// In edit mode one finger (or the mouse) adds, selects, moves and resizes
+  /// notes, sets velocities and draws controller lanes; two fingers or the
+  /// wheel move the view. Null: a viewer only.
+  final MidiClipEditController? editor;
 
   /// The scale shown when the roll opens; null shows none.
   final MusicalScale? initialScale;
@@ -271,7 +292,18 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   bool _wasPlaying = false;
   Size _view = Size.zero;
 
-  late ({int low, int high}) _range = pianoRollRange(widget.clip.notes);
+  /// What is on screen: the editor's clip while editing is possible.
+  MidiClip get _shown => widget.editor?.clip ?? widget.clip;
+
+  bool get _editing => widget.editor?.editing ?? false;
+
+  /// Every key with an editor, so a note can go anywhere; otherwise the
+  /// clip's range.
+  ({int low, int high}) _rangeFor(MidiClip clip) => widget.editor != null
+      ? (low: 0, high: 127)
+      : pianoRollRange(clip.notes);
+
+  late ({int low, int high}) _range = _rangeFor(_shown);
 
   late MusicalScale? _scale = widget.initialScale;
 
@@ -287,18 +319,18 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
   /// The lane under the notes; null shows none.
   MidiLane? _lane = const MidiLane.velocity();
-  late List<MidiLane> _lanes = availableMidiLanes(widget.clip);
+  late List<MidiLane> _lanes = availableMidiLanes(_shown);
 
   // What the lane draws, kept between frames: playback rebuilds every frame
   // while following, and the points only change with the clip or the lane.
   (MidiClip, MidiLane, List<(int, int)>)? _pointsCache;
   List<(int, int)> _lanePoints(MidiLane lane) {
     final cached = _pointsCache;
-    if (cached != null && identical(cached.$1, widget.clip) && cached.$2 == lane) {
+    if (cached != null && identical(cached.$1, _shown) && cached.$2 == lane) {
       return cached.$3;
     }
-    final points = midiLanePoints(widget.clip, lane);
-    _pointsCache = (widget.clip, lane, points);
+    final points = midiLanePoints(_shown, lane);
+    _pointsCache = (_shown, lane, points);
     return points;
   }
 
@@ -307,7 +339,13 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     super.initState();
     _ticker = createTicker(_tick);
     widget.playback?.addListener(_syncTicker);
+    widget.editor?.addListener(_onEdit);
     _syncTicker();
+  }
+
+  void _onEdit() {
+    if (!mounted) return;
+    setState(() => _lanes = availableMidiLanes(_shown));
   }
 
   /// Runs the frame ticker exactly while the clip is playing.
@@ -330,9 +368,13 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       widget.playback?.addListener(_syncTicker);
       _syncTicker();
     }
+    if (old.editor != widget.editor) {
+      old.editor?.removeListener(_onEdit);
+      widget.editor?.addListener(_onEdit);
+    }
     if (!identical(old.clip, widget.clip)) {
-      _range = pianoRollRange(widget.clip.notes);
-      _lanes = availableMidiLanes(widget.clip);
+      _range = _rangeFor(_shown);
+      _lanes = availableMidiLanes(_shown);
       if (_lane != null && !_lanes.contains(_lane)) {
         _lane = const MidiLane.velocity();
       }
@@ -345,6 +387,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   @override
   void dispose() {
     widget.playback?.removeListener(_syncTicker);
+    widget.editor?.removeListener(_onEdit);
     _ticker.dispose();
     _playhead.dispose();
     super.dispose();
@@ -352,7 +395,19 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
   int get _rows => _range.high - _range.low + 1;
   double get _px => _pxPerTick ?? _fitPxPerTick;
-  double get _contentWidth => widget.clip.lengthTicks * _px;
+  /// Ticks the view spans: the clip, plus a bar beyond its end (or its last
+  /// note) while editing, so a note can be added past the end.
+  int get _contentTicks {
+    final clip = _shown;
+    if (widget.editor == null) return clip.lengthTicks;
+    var end = clip.lengthTicks;
+    for (final n in clip.notes) {
+      if (n.endTick > end) end = n.endTick;
+    }
+    return end + clip.ppq * 4;
+  }
+
+  double get _contentWidth => _contentTicks * _px;
   double get _contentHeight => _rows * _rowHeight;
   double get _gridWidth => math.max(0, _view.width - _keyboardWidth);
   double get _gridHeight => math.max(0, _view.height - _rulerHeight);
@@ -372,8 +427,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     // While the ruler is being dragged the line follows the pointer, not
     // the audio, until the drag lets go and the player jumps there.
     final tick = _scrubTick ??
-        ticksAt(position, widget.bpm, widget.clip.ppq)
-            .clamp(0.0, widget.clip.lengthTicks.toDouble());
+        ticksAt(position, widget.bpm, _shown.ppq)
+            .clamp(0.0, _shown.lengthTicks.toDouble());
     _playhead.value = tick;
     if (_follow) {
       final next = followScroll(
@@ -387,7 +442,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
   /// The tick under the ruler at [x] (ruler-relative pixels), in the clip.
   double _tickAtRulerX(double x) =>
-      ((_scrollX + x) / _px).clamp(0.0, widget.clip.lengthTicks.toDouble());
+      ((_scrollX + x) / _px).clamp(0.0, _shown.lengthTicks.toDouble());
 
   double? _scrubTick;
 
@@ -399,14 +454,14 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   void _seekTo(double tick) {
     _scrubTick = null;
     _playhead.value = tick;
-    widget.onSeek?.call(durationAtTick(tick, widget.bpm, widget.clip.ppq));
+    widget.onSeek?.call(durationAtTick(tick, widget.bpm, _shown.ppq));
   }
 
   void _fit() => setState(() {
         _pxPerTick = _fitPxPerTick;
         _scrollX = 0;
         // Centre the notes vertically when they don't fill the height.
-        _scrollY = (_maxScrollY / 2).clamp(0, _maxScrollY);
+        _scrollY = _initialScrollY();
       });
 
   /// Zooms horizontally by [factor], keeping the tick under [anchorX] (view
@@ -445,6 +500,229 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   }
 
   double _scaleStartPx = 0;
+
+  /// Where the view opens vertically: centred on the notes. With every key
+  /// on the roll (an editor), that is somewhere in the middle of 128 rows.
+  double _initialScrollY() {
+    final notes = _shown.notes;
+    if (widget.editor == null || notes.isEmpty) {
+      final centreOf = widget.editor == null ? null : 60;
+      if (centreOf == null) return (_maxScrollY / 2).clamp(0, _maxScrollY);
+      return ((_range.high - centreOf) * _rowHeight - _gridHeight / 2)
+          .clamp(0.0, _maxScrollY);
+    }
+    var low = 127, high = 0;
+    for (final n in notes) {
+      if (n.pitch < low) low = n.pitch;
+      if (n.pitch > high) high = n.pitch;
+    }
+    final centre = (low + high) / 2;
+    return ((_range.high - centre) * _rowHeight + _rowHeight / 2 - _gridHeight / 2)
+        .clamp(0.0, _maxScrollY);
+  }
+
+  // --- editing ---------------------------------------------------------------
+
+  double _laneHeight = 0;
+  final Set<int> _pointers = {};
+  _EditDrag? _drag;
+
+  double _tickAtX(double x) => (x - _keyboardWidth + _scrollX) / _px;
+
+  int _pitchAtY(double y) =>
+      (_range.high - ((y - _rulerHeight + _scrollY) / _rowHeight).floor())
+          .clamp(0, 127);
+
+  /// The note under [p] (the last drawn first, as it is on top) and whether
+  /// [p] is on its right edge, where a drag resizes it.
+  (int, bool)? _noteAt(Offset p) {
+    final notes = _shown.notes;
+    final pitch = _pitchAtY(p.dy);
+    for (var i = notes.length - 1; i >= 0; i--) {
+      final n = notes[i];
+      if (n.pitch != pitch) continue;
+      final left = _keyboardWidth + n.startTick * _px - _scrollX;
+      final right = left + math.max(2.0, n.lengthTicks * _px);
+      if (p.dx < left || p.dx > right + 4) continue;
+      final edge = math.min(10.0, (right - left) / 3);
+      return (i, p.dx >= right - edge);
+    }
+    return null;
+  }
+
+  /// The note whose velocity stem is nearest [x], if one is within reach.
+  int? _stemAt(double x) {
+    int? best;
+    var bestDistance = 12.0;
+    final notes = _shown.notes;
+    for (var i = 0; i < notes.length; i++) {
+      final stem = _keyboardWidth + notes[i].startTick * _px - _scrollX;
+      final d = (stem - x).abs();
+      if (d <= bestDistance) {
+        bestDistance = d;
+        best = i;
+      }
+    }
+    return best;
+  }
+
+  /// The lane value at height [y], as the lane draws it.
+  int _laneValueAt(double y, MidiLane lane) {
+    const pad = _LanePainter._pad;
+    final top = _view.height + pad;
+    final bottom = _view.height + _laneHeight - pad;
+    if (bottom <= top) return 0;
+    final f = ((bottom - y) / (bottom - top)).clamp(0.0, 1.0);
+    return (f * lane.maxValue).round();
+  }
+
+  /// Lanes a drag can draw: one value per moment. Program changes and poly
+  /// aftertouch (a value per key) aren't drawn.
+  static bool _drawable(MidiLane lane) =>
+      lane.kind == MidiEventKind.controller ||
+      lane.kind == MidiEventKind.pitchBend ||
+      lane.kind == MidiEventKind.channelPressure;
+
+  void _onEditDown(PointerDownEvent e) {
+    _pointers.add(e.pointer);
+    final editor = widget.editor;
+    if (editor == null || !editor.editing) return;
+    if (_pointers.length > 1) {
+      // A second finger: the gesture is a pinch or a pan, not an edit.
+      if (_drag != null) {
+        editor.cancelGesture();
+        _drag = null;
+      }
+      return;
+    }
+    final p = e.localPosition;
+    if (p.dx < _keyboardWidth || p.dy < _rulerHeight) return;
+    if (p.dy < _view.height) {
+      final hit = _noteAt(p);
+      if (hit != null) {
+        editor.select(hit.$1);
+        _drag = _EditDrag(hit.$2 ? _DragKind.resize : _DragKind.move, p, hit.$1);
+      } else {
+        editor.select(null);
+        _drag = _EditDrag(_DragKind.add, p, null);
+      }
+      return;
+    }
+    final lane = _lane;
+    if (lane == null) return;
+    if (lane.isVelocity) {
+      final i = _stemAt(p.dx);
+      if (i == null) return;
+      editor.select(i);
+      _drag = _EditDrag(_DragKind.velocity, p, i);
+      editor.setVelocity(i, _laneValueAt(p.dy, lane));
+    } else if (_drawable(lane)) {
+      _drag = _EditDrag(_DragKind.lane, p, null);
+      editor.drawLane(
+          lane.kind!, lane.number, _tickAtX(p.dx), _laneValueAt(p.dy, lane));
+    }
+  }
+
+  void _onEditMove(PointerMoveEvent e) {
+    final drag = _drag;
+    final editor = widget.editor;
+    if (drag == null || editor == null || _pointers.length > 1) return;
+    final p = e.localPosition;
+    final d = p - drag.start;
+    if (d.distance > 4) drag.moved = true;
+    final lane = _lane;
+    switch (drag.kind) {
+      case _DragKind.move:
+        if (!drag.moved) return;
+        editor.moveNote(drag.index!, d.dx / _px, -(d.dy / _rowHeight).round());
+      case _DragKind.resize:
+        editor.resizeNote(drag.index!, _tickAtX(p.dx));
+      case _DragKind.velocity:
+        if (lane != null) editor.setVelocity(drag.index!, _laneValueAt(p.dy, lane));
+      case _DragKind.lane:
+        if (lane != null && lane.kind != null) {
+          editor.drawLane(
+              lane.kind!, lane.number, _tickAtX(p.dx), _laneValueAt(p.dy, lane));
+        }
+      case _DragKind.add:
+        break;
+    }
+  }
+
+  void _onEditUp(PointerUpEvent e) {
+    _pointers.remove(e.pointer);
+    final drag = _drag;
+    final editor = widget.editor;
+    if (drag == null || editor == null) return;
+    _drag = null;
+    if (drag.kind == _DragKind.add) {
+      // A tap on an empty spot adds a note; a drag from one does nothing.
+      if (!drag.moved) {
+        editor.addNoteAt(_tickAtX(drag.start.dx), _pitchAtY(drag.start.dy));
+      }
+      return;
+    }
+    editor.endGesture();
+  }
+
+  void _onEditCancel(PointerCancelEvent e) {
+    _pointers.remove(e.pointer);
+    if (_drag == null) return;
+    _drag = null;
+    widget.editor?.cancelGesture();
+  }
+
+  /// The edit toggle, and while editing: undo, redo, delete and snap.
+  List<Widget> _editTools(MidiClipEditController editor) {
+    final labels = widget.labels;
+    return [
+      IconButton(
+        key: const ValueKey('midi-piano-roll-edit'),
+        tooltip: labels.edit,
+        isSelected: editor.editing,
+        icon: const Icon(Icons.edit_outlined),
+        selectedIcon: const Icon(Icons.edit),
+        onPressed: () => editor.editing = !editor.editing,
+      ),
+      if (editor.editing) ...[
+        IconButton(
+          tooltip: labels.undo,
+          icon: const Icon(Icons.undo),
+          onPressed: editor.canUndo ? editor.undo : null,
+        ),
+        IconButton(
+          tooltip: labels.redo,
+          icon: const Icon(Icons.redo),
+          onPressed: editor.canRedo ? editor.redo : null,
+        ),
+        IconButton(
+          tooltip: labels.deleteNote,
+          icon: const Icon(Icons.delete_outline),
+          onPressed: editor.selected != null ? editor.deleteSelected : null,
+        ),
+        Tooltip(
+          message: labels.snap,
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<MidiSnap>(
+              key: const ValueKey('midi-piano-roll-snap'),
+              value: editor.snap,
+              isDense: true,
+              items: [
+                for (final s in MidiSnap.values)
+                  DropdownMenuItem(
+                    value: s,
+                    child: Text(s == MidiSnap.off ? labels.snapOff : s.fraction),
+                  ),
+              ],
+              onChanged: (s) {
+                if (s != null) editor.snap = s;
+              },
+            ),
+          ),
+        ),
+      ],
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -487,6 +765,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                             : labels.scaleName(_scale!)),
                       ),
                     ),
+                    if (widget.editor != null) ..._editTools(widget.editor!),
                   ],
                 ),
               ),
@@ -507,13 +786,14 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                 ? 0.0
                 : (total.height * 0.22).clamp(48.0, 140.0).toDouble();
             _view = Size(total.width, math.max(0, total.height - laneHeight));
-            final fit = widget.clip.lengthTicks <= 0
+            _laneHeight = laneHeight;
+            final fit = _shown.lengthTicks <= 0
                 ? 0.1
-                : _gridWidth / widget.clip.lengthTicks;
+                : _gridWidth / _shown.lengthTicks;
             if (fit > 0) _fitPxPerTick = fit;
             if (_pxPerTick == null && fit > 0) {
               _pxPerTick = fit;
-              _scrollY = (_maxScrollY / 2).clamp(0, _maxScrollY);
+              _scrollY = _initialScrollY();
             }
             _scrollX = _scrollX.clamp(0.0, _maxScrollX);
             _scrollY = _scrollY.clamp(0.0, _maxScrollY);
@@ -525,6 +805,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                 child: GestureDetector(
                   onScaleStart: (_) => _scaleStartPx = _px,
                   onScaleUpdate: (d) {
+                    // Editing: one finger edits (see _onEditDown); two move.
+                    if (_editing && d.pointerCount < 2) return;
                     if (d.pointerCount > 1 && d.horizontalScale != 1) {
                       final target = _scaleStartPx * d.horizontalScale;
                       _zoom(target / _px,
@@ -533,7 +815,12 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                       _scrollBy(-d.focalPointDelta.dx, -d.focalPointDelta.dy);
                     }
                   },
-                  child: Stack(
+                  child: Listener(
+                    onPointerDown: _onEditDown,
+                    onPointerMove: _onEditMove,
+                    onPointerUp: _onEditUp,
+                    onPointerCancel: _onEditCancel,
+                    child: Stack(
                     children: [
                       Positioned(
                         left: 0,
@@ -542,7 +829,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                         height: _view.height,
                         child: CustomPaint(
                           painter: _RollPainter(
-                            clip: widget.clip,
+                            clip: _shown,
+                            selected: _editing ? widget.editor?.selected : null,
                             scale: _scale,
                             low: _range.low,
                             high: _range.high,
@@ -569,8 +857,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                             painter: _LanePainter(
                               points: _lanePoints(_lane!),
                               lane: _lane!,
-                              clipLength: widget.clip.lengthTicks,
-                              ppq: widget.clip.ppq,
+                              clipLength: _shown.lengthTicks,
+                              ppq: _shown.ppq,
                               pxPerTick: _px,
                               scrollX: _scrollX,
                               keyboardWidth: _keyboardWidth,
@@ -619,6 +907,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                           ),
                         ),
                     ],
+                  ),
                   ),
                 ),
               ),
@@ -690,6 +979,21 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
 const _noteGreen = Color(0xFF8FE3A0);
 const _noteGreenBorder = Color(0xFF3F8F55);
+
+enum _DragKind { add, move, resize, velocity, lane }
+
+/// One editing gesture under way: what it does, where it started and on
+/// which note.
+class _EditDrag {
+  _EditDrag(this.kind, this.start, this.index);
+
+  final _DragKind kind;
+  final Offset start;
+  final int? index;
+
+  /// Past the slop: a drag rather than a tap.
+  bool moved = false;
+}
 
 /// What the scale chooser returns: the scale picked, or null for none.
 /// (A null *choice* means the chooser was dismissed.)
@@ -814,6 +1118,7 @@ class _RollColors {
 class _RollPainter extends CustomPainter {
   _RollPainter({
     required this.clip,
+    this.selected,
     this.scale,
     required this.low,
     required this.high,
@@ -828,6 +1133,9 @@ class _RollPainter extends CustomPainter {
   });
 
   final MidiClip clip;
+
+  /// The selected note's index, outlined; null when none.
+  final int? selected;
   final MusicalScale? scale;
   final int low, high;
   final double pxPerTick, rowHeight, scrollX, scrollY;
@@ -901,7 +1209,12 @@ class _RollPainter extends CustomPainter {
       ..strokeWidth = 1;
     final firstTick = scrollX / pxPerTick;
     final lastTick = (scrollX + size.width) / pxPerTick;
-    for (final n in clip.notes) {
+    final selectedBorder = Paint()
+      ..color = colors.playhead
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+    for (var i = 0; i < clip.notes.length; i++) {
+      final n = clip.notes[i];
       if (n.endTick < firstTick || n.startTick > lastTick) continue;
       final y = _yOf(n.pitch);
       if (y > size.height || y + rowHeight < rulerHeight) continue;
@@ -915,7 +1228,12 @@ class _RollPainter extends CustomPainter {
       notePaint.color = colors.note.withValues(alpha: 0.35 + 0.65 * n.velocity / 127);
       final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(2));
       canvas.drawRRect(rrect, notePaint);
-      if (rowHeight >= 8) canvas.drawRRect(rrect, border);
+      if (i == selected) {
+        // The note being edited, outlined in the theme's accent.
+        canvas.drawRRect(rrect, selectedBorder);
+      } else if (rowHeight >= 8) {
+        canvas.drawRRect(rrect, border);
+      }
     }
     canvas.restore();
 
@@ -984,6 +1302,7 @@ class _RollPainter extends CustomPainter {
       old.low != low ||
       old.high != high ||
       old.scale != scale ||
+      old.selected != selected ||
       old.colors.note != colors.note;
 }
 

@@ -36,14 +36,15 @@ MidiCollectionItem collectionItemFor(
     );
 
 /// Asks which collection to put [items] in — every existing one, or a new
-/// one — and adds them there. Shows what happened in a snackbar.
-Future<void> addToCollectionFlow(
+/// one — and adds them there. Shows what happened in a snackbar. Resolves
+/// to whether they went into a collection (false: the user backed out).
+Future<bool> addToCollectionFlow(
   BuildContext context,
   WidgetRef ref,
   List<MidiCollectionItem> items, {
   Rect? origin,
 }) async {
-  if (items.isEmpty) return;
+  if (items.isEmpty) return false;
   final l10n = AppLocalizations.of(context)!;
   final messenger = ScaffoldMessenger.of(context);
   // Captured now: by the time the snackbar's Open is pressed this context
@@ -52,7 +53,7 @@ Future<void> addToCollectionFlow(
   final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
   final repo = await ref.read(repositoryProvider.future);
   final collections = await repo.midiCollections.all();
-  if (!context.mounted) return;
+  if (!context.mounted) return false;
 
   const newChoice = '\u0000new';
   final anchor = origin ??
@@ -89,7 +90,7 @@ Future<void> addToCollectionFlow(
       ),
     ],
   );
-  if (picked == null || !context.mounted) return;
+  if (picked == null || !context.mounted) return false;
 
   MidiCollection? target;
   if (picked == newChoice) {
@@ -98,7 +99,7 @@ Future<void> addToCollectionFlow(
       title: l10n.midiCollectionNew,
       action: l10n.midiCollectionCreate,
     );
-    if (name == null) return;
+    if (name == null) return false;
     target = await repo.midiCollections.create(name);
   } else {
     target = collections.firstWhere((c) => c.id == picked);
@@ -126,6 +127,7 @@ Future<void> addToCollectionFlow(
           )
         : null,
   ));
+  return true;
 }
 
 /// A name for a new or renamed collection, or null if cancelled. Blank names

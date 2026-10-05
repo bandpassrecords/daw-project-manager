@@ -4045,5 +4045,17 @@
   "scaleLocrian": "ロクリアン",
   "scaleMajorPentatonic": "メジャー・ペンタトニック",
   "scaleMinorPentatonic": "マイナー・ペンタトニック",
-  "scaleBlues": "ブルース"
+  "scaleBlues": "ブルース",
+  "midiEditNotes": "ノートを編集",
+  "midiUndo": "元に戻す",
+  "midiRedo": "やり直す",
+  "midiDeleteNote": "ノートを削除",
+  "midiSnap": "グリッドにスナップ",
+  "midiSnapOff": "オフ",
+  "midiSaveAsNewClip": "新しいクリップとして保存",
+  "midiClipEditedName": "{name}（編集済み）",
+  "midiDiscardEditsTitle": "変更を破棄しますか？",
+  "midiDiscardEditsBody": "編集したクリップは保存されていません。残すには新しいクリップとして保存してください。",
+  "midiKeepEditing": "編集を続ける",
+  "midiDiscardEdits": "破棄"
 }

@@ -547,6 +547,23 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
                 bpm: _tempo,
                 onPlay: () => _play(index),
                 musicalKey: _projectKey,
+                voice: _voiceOf(index),
+                // An edit is saved as a new clip in a collection; the
+                // project's own clips are re-read from its file.
+                onSaveEdited: (edited, key) => addToCollectionFlow(
+                  context,
+                  ref,
+                  [
+                    collectionItemFor(
+                      edited,
+                      projectId: widget.project.id,
+                      projectName: widget.project.displayName,
+                      bpm: _projectBpm,
+                      musicalKey: key,
+                      pickedVoice: _voiceOverrides[clip.contentKey],
+                    ),
+                  ],
+                ),
               );
             },
             onAddToCollection: (index, origin) => addToCollectionFlow(

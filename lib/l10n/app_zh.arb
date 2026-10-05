@@ -4045,5 +4045,17 @@
   "scaleLocrian": "洛克里亚",
   "scaleMajorPentatonic": "大调五声",
   "scaleMinorPentatonic": "小调五声",
-  "scaleBlues": "布鲁斯"
+  "scaleBlues": "布鲁斯",
+  "midiEditNotes": "编辑音符",
+  "midiUndo": "撤销",
+  "midiRedo": "重做",
+  "midiDeleteNote": "删除音符",
+  "midiSnap": "吸附到网格",
+  "midiSnapOff": "关",
+  "midiSaveAsNewClip": "另存为新片段",
+  "midiClipEditedName": "{name}（已编辑）",
+  "midiDiscardEditsTitle": "放弃更改？",
+  "midiDiscardEditsBody": "编辑后的片段尚未保存。将其另存为新片段即可保留。",
+  "midiKeepEditing": "继续编辑",
+  "midiDiscardEdits": "放弃"
 }

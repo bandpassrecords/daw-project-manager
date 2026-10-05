@@ -7,7 +7,9 @@ import '../models/midi_clip.dart';
 import '../providers/providers.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/musical_scale.dart';
+import '../services/midi/synth_voice.dart';
 import 'midi_preview_player.dart';
+import 'widgets/midi_clip_edit_controller.dart';
 import 'widgets/midi_piano_roll.dart';
 import 'widgets/midi_loop_toggle.dart';
 import 'widgets/midi_volume_control.dart';
@@ -35,6 +37,8 @@ Future<void> showMidiPianoRoll(
   required VoidCallback onPlay,
   VoidCallback? onOpenProject,
   String? musicalKey,
+  SynthVoice? voice,
+  SaveEditedMidiClip? onSaveEdited,
 }) {
   final l10n = AppLocalizations.of(context)!;
   final body = MidiPianoRollWindow(
@@ -47,6 +51,8 @@ Future<void> showMidiPianoRoll(
     onPlay: onPlay,
     onOpenProject: onOpenProject,
     musicalKey: musicalKey,
+    voice: voice,
+    onSaveEdited: onSaveEdited,
     labels: MidiPianoRollWindowLabels(
       roll: MidiPianoRollLabels(
         zoomIn: l10n.midiPianoRollZoomIn,
@@ -61,12 +67,24 @@ Future<void> showMidiPianoRoll(
         scaleRoot: l10n.midiScaleRoot,
         scaleType: l10n.midiScaleType,
         scaleTypeName: (type) => scaleTypeName(l10n, type),
+        edit: l10n.midiEditNotes,
+        undo: l10n.midiUndo,
+        redo: l10n.midiRedo,
+        deleteNote: l10n.midiDeleteNote,
+        snap: l10n.midiSnap,
+        snapOff: l10n.midiSnapOff,
       ),
       close: l10n.close,
       play: l10n.midiClipPlay,
       pause: l10n.midiPianoRollPause,
       stop: l10n.midiClipStop,
       openProject: l10n.midiOpenSourceProject,
+      saveAsNew: l10n.midiSaveAsNewClip,
+      editedName: l10n.midiClipEditedName,
+      discardTitle: l10n.midiDiscardEditsTitle,
+      discardBody: l10n.midiDiscardEditsBody,
+      keepEditing: l10n.midiKeepEditing,
+      discard: l10n.midiDiscardEdits,
     ),
   );
   // The shared preview volume and loop setting, live: the window's controls
@@ -110,10 +128,11 @@ Future<void> showMidiPianoRoll(
       );
     },
   ).whenComplete(() {
-    // Sound with nothing on screen to stop it is the bug this prevents.
-    if (player.playingKey == playerKey || player.preparingKey == playerKey) {
-      player.stop();
-    }
+    // Sound with nothing on screen to stop it is the bug this prevents —
+    // the clip as opened, or its edited version.
+    final edited = MidiPianoRollWindow.editedKeyOf(playerKey);
+    bool ours(String? k) => k == playerKey || k == edited;
+    if (ours(player.playingKey) || ours(player.preparingKey)) player.stop();
   });
 }
 
@@ -181,15 +200,40 @@ class MidiPianoRollWindowLabels {
     required this.pause,
     required this.stop,
     required this.openProject,
+    this.saveAsNew = '',
+    this.editedName,
+    this.discardTitle = '',
+    this.discardBody = '',
+    this.keepEditing = '',
+    this.discard = '',
   });
 
   final MidiPianoRollLabels roll;
   final String close, play, pause, stop, openProject;
+
+  /// Editing: the save button's tooltip, and the question asked before
+  /// unsaved edits are thrown away.
+  final String saveAsNew, discardTitle, discardBody, keepEditing, discard;
+
+  /// The name an edited clip is saved under: "Riff (edited)".
+  final String Function(String name)? editedName;
 }
+
+/// Saves a clip edited in the piano roll — as a new clip; the one opened is
+/// never changed — with the key it was being edited in. Resolves to whether
+/// it was saved (false: the user backed out, of a collection picker say).
+typedef SaveEditedMidiClip = Future<bool> Function(
+    MidiClip clip, String? musicalKey);
 
 /// The contents of [showMidiPianoRoll]'s window — public so it can be tested
 /// without a dialog route around it.
-class MidiPianoRollWindow extends StatelessWidget {
+///
+/// Given [onSaveEdited], the window is also an editor: the piano roll gets
+/// its edit tools (see [MidiClipEditController]), Delete and Ctrl/Cmd+Z,
+/// Ctrl/Cmd+Shift+Z (or Ctrl+Y) work, play plays the edited clip, a Save
+/// button saves it as a new clip, and closing with unsaved edits asks
+/// first.
+class MidiPianoRollWindow extends StatefulWidget {
   const MidiPianoRollWindow({
     super.key,
     required this.clip,
@@ -208,6 +252,8 @@ class MidiPianoRollWindow extends StatelessWidget {
     this.onLoopChanged,
     this.loopTooltip,
     this.musicalKey,
+    this.voice,
+    this.onSaveEdited,
   });
 
   /// [base] with a volume control added.
@@ -237,6 +283,8 @@ class MidiPianoRollWindow extends StatelessWidget {
         onLoopChanged: onLoopChanged,
         loopTooltip: loopTooltip,
         musicalKey: base.musicalKey,
+        voice: base.voice,
+        onSaveEdited: base.onSaveEdited,
       );
 
   /// The shared preview volume; the control shows only when all three of
@@ -254,6 +302,12 @@ class MidiPianoRollWindow extends StatelessWidget {
   /// The source project's key: the scale the piano roll opens with.
   final String? musicalKey;
 
+  /// The instrument an edited clip plays with; null infers one from it.
+  final SynthVoice? voice;
+
+  /// Makes the window an editor, saving edits through it. Null: view only.
+  final SaveEditedMidiClip? onSaveEdited;
+
   final MidiClip clip;
   final String title;
   final String? subtitle;
@@ -264,24 +318,106 @@ class MidiPianoRollWindow extends StatelessWidget {
   final VoidCallback? onOpenProject;
   final MidiPianoRollWindowLabels labels;
 
-  bool get _isOurs => player.playingKey == playerKey;
+  /// The player key the edited version of [playerKey]'s clip plays under.
+  static String editedKeyOf(String playerKey) => '$playerKey~edit';
+
+  @override
+  State<MidiPianoRollWindow> createState() => _MidiPianoRollWindowState();
+}
+
+class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
+  late final MidiClipEditController? _editor = widget.onSaveEdited == null
+      ? null
+      : MidiClipEditController(widget.clip);
+
+  /// The scale being edited in — what a saved clip keeps as its key.
+  late MusicalScale? _scale = scaleFromKey(widget.musicalKey);
+
+  /// The edited clip last handed to the player, to replay after a change.
+  MidiClip? _playedEdit;
+
+  /// Set once the user agreed to throw unsaved edits away.
+  bool _leaving = false;
+
+  MidiPreviewPlayer get _player => widget.player;
+  MidiPianoRollWindowLabels get labels => widget.labels;
+  String get _editKey => MidiPianoRollWindow.editedKeyOf(widget.playerKey);
+
+  /// Whether what is on screen differs from the clip opened — then play
+  /// plays it, saved or not.
+  bool get _differs =>
+      _editor != null && !identical(_editor.committed, widget.clip);
+
+  /// Unsaved edits: what the save button and the close prompt are about.
+  bool get _unsaved => _editor?.edited ?? false;
+
+  /// Whether the player is busy with this window's clip, either version.
+  bool get _isOurs {
+    final k = _player.playingKey;
+    return k == widget.playerKey || k == _editKey;
+  }
+
+  bool get _preparing {
+    final k = _player.preparingKey;
+    return k == widget.playerKey || k == _editKey;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _editor?.addListener(_onEdit);
+  }
+
+  @override
+  void dispose() {
+    _editor?.removeListener(_onEdit);
+    _editor?.dispose();
+    super.dispose();
+  }
+
+  void _onEdit() {
+    if (!mounted) return;
+    setState(() {});
+    // A finished edit while the edited clip plays: carry on with the new
+    // notes from where it was.
+    final editor = _editor!;
+    if (_player.playingKey != _editKey || _player.paused) return;
+    if (identical(_playedEdit, editor.committed)) return;
+    _playEdited(from: _player.positionOf(_editKey));
+  }
+
+  void _playEdited({Duration? from}) {
+    final editor = _editor!;
+    _playedEdit = editor.committed;
+    final clip = editor.finished;
+    if (from != null) _player.startAt(_editKey, from);
+    _player
+        .play(_editKey, clip,
+            bpm: widget.bpm, voice: widget.voice ?? inferSynthVoice(clip))
+        .catchError((Object _) {});
+  }
+
+  void _start() => _differs ? _playEdited() : widget.onPlay();
 
   /// The ruler was clicked: jump there, or — with this clip not playing —
   /// start playback from there.
   void _seek(Duration position) {
-    if (_isOurs) {
-      player.seek(playerKey, position);
+    final playing = _player.playingKey;
+    if (_isOurs && playing != null) {
+      _player.seek(playing, position);
+    } else if (_differs) {
+      _playEdited(from: position);
     } else {
-      player.startAt(playerKey, position);
-      onPlay();
+      _player.startAt(widget.playerKey, position);
+      widget.onPlay();
     }
   }
 
   /// Esc: stop this clip if it is playing (or paused, or still rendering),
   /// otherwise close the window.
-  void _escape(BuildContext context) {
-    if (_isOurs || player.preparingKey == playerKey) {
-      player.stop();
+  void _escape() {
+    if (_isOurs || _preparing) {
+      _player.stop();
     } else {
       Navigator.of(context).maybePop();
     }
@@ -290,141 +426,235 @@ class MidiPianoRollWindow extends StatelessWidget {
   /// Space: start, pause, or resume.
   void _playPause() {
     if (!_isOurs) {
-      onPlay();
-    } else if (player.paused) {
-      player.resume();
+      _start();
+    } else if (_player.paused) {
+      _player.resume();
     } else {
-      player.pause();
+      _player.pause();
     }
+  }
+
+  Future<void> _save() async {
+    final editor = _editor;
+    final save = widget.onSaveEdited;
+    if (editor == null || save == null) return;
+    final name = labels.editedName?.call(widget.clip.name) ?? widget.clip.name;
+    final saved = await save(
+      editor.finished.copyWith(name: name),
+      _scale?.keyText ?? widget.musicalKey,
+    );
+    if (saved && mounted) editor.markSaved();
+  }
+
+  /// Asks before unsaved edits are thrown away. True: go ahead.
+  Future<bool> _confirmDiscard() async {
+    if (!_unsaved || _leaving) return true;
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(labels.discardTitle),
+        content: Text(labels.discardBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(labels.keepEditing),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red.shade700,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(labels.discard),
+          ),
+        ],
+      ),
+    );
+    if (discard != true || !mounted) return false;
+    setState(() => _leaving = true);
+    return true;
+  }
+
+  Future<void> _close() async {
+    if (!await _confirmDiscard() || !mounted) return;
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(LogicalKeyboardKey.space): _playPause,
-        const SingleActivator(LogicalKeyboardKey.escape): () => _escape(context),
+    final editor = _editor;
+    return PopScope(
+      // Esc, the barrier and the back button all come through here.
+      canPop: !_unsaved || _leaving,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        if (await _confirmDiscard() && context.mounted) {
+          Navigator.of(context).pop();
+        }
       },
-      // Autofocus so Space works the moment the window opens, before anything
-      // inside it has been clicked.
-      child: Focus(
-        autofocus: true,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              LayoutBuilder(
-                builder: (context, constraints) => _header(
-                  context,
-                  stacked: pianoRollHeaderStacked(constraints.maxWidth),
+      child: CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.space): _playPause,
+          const SingleActivator(LogicalKeyboardKey.escape): _escape,
+          if (editor != null) ...{
+            const SingleActivator(LogicalKeyboardKey.delete): () {
+              if (editor.editing) editor.deleteSelected();
+            },
+            const SingleActivator(LogicalKeyboardKey.backspace): () {
+              if (editor.editing) editor.deleteSelected();
+            },
+            const SingleActivator(LogicalKeyboardKey.keyZ, control: true):
+                editor.undo,
+            const SingleActivator(LogicalKeyboardKey.keyZ, meta: true):
+                editor.undo,
+            const SingleActivator(LogicalKeyboardKey.keyZ,
+                control: true, shift: true): editor.redo,
+            const SingleActivator(LogicalKeyboardKey.keyZ,
+                meta: true, shift: true): editor.redo,
+            const SingleActivator(LogicalKeyboardKey.keyY, control: true):
+                editor.redo,
+          },
+        },
+        // Autofocus so Space works the moment the window opens, before
+        // anything inside it has been clicked.
+        child: Focus(
+          autofocus: true,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                LayoutBuilder(
+                  builder: (context, constraints) => _header(
+                    context,
+                    stacked: pianoRollHeaderStacked(constraints.maxWidth),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: MidiPianoRoll(
-                  clip: clip,
-                  bpm: bpm,
-                  labels: labels.roll,
-                  positionOf: () => player.positionOf(playerKey),
-                  playback: player,
-                  onSeek: _seek,
-                  initialScale: scaleFromKey(musicalKey),
+                Expanded(
+                  child: MidiPianoRoll(
+                    clip: widget.clip,
+                    editor: editor,
+                    bpm: widget.bpm,
+                    labels: labels.roll,
+                    positionOf: () {
+                      final k = _player.playingKey;
+                      return k != null && _isOurs ? _player.positionOf(k) : null;
+                    },
+                    playback: _player,
+                    onSeek: _seek,
+                    initialScale: scaleFromKey(widget.musicalKey),
+                    onScaleChanged: (s) => _scale = s,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  /// The window's top: transport, title, loop, volume, open project, close.
-  /// Stacked on a narrow screen — the title on a line of its own, up to two
-  /// lines long, the controls in a row beneath — because squeezed into one
-  /// row with everything else a phone left the name a few letters wide.
+  /// The window's top: transport, title, loop, volume, save, open project,
+  /// close. Stacked on a narrow screen — the title on a line of its own, up
+  /// to two lines long, the controls in a row beneath — because squeezed
+  /// into one row with everything else a phone left the name a few letters
+  /// wide.
   Widget _header(BuildContext context, {required bool stacked}) {
     final theme = Theme.of(context);
     final transport = ListenableBuilder(
-                    listenable: player,
-                    builder: (context, _) {
-                      if (player.preparingKey == playerKey) {
-                        return const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        );
-                      }
-                      final running = _isOurs && !player.paused;
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            tooltip: running ? labels.pause : labels.play,
-                            iconSize: 32,
-                            icon: Icon(running
-                                ? Icons.pause_circle_outline
-                                : Icons.play_circle_outline),
-                            onPressed: _playPause,
-                          ),
-                          if (_isOurs)
-                            IconButton(
-                              tooltip: labels.stop,
-                              icon: const Icon(Icons.stop_circle_outlined),
-                              onPressed: player.stop,
-                            ),
-                        ],
-                      );
-                    },
-                  );
+      listenable: _player,
+      builder: (context, _) {
+        if (_preparing) {
+          return const Padding(
+            padding: EdgeInsets.all(12),
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          );
+        }
+        final running = _isOurs && !_player.paused;
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              tooltip: running ? labels.pause : labels.play,
+              iconSize: 32,
+              icon: Icon(running
+                  ? Icons.pause_circle_outline
+                  : Icons.play_circle_outline),
+              onPressed: _playPause,
+            ),
+            if (_isOurs)
+              IconButton(
+                tooltip: labels.stop,
+                icon: const Icon(Icons.stop_circle_outlined),
+                onPressed: _player.stop,
+              ),
+          ],
+        );
+      },
+    );
     final lines = stacked ? 2 : 1;
     final titleBlock = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(title,
+        Text(widget.title,
             key: const ValueKey('midi-piano-roll-title'),
             style: theme.textTheme.titleMedium,
             maxLines: lines,
             overflow: TextOverflow.ellipsis),
-        if (subtitle != null && subtitle!.isNotEmpty)
-          Text(subtitle!,
+        if (widget.subtitle != null && widget.subtitle!.isNotEmpty)
+          Text(widget.subtitle!,
               style: theme.textTheme.bodySmall,
               maxLines: lines,
               overflow: TextOverflow.ellipsis),
       ],
     );
     final controls = <Widget>[
-      if (loop != null && onLoopChanged != null && loopTooltip != null)
+      if (widget.loop != null &&
+          widget.onLoopChanged != null &&
+          widget.loopTooltip != null)
         MidiLoopToggle(
-          loop: loop!,
-          onChanged: onLoopChanged!,
-          tooltip: loopTooltip!,
+          loop: widget.loop!,
+          onChanged: widget.onLoopChanged!,
+          tooltip: widget.loopTooltip!,
         ),
-      if (volume != null && onVolumeChanged != null && volumeLabels != null)
+      if (widget.volume != null &&
+          widget.onVolumeChanged != null &&
+          widget.volumeLabels != null)
         MidiVolumeControl(
-          volume: volume!,
-          onChanged: onVolumeChanged!,
-          labels: volumeLabels!,
+          volume: widget.volume!,
+          onChanged: widget.onVolumeChanged!,
+          labels: widget.volumeLabels!,
           sliderWidth: 90,
         ),
-      if (onOpenProject != null)
+      if (_unsaved)
+        IconButton(
+          key: const ValueKey('midi-piano-roll-save'),
+          tooltip: labels.saveAsNew,
+          icon: const Icon(Icons.save_as_outlined),
+          color: theme.colorScheme.primary,
+          onPressed: _save,
+        ),
+      if (widget.onOpenProject != null)
         IconButton(
           tooltip: labels.openProject,
           icon: const Icon(Icons.assignment),
-          onPressed: () {
-            player.stop();
+          onPressed: () async {
+            if (!await _confirmDiscard() || !context.mounted) return;
+            _player.stop();
             Navigator.of(context).pop();
-            onOpenProject!();
+            widget.onOpenProject!();
           },
         ),
     ];
     final close = IconButton(
       tooltip: labels.close,
       icon: const Icon(Icons.close),
-      onPressed: () => Navigator.of(context).pop(),
+      onPressed: _close,
     );
 
     if (!stacked) {

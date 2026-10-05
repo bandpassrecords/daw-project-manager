@@ -6473,4 +6473,43 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get scaleBlues => 'Blues';
+
+  @override
+  String get midiEditNotes => 'Editar notas';
+
+  @override
+  String get midiUndo => 'Desfazer';
+
+  @override
+  String get midiRedo => 'Refazer';
+
+  @override
+  String get midiDeleteNote => 'Excluir nota';
+
+  @override
+  String get midiSnap => 'Alinhar à grade';
+
+  @override
+  String get midiSnapOff => 'Desligado';
+
+  @override
+  String get midiSaveAsNewClip => 'Salvar como novo clipe';
+
+  @override
+  String midiClipEditedName(String name) {
+    return '$name (editado)';
+  }
+
+  @override
+  String get midiDiscardEditsTitle => 'Descartar as alterações?';
+
+  @override
+  String get midiDiscardEditsBody =>
+      'O clipe editado não foi salvo. Salve-o como novo clipe para mantê-lo.';
+
+  @override
+  String get midiKeepEditing => 'Continuar editando';
+
+  @override
+  String get midiDiscardEdits => 'Descartar';
 }
