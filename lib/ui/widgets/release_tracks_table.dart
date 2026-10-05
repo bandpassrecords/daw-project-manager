@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:trina_grid/trina_grid.dart';
 
+import '../../utils/column_widths.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
 import '../../models/custom_field.dart';
@@ -70,6 +71,16 @@ class ReleaseTracksTable extends ConsumerStatefulWidget {
 }
 
 class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
+
+  /// Column widths as the user left them, kept across tab switches and
+  /// restarts (device-local).
+  final _columnWidths = ColumnWidthMemory('releaseTracks');
+
+  @override
+  void dispose() {
+    _columnWidths.dispose();
+    super.dispose();
+  }
   TrinaGridStateManager? _stateManager;
 
   /// Custom fields with a column here, as of the last build — rows get
@@ -390,11 +401,12 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
       // Columns are fixed once a grid mounts.
       key: ValueKey(
           'release_tracks_${customFieldColumnsSignature(_fields)}'),
-      columns: columns,
+      columns: _columnWidths.apply(columns),
       rows: _mapToRows(widget.projects),
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
       onLoaded: (event) {
         _stateManager = event.stateManager;
+        _columnWidths.attach(event.stateManager);
         // Nothing here acts on a cell range, so TrinaGrid's own selection is
         // off — same as every other grid in the app.
         _stateManager!.setSelectingMode(TrinaGridSelectingMode.none);

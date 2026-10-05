@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:trina_grid/trina_grid.dart';
 
+import '../utils/column_widths.dart';
 import '../models/release.dart';
 import '../models/music_project.dart';
 import '../providers/providers.dart';
@@ -415,6 +416,10 @@ class _ReleasesTable extends ConsumerStatefulWidget {
 }
 
 class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
+
+  /// Column widths as the user left them, kept across tab switches and
+  /// restarts (device-local).
+  final _columnWidths = ColumnWidthMemory('releases');
   TrinaGridStateManager? stateManager;
 
   /// Ctrl/cmd- and shift-click selection for this table, shared with the
@@ -452,6 +457,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
 
   @override
   void dispose() {
+    _columnWidths.dispose();
     stateManager?.removeListener(_onStateManagerChanged);
     super.dispose();
   }
@@ -850,7 +856,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
           );
 
     return TrinaGrid(
-      columns: columns,
+      columns: _columnWidths.apply(columns),
       rows: initialRows,
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
       // Ctrl/cmd- and shift-click anywhere on a row extend the checkbox
@@ -880,6 +886,7 @@ class _ReleasesTableState extends ConsumerState<_ReleasesTable> {
       },
       onLoaded: (TrinaGridOnLoadedEvent event) {
         stateManager = event.stateManager;
+        _columnWidths.attach(event.stateManager);
         // Same as the projects and templates grids: nothing here acts on a
         // cell/row range, so turn TrinaGrid's own selection off rather than
         // have a ctrl/shift-click paint a range of outlined cells. Clicking a

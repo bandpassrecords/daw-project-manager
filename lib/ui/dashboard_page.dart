@@ -20,6 +20,7 @@ import 'package:archive/archive_io.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 
+import '../utils/column_widths.dart';
 import '../services/scanner_service.dart';
 import '../services/changelog_service.dart';
 import '../services/release_artwork_service.dart';
@@ -6668,6 +6669,10 @@ List<TrinaRow> groupRowsToExpand(
 
 class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     with RouteAwareDropTargetState<_PlutoProjectsTable> {
+
+  /// Column widths as the user left them, kept across tab switches and
+  /// restarts (device-local).
+  final _columnWidths = ColumnWidthMemory('projects');
   TrinaGridStateManager? stateManager;
   bool _isRebuildingRows = false;
 
@@ -8546,7 +8551,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         '_${encodeColumnLayout(columnLayout)}_${customFieldColumnsSignature(_tableCustomFields)}',
       ),
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
-      columns: arrangedColumns,
+      columns: _columnWidths.apply(arrangedColumns),
       rows: initialRows,
       // Ctrl/cmd- and shift-click anywhere on a row extend the checkbox
       // selection, so building a multi-selection doesn't mean aiming at the
@@ -8591,6 +8596,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       },
       onLoaded: (TrinaGridOnLoadedEvent event) {
         stateManager = event.stateManager;
+        _columnWidths.attach(event.stateManager);
         // TrinaGrid defaults to cell selection, so dragging across the table
         // paints a range and leaves cells outlined. Nothing here acts on a
         // selected range — bulk actions go through the checkbox column — so
@@ -8837,6 +8843,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
 
   @override
   void dispose() {
+    _columnWidths.dispose();
     stateManager?.removeListener(_onStateManagerChanged);
     _parkingFocusNode?.removeListener(_onGridFocusChanged);
     super.dispose();
