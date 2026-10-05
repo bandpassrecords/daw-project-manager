@@ -6485,4 +6485,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get midiDiscardEdits => 'Discard';
+
+  @override
+  String get midiEditHint =>
+      'Double-click to add a note, or on a note to delete it. Drag on empty space to select; Shift-click adds to the selection. Drag a note\'s edge to change its length. ↑/↓ moves the selection a semitone, Shift+↑/↓ an octave. Alt-drag copies; hold Ctrl to ignore the grid.';
 }

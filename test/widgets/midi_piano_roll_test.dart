@@ -8,6 +8,7 @@ import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
+import 'package:daw_project_manager/ui/widgets/midi_clip_edit_controller.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
 import 'package:daw_project_manager/utils/musical_scale.dart';
 
@@ -101,6 +102,43 @@ void main() {
       expect(noteLabelColor(0.4), isNot(noteLabelColor(1.0)));
       expect(noteLabelColor(0.4).computeLuminance(),
           greaterThan(noteLabelColor(1.0).computeLuminance()));
+    });
+
+    test("a note's edges: its outer quarter, at most 8 px, the end first", () {
+      expect(noteEdgeAt(x: 103, left: 100, right: 200), NoteEdge.start);
+      expect(noteEdgeAt(x: 150, left: 100, right: 200), isNull);
+      expect(noteEdgeAt(x: 195, left: 100, right: 200), NoteEdge.end);
+      expect(noteEdgeAt(x: 203, left: 100, right: 200), NoteEdge.end,
+          reason: 'just past the end still catches it');
+      expect(noteEdgeAt(x: 109, left: 100, right: 200), isNull,
+          reason: 'never more than 8 px in');
+      // A 12 px note: a 3 px edge each side, the middle still a move.
+      expect(noteEdgeAt(x: 106, left: 100, right: 112), isNull);
+      expect(noteEdgeAt(x: 110, left: 100, right: 112), NoteEdge.end);
+      // A 2 px note still has an end to catch.
+      expect(noteEdgeAt(x: 102, left: 100, right: 102), NoteEdge.end);
+    });
+
+    test('a double-click: soon enough after, close enough to the first', () {
+      const at = Offset(50, 50);
+      const t = Duration(seconds: 3);
+      bool second(Duration time, Offset where) => isDoubleTap(
+          previousTime: t, previousAt: at, time: time, at: where);
+      expect(second(t + const Duration(milliseconds: 200), at), isTrue);
+      expect(second(t + const Duration(milliseconds: 400), at), isFalse);
+      expect(second(t + const Duration(milliseconds: 200), at + const Offset(20, 0)),
+          isFalse);
+      expect(
+          isDoubleTap(previousTime: null, previousAt: null, time: t, at: at),
+          isFalse,
+          reason: 'the first click');
+    });
+
+    test('zoom keeps the pointer still, or the middle without one', () {
+      expect(zoomAnchorX(pointerX: 640, viewWidth: 800), 640);
+      expect(zoomAnchorX(pointerX: null, viewWidth: 800), 400);
+      expect(zoomAnchorX(pointerX: 900, viewWidth: 800), 400,
+          reason: 'off the grid');
     });
 
     test('black keys', () {
@@ -460,6 +498,15 @@ void main() {
       await tester.tap(find.byTooltip('Follow'));
       await tester.pump();
       expect(tester.widgetList(find.byIcon(Icons.my_location)), isEmpty);
+    });
+
+    testWidgets('zooming switches follow off, so it does not snap back',
+        (tester) async {
+      await tester.pumpWidget(wrap(_clip()));
+      expect(find.byIcon(Icons.my_location), findsOneWidget);
+      await tester.tap(find.byTooltip('Zoom in'));
+      await tester.pump();
+      expect(find.byIcon(Icons.my_location), findsNothing);
     });
 
     testWidgets('ticks only while playing', (tester) async {

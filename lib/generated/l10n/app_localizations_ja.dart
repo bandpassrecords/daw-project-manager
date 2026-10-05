@@ -6328,4 +6328,8 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiDiscardEdits => '破棄';
+
+  @override
+  String get midiEditHint =>
+      'ダブルクリックでノートを追加、ノート上でダブルクリックすると削除します。空いている所をドラッグして選択、Shift+クリックで選択に追加。ノートの端をドラッグすると長さを変更。↑/↓ で選択範囲を半音、Shift+↑/↓ で1オクターブ移動。Alt+ドラッグでコピー、Ctrl を押しながらでグリッドを無視します。';
 }

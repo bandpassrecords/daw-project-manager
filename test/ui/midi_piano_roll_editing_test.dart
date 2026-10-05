@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -121,6 +122,37 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  // Taps carry their own times, so two separate clicks are never taken for
+  // a double-click by accident, and a double-click is one on purpose.
+  var clock = Duration.zero;
+
+  Future<void> click(WidgetTester tester, Offset at,
+      {Duration after = const Duration(seconds: 1)}) async {
+    clock += after;
+    final g = await tester.createGesture();
+    await g.down(at, timeStamp: clock);
+    await g.up(timeStamp: clock);
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> doubleClick(WidgetTester tester, Offset at) async {
+    await click(tester, at);
+    await click(tester, at, after: const Duration(milliseconds: 120));
+  }
+
+  Future<void> dragFrom(WidgetTester tester, Offset from, Offset by) async {
+    final drag = await tester.startGesture(from);
+    for (var i = 1; i <= 4; i++) {
+      await drag.moveTo(from + by * (i / 4));
+      await tester.pump();
+    }
+    await drag.up();
+    await tester.pumpAndSettle();
+  }
+
+  /// The middle of the clip's one note (ticks 0–240 of 1920, on C3).
+  Offset noteMiddle(Rect g) => Offset(g.left + g.width / 16, g.center.dy);
+
   Future<void> save(WidgetTester tester) async {
     await tester.tap(find.byKey(const ValueKey('midi-piano-roll-save')));
     await tester.pumpAndSettle();
@@ -142,14 +174,18 @@ void main() {
     expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsNothing);
   });
 
-  testWidgets('a tap adds a note; saving makes a new clip in the project key',
-      (tester) async {
+  testWidgets(
+      'a click only selects; a double-click adds a note; saving makes a new '
+      'clip in the project key', (tester) async {
     await open(tester);
     await startEditing(tester);
     final g = grid(tester);
     // Three quarters into the clip (tick 1440), on the middle row (C3).
-    await tester.tapAt(Offset(g.left + g.width * 0.75, g.center.dy));
-    await tester.pumpAndSettle();
+    final spot = Offset(g.left + g.width * 0.76, g.center.dy);
+    await click(tester, spot);
+    expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsNothing,
+        reason: 'as in Cubase, a single click adds nothing');
+    await doubleClick(tester, spot);
 
     await save(tester);
     final (clip, key) = saved.single;
@@ -160,11 +196,19 @@ void main() {
         reason: 'saved: nothing left to save');
   });
 
+  testWidgets('a double-click on a note deletes it', (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    await doubleClick(tester, noteMiddle(grid(tester)));
+    await save(tester);
+    expect(saved.single.$1.notes, isEmpty);
+  });
+
   testWidgets('dragging a note moves it along the grid', (tester) async {
     await open(tester);
     await startEditing(tester);
     final g = grid(tester);
-    final note = Offset(g.left + 4, g.center.dy);
+    final note = noteMiddle(g);
     final drag = await tester.startGesture(note);
     await drag.moveBy(Offset(g.width * 0.125, 0));
     await tester.pump();
@@ -183,8 +227,7 @@ void main() {
     await open(tester);
     await startEditing(tester);
     final g = grid(tester);
-    await tester.tapAt(Offset(g.left + 4, g.center.dy)); // select it
-    await tester.pumpAndSettle();
+    await click(tester, noteMiddle(g)); // select it
     await tester.sendKeyEvent(LogicalKeyboardKey.delete);
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsOneWidget);
@@ -201,8 +244,7 @@ void main() {
     await open(tester);
     await startEditing(tester);
     final g = grid(tester);
-    await tester.tapAt(Offset(g.left + g.width * 0.5, g.center.dy));
-    await tester.pumpAndSettle();
+    await doubleClick(tester, Offset(g.left + g.width * 0.5, g.center.dy));
 
     await tester.tap(find.byTooltip('Close'));
     await tester.pumpAndSettle();
@@ -246,6 +288,80 @@ void main() {
     expect(mod.length, greaterThan(3), reason: 'a curve, not a single point');
     expect(mod.first.value, greaterThan(100), reason: 'starts near the top');
     expect(mod.last.value, lessThan(30), reason: 'ends near the bottom');
+  });
+
+  testWidgets('a box selects; up moves a semitone, Shift+up an octave',
+      (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    final g = grid(tester);
+    // From empty space above and right of the note, to below its start.
+    await dragFrom(tester, Offset(g.left + g.width * 0.3, g.center.dy - 40),
+        Offset(-g.width * 0.3 + 2, 80));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.pumpAndSettle();
+
+    await save(tester);
+    expect(saved.single.$1.notes.single.pitch, 73);
+  });
+
+  testWidgets("dragging a note's end changes its length", (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    final g = grid(tester);
+    // The note's right edge is an eighth of the way across.
+    await dragFrom(tester, Offset(g.left + g.width / 8 - 3, g.center.dy),
+        Offset(g.width / 8, 0));
+    await save(tester);
+    final note = saved.single.$1.notes.single;
+    expect((note.startTick, note.lengthTicks), (0, 480));
+  });
+
+  testWidgets('an Alt-drag copies the note', (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    final g = grid(tester);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.altLeft);
+    await dragFrom(tester, noteMiddle(g), Offset(g.width / 4, 0));
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
+    await save(tester);
+    expect(saved.single.$1.notes.map((n) => (n.startTick, n.pitch)),
+        [(0, 60), (480, 60)]);
+  });
+
+  testWidgets('holding Ctrl, a drag ignores the grid', (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    final g = grid(tester);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    // 250 ticks: between the 1/16 steps at 240 and 360.
+    await dragFrom(tester, noteMiddle(g), Offset(g.width * 250 / 1920, 0));
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await save(tester);
+    expect(saved.single.$1.notes.single.startTick, closeTo(250, 2));
+  });
+
+  testWidgets('zooming keeps the time under the mouse where it was',
+      (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    final g = grid(tester);
+    final spot = Offset(g.left + g.width * 0.76, g.center.dy); // tick ~1459
+    final mouse = TestPointer(1, PointerDeviceKind.mouse);
+    await tester.sendEventToBinding(mouse.hover(spot));
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendEventToBinding(mouse.scroll(const Offset(0, -120)));
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await tester.pumpAndSettle();
+
+    // Zoomed around the middle or the start, the same spot would be a
+    // different 1/16 step (1320 or 1200).
+    await doubleClick(tester, spot);
+    await save(tester);
+    expect(saved.single.$1.notes.last.startTick, 1440);
   });
 
   testWidgets('with nothing changed, closing just closes', (tester) async {

@@ -10858,6 +10858,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Discard'**
   String get midiDiscardEdits;
+
+  /// Piano roll: how note editing works, shown in the edit toggle tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Double-click to add a note, or on a note to delete it. Drag on empty space to select; Shift-click adds to the selection. Drag a note\'s edge to change its length. ↑/↓ moves the selection a semitone, Shift+↑/↓ an octave. Alt-drag copies; hold Ctrl to ignore the grid.'**
+  String get midiEditHint;
 }
 
 class _AppLocalizationsDelegate

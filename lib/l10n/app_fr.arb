@@ -4057,5 +4057,6 @@
   "midiDiscardEditsTitle": "Abandonner les modifications ?",
   "midiDiscardEditsBody": "Le clip modifié n’a pas été enregistré. Enregistrez-le comme nouveau clip pour le garder.",
   "midiKeepEditing": "Continuer à modifier",
-  "midiDiscardEdits": "Abandonner"
+  "midiDiscardEdits": "Abandonner",
+  "midiEditHint": "Double-cliquez pour ajouter une note, ou sur une note pour la supprimer. Faites glisser sur un espace vide pour sélectionner ; Maj+clic ajoute à la sélection. Faites glisser le bord d’une note pour changer sa durée. ↑/↓ déplace la sélection d’un demi-ton, Maj+↑/↓ d’une octave. Alt+glisser copie ; maintenez Ctrl pour ignorer la grille."
 }

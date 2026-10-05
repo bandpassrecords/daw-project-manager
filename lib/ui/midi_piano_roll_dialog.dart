@@ -73,6 +73,7 @@ Future<void> showMidiPianoRoll(
         deleteNote: l10n.midiDeleteNote,
         snap: l10n.midiSnap,
         snapOff: l10n.midiSnapOff,
+        editHint: l10n.midiEditHint,
       ),
       close: l10n.close,
       play: l10n.midiClipPlay,
@@ -513,6 +514,27 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                 meta: true, shift: true): editor.redo,
             const SingleActivator(LogicalKeyboardKey.keyY, control: true):
                 editor.redo,
+            // As in Cubase: ↑/↓ a semitone, Shift+↑/↓ an octave.
+            const SingleActivator(LogicalKeyboardKey.arrowUp): () {
+              if (editor.editing) editor.transposeSelection(1);
+            },
+            const SingleActivator(LogicalKeyboardKey.arrowDown): () {
+              if (editor.editing) editor.transposeSelection(-1);
+            },
+            const SingleActivator(LogicalKeyboardKey.arrowUp, shift: true):
+                () {
+              if (editor.editing) editor.transposeSelection(12);
+            },
+            const SingleActivator(LogicalKeyboardKey.arrowDown, shift: true):
+                () {
+              if (editor.editing) editor.transposeSelection(-12);
+            },
+            const SingleActivator(LogicalKeyboardKey.keyA, control: true): () {
+              if (editor.editing) editor.selectAll();
+            },
+            const SingleActivator(LogicalKeyboardKey.keyA, meta: true): () {
+              if (editor.editing) editor.selectAll();
+            },
           },
         },
         // Autofocus so Space works the moment the window opens, before

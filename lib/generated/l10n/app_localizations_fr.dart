@@ -6558,4 +6558,8 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get midiDiscardEdits => 'Abandonner';
+
+  @override
+  String get midiEditHint =>
+      'Double-cliquez pour ajouter une note, ou sur une note pour la supprimer. Faites glisser sur un espace vide pour sélectionner ; Maj+clic ajoute à la sélection. Faites glisser le bord d’une note pour changer sa durée. ↑/↓ déplace la sélection d’un demi-ton, Maj+↑/↓ d’une octave. Alt+glisser copie ; maintenez Ctrl pour ignorer la grille.';
 }

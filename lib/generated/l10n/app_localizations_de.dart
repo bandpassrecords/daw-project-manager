@@ -6528,4 +6528,8 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiDiscardEdits => 'Verwerfen';
+
+  @override
+  String get midiEditHint =>
+      'Doppelklick fügt eine Note hinzu, auf einer Note löscht er sie. Auf freier Fläche ziehen wählt aus; Umschalt-Klick erweitert die Auswahl. Am Rand einer Note ziehen ändert ihre Länge. ↑/↓ verschiebt die Auswahl um einen Halbton, Umschalt+↑/↓ um eine Oktave. Alt-Ziehen kopiert; mit gedrückter Strg-Taste wird das Raster ignoriert.';
 }

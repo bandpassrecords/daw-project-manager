@@ -6512,4 +6512,8 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get midiDiscardEdits => 'Descartar';
+
+  @override
+  String get midiEditHint =>
+      'Clique duas vezes para adicionar uma nota, ou sobre uma nota para excluí-la. Arraste em um espaço vazio para selecionar; Shift+clique adiciona à seleção. Arraste a borda de uma nota para mudar sua duração. ↑/↓ move a seleção um semitom, Shift+↑/↓ uma oitava. Alt+arrastar copia; segure Ctrl para ignorar a grade.';
 }

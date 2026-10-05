@@ -4057,5 +4057,6 @@
   "midiDiscardEditsTitle": "¿Descartar los cambios?",
   "midiDiscardEditsBody": "El clip editado no se ha guardado. Guárdalo como clip nuevo para conservarlo.",
   "midiKeepEditing": "Seguir editando",
-  "midiDiscardEdits": "Descartar"
+  "midiDiscardEdits": "Descartar",
+  "midiEditHint": "Doble clic para añadir una nota, o sobre una nota para borrarla. Arrastra en un espacio vacío para seleccionar; Mayús+clic añade a la selección. Arrastra el borde de una nota para cambiar su duración. ↑/↓ mueve la selección un semitono, Mayús+↑/↓ una octava. Alt+arrastrar copia; mantén Ctrl para ignorar la cuadrícula."
 }

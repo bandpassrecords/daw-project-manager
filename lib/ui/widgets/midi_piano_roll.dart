@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -76,6 +77,42 @@ double ticksAt(Duration elapsed, double bpm, int ppq) =>
 /// How long a preview at [bpm] takes to reach [tick] — [ticksAt] reversed.
 Duration durationAtTick(double tick, double bpm, int ppq) => Duration(
     microseconds: bpm <= 0 || ppq <= 0 ? 0 : (tick / ppq * 60 / bpm * 1e6).round());
+
+/// Which edge of a note drawn from [left] to [right] the pointer at [x] is
+/// on, if either: the outer quarter of the note, at most 8 px, and a few
+/// pixels past it, so a thin note's edge can still be caught. The end wins
+/// on a note too short to have two.
+NoteEdge? noteEdgeAt({
+  required double x,
+  required double left,
+  required double right,
+}) {
+  final zone = math.min(8.0, (right - left) / 4);
+  if (x >= right - zone) return NoteEdge.end;
+  if (x <= left + zone) return NoteEdge.start;
+  return null;
+}
+
+/// Whether a tap at [at], [time], makes a double-click with the one before
+/// it: soon enough after and close enough to it.
+bool isDoubleTap({
+  required Duration? previousTime,
+  required Offset? previousAt,
+  required Duration time,
+  required Offset at,
+}) =>
+    previousTime != null &&
+    previousAt != null &&
+    time - previousTime <= kDoubleTapTimeout &&
+    (at - previousAt).distance <= 12;
+
+/// The x a zoom keeps still (grid-relative pixels): the pointer's, when it
+/// is over the grid, else the middle of the view.
+double zoomAnchorX({required double? pointerX, required double viewWidth}) {
+  final x = pointerX;
+  if (x == null || x < 0 || x > viewWidth) return viewWidth / 2;
+  return x;
+}
 
 /// The horizontal scroll that follows a playhead at [playheadX] (content
 /// pixels) by keeping it in the middle of the view: the line walks right
@@ -188,10 +225,15 @@ class MidiPianoRollLabels {
     this.deleteNote = '',
     this.snap = '',
     this.snapOff = '',
+    this.editHint = '',
   });
 
   /// Editing tools' tooltips; only shown with an editor.
   final String edit, undo, redo, deleteNote, snap, snapOff;
+
+  /// How editing works (double-click, selection box, arrows…), shown under
+  /// the edit toggle's name in its tooltip.
+  final String editHint;
 
   final String zoomIn;
   final String zoomOut;
@@ -494,12 +536,30 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     final old = _px;
     final next = (old * factor).clamp(_fitPxPerTick / 2, _fitPxPerTick * _maxZoom);
     if (next == old) return;
-    final anchor = anchorX ?? _gridWidth / 2;
+    // Around the pointer: where it is (wheel, pinch), or where it last was
+    // over the notes (the buttons) — the middle when it hasn't been.
+    final anchor = zoomAnchorX(
+      pointerX: anchorX ?? _lastPointerX,
+      viewWidth: _gridWidth,
+    );
     final tickAtAnchor = (_scrollX + anchor) / old;
     setState(() {
+      // A zoom is the user looking somewhere: following would snap the view
+      // back to the playhead on the next frame and undo it.
+      _follow = false;
       _pxPerTick = next;
       _scrollX = (tickAtAnchor * next - anchor).clamp(0.0, _maxScrollX);
     });
+  }
+
+  /// Where the pointer last was over the grid, grid-relative; null until it
+  /// has been there.
+  double? _lastPointerX;
+
+  void _onHover(PointerHoverEvent e) {
+    final x = e.localPosition.dx - _keyboardWidth;
+    if (x >= 0 && x <= _gridWidth) _lastPointerX = x;
+    _updateCursor(e.localPosition);
   }
 
   void _scrollBy(double dx, double dy, {bool manual = true}) {
@@ -557,9 +617,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       (_range.high - ((y - _rulerHeight + _scrollY) / _rowHeight).floor())
           .clamp(0, 127);
 
-  /// The note under [p] (the last drawn first, as it is on top) and whether
-  /// [p] is on its right edge, where a drag resizes it.
-  (int, bool)? _noteAt(Offset p) {
+  /// The note under [p] (the last drawn first, as it is on top) and the
+  /// edge of it [p] is on, if either — where a drag resizes it.
+  (int, NoteEdge?)? _noteAt(Offset p) {
     final notes = _shown.notes;
     final pitch = _pitchAtY(p.dy);
     for (var i = notes.length - 1; i >= 0; i--) {
@@ -567,9 +627,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       if (n.pitch != pitch) continue;
       final left = _keyboardWidth + n.startTick * _px - _scrollX;
       final right = left + math.max(2.0, n.lengthTicks * _px);
-      if (p.dx < left || p.dx > right + 4) continue;
-      final edge = math.min(10.0, (right - left) / 3);
-      return (i, p.dx >= right - edge);
+      if (p.dx < left - 4 || p.dx > right + 4) continue;
+      return (i, noteEdgeAt(x: p.dx, left: left, right: right));
     }
     return null;
   }
@@ -607,28 +666,70 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       lane.kind == MidiEventKind.pitchBend ||
       lane.kind == MidiEventKind.channelPressure;
 
+  static HardwareKeyboard get _keys => HardwareKeyboard.instance;
+
+  /// Ctrl (Cmd on a Mac) held: drags ignore the grid, as in Cubase.
+  static bool get _free => _keys.isControlPressed || _keys.isMetaPressed;
+
+  /// The selection box being drawn, in the roll's own coordinates.
+  Rect? _marquee;
+
+  /// What a Shift-drawn selection box adds to.
+  Set<int> _marqueeKeep = const {};
+
+  // The last tap, to tell a double-click from two clicks.
+  Duration? _lastTapTime;
+  Offset? _lastTapAt;
+
+  /// Whether this tap at [at] makes a double-click with the one before.
+  bool _doubleTap(Duration time, Offset at) {
+    final isDouble = isDoubleTap(
+      previousTime: _lastTapTime,
+      previousAt: _lastTapAt,
+      time: time,
+      at: at,
+    );
+    // A double-click is used up; a third click starts the next pair.
+    _lastTapTime = isDouble ? null : time;
+    _lastTapAt = isDouble ? null : at;
+    return isDouble;
+  }
+
   void _onEditDown(PointerDownEvent e) {
     _pointers.add(e.pointer);
     final editor = widget.editor;
     if (editor == null || !editor.editing) return;
     if (_pointers.length > 1) {
       // A second finger: the gesture is a pinch or a pan, not an edit.
-      if (_drag != null) {
-        editor.cancelGesture();
-        _drag = null;
-      }
+      _abandonDrag(editor);
       return;
     }
     final p = e.localPosition;
     if (p.dx < _keyboardWidth || p.dy < _rulerHeight) return;
     if (p.dy < _view.height) {
       final hit = _noteAt(p);
-      if (hit != null) {
-        editor.select(hit.$1);
-        _drag = _EditDrag(hit.$2 ? _DragKind.resize : _DragKind.move, p, hit.$1);
+      if (hit == null) {
+        // Empty space: a selection box from here (Shift adds to the
+        // selection), or, on a double-click, a new note.
+        _marqueeKeep = _keys.isShiftPressed ? editor.selection : const {};
+        if (!_keys.isShiftPressed) editor.select(null);
+        _drag = _EditDrag(_DragKind.marquee, p, null);
+        return;
+      }
+      final (index, edge) = hit;
+      if (_keys.isShiftPressed) {
+        editor.toggleSelected(index);
+        _drag = _EditDrag(_DragKind.tapNote, p, index);
+        return;
+      }
+      // A note already in the selection drags the whole selection.
+      if (!editor.isSelected(index)) editor.select(index);
+      if (edge != null) {
+        editor.beginGesture();
+        _drag = _EditDrag(_DragKind.resize, p, index, edge: edge);
       } else {
-        editor.select(null);
-        _drag = _EditDrag(_DragKind.add, p, null);
+        _drag = _EditDrag(_DragKind.move, p, index,
+            duplicate: _keys.isAltPressed);
       }
       return;
     }
@@ -638,9 +739,11 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       final i = _stemAt(p.dx);
       if (i == null) return;
       editor.select(i);
+      editor.beginGesture();
       _drag = _EditDrag(_DragKind.velocity, p, i);
       editor.setVelocity(i, _laneValueAt(p.dy, lane));
     } else if (_drawable(lane)) {
+      editor.beginGesture();
       _drag = _EditDrag(_DragKind.lane, p, null);
       editor.drawLane(
           lane.kind!, lane.number, _tickAtX(p.dx), _laneValueAt(p.dy, lane));
@@ -658,17 +761,36 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     switch (drag.kind) {
       case _DragKind.move:
         if (!drag.moved) return;
-        editor.moveNote(drag.index!, d.dx / _px, -(d.dy / _rowHeight).round());
+        if (!drag.begun) {
+          // Alt held when the drag starts: move copies, leave originals.
+          editor.beginGesture(duplicate: drag.duplicate);
+          drag.begun = true;
+        }
+        editor.moveSelection(d.dx / _px, -(d.dy / _rowHeight).round(),
+            free: _free);
       case _DragKind.resize:
-        editor.resizeNote(drag.index!, _tickAtX(p.dx));
+        editor.resizeSelection(drag.edge!, d.dx / _px, free: _free);
       case _DragKind.velocity:
-        if (lane != null) editor.setVelocity(drag.index!, _laneValueAt(p.dy, lane));
+        if (lane != null) {
+          editor.setVelocity(drag.index!, _laneValueAt(p.dy, lane));
+        }
       case _DragKind.lane:
         if (lane != null && lane.kind != null) {
           editor.drawLane(
               lane.kind!, lane.number, _tickAtX(p.dx), _laneValueAt(p.dy, lane));
         }
-      case _DragKind.add:
+      case _DragKind.marquee:
+        if (!drag.moved) return;
+        final box = Rect.fromPoints(drag.start, p);
+        setState(() => _marquee = box);
+        editor.selectInBox(
+          fromTick: _tickAtX(box.left),
+          toTick: _tickAtX(box.right),
+          lowPitch: _pitchAtY(box.bottom),
+          highPitch: _pitchAtY(box.top),
+          keep: _marqueeKeep,
+        );
+      case _DragKind.tapNote:
         break;
     }
   }
@@ -679,21 +801,58 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     final editor = widget.editor;
     if (drag == null || editor == null) return;
     _drag = null;
-    if (drag.kind == _DragKind.add) {
-      // A tap on an empty spot adds a note; a drag from one does nothing.
-      if (!drag.moved) {
-        editor.addNoteAt(_tickAtX(drag.start.dx), _pitchAtY(drag.start.dy));
-      }
-      return;
+    switch (drag.kind) {
+      case _DragKind.marquee:
+        if (_marquee != null) setState(() => _marquee = null);
+        // A double-click on an empty spot adds a note there.
+        if (!drag.moved && _doubleTap(e.timeStamp, drag.start)) {
+          editor.addNoteAt(_tickAtX(drag.start.dx), _pitchAtY(drag.start.dy));
+        }
+      case _DragKind.move || _DragKind.tapNote || _DragKind.resize:
+        if (drag.moved) {
+          editor.endGesture();
+        } else {
+          editor.cancelGesture();
+          // A double-click on a note deletes it.
+          if (drag.kind != _DragKind.tapNote &&
+              _doubleTap(e.timeStamp, drag.start)) {
+            editor.deleteNote(drag.index!);
+          }
+        }
+      case _DragKind.velocity || _DragKind.lane:
+        editor.endGesture();
     }
-    editor.endGesture();
   }
 
   void _onEditCancel(PointerCancelEvent e) {
     _pointers.remove(e.pointer);
+    final editor = widget.editor;
+    if (editor != null) _abandonDrag(editor);
+  }
+
+  void _abandonDrag(MidiClipEditController editor) {
     if (_drag == null) return;
     _drag = null;
-    widget.editor?.cancelGesture();
+    editor.cancelGesture();
+    if (_marquee != null) setState(() => _marquee = null);
+  }
+
+  /// What the mouse pointer looks like over the grid while editing: a
+  /// resize arrow on a note's edge, so that edge is easy to find.
+  MouseCursor _cursor = MouseCursor.defer;
+
+  void _updateCursor(Offset local) {
+    final editing = _editing &&
+        local.dx >= _keyboardWidth &&
+        local.dy >= _rulerHeight &&
+        local.dy < _view.height;
+    final hit = editing ? _noteAt(local) : null;
+    final next = hit == null
+        ? MouseCursor.defer
+        : hit.$2 != null
+            ? SystemMouseCursors.resizeLeftRight
+            : SystemMouseCursors.click;
+    if (next != _cursor) setState(() => _cursor = next);
   }
 
   /// The edit toggle, and while editing: undo, redo, delete and snap.
@@ -702,7 +861,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     return [
       IconButton(
         key: const ValueKey('midi-piano-roll-edit'),
-        tooltip: labels.edit,
+        tooltip: labels.editHint.isEmpty
+            ? labels.edit
+            : '${labels.edit}\n${labels.editHint}',
         isSelected: editor.editing,
         icon: const Icon(Icons.edit_outlined),
         selectedIcon: const Icon(Icons.edit),
@@ -722,7 +883,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         IconButton(
           tooltip: labels.deleteNote,
           icon: const Icon(Icons.delete_outline),
-          onPressed: editor.selected != null ? editor.deleteSelected : null,
+          onPressed:
+              editor.selection.isNotEmpty ? editor.deleteSelected : null,
         ),
         Tooltip(
           message: labels.snap,
@@ -824,8 +986,11 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
             final colors = _RollColors.of(theme);
             return ClipRect(
-              child: Listener(
+              child: MouseRegion(
+                cursor: _cursor,
+                child: Listener(
                 onPointerSignal: _onPointerSignal,
+                onPointerHover: _onHover,
                 child: GestureDetector(
                   onScaleStart: (_) => _scaleStartPx = _px,
                   onScaleUpdate: (d) {
@@ -854,7 +1019,10 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                         child: CustomPaint(
                           painter: _RollPainter(
                             clip: _shown,
-                            selected: _editing ? widget.editor?.selected : null,
+                            selected: _editing
+                                ? widget.editor!.selection
+                                : const {},
+                            marquee: _marquee,
                             scale: _scale,
                             low: _range.low,
                             high: _range.high,
@@ -934,6 +1102,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                   ),
                   ),
                 ),
+                ),
               ),
             );
           }),
@@ -1004,19 +1173,29 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 const _noteGreen = Color(0xFF8FE3A0);
 const _noteGreenBorder = Color(0xFF3F8F55);
 
-enum _DragKind { add, move, resize, velocity, lane }
+enum _DragKind { marquee, tapNote, move, resize, velocity, lane }
 
-/// One editing gesture under way: what it does, where it started and on
-/// which note.
+/// One editing gesture under way: what it does, where it started, on which
+/// note, and how.
 class _EditDrag {
-  _EditDrag(this.kind, this.start, this.index);
+  _EditDrag(this.kind, this.start, this.index,
+      {this.edge, this.duplicate = false});
 
   final _DragKind kind;
   final Offset start;
   final int? index;
 
+  /// The edge a resize drags.
+  final NoteEdge? edge;
+
+  /// Alt was held: the move drags copies.
+  final bool duplicate;
+
   /// Past the slop: a drag rather than a tap.
   bool moved = false;
+
+  /// The editor's gesture has been started (a move starts it on moving).
+  bool begun = false;
 }
 
 /// What the scale chooser returns: the scale picked, or null for none.
@@ -1142,7 +1321,8 @@ class _RollColors {
 class _RollPainter extends CustomPainter {
   _RollPainter({
     required this.clip,
-    this.selected,
+    this.selected = const {},
+    this.marquee,
     this.scale,
     required this.low,
     required this.high,
@@ -1159,7 +1339,10 @@ class _RollPainter extends CustomPainter {
   final MidiClip clip;
 
   /// The selected note's index, outlined; null when none.
-  final int? selected;
+  final Set<int> selected;
+
+  /// The selection box being drawn, if one is.
+  final Rect? marquee;
   final MusicalScale? scale;
   final int low, high;
   final double pxPerTick, rowHeight, scrollX, scrollY;
@@ -1256,7 +1439,7 @@ class _RollPainter extends CustomPainter {
       notePaint.color = colors.note.withValues(alpha: fillAlpha);
       final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(2));
       canvas.drawRRect(rrect, notePaint);
-      if (i == selected) {
+      if (selected.contains(i)) {
         // The note being edited, outlined in the theme's accent.
         canvas.drawRRect(rrect, selectedBorder);
       } else if (rowHeight >= 8) {
@@ -1282,6 +1465,18 @@ class _RollPainter extends CustomPainter {
           canvas.restore();
         }
       }
+    }
+    // The selection box being drawn, over the notes it catches.
+    final box = marquee;
+    if (box != null) {
+      canvas.drawRect(box, Paint()..color = colors.playhead.withValues(alpha: 0.12));
+      canvas.drawRect(
+        box,
+        Paint()
+          ..color = colors.playhead
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1,
+      );
     }
     canvas.restore();
 
@@ -1364,7 +1559,8 @@ class _RollPainter extends CustomPainter {
       old.low != low ||
       old.high != high ||
       old.scale != scale ||
-      old.selected != selected ||
+      !setEquals(old.selected, selected) ||
+      old.marquee != marquee ||
       old.colors.note != colors.note;
 }
 

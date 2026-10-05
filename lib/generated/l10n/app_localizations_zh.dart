@@ -6257,4 +6257,8 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiDiscardEdits => '放弃';
+
+  @override
+  String get midiEditHint =>
+      '双击添加音符，在音符上双击则删除。在空白处拖动可框选；Shift+单击加入选择。拖动音符边缘可改变时值。↑/↓ 将所选音符移动一个半音，Shift+↑/↓ 移动一个八度。Alt+拖动可复制；按住 Ctrl 可忽略网格。';
 }
