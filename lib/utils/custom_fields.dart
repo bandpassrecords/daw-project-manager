@@ -118,7 +118,16 @@ const List<String> kProjectsTableBuiltInColumns = [
   'tags',
   'lastModified',
   'deadline',
+  // The columns a release's tracklist has, offered here too.
+  'notes',
+  'length',
+  'parts',
 ];
+
+/// Built-ins that start hidden: added after users had arranged their table,
+/// they shouldn't appear in it uninvited. Switched on in Settings > Columns
+/// & fields like any other.
+const Set<String> kProjectsTableHiddenByDefault = {'notes', 'length', 'parts'};
 
 /// One built-in column's place and visibility. Device-local, in the
 /// `settings` box: which columns fit is a question about this screen.
@@ -143,11 +152,12 @@ class TableColumnSetting {
 }
 
 /// [stored] made complete and safe: unknown or repeated ids dropped, and every
-/// built-in it lacks (one added by a newer version) appended at the end,
-/// visible.
+/// built-in it lacks (one added by a newer version) appended at the end —
+/// visible, unless it is one of [hiddenByDefault].
 List<TableColumnSetting> normalizeColumnLayout(
   Iterable<TableColumnSetting> stored, {
   List<String> builtIns = kProjectsTableBuiltInColumns,
+  Set<String> hiddenByDefault = kProjectsTableHiddenByDefault,
 }) {
   final seen = <String>{};
   final result = <TableColumnSetting>[];
@@ -156,7 +166,9 @@ List<TableColumnSetting> normalizeColumnLayout(
     result.add(setting);
   }
   for (final id in builtIns) {
-    if (seen.add(id)) result.add(TableColumnSetting(id));
+    if (seen.add(id)) {
+      result.add(TableColumnSetting(id, visible: !hiddenByDefault.contains(id)));
+    }
   }
   return result;
 }

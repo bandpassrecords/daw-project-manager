@@ -28,6 +28,7 @@ import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
 import 'row_click_selection.dart';
+import 'widgets/project_info_columns.dart';
 import 'widgets/on_art_marker.dart';
 import 'widgets/stack_version_badge.dart';
 import 'widgets/now_playing_icon.dart';
@@ -7221,6 +7222,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         'tags': TrinaCell(value: p.tags.join(', ')),
         'lastModified': TrinaCell(value: p.lastModifiedAt),
         'deadline': TrinaCell(value: p.deadlineStatus ?? ''),
+        // Length, notes and parts: shared with a release's tracklist.
+        ...projectInfoCells(p),
         for (final f in _tableCustomFields)
           customFieldColumnField(f.id): TrinaCell(value: customFieldValue(p, f)),
         'launch': TrinaCell(value: ''),
@@ -7333,6 +7336,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
             'tags': TrinaCell(value: ''),
             'lastModified': TrinaCell(value: latestModified),
             'deadline': TrinaCell(value: ''),
+            ...emptyProjectInfoCells(),
             for (final f in _tableCustomFields)
               customFieldColumnField(f.id): TrinaCell(value: ''),
             'launch': TrinaCell(value: ''),
@@ -8420,6 +8424,18 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           );
         },
       ),
+      // The same columns a release's tracklist has, so a song's notes, length
+      // and parts can be seen here too (user feedback: notes visible in a
+      // release could not be shown in the projects table). Hidden until
+      // switched on in Settings > Columns & fields.
+      projectNotesColumn(
+        title: AppLocalizations.of(context)!.notes,
+        textStyle: Theme.of(context).textTheme.bodySmall,
+      ),
+      projectLengthColumn(
+        title: AppLocalizations.of(context)!.songLengthColumn,
+      ),
+      projectPartsColumn(title: AppLocalizations.of(context)!.partsColumn),
       // Hidden backing column for passing the model instance
       TrinaColumn(
         title: 'data',

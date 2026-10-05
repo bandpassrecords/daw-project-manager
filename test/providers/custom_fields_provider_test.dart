@@ -124,14 +124,17 @@ void main() {
   });
 
   group('projectsTableColumnsProvider', () {
-    test('starts with every built-in visible', () async {
+    test('starts with every built-in, visible but the opt-in ones', () async {
       await Hive.openBox<String>('settings');
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
       final layout = container.read(projectsTableColumnsProvider);
       expect(layout.map((s) => s.id), kProjectsTableBuiltInColumns);
-      expect(layout.every((s) => s.visible), isTrue);
+      for (final s in layout) {
+        expect(s.visible, !kProjectsTableHiddenByDefault.contains(s.id),
+            reason: s.id);
+      }
     });
 
     test('hiding, reordering and resetting persist to the settings box',
