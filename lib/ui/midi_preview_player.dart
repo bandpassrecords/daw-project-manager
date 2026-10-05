@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../models/midi_clip.dart';
+import '../services/app_audio_focus.dart';
 import '../services/midi/midi_clip_service.dart';
 import '../services/midi/midi_clip_synth.dart';
 import '../services/midi/synth_voice.dart';
@@ -23,6 +24,15 @@ import '../services/midi/synth_voice.dart';
 /// [play] or [stop] is dropped. That is what makes "change the tempo while it
 /// renders" and "tap another clip while one renders" both come out right.
 class MidiPreviewPlayer extends ChangeNotifier {
+  /// Joins the app-wide one-sound-at-a-time rule ([AppAudioFocus]): a song
+  /// or another preview starting stops this one, and this one starting
+  /// pauses them.
+  MidiPreviewPlayer() {
+    AppAudioFocus.register(this, () {
+      if (playingKey != null || preparingKey != null) stop();
+    });
+  }
+
   AudioPlayer? _player;
   StreamSubscription<void>? _completeSub;
   StreamSubscription<Duration>? _positionSub;
@@ -183,6 +193,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
       _lastPosition = startAt ?? Duration.zero;
       _lastPositionAt = DateTime.now();
       playingKey = key;
+      AppAudioFocus.claim(this);
     } finally {
       if (generation == _generation && preparingKey == key) preparingKey = null;
       _notify();
@@ -223,6 +234,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
     paused = false;
     _lastPositionAt = DateTime.now();
     _notify();
+    AppAudioFocus.claim(this);
     await _player?.resume();
   }
 
@@ -246,6 +258,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
 
   @override
   void dispose() {
+    AppAudioFocus.unregister(this);
     _disposed = true;
     _generation++;
     _completeSub?.cancel();

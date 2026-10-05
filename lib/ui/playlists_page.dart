@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../services/app_audio_focus.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/search_utils.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
@@ -661,6 +662,10 @@ class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
   @override
   void initState() {
     super.initState();
+    // Pause when another player in the app starts making sound.
+    AppAudioFocus.register(this, () {
+      if (_audioPlayer.state == PlayerState.playing) _audioPlayer.pause();
+    });
     _currentPlaylist = widget.playlist;
     _initAudioPlayer();
     _loadPlaylistItems();
@@ -673,6 +678,7 @@ class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
         setState(() {
           _isPlaying = state == PlayerState.playing;
         });
+        if (state == PlayerState.playing) AppAudioFocus.claim(this);
       }
     });
 
@@ -917,6 +923,7 @@ class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
   @override
   void dispose() {
     _audioPlayer.dispose();
+    AppAudioFocus.unregister(this);
     super.dispose();
   }
 

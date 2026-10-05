@@ -29,6 +29,7 @@ import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
 import '../models/midi_collection.dart';
 import '../models/midi_library.dart';
+import '../services/app_audio_focus.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/player_volume_store.dart';
 import '../services/thumbnail_toolbar_service.dart';
@@ -3993,6 +3994,12 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
   @override
   MobilePlayerState build() {
     ref.onDispose(_dispose);
+    // One sound at a time (AppAudioFocus): pause when a MIDI preview or
+    // another player in the app starts.
+    AppAudioFocus.register(this, () {
+      if (state.isPlaying) unawaited(pause());
+    });
+    ref.onDispose(() => AppAudioFocus.unregister(this));
     if (_isAndroid) {
       _jaPlayer = ja.AudioPlayer();
       _attachJaListeners();
@@ -4033,6 +4040,7 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     });
     _jaPlayingSub = p.playingStream.listen((playing) {
       state = state.copyWith(isPlaying: playing);
+      if (playing) AppAudioFocus.claim(this);
     });
     _jaPosSub = p.positionStream.listen((pos) {
       state = state.copyWith(position: pos);
@@ -4070,6 +4078,7 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     final p = _fallbackPlayer!;
     _fbStateSub = p.onPlayerStateChanged.listen((s) {
       state = state.copyWith(isPlaying: s == PlayerState.playing);
+      if (s == PlayerState.playing) AppAudioFocus.claim(this);
     });
     _fbPosSub = p.onPositionChanged.listen((pos) {
       state = state.copyWith(position: pos);
