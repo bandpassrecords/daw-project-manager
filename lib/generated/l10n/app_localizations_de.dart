@@ -6186,11 +6186,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get columnsAndFieldsTabLabel => 'Spalten & Felder';
 
   @override
-  String get projectsTableColumnsTitle => 'Spalten der Projekttabelle';
+  String get projectsTableColumnsTitle => 'Tabellenspalten';
 
   @override
   String get projectsTableColumnsDescription =>
-      'Wähle, welche Spalten die Projekttabelle zeigt, und ziehe sie in die gewünschte Reihenfolge. Name und Aktionen werden immer angezeigt. Gilt nur für dieses Gerät.';
+      'Wähle, welche Spalten die Projekttabelle und die Release-Tracklisten zeigen, und ziehe sie in die gewünschte Reihenfolge – sie gilt für beide. Name und Aktionen werden immer angezeigt. Gilt nur für dieses Gerät.';
 
   @override
   String get customFieldsTitle => 'Eigene Felder';
@@ -6430,4 +6430,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'Wiedergabe in Schleife';
+
+  @override
+  String get columnsInProjectsTable => 'Projekte';
+
+  @override
+  String get columnsInReleaseTracks => 'Release-Tracks';
 }

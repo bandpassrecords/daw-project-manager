@@ -3954,8 +3954,8 @@
   "releaseTracksMaximize": "Mostra l'intera tracklist",
   "releaseTracksRestoreFiles": "Mostra di nuovo il pannello dei file",
   "columnsAndFieldsTabLabel": "Colonne e campi",
-  "projectsTableColumnsTitle": "Colonne della tabella progetti",
-  "projectsTableColumnsDescription": "Scegli quali colonne mostra la tabella progetti e trascinale nell'ordine che preferisci. Nome e azioni sono sempre visibili. Vale solo per questo dispositivo.",
+  "projectsTableColumnsTitle": "Colonne delle tabelle",
+  "projectsTableColumnsDescription": "Scegli quali colonne mostrano la tabella progetti e le tracklist delle uscite e trascinale nell'ordine che preferisci, valido per entrambe. Nome e azioni sono sempre visibili. Vale solo per questo dispositivo.",
   "customFieldsTitle": "Campi personalizzati",
   "customFieldsDescription": "Aggiungi campi tuoi a ogni progetto: loudness (LUFS), tecnico di mastering, ISRC, qualsiasi cosa. Un campo si compila sempre nella pagina del progetto; scegli se ha anche una colonna nella tabella progetti o nelle tracklist delle uscite.",
   "addCustomField": "Aggiungi campo",
@@ -4026,5 +4026,7 @@
   "midiImportFiles": "Importa file MIDI",
   "midiImportDialogTitle": "Scegli i file MIDI da importare",
   "midiImportSkipped": "Non importato (non è un file MIDI o non contiene note): {files}",
-  "midiPreviewLoop": "Riproduzione in loop"
+  "midiPreviewLoop": "Riproduzione in loop",
+  "columnsInProjectsTable": "Progetti",
+  "columnsInReleaseTracks": "Tracce delle uscite"
 }

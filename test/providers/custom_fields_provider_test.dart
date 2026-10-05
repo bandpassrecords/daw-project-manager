@@ -137,6 +137,27 @@ void main() {
       }
     });
 
+    test('showing a column in release tracklists persists, separately',
+        () async {
+      final box = await Hive.openBox<String>('settings');
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(projectsTableColumnsProvider.notifier);
+
+      await notifier.setInReleaseTracks('tags', true);
+      await notifier.setInReleaseTracks('bpm', false);
+      final layout = container.read(projectsTableColumnsProvider);
+      final tags = layout.firstWhere((s) => s.id == 'tags');
+      final bpm = layout.firstWhere((s) => s.id == 'bpm');
+      expect(tags.inReleaseTracks, isTrue);
+      expect(bpm.inReleaseTracks, isFalse);
+      expect(bpm.visible, isTrue, reason: 'the projects table is untouched');
+
+      final stored = decodeColumnLayout(
+          box.get(ProjectsTableColumnsNotifier.boxKey));
+      expect(stored.firstWhere((s) => s.id == 'bpm').inReleaseTracks, isFalse);
+    });
+
     test('hiding, reordering and resetting persist to the settings box',
         () async {
       final box = await Hive.openBox<String>('settings');

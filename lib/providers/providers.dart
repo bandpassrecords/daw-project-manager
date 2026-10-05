@@ -2291,6 +2291,11 @@ class ProjectsTableColumnsNotifier
         for (final s in state) s.id == id ? s.withVisible(visible) : s,
       ]);
 
+  /// Shows or hides built-in [id] in release tracklists.
+  Future<void> setInReleaseTracks(String id, bool shown) => _persist([
+        for (final s in state) s.id == id ? s.withInReleaseTracks(shown) : s,
+      ]);
+
   Future<void> reorder(int oldIndex, int newIndex) =>
       _persist(reorderColumnLayout(state, oldIndex, newIndex));
 

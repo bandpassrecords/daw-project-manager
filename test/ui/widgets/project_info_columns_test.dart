@@ -30,6 +30,24 @@ void main() {
     expect(cells[kPartsColumnField]!.value, 2);
   });
 
+  test('tags and deadline are shared too', () {
+    final p = TestFactories.makeProject(id: 't', tags: const ['Trap', 'Demo']);
+    final cells = projectInfoCells(p);
+    expect(cells[kTagsColumnField]!.value, 'Trap, Demo');
+    expect(cells.containsKey(kDeadlineColumnField), isTrue);
+  });
+
+  test('deadline badges: late, today, this week, later', () {
+    expect(deadlineBadgeOf(-3).kind, DeadlineBadgeKind.late);
+    expect(deadlineBadgeOf(-3).days, 3);
+    expect(deadlineBadgeOf(0).kind, DeadlineBadgeKind.today);
+    expect(deadlineBadgeOf(5).kind, DeadlineBadgeKind.soon);
+    expect(deadlineBadgeOf(30).kind, DeadlineBadgeKind.later);
+    expect(deadlineBadgeOf(30).days, 30,
+        reason: 'shown through the translated "days left", no longer a '
+            'hardcoded English "30d left"');
+  });
+
   test('a project with nothing to show: empty, sorting as zero', () {
     final cells = projectInfoCells(TestFactories.makeProject(id: 'q'));
     expect(cells[kLengthColumnField]!.value, 0);

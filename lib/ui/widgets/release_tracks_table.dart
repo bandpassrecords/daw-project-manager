@@ -11,7 +11,8 @@ import '../../models/music_project.dart';
 import '../../models/custom_field.dart';
 import '../../utils/custom_fields.dart';
 import 'custom_field_column.dart';
-import '../../providers/providers.dart' show activeCustomFieldsProvider;
+import '../../providers/providers.dart'
+    show activeCustomFieldsProvider, projectsTableColumnsProvider, tagsEnabledProvider;
 import '../../providers/theme_provider.dart';
 import '../../utils/theme_derivations.dart';
 import '../../utils/trina_grid_locale.dart';
@@ -101,15 +102,16 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
           cells: {
             'position': TrinaCell(value: i + 1),
             'title': TrinaCell(value: projects[i].displayName),
-            'daw': TrinaCell(value: _dawLabel(projects[i])),
+            'dawType': TrinaCell(value: _dawLabel(projects[i])),
             // Stored as a number so the column sorts numerically rather than
             // as "100" < "90"; the renderer formats it.
             'bpm': TrinaCell(value: projects[i].bpm ?? 0),
             'key': TrinaCell(value: projects[i].musicalKey ?? ''),
             'status': TrinaCell(value: projects[i].status),
-            // Length, notes and parts: shared with the projects table.
+            // Tags, deadline, length, notes and parts: shared with the
+            // projects table.
             ...projectInfoCells(projects[i]),
-            'modified': TrinaCell(value: projects[i].lastModifiedAt),
+            'lastModified': TrinaCell(value: projects[i].lastModifiedAt),
             for (final f in _fields)
               customFieldColumnField(f.id):
                   TrinaCell(value: customFieldValue(projects[i], f)),
@@ -211,7 +213,7 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
       ),
       TrinaColumn(
         title: l10n.daw,
-        field: 'daw',
+        field: 'dawType',
         type: TrinaColumnType.text(),
         enableEditingMode: false,
         width: 160,
@@ -272,9 +274,12 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
         title: l10n.partsColumn,
         onOpenParts: widget.onOpenParts,
       ),
+      // Off unless switched on for release tracklists in Settings.
+      projectTagsColumn(title: l10n.projectTags),
+      projectDeadlineColumn(title: l10n.deadline),
       TrinaColumn(
         title: l10n.lastModifiedColumn,
-        field: 'modified',
+        field: 'lastModified',
         type: TrinaColumnType.date(),
         enableEditingMode: false,
         width: 150,
@@ -329,17 +334,32 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
         },
       ),
     ];
-    // Custom field columns go just before the frozen actions column.
-    columns.insertAll(
-      columns.length - 1,
+    // Settings > Columns & fields: the built-ins switched on for release
+    // tracklists, in the order shared with the projects table (hidden ones
+    // kept, so every row's cells still match a column), then the custom
+    // fields, then the actions.
+    final layout = ref.watch(projectsTableColumnsProvider);
+    final tagsEnabled = ref.watch(tagsEnabledProvider);
+    final shown = releaseTracksBuiltInColumns(layout, tagsEnabled: tagsEnabled);
+    for (final column in columns) {
+      if (kProjectsTableBuiltInColumns.contains(column.field)) {
+        column.hide = !shown.contains(column.field);
+      }
+    }
+    final arranged = arrangeTableColumns<TrinaColumn>(
+      columns,
+      (c) => c.field,
+      [for (final s in layout) s.id],
       [for (final f in _fields) customFieldTrinaColumn(f)],
     );
 
     return TrinaGrid(
-      // Columns are fixed once a grid mounts.
+      // Columns are fixed once a grid mounts: a changed layout or custom
+      // field set needs a fresh one.
       key: ValueKey(
-          'release_tracks_${customFieldColumnsSignature(_fields)}'),
-      columns: _columnWidths.apply(columns),
+          'release_tracks_${customFieldColumnsSignature(_fields)}'
+          '_${encodeColumnLayout(layout)}_$tagsEnabled'),
+      columns: _columnWidths.apply(arranged),
       rows: _mapToRows(widget.projects),
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
       onLoaded: (event) {

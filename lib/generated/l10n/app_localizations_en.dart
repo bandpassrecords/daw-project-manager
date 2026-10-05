@@ -6145,11 +6145,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnsAndFieldsTabLabel => 'Columns & fields';
 
   @override
-  String get projectsTableColumnsTitle => 'Projects table columns';
+  String get projectsTableColumnsTitle => 'Table columns';
 
   @override
   String get projectsTableColumnsDescription =>
-      'Choose which columns the projects table shows and drag them into the order you want. Name and actions are always shown. Applies to this device only.';
+      'Choose which columns the projects table and release tracklists show, and drag them into the order you want — the order applies to both. Name and actions are always shown. Applies to this device only.';
 
   @override
   String get customFieldsTitle => 'Custom fields';
@@ -6387,4 +6387,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'Loop playback';
+
+  @override
+  String get columnsInProjectsTable => 'Projects';
+
+  @override
+  String get columnsInReleaseTracks => 'Release tracks';
 }

@@ -182,6 +182,48 @@ void main() {
           reason: 'older built-ins it lacked still come in visible');
     });
 
+    test('a layout saved before tracklists could be arranged keeps what they showed',
+        () {
+      // An older build wrote only id + visible.
+      final layout = decodeColumnLayout(
+          '[{"id":"status","visible":true},{"id":"tags","visible":true},'
+          '{"id":"deadline","visible":false},{"id":"bpm","visible":true}]');
+      final tracks = {for (final s in layout) s.id: s.inReleaseTracks};
+      expect(tracks['status'], isTrue);
+      expect(tracks['bpm'], isTrue);
+      expect(tracks['tags'], isFalse, reason: 'tracklists never had tags');
+      expect(tracks['deadline'], isFalse);
+      expect(layout.firstWhere((s) => s.id == 'deadline').visible, isFalse,
+          reason: 'the projects table setting is untouched');
+    });
+
+    test('the release tracklist setting round-trips, independently', () {
+      final layout = normalizeColumnLayout(const [
+        TableColumnSetting('bpm', visible: false, inReleaseTracks: true),
+        TableColumnSetting('key', visible: true, inReleaseTracks: false),
+      ]);
+      final back = decodeColumnLayout(encodeColumnLayout(layout));
+      expect(back, layout);
+      expect(back.first.toString(), 'bpm (hidden)');
+      expect(back[1].toString(), 'key (not in tracks)');
+    });
+
+    test('releaseTracksBuiltInColumns: what the tracklist draws, in order', () {
+      final layout = normalizeColumnLayout(const [
+        TableColumnSetting('tags', inReleaseTracks: true),
+        TableColumnSetting('bpm', inReleaseTracks: false),
+      ]);
+      final shown = releaseTracksBuiltInColumns(layout, tagsEnabled: true);
+      expect(shown.first, 'tags');
+      expect(shown, isNot(contains('bpm')));
+      expect(shown, isNot(contains('deadline')), reason: 'off by default there');
+      expect(shown, containsAll(['notes', 'length', 'parts']),
+          reason: 'the tracklist had these before');
+      expect(releaseTracksBuiltInColumns(layout, tagsEnabled: false),
+          isNot(contains('tags')),
+          reason: 'tags switched off app-wide hide everywhere');
+    });
+
     test('once switched on, an opt-in column stays on', () {
       final layout = normalizeColumnLayout(const [
         TableColumnSetting('notes'),

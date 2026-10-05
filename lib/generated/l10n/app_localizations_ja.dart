@@ -5992,11 +5992,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get columnsAndFieldsTabLabel => '列とフィールド';
 
   @override
-  String get projectsTableColumnsTitle => 'プロジェクト表の列';
+  String get projectsTableColumnsTitle => '表の列';
 
   @override
   String get projectsTableColumnsDescription =>
-      'プロジェクト表に表示する列を選び、ドラッグして並べ替えます。名前と操作は常に表示されます。このデバイスのみに適用されます。';
+      'プロジェクト表とリリースのトラックリストに表示する列を選び、ドラッグして並べ替えます（並び順は両方に適用されます）。名前と操作は常に表示されます。このデバイスのみに適用されます。';
 
   @override
   String get customFieldsTitle => 'カスタムフィールド';
@@ -6230,4 +6230,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'ループ再生';
+
+  @override
+  String get columnsInProjectsTable => 'プロジェクト';
+
+  @override
+  String get columnsInReleaseTracks => 'リリースのトラック';
 }

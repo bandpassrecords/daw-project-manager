@@ -3954,8 +3954,8 @@
   "releaseTracksMaximize": "トラックリスト全体を表示",
   "releaseTracksRestoreFiles": "ファイルパネルを再表示",
   "columnsAndFieldsTabLabel": "列とフィールド",
-  "projectsTableColumnsTitle": "プロジェクト表の列",
-  "projectsTableColumnsDescription": "プロジェクト表に表示する列を選び、ドラッグして並べ替えます。名前と操作は常に表示されます。このデバイスのみに適用されます。",
+  "projectsTableColumnsTitle": "表の列",
+  "projectsTableColumnsDescription": "プロジェクト表とリリースのトラックリストに表示する列を選び、ドラッグして並べ替えます（並び順は両方に適用されます）。名前と操作は常に表示されます。このデバイスのみに適用されます。",
   "customFieldsTitle": "カスタムフィールド",
   "customFieldsDescription": "すべてのプロジェクトに独自のフィールドを追加できます（ラウドネス（LUFS）、マスタリングエンジニア、ISRC など）。フィールドは常にプロジェクトページで入力でき、プロジェクト表やリリースのトラックリストに列として表示するかも選べます。",
   "addCustomField": "フィールドを追加",
@@ -4026,5 +4026,7 @@
   "midiImportFiles": "MIDI ファイルを読み込む",
   "midiImportDialogTitle": "読み込む MIDI ファイルを選択",
   "midiImportSkipped": "読み込めませんでした (MIDI ファイルではないか、ノートがありません): {files}",
-  "midiPreviewLoop": "ループ再生"
+  "midiPreviewLoop": "ループ再生",
+  "columnsInProjectsTable": "プロジェクト",
+  "columnsInReleaseTracks": "リリースのトラック"
 }

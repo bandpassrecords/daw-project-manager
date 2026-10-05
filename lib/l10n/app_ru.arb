@@ -3954,8 +3954,8 @@
   "releaseTracksMaximize": "Показать весь трек-лист",
   "releaseTracksRestoreFiles": "Снова показать панель файлов",
   "columnsAndFieldsTabLabel": "Столбцы и поля",
-  "projectsTableColumnsTitle": "Столбцы таблицы проектов",
-  "projectsTableColumnsDescription": "Выберите, какие столбцы показывает таблица проектов, и перетащите их в нужном порядке. Название и действия показываются всегда. Только для этого устройства.",
+  "projectsTableColumnsTitle": "Столбцы таблиц",
+  "projectsTableColumnsDescription": "Выберите, какие столбцы показывают таблица проектов и трек-листы релизов, и перетащите их в нужном порядке — он общий для обеих. Название и действия показываются всегда. Только для этого устройства.",
   "customFieldsTitle": "Свои поля",
   "customFieldsDescription": "Добавьте к каждому проекту свои поля — громкость (LUFS), инженер мастеринга, ISRC, что угодно. Поле всегда можно заполнить на странице проекта; выберите, будет ли у него ещё и столбец в таблице проектов или в трек-листах релизов.",
   "addCustomField": "Добавить поле",
@@ -4026,5 +4026,7 @@
   "midiImportFiles": "Импортировать MIDI-файлы",
   "midiImportDialogTitle": "Выберите MIDI-файлы для импорта",
   "midiImportSkipped": "Не импортировано (не MIDI-файл или в нём нет нот): {files}",
-  "midiPreviewLoop": "Воспроизведение по кругу"
+  "midiPreviewLoop": "Воспроизведение по кругу",
+  "columnsInProjectsTable": "Проекты",
+  "columnsInReleaseTracks": "Треки релизов"
 }

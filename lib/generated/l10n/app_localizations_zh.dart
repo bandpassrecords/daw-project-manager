@@ -5924,11 +5924,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get columnsAndFieldsTabLabel => '列与字段';
 
   @override
-  String get projectsTableColumnsTitle => '项目表格的列';
+  String get projectsTableColumnsTitle => '表格列';
 
   @override
   String get projectsTableColumnsDescription =>
-      '选择项目表格显示哪些列，并拖动调整顺序。名称和操作列始终显示。仅对此设备生效。';
+      '选择项目表格和发行曲目列表显示哪些列，并拖动调整顺序（两者共用同一顺序）。名称和操作列始终显示。仅对此设备生效。';
 
   @override
   String get customFieldsTitle => '自定义字段';
@@ -6160,4 +6160,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => '循环播放';
+
+  @override
+  String get columnsInProjectsTable => '项目';
+
+  @override
+  String get columnsInReleaseTracks => '发行曲目';
 }
