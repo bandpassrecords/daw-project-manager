@@ -1037,6 +1037,114 @@ void main() {
   });
 
 
+  group('a double-click with the select tool', () {
+    /// A click, then a second press held down there.
+    Future<TestGesture> secondPress(WidgetTester tester, Offset at) async {
+      await click(tester, at);
+      clock += const Duration(milliseconds: 120);
+      final g = await tester.createGesture();
+      await g.down(at, timeStamp: clock);
+      await tester.pump();
+      return g;
+    }
+
+    MidiClipEditController editorOf(WidgetTester tester) =>
+        tester.widget<MidiPianoRoll>(find.byType(MidiPianoRoll)).editor!;
+
+    testWidgets('adds the note on the second press, before it is let go',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      final g = grid(tester);
+      final press =
+          await secondPress(tester, Offset(g.left + g.width * 0.5 + 2, g.center.dy));
+      expect(editorOf(tester).clip.notes, hasLength(2),
+          reason: 'there already, held');
+      await press.up();
+      await tester.pumpAndSettle();
+      await save(tester);
+      expect(saved.single.$1.notes.last.startTick, 960);
+    });
+
+    testWidgets('held and dragged, sets how long the new note is',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      final g = grid(tester);
+      final press =
+          await secondPress(tester, Offset(g.left + g.width * 0.5 + 2, g.center.dy));
+      await press.moveBy(Offset(g.width / 8, -30)); // up as well: no velocity
+      await tester.pump();
+      await press.up();
+      await tester.pumpAndSettle();
+      await save(tester);
+      final drawn = saved.single.$1.notes.last;
+      expect((drawn.startTick, drawn.lengthTicks), (960, 360));
+      expect(drawn.velocity, 100, reason: 'only the pencil sets velocity');
+    });
+
+    testWidgets('with Ctrl held, off the grid', (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      final g = grid(tester);
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+      final press =
+          await secondPress(tester, Offset(g.left + g.width * 0.5 + 2, g.center.dy));
+      await press.moveBy(Offset(g.width * 250 / 1920, 0));
+      await tester.pump();
+      await press.up();
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+      await tester.pumpAndSettle();
+      await save(tester);
+      expect(saved.single.$1.notes.last.lengthTicks, closeTo(370, 2));
+    });
+  });
+
+  group('typing in a field', () {
+    bool pencilSelected(WidgetTester tester) => tester
+        .widget<IconButton>(
+            find.byKey(const ValueKey('midi-piano-roll-tool-pencil')))
+        .isSelected!;
+
+    Future<void> typeInTempo(WidgetTester tester) async {
+      await tester.tap(find.descendant(
+          of: find.byKey(const ValueKey('midi-piano-roll-tempo')),
+          matching: find.byType(TextField)));
+      await tester.pump();
+    }
+
+    testWidgets('the shortcuts stand aside; Esc gives the keys back',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await typeInTempo(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(pencilSelected(tester), isFalse);
+      expect(playedAt, isEmpty);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pump();
+      expect(find.byType(MidiPianoRollWindow), findsOneWidget,
+          reason: 'Esc left the field, not the window');
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.pump();
+      expect(pencilSelected(tester), isTrue);
+    });
+
+    testWidgets('a press on the notes gives the keys back', (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await typeInTempo(tester);
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.6, g.center.dy - 60));
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.pump();
+      expect(pencilSelected(tester), isTrue);
+    });
+  });
+
   group('sound', () {
     testWidgets('dragging along the keyboard plays each key it passes',
         (tester) async {
@@ -1077,7 +1185,10 @@ void main() {
       await click(tester, noteMiddle(g));
       expect(ear.heard, isEmpty, reason: 'feedback is off');
 
-      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-feedback')));
+      final toggle = find.byKey(const ValueKey('midi-piano-roll-feedback'));
+      expect(find.descendant(of: toggle, matching: find.byIcon(Icons.volume_off_outlined)),
+          findsOneWidget, reason: 'a muted speaker while off');
+      await tester.tap(toggle);
       await tester.pumpAndSettle();
       expect(feedbackChanges, [true]);
 

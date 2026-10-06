@@ -4067,7 +4067,7 @@
   "midiGestureWheel": "Mausrad",
   "midiShortcutSelectTool": "Auswahlwerkzeug",
   "midiShortcutPencilTool": "Stift: Klick fügt eine Note hinzu – seitlich ziehen verlängert sie, nach oben oder unten ändert die Anschlagstärke; Klick auf eine Note wählt sie aus",
-  "midiShortcutDoubleClick": "Auf freier Fläche: Note hinzufügen. Auf einer Note: sie löschen",
+  "midiShortcutDoubleClick": "Auf freier Fläche: Note hinzufügen (gedrückt halten und ziehen legt die Länge fest; Strg: frei vom Raster). Auf einer Note: sie löschen",
   "midiShortcutMove": "Eine Note: verschieben, mit allen ausgewählten Noten",
   "midiShortcutResize": "Den Rand einer Note: kürzer oder länger machen",
   "midiShortcutCopy": "Eine Note: die ausgewählten Noten kopieren",

@@ -6397,7 +6397,8 @@ class AppLocalizationsJa extends AppLocalizations {
       '鉛筆：クリックでノートを追加。横にドラッグで長く、上下でベロシティ。ノートをクリックすると選択';
 
   @override
-  String get midiShortcutDoubleClick => '空いている所：ノートを追加。ノートの上：削除';
+  String get midiShortcutDoubleClick =>
+      '空いている所：ノートを追加（押したままドラッグで長さ、Ctrl でグリッド無視）。ノートの上：削除';
 
   @override
   String get midiShortcutMove => 'ノート：選択中のノートごと移動';

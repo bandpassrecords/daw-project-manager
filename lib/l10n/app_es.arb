@@ -4067,7 +4067,7 @@
   "midiGestureWheel": "Rueda",
   "midiShortcutSelectTool": "Herramienta de selección",
   "midiShortcutPencilTool": "Lápiz: clic para añadir una nota; arrastra a los lados para alargarla, arriba o abajo para su velocidad; clic en una nota para seleccionarla",
-  "midiShortcutDoubleClick": "En un espacio vacío: añadir una nota. Sobre una nota: borrarla",
+  "midiShortcutDoubleClick": "En un espacio vacío: añadir una nota (mantén y arrastra para fijar su duración; Ctrl: fuera de la cuadrícula). Sobre una nota: borrarla",
   "midiShortcutMove": "Una nota: moverla, con todas las notas seleccionadas",
   "midiShortcutResize": "El borde de una nota: acortarla o alargarla",
   "midiShortcutCopy": "Una nota: copiar las notas seleccionadas",

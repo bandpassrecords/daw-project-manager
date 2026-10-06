@@ -6628,7 +6628,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get midiShortcutDoubleClick =>
-      'Dans le vide : ajouter une note. Sur une note : la supprimer';
+      'Dans le vide : ajouter une note (maintenez et glissez pour régler sa durée ; Ctrl : hors grille). Sur une note : la supprimer';
 
   @override
   String get midiShortcutMove =>

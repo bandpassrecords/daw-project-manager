@@ -4067,7 +4067,7 @@
   "midiGestureWheel": "Rotellina",
   "midiShortcutSelectTool": "Strumento di selezione",
   "midiShortcutPencilTool": "Matita: clic per aggiungere una nota; trascina di lato per allungarla, su o giù per la velocity; un clic su una nota la seleziona",
-  "midiShortcutDoubleClick": "Su uno spazio vuoto: aggiungi una nota. Su una nota: eliminala",
+  "midiShortcutDoubleClick": "Su uno spazio vuoto: aggiungi una nota (tieni premuto e trascina per la durata; Ctrl: fuori griglia). Su una nota: eliminala",
   "midiShortcutMove": "Una nota: spostala, con tutte le note selezionate",
   "midiShortcutResize": "Il bordo di una nota: accorciala o allungala",
   "midiShortcutCopy": "Una nota: copia le note selezionate",

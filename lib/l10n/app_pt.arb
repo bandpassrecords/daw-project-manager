@@ -4091,7 +4091,7 @@
   "midiGestureWheel": "Roda do mouse",
   "midiShortcutSelectTool": "Ferramenta de seleção",
   "midiShortcutPencilTool": "Lápis: clique para adicionar uma nota — arraste para o lado para alongá-la, para cima ou para baixo para a velocidade; clicar em uma nota a seleciona",
-  "midiShortcutDoubleClick": "Em um espaço vazio: adicionar uma nota. Em uma nota: excluí-la",
+  "midiShortcutDoubleClick": "Em um espaço vazio: adicionar uma nota (segure e arraste para definir a duração; Ctrl: fora da grade). Em uma nota: excluí-la",
   "midiShortcutMove": "Uma nota: movê-la, junto com todas as notas selecionadas",
   "midiShortcutResize": "A borda de uma nota: deixá-la mais curta ou mais longa",
   "midiShortcutCopy": "Uma nota: copiar as notas selecionadas",

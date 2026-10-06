@@ -6586,7 +6586,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiShortcutDoubleClick =>
-      'На пустом месте: добавить ноту. По ноте: удалить её';
+      'На пустом месте: добавить ноту (удерживайте и тяните, чтобы задать длину; Ctrl — без сетки). По ноте: удалить её';
 
   @override
   String get midiShortcutMove => 'Ноту: сдвинуть вместе со всеми выделенными';

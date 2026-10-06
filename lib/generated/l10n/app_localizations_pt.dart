@@ -6582,7 +6582,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get midiShortcutDoubleClick =>
-      'Em um espaço vazio: adicionar uma nota. Em uma nota: excluí-la';
+      'Em um espaço vazio: adicionar uma nota (segure e arraste para definir a duração; Ctrl: fora da grade). Em uma nota: excluí-la';
 
   @override
   String get midiShortcutMove =>

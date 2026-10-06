@@ -569,6 +569,10 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   /// Set once the user agreed to throw unsaved edits away.
   bool _leaving = false;
 
+  /// Where the window's keys are listened for — what a text field gives the
+  /// keyboard back to.
+  final FocusNode _keys = FocusNode(debugLabel: 'midi-piano-roll-keys');
+
   /// The instrument both versions of the clip play with.
   late SynthVoice _voice = widget.voice ?? inferSynthVoice(widget.clip);
 
@@ -691,6 +695,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     _editor?.removeListener(_onEdit);
     _editor?.dispose();
     _ownAuditioner?.dispose();
+    _keys.dispose();
     _regionRestart?.cancel();
     super.dispose();
   }
@@ -895,7 +900,8 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
           Navigator.of(context).pop();
         }
       },
-      child: CallbackShortcuts(
+      child: _WindowKeys(
+        focusNode: _keys,
         bindings: {
           const SingleActivator(LogicalKeyboardKey.space): _playPause,
           const SingleActivator(LogicalKeyboardKey.escape): _escape,
@@ -979,7 +985,13 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                   ),
                 ),
                 Expanded(
-                  child: MidiPianoRoll(
+                  // A press on the notes takes the keyboard back from a
+                  // text field (the tempo, say), so the shortcuts work again.
+                  child: Listener(
+                    onPointerDown: (_) {
+                      if (isTypingInTextField()) _keys.requestFocus();
+                    },
+                    child: MidiPianoRoll(
                     clip: widget.clip,
                     editor: editor,
                     bpm: _bpm,
@@ -1013,6 +1025,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                             setState(() => _feedback = on);
                             widget.onAcousticFeedbackChanged?.call(on);
                           },
+                  ),
                   ),
                 ),
               ],
@@ -1217,3 +1230,53 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
 /// controls: below this width its tools (instrument, tempo, time
 /// signature, loop, volume…) and the clip's name don't fit in one row.
 bool pianoRollHeaderStacked(double width) => width < 1000;
+
+/// Whether the keyboard is with a text field — the tempo, a name — which
+/// the window's shortcuts then stand aside for.
+bool isTypingInTextField() {
+  final context = FocusManager.instance.primaryFocus?.context;
+  if (context == null) return false;
+  return context.widget is EditableText ||
+      context.findAncestorWidgetOfExactType<EditableText>() != null;
+}
+
+/// The window's keys: like [CallbackShortcuts], but they stand aside while
+/// a text field has the keyboard — typing "8" into the tempo must not pick
+/// the pencil, nor Space start playback. Esc there gives the keys back to
+/// the window ([focusNode]).
+class _WindowKeys extends StatelessWidget {
+  const _WindowKeys({
+    required this.bindings,
+    required this.focusNode,
+    required this.child,
+  });
+
+  final Map<ShortcutActivator, VoidCallback> bindings;
+  final FocusNode focusNode;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      focusNode: focusNode,
+      onKeyEvent: (node, event) {
+        if (isTypingInTextField()) {
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.escape) {
+            focusNode.requestFocus();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        }
+        for (final entry in bindings.entries) {
+          if (entry.key.accepts(event, HardwareKeyboard.instance)) {
+            entry.value();
+            return KeyEventResult.handled;
+          }
+        }
+        return KeyEventResult.ignored;
+      },
+      child: child,
+    );
+  }
+}

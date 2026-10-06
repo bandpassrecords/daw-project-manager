@@ -1000,6 +1000,22 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   Duration? _lastTapTime;
   Offset? _lastTapAt;
 
+  /// Whether a press at [at] is the second of a double-click — checked as
+  /// it goes down, so what it does can carry on while it is held.
+  bool _secondPress(Duration time, Offset at) {
+    final isDouble = isDoubleTap(
+      previousTime: _lastTapTime,
+      previousAt: _lastTapAt,
+      time: time,
+      at: at,
+    );
+    if (isDouble) {
+      _lastTapTime = null;
+      _lastTapAt = null;
+    }
+    return isDouble;
+  }
+
   /// Whether this tap at [at] makes a double-click with the one before.
   bool _doubleTap(Duration time, Offset at) {
     final isDouble = isDoubleTap(
@@ -1081,9 +1097,20 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         _feedback(_pitchAtY(p.dy));
         return;
       }
+      if (hit == null && !_keys.isShiftPressed && _secondPress(e.timeStamp, p)) {
+        // A double-click on empty space adds a note — on the second press,
+        // not its release, so holding on and dragging sets how long it is
+        // (Ctrl: off the grid).
+        editor.beginNote(_tickAtX(p.dx), _pitchAtY(p.dy));
+        _drag = _EditDrag(_DragKind.draw, p, null)
+          ..lastValue = editor.velocity
+          ..lengthOnly = true;
+        _feedback(_pitchAtY(p.dy));
+        return;
+      }
       if (hit == null) {
         // Empty space: a selection box from here (Shift adds to the
-        // selection), or, on a double-click, a new note.
+        // selection) — or, pressed again straight after, a new note.
         _marqueeKeep = _keys.isShiftPressed ? editor.selection : const {};
         if (!_keys.isShiftPressed) editor.select(null);
         _drag = _EditDrag(_DragKind.marquee, p, null);
@@ -1207,7 +1234,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         if (drag.moved) {
           // Up or down while drawing sets how hard it plays, as in Cubase;
           // across, how long it is.
-          if (d.dy.abs() > 4) {
+          if (!drag.lengthOnly && d.dy.abs() > 4) {
             editor.setDrawnVelocity(drag.lastValue - (d.dy / 2).round());
           }
           editor.resizeSelection(NoteEdge.end, d.dx / _px, free: _free);
@@ -1364,10 +1391,11 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     switch (drag.kind) {
       case _DragKind.marquee:
         if (_marquee != null) setState(() => _marquee = null);
-        if (!drag.moved && _doubleTap(e.timeStamp, drag.start)) {
-          // A double-click on an empty spot adds a note there.
-          editor.addNoteAt(_tickAtX(drag.start.dx), _pitchAtY(drag.start.dy));
-          _feedback(_pitchAtY(drag.start.dy));
+        // A click on empty space: the first of a double-click, perhaps — the
+        // second press adds the note (see the down handler).
+        if (!drag.moved) {
+          _lastTapTime = e.timeStamp;
+          _lastTapAt = drag.start;
         }
       case _DragKind.draw:
         editor.endGesture();
@@ -1602,8 +1630,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
             key: const ValueKey('midi-piano-roll-feedback'),
             tooltip: labels.acousticFeedback,
             isSelected: widget.acousticFeedback,
-            icon: const Icon(Icons.hearing_disabled_outlined),
-            selectedIcon: const Icon(Icons.hearing),
+            // A speaker: muted while notes edit silently.
+            icon: const Icon(Icons.volume_off_outlined),
+            selectedIcon: const Icon(Icons.volume_up),
             onPressed: () => widget
                 .onAcousticFeedbackChanged!(!widget.acousticFeedback),
           ),
@@ -2063,6 +2092,10 @@ class _EditDrag {
 
   /// Where the eraser last was, to erase on from there.
   Offset? lastAt;
+
+  /// A note drawn by a double-click with the select tool: a drag sets only
+  /// its length, not (as the pencil's does) its velocity too.
+  bool lengthOnly = false;
 
   /// The view's scroll when the drag began.
   Offset scrollStart = Offset.zero;

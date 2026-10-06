@@ -4067,7 +4067,7 @@
   "midiGestureWheel": "滚轮",
   "midiShortcutSelectTool": "选择工具",
   "midiShortcutPencilTool": "铅笔：单击添加音符；横向拖动可延长，上下拖动调整力度；单击音符将其选中",
-  "midiShortcutDoubleClick": "空白处：添加音符。音符上：删除它",
+  "midiShortcutDoubleClick": "空白处：添加音符（按住拖动设定时值；Ctrl：不吸附网格）。音符上：删除它",
   "midiShortcutMove": "音符：与所有选中音符一起移动",
   "midiShortcutResize": "音符边缘：缩短或延长",
   "midiShortcutCopy": "音符：复制所选音符",
