@@ -217,6 +217,22 @@ void main() {
       expect(player.playingKey, isNull);
     });
 
+    // Regression: while a preview rendered, the whole transport became a
+    // spinner, so stop vanished and came back on every render.
+    testWidgets('stop stays while a preview renders, and cancels it',
+        (tester) async {
+      await open(tester);
+      player.preparingKey = 'k';
+      player.notifyListeners();
+      await tester.pump();
+      expect(find.byKey(const ValueKey('midi-piano-roll-preparing')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey('midi-piano-roll-stop')), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-stop')));
+      await tester.pump();
+      expect(player.preparingKey, isNull);
+    });
+
     testWidgets('stopped, stop takes the start back to the beginning',
         (tester) async {
       await open(tester);

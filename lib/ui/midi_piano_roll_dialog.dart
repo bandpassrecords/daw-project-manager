@@ -78,14 +78,16 @@ Future<void> showMidiPianoRoll(
     onShowShortcuts: MobileUtils.isMobile()
         ? null
         : () => showDialog<void>(
-              context: context,
-              builder: (_) => MidiShortcutsSheet(
-                title: l10n.midiShortcutsTitle,
-                close: l10n.close,
-                sections: midiShortcutSections(l10n,
-                    mac: defaultTargetPlatform == TargetPlatform.macOS),
+            context: context,
+            builder: (_) => MidiShortcutsSheet(
+              title: l10n.midiShortcutsTitle,
+              close: l10n.close,
+              sections: midiShortcutSections(
+                l10n,
+                mac: defaultTargetPlatform == TargetPlatform.macOS,
               ),
             ),
+          ),
     acousticFeedback: MidiAcousticFeedbackStore.current,
     onAcousticFeedbackChanged: MidiAcousticFeedbackStore.save,
     labels: MidiPianoRollWindowLabels(
@@ -220,34 +222,34 @@ String midiLaneName(AppLocalizations l10n, MidiLane lane) {
     MidiEventKind.polyPressure => l10n.midiLanePolyPressure,
     MidiEventKind.program => l10n.midiLaneProgram,
     MidiEventKind.controller => switch (_controllerName(l10n, lane.number)) {
-        final name? => l10n.midiLaneControllerNamed(lane.number, name),
-        null => l10n.midiLaneController(lane.number),
-      },
+      final name? => l10n.midiLaneControllerNamed(lane.number, name),
+      null => l10n.midiLaneController(lane.number),
+    },
   };
 }
 
 /// The usual name of controller [number], for the ones every DAW names.
 String? _controllerName(AppLocalizations l10n, int number) => switch (number) {
-      1 => l10n.midiCcModulation,
-      2 => l10n.midiCcBreath,
-      4 => l10n.midiCcFoot,
-      5 => l10n.midiCcPortamentoTime,
-      7 => l10n.midiCcVolume,
-      8 => l10n.midiCcBalance,
-      10 => l10n.midiCcPan,
-      11 => l10n.midiCcExpression,
-      64 => l10n.midiCcSustain,
-      65 => l10n.midiCcPortamento,
-      66 => l10n.midiCcSostenuto,
-      67 => l10n.midiCcSoftPedal,
-      71 => l10n.midiCcResonance,
-      72 => l10n.midiCcRelease,
-      73 => l10n.midiCcAttack,
-      74 => l10n.midiCcCutoff,
-      91 => l10n.midiCcReverb,
-      93 => l10n.midiCcChorus,
-      _ => null,
-    };
+  1 => l10n.midiCcModulation,
+  2 => l10n.midiCcBreath,
+  4 => l10n.midiCcFoot,
+  5 => l10n.midiCcPortamentoTime,
+  7 => l10n.midiCcVolume,
+  8 => l10n.midiCcBalance,
+  10 => l10n.midiCcPan,
+  11 => l10n.midiCcExpression,
+  64 => l10n.midiCcSustain,
+  65 => l10n.midiCcPortamento,
+  66 => l10n.midiCcSostenuto,
+  67 => l10n.midiCcSoftPedal,
+  71 => l10n.midiCcResonance,
+  72 => l10n.midiCcRelease,
+  73 => l10n.midiCcAttack,
+  74 => l10n.midiCcCutoff,
+  91 => l10n.midiCcReverb,
+  93 => l10n.midiCcChorus,
+  _ => null,
+};
 
 /// Every shortcut and gesture of the piano roll, for its sheet. Keys are
 /// named the way this platform's keyboard prints them ([mac]: ⌘ ⌥ ⇧ ⌫).
@@ -312,19 +314,19 @@ List<MidiShortcutSection> midiShortcutSections(
 
 /// A scale type's name in the piano roll's scale chooser.
 String scaleTypeName(AppLocalizations l10n, ScaleType type) => switch (type) {
-      ScaleType.major => l10n.scaleMajor,
-      ScaleType.minor => l10n.scaleMinor,
-      ScaleType.harmonicMinor => l10n.scaleHarmonicMinor,
-      ScaleType.melodicMinor => l10n.scaleMelodicMinor,
-      ScaleType.dorian => l10n.scaleDorian,
-      ScaleType.phrygian => l10n.scalePhrygian,
-      ScaleType.lydian => l10n.scaleLydian,
-      ScaleType.mixolydian => l10n.scaleMixolydian,
-      ScaleType.locrian => l10n.scaleLocrian,
-      ScaleType.majorPentatonic => l10n.scaleMajorPentatonic,
-      ScaleType.minorPentatonic => l10n.scaleMinorPentatonic,
-      ScaleType.blues => l10n.scaleBlues,
-    };
+  ScaleType.major => l10n.scaleMajor,
+  ScaleType.minor => l10n.scaleMinor,
+  ScaleType.harmonicMinor => l10n.scaleHarmonicMinor,
+  ScaleType.melodicMinor => l10n.scaleMelodicMinor,
+  ScaleType.dorian => l10n.scaleDorian,
+  ScaleType.phrygian => l10n.scalePhrygian,
+  ScaleType.lydian => l10n.scaleLydian,
+  ScaleType.mixolydian => l10n.scaleMixolydian,
+  ScaleType.locrian => l10n.scaleLocrian,
+  ScaleType.majorPentatonic => l10n.scaleMajorPentatonic,
+  ScaleType.minorPentatonic => l10n.scaleMinorPentatonic,
+  ScaleType.blues => l10n.scaleBlues,
+};
 
 class MidiPianoRollWindowLabels {
   const MidiPianoRollWindowLabels({
@@ -453,37 +455,36 @@ class MidiPianoRollWindow extends StatefulWidget {
     String? loopTooltip,
     bool? fullScreen,
     ValueChanged<bool>? onFullScreenChanged,
-  }) =>
-      MidiPianoRollWindow(
-        clip: base.clip,
-        title: base.title,
-        subtitle: base.subtitle,
-        player: base.player,
-        playerKey: base.playerKey,
-        bpm: base.bpm,
-        onPlay: base.onPlay,
-        labels: base.labels,
-        onOpenProject: base.onOpenProject,
-        volume: volume,
-        onVolumeChanged: onVolumeChanged,
-        volumeLabels: volumeLabels,
-        loop: loop,
-        onLoopChanged: onLoopChanged,
-        loopTooltip: loopTooltip,
-        musicalKey: base.musicalKey,
-        voice: base.voice,
-        onVoiceChanged: base.onVoiceChanged,
-        onSaveEdited: base.onSaveEdited,
-        onShowShortcuts: base.onShowShortcuts,
-        acousticFeedback: base.acousticFeedback,
-        onAcousticFeedbackChanged: base.onAcousticFeedbackChanged,
-        auditioner: base.auditioner,
-        startEditing: base.startEditing,
-        lengthFollowsNotes: base.lengthFollowsNotes,
-        timeSignature: base.timeSignature,
-        fullScreen: fullScreen,
-        onFullScreenChanged: onFullScreenChanged,
-      );
+  }) => MidiPianoRollWindow(
+    clip: base.clip,
+    title: base.title,
+    subtitle: base.subtitle,
+    player: base.player,
+    playerKey: base.playerKey,
+    bpm: base.bpm,
+    onPlay: base.onPlay,
+    labels: base.labels,
+    onOpenProject: base.onOpenProject,
+    volume: volume,
+    onVolumeChanged: onVolumeChanged,
+    volumeLabels: volumeLabels,
+    loop: loop,
+    onLoopChanged: onLoopChanged,
+    loopTooltip: loopTooltip,
+    musicalKey: base.musicalKey,
+    voice: base.voice,
+    onVoiceChanged: base.onVoiceChanged,
+    onSaveEdited: base.onSaveEdited,
+    onShowShortcuts: base.onShowShortcuts,
+    acousticFeedback: base.acousticFeedback,
+    onAcousticFeedbackChanged: base.onAcousticFeedbackChanged,
+    auditioner: base.auditioner,
+    startEditing: base.startEditing,
+    lengthFollowsNotes: base.lengthFollowsNotes,
+    timeSignature: base.timeSignature,
+    fullScreen: fullScreen,
+    onFullScreenChanged: onFullScreenChanged,
+  );
 
   /// The shared preview volume; the control shows only when all three of
   /// [volume], [onVolumeChanged] and [volumeLabels] are given.
@@ -580,7 +581,8 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   /// tempo commits as it loses focus).
   void _takeKeysBack(PointerDownEvent e) {
     if (isTypingInTextField()) {
-      final box = FocusManager.instance.primaryFocus?.context?.findRenderObject();
+      final box = FocusManager.instance.primaryFocus?.context
+          ?.findRenderObject();
       if (box is RenderBox && box.attached) {
         final field = box.localToGlobal(Offset.zero) & box.size;
         if (field.contains(e.position)) return;
@@ -775,8 +777,8 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   /// the end of its last bar with notes once it is saved.
   late MidiTickRange? _loopRegion =
       widget.lengthFollowsNotes || widget.clip.lengthTicks <= 0
-          ? null
-          : (start: 0, end: widget.clip.lengthTicks);
+      ? null
+      : (start: 0, end: widget.clip.lengthTicks);
 
   /// The region the playing preview was cut to, if it was: positions in it
   /// are offset by its start in the whole clip.
@@ -811,8 +813,11 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     if (region != null) {
       clip = loopRegionClip(clip, region);
     } else if (openEnded) {
-      _horizonTicks =
-          openEndedHorizon(clip, current: _horizonTicks, step: _horizonStep);
+      _horizonTicks = openEndedHorizon(
+        clip,
+        current: _horizonTicks,
+        step: _horizonStep,
+      );
       // Started further on than that (a click on the ruler past the notes):
       // rendered on from there too, or it would have nothing to play.
       if (from != null) {
@@ -825,11 +830,14 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     }
     if (from != null) _player.startAt(key, from);
     _player
-        .play(key, clip,
-            bpm: _bpm,
-            voice: _voice,
-            takeOver: takeOver,
-            loop: openEnded ? false : null)
+        .play(
+          key,
+          clip,
+          bpm: _bpm,
+          voice: _voice,
+          takeOver: takeOver,
+          loop: openEnded ? false : null,
+        )
         .catchError((Object _) {});
     _watchHorizon(openEnded);
   }
@@ -855,7 +863,9 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     _horizonTimer?.cancel();
     _horizonTimer = on
         ? Timer.periodic(
-            const Duration(milliseconds: 500), (_) => _checkHorizon())
+            const Duration(milliseconds: 500),
+            (_) => _checkHorizon(),
+          )
         : null;
   }
 
@@ -880,7 +890,9 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   void _start() {
     final from = _startFrom;
     if (_differs || _activeRegion != null || _openEnded) {
-      _playHere(from: from == null ? null : _between(from, null, _activeRegion));
+      _playHere(
+        from: from == null ? null : _between(from, null, _activeRegion),
+      );
     } else {
       _playingRegion = null;
       if (from != null) _player.startAt(widget.playerKey, from);
@@ -974,13 +986,15 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     if (editor == null || save == null) return;
     final name = labels.editedName?.call(widget.clip.name) ?? widget.clip.name;
     final clip = editor.finished.copyWith(name: name);
-    final saved = await save(EditedMidiClip(
-      clip: clip,
-      musicalKey: _scale?.keyText ?? widget.musicalKey,
-      voice: _voice,
-      bpm: _bpm,
-      timeSignature: _timeSignature,
-    ));
+    final saved = await save(
+      EditedMidiClip(
+        clip: clip,
+        musicalKey: _scale?.keyText ?? widget.musicalKey,
+        voice: _voice,
+        bpm: _bpm,
+        timeSignature: _timeSignature,
+      ),
+    );
     if (!saved || !mounted) return;
     editor.markSaved();
     // A drafted clip now has a length: the loop spans it.
@@ -1056,10 +1070,16 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                 editor.undo,
             const SingleActivator(LogicalKeyboardKey.keyZ, meta: true):
                 editor.undo,
-            const SingleActivator(LogicalKeyboardKey.keyZ,
-                control: true, shift: true): editor.redo,
-            const SingleActivator(LogicalKeyboardKey.keyZ,
-                meta: true, shift: true): editor.redo,
+            const SingleActivator(
+              LogicalKeyboardKey.keyZ,
+              control: true,
+              shift: true,
+            ): editor.redo,
+            const SingleActivator(
+              LogicalKeyboardKey.keyZ,
+              meta: true,
+              shift: true,
+            ): editor.redo,
             const SingleActivator(LogicalKeyboardKey.keyY, control: true):
                 editor.redo,
             // As in Cubase: ↑/↓ a semitone, Shift+↑/↓ an octave.
@@ -1067,10 +1087,16 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                 _transpose(editor, 1),
             const SingleActivator(LogicalKeyboardKey.arrowDown): () =>
                 _transpose(editor, -1),
-            const SingleActivator(LogicalKeyboardKey.arrowUp, shift: true):
-                () => _transpose(editor, 12),
-            const SingleActivator(LogicalKeyboardKey.arrowDown, shift: true):
-                () => _transpose(editor, -12),
+            const SingleActivator(
+              LogicalKeyboardKey.arrowUp,
+              shift: true,
+            ): () =>
+                _transpose(editor, 12),
+            const SingleActivator(
+              LogicalKeyboardKey.arrowDown,
+              shift: true,
+            ): () =>
+                _transpose(editor, -12),
             // Cubase's tool keys: 1 selects, 8 draws.
             const SingleActivator(LogicalKeyboardKey.digit1): () =>
                 _setTool(editor, MidiEditTool.select),
@@ -1114,63 +1140,69 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
           child: Listener(
             onPointerDown: _takeKeysBack,
             child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                LayoutBuilder(
-                  builder: (context, constraints) => _header(
-                    context,
-                    stacked: pianoRollHeaderStacked(constraints.maxWidth),
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) => _header(
+                      context,
+                      stacked: pianoRollHeaderStacked(constraints.maxWidth),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: MidiPianoRoll(
-                    clip: widget.clip,
-                    editor: editor,
-                    bpm: _bpm,
-                    timeSignature: _timeSignature,
-                    labels: labels.roll,
-                    positionOf: () {
-                      final k = _player.playingKey;
-                      if (k == null || !_isOurs) return null;
-                      final p = _player.positionOf(k);
-                      final region = _playingRegion;
-                      if (p == null || region == null) return p;
-                      // Cut to the loop region: back to where that is in
-                      // the whole clip.
-                      return p + durationAtTick(region.start.toDouble(), _bpm, _ppq);
-                    },
-                    loopRegion: _loopRegion,
-                    onLoopRegionChanged: _setLoopRegion,
-                    restTick: ticksAt(_startFrom ?? Duration.zero, _bpm, _ppq),
-                    // The loop button and the region's bar are one switch.
-                    loopActive: widget.loop ?? false,
-                    onLoopToggled: widget.onLoopChanged == null
-                        ? null
-                        : () => widget.onLoopChanged!(!(widget.loop ?? false)),
-                    // A drafted clip opens on room to draw in: four bars.
-                    minViewTicks: widget.lengthFollowsNotes
-                        ? _timeSignature.barTicks(_ppq) * 4
-                        : null,
-                    playback: _player,
-                    onSeek: _seek,
-                    initialScale: scaleFromKey(widget.musicalKey),
-                    onScaleChanged: (s) => _scale = s,
-                    onAudition: _audition,
-                    onHold: _hold,
-                    acousticFeedback: _feedback,
-                    onAcousticFeedbackChanged: editor == null
-                        ? null
-                        : (on) {
-                            setState(() => _feedback = on);
-                            widget.onAcousticFeedbackChanged?.call(on);
-                          },
+                  Expanded(
+                    child: MidiPianoRoll(
+                      clip: widget.clip,
+                      editor: editor,
+                      bpm: _bpm,
+                      timeSignature: _timeSignature,
+                      labels: labels.roll,
+                      positionOf: () {
+                        final k = _player.playingKey;
+                        if (k == null || !_isOurs) return null;
+                        final p = _player.positionOf(k);
+                        final region = _playingRegion;
+                        if (p == null || region == null) return p;
+                        // Cut to the loop region: back to where that is in
+                        // the whole clip.
+                        return p +
+                            durationAtTick(region.start.toDouble(), _bpm, _ppq);
+                      },
+                      loopRegion: _loopRegion,
+                      onLoopRegionChanged: _setLoopRegion,
+                      restTick: ticksAt(
+                        _startFrom ?? Duration.zero,
+                        _bpm,
+                        _ppq,
+                      ),
+                      // The loop button and the region's bar are one switch.
+                      loopActive: widget.loop ?? false,
+                      onLoopToggled: widget.onLoopChanged == null
+                          ? null
+                          : () =>
+                                widget.onLoopChanged!(!(widget.loop ?? false)),
+                      // A drafted clip opens on room to draw in: four bars.
+                      minViewTicks: widget.lengthFollowsNotes
+                          ? _timeSignature.barTicks(_ppq) * 4
+                          : null,
+                      playback: _player,
+                      onSeek: _seek,
+                      initialScale: scaleFromKey(widget.musicalKey),
+                      onScaleChanged: (s) => _scale = s,
+                      onAudition: _audition,
+                      onHold: _hold,
+                      acousticFeedback: _feedback,
+                      onAcousticFeedbackChanged: editor == null
+                          ? null
+                          : (on) {
+                              setState(() => _feedback = on);
+                              widget.onAcousticFeedbackChanged?.call(on);
+                            },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           ),
         ),
       ),
@@ -1187,28 +1219,35 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     final transport = ListenableBuilder(
       listenable: _player,
       builder: (context, _) {
-        if (_preparing) {
-          return const Padding(
-            padding: EdgeInsets.all(12),
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          );
-        }
         final running = _isOurs && !_player.paused;
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              tooltip: running ? labels.pause : labels.play,
-              iconSize: 32,
-              icon: Icon(running
-                  ? Icons.pause_circle_outline
-                  : Icons.play_circle_outline),
-              onPressed: _playPause,
-            ),
+            // Rendering: a spinner where play is — only there. Replacing
+            // the whole transport hid stop on every render (first play, a
+            // new instrument or tempo, looping switched), and stop is what
+            // cancels a render.
+            if (_preparing)
+              const Padding(
+                key: ValueKey('midi-piano-roll-preparing'),
+                padding: EdgeInsets.all(14),
+                child: SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
+            else
+              IconButton(
+                tooltip: running ? labels.pause : labels.play,
+                iconSize: 32,
+                icon: Icon(
+                  running
+                      ? Icons.pause_circle_outline
+                      : Icons.play_circle_outline,
+                ),
+                onPressed: _playPause,
+              ),
             // Always there, as in a DAW: playing, it stops; stopped, it
             // takes the start back to the beginning.
             IconButton(
@@ -1226,16 +1265,20 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(widget.title,
-            key: const ValueKey('midi-piano-roll-title'),
-            style: theme.textTheme.titleMedium,
-            maxLines: lines,
-            overflow: TextOverflow.ellipsis),
+        Text(
+          widget.title,
+          key: const ValueKey('midi-piano-roll-title'),
+          style: theme.textTheme.titleMedium,
+          maxLines: lines,
+          overflow: TextOverflow.ellipsis,
+        ),
         if (widget.subtitle != null && widget.subtitle!.isNotEmpty)
-          Text(widget.subtitle!,
-              style: theme.textTheme.bodySmall,
-              maxLines: lines,
-              overflow: TextOverflow.ellipsis),
+          Text(
+            widget.subtitle!,
+            style: theme.textTheme.bodySmall,
+            maxLines: lines,
+            overflow: TextOverflow.ellipsis,
+          ),
       ],
     );
     final controls = <Widget>[
@@ -1260,22 +1303,22 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
           // Room from the tempo field, which otherwise runs into it.
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Tooltip(
-          message: labels.timeSignature,
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<TimeSignature>(
-              key: const ValueKey('midi-piano-roll-time-signature'),
-              value: _timeSignature,
-              isDense: true,
-              items: [
-                for (final ts in {...kTimeSignatureChoices, _timeSignature})
-                  DropdownMenuItem(value: ts, child: Text(ts.text)),
-              ],
-              onChanged: (ts) {
-                if (ts != null) _setTimeSignature(ts);
-              },
+            message: labels.timeSignature,
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<TimeSignature>(
+                key: const ValueKey('midi-piano-roll-time-signature'),
+                value: _timeSignature,
+                isDense: true,
+                items: [
+                  for (final ts in {...kTimeSignatureChoices, _timeSignature})
+                    DropdownMenuItem(value: ts, child: Text(ts.text)),
+                ],
+                onChanged: (ts) {
+                  if (ts != null) _setTimeSignature(ts);
+                },
+              ),
             ),
           ),
-        ),
         ),
       if (widget.loop != null &&
           widget.onLoopChanged != null &&
@@ -1323,12 +1366,14 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     ];
     final full = widget.fullScreen;
     if (full != null && widget.onFullScreenChanged != null) {
-      controls.add(IconButton(
-        key: const ValueKey('midi-piano-roll-fullscreen'),
-        tooltip: full ? labels.exitFullScreen : labels.fullScreen,
-        icon: Icon(full ? Icons.fullscreen_exit : Icons.fullscreen),
-        onPressed: () => widget.onFullScreenChanged!(!full),
-      ));
+      controls.add(
+        IconButton(
+          key: const ValueKey('midi-piano-roll-fullscreen'),
+          tooltip: full ? labels.exitFullScreen : labels.fullScreen,
+          icon: Icon(full ? Icons.fullscreen_exit : Icons.fullscreen),
+          onPressed: () => widget.onFullScreenChanged!(!full),
+        ),
+      );
     }
     final close = IconButton(
       tooltip: labels.close,
@@ -1446,11 +1491,17 @@ int openEndedHorizon(MidiClip clip, {required int current, required int step}) {
   for (final n in clip.notes) {
     if (n.endTick > end) end = n.endTick;
   }
-  return [current, clip.lengthTicks, end + step].reduce((a, b) => a > b ? a : b);
+  return [
+    current,
+    clip.lengthTicks,
+    end + step,
+  ].reduce((a, b) => a > b ? a : b);
 }
 
 /// Whether open-ended playback at [position] has come within [lead] of
 /// the end of what was rendered: time to render further.
-bool needsLongerHorizon(Duration? position, Duration rendered,
-        {Duration lead = const Duration(seconds: 3)}) =>
-    position != null && position >= rendered - lead;
+bool needsLongerHorizon(
+  Duration? position,
+  Duration rendered, {
+  Duration lead = const Duration(seconds: 3),
+}) => position != null && position >= rendered - lead;
