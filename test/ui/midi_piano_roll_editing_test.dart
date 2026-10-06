@@ -1059,6 +1059,40 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
     });
 
+    testWidgets('editing any clip, playback runs on past its end',
+        (tester) async {
+      await open(tester, loop: false);
+      await startEditing(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(player.requestedClip!.lengthTicks, greaterThanOrEqualTo(8 * 1920),
+          reason: 'no end to stop at while editing, notes left or not');
+      expect(player.requestedLoop, isFalse);
+      await player.stop();
+      await tester.pump(const Duration(seconds: 1));
+    });
+
+    testWidgets('just listening, a clip still ends', (tester) async {
+      await open(tester, loop: false);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(playedAt, hasLength(1),
+          reason: "played as the list plays it: to the clip's end");
+      expect(player.requestedClip, isNull);
+    });
+
+    testWidgets('editing with a cycling loop region, it cycles',
+        (tester) async {
+      await open(tester, clip: _fourNotes, loop: true);
+      await startEditing(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(player.requestedClip!.lengthTicks, 1920,
+          reason: 'the loop region (the clip, here) and only that');
+      await player.stop();
+      await tester.pump(const Duration(seconds: 1));
+    });
+
     testWidgets('its middle drags it along, on the grid', (tester) async {
       await open(tester, clip: _fourNotes);
       final r = ruler(tester);

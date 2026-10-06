@@ -667,7 +667,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     _player.stop();
     _player.startAt(key, at == null ? position : at(position));
     if (!running) return;
-    if (key == _editKey || _activeRegion != null || widget.lengthFollowsNotes) {
+    if (key == _editKey || _activeRegion != null || _openEnded) {
       _playHere();
     } else {
       _playingRegion = null;
@@ -789,7 +789,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     if (_differs) _playedEdit = _editor!.committed;
     final region = _activeRegion;
     _playingRegion = region;
-    final openEnded = region == null && widget.lengthFollowsNotes;
+    final openEnded = _openEnded;
     if (region != null) {
       clip = loopRegionClip(clip, region);
     } else if (openEnded) {
@@ -807,6 +807,15 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
         .catchError((Object _) {});
     _watchHorizon(openEnded);
   }
+
+  /// Whether playback here runs on past the clip's end until it's stopped,
+  /// even with no notes left to play: a drafted clip always, and any clip
+  /// while it is being edited — there, the clip has no end to stop at. Only
+  /// a cycling loop region bounds it. Just listening, a clip ends.
+  bool get _openEnded => _activeRegion == null && _openEndedWhenNotLooping;
+
+  bool get _openEndedWhenNotLooping =>
+      widget.lengthFollowsNotes || (_editor?.editing ?? false);
 
   /// How far a drafted clip's playback reaches: past its notes into
   /// silence, pushed further by [_horizonStep] as playback nears it — so a
@@ -844,7 +853,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
 
   void _start() {
     final from = _startFrom;
-    if (_differs || _activeRegion != null || widget.lengthFollowsNotes) {
+    if (_differs || _activeRegion != null || _openEnded) {
       _playHere(from: from == null ? null : _between(from, null, _activeRegion));
     } else {
       _playingRegion = null;
@@ -889,7 +898,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     // Looping switched while a loop region is set: playback moves into the
     // region, or back out to the whole clip, from the same spot.
     if ((old.loop ?? false) != (widget.loop ?? false) &&
-        (_loopRegion != null || widget.lengthFollowsNotes)) {
+        (_loopRegion != null || _openEndedWhenNotLooping)) {
       final from = _playingRegion;
       final to = _activeRegion;
       _restartWith(() {}, at: (p) => _between(p, from, to));
