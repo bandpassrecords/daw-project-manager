@@ -6322,7 +6322,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiShortcutSelectTool => '选择工具';
 
   @override
-  String get midiShortcutPencilTool => '铅笔：单击添加音符（拖动可延长）；单击音符将其选中';
+  String get midiShortcutPencilTool => '铅笔：单击添加音符；横向拖动可延长，上下拖动调整力度；单击音符将其选中';
 
   @override
   String get midiShortcutDoubleClick => '空白处：添加音符。音符上：删除它';
@@ -6436,4 +6436,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiShortcutQuantize => '量化：将所选音符（或全部音符）对齐到网格';
+
+  @override
+  String get midiTimeSignature => '拍号';
+
+  @override
+  String get midiShortcutLoopStart => '在标尺上：设置循环起点';
+
+  @override
+  String get midiShortcutLoopEnd => '在标尺上：设置循环终点';
+
+  @override
+  String get midiShortcutLoopDrag => '循环的紫色两端：微调（开启循环时只播放该段）';
 }

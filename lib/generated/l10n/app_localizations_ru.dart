@@ -6582,7 +6582,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Карандаш: щелчок добавляет ноту (протяните, чтобы удлинить); щелчок по ноте выделяет её';
+      'Карандаш: щелчок добавляет ноту; протяните вбок, чтобы удлинить, вверх или вниз — громкость; щелчок по ноте выделяет её';
 
   @override
   String get midiShortcutDoubleClick =>
@@ -6706,4 +6706,17 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get midiShortcutQuantize =>
       'Квантовать: привязать к сетке выделенные ноты (или все)';
+
+  @override
+  String get midiTimeSignature => 'Размер';
+
+  @override
+  String get midiShortcutLoopStart => 'На линейке: задать начало цикла';
+
+  @override
+  String get midiShortcutLoopEnd => 'На линейке: задать конец цикла';
+
+  @override
+  String get midiShortcutLoopDrag =>
+      'Фиолетовые края цикла: подстроить их (при включённом цикле звучит только он)';
 }

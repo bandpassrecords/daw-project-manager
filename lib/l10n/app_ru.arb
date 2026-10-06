@@ -4066,7 +4066,7 @@
   "midiGestureDrag": "Перетаскивание",
   "midiGestureWheel": "Колесо мыши",
   "midiShortcutSelectTool": "Инструмент выделения",
-  "midiShortcutPencilTool": "Карандаш: щелчок добавляет ноту (протяните, чтобы удлинить); щелчок по ноте выделяет её",
+  "midiShortcutPencilTool": "Карандаш: щелчок добавляет ноту; протяните вбок, чтобы удлинить, вверх или вниз — громкость; щелчок по ноте выделяет её",
   "midiShortcutDoubleClick": "На пустом месте: добавить ноту. По ноте: удалить её",
   "midiShortcutMove": "Ноту: сдвинуть вместе со всеми выделенными",
   "midiShortcutResize": "Край ноты: укоротить или удлинить",
@@ -4103,5 +4103,9 @@
   "midiNewClip": "Новый клип",
   "midiNewClipName": "Идея {number}",
   "midiQuantize": "Квантовать (Q)",
-  "midiShortcutQuantize": "Квантовать: привязать к сетке выделенные ноты (или все)"
+  "midiShortcutQuantize": "Квантовать: привязать к сетке выделенные ноты (или все)",
+  "midiTimeSignature": "Размер",
+  "midiShortcutLoopStart": "На линейке: задать начало цикла",
+  "midiShortcutLoopEnd": "На линейке: задать конец цикла",
+  "midiShortcutLoopDrag": "Фиолетовые края цикла: подстроить их (при включённом цикле звучит только он)"
 }

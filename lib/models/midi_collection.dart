@@ -19,6 +19,7 @@ class MidiCollectionItem {
     this.bpm,
     this.musicalKey,
     this.voice,
+    this.timeSignature,
   });
 
   final String id;
@@ -48,6 +49,11 @@ class MidiCollectionItem {
   /// null to infer one from the clip's names.
   final String? voice;
 
+  /// The time signature the clip was drafted or edited in ("3/4"), written
+  /// into its exported file; null for 4/4 — every clip copied from a
+  /// project, whose files don't say.
+  final String? timeSignature;
+
   MidiCollectionItem copyWith({String? voice, bool clearVoice = false}) =>
       MidiCollectionItem(
         id: id,
@@ -59,6 +65,7 @@ class MidiCollectionItem {
         bpm: bpm,
         musicalKey: musicalKey,
         voice: clearVoice ? null : (voice ?? this.voice),
+        timeSignature: timeSignature,
       );
 
   Map<String, dynamic> toJson() => {
@@ -71,6 +78,7 @@ class MidiCollectionItem {
         if (bpm != null) 'bpm': bpm,
         if (musicalKey != null) 'key': musicalKey,
         if (voice != null) 'voice': voice,
+        if (timeSignature != null) 'timeSig': timeSignature,
       };
 
   static MidiCollectionItem? tryParse(Object? json) {
@@ -89,6 +97,7 @@ class MidiCollectionItem {
       bpm: (json['bpm'] as num?)?.toDouble(),
       musicalKey: json['key'] as String?,
       voice: json['voice'] as String?,
+      timeSignature: json['timeSig'] as String?,
     );
   }
 }

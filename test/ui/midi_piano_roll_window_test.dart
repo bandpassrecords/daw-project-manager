@@ -137,7 +137,7 @@ void main() {
                         playerKey: 'k',
                         bpm: 120,
                         labels: _labels,
-                        onPlay: (_) => plays++,
+                        onPlay: (_, __) => plays++,
                         onOpenProject: withActions ? () => opens++ : null,
                       ),
                     ),
@@ -259,8 +259,8 @@ void main() {
   group('header layout', () {
     test('stacks below 600 pixels wide', () {
       expect(pianoRollHeaderStacked(360), isTrue);
-      expect(pianoRollHeaderStacked(599), isTrue);
-      expect(pianoRollHeaderStacked(600), isFalse);
+      expect(pianoRollHeaderStacked(999), isTrue);
+      expect(pianoRollHeaderStacked(1000), isFalse);
       expect(pianoRollHeaderStacked(1200), isFalse);
     });
 
@@ -282,7 +282,7 @@ void main() {
             playerKey: 'k',
             bpm: 120,
             labels: _labels,
-            onPlay: (_) {},
+            onPlay: (_, __) {},
             onOpenProject: () {},
             volume: 0.8,
             onVolumeChanged: (_) {},
@@ -318,7 +318,7 @@ void main() {
     });
 
     testWidgets('a wide window keeps the single row', (tester) async {
-      await pumpAt(tester, 1000);
+      await pumpAt(tester, 1200);
       expect(title(tester).maxLines, 1);
       final titleTop =
           tester.getTopLeft(find.byKey(const ValueKey('midi-piano-roll-title'))).dy;

@@ -6594,7 +6594,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Stift: Klick fügt eine Note hinzu (ziehen verlängert sie); Klick auf eine Note wählt sie aus';
+      'Stift: Klick fügt eine Note hinzu – seitlich ziehen verlängert sie, nach oben oder unten ändert die Anschlagstärke; Klick auf eine Note wählt sie aus';
 
   @override
   String get midiShortcutDoubleClick =>
@@ -6723,4 +6723,19 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get midiShortcutQuantize =>
       'Quantisieren: die ausgewählten Noten (oder alle) aufs Raster setzen';
+
+  @override
+  String get midiTimeSignature => 'Taktart';
+
+  @override
+  String get midiShortcutLoopStart =>
+      'Auf dem Lineal: den Anfang der Schleife setzen';
+
+  @override
+  String get midiShortcutLoopEnd =>
+      'Auf dem Lineal: das Ende der Schleife setzen';
+
+  @override
+  String get midiShortcutLoopDrag =>
+      'Die lila Enden der Schleife: feinjustieren (mit Schleife an spielt nur sie)';
 }

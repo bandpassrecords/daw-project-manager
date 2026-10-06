@@ -8,6 +8,8 @@ import 'package:daw_project_manager/services/midi/synth_voice.dart';
 import 'package:daw_project_manager/ui/midi_note_auditioner.dart';
 import 'package:daw_project_manager/ui/midi_collection_actions.dart';
 import 'package:daw_project_manager/ui/widgets/midi_tool_icons.dart';
+import 'package:daw_project_manager/ui/widgets/midi_tempo_control.dart';
+import 'package:daw_project_manager/utils/time_signature.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
@@ -92,12 +94,21 @@ const _labels = MidiPianoRollWindowLabels(
   discard: 'Discard',
   voiceName: _voiceName,
   instrument: _instrument,
+  tempo: MidiTempoLabels(
+    unit: 'BPM',
+    tooltip: 'Tempo',
+    slower: 'Slower',
+    faster: 'Faster',
+  ),
+  timeSignature: 'Time signature',
 );
 
 void main() {
   late MidiPreviewPlayer player;
   late List<(MidiClip, String?)> saved;
   late List<SynthVoice> savedVoices, voiceChanges;
+  late List<EditedMidiClip> edits;
+  late List<double> playedAt;
   late int shortcutSheets;
   late List<bool> fullScreenChanges;
   late List<bool> feedbackChanges;
@@ -108,6 +119,8 @@ void main() {
     saved = [];
     savedVoices = [];
     voiceChanges = [];
+    edits = [];
+    playedAt = [];
     shortcutSheets = 0;
     fullScreenChanges = [];
     feedbackChanges = [];
@@ -146,7 +159,7 @@ void main() {
                     playerKey: 'k',
                     bpm: 120,
                     labels: labels,
-                    onPlay: (_) {},
+                    onPlay: (_, bpm) => playedAt.add(bpm),
                     musicalKey: 'A minor',
                     voice: SynthVoice.keys,
                     onVoiceChanged: voiceChanges.add,
@@ -158,9 +171,10 @@ void main() {
                     auditioner: ear,
                     startEditing: startEditing,
                     onSaveEdited: editable
-                        ? (clip, key, voice) async {
-                            saved.add((clip, key));
-                            savedVoices.add(voice);
+                        ? (edit) async {
+                            saved.add((edit.clip, edit.musicalKey));
+                            savedVoices.add(edit.voice);
+                            edits.add(edit);
                             return true;
                           }
                         : null,
@@ -561,6 +575,23 @@ void main() {
     expect(bend.last.value, 8192, reason: 'snapped to no bend');
   });
 
+  testWidgets('the lane drags taller, and the zoom slider rides above it',
+      (tester) async {
+    await open(tester);
+    final lane = find.byKey(const ValueKey('midi-piano-roll-lane'));
+    final before = tester.getRect(lane).height;
+    await tester.drag(
+        find.byKey(const ValueKey('midi-piano-roll-lane-resize')),
+        const Offset(0, -60));
+    await tester.pumpAndSettle();
+    expect(tester.getRect(lane).height, closeTo(before + 60, 1));
+    final zoom = tester
+        .getRect(find.byKey(const ValueKey('midi-piano-roll-vertical-zoom')));
+    expect(zoom.bottom, closeTo(tester.getRect(lane).top - 4, 2));
+    expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsNothing,
+        reason: 'resizing the lane edits nothing');
+  });
+
   testWidgets('the shortcut sheet opens from its button, ? and F1',
       (tester) async {
     await open(tester);
@@ -781,12 +812,167 @@ void main() {
       expect(saved.single.$1.lengthTicks, greaterThanOrEqualTo(drawn.endTick));
     });
 
-    test('a blank idea is four empty bars', () {
+    test('a blank idea is one empty bar', () {
       final idea = newMidiIdea('Idea 1');
       expect(idea.notes, isEmpty);
-      expect(idea.lengthTicks, 4 * 4 * idea.ppq);
+      expect(idea.lengthTicks, 4 * idea.ppq);
       expect(idea.name, 'Idea 1');
     });
+  });
+
+
+  group('tempo and time signature', () {
+    testWidgets('the tempo plays and saves with the clip', (tester) async {
+      await open(tester);
+      await tester.tap(find.byTooltip('Faster'));
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(playedAt, [121]);
+
+      await startEditing(tester);
+      await doubleClick(tester, Offset(grid(tester).left + 300, grid(tester).center.dy));
+      await save(tester);
+      expect(edits.single.bpm, 121);
+    });
+
+    testWidgets('a time signature is picked, drawn and saved', (tester) async {
+      await open(tester);
+      await tester
+          .tap(find.byKey(const ValueKey('midi-piano-roll-time-signature')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('3/4').last);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      await startEditing(tester);
+      await doubleClick(tester, Offset(grid(tester).left + 300, grid(tester).center.dy));
+      await save(tester);
+      expect(edits.single.timeSignature, const TimeSignature(3, 4));
+    });
+  });
+
+  testWidgets('the pencil dragged up draws a louder note', (tester) async {
+    await open(tester, startEditing: true);
+    final g = grid(tester);
+    await dragFrom(tester, Offset(g.left + g.width * 0.5 + 2, g.center.dy),
+        const Offset(0, -40));
+    await save(tester);
+    final drawn = saved.single.$1.notes.last;
+    expect(drawn.velocity, 120, reason: '100, plus one for every 2 px up');
+    expect(drawn.lengthTicks, 120, reason: 'straight up: no longer');
+  });
+
+  testWidgets('Ctrl+click adds notes to the selection one by one',
+      (tester) async {
+    await open(tester, clip: _fourNotes);
+    await startEditing(tester);
+    final g = grid(tester);
+    Offset noteAt(int i) =>
+        Offset(g.left + g.width * (i / 4 + 1 / 16), g.center.dy);
+    await click(tester, noteAt(0));
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await click(tester, noteAt(2));
+    await click(tester, noteAt(3));
+    await click(tester, noteAt(3)); // already selected: out it goes
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pumpAndSettle();
+    await save(tester);
+    expect(saved.single.$1.notes.map((n) => n.pitch), [61, 60, 61, 60]);
+  });
+
+  testWidgets('a note dragged to the edge carries on, the view scrolling',
+      (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    final g = grid(tester);
+    final drag = await tester.startGesture(noteMiddle(g));
+    await drag.moveTo(Offset(g.right - 6, g.center.dy));
+    await tester.pump();
+    for (var i = 0; i < 30; i++) {
+      await tester.pump(const Duration(milliseconds: 16)); // held there
+    }
+    await drag.up();
+    await tester.pumpAndSettle();
+    await save(tester);
+    expect(saved.single.$1.notes.single.startTick, greaterThan(1920),
+        reason: 'carried past what was on screen');
+  });
+
+  group('the loop region', () {
+    Rect ruler(WidgetTester tester) =>
+        tester.getRect(find.byKey(const ValueKey('midi-piano-roll-ruler')));
+
+    testWidgets('Ctrl-click sets its start, Alt-click its end, an end drags',
+        (tester) async {
+      await open(tester, clip: _fourNotes);
+      final r = ruler(tester);
+      Offset at(double fraction) =>
+          Offset(r.left + r.width * fraction, r.center.dy);
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+      await tester.tapAt(at(0.25));
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+      await tester.pump();
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.altLeft);
+      await tester.tapAt(at(0.75));
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
+      await tester.pump();
+      final roll = tester.widget<MidiPianoRoll>(find.byType(MidiPianoRoll));
+      expect(roll.loopRegion, (start: 480, end: 1440));
+
+      // Its start, dragged back a beat.
+      final drag = await tester.startGesture(at(0.25));
+      await drag.moveTo(at(0.125));
+      await tester.pump();
+      await drag.up();
+      await tester.pump();
+      expect(tester.widget<MidiPianoRoll>(find.byType(MidiPianoRoll)).loopRegion,
+          (start: 240, end: 1440));
+    });
+
+    test('a loop region plays just what is in it, values chased in', () {
+      final region = loopRegionClip(
+        const MidiClip(
+          name: 'Riff',
+          ppq: 480,
+          lengthTicks: 1920,
+          notes: [
+            MidiNote(startTick: 0, lengthTicks: 240, pitch: 60, velocity: 90),
+            MidiNote(startTick: 480, lengthTicks: 240, pitch: 62, velocity: 90),
+            MidiNote(startTick: 1440, lengthTicks: 240, pitch: 64, velocity: 90),
+          ],
+          events: [
+            MidiEvent(tick: 100, kind: MidiEventKind.controller, number: 1, value: 50),
+          ],
+        ),
+        (start: 480, end: 960),
+      );
+      expect(region.lengthTicks, 480);
+      expect(region.notes.map((n) => (n.startTick, n.pitch)), [(0, 62)]);
+      expect(region.events.map((e) => (e.tick, e.value)), [(0, 50)],
+          reason: 'the mod wheel as it stood when the loop starts');
+    });
+  });
+
+  testWidgets('range ends drag, and snap to the nearest line', (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.digit2);
+    await tester.pumpAndSettle();
+    final g = grid(tester);
+    // 0 to 480, then the end pulled out to 960.
+    await dragFrom(tester, Offset(g.left + 2, g.center.dy - 50),
+        Offset(g.width * 0.24, 0));
+    await dragFrom(tester, Offset(g.left + g.width * 0.25, g.center.dy - 50),
+        Offset(g.width * 0.24, 0));
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyD);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await tester.pumpAndSettle();
+    await save(tester);
+    expect(saved.single.$1.notes.map((n) => n.startTick), [0, 960],
+        reason: 'the 960-tick range repeated right after itself');
   });
 
 
@@ -865,16 +1051,17 @@ void main() {
     });
   });
 
-  testWidgets('the vertical zoom stands upright at the top of the right side',
+  testWidgets('the vertical zoom stands upright at the foot of the right side',
       (tester) async {
     await open(tester);
     final zoom = find.byKey(const ValueKey('midi-piano-roll-vertical-zoom'));
     final box = tester.getRect(zoom);
     final g = grid(tester);
     expect(box.height, greaterThan(box.width * 4));
-    expect(box.bottom, lessThan(g.bottom - 100),
+    expect(box.height, lessThan(g.height / 1.5),
         reason: 'its old length, not stretched down the whole side');
-    expect(box.top, lessThan(g.top + 4));
+    expect(box.bottom, closeTo(g.bottom - 4, 2),
+        reason: 'at the foot of the notes, just above the lane');
     expect(box.left, greaterThan(g.right - 1));
     expect(find.descendant(of: zoom, matching: find.byType(RotatedBox)),
         findsOneWidget);

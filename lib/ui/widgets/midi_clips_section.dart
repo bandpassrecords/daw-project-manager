@@ -200,14 +200,14 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
     await _play(index);
   }
 
-  Future<void> _play(int index, {SynthVoice? voice}) async {
+  Future<void> _play(int index, {SynthVoice? voice, double? bpm}) async {
     final l10n = AppLocalizations.of(context)!;
     final clip = _clips[index];
     try {
       await _player.play(
         clip.contentKey,
         clip,
-        bpm: _tempo,
+        bpm: bpm ?? _tempo,
         voice: voice ?? _voiceOf(index),
       );
     } catch (e) {
@@ -545,24 +545,25 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
                 player: _player,
                 playerKey: clip.contentKey,
                 bpm: _tempo,
-                onPlay: (voice) => _play(index, voice: voice),
+                onPlay: (voice, bpm) => _play(index, voice: voice, bpm: bpm),
                 musicalKey: _projectKey,
                 voice: _voiceOf(index),
                 onVoiceChanged: (v) => setState(
                     () => _voiceOverrides[clip.contentKey] = v),
                 // An edit is saved as a new clip in a collection; the
                 // project's own clips are re-read from its file.
-                onSaveEdited: (edited, key, voice) => addToCollectionFlow(
+                onSaveEdited: (edit) => addToCollectionFlow(
                   context,
                   ref,
                   [
                     collectionItemFor(
-                      edited,
+                      edit.clip,
                       projectId: widget.project.id,
                       projectName: widget.project.displayName,
-                      bpm: _projectBpm,
-                      musicalKey: key,
-                      pickedVoice: voice,
+                      bpm: edit.bpm,
+                      musicalKey: edit.musicalKey,
+                      pickedVoice: edit.voice,
+                      timeSignature: edit.timeSignature,
                     ),
                   ],
                 ),

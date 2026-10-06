@@ -10988,7 +10988,7 @@ abstract class AppLocalizations {
   /// Shortcut sheet action
   ///
   /// In en, this message translates to:
-  /// **'Pencil: click to add a note (drag to make it longer); a click on a note selects it'**
+  /// **'Pencil: click to add a note — drag across to lengthen it, up or down for how hard it plays; a click on a note selects it'**
   String get midiShortcutPencilTool;
 
   /// Shortcut sheet action
@@ -11212,6 +11212,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quantize: snap the selected notes (or every note) to the grid'**
   String get midiShortcutQuantize;
+
+  /// Piano roll: tooltip of the time signature picker (3/4, 4/4, 6/8…)
+  ///
+  /// In en, this message translates to:
+  /// **'Time signature'**
+  String get midiTimeSignature;
+
+  /// Shortcut sheet action: Ctrl/Cmd-click on the bar ruler
+  ///
+  /// In en, this message translates to:
+  /// **'On the ruler: set where the loop starts'**
+  String get midiShortcutLoopStart;
+
+  /// Shortcut sheet action: Alt-click on the bar ruler
+  ///
+  /// In en, this message translates to:
+  /// **'On the ruler: set where the loop ends'**
+  String get midiShortcutLoopEnd;
+
+  /// Shortcut sheet action: dragging the purple loop ends on the ruler
+  ///
+  /// In en, this message translates to:
+  /// **'The loop\'s purple ends: fine-tune them (with looping on, only the loop plays)'**
+  String get midiShortcutLoopDrag;
 }
 
 class _AppLocalizationsDelegate

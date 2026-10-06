@@ -12,6 +12,18 @@ import '../services/midi/midi_clip_service.dart';
 import '../services/midi/midi_clip_synth.dart';
 import '../services/midi/synth_voice.dart';
 
+/// Where a [MidiPreviewPlayer.play] starts: where the clip it takes over
+/// had got to ([held]), when it takes one over, else where it was asked to
+/// ([requested]) — inside one pass of a loop of [loopLength].
+Duration? takeOverStart({
+  required Duration? held,
+  required Duration? requested,
+  Duration? loopLength,
+}) {
+  final at = held ?? requested;
+  return at == null ? null : wrapLoopPosition(at, loopLength);
+}
+
 /// Plays MIDI clip previews — renders through the built-in synth, then plays
 /// the WAV — for any list of clips. Shared by a project's clip section and
 /// the MIDI library so both behave the same.
@@ -187,6 +199,17 @@ class MidiPreviewPlayer extends ChangeNotifier {
         _lastPosition = p;
         _lastPositionAt = DateTime.now();
       });
+      // Taking over: carry on from where the held clip is by now (the render
+      // took a moment), not from where it was when it began. Read before
+      // anything below stops it or resets the position — read after, it
+      // was always 0, and every edit, undo or redo restarted the clip.
+      final from = takeOverStart(
+        held: takingOver && heldKey != null && playingKey == heldKey
+            ? positionOf(heldKey)
+            : null,
+        requested: startAt,
+        loopLength: loopLength,
+      );
       await player.stop();
       await player.setVolume(volume);
       await player
@@ -194,17 +217,18 @@ class MidiPreviewPlayer extends ChangeNotifier {
       _loopLength = loopLength;
       _lastPosition = Duration.zero;
       _lastPositionAt = DateTime.now();
-      // Taking over: carry on from where the held clip is by now (the render
-      // took a moment), not from where it was when it began.
-      final from = takingOver && heldKey != null && playingKey == heldKey
-          ? wrapLoopPosition(positionOf(heldKey) ?? Duration.zero, loopLength)
-          : startAt;
-      await player.play(DeviceFileSource(path));
-      if (generation != _generation || _disposed) return;
       if (from != null && from > Duration.zero) {
+        // Loaded, moved, then started: playing first and seeking after
+        // sounded the clip's first moments — a restart — before the jump.
+        await player.setSource(DeviceFileSource(path));
+        if (generation != _generation || _disposed) return;
         await player.seek(from);
         if (generation != _generation || _disposed) return;
+        await player.resume();
+      } else {
+        await player.play(DeviceFileSource(path));
       }
+      if (generation != _generation || _disposed) return;
       _lastPosition = from ?? Duration.zero;
       _lastPositionAt = DateTime.now();
       playingKey = key;

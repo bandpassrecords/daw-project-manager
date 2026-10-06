@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,12 +11,14 @@ import '../providers/providers.dart';
 import '../services/midi_editor_prefs_store.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/musical_scale.dart';
+import '../utils/time_signature.dart';
 import '../services/midi/synth_voice.dart';
 import 'midi_note_auditioner.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_clip_edit_controller.dart';
 import 'widgets/midi_clip_list.dart';
-import 'widgets/midi_clips_section.dart' show synthVoiceName;
+import 'widgets/midi_clips_section.dart' show midiTempoLabelsOf, synthVoiceName;
+import 'widgets/midi_tempo_control.dart';
 import 'widgets/midi_piano_roll.dart';
 import 'widgets/midi_shortcuts_sheet.dart';
 import 'widgets/midi_loop_toggle.dart';
@@ -43,13 +47,15 @@ Future<void> showMidiPianoRoll(
   required MidiPreviewPlayer player,
   required String playerKey,
   required double bpm,
-  required void Function(SynthVoice voice) onPlay,
+  required void Function(SynthVoice voice, double bpm) onPlay,
   VoidCallback? onOpenProject,
   String? musicalKey,
+  TimeSignature timeSignature = TimeSignature.common,
   SynthVoice? voice,
   ValueChanged<SynthVoice>? onVoiceChanged,
   SaveEditedMidiClip? onSaveEdited,
   bool startEditing = false,
+  bool lengthFollowsNotes = false,
 }) {
   final l10n = AppLocalizations.of(context)!;
   final body = MidiPianoRollWindow(
@@ -66,6 +72,8 @@ Future<void> showMidiPianoRoll(
     onVoiceChanged: onVoiceChanged,
     onSaveEdited: onSaveEdited,
     startEditing: startEditing,
+    lengthFollowsNotes: lengthFollowsNotes,
+    timeSignature: timeSignature,
     // A phone has no keys to press; its gestures are the plain ones.
     onShowShortcuts: MobileUtils.isMobile()
         ? null
@@ -125,6 +133,8 @@ Future<void> showMidiPianoRoll(
       discard: l10n.midiDiscardEdits,
       voiceName: (v) => synthVoiceName(l10n, v),
       instrument: l10n.midiClipInstrumentTooltip,
+      tempo: midiTempoLabelsOf(l10n),
+      timeSignature: l10n.midiTimeSignature,
       shortcuts: l10n.midiShortcuts,
       fullScreen: l10n.midiFullScreen,
       exitFullScreen: l10n.midiExitFullScreen,
@@ -273,7 +283,7 @@ List<MidiShortcutSection> midiShortcutSections(
     ]),
     MidiShortcutSection(l10n.midiShortcutsSelecting, [
       MidiShortcut([drag], l10n.midiShortcutBox),
-      MidiShortcut([shift, click], l10n.midiShortcutToggle),
+      MidiShortcut(['$ctrl / $shift', click], l10n.midiShortcutToggle),
       MidiShortcut([ctrl, 'A'], l10n.midiShortcutSelectAll),
     ]),
     MidiShortcutSection(l10n.midiShortcutsLanes, [
@@ -289,6 +299,9 @@ List<MidiShortcutSection> midiShortcutSections(
       MidiShortcut([l10n.midiKeyEsc], l10n.midiShortcutStop),
       MidiShortcut([click], l10n.midiShortcutKeyboard),
       MidiShortcut([click], l10n.midiShortcutRuler),
+      MidiShortcut([ctrl, click], l10n.midiShortcutLoopStart),
+      MidiShortcut([alt, click], l10n.midiShortcutLoopEnd),
+      MidiShortcut([drag], l10n.midiShortcutLoopDrag),
       MidiShortcut([ctrl, l10n.midiGestureWheel], l10n.midiShortcutZoom),
       MidiShortcut([shift, l10n.midiGestureWheel], l10n.midiShortcutScroll),
       MidiShortcut(const ['?'], l10n.midiShortcutShowSheet),
@@ -329,12 +342,20 @@ class MidiPianoRollWindowLabels {
     this.voiceName,
     this.instrument,
     this.shortcuts = '',
+    this.tempo,
+    this.timeSignature = '',
     this.fullScreen = '',
     this.exitFullScreen = '',
   });
 
   /// The shortcut sheet button's tooltip.
   final String shortcuts;
+
+  /// The tempo control's strings; it shows when given.
+  final MidiTempoLabels? tempo;
+
+  /// The time signature picker's tooltip; it shows when given.
+  final String timeSignature;
 
   /// The full screen toggle's tooltips.
   final String fullScreen, exitFullScreen;
@@ -355,12 +376,29 @@ class MidiPianoRollWindowLabels {
   final String Function(String name)? editedName;
 }
 
+/// What the piano roll window hands over to be saved: the edited clip, and
+/// how it was being heard — the scale as a key, the instrument, the tempo
+/// and the time signature.
+class EditedMidiClip {
+  const EditedMidiClip({
+    required this.clip,
+    required this.voice,
+    required this.bpm,
+    this.musicalKey,
+    this.timeSignature = TimeSignature.common,
+  });
+
+  final MidiClip clip;
+  final String? musicalKey;
+  final SynthVoice voice;
+  final double bpm;
+  final TimeSignature timeSignature;
+}
+
 /// Saves a clip edited in the piano roll — as a new clip; the one opened is
-/// never changed — with the key it was being edited in and the instrument
-/// it was playing with. Resolves to whether it was saved (false: the user
-/// backed out, of a collection picker say).
-typedef SaveEditedMidiClip = Future<bool> Function(
-    MidiClip clip, String? musicalKey, SynthVoice voice);
+/// never changed. Resolves to whether it was saved (false: the user backed
+/// out, of a collection picker say).
+typedef SaveEditedMidiClip = Future<bool> Function(EditedMidiClip edit);
 
 /// The contents of [showMidiPianoRoll]'s window — public so it can be tested
 /// without a dialog route around it.
@@ -397,6 +435,8 @@ class MidiPianoRollWindow extends StatefulWidget {
     this.onAcousticFeedbackChanged,
     this.auditioner,
     this.startEditing = false,
+    this.lengthFollowsNotes = false,
+    this.timeSignature = TimeSignature.common,
     this.fullScreen,
     this.onFullScreenChanged,
   });
@@ -438,6 +478,8 @@ class MidiPianoRollWindow extends StatefulWidget {
         onAcousticFeedbackChanged: base.onAcousticFeedbackChanged,
         auditioner: base.auditioner,
         startEditing: base.startEditing,
+        lengthFollowsNotes: base.lengthFollowsNotes,
+        timeSignature: base.timeSignature,
         fullScreen: fullScreen,
         onFullScreenChanged: onFullScreenChanged,
       );
@@ -483,6 +525,13 @@ class MidiPianoRollWindow extends StatefulWidget {
   /// Opens already editing, pencil in hand — for a blank clip to draft in.
   final bool startEditing;
 
+  /// A clip drafted from nothing: its length follows its notes, shrinking
+  /// too (see [MidiClipEditController.lengthFollowsNotes]).
+  final bool lengthFollowsNotes;
+
+  /// The bars the clip opens in; changeable in the window.
+  final TimeSignature timeSignature;
+
   /// Makes the window an editor, saving edits through it. Null: view only.
   final SaveEditedMidiClip? onSaveEdited;
 
@@ -493,9 +542,9 @@ class MidiPianoRollWindow extends StatefulWidget {
   final String playerKey;
   final double bpm;
 
-  /// Plays the clip as opened with the given instrument — the list's own
-  /// play, so tempo and error handling match it.
-  final void Function(SynthVoice voice) onPlay;
+  /// Plays the clip as opened with the given instrument and tempo — the
+  /// list's own play, so error handling matches it.
+  final void Function(SynthVoice voice, double bpm) onPlay;
   final VoidCallback? onOpenProject;
   final MidiPianoRollWindowLabels labels;
 
@@ -523,6 +572,10 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   /// The instrument both versions of the clip play with.
   late SynthVoice _voice = widget.voice ?? inferSynthVoice(widget.clip);
 
+  /// The tempo both versions play at, and the bars they're drawn in.
+  late double _bpm = widget.bpm;
+  late TimeSignature _timeSignature = widget.timeSignature;
+
   late bool _feedback = widget.acousticFeedback;
 
   MidiNoteAuditioner? _ownAuditioner;
@@ -541,19 +594,44 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   /// from where it is with it (a paused one starts there next time).
   void _setVoice(SynthVoice voice) {
     if (voice == _voice) return;
+    _restartWith(() => _voice = voice);
+    widget.onVoiceChanged?.call(voice);
+  }
+
+  /// A new tempo: playback carries on from the same spot in the music —
+  /// the same tick, at the new speed.
+  void _setBpm(double bpm) {
+    if (bpm == _bpm) return;
+    final old = _bpm;
+    final ppq = widget.clip.ppq;
+    _restartWith(
+      () => _bpm = bpm,
+      at: (position) => durationAtTick(ticksAt(position, old, ppq), bpm, ppq),
+    );
+  }
+
+  void _setTimeSignature(TimeSignature value) {
+    if (value == _timeSignature) return;
+    setState(() => _timeSignature = value);
+    _editor?.timeSignature = value;
+  }
+
+  /// Applies [change]; a clip playing here (or paused) then starts again
+  /// with it, from where it was — [at] moves that spot, for a new tempo.
+  void _restartWith(VoidCallback change, {Duration Function(Duration)? at}) {
     final key = _player.playingKey;
     final position = key != null && _isOurs ? _player.positionOf(key) : null;
     final running = position != null && !_player.paused;
-    setState(() => _voice = voice);
-    widget.onVoiceChanged?.call(voice);
+    setState(change);
     if (key == null || position == null) return;
     _player.stop();
-    _player.startAt(key, position);
+    _player.startAt(key, at == null ? position : at(position));
     if (!running) return;
-    if (key == _editKey) {
-      _playEdited();
+    if (key == _editKey || _activeRegion != null) {
+      _playHere();
     } else {
-      widget.onPlay(voice);
+      _playingRegion = null;
+      widget.onPlay(_voice, _bpm);
     }
   }
 
@@ -598,6 +676,8 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   @override
   void initState() {
     super.initState();
+    _editor?.timeSignature = _timeSignature;
+    _editor?.lengthFollowsNotes = widget.lengthFollowsNotes;
     if (widget.startEditing && _editor != null) {
       _editor
         ..editing = true
@@ -611,6 +691,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     _editor?.removeListener(_onEdit);
     _editor?.dispose();
     _ownAuditioner?.dispose();
+    _regionRestart?.cancel();
     super.dispose();
   }
 
@@ -622,35 +703,101 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     final editor = _editor!;
     if (_player.playingKey != _editKey || _player.paused) return;
     if (identical(_playedEdit, editor.committed)) return;
-    _playEdited(takeOver: true);
+    _playHere(takeOver: true);
   }
 
-  /// Plays the edited clip — or, [takeOver], swaps it in for the version
-  /// playing without a gap (see [MidiPreviewPlayer.play]).
-  void _playEdited({Duration? from, bool takeOver = false}) {
-    final editor = _editor!;
-    _playedEdit = editor.committed;
-    final clip = editor.finished;
-    if (from != null) _player.startAt(_editKey, from);
+  /// The loop region (Cubase's locators), set on the ruler. With looping on,
+  /// playback cycles just this stretch.
+  MidiTickRange? _loopRegion;
+
+  /// The region the playing preview was cut to, if it was: positions in it
+  /// are offset by its start in the whole clip.
+  MidiTickRange? _playingRegion;
+
+  /// The loop region playback goes by: only with looping on.
+  MidiTickRange? get _activeRegion =>
+      (widget.loop ?? false) ? _loopRegion : null;
+
+  int get _ppq => widget.clip.ppq;
+
+  /// [position] in a preview cut to [from] (null: the whole clip), as the
+  /// same spot in one cut to [to] — the loop's start when it's outside it.
+  Duration _between(Duration position, MidiTickRange? from, MidiTickRange? to) {
+    var tick = ticksAt(position, _bpm, _ppq) + (from?.start ?? 0);
+    if (to != null) {
+      tick = tick >= to.start && tick < to.end ? tick - to.start : 0;
+    }
+    return durationAtTick(tick, _bpm, _ppq);
+  }
+
+  /// Plays from the window itself: the edited clip when there is one, cut to
+  /// the loop region when looping in one. [takeOver] swaps it in for what
+  /// plays without a gap (see [MidiPreviewPlayer.play]).
+  void _playHere({Duration? from, bool takeOver = false}) {
+    final key = _differs ? _editKey : widget.playerKey;
+    var clip = _differs ? _editor!.finished : widget.clip;
+    if (_differs) _playedEdit = _editor!.committed;
+    final region = _activeRegion;
+    _playingRegion = region;
+    if (region != null) clip = loopRegionClip(clip, region);
+    if (from != null) _player.startAt(key, from);
     _player
-        .play(_editKey, clip,
-            bpm: widget.bpm, voice: _voice, takeOver: takeOver)
+        .play(key, clip, bpm: _bpm, voice: _voice, takeOver: takeOver)
         .catchError((Object _) {});
   }
 
-  void _start() => _differs ? _playEdited() : widget.onPlay(_voice);
+  void _start() {
+    if (_differs || _activeRegion != null) {
+      _playHere();
+    } else {
+      _playingRegion = null;
+      widget.onPlay(_voice, _bpm);
+    }
+  }
 
   /// The ruler was clicked: jump there, or — with this clip not playing —
-  /// start playback from there.
+  /// start playback from there. Cycling a loop region, the spot is found in
+  /// it (its start, outside it).
   void _seek(Duration position) {
     final playing = _player.playingKey;
     if (_isOurs && playing != null) {
-      _player.seek(playing, position);
-    } else if (_differs) {
-      _playEdited(from: position);
+      _player.seek(playing, _between(position, null, _playingRegion));
+    } else if (_differs || _activeRegion != null) {
+      _playHere(from: _between(position, null, _activeRegion));
     } else {
+      _playingRegion = null;
       _player.startAt(widget.playerKey, position);
-      widget.onPlay(_voice);
+      widget.onPlay(_voice, _bpm);
+    }
+  }
+
+  Timer? _regionRestart;
+
+  /// A new loop region. Cycling, playback carries on in it — once it has
+  /// settled, not on every step of a drag along the ruler (each would mean
+  /// rendering the preview again).
+  void _setLoopRegion(MidiTickRange region) {
+    setState(() => _loopRegion = region);
+    if (!(widget.loop ?? false) || !_isOurs || _player.playingKey == null) {
+      return;
+    }
+    _regionRestart?.cancel();
+    _regionRestart = Timer(const Duration(milliseconds: 200), () {
+      if (!mounted) return;
+      final from = _playingRegion;
+      _restartWith(() {}, at: (p) => _between(p, from, _activeRegion));
+    });
+  }
+
+  @override
+  void didUpdateWidget(MidiPianoRollWindow old) {
+    super.didUpdateWidget(old);
+    // Looping switched while a loop region is set: playback moves into the
+    // region, or back out to the whole clip, from the same spot.
+    if ((old.loop ?? false) != (widget.loop ?? false) && _loopRegion != null) {
+      final from = _playingRegion;
+      final to = _activeRegion;
+      _restartWith(() {}, at: (p) => _between(p, from, to));
     }
   }
 
@@ -680,11 +827,13 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     final save = widget.onSaveEdited;
     if (editor == null || save == null) return;
     final name = labels.editedName?.call(widget.clip.name) ?? widget.clip.name;
-    final saved = await save(
-      editor.finished.copyWith(name: name),
-      _scale?.keyText ?? widget.musicalKey,
-      _voice,
-    );
+    final saved = await save(EditedMidiClip(
+      clip: editor.finished.copyWith(name: name),
+      musicalKey: _scale?.keyText ?? widget.musicalKey,
+      voice: _voice,
+      bpm: _bpm,
+      timeSignature: _timeSignature,
+    ));
     if (saved && mounted) editor.markSaved();
   }
 
@@ -821,12 +970,21 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                   child: MidiPianoRoll(
                     clip: widget.clip,
                     editor: editor,
-                    bpm: widget.bpm,
+                    bpm: _bpm,
+                    timeSignature: _timeSignature,
                     labels: labels.roll,
                     positionOf: () {
                       final k = _player.playingKey;
-                      return k != null && _isOurs ? _player.positionOf(k) : null;
+                      if (k == null || !_isOurs) return null;
+                      final p = _player.positionOf(k);
+                      final region = _playingRegion;
+                      if (p == null || region == null) return p;
+                      // Cut to the loop region: back to where that is in
+                      // the whole clip.
+                      return p + durationAtTick(region.start.toDouble(), _bpm, _ppq);
                     },
+                    loopRegion: _loopRegion,
+                    onLoopRegionChanged: _setLoopRegion,
                     playback: _player,
                     onSeek: _seek,
                     initialScale: scaleFromKey(widget.musicalKey),
@@ -917,6 +1075,31 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
           tooltip: labels.instrument!,
           onChanged: _setVoice,
           showName: true,
+        ),
+      if (labels.tempo != null)
+        MidiTempoControl(
+          key: const ValueKey('midi-piano-roll-tempo'),
+          bpm: _bpm,
+          onChanged: _setBpm,
+          labels: labels.tempo!,
+        ),
+      if (labels.timeSignature.isNotEmpty)
+        Tooltip(
+          message: labels.timeSignature,
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<TimeSignature>(
+              key: const ValueKey('midi-piano-roll-time-signature'),
+              value: _timeSignature,
+              isDense: true,
+              items: [
+                for (final ts in {...kTimeSignatureChoices, _timeSignature})
+                  DropdownMenuItem(value: ts, child: Text(ts.text)),
+              ],
+              onChanged: (ts) {
+                if (ts != null) _setTimeSignature(ts);
+              },
+            ),
+          ),
         ),
       if (widget.loop != null &&
           widget.onLoopChanged != null &&
@@ -1015,6 +1198,6 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
 }
 
 /// Whether the piano roll window's header stacks its title above the
-/// controls: below this width a single row leaves the clip's name a few
-/// letters wide.
-bool pianoRollHeaderStacked(double width) => width < 600;
+/// controls: below this width its tools (instrument, tempo, time
+/// signature, loop, volume…) and the clip's name don't fit in one row.
+bool pianoRollHeaderStacked(double width) => width < 1000;

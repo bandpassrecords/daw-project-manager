@@ -6393,7 +6393,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get midiShortcutSelectTool => '選択ツール';
 
   @override
-  String get midiShortcutPencilTool => '鉛筆：クリックでノートを追加（ドラッグで長く）。ノートをクリックすると選択';
+  String get midiShortcutPencilTool =>
+      '鉛筆：クリックでノートを追加。横にドラッグで長く、上下でベロシティ。ノートをクリックすると選択';
 
   @override
   String get midiShortcutDoubleClick => '空いている所：ノートを追加。ノートの上：削除';
@@ -6507,4 +6508,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiShortcutQuantize => 'クオンタイズ：選択したノート（なければ全ノート）をグリッドに合わせる';
+
+  @override
+  String get midiTimeSignature => '拍子';
+
+  @override
+  String get midiShortcutLoopStart => 'ルーラーの上：ループの開始位置を設定';
+
+  @override
+  String get midiShortcutLoopEnd => 'ルーラーの上：ループの終了位置を設定';
+
+  @override
+  String get midiShortcutLoopDrag => 'ループの紫の端：微調整（ループ再生中はその範囲だけ再生）';
 }

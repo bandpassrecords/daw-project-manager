@@ -183,10 +183,10 @@ void main() {
     });
 
     test('the snap grid draws its divisions between the beats', () {
-      expect(gridDivisionTicks(stepTicks: 120, ppq: 480, pxPerTick: 0.1), 120);
-      expect(gridDivisionTicks(stepTicks: 480, ppq: 480, pxPerTick: 1), isNull,
+      expect(gridDivisionTicks(stepTicks: 120, beatTicks: 480, pxPerTick: 0.1), 120);
+      expect(gridDivisionTicks(stepTicks: 480, beatTicks: 480, pxPerTick: 1), isNull,
           reason: 'a quarter-note grid is the beat lines');
-      expect(gridDivisionTicks(stepTicks: 60, ppq: 480, pxPerTick: 0.05), isNull,
+      expect(gridDivisionTicks(stepTicks: 60, beatTicks: 480, pxPerTick: 0.05), isNull,
           reason: 'too close together to see');
     });
 
@@ -635,7 +635,7 @@ void main() {
                 player: player,
                 playerKey: 'k',
                 bpm: 120,
-                onPlay: (_) {},
+                onPlay: (_, __) {},
               ),
               child: const Text('open'),
             ),
@@ -673,7 +673,7 @@ void main() {
                 player: player,
                 playerKey: 'k',
                 bpm: 128,
-                onPlay: (_) => toggles++,
+                onPlay: (_, __) => toggles++,
                 musicalKey: 'A minor',
               ),
               child: const Text('open'),

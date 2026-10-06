@@ -4066,7 +4066,7 @@
   "midiGestureDrag": "Ziehen",
   "midiGestureWheel": "Mausrad",
   "midiShortcutSelectTool": "Auswahlwerkzeug",
-  "midiShortcutPencilTool": "Stift: Klick fügt eine Note hinzu (ziehen verlängert sie); Klick auf eine Note wählt sie aus",
+  "midiShortcutPencilTool": "Stift: Klick fügt eine Note hinzu – seitlich ziehen verlängert sie, nach oben oder unten ändert die Anschlagstärke; Klick auf eine Note wählt sie aus",
   "midiShortcutDoubleClick": "Auf freier Fläche: Note hinzufügen. Auf einer Note: sie löschen",
   "midiShortcutMove": "Eine Note: verschieben, mit allen ausgewählten Noten",
   "midiShortcutResize": "Den Rand einer Note: kürzer oder länger machen",
@@ -4103,5 +4103,9 @@
   "midiNewClip": "Neuer Clip",
   "midiNewClipName": "Idee {number}",
   "midiQuantize": "Quantisieren (Q)",
-  "midiShortcutQuantize": "Quantisieren: die ausgewählten Noten (oder alle) aufs Raster setzen"
+  "midiShortcutQuantize": "Quantisieren: die ausgewählten Noten (oder alle) aufs Raster setzen",
+  "midiTimeSignature": "Taktart",
+  "midiShortcutLoopStart": "Auf dem Lineal: den Anfang der Schleife setzen",
+  "midiShortcutLoopEnd": "Auf dem Lineal: das Ende der Schleife setzen",
+  "midiShortcutLoopDrag": "Die lila Enden der Schleife: feinjustieren (mit Schleife an spielt nur sie)"
 }

@@ -4090,7 +4090,7 @@
   "midiGestureDrag": "Arrastar",
   "midiGestureWheel": "Roda do mouse",
   "midiShortcutSelectTool": "Ferramenta de seleção",
-  "midiShortcutPencilTool": "Lápis: clique para adicionar uma nota (arraste para alongá-la); clicar em uma nota a seleciona",
+  "midiShortcutPencilTool": "Lápis: clique para adicionar uma nota — arraste para o lado para alongá-la, para cima ou para baixo para a velocidade; clicar em uma nota a seleciona",
   "midiShortcutDoubleClick": "Em um espaço vazio: adicionar uma nota. Em uma nota: excluí-la",
   "midiShortcutMove": "Uma nota: movê-la, junto com todas as notas selecionadas",
   "midiShortcutResize": "A borda de uma nota: deixá-la mais curta ou mais longa",
@@ -4127,5 +4127,9 @@
   "midiNewClip": "Novo clipe",
   "midiNewClipName": "Ideia {number}",
   "midiQuantize": "Quantizar (Q)",
-  "midiShortcutQuantize": "Quantizar: encaixar na grade as notas selecionadas (ou todas)"
+  "midiShortcutQuantize": "Quantizar: encaixar na grade as notas selecionadas (ou todas)",
+  "midiTimeSignature": "Fórmula de compasso",
+  "midiShortcutLoopStart": "Na régua: definir onde o loop começa",
+  "midiShortcutLoopEnd": "Na régua: definir onde o loop termina",
+  "midiShortcutLoopDrag": "As pontas roxas do loop: ajustá-las (com o loop ligado, só ele toca)"
 }

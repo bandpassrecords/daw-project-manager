@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 
 import '../../models/midi_clip.dart';
+import '../../utils/time_signature.dart';
 
 /// The grid edits snap to, as a fraction of a beat; [off] doesn't snap.
 enum MidiSnap {
@@ -122,15 +123,37 @@ class MidiClipEditController extends ChangeNotifier {
   MidiTickRange? _range;
 
   /// Selects the stretch between [fromTick] and [toTick] (either way
-  /// round), widened to whole grid steps, and every note starting in it.
+  /// round), each end on the nearest grid line — and at least a step long
+  /// — and every note starting in it.
   void selectRange(double fromTick, double toTick) {
-    final step = stepTicks;
     final lo = fromTick < toTick ? fromTick : toTick;
     final hi = fromTick < toTick ? toTick : fromTick;
-    final start = snapDown(lo);
-    var end = ((hi < 0 ? 0 : hi) / step).ceil() * step;
-    if (end <= start) end = start + step;
-    final next = (start: start, end: end);
+    final start = _nearestStep(lo);
+    var end = _nearestStep(hi);
+    if (end <= start) end = start + stepTicks;
+    _setRange((start: start, end: end));
+  }
+
+  /// Drags one [edge] of the [range] to the grid line nearest [tick],
+  /// never past the other end.
+  void adjustRange(NoteEdge edge, double tick) {
+    final r = _range;
+    if (r == null) return;
+    final at = _nearestStep(tick);
+    final step = stepTicks;
+    _setRange(edge == NoteEdge.start
+        ? (start: math.min(at, r.end - step), end: r.end)
+        : (start: r.start, end: math.max(at, r.start + step)));
+  }
+
+  /// [tick] on the nearest grid line — not the one before it, so a range
+  /// started just short of a line starts on it — and never before 0.
+  int _nearestStep(double tick) {
+    final step = stepTicks;
+    return math.max(0, (tick / step).round() * step);
+  }
+
+  void _setRange(MidiTickRange next) {
     if (next == _range) return;
     _range = next;
     _selection
@@ -145,6 +168,27 @@ class MidiClipEditController extends ChangeNotifier {
       if (t >= r.start && t < r.end) yield i;
     }
   }
+
+  /// The bars the clip is in: how far a note past the end grows it.
+  TimeSignature get timeSignature => _timeSignature;
+  TimeSignature _timeSignature = TimeSignature.common;
+  set timeSignature(TimeSignature value) {
+    if (_timeSignature == value) return;
+    _timeSignature = value;
+    notifyListeners();
+  }
+
+  int get _barTicks => _timeSignature.barTicks(_committed.ppq);
+
+  /// A clip drafted from nothing has no length of its own: it ends with
+  /// the bar its last note ends in (a bar at least), shrinking as well as
+  /// growing — rather than keeping an end where nothing is. A clip read
+  /// from a project keeps its part's length (only growing past it).
+  bool lengthFollowsNotes = false;
+
+  MidiClip _sized(MidiClip clip) => lengthFollowsNotes
+      ? fittedToNotes(clip, barTicks: _barTicks)
+      : grownToNotes(clip, barTicks: _barTicks);
 
   MidiSnap get snap => _snap;
   MidiSnap _snap = MidiSnap.sixteenth;
@@ -292,6 +336,21 @@ class MidiClipEditController extends ChangeNotifier {
     _apply(_base);
   }
 
+  /// The pencil, mid-draw: how hard the note being drawn plays — dragged
+  /// up for louder, down for softer, as in Cubase. Remembered for the next
+  /// note.
+  void setDrawnVelocity(int value) {
+    if (!_adding || _selection.length != 1) return;
+    final i = _selection.first;
+    final v = value.clamp(1, 127);
+    velocity = v;
+    if (_base.notes[i].velocity == v) return;
+    _base = _base.copyWith(
+        notes: [..._base.notes]..[i] = _note(_base.notes[i], velocity: v));
+    _apply(_clip.copyWith(
+        notes: [..._clip.notes]..[i] = _note(_clip.notes[i], velocity: v)));
+  }
+
   /// A note one step long (a 16th with snapping off) at the grid step
   /// [tick] falls in, at the velocity last used.
   MidiNote _newNote(double tick, int pitch) {
@@ -329,8 +388,9 @@ class MidiClipEditController extends ChangeNotifier {
   /// Ctrl/Cmd+D, as in Cubase. With a [range]: its notes (cut off at its
   /// end) and controller events are copied straight after it, and the
   /// range moves onto the copy — so pressing it again carries on the
-  /// pattern. Otherwise the selected notes are copied to start where the
-  /// last of them ends (on the grid, when snapping), and the copies become
+  /// pattern. Otherwise the selected notes are copied to start exactly
+  /// where the last of them ends — on the grid or not, on purpose: the
+  /// range is the on-grid way to repeat a pattern — and the copies become
   /// the selection. One undo step either way.
   void duplicate() {
     if (!_editing) return;
@@ -389,10 +449,6 @@ class MidiClipEditController extends ChangeNotifier {
       if (n.endTick > end) end = n.endTick;
     }
     var offset = end - start;
-    if (_snap != MidiSnap.off) {
-      final step = stepTicks;
-      offset = (offset / step).ceil() * step;
-    }
     if (offset < 1) offset = 1;
     final first = source.notes.length;
     _apply(source.copyWith(notes: [
@@ -566,16 +622,21 @@ class MidiClipEditController extends ChangeNotifier {
   /// [toTick] — the stretch of the velocity lane a drag just crossed — on
   /// the line from [fromValue] to [toValue], like a pencil across the
   /// stems. Notes starting together (a chord) all get the value there.
+  /// With two or more notes selected, only those change.
   /// Repeated calls in one gesture shape a whole run of notes.
   void drawVelocities(
       double fromTick, int fromValue, double toTick, int toValue) {
     final (t0, v0, t1, v1) = fromTick <= toTick
         ? (fromTick, fromValue, toTick, toValue)
         : (toTick, toValue, fromTick, fromValue);
+    // With several notes selected only they change, as in Cubase — so a
+    // sweep can shape a chosen few among the rest.
+    final only = _selection.length > 1 ? _selection : null;
     final notes = [..._clip.notes];
     var changed = false;
     for (var i = 0; i < notes.length; i++) {
       final n = notes[i];
+      if (only != null && !only.contains(i)) continue;
       if (n.startTick < t0 || n.startTick > t1) continue;
       final f = t1 == t0 ? 1.0 : (n.startTick - t0) / (t1 - t0);
       final v = (v0 + (v1 - v0) * f).round().clamp(1, 127);
@@ -674,12 +735,7 @@ class MidiClipEditController extends ChangeNotifier {
         final c = a.startTick.compareTo(b.startTick);
         return c != 0 ? c : a.pitch.compareTo(b.pitch);
       });
-    var length = _committed.lengthTicks;
-    final bar = _committed.ppq * 4;
-    for (final n in notes) {
-      if (n.endTick > length) length = ((n.endTick + bar - 1) ~/ bar) * bar;
-    }
-    return _committed.copyWith(notes: notes, lengthTicks: length);
+    return _sized(_committed.copyWith(notes: notes));
   }
 
   /// The edits were saved: what is on screen is the new [original].
@@ -726,22 +782,35 @@ class MidiClipEditController extends ChangeNotifier {
   void _commit() {
     _undo.add(_committed);
     _redo.clear();
-    _committed = _clip = grownToNotes(_clip);
+    _committed = _clip = _sized(_clip);
     _base = _committed;
     notifyListeners();
   }
+}
+
+/// [clip], as long as its notes: to the end of the bar the last one ends
+/// in, a bar at least — however long it was before. For a clip drafted
+/// from nothing, whose length is only ever where its notes stop.
+MidiClip fittedToNotes(MidiClip clip, {required int barTicks}) {
+  var end = 0;
+  for (final n in clip.notes) {
+    if (n.endTick > end) end = n.endTick;
+  }
+  final bars = end <= 0 ? 1 : (end + barTicks - 1) ~/ barTicks;
+  final length = bars * barTicks;
+  return length == clip.lengthTicks ? clip : clip.copyWith(lengthTicks: length);
 }
 
 /// [clip], grown to the end of the bar its last note ends in when a note
 /// runs past its end — so a clip being drawn keeps growing as notes go past
 /// it, bar by bar, and its end line, playback and saving follow. [clip]
 /// itself when nothing runs past.
-MidiClip grownToNotes(MidiClip clip) {
+MidiClip grownToNotes(MidiClip clip, {int? barTicks}) {
   var end = clip.lengthTicks;
   for (final n in clip.notes) {
     if (n.endTick > end) end = n.endTick;
   }
   if (end <= clip.lengthTicks) return clip;
-  final bar = clip.ppq * 4;
+  final bar = barTicks ?? clip.ppq * 4;
   return clip.copyWith(lengthTicks: ((end + bar - 1) ~/ bar) * bar);
 }

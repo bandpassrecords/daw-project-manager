@@ -4066,7 +4066,7 @@
   "midiGestureDrag": "Glisser",
   "midiGestureWheel": "Molette",
   "midiShortcutSelectTool": "Outil de sélection",
-  "midiShortcutPencilTool": "Crayon : cliquez pour ajouter une note (glissez pour l’allonger) ; un clic sur une note la sélectionne",
+  "midiShortcutPencilTool": "Crayon : cliquez pour ajouter une note — glissez de côté pour l’allonger, vers le haut ou le bas pour sa vélocité ; un clic sur une note la sélectionne",
   "midiShortcutDoubleClick": "Dans le vide : ajouter une note. Sur une note : la supprimer",
   "midiShortcutMove": "Une note : la déplacer, avec toutes les notes sélectionnées",
   "midiShortcutResize": "Le bord d’une note : la raccourcir ou l’allonger",
@@ -4103,5 +4103,9 @@
   "midiNewClip": "Nouveau clip",
   "midiNewClipName": "Idée {number}",
   "midiQuantize": "Quantifier (Q)",
-  "midiShortcutQuantize": "Quantifier : caler sur la grille les notes sélectionnées (ou toutes)"
+  "midiShortcutQuantize": "Quantifier : caler sur la grille les notes sélectionnées (ou toutes)",
+  "midiTimeSignature": "Signature rythmique",
+  "midiShortcutLoopStart": "Sur la règle : placer le début de la boucle",
+  "midiShortcutLoopEnd": "Sur la règle : placer la fin de la boucle",
+  "midiShortcutLoopDrag": "Les extrémités violettes de la boucle : les ajuster (boucle activée, seule elle est jouée)"
 }

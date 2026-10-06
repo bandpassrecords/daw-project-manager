@@ -18,6 +18,7 @@ import '../services/midi/midi_file_writer.dart';
 import '../services/midi/synth_voice.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/search_utils.dart';
+import '../utils/time_signature.dart';
 import 'midi_clip_share.dart';
 import 'midi_collection_actions.dart';
 import 'midi_piano_roll_dialog.dart';
@@ -131,14 +132,22 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
 
   double _bpmOf(_Entry e) => _tempo ?? e.bpm ?? 120;
 
-  MidiExport _exportOf(_Entry e) =>
-      MidiExport(e.clip, bpm: _bpmOf(e), musicalKey: e.musicalKey);
+  MidiExport _exportOf(_Entry e) => MidiExport(e.clip,
+      bpm: _bpmOf(e),
+      musicalKey: e.musicalKey,
+      timeSignature: _timeSignatureOf(e.item));
+
+  static TimeSignature _timeSignatureOf(MidiCollectionItem? item) =>
+      TimeSignature.tryParse(item?.timeSignature) ?? TimeSignature.common;
 
   /// A collection's clips each at their own project's tempo and key, unless
   /// the user set one tempo for all of them.
   List<MidiExport> _collectionExports(MidiCollection c) => [
         for (final i in c.items)
-          MidiExport(i.clip, bpm: _tempo ?? i.bpm, musicalKey: i.musicalKey),
+          MidiExport(i.clip,
+              bpm: _tempo ?? i.bpm,
+              musicalKey: i.musicalKey,
+              timeSignature: _timeSignatureOf(i)),
       ];
 
   void _snack(String message) {
@@ -164,21 +173,30 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       player: _player,
       playerKey: playerKey,
       bpm: kNewIdeaBpm,
-      onPlay: (voice) => _player
-          .play(playerKey, clip, bpm: kNewIdeaBpm, voice: voice)
+      onPlay: (voice, bpm) => _player
+          .play(playerKey, clip, bpm: bpm, voice: voice)
           .catchError((Object _) {}),
       startEditing: true,
-      onSaveEdited: (edited, musicalKey, voice) async {
+      lengthFollowsNotes: true,
+      onSaveEdited: (edit) async {
         final repo = await ref.read(repositoryProvider.future);
+        final item = collectionItemFor(
+          edit.clip.copyWith(name: name),
+          bpm: edit.bpm,
+          musicalKey: edit.musicalKey,
+          pickedVoice: edit.voice,
+          timeSignature: edit.timeSignature,
+        );
         await repo.midiCollections.putItem(
           c.id,
           MidiCollectionItem(
             id: itemId,
-            clip: edited.copyWith(name: name),
+            clip: item.clip,
             addedAt: addedAt,
-            bpm: kNewIdeaBpm,
-            musicalKey: musicalKey,
-            voice: voice.name,
+            bpm: item.bpm,
+            musicalKey: item.musicalKey,
+            voice: item.voice,
+            timeSignature: item.timeSignature,
           ),
         );
         return true;
@@ -186,11 +204,11 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     );
   }
 
-  Future<void> _play(_Entry e, {SynthVoice? voice}) async {
+  Future<void> _play(_Entry e, {SynthVoice? voice, double? bpm}) async {
     final l10n = AppLocalizations.of(context)!;
     try {
       await _player.toggle(e.key, e.clip,
-          bpm: _bpmOf(e), voice: voice ?? e.voice);
+          bpm: bpm ?? _bpmOf(e), voice: voice ?? e.voice);
     } catch (err) {
       _snack(l10n.midiClipPreviewFailed(err.toString()));
     }
@@ -596,22 +614,24 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
           player: _player,
           playerKey: e.key,
           bpm: _bpmOf(e),
-          onPlay: (voice) => _play(e, voice: voice),
+          onPlay: (voice, bpm) => _play(e, voice: voice, bpm: bpm),
+          timeSignature: _timeSignatureOf(e.item),
           onOpenProject: e.projectId == null ? null : () => _openProject(e),
           musicalKey: e.musicalKey,
           voice: e.voice,
           onVoiceChanged: (v) => setVoice(e, v),
-          onSaveEdited: (edited, key, voice) => addToCollectionFlow(
+          onSaveEdited: (edit) => addToCollectionFlow(
             context,
             ref,
             [
               collectionItemFor(
-                edited,
+                edit.clip,
                 projectId: e.projectId,
                 projectName: e.projectName,
-                bpm: e.bpm,
-                musicalKey: key,
-                pickedVoice: voice,
+                bpm: edit.bpm,
+                musicalKey: edit.musicalKey,
+                pickedVoice: edit.voice,
+                timeSignature: edit.timeSignature,
               ),
             ],
           ),

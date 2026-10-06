@@ -6611,7 +6611,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Lápiz: clic para añadir una nota (arrastra para alargarla); clic en una nota para seleccionarla';
+      'Lápiz: clic para añadir una nota; arrastra a los lados para alargarla, arriba o abajo para su velocidad; clic en una nota para seleccionarla';
 
   @override
   String get midiShortcutDoubleClick =>
@@ -6739,4 +6739,18 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get midiShortcutQuantize =>
       'Cuantizar: ajustar a la cuadrícula las notas seleccionadas (o todas)';
+
+  @override
+  String get midiTimeSignature => 'Compás';
+
+  @override
+  String get midiShortcutLoopStart =>
+      'En la regla: fijar dónde empieza el bucle';
+
+  @override
+  String get midiShortcutLoopEnd => 'En la regla: fijar dónde termina el bucle';
+
+  @override
+  String get midiShortcutLoopDrag =>
+      'Los extremos morados del bucle: ajustarlos (con el bucle activo, solo suena él)';
 }

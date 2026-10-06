@@ -12,13 +12,15 @@ import '../providers/providers.dart';
 import '../repository/midi_collection_store.dart';
 import '../services/midi/midi_file_import.dart';
 import '../services/midi/synth_voice.dart';
+import '../utils/time_signature.dart';
 
 /// The tempo a new idea is drafted at.
 const double kNewIdeaBpm = 120;
 
-/// A blank clip to draft an idea in: four empty bars of 4/4.
+/// A blank clip to draft an idea in: one empty bar of 4/4, which its notes
+/// then lengthen (see `MidiClipEditController.lengthFollowsNotes`).
 MidiClip newMidiIdea(String name) =>
-    MidiClip(name: name, ppq: 480, lengthTicks: 4 * 4 * 480, notes: const []);
+    MidiClip(name: name, ppq: 480, lengthTicks: 4 * 480, notes: const []);
 
 /// A copy of [clip] ready to go into a collection, remembering where it came
 /// from, its project's tempo and key, and the instrument it was being heard
@@ -30,6 +32,7 @@ MidiCollectionItem collectionItemFor(
   double? bpm,
   String? musicalKey,
   SynthVoice? pickedVoice,
+  TimeSignature? timeSignature,
 }) =>
     MidiCollectionItem(
       id: MidiCollectionStore.newItemId(),
@@ -40,6 +43,10 @@ MidiCollectionItem collectionItemFor(
       bpm: bpm,
       musicalKey: musicalKey,
       voice: pickedVoice?.name,
+      // 4/4 goes unsaid, as it does for every clip copied from a project.
+      timeSignature: timeSignature == null || timeSignature == TimeSignature.common
+          ? null
+          : timeSignature.text,
     );
 
 /// Asks which collection to put [items] in — every existing one, or a new

@@ -4066,7 +4066,7 @@
   "midiGestureDrag": "Trascina",
   "midiGestureWheel": "Rotellina",
   "midiShortcutSelectTool": "Strumento di selezione",
-  "midiShortcutPencilTool": "Matita: clic per aggiungere una nota (trascina per allungarla); un clic su una nota la seleziona",
+  "midiShortcutPencilTool": "Matita: clic per aggiungere una nota; trascina di lato per allungarla, su o giù per la velocity; un clic su una nota la seleziona",
   "midiShortcutDoubleClick": "Su uno spazio vuoto: aggiungi una nota. Su una nota: eliminala",
   "midiShortcutMove": "Una nota: spostala, con tutte le note selezionate",
   "midiShortcutResize": "Il bordo di una nota: accorciala o allungala",
@@ -4103,5 +4103,9 @@
   "midiNewClip": "Nuova clip",
   "midiNewClipName": "Idea {number}",
   "midiQuantize": "Quantizza (Q)",
-  "midiShortcutQuantize": "Quantizza: aggancia alla griglia le note selezionate (o tutte)"
+  "midiShortcutQuantize": "Quantizza: aggancia alla griglia le note selezionate (o tutte)",
+  "midiTimeSignature": "Tempo in chiave",
+  "midiShortcutLoopStart": "Sul righello: imposta dove inizia il loop",
+  "midiShortcutLoopEnd": "Sul righello: imposta dove finisce il loop",
+  "midiShortcutLoopDrag": "Gli estremi viola del loop: regolali (con il loop attivo, suona solo lui)"
 }

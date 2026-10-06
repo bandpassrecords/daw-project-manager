@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/ui/widgets/midi_clip_edit_controller.dart';
+import 'package:daw_project_manager/utils/time_signature.dart';
 
 /// One 4/4 bar at 480 PPQ with one note: C3 on beat 1.
 const _clip = MidiClip(
@@ -443,6 +444,17 @@ void main() {
       expect(c.clip.notes.map((n) => n.velocity), [30, 30, 70]);
     });
 
+    test('with several notes selected, only they change', () {
+      final c = editingChord()
+        ..select(0)
+        ..toggleSelected(2);
+      c.drawVelocities(0, 120, 960, 20);
+      expect(c.clip.notes.map((n) => n.velocity), [120, 90, 20]);
+      c.select(1); // one selected: a sweep is a sweep again
+      c.drawVelocities(0, 10, 960, 10);
+      expect(c.clip.notes.map((n) => n.velocity), [10, 10, 10]);
+    });
+
     test('only notes starting inside the stretch change', () {
       final c = editingChord();
       c.drawVelocities(400, 50, 900, 50);
@@ -479,10 +491,10 @@ void main() {
   });
 
   group('the range tool', () {
-    test('a range widens to whole grid steps and selects what starts in it',
-        () {
+    test('a range snaps each end to the nearest grid line, and selects '
+        'what starts in it', () {
       final c = editingChord();
-      c.selectRange(500, 130); // either way round
+      c.selectRange(560, 130); // either way round
       expect(c.range, (start: 120, end: 600));
       expect(c.selection, {1}, reason: 'only E3 starts inside');
       c.selectRange(10, 10);
@@ -549,7 +561,7 @@ void main() {
       expect(c.clip.notes.map((n) => n.startTick).skip(5), [1920, 2400]);
     });
 
-    test('on the grid when snapping, exactly at the end when not', () {
+    test('exactly where the last note ends, on the grid or not', () {
       final c = MidiClipEditController(const MidiClip(
         name: 'Short',
         ppq: 480,
@@ -559,13 +571,8 @@ void main() {
         ..editing = true
         ..select(0);
       c.duplicate();
-      expect(c.clip.notes.last.startTick, 120, reason: 'the next 1/16');
-      c.undo();
-      c
-        ..snap = MidiSnap.off
-        ..select(0)
-        ..duplicate();
-      expect(c.clip.notes.last.startTick, 100);
+      expect(c.clip.notes.last.startTick, 100,
+          reason: 'not the next 1/16: right after the note, on purpose');
     });
 
     test('nothing selected, or not editing: nothing happens', () {
@@ -662,6 +669,93 @@ void main() {
 
     test('nothing past the end: the very same clip', () {
       expect(grownToNotes(chord), same(chord));
+    });
+  });
+
+  group('range snapping', () {
+    test('each end goes to the nearest line, not the next one', () {
+      final c = editingChord();
+      c.selectRange(50, 170); // under half a step past 0 and past 120
+      expect(c.range, (start: 0, end: 120));
+      c.selectRange(70, 290);
+      expect(c.range, (start: 120, end: 240));
+    });
+
+    test('an end dragged moves to the nearest line, never past the other',
+        () {
+      final c = editingChord()..selectRange(0, 960);
+      c.adjustRange(NoteEdge.end, 1470);
+      expect(c.range, (start: 0, end: 1440));
+      expect(c.selection, {0, 1, 2}, reason: 'G3 at 960 is now inside');
+      c.adjustRange(NoteEdge.start, 2000);
+      expect(c.range, (start: 1320, end: 1440), reason: 'a step short of the end');
+      c.adjustRange(NoteEdge.end, 0);
+      expect(c.range, (start: 1320, end: 1440), reason: 'a step past the start');
+    });
+  });
+
+  group('time signature', () {
+    test('a clip grows by its own bars', () {
+      final c = editingChord()..timeSignature = const TimeSignature(3, 4);
+      c.addNoteAt(1900, 72);
+      c.beginGesture();
+      c.resizeSelection(NoteEdge.end, 240);
+      c.endGesture();
+      // Ends at 2160: past 1920, into the second 3/4 bar (1440–2880).
+      expect(c.clip.lengthTicks, 2880);
+      expect(grownToNotes(c.clip, barTicks: 1440), same(c.clip));
+    });
+  });
+
+  group('the pencil sets how hard', () {
+    test('up and down while drawing, remembered for the next note', () {
+      final c = editingChord()..beginNote(0, 50);
+      c.setDrawnVelocity(127);
+      c.resizeSelection(NoteEdge.end, 240);
+      c.endGesture();
+      expect(c.clip.notes.last.velocity, 127);
+      expect(c.clip.notes.last.lengthTicks, 360, reason: 'length kept too');
+      expect(c.velocity, 127);
+      c.addNoteAt(960, 52);
+      expect(c.clip.notes.last.velocity, 127);
+    });
+
+    test('only while drawing', () {
+      final c = editingChord()..select(0);
+      c.setDrawnVelocity(10);
+      expect(c.clip.notes.first.velocity, 90);
+    });
+  });
+
+  group('a drafted clip is as long as its notes', () {
+    test('it grows and shrinks bar by bar, a bar at least', () {
+      final c = MidiClipEditController(
+          const MidiClip(name: 'Idea', ppq: 480, lengthTicks: 1920, notes: []))
+        ..editing = true
+        ..lengthFollowsNotes = true;
+      c.addNoteAt(5000, 60); // in the third bar
+      expect(c.clip.lengthTicks, 5760);
+      c.deleteNote(0);
+      expect(c.clip.lengthTicks, 1920, reason: 'nothing left: one bar');
+      c.addNoteAt(100, 60);
+      expect(c.finished.lengthTicks, 1920);
+    });
+
+    test('a clip from a project keeps its length when notes go', () {
+      final c = editingChord()..deleteNote(2);
+      expect(c.clip.lengthTicks, 1920);
+    });
+
+    test('fittedToNotes: the bar the last note ends in', () {
+      const clip = MidiClip(
+        name: 'x',
+        ppq: 480,
+        lengthTicks: 9600,
+        notes: [MidiNote(startTick: 1400, lengthTicks: 100, pitch: 60, velocity: 90)],
+      );
+      expect(fittedToNotes(clip, barTicks: 1440).lengthTicks, 2880,
+          reason: 'ends at 1500: into the second 3/4 bar');
+      expect(fittedToNotes(clip, barTicks: 1920).lengthTicks, 1920);
     });
   });
 }

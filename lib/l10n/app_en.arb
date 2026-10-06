@@ -6389,7 +6389,7 @@
   "@midiShortcutSelectTool": {
     "description": "Shortcut sheet action"
   },
-  "midiShortcutPencilTool": "Pencil: click to add a note (drag to make it longer); a click on a note selects it",
+  "midiShortcutPencilTool": "Pencil: click to add a note — drag across to lengthen it, up or down for how hard it plays; a click on a note selects it",
   "@midiShortcutPencilTool": {
     "description": "Shortcut sheet action"
   },
@@ -6545,5 +6545,21 @@
   "midiShortcutQuantize": "Quantize: snap the selected notes (or every note) to the grid",
   "@midiShortcutQuantize": {
     "description": "Shortcut sheet action"
+  },
+  "midiTimeSignature": "Time signature",
+  "@midiTimeSignature": {
+    "description": "Piano roll: tooltip of the time signature picker (3/4, 4/4, 6/8…)"
+  },
+  "midiShortcutLoopStart": "On the ruler: set where the loop starts",
+  "@midiShortcutLoopStart": {
+    "description": "Shortcut sheet action: Ctrl/Cmd-click on the bar ruler"
+  },
+  "midiShortcutLoopEnd": "On the ruler: set where the loop ends",
+  "@midiShortcutLoopEnd": {
+    "description": "Shortcut sheet action: Alt-click on the bar ruler"
+  },
+  "midiShortcutLoopDrag": "The loop's purple ends: fine-tune them (with looping on, only the loop plays)",
+  "@midiShortcutLoopDrag": {
+    "description": "Shortcut sheet action: dragging the purple loop ends on the ruler"
   }
 }

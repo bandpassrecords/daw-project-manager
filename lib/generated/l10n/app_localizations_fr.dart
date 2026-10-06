@@ -6624,7 +6624,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Crayon : cliquez pour ajouter une note (glissez pour l’allonger) ; un clic sur une note la sélectionne';
+      'Crayon : cliquez pour ajouter une note — glissez de côté pour l’allonger, vers le haut ou le bas pour sa vélocité ; un clic sur une note la sélectionne';
 
   @override
   String get midiShortcutDoubleClick =>
@@ -6753,4 +6753,18 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get midiShortcutQuantize =>
       'Quantifier : caler sur la grille les notes sélectionnées (ou toutes)';
+
+  @override
+  String get midiTimeSignature => 'Signature rythmique';
+
+  @override
+  String get midiShortcutLoopStart =>
+      'Sur la règle : placer le début de la boucle';
+
+  @override
+  String get midiShortcutLoopEnd => 'Sur la règle : placer la fin de la boucle';
+
+  @override
+  String get midiShortcutLoopDrag =>
+      'Les extrémités violettes de la boucle : les ajuster (boucle activée, seule elle est jouée)';
 }

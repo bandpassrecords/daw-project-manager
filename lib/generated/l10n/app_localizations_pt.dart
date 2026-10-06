@@ -6578,7 +6578,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Lápis: clique para adicionar uma nota (arraste para alongá-la); clicar em uma nota a seleciona';
+      'Lápis: clique para adicionar uma nota — arraste para o lado para alongá-la, para cima ou para baixo para a velocidade; clicar em uma nota a seleciona';
 
   @override
   String get midiShortcutDoubleClick =>
@@ -6704,4 +6704,17 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get midiShortcutQuantize =>
       'Quantizar: encaixar na grade as notas selecionadas (ou todas)';
+
+  @override
+  String get midiTimeSignature => 'Fórmula de compasso';
+
+  @override
+  String get midiShortcutLoopStart => 'Na régua: definir onde o loop começa';
+
+  @override
+  String get midiShortcutLoopEnd => 'Na régua: definir onde o loop termina';
+
+  @override
+  String get midiShortcutLoopDrag =>
+      'As pontas roxas do loop: ajustá-las (com o loop ligado, só ele toca)';
 }

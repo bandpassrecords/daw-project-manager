@@ -6596,7 +6596,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Matita: clic per aggiungere una nota (trascina per allungarla); un clic su una nota la seleziona';
+      'Matita: clic per aggiungere una nota; trascina di lato per allungarla, su o giù per la velocity; un clic su una nota la seleziona';
 
   @override
   String get midiShortcutDoubleClick =>
@@ -6724,4 +6724,19 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get midiShortcutQuantize =>
       'Quantizza: aggancia alla griglia le note selezionate (o tutte)';
+
+  @override
+  String get midiTimeSignature => 'Tempo in chiave';
+
+  @override
+  String get midiShortcutLoopStart =>
+      'Sul righello: imposta dove inizia il loop';
+
+  @override
+  String get midiShortcutLoopEnd =>
+      'Sul righello: imposta dove finisce il loop';
+
+  @override
+  String get midiShortcutLoopDrag =>
+      'Gli estremi viola del loop: regolali (con il loop attivo, suona solo lui)';
 }
