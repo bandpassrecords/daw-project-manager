@@ -485,13 +485,23 @@ void main() {
       expect((drawn.startTick, drawn.lengthTicks), (960, 360));
     });
 
-    testWidgets('a click on a note erases it', (tester) async {
+    testWidgets('never deletes: a click (or two) on a note selects it',
+        (tester) async {
       await open(tester);
       await startEditing(tester);
       await pickPencil(tester);
-      await click(tester, noteMiddle(grid(tester)));
+      final note = noteMiddle(grid(tester));
+      await click(tester, note);
+      expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsNothing,
+          reason: 'the note is still there');
+      await doubleClick(tester, note);
+      expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsNothing,
+          reason: 'not even a double-click deletes with the pencil');
+      // It was selected: ↑ moves it.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
       await save(tester);
-      expect(saved.single.$1.notes, isEmpty);
+      expect(saved.single.$1.notes.single.pitch, 61);
     });
 
     testWidgets('1 goes back to selecting: a click adds nothing',

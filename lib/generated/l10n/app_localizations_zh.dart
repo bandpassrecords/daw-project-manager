@@ -6322,7 +6322,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiShortcutSelectTool => '选择工具';
 
   @override
-  String get midiShortcutPencilTool => '铅笔：单击添加音符（拖动可延长），单击音符将其擦除';
+  String get midiShortcutPencilTool => '铅笔：单击添加音符（拖动可延长）；单击音符将其选中';
 
   @override
   String get midiShortcutDoubleClick => '空白处：添加音符。音符上：删除它';

@@ -6393,7 +6393,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get midiShortcutSelectTool => '選択ツール';
 
   @override
-  String get midiShortcutPencilTool => '鉛筆：クリックでノートを追加（ドラッグで長く）、ノートをクリックで消去';
+  String get midiShortcutPencilTool => '鉛筆：クリックでノートを追加（ドラッグで長く）。ノートをクリックすると選択';
 
   @override
   String get midiShortcutDoubleClick => '空いている所：ノートを追加。ノートの上：削除';

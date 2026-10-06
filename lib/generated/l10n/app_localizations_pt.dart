@@ -6578,7 +6578,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Lápis: clique para adicionar uma nota (arraste para alongá-la), clique em uma nota para apagá-la';
+      'Lápis: clique para adicionar uma nota (arraste para alongá-la); clicar em uma nota a seleciona';
 
   @override
   String get midiShortcutDoubleClick =>

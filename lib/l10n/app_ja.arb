@@ -4066,7 +4066,7 @@
   "midiGestureDrag": "ドラッグ",
   "midiGestureWheel": "ホイール",
   "midiShortcutSelectTool": "選択ツール",
-  "midiShortcutPencilTool": "鉛筆：クリックでノートを追加（ドラッグで長く）、ノートをクリックで消去",
+  "midiShortcutPencilTool": "鉛筆：クリックでノートを追加（ドラッグで長く）。ノートをクリックすると選択",
   "midiShortcutDoubleClick": "空いている所：ノートを追加。ノートの上：削除",
   "midiShortcutMove": "ノート：選択中のノートごと移動",
   "midiShortcutResize": "ノートの端：短く・長くする",

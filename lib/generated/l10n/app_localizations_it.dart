@@ -6596,7 +6596,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Matita: clic per aggiungere una nota (trascina per allungarla), clic su una nota per cancellarla';
+      'Matita: clic per aggiungere una nota (trascina per allungarla); un clic su una nota la seleziona';
 
   @override
   String get midiShortcutDoubleClick =>

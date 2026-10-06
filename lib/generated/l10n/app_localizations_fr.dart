@@ -6624,7 +6624,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Crayon : cliquez pour ajouter une note (glissez pour l’allonger), cliquez sur une note pour l’effacer';
+      'Crayon : cliquez pour ajouter une note (glissez pour l’allonger) ; un clic sur une note la sélectionne';
 
   @override
   String get midiShortcutDoubleClick =>

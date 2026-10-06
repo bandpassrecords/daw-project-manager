@@ -926,8 +926,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       }
       final (index, edge) = hit;
       final note = _shown.notes[index];
-      // The pencil erases what it clicks; anything else plays the note.
-      if (!_pencil) _feedback(note.pitch, note.velocity);
+      _feedback(note.pitch, note.velocity);
       if (_keys.isShiftPressed) {
         editor.toggleSelected(index);
         _drag = _EditDrag(_DragKind.tapNote, p, index);
@@ -1126,11 +1125,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         } else {
           editor.cancelGesture();
           if (drag.kind == _DragKind.tapNote) break;
-          if (_pencil) {
-            // The pencil erases the note it clicks.
-            editor.deleteNote(drag.index!);
-          } else if (_doubleTap(e.timeStamp, drag.start)) {
-            // A double-click on a note deletes it.
+          // A double-click on a note deletes it — with the select tool
+          // only: the pencil never deletes, a click with it just selects.
+          if (!_pencil && _doubleTap(e.timeStamp, drag.start)) {
             editor.deleteNote(drag.index!);
           }
         }

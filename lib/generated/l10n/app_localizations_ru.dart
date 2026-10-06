@@ -6582,7 +6582,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Карандаш: щелчок добавляет ноту (протяните, чтобы удлинить), щелчок по ноте стирает её';
+      'Карандаш: щелчок добавляет ноту (протяните, чтобы удлинить); щелчок по ноте выделяет её';
 
   @override
   String get midiShortcutDoubleClick =>

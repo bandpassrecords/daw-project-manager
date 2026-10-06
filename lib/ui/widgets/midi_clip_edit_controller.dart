@@ -35,7 +35,8 @@ enum NoteEdge { start, end }
 /// or deletes; [range] (2) selects a stretch of time and every note in it,
 /// for [MidiClipEditController.duplicate]; [eraser] (5) deletes whatever it
 /// clicks or is dragged over; [pencil] (8) adds a note with a single click
-/// (a drag makes it longer) and erases one clicked on.
+/// (a drag makes it longer) — and never deletes one: a click on a note
+/// selects it.
 enum MidiEditTool { select, range, eraser, pencil }
 
 /// A stretch of the clip, in ticks: [start] inclusive, [end] exclusive.

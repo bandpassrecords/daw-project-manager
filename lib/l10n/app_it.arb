@@ -4066,7 +4066,7 @@
   "midiGestureDrag": "Trascina",
   "midiGestureWheel": "Rotellina",
   "midiShortcutSelectTool": "Strumento di selezione",
-  "midiShortcutPencilTool": "Matita: clic per aggiungere una nota (trascina per allungarla), clic su una nota per cancellarla",
+  "midiShortcutPencilTool": "Matita: clic per aggiungere una nota (trascina per allungarla); un clic su una nota la seleziona",
   "midiShortcutDoubleClick": "Su uno spazio vuoto: aggiungi una nota. Su una nota: eliminala",
   "midiShortcutMove": "Una nota: spostala, con tutte le note selezionate",
   "midiShortcutResize": "Il bordo di una nota: accorciala o allungala",

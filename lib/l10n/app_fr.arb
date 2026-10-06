@@ -4066,7 +4066,7 @@
   "midiGestureDrag": "Glisser",
   "midiGestureWheel": "Molette",
   "midiShortcutSelectTool": "Outil de sélection",
-  "midiShortcutPencilTool": "Crayon : cliquez pour ajouter une note (glissez pour l’allonger), cliquez sur une note pour l’effacer",
+  "midiShortcutPencilTool": "Crayon : cliquez pour ajouter une note (glissez pour l’allonger) ; un clic sur une note la sélectionne",
   "midiShortcutDoubleClick": "Dans le vide : ajouter une note. Sur une note : la supprimer",
   "midiShortcutMove": "Une note : la déplacer, avec toutes les notes sélectionnées",
   "midiShortcutResize": "Le bord d’une note : la raccourcir ou l’allonger",

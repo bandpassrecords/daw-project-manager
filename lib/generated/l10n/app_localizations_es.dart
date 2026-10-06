@@ -6611,7 +6611,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Lápiz: clic para añadir una nota (arrastra para alargarla), clic en una nota para borrarla';
+      'Lápiz: clic para añadir una nota (arrastra para alargarla); clic en una nota para seleccionarla';
 
   @override
   String get midiShortcutDoubleClick =>

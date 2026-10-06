@@ -6594,7 +6594,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiShortcutPencilTool =>
-      'Stift: Klick fügt eine Note hinzu (ziehen verlängert sie), Klick auf eine Note löscht sie';
+      'Stift: Klick fügt eine Note hinzu (ziehen verlängert sie); Klick auf eine Note wählt sie aus';
 
   @override
   String get midiShortcutDoubleClick =>

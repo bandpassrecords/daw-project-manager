@@ -4090,7 +4090,7 @@
   "midiGestureDrag": "Arrastar",
   "midiGestureWheel": "Roda do mouse",
   "midiShortcutSelectTool": "Ferramenta de seleção",
-  "midiShortcutPencilTool": "Lápis: clique para adicionar uma nota (arraste para alongá-la), clique em uma nota para apagá-la",
+  "midiShortcutPencilTool": "Lápis: clique para adicionar uma nota (arraste para alongá-la); clicar em uma nota a seleciona",
   "midiShortcutDoubleClick": "Em um espaço vazio: adicionar uma nota. Em uma nota: excluí-la",
   "midiShortcutMove": "Uma nota: movê-la, junto com todas as notas selecionadas",
   "midiShortcutResize": "A borda de uma nota: deixá-la mais curta ou mais longa",

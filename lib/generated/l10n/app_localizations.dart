@@ -10988,7 +10988,7 @@ abstract class AppLocalizations {
   /// Shortcut sheet action
   ///
   /// In en, this message translates to:
-  /// **'Pencil: click to add a note (drag to make it longer), click a note to erase it'**
+  /// **'Pencil: click to add a note (drag to make it longer); a click on a note selects it'**
   String get midiShortcutPencilTool;
 
   /// Shortcut sheet action
