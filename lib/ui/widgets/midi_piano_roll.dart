@@ -1511,14 +1511,21 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                   : SystemMouseCursors.click;
       }
     } else if (_editing &&
-        editor!.tool == MidiEditTool.eraser &&
         local.dx >= _keyboardWidth &&
         local.dy >= _view.height &&
-        _lane != null &&
-        !_lane!.isVelocity &&
-        _drawable(_lane!)) {
-      cursor = SystemMouseCursors.none;
-      drawn = local;
+        _lane != null) {
+      // Over the lane a drag draws, whatever the tool but the range: so it
+      // shows the pencil — or the eraser, where that takes points away.
+      final lane = _lane!;
+      final shows = switch (editor!.tool) {
+        MidiEditTool.eraser => !lane.isVelocity && _drawable(lane),
+        MidiEditTool.range => false,
+        _ => lane.isVelocity || _drawable(lane),
+      };
+      if (shows) {
+        cursor = SystemMouseCursors.none;
+        drawn = local;
+      }
     }
     _toolCursorAt.value = drawn;
     if (cursor != _cursor) setState(() => _cursor = cursor);

@@ -666,6 +666,25 @@ void main() {
     expect(cursor, findsOneWidget, reason: 'the pencil again, once let go');
   });
 
+  testWidgets('over the velocity lane, the pencil shows whatever the tool',
+      (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    final lane =
+        tester.getRect(find.byKey(const ValueKey('midi-piano-roll-lane')));
+    final cursor = find.byKey(const ValueKey('midi-piano-roll-tool-cursor'));
+    final mouse = TestPointer(1, PointerDeviceKind.mouse);
+    await tester.sendEventToBinding(mouse.hover(lane.center));
+    await tester.pump();
+    expect(find.descendant(of: cursor, matching: find.byIcon(Icons.edit)),
+        findsWidgets, reason: 'the select tool: a drag here draws');
+    await tester.sendKeyEvent(LogicalKeyboardKey.digit5);
+    await tester.sendEventToBinding(mouse.hover(lane.center + const Offset(3, 0)));
+    await tester.pump();
+    expect(cursor, findsNothing,
+        reason: 'the eraser takes nothing from velocities');
+  });
+
   testWidgets('a middle-button drag moves the canvas, and edits nothing',
       (tester) async {
     await open(tester);
@@ -1203,6 +1222,22 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
       await tester.pump();
       expect(pencilSelected(tester), isTrue);
+    });
+
+    testWidgets('Enter in the tempo keeps the shortcuts working',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      final field = find.descendant(
+          of: find.byKey(const ValueKey('midi-piano-roll-tempo')),
+          matching: find.byType(TextField));
+      await tester.enterText(field, '130');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.pump();
+      expect(pencilSelected(tester), isTrue,
+          reason: 'the keyboard came back to the window');
     });
 
     testWidgets('a press on the notes gives the keys back', (tester) async {

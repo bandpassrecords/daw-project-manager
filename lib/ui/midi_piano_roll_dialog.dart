@@ -574,6 +574,16 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   /// keyboard back to.
   final FocusNode _keys = FocusNode(debugLabel: 'midi-piano-roll-keys');
 
+  /// A field let go of the keyboard (Enter in the tempo does) and it fell
+  /// back to the window's own route: the window's keys take it, or no
+  /// shortcut would work until something was clicked. Focus that went
+  /// anywhere else — a dialog over this one — is left alone.
+  void _reclaimKeys() {
+    final primary = FocusManager.instance.primaryFocus;
+    if (!mounted || primary == null || primary == _keys) return;
+    if (_keys.ancestors.contains(primary)) _keys.requestFocus();
+  }
+
   /// The instrument both versions of the clip play with.
   late SynthVoice _voice = widget.voice ?? inferSynthVoice(widget.clip);
 
@@ -689,6 +699,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
         ..tool = MidiEditTool.pencil;
     }
     _editor?.addListener(_onEdit);
+    FocusManager.instance.addListener(_reclaimKeys);
   }
 
   @override
@@ -696,6 +707,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     _editor?.removeListener(_onEdit);
     _editor?.dispose();
     _ownAuditioner?.dispose();
+    FocusManager.instance.removeListener(_reclaimKeys);
     _keys.dispose();
     _horizonTimer?.cancel();
     _regionRestart?.cancel();
@@ -1034,7 +1046,9 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                   // text field (the tempo, say), so the shortcuts work again.
                   child: Listener(
                     onPointerDown: (_) {
-                      if (isTypingInTextField()) _keys.requestFocus();
+                      if (isTypingInTextField() || !_keys.hasFocus) {
+                        _keys.requestFocus();
+                      }
                     },
                     child: MidiPianoRoll(
                     clip: widget.clip,
