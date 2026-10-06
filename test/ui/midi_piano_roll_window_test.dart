@@ -178,13 +178,18 @@ void main() {
     Offset rulerMiddle(WidgetTester tester) =>
         tester.getCenter(find.byKey(const ValueKey('midi-piano-roll-ruler')));
 
-    testWidgets('clicking the ruler while stopped starts playback there',
+    testWidgets('clicking the ruler while stopped moves the start, plays nothing',
         (tester) async {
       await open(tester);
       await tester.tapAt(rulerMiddle(tester));
       await tester.pump();
+      expect(plays, 0, reason: 'a click on the ruler never starts playback');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
       expect(plays, 1);
-      expect(player.pendingStartFor('k')!.inMilliseconds, closeTo(1000, 5));
+      expect(player.pendingStartFor('k')!.inMilliseconds, closeTo(1000, 5),
+          reason: 'play starts where the ruler was clicked');
     });
 
     testWidgets('clicking the ruler while playing jumps there', (tester) async {

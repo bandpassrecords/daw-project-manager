@@ -30,7 +30,7 @@ import 'widgets/midi_volume_control.dart';
 /// clip row's play button calls — so the instrument, tempo and error
 /// handling are exactly what the list uses; pause, resume and stop go to
 /// [player] directly. Space plays and pauses; clicking the bar ruler jumps
-/// playback there, or starts it from there when stopped. Esc stops the
+/// playback there — or, stopped, only moves where the next play starts. Esc stops the
 /// clip, or closes the window when nothing is playing — and however the
 /// window closes, the clip it was playing stops with it.
 ///
@@ -838,28 +838,30 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     _playHere(takeOver: true);
   }
 
+  /// Where play starts: the last spot clicked on the ruler (the start
+  /// until then).
+  Duration? _startFrom;
+
   void _start() {
+    final from = _startFrom;
     if (_differs || _activeRegion != null || widget.lengthFollowsNotes) {
-      _playHere();
+      _playHere(from: from == null ? null : _between(from, null, _activeRegion));
     } else {
       _playingRegion = null;
+      if (from != null) _player.startAt(widget.playerKey, from);
       widget.onPlay(_voice, _bpm);
     }
   }
 
-  /// The ruler was clicked: jump there, or — with this clip not playing —
-  /// start playback from there. Cycling a loop region, the spot is found in
-  /// it (its start, outside it).
+  /// The ruler was clicked: playing (or paused), jump there; stopped, only
+  /// put the start there — a click on the ruler never starts playback by
+  /// itself. Either way the next play starts from it. Cycling a loop
+  /// region, the spot is found in it (its start, outside it).
   void _seek(Duration position) {
+    _startFrom = position;
     final playing = _player.playingKey;
     if (_isOurs && playing != null) {
       _player.seek(playing, _between(position, null, _playingRegion));
-    } else if (_differs || _activeRegion != null || widget.lengthFollowsNotes) {
-      _playHere(from: _between(position, null, _activeRegion));
-    } else {
-      _playingRegion = null;
-      _player.startAt(widget.playerKey, position);
-      widget.onPlay(_voice, _bpm);
     }
   }
 

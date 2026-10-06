@@ -393,7 +393,8 @@ class MidiPianoRollLabels {
 /// the next start of playback, turns it back on.
 ///
 /// Clicking the bar ruler — or dragging along it and letting go — jumps
-/// playback there through [onSeek], like a DAW's ruler.
+/// playback there through [onSeek], like a DAW's ruler; stopped, the line
+/// rests there to show where the next play starts.
 ///
 /// With a scale set — [initialScale], usually the project's key, or one
 /// picked from the toolbar — rows outside it are shaded and the root's rows
@@ -632,7 +633,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     } else if (!playing && _ticker.isActive) {
       _ticker.stop();
       _wasPlaying = false;
-      _playhead.value = null;
+      // Stopped: the line rests where the next play starts.
+      _playhead.value = _cursorTick;
     }
   }
 
@@ -842,8 +844,13 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     if (next != r) widget.onLoopRegionChanged!(next);
   }
 
+  /// Where a click on the ruler put the start: the line rests there while
+  /// stopped, as a DAW's cursor does.
+  double? _cursorTick;
+
   void _seekTo(double tick) {
     _scrubTick = null;
+    _cursorTick = tick;
     _playhead.value = tick;
     widget.onSeek?.call(durationAtTick(tick, widget.bpm, _shown.ppq));
   }
