@@ -739,9 +739,17 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     super.dispose();
   }
 
+  /// Whether there was something to save, as the header last showed it.
+  bool _showedUnsaved = false;
+
   void _onEdit() {
     if (!mounted) return;
-    setState(() {});
+    // The roll listens to the editor itself; the window only shows whether
+    // there is something to save. Rebuilding it — header and all — on every
+    // step of a drag was work for nothing, and while playing, jank.
+    if (_unsaved != _showedUnsaved) {
+      setState(() => _showedUnsaved = _unsaved);
+    }
     // What plays must be what is on screen: a finished edit — or an undo
     // back to the clip as opened — takes over from wherever playback is,
     // whichever version was playing. Only an edited version playing used to

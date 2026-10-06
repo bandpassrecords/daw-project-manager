@@ -80,6 +80,10 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// Whether previews play on repeat until stopped. Set with [setLoop].
   bool loop = false;
 
+  /// Between stopping the old audio and starting the new: position reports
+  /// then are the swap's, not playback's, and are ignored.
+  bool _swapping = false;
+
   /// The clip [play] was last asked for, and whether it was to loop.
   @visibleForTesting
   MidiClip? requestedClip;
@@ -215,6 +219,10 @@ class MidiPreviewPlayer extends ChangeNotifier {
         _notify();
       });
       _positionSub ??= player.onPositionChanged.listen((p) {
+        // Mid-swap the player reports the stop's rewind (0) and the new
+        // audio's first steps: the line jumped to the start and back, the
+        // view with it, on every note drawn while playing.
+        if (_swapping) return;
         _lastPosition = p;
         _lastPositionAt = DateTime.now();
       });
@@ -222,20 +230,28 @@ class MidiPreviewPlayer extends ChangeNotifier {
       // took a moment), not from where it was when it began. Read before
       // anything below stops it or resets the position — read after, it
       // was always 0, and every edit, undo or redo restarted the clip.
-      final from = takeOverStart(
+      var from = takeOverStart(
         held: takingOver && heldKey != null && playingKey == heldKey
             ? positionOf(heldKey)
             : null,
         requested: startAt,
         loopLength: loopLength,
       );
+      _swapping = true;
       await player.stop();
       await player.setVolume(volume);
       await player
           .setReleaseMode(looping ? ReleaseMode.loop : ReleaseMode.stop);
       _loopLength = loopLength;
-      _lastPosition = Duration.zero;
-      _lastPositionAt = DateTime.now();
+      if (takingOver && heldKey != null && playingKey == heldKey) {
+        // Still the held clip's spot, extrapolated on through the swap
+        // (its reports are ignored meanwhile) — taken now, just before the
+        // new audio starts, not before the stop.
+        from = wrapLoopPosition(positionOf(heldKey) ?? Duration.zero, loopLength);
+      } else {
+        _lastPosition = Duration.zero;
+        _lastPositionAt = DateTime.now();
+      }
       if (from != null && from > Duration.zero) {
         // Loaded, moved, then started: playing first and seeking after
         // sounded the clip's first moments — a restart — before the jump.
@@ -253,6 +269,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
       playingKey = key;
       AppAudioFocus.claim(this);
     } finally {
+      if (generation == _generation) _swapping = false;
       if (generation == _generation && preparingKey == key) preparingKey = null;
       _notify();
     }
