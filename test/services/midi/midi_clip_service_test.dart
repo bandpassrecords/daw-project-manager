@@ -158,6 +158,23 @@ void main() {
     expect(looped, isNot(first), reason: 'and whether it loops');
     expect(looped, endsWith('_loop.wav'));
 
+    // A held note's loop is rendered once, too.
+    final held = await MidiClipService.renderSustainLoop(
+        const MidiClip(name: 'h', ppq: 480, lengthTicks: 3840, notes: [
+          MidiNote(startTick: 0, lengthTicks: 3840, pitch: 60, velocity: 100),
+        ]),
+        voice: SynthVoice.organ,
+        directory: tempDir);
+    expect(p.basename(held), startsWith('sustain_v'));
+    expect(
+        await MidiClipService.renderSustainLoop(
+            const MidiClip(name: 'h', ppq: 480, lengthTicks: 3840, notes: [
+              MidiNote(startTick: 0, lengthTicks: 3840, pitch: 60, velocity: 100),
+            ]),
+            voice: SynthVoice.organ,
+            directory: tempDir),
+        held);
+
     // And how the synth sounds: a render from before a voice was retuned
     // is never played again.
     expect(p.basename(first),

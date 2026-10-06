@@ -59,4 +59,34 @@ void main() {
   test('a muted player fades from nothing to nothing', () {
     expect(fadeOutVolumes(0).every((v) => v == 0), isTrue);
   });
+
+  test('a crossfade neither dips nor swells, and ends all incoming', () {
+    final steps = crossfadeVolumes(0.8);
+    expect(steps, hasLength(16));
+    for (final (out, into) in steps) {
+      expect(out * out + into * into, closeTo(0.64, 1e-9),
+          reason: 'equal power: the same loudness throughout');
+    }
+    expect(steps.last.$1, closeTo(0, 1e-9));
+    expect(steps.last.$2, closeTo(0.8, 1e-9));
+  });
+
+  test('a crossfade let go of stops where it is', () async {
+    final outs = <double>[];
+    final done = await runCrossfade(
+      setOut: (v) async => outs.add(v),
+      setIn: (_) async {},
+      volume: 1,
+      over: Duration.zero,
+      abandoned: () => outs.length >= 5, // let go mid-handover
+    );
+    expect(done, isFalse);
+    expect(outs, hasLength(5));
+    expect(await runCrossfade(
+            setOut: (_) async {},
+            setIn: (_) async {},
+            volume: 1,
+            over: Duration.zero),
+        isTrue);
+  });
 }

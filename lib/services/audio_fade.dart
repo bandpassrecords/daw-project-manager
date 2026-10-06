@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:audioplayers/audioplayers.dart';
 
 /// The volumes a fade from [volume] to silence steps through: [steps] of
@@ -54,4 +56,39 @@ Future<void> runFadeOut({
   }
   if (gone()) return;
   await stop();
+}
+
+/// The (outgoing, incoming) volumes a crossfade at [volume] steps through:
+/// equal-power, so the sound neither dips nor swells while one hands over
+/// to the other; the last step all incoming.
+List<(double, double)> crossfadeVolumes(double volume, {int steps = 16}) => [
+      for (var k = 1; k <= steps; k++)
+        (
+          volume * math.cos(k / steps * math.pi / 2).clamp(0.0, 1.0),
+          volume * math.sin(k / steps * math.pi / 2),
+        ),
+    ];
+
+/// Hands a sound over from one player ([setOut]) to another ([setIn]) over
+/// about [over]. Gives up — leaving both as they are — once [abandoned]
+/// says so. Resolves to whether it got all the way.
+Future<bool> runCrossfade({
+  required Future<void> Function(double volume) setOut,
+  required Future<void> Function(double volume) setIn,
+  required double volume,
+  Duration over = const Duration(milliseconds: 200),
+  bool Function()? abandoned,
+}) async {
+  const steps = 16;
+  try {
+    for (final (out, into) in crossfadeVolumes(volume, steps: steps)) {
+      if (abandoned?.call() ?? false) return false;
+      await setOut(out);
+      await setIn(into);
+      await Future<void>.delayed(over ~/ steps);
+    }
+  } catch (_) {
+    return false;
+  }
+  return true;
 }

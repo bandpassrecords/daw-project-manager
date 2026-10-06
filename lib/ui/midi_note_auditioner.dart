@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import '../models/midi_clip.dart';
 import '../services/audio_fade.dart';
 import '../services/midi/midi_clip_service.dart';
+import '../services/midi/midi_clip_synth.dart';
 import '../services/midi/synth_voice.dart';
 
 /// Sounds single notes in the piano roll: a key pressed on its keyboard, a
@@ -67,6 +68,7 @@ class MidiNoteAuditioner {
       if (_disposed) return;
       final player = _nextPlayer(Object());
       await player.stop();
+      await player.setReleaseMode(ReleaseMode.release);
       await player.setVolume(volume);
       await player.play(DeviceFileSource(path));
     } catch (e) {
@@ -86,20 +88,63 @@ class MidiNoteAuditioner {
   Future<void> _hold(MidiHeldNote note, int pitch, int velocity) async {
     if (_disposed) return;
     try {
-      final path = await _render(clipFor(pitch, velocity, held: true));
+      final clip = clipFor(pitch, velocity, held: true);
+      final path = await _render(clip);
       if (_disposed) return;
       if (note._released) {
         await play(pitch, velocity: velocity);
         return;
       }
       final player = _nextPlayer(note);
-      note._player = player;
+      note._players.add(player);
+      final startedAt = DateTime.now();
       await player.stop();
+      await player.setReleaseMode(ReleaseMode.release);
       await player.setVolume(volume);
       await player.play(DeviceFileSource(path));
-      if (note._released) await _fadeOut(player, note);
+      if (note._released) {
+        await _fadeOut(player, note);
+        return;
+      }
+      // A voice that holds its note carries on, past the render, in a loop
+      // of its steady middle — crossfaded in while the render still plays,
+      // so it lasts for as long as the key is held.
+      if (sustainsWhileHeld(voice)) {
+        await _carryOn(note, player, clip, startedAt);
+      }
     } catch (e) {
       debugPrint('[MidiNoteAuditioner] failed to hold $pitch: $e');
+    }
+  }
+
+  /// How far into a held note's render the loop takes over: well before
+  /// the note in it lets go (four seconds in).
+  static const _loopAfter = Duration(seconds: 3);
+
+  Future<void> _carryOn(MidiHeldNote note, AudioPlayer first, MidiClip clip,
+      DateTime startedAt) async {
+    final loopPath = await MidiClipService.renderSustainLoop(clip,
+        voice: voice, directory: await _directory());
+    final wait = _loopAfter - DateTime.now().difference(startedAt);
+    if (wait > Duration.zero) await Future<void>.delayed(wait);
+    bool gone() =>
+        _disposed || note._released || !identical(_playing[first], note);
+    if (gone()) return;
+    final loop = _nextPlayer(note);
+    note._players.add(loop);
+    await loop.stop();
+    await loop.setReleaseMode(ReleaseMode.loop);
+    await loop.setVolume(0);
+    await loop.play(DeviceFileSource(loopPath));
+    final handedOver = await runCrossfade(
+      setOut: first.setVolume,
+      setIn: loop.setVolume,
+      volume: volume,
+      abandoned: gone,
+    );
+    if (handedOver && !gone()) {
+      note._players.remove(first);
+      await first.stop();
     }
   }
 
@@ -107,8 +152,9 @@ class MidiNoteAuditioner {
   Future<void> release(MidiHeldNote note) async {
     if (note._released) return;
     note._released = true;
-    final player = note._player;
-    if (player != null && !_disposed) await _fadeOut(player, note);
+    if (_disposed) return;
+    // Every player it is sounding on: mid-handover, both.
+    await Future.wait([for (final p in [...note._players]) _fadeOut(p, note)]);
   }
 
   /// Which sound each player is playing now: a fade lets go of a player
@@ -165,7 +211,10 @@ class MidiHeldNote {
   MidiHeldNote._();
 
   bool _released = false;
-  AudioPlayer? _player;
+
+  /// The players it is sounding on: one, or two while its render hands
+  /// over to its loop.
+  final List<AudioPlayer> _players = [];
 
   /// Whether it has been let go.
   bool get released => _released;

@@ -72,7 +72,25 @@ class MidiClipService {
   /// Bumped whenever the synth sounds different — a voice retuned, a fade
   /// added — so previews cached before are rendered again rather than
   /// played as they were.
-  static const kPreviewRenderVersion = 2;
+  static const kPreviewRenderVersion = 3;
+
+  /// The loop a held [heldClip] carries on in once its render runs out (see
+  /// [sustainLoopWav]), rendered once and cached like a preview.
+  static Future<String> renderSustainLoop(
+    MidiClip heldClip, {
+    SynthVoice voice = SynthVoice.keys,
+    required Directory directory,
+  }) async {
+    final name = 'sustain_v$kPreviewRenderVersion'
+        '_${_fnv1a(heldClip.contentKey)}_${voice.name}.wav';
+    final out = File(p.join(directory.path, name));
+    if (await out.exists()) return out.path;
+    final bytes = await Isolate.run(() => sustainLoopWav(
+        const MidiClipSynth().renderWav(heldClip, bpm: 120, voice: voice)));
+    await directory.create(recursive: true);
+    await out.writeAsBytes(bytes, flush: true);
+    return out.path;
+  }
 
   static Future<String> renderPreview(
     MidiClip clip, {

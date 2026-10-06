@@ -43,7 +43,9 @@ void main() {
     final seconds = synth.durationSeconds(_clip(const [], length: 1920), 120);
     expect(seconds, closeTo(2.3, 1e-9));
     final wav = synth.renderWav(_clip(const [], length: 1920), bpm: 120);
-    expect(_samples(wav).length, (2.3 * 8000).ceil());
+    expect(_samples(wav).length,
+        (2.3 * 8000).ceil() + (kEndSilenceSeconds * 8000).round(),
+        reason: 'and the silence after the end');
   });
 
   test('defaults to 120 BPM when the project tempo is unknown', () {
@@ -210,7 +212,9 @@ void main() {
     final clip = _clip(const [
       MidiNote(startTick: 0, lengthTicks: 480, pitch: 60, velocity: 100),
     ], length: 480 * 1000);
-    expect(_samples(capped.renderWav(clip, bpm: 120)).length, 3 * 8000);
+    expect(_samples(capped.renderWav(clip, bpm: 120)).length,
+        3 * 8000 + (kEndSilenceSeconds * 8000).round(),
+        reason: 'three seconds of sound, then the silence after it');
   });
 
   group('voices', () {
@@ -292,7 +296,8 @@ void main() {
         ]),
         voice: SynthVoice.drumKit);
     final x = _samples(wav);
-    expect(x.last, 0);
+    final silence = (kEndSilenceSeconds * 8000).round();
+    final end = x.length - silence; // where the sound itself ends
     final fade = (kEndFadeSeconds * 8000).round();
     double loudness(int from) {
       var s = 0.0;
@@ -302,8 +307,58 @@ void main() {
       return s;
     }
 
-    expect(loudness(x.length - fade ~/ 4), lessThan(loudness(x.length - fade)),
+    expect(loudness(end - fade ~/ 4), lessThan(loudness(end - fade)),
         reason: 'fading towards the end');
+    // Then true silence: Windows plays out its last, part-filled buffer
+    // with leftovers — the glitch heard after a sound — and leftovers of
+    // silence are silent.
+    expect(x.sublist(end - 1).every((v) => v.abs() <= 1), isTrue);
+    expect(x.length - end, silence);
+  });
+
+  group('a held note carries on in a loop', () {
+    const held = MidiClip(name: 'h', ppq: 480, lengthTicks: 3840, notes: [
+      MidiNote(startTick: 0, lengthTicks: 3840, pitch: 60, velocity: 100),
+    ]);
+
+    test('only voices that hold a note need one', () {
+      for (final v in [SynthVoice.organ, SynthVoice.pad, SynthVoice.lead,
+          SynthVoice.strings, SynthVoice.brass, SynthVoice.bass]) {
+        expect(sustainsWhileHeld(v), isTrue, reason: v.name);
+      }
+      for (final v in [SynthVoice.keys, SynthVoice.pluck, SynthVoice.bell,
+          SynthVoice.kick, SynthVoice.drumKit]) {
+        expect(sustainsWhileHeld(v), isFalse,
+            reason: '${v.name} dies away on its own');
+      }
+    });
+
+    test('its loop is a second of the steady middle, as loud, and seamless',
+        () {
+      final whole = synth.renderWav(held, bpm: 120, voice: SynthVoice.organ);
+      final loop = _samples(sustainLoopWav(whole));
+      final source = _samples(whole);
+      expect(loop.length, 8000, reason: 'one second at 8 kHz');
+
+      double rms(List<int> x) {
+        var s = 0.0;
+        for (final v in x) {
+          s += v.toDouble() * v;
+        }
+        return math.sqrt(s / x.length);
+      }
+
+      expect(rms(loop), closeTo(rms(source.sublist(16000, 24000)), rms(loop) * 0.05),
+          reason: 'cut from the same render: the same level');
+
+      // The seam (last sample into the first) is no bigger a step than the
+      // wave itself takes between neighbouring samples.
+      var biggest = 0;
+      for (var i = 1; i < loop.length; i++) {
+        biggest = math.max(biggest, (loop[i] - loop[i - 1]).abs());
+      }
+      expect((loop.first - loop.last).abs(), lessThanOrEqualTo(biggest));
+    });
   });
 
   test('a loop runs straight on: its end is not faded', () {

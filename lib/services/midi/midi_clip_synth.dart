@@ -120,6 +120,15 @@ class MidiClipSynth {
       for (var i = 0; i < fade; i++) {
         mix[frames - 1 - i] *= i / fade;
       }
+      // Then true silence. Windows' player, reaching the end of a file,
+      // plays out its last, part-filled buffer with whatever was left in it
+      // — the glitch heard after a sound had ended. Ending on silence, that
+      // leftover is silence too.
+      final padded =
+          Float64List(frames + (kEndSilenceSeconds * sampleRate).round());
+      padded.setRange(0, frames, mix);
+      mix = padded;
+      frames = padded.length;
     }
 
     final pcm = ByteData(frames * 2);
@@ -401,6 +410,47 @@ List<double> _saw(int n, [double rolloff = 1]) =>
 
 /// How long the end of a rendered preview takes to fade to silence.
 const double kEndFadeSeconds = 0.02;
+
+/// The silence after it: see [MidiClipSynth.renderWav].
+const double kEndSilenceSeconds = 0.15;
+
+/// Whether [voice] holds its note for as long as it's held (an organ, a
+/// pad) rather than dying away on its own (keys, a pluck, a bell, drums):
+/// only those need a held note to carry on in a loop.
+bool sustainsWhileHeld(SynthVoice voice) =>
+    !voice.isDrum && (_patches[voice]?.sustain ?? 0) > 0;
+
+/// A stretch of a held note's steady middle, cut from its render [heldWav]
+/// ([length] seconds from [from]) to repeat for as long as the note is
+/// held. Its end is crossfaded into its start over [crossfade] seconds, so
+/// it loops without a seam. Cut from the very render that starts the note,
+/// it is exactly as loud.
+Uint8List sustainLoopWav(
+  Uint8List heldWav, {
+  double from = 2.0,
+  double length = 1.0,
+  double crossfade = 0.15,
+}) {
+  final data = ByteData.sublistView(heldWav);
+  final rate = data.getUint32(24, Endian.little);
+  final count = data.getUint32(40, Endian.little) ~/ 2;
+  double at(int i) =>
+      i < count ? data.getInt16(44 + i * 2, Endian.little).toDouble() : 0;
+  final start = (from * rate).round();
+  final frames = (length * rate).round();
+  final fade = (crossfade * rate).round();
+  final pcm = ByteData(frames * 2);
+  for (var i = 0; i < frames; i++) {
+    var v = at(start + i);
+    if (i < fade) {
+      // The loop's head, blended in from where its tail runs on into it.
+      final w = i / fade;
+      v = v * w + at(start + frames + i) * (1 - w);
+    }
+    pcm.setInt16(i * 2, v.round().clamp(-32768, 32767), Endian.little);
+  }
+  return _wav(pcm.buffer.asUint8List(), rate);
+}
 
 final Map<SynthVoice, _Patch> _patches = {
   // Bright and held, with a centre voice so its detuned pair can't beat it
