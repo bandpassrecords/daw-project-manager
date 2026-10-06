@@ -636,6 +636,36 @@ void main() {
     expect(fullScreenChanges, [true]);
   });
 
+  testWidgets('a middle-button drag shows only a grabbing hand, any tool',
+      (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+    final g = grid(tester);
+    final at = Offset(g.left + g.width * 0.6, g.center.dy - 60);
+    final cursor = find.byKey(const ValueKey('midi-piano-roll-tool-cursor'));
+    final mouse = TestPointer(1, PointerDeviceKind.mouse);
+    await tester.sendEventToBinding(mouse.hover(at));
+    await tester.pump();
+    expect(cursor, findsOneWidget, reason: 'the pencil, drawn');
+
+    final middle = await tester.startGesture(at,
+        kind: PointerDeviceKind.mouse, buttons: kMiddleMouseButton);
+    await tester.pump();
+    MouseCursor shown() => tester
+        .widget<MouseRegion>(find.byWidgetPredicate((w) =>
+            w is MouseRegion && w.cursor == SystemMouseCursors.grabbing))
+        .cursor;
+    expect(cursor, findsNothing, reason: 'no pencil left behind');
+    expect(shown(), SystemMouseCursors.grabbing);
+    await middle.moveBy(const Offset(-40, 0));
+    await tester.pump();
+    expect(cursor, findsNothing);
+    await middle.up();
+    await tester.pump();
+    expect(cursor, findsOneWidget, reason: 'the pencil again, once let go');
+  });
+
   testWidgets('a middle-button drag moves the canvas, and edits nothing',
       (tester) async {
     await open(tester);
@@ -941,6 +971,22 @@ void main() {
       expect(saved.single.$1.notes.last.startTick, 5760);
       expect(saved.single.$1.lengthTicks, 7680);
       expect(loopOf(tester), (start: 0, end: 7680));
+    });
+
+    testWidgets('a drafted clip plays on past its notes, never cycling',
+        (tester) async {
+      await open(tester,
+          startEditing: true, lengthFollowsNotes: true, loop: true);
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.1, g.center.dy));
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(player.requestedClip!.lengthTicks, greaterThanOrEqualTo(8 * 1920),
+          reason: 'bars of room past a one-bar draft');
+      expect(player.requestedLoop, isFalse,
+          reason: 'no loop region: it plays on, the loop button or not');
+      await player.stop();
+      await tester.pump(const Duration(seconds: 1));
     });
 
     testWidgets('its middle drags it along, on the grid', (tester) async {

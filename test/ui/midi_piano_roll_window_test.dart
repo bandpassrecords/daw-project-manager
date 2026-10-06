@@ -330,6 +330,30 @@ void main() {
     });
   });
 
+  group('open-ended playback', () {
+    const draft = MidiClip(
+      name: 'Idea',
+      ppq: 480,
+      lengthTicks: 1920,
+      notes: [MidiNote(startTick: 5000, lengthTicks: 240, pitch: 60, velocity: 90)],
+    );
+
+    test('renders past the last note, and never back', () {
+      expect(openEndedHorizon(draft, current: 0, step: 15360), 5240 + 15360);
+      expect(openEndedHorizon(draft, current: 40000, step: 15360), 40000,
+          reason: 'what was reached stays reached');
+      const empty = MidiClip(name: 'x', ppq: 480, lengthTicks: 1920, notes: []);
+      expect(openEndedHorizon(empty, current: 0, step: 15360), 15360);
+    });
+
+    test('renders further a few seconds before the end', () {
+      const rendered = Duration(seconds: 16);
+      expect(needsLongerHorizon(const Duration(seconds: 12), rendered), isFalse);
+      expect(needsLongerHorizon(const Duration(seconds: 13), rendered), isTrue);
+      expect(needsLongerHorizon(null, rendered), isFalse);
+    });
+  });
+
   test('zipMidiFiles packs the files under a filesystem-safe name', () async {
     final dir = await Directory.systemTemp.createTemp('midi_zip_');
     addTearDown(() => dir.delete(recursive: true));

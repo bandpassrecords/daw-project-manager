@@ -79,6 +79,12 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// Whether previews play on repeat until stopped. Set with [setLoop].
   bool loop = false;
 
+  /// The clip [play] was last asked for, and whether it was to loop.
+  @visibleForTesting
+  MidiClip? requestedClip;
+  @visibleForTesting
+  bool? requestedLoop;
+
   /// What [play] was last asked to play, so [setLoop] can carry on with it.
   (String, MidiClip, double?, SynthVoice)? _current;
 
@@ -158,11 +164,18 @@ class MidiPreviewPlayer extends ChangeNotifier {
   /// by then. Without it, deleting a note mid-playback cut the sound out
   /// and flickered the transport.
   Future<void> play(String key, MidiClip clip,
-      {double? bpm, required SynthVoice voice, bool takeOver = false}) async {
+      {double? bpm,
+      required SynthVoice voice,
+      bool takeOver = false,
+      bool? loop}) async {
     final generation = ++_generation;
     final takingOver = takeOver && playingKey != null && !paused;
     final heldKey = playingKey;
-    final looping = loop;
+    // [loop] overrides the player's setting for this play: an open-ended
+    // draft never cycles, whatever the loop button says.
+    final looping = loop ?? this.loop;
+    requestedClip = clip;
+    requestedLoop = looping;
     final loopLength = looping
         ? Duration(
             microseconds:

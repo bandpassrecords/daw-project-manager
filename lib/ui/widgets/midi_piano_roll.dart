@@ -1064,7 +1064,10 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   void _startDrag(PointerDownEvent e) {
     _pointers.add(e.pointer);
     if (e.buttons & kMiddleMouseButton != 0) {
-      // The middle button grabs the canvas and moves it, as in a DAW.
+      // The middle button grabs the canvas and moves it, as in a DAW — a
+      // grabbing hand and nothing else, whatever the tool: the drawn pencil
+      // or eraser would only sit there while the view slid under it.
+      _toolCursorAt.value = null;
       setState(() {
         _panning = true;
         _cursor = SystemMouseCursors.grabbing;
@@ -1402,6 +1405,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         _panning = false;
         _cursor = MouseCursor.defer;
       });
+      // Back to the tool's own pointer, where the mouse is now.
+      _updateHover(e.localPosition);
       return;
     }
     if (_pressedKey != null) setState(() => _pressedKey = null);

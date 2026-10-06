@@ -632,7 +632,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     _player.stop();
     _player.startAt(key, at == null ? position : at(position));
     if (!running) return;
-    if (key == _editKey || _activeRegion != null) {
+    if (key == _editKey || _activeRegion != null || widget.lengthFollowsNotes) {
       _playHere();
     } else {
       _playingRegion = null;
@@ -697,6 +697,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     _editor?.dispose();
     _ownAuditioner?.dispose();
     _keys.dispose();
+    _horizonTimer?.cancel();
     _regionRestart?.cancel();
     super.dispose();
   }
@@ -751,15 +752,57 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     if (_differs) _playedEdit = _editor!.committed;
     final region = _activeRegion;
     _playingRegion = region;
-    if (region != null) clip = loopRegionClip(clip, region);
+    final openEnded = region == null && widget.lengthFollowsNotes;
+    if (region != null) {
+      clip = loopRegionClip(clip, region);
+    } else if (openEnded) {
+      _horizonTicks =
+          openEndedHorizon(clip, current: _horizonTicks, step: _horizonStep);
+      clip = clip.copyWith(lengthTicks: _horizonTicks);
+    }
     if (from != null) _player.startAt(key, from);
     _player
-        .play(key, clip, bpm: _bpm, voice: _voice, takeOver: takeOver)
+        .play(key, clip,
+            bpm: _bpm,
+            voice: _voice,
+            takeOver: takeOver,
+            loop: openEnded ? false : null)
         .catchError((Object _) {});
+    _watchHorizon(openEnded);
+  }
+
+  /// How far a drafted clip's playback reaches: past its notes into
+  /// silence, pushed further by [_horizonStep] as playback nears it — so a
+  /// draft plays on until it's stopped, instead of ending (or cycling) with
+  /// its last bar.
+  late int _horizonTicks = _horizonStep;
+  int get _horizonStep => _timeSignature.barTicks(_ppq) * 8;
+  Timer? _horizonTimer;
+
+  void _watchHorizon(bool on) {
+    _horizonTimer?.cancel();
+    _horizonTimer = on
+        ? Timer.periodic(
+            const Duration(milliseconds: 500), (_) => _checkHorizon())
+        : null;
+  }
+
+  void _checkHorizon() {
+    final key = _player.playingKey;
+    if (!mounted || (!_isOurs && !_preparing)) {
+      _watchHorizon(false);
+      return;
+    }
+    if (key == null || _player.paused) return;
+    final rendered = durationAtTick(_horizonTicks.toDouble(), _bpm, _ppq);
+    if (!needsLongerHorizon(_player.positionOf(key), rendered)) return;
+    // Nearly there: render further and swap it in without a gap.
+    _horizonTicks += _horizonStep;
+    _playHere(takeOver: true);
   }
 
   void _start() {
-    if (_differs || _activeRegion != null) {
+    if (_differs || _activeRegion != null || widget.lengthFollowsNotes) {
       _playHere();
     } else {
       _playingRegion = null;
@@ -774,7 +817,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     final playing = _player.playingKey;
     if (_isOurs && playing != null) {
       _player.seek(playing, _between(position, null, _playingRegion));
-    } else if (_differs || _activeRegion != null) {
+    } else if (_differs || _activeRegion != null || widget.lengthFollowsNotes) {
       _playHere(from: _between(position, null, _activeRegion));
     } else {
       _playingRegion = null;
@@ -806,7 +849,8 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     super.didUpdateWidget(old);
     // Looping switched while a loop region is set: playback moves into the
     // region, or back out to the whole clip, from the same spot.
-    if ((old.loop ?? false) != (widget.loop ?? false) && _loopRegion != null) {
+    if ((old.loop ?? false) != (widget.loop ?? false) &&
+        (_loopRegion != null || widget.lengthFollowsNotes)) {
       final from = _playingRegion;
       final to = _activeRegion;
       _restartWith(() {}, at: (p) => _between(p, from, to));
@@ -1286,3 +1330,20 @@ class _WindowKeys extends StatelessWidget {
     );
   }
 }
+
+/// How far open-ended playback of [clip] renders: at least its own length
+/// and [step] past its last note, never less than it reached before
+/// ([current]).
+int openEndedHorizon(MidiClip clip, {required int current, required int step}) {
+  var end = 0;
+  for (final n in clip.notes) {
+    if (n.endTick > end) end = n.endTick;
+  }
+  return [current, clip.lengthTicks, end + step].reduce((a, b) => a > b ? a : b);
+}
+
+/// Whether open-ended playback at [position] has come within [lead] of
+/// the end of what was rendered: time to render further.
+bool needsLongerHorizon(Duration? position, Duration rendered,
+        {Duration lead = const Duration(seconds: 3)}) =>
+    position != null && position >= rendered - lead;
