@@ -523,7 +523,8 @@ class MidiPianoRollWindow extends StatefulWidget {
   /// Sounds keys and edited notes; the window makes its own when null.
   final MidiNoteAuditioner? auditioner;
 
-  /// Opens already editing, pencil in hand — for a blank clip to draft in.
+  /// Opens already editing (with the select tool, as editing always
+  /// starts) — for a blank clip to draft in.
   final bool startEditing;
 
   /// A clip drafted from nothing: its length follows its notes, shrinking
@@ -719,9 +720,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     _editor?.timeSignature = _timeSignature;
     _editor?.lengthFollowsNotes = widget.lengthFollowsNotes;
     if (widget.startEditing && _editor != null) {
-      _editor
-        ..editing = true
-        ..tool = MidiEditTool.pencil;
+      _editor.editing = true;
     }
     _editor?.addListener(_onEdit);
     FocusManager.instance.addListener(_reclaimKeys);

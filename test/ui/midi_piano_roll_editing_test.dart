@@ -263,6 +263,12 @@ void main() {
   /// The middle of the clip's one note (ticks 0–240 of 1920, on C3).
   Offset noteMiddle(Rect g) => Offset(g.left + g.width / 16, g.center.dy);
 
+  /// The pencil, by its key (8).
+  Future<void> pickPencilKey(WidgetTester tester) async {
+    await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+    await tester.pumpAndSettle();
+  }
+
   Future<void> save(WidgetTester tester) async {
     await tester.tap(find.byKey(const ValueKey('midi-piano-roll-save')));
     await tester.pumpAndSettle();
@@ -900,23 +906,23 @@ void main() {
   });
 
   group('a new idea', () {
-    testWidgets('opens editing with the pencil: one click draws',
+    testWidgets('opens editing, with the select tool: a double-click draws',
         (tester) async {
       await open(tester, startEditing: true);
-      expect(
-          tester
-              .widget<IconButton>(
-                  find.byKey(const ValueKey('midi-piano-roll-tool-pencil')))
-              .isSelected,
-          isTrue);
+      bool selected(String tool) => tester
+          .widget<IconButton>(find.byKey(ValueKey('midi-piano-roll-tool-$tool')))
+          .isSelected!;
+      expect(selected('select'), isTrue);
+      expect(selected('pencil'), isFalse);
       final g = grid(tester);
-      await click(tester, Offset(g.left + g.width * 0.76, g.center.dy));
+      await doubleClick(tester, Offset(g.left + g.width * 0.76, g.center.dy));
       await save(tester);
       expect(saved.single.$1.notes, hasLength(2));
     });
 
     testWidgets('a note dragged past the end grows the clip', (tester) async {
       await open(tester, startEditing: true);
+      await pickPencilKey(tester);
       final g = grid(tester);
       await dragFrom(tester, Offset(g.left + g.width * 0.9, g.center.dy),
           Offset(g.width * 0.3, 0));
@@ -927,6 +933,7 @@ void main() {
     testWidgets('the canvas never ends: scroll on and keep drawing',
         (tester) async {
       await open(tester, startEditing: true);
+      await pickPencilKey(tester);
       final g = grid(tester);
       for (var pass = 0; pass < 6; pass++) {
         final middle = await tester.startGesture(
@@ -1002,6 +1009,7 @@ void main() {
   testWidgets('with Ctrl, the pencil places a note where it is clicked',
       (tester) async {
     await open(tester, startEditing: true);
+    await pickPencilKey(tester);
     final g = grid(tester);
     await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
     // 250 ticks in: between the 1/16 lines at 240 and 360.
@@ -1015,6 +1023,7 @@ void main() {
 
   testWidgets('the pencil dragged up draws a louder note', (tester) async {
     await open(tester, startEditing: true);
+    await pickPencilKey(tester);
     final g = grid(tester);
     await dragFrom(tester, Offset(g.left + g.width * 0.5 + 2, g.center.dy),
         const Offset(0, -40));
@@ -1085,6 +1094,7 @@ void main() {
         'a drafted clip opens unbounded on four bars, and is looped where '
         'its notes end once saved', (tester) async {
       await open(tester, startEditing: true, lengthFollowsNotes: true);
+      await pickPencilKey(tester);
       expect(loopOf(tester), isNull, reason: 'nothing bounds a new idea');
       final g = grid(tester);
       // Four bars across: three quarters in is the fourth bar.
@@ -1099,6 +1109,7 @@ void main() {
         (tester) async {
       await open(tester,
           startEditing: true, lengthFollowsNotes: true, loop: true);
+      await pickPencilKey(tester);
       final g = grid(tester);
       await click(tester, Offset(g.left + g.width * 0.1, g.center.dy));
       await tester.sendKeyEvent(LogicalKeyboardKey.space);

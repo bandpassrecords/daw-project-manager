@@ -156,7 +156,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
   }
 
   /// A blank clip to draft an idea in, for collection [c]: the piano roll
-  /// opens on it with the pencil in hand, and saving puts it in [c] — the
+  /// opens on it, editing, and saving puts it in [c] — the
   /// same item each time it's saved again, not a copy per save.
   Future<void> _newClip(MidiCollection c) async {
     final l10n = AppLocalizations.of(context)!;

@@ -101,7 +101,10 @@ class MidiClipEditController extends ChangeNotifier {
   set editing(bool value) {
     if (_editing == value) return;
     _editing = value;
-    if (!value) {
+    if (value) {
+      // Editing starts with the select tool, whatever was in hand last time.
+      _tool = MidiEditTool.select;
+    } else {
       _selection.clear();
       _range = null;
     }

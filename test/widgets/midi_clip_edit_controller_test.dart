@@ -770,4 +770,14 @@ void main() {
     c.addNoteAt(1001.6, 74);
     expect(c.clip.notes.last.startTick, 960, reason: 'without: on the grid');
   });
+
+  test('editing always starts with the select tool', () {
+    final c = MidiClipEditController(chord)..editing = true;
+    expect(c.tool, MidiEditTool.select);
+    c.tool = MidiEditTool.pencil;
+    c.editing = false;
+    c.editing = true;
+    expect(c.tool, MidiEditTool.select,
+        reason: 'not the pencil left in hand last time');
+  });
 }
