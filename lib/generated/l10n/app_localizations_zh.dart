@@ -5780,9 +5780,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get synthVoiceSynth => '合成器';
-
-  @override
   String get synthVoiceLead => '主音';
 
   @override

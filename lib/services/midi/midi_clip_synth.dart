@@ -30,7 +30,7 @@ class MidiClipSynth {
   /// Seconds the clip lasts at [bpm] with [voice]'s release tail, capped at
   /// [maxSeconds].
   double durationSeconds(MidiClip clip, double bpm,
-      {SynthVoice voice = SynthVoice.synth}) {
+      {SynthVoice voice = SynthVoice.keys}) {
     final secondsPerTick = 60 / bpm / clip.ppq;
     var end = clip.lengthTicks;
     for (final n in clip.notes) {
@@ -56,7 +56,7 @@ class MidiClipSynth {
   /// folded back onto its start, the way it would ring into the next pass.
   /// Played on repeat, it loops seamlessly, in time.
   Uint8List renderWav(MidiClip clip,
-      {double? bpm, SynthVoice voice = SynthVoice.synth, bool loop = false}) {
+      {double? bpm, SynthVoice voice = SynthVoice.keys, bool loop = false}) {
     final tempo = (bpm == null || bpm <= 0) ? 120.0 : bpm;
     final secondsPerTick = 60 / tempo / clip.ppq;
     final totalSeconds = durationSeconds(clip, tempo, voice: voice);
@@ -369,7 +369,6 @@ List<double> _saw(int n, [double rolloff = 1]) =>
     [for (var h = 1; h <= n; h++) 1 / math.pow(h, rolloff).toDouble()];
 
 final Map<SynthVoice, _Patch> _patches = {
-  SynthVoice.synth: _Patch(harmonics: const [1.0, 0.45, 0.25, 0.12, 0.06]),
   SynthVoice.lead: _Patch(
     harmonics: _saw(14),
     attack: 0.004,

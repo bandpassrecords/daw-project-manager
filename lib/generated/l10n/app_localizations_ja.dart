@@ -5846,9 +5846,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get synthVoiceSynth => 'シンセ';
-
-  @override
   String get synthVoiceLead => 'リード';
 
   @override

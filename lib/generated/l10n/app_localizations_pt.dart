@@ -6021,9 +6021,6 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get synthVoiceSynth => 'Sintetizador';
-
-  @override
   String get synthVoiceLead => 'Lead';
 
   @override

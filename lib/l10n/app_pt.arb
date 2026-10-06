@@ -3922,7 +3922,6 @@
   "midiClipsStale": "O arquivo do projeto mudou desde que estes clipes foram lidos.",
   "midiClipsNoneStored": "Ainda não há clipes MIDI salvos para este projeto. Extraia os metadados no computador que tem o arquivo do projeto.",
   "midiClipInstrumentTooltip": "Instrumento: {name}",
-  "synthVoiceSynth": "Sintetizador",
   "synthVoiceLead": "Lead",
   "synthVoiceBass": "Baixo",
   "synthVoicePad": "Pad",

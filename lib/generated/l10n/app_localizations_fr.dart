@@ -6068,9 +6068,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get synthVoiceSynth => 'Synthé';
-
-  @override
   String get synthVoiceLead => 'Lead';
 
   @override

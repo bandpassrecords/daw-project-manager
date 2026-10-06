@@ -72,7 +72,7 @@ class MidiClipService {
   static Future<String> renderPreview(
     MidiClip clip, {
     double? bpm,
-    SynthVoice voice = SynthVoice.synth,
+    SynthVoice voice = SynthVoice.keys,
     bool loop = false,
     required Directory directory,
   }) async {

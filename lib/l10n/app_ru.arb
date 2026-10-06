@@ -3898,7 +3898,6 @@
   "midiClipsStale": "Файл проекта изменился с тех пор, как были прочитаны эти клипы.",
   "midiClipsNoneStored": "Для этого проекта ещё нет сохранённых MIDI-клипов. Извлеките метаданные на компьютере, где есть файл проекта.",
   "midiClipInstrumentTooltip": "Инструмент: {name}",
-  "synthVoiceSynth": "Синтезатор",
   "synthVoiceLead": "Лид",
   "synthVoiceBass": "Бас",
   "synthVoicePad": "Пэд",

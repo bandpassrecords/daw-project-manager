@@ -3898,7 +3898,6 @@
   "midiClipsStale": "これらのクリップを読み込んだ後にプロジェクトファイルが変更されました。",
   "midiClipsNoneStored": "このプロジェクトのMIDIクリップはまだ保存されていません。プロジェクトファイルのあるコンピューターでメタデータを抽出してください。",
   "midiClipInstrumentTooltip": "楽器: {name}",
-  "synthVoiceSynth": "シンセ",
   "synthVoiceLead": "リード",
   "synthVoiceBass": "ベース",
   "synthVoicePad": "パッド",

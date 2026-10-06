@@ -5645,10 +5645,6 @@
       }
     }
   },
-  "synthVoiceSynth": "Synth",
-  "@synthVoiceSynth": {
-    "description": "Built-in preview instrument name: Generic synth"
-  },
   "synthVoiceLead": "Lead",
   "@synthVoiceLead": {
     "description": "Built-in preview instrument name: Lead synth"

@@ -411,6 +411,7 @@ class MidiPianoRoll extends StatefulWidget {
     this.onScaleChanged,
     this.editor,
     this.onAudition,
+    this.onHold,
     this.timeSignature = TimeSignature.common,
     this.loopRegion,
     this.onLoopRegionChanged,
@@ -449,6 +450,12 @@ class MidiPianoRoll extends StatefulWidget {
   /// drafted from nothing, one bar long, opens on room to draw in rather
   /// than zoomed in on that bar.
   final int? minViewTicks;
+
+  /// Like [onAudition], but for as long as the press lasts: returns what
+  /// lets the note go. A key on the keyboard and a note pressed or drawn
+  /// sound through it, so a quick click is a blip and a held one rings on.
+  /// Null: [onAudition] sounds them briefly instead.
+  final VoidCallback Function(int pitch, int velocity)? onHold;
 
   /// Cubase's "acoustic feedback": notes sound as they are edited.
   final bool acousticFeedback;
@@ -587,11 +594,34 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   /// The key held down on the keyboard, drawn pressed.
   int? _pressedKey;
 
-  /// Sounds [pitch] when acoustic feedback is on.
+  /// Sounds [pitch] briefly when acoustic feedback is on.
   void _feedback(int pitch, [int? velocity]) {
     if (!widget.acousticFeedback) return;
     widget.onAudition
         ?.call(pitch.clamp(0, 127), velocity ?? widget.editor?.velocity ?? 100);
+  }
+
+  /// What lets the note sounding under the press go, if one is.
+  VoidCallback? _letGo;
+
+  /// Sounds [pitch] for as long as the press lasts (letting go of any it
+  /// was sounding): a key always, a note only with acoustic feedback on
+  /// ([key] false).
+  void _holdSound(int pitch, {int? velocity, bool key = false}) {
+    if (!key && !widget.acousticFeedback) return;
+    _releaseSound();
+    final v = velocity ?? (key ? 100 : widget.editor?.velocity ?? 100);
+    final hold = widget.onHold;
+    if (hold == null) {
+      widget.onAudition?.call(pitch.clamp(0, 127), v);
+      return;
+    }
+    _letGo = hold(pitch.clamp(0, 127), v);
+  }
+
+  void _releaseSound() {
+    _letGo?.call();
+    _letGo = null;
   }
 
   /// Runs the frame ticker exactly while the clip is playing.
@@ -1082,7 +1112,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       // The keyboard plays the key pressed, editing or not.
       final pitch = _pitchAtY(k.dy);
       setState(() => _pressedKey = pitch);
-      widget.onAudition?.call(pitch, 100);
+      _holdSound(pitch, key: true);
       return;
     }
     final editor = widget.editor;
@@ -1118,7 +1148,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         // The pencil draws a note here, as long as the drag makes it.
         editor.beginNote(_tickAtX(p.dx), _pitchAtY(p.dy));
         _drag = _EditDrag(_DragKind.draw, p, null)..lastValue = editor.velocity;
-        _feedback(_pitchAtY(p.dy));
+        _holdSound(_pitchAtY(p.dy));
         return;
       }
       if (hit == null && !_keys.isShiftPressed && _secondPress(e.timeStamp, p)) {
@@ -1129,7 +1159,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         _drag = _EditDrag(_DragKind.draw, p, null)
           ..lastValue = editor.velocity
           ..lengthOnly = true;
-        _feedback(_pitchAtY(p.dy));
+        _holdSound(_pitchAtY(p.dy));
         return;
       }
       if (hit == null) {
@@ -1142,7 +1172,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       }
       final (index, edge) = hit;
       final note = _shown.notes[index];
-      _feedback(note.pitch, note.velocity);
+      _holdSound(note.pitch, velocity: note.velocity);
       if (_keys.isShiftPressed) {
         editor.toggleSelected(index);
         _drag = _EditDrag(_DragKind.tapNote, p, index);
@@ -1214,7 +1244,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       final pitch = _pitchAtY(y);
       if (pitch != _pressedKey) {
         setState(() => _pressedKey = pitch);
-        widget.onAudition?.call(pitch, 100);
+        _holdSound(pitch, key: true);
       }
       return;
     }
@@ -1250,7 +1280,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         if (dp != drag.lastPitchDelta) {
           // Dragged onto another key: hear where it landed.
           drag.lastPitchDelta = dp;
-          _feedback(drag.pitch + dp);
+          _holdSound(drag.pitch + dp);
         }
       case _DragKind.resize:
         editor.resizeSelection(drag.edge!, d.dx / _px, free: _free);
@@ -1409,6 +1439,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       _updateHover(e.localPosition);
       return;
     }
+    _releaseSound();
     if (_pressedKey != null) setState(() => _pressedKey = null);
     final drag = _drag;
     final editor = widget.editor;
@@ -1459,6 +1490,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     _pointers.remove(e.pointer);
     _stopAutoScroll();
     _panning = false;
+    _releaseSound();
     if (_pressedKey != null) setState(() => _pressedKey = null);
     final editor = widget.editor;
     if (editor != null) _abandonDrag(editor);

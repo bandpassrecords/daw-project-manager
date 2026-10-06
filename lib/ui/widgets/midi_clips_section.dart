@@ -647,7 +647,6 @@ MidiClipListLabels midiClipListLabelsOf(AppLocalizations l10n) =>
     );
 
 String synthVoiceName(AppLocalizations l10n, SynthVoice v) => switch (v) {
-      SynthVoice.synth => l10n.synthVoiceSynth,
       SynthVoice.lead => l10n.synthVoiceLead,
       SynthVoice.bass => l10n.synthVoiceBass,
       SynthVoice.pad => l10n.synthVoicePad,

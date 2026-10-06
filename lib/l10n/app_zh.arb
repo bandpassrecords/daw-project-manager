@@ -3898,7 +3898,6 @@
   "midiClipsStale": "读取这些片段后，项目文件已更改。",
   "midiClipsNoneStored": "此项目尚未保存 MIDI 片段。请在存有项目文件的电脑上提取其元数据。",
   "midiClipInstrumentTooltip": "乐器：{name}",
-  "synthVoiceSynth": "合成器",
   "synthVoiceLead": "主音",
   "synthVoiceBass": "贝斯",
   "synthVoicePad": "铺底",

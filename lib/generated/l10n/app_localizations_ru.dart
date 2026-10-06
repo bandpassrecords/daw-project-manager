@@ -6025,9 +6025,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get synthVoiceSynth => 'Синтезатор';
-
-  @override
   String get synthVoiceLead => 'Лид';
 
   @override

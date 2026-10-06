@@ -18,7 +18,18 @@ void main() {
     final note = clip.notes.single;
     expect((note.pitch, note.velocity, note.startTick), (64, 96, 0));
     expect(note.lengthTicks, lessThan(clip.lengthTicks));
+    expect(note.lengthTicks, lessThanOrEqualTo(120),
+        reason: 'a short blip: at 120 BPM a 16th, an eighth of a second');
     expect(MidiNoteAuditioner.clipFor(200, 100).notes.single.pitch, 127);
+  });
+
+  test('a held note is long enough to outlast a press, and renders apart',
+      () {
+    final held = MidiNoteAuditioner.clipFor(60, 100, held: true);
+    expect(held.notes.single.lengthTicks, greaterThanOrEqualTo(8 * 480));
+    expect(held.contentKey,
+        isNot(MidiNoteAuditioner.clipFor(60, 100).contentKey));
+    expect(heldNoteForTest().released, isFalse);
   });
 
   test('the same note and loudness renders once', () {

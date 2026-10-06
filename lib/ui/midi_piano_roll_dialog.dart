@@ -574,6 +574,22 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   /// keyboard back to.
   final FocusNode _keys = FocusNode(debugLabel: 'midi-piano-roll-keys');
 
+  /// A press at [e]: unless it is in the text field being typed in, the
+  /// keyboard comes back to the window. The field keeps what was typed (the
+  /// tempo commits as it loses focus).
+  void _takeKeysBack(PointerDownEvent e) {
+    if (isTypingInTextField()) {
+      final box = FocusManager.instance.primaryFocus?.context?.findRenderObject();
+      if (box is RenderBox && box.attached) {
+        final field = box.localToGlobal(Offset.zero) & box.size;
+        if (field.contains(e.position)) return;
+      }
+      _keys.requestFocus();
+    } else if (!_keys.hasFocus) {
+      _keys.requestFocus();
+    }
+  }
+
   /// A field let go of the keyboard (Enter in the tempo does) and it fell
   /// back to the window's own route: the window's keys take it, or no
   /// shortcut would work until something was clicked. Focus that went
@@ -603,6 +619,15 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
       ..voice = _voice
       ..volume = widget.volume ?? _player.volume;
     _auditioner.play(pitch, velocity: velocity);
+  }
+
+  /// Sounds one note until the returned callback lets it go.
+  VoidCallback _hold(int pitch, int velocity) {
+    _auditioner
+      ..voice = _voice
+      ..volume = widget.volume ?? _player.volume;
+    final held = _auditioner.hold(pitch, velocity: velocity);
+    return () => _auditioner.release(held);
   }
 
   /// A new instrument: the list hears of it, and a clip playing carries on
@@ -1030,7 +1055,12 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
         // anything inside it has been clicked.
         child: Focus(
           autofocus: true,
-          child: Padding(
+          // A press anywhere but in the field being typed in — the notes,
+          // the toolbar, an empty bit of the header — gives the keyboard
+          // back to the window, so the shortcuts work again.
+          child: Listener(
+            onPointerDown: _takeKeysBack,
+            child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1042,15 +1072,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                   ),
                 ),
                 Expanded(
-                  // A press on the notes takes the keyboard back from a
-                  // text field (the tempo, say), so the shortcuts work again.
-                  child: Listener(
-                    onPointerDown: (_) {
-                      if (isTypingInTextField() || !_keys.hasFocus) {
-                        _keys.requestFocus();
-                      }
-                    },
-                    child: MidiPianoRoll(
+                  child: MidiPianoRoll(
                     clip: widget.clip,
                     editor: editor,
                     bpm: _bpm,
@@ -1082,6 +1104,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                     initialScale: scaleFromKey(widget.musicalKey),
                     onScaleChanged: (s) => _scale = s,
                     onAudition: _audition,
+                    onHold: _hold,
                     acousticFeedback: _feedback,
                     onAcousticFeedbackChanged: editor == null
                         ? null
@@ -1090,10 +1113,10 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                             widget.onAcousticFeedbackChanged?.call(on);
                           },
                   ),
-                  ),
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),
@@ -1177,7 +1200,10 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
           labels: labels.tempo!,
         ),
       if (labels.timeSignature.isNotEmpty)
-        Tooltip(
+        Padding(
+          // Room from the tempo field, which otherwise runs into it.
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Tooltip(
           message: labels.timeSignature,
           child: DropdownButtonHideUnderline(
             child: DropdownButton<TimeSignature>(
@@ -1193,6 +1219,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
               },
             ),
           ),
+        ),
         ),
       if (widget.loop != null &&
           widget.onLoopChanged != null &&
@@ -1325,10 +1352,20 @@ class _WindowKeys extends StatelessWidget {
       focusNode: focusNode,
       onKeyEvent: (node, event) {
         if (isTypingInTextField()) {
-          if (event is KeyDownEvent &&
-              event.logicalKey == LogicalKeyboardKey.escape) {
+          if (event is! KeyDownEvent) return KeyEventResult.ignored;
+          final key = event.logicalKey;
+          if (key == LogicalKeyboardKey.escape) {
             focusNode.requestFocus();
             return KeyEventResult.handled;
+          }
+          if (key == LogicalKeyboardKey.enter ||
+              key == LogicalKeyboardKey.numpadEnter) {
+            // The field takes the Enter first (the tempo commits on it);
+            // then the keys come back to the window.
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (isTypingInTextField()) focusNode.requestFocus();
+            });
+            WidgetsBinding.instance.scheduleFrame();
           }
           return KeyEventResult.ignored;
         }

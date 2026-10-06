@@ -9977,12 +9977,6 @@ abstract class AppLocalizations {
   /// **'Instrument: {name}'**
   String midiClipInstrumentTooltip(String name);
 
-  /// Built-in preview instrument name: Generic synth
-  ///
-  /// In en, this message translates to:
-  /// **'Synth'**
-  String get synthVoiceSynth;
-
   /// Built-in preview instrument name: Lead synth
   ///
   /// In en, this message translates to:

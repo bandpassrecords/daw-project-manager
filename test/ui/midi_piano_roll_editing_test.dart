@@ -47,8 +47,28 @@ const _fourNotes = MidiClip(
 class _Ear extends MidiNoteAuditioner {
   final heard = <int>[];
 
+  /// The notes held and not yet let go.
+  final held = <int>[];
+
   @override
   Future<void> play(int pitch, {int velocity = 100}) async => heard.add(pitch);
+
+  final _notes = <MidiHeldNote, int>{};
+
+  @override
+  MidiHeldNote hold(int pitch, {int velocity = 100}) {
+    heard.add(pitch);
+    held.add(pitch);
+    final note = heldNoteForTest();
+    _notes[note] = pitch;
+    return note;
+  }
+
+  @override
+  Future<void> release(MidiHeldNote note) async {
+    final pitch = _notes.remove(note);
+    if (pitch != null) held.remove(pitch);
+  }
 }
 
 const _labels = MidiPianoRollWindowLabels(
@@ -894,6 +914,16 @@ void main() {
       expect(edits.single.bpm, 121);
     });
 
+    testWidgets('the tempo and the time signature have room between them',
+        (tester) async {
+      await open(tester);
+      final tempo =
+          tester.getRect(find.byKey(const ValueKey('midi-piano-roll-tempo')));
+      final signature = tester.getRect(
+          find.byKey(const ValueKey('midi-piano-roll-time-signature')));
+      expect(signature.left - tempo.right, greaterThanOrEqualTo(8));
+    });
+
     testWidgets('a time signature is picked, drawn and saved', (tester) async {
       await open(tester);
       await tester
@@ -1240,6 +1270,41 @@ void main() {
           reason: 'the keyboard came back to the window');
     });
 
+    testWidgets('Enter pressed in the tempo gives the keys back',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await typeInTempo(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.pump();
+      expect(pencilSelected(tester), isTrue);
+    });
+
+    testWidgets('a click anywhere else gives the keys back — the header too',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await typeInTempo(tester);
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-title')));
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.pump();
+      expect(pencilSelected(tester), isTrue);
+    });
+
+    testWidgets('a click in the field itself keeps typing there',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await typeInTempo(tester);
+      await typeInTempo(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.pump();
+      expect(pencilSelected(tester), isFalse);
+    });
+
     testWidgets('a press on the notes gives the keys back', (tester) async {
       await open(tester);
       await startEditing(tester);
@@ -1274,6 +1339,17 @@ void main() {
               of: find.byKey(const ValueKey('midi-piano-roll-voice')),
               matching: find.text('keys')),
           findsOneWidget);
+    });
+
+    testWidgets('a key sounds for as long as it is held', (tester) async {
+      await open(tester);
+      final g = grid(tester);
+      final press = await tester.startGesture(Offset(g.left - 10, g.center.dy));
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(ear.held, [60], reason: 'still ringing while held');
+      await press.up();
+      await tester.pump();
+      expect(ear.held, isEmpty, reason: 'let go with the key');
     });
 
     testWidgets('a key on the keyboard plays, editing or not',

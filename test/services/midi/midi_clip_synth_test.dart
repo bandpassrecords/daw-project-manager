@@ -39,11 +39,11 @@ void main() {
   });
 
   test('lasts the clip length at the given tempo, plus the release tail', () {
-    // 4 beats at 120 BPM = 2 s, + 0.15 s release.
+    // 4 beats at 120 BPM = 2 s, + the default voice's (keys) 0.25 s release.
     final seconds = synth.durationSeconds(_clip(const [], length: 1920), 120);
-    expect(seconds, closeTo(2.15, 1e-9));
+    expect(seconds, closeTo(2.25, 1e-9));
     final wav = synth.renderWav(_clip(const [], length: 1920), bpm: 120);
-    expect(_samples(wav).length, (2.15 * 8000).ceil());
+    expect(_samples(wav).length, (2.25 * 8000).ceil());
   });
 
   test('defaults to 120 BPM when the project tempo is unknown', () {
