@@ -6744,5 +6744,63 @@
   "midiSaveFileName": "File name",
   "@midiSaveFileName": {
     "description": "Label above the file name a clip will export as"
+  },
+  "midiBulkRenameMenu": "Rename by scheme…",
+  "@midiBulkRenameMenu": {
+    "description": "Button and menu entry: rename many clips from the naming scheme at once"
+  },
+  "midiBulkRenameTitle": "Rename by naming scheme",
+  "@midiBulkRenameTitle": {
+    "description": "Dialog title"
+  },
+  "midiBulkRenameHint": "Each name is proposed from the collection's naming scheme. Edit any of them first, and untick the clips to leave as they are.",
+  "@midiBulkRenameHint": {
+    "description": "Explains the bulk rename dialog"
+  },
+  "midiBulkRenameApply": "{count, plural, =1{Rename 1 clip} other{Rename {count} clips}}",
+  "@midiBulkRenameApply": {
+    "description": "Button: apply the renames",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiBulkRenameDone": "{count, plural, =1{Renamed 1 clip} other{Renamed {count} clips}}",
+  "@midiBulkRenameDone": {
+    "description": "Snackbar after a bulk rename",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiBulkRenameSelectAll": "All",
+  "@midiBulkRenameSelectAll": {
+    "description": "Checkbox: tick or untick every clip in the list"
+  },
+  "midiNameFromScheme": "From the naming scheme",
+  "@midiNameFromScheme": {
+    "description": "Button in the rename dialog: fill in a name made from the naming scheme"
+  },
+  "midiCollectionMoved": "{count, plural, =1{Moved to {name}} other{Moved {count} clips to {name}}}",
+  "@midiCollectionMoved": {
+    "description": "Snackbar: clips dragged into another collection",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiExpandAll": "Expand all",
+  "@midiExpandAll": {
+    "description": "Button: open every collection, folder or group in a MIDI list"
+  },
+  "midiCollapseAll": "Collapse all",
+  "@midiCollapseAll": {
+    "description": "Button: close every collection, folder or group in a MIDI list"
   }
 }

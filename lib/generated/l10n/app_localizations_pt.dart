@@ -6852,4 +6852,59 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get midiSaveFileName => 'Nome do arquivo';
+
+  @override
+  String get midiBulkRenameMenu => 'Renomear pelo esquema…';
+
+  @override
+  String get midiBulkRenameTitle => 'Renomear pelo esquema de nomes';
+
+  @override
+  String get midiBulkRenameHint =>
+      'Cada nome é proposto pelo esquema de nomes da coleção. Edite qualquer um antes e desmarque os clipes que devem ficar como estão.';
+
+  @override
+  String midiBulkRenameApply(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Renomear $count clipes',
+      one: 'Renomear 1 clipe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiBulkRenameDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count clipes renomeados',
+      one: '1 clipe renomeado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiBulkRenameSelectAll => 'Todos';
+
+  @override
+  String get midiNameFromScheme => 'Pelo esquema de nomes';
+
+  @override
+  String midiCollectionMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count clipes movidos para $name',
+      one: 'Movido para $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiExpandAll => 'Expandir tudo';
+
+  @override
+  String get midiCollapseAll => 'Recolher tudo';
 }

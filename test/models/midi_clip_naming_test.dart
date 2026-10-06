@@ -266,6 +266,64 @@ void main() {
     });
   });
 
+  group('names from the scheme', () {
+    const template = MidiNamingTemplate(numbered: false);
+    final parts = {
+      MidiNameField.name: 'MIDI 01',
+      MidiNameField.role: 'Bass',
+      MidiNameField.bpm: '140BPM',
+      MidiNameField.key: 'Am',
+      MidiNameField.bars: '4 bars',
+    };
+
+    test('a scheme name is every piece but the name, unnumbered', () {
+      expect(
+        midiSchemeName(MidiNamingTemplate.standard, parts),
+        'Bass - 140BPM - Am - 4 bars',
+      );
+      expect(
+        midiSchemeName(
+          const MidiNamingTemplate(fields: [MidiNameField.name]),
+          parts,
+        ),
+        'Bass',
+        reason: 'a template of the name alone falls back to the role',
+      );
+    });
+
+    test('a clip named by the scheme does not say it twice in its file', () {
+      final named = {
+        ...parts,
+        MidiNameField.name: 'Bass - 140BPM - Am - 4 bars',
+      };
+      expect(
+        midiTemplateFileName(template, named),
+        'Bass - 140BPM - Am - 4 bars.mid',
+      );
+      final retempo = {...named, MidiNameField.bpm: '128BPM'};
+      expect(
+        midiTemplateFileName(template, retempo),
+        'Bass - 140BPM - Am - 4 bars - 128BPM.mid',
+        reason: 'only what the name already says is left out',
+      );
+      final own = {...parts, MidiNameField.name: 'Acid bass'};
+      expect(
+        midiTemplateFileName(template, own),
+        'Acid bass - Bass - 140BPM - Am - 4 bars.mid',
+        reason: 'a word inside a name is not a piece of it',
+      );
+    });
+
+    test('repeated proposals are numbered, ignoring case', () {
+      expect(uniqueClipNames(['Bass', 'bass', 'Pad', 'Bass']), [
+        'Bass',
+        'bass 2',
+        'Pad',
+        'Bass 3',
+      ]);
+    });
+  });
+
   group('planCollectionExport', () {
     String name(MidiCollectionItem i, int n, int w) =>
         '${n.toString().padLeft(w, '0')} ${i.clip.name}.mid';

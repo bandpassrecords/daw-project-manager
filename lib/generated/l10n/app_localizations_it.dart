@@ -6873,4 +6873,59 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get midiSaveFileName => 'Nome del file';
+
+  @override
+  String get midiBulkRenameMenu => 'Rinomina secondo lo schema…';
+
+  @override
+  String get midiBulkRenameTitle => 'Rinomina secondo lo schema dei nomi';
+
+  @override
+  String get midiBulkRenameHint =>
+      'Ogni nome è proposto dallo schema dei nomi della raccolta. Modificali prima se vuoi e togli la spunta alle clip da lasciare come sono.';
+
+  @override
+  String midiBulkRenameApply(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Rinomina $count clip',
+      one: 'Rinomina 1 clip',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiBulkRenameDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count clip rinominate',
+      one: '1 clip rinominata',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiBulkRenameSelectAll => 'Tutte';
+
+  @override
+  String get midiNameFromScheme => 'Dallo schema dei nomi';
+
+  @override
+  String midiCollectionMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count clip spostate in $name',
+      one: 'Spostata in $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiExpandAll => 'Espandi tutto';
+
+  @override
+  String get midiCollapseAll => 'Comprimi tutto';
 }

@@ -4149,5 +4149,15 @@
   "midiItemRename": "名前を変更",
   "midiItemNameHint": "空欄: クリップ本来の名前",
   "midiSaveClipTitle": "クリップを保存",
-  "midiSaveFileName": "ファイル名"
+  "midiSaveFileName": "ファイル名",
+  "midiBulkRenameMenu": "スキームで名前を変更…",
+  "midiBulkRenameTitle": "命名スキームで名前を変更",
+  "midiBulkRenameHint": "各名前はコレクションの命名スキームから提案されます。先に自由に編集でき、そのままにしたいクリップはチェックを外してください。",
+  "midiBulkRenameApply": "{count, plural, other{{count} 個のクリップの名前を変更}}",
+  "midiBulkRenameDone": "{count, plural, other{{count} 個のクリップの名前を変更しました}}",
+  "midiBulkRenameSelectAll": "すべて",
+  "midiNameFromScheme": "命名スキームから",
+  "midiCollectionMoved": "{count, plural, other{{count} 個を {name} に移動しました}}",
+  "midiExpandAll": "すべて展開",
+  "midiCollapseAll": "すべて折りたたむ"
 }

@@ -4149,5 +4149,15 @@
   "midiItemRename": "Umbenennen",
   "midiItemNameHint": "Leer: der eigene Name des Clips",
   "midiSaveClipTitle": "Clip speichern",
-  "midiSaveFileName": "Dateiname"
+  "midiSaveFileName": "Dateiname",
+  "midiBulkRenameMenu": "Nach Schema umbenennen …",
+  "midiBulkRenameTitle": "Nach Benennungsschema umbenennen",
+  "midiBulkRenameHint": "Jeder Name wird aus dem Benennungsschema der Sammlung vorgeschlagen. Bearbeite sie vorher nach Belieben und entferne den Haken bei Clips, die bleiben sollen, wie sie sind.",
+  "midiBulkRenameApply": "{count, plural, =1{1 Clip umbenennen} other{{count} Clips umbenennen}}",
+  "midiBulkRenameDone": "{count, plural, =1{1 Clip umbenannt} other{{count} Clips umbenannt}}",
+  "midiBulkRenameSelectAll": "Alle",
+  "midiNameFromScheme": "Aus dem Benennungsschema",
+  "midiCollectionMoved": "{count, plural, =1{Nach {name} verschoben} other{{count} Clips nach {name} verschoben}}",
+  "midiExpandAll": "Alle aufklappen",
+  "midiCollapseAll": "Alle zuklappen"
 }

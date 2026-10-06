@@ -270,20 +270,41 @@ String _bpmText(double bpm) {
       .replaceFirst(RegExp(r'\.$'), '');
 }
 
+/// The words of [name] as a file name piece can repeat them: split on
+/// [separator] and the usual " - " and "_", lowercased.
+Set<String> _saidIn(String name, String separator) {
+  var pieces = [name];
+  for (final sep in {separator, ' - ', '_'}) {
+    if (sep.isEmpty) continue;
+    pieces = [for (final p in pieces) ...p.split(sep)];
+  }
+  return {
+    for (final p in pieces)
+      if (p.trim().isNotEmpty) p.trim().toLowerCase(),
+  };
+}
+
 /// A file name from [parts] by [template]: its number first when it has
 /// one ([number], zero-padded to [width] so files sort in order), then the
 /// template's pieces that have something to say, joined by its separator.
-/// Safe on every desktop filesystem.
+/// A piece the name already says — a clip named after the scheme ("Bass -
+/// 140BPM") — is not said twice. Safe on every desktop filesystem.
 String midiTemplateFileName(
   MidiNamingTemplate template,
   Map<MidiNameField, String?> parts, {
   int? number,
   int width = 2,
 }) {
+  final name = template.fields.contains(MidiNameField.name)
+      ? parts[MidiNameField.name]?.trim()
+      : null;
+  final said = name == null ? const <String>{} : _saidIn(name, template.separator);
   final pieces = [
     for (final field in template.fields)
       if (parts[field] case final value? when value.trim().isNotEmpty)
-        value.trim(),
+        if (field == MidiNameField.name ||
+            !said.contains(value.trim().toLowerCase()))
+          value.trim(),
   ];
   var base = pieces.isEmpty ? 'MIDI clip' : pieces.join(template.separator);
   if (template.numbered && number != null) {
@@ -293,6 +314,43 @@ String midiTemplateFileName(
   if (base.length > 150) base = base.substring(0, 150).trim();
   if (base.isEmpty) base = 'MIDI clip';
   return '$base.mid';
+}
+
+/// A name for a clip made from the naming scheme: [template]'s pieces
+/// other than the name itself, joined by its separator, with no number —
+/// "Bass - 140BPM - A minor - 4 bars". For a clip whose own name says
+/// nothing ("MIDI 01", an imported track). Its role when the template
+/// says nothing else.
+String midiSchemeName(
+  MidiNamingTemplate template,
+  Map<MidiNameField, String?> parts,
+) {
+  final pieces = [
+    for (final field in template.fields)
+      if (field != MidiNameField.name)
+        if (parts[field] case final value? when value.trim().isNotEmpty)
+          value.trim(),
+  ];
+  if (pieces.isNotEmpty) return pieces.join(template.separator);
+  return parts[MidiNameField.role]?.trim() ?? 'MIDI clip';
+}
+
+/// [names] made unique, ignoring case, by numbering the repeats: "Bass",
+/// "Bass 2", "Bass 3" — what two clips proposed the same scheme name get.
+List<String> uniqueClipNames(List<String> names) {
+  final used = <String>{};
+  return [
+    for (final name in names)
+      () {
+        var candidate = name;
+        var n = 2;
+        while (!used.add(candidate.toLowerCase())) {
+          candidate = '$name $n';
+          n++;
+        }
+        return candidate;
+      }(),
+  ];
 }
 
 /// [name] with what Windows, macOS and Linux reject in a file or folder

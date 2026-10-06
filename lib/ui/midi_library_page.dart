@@ -11,12 +11,14 @@ import '../generated/l10n/app_localizations.dart';
 import '../models/midi_clip.dart';
 import '../models/midi_clip_naming.dart';
 import '../models/midi_collection.dart';
+import '../models/midi_collection_drag.dart';
 import '../models/midi_library.dart';
 import '../providers/providers.dart';
 import '../repository/midi_collection_store.dart';
 import '../services/midi/midi_clip_service.dart';
 import '../services/midi/midi_file_writer.dart';
 import '../services/midi/synth_voice.dart';
+import '../services/midi_tree_state_store.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/search_utils.dart';
 import '../utils/time_signature.dart';
@@ -27,6 +29,7 @@ import 'midi_piano_roll_dialog.dart';
 import 'project_detail_page.dart';
 import 'midi_preview_player.dart';
 import 'widgets/midi_clip_list.dart';
+import 'widgets/midi_collection_tree.dart';
 import 'widgets/midi_clips_section.dart'
     show
         midiClipListLabelsOf,
@@ -94,10 +97,55 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
   /// The folder of it on show; null for its top level.
   String? _folderId;
 
-  void _showCollection(String? id) => setState(() {
-    if (id != _collectionId) _folderId = null;
+  /// Shows collection [id] (null: all clips) from its top level, or from
+  /// its folder [folderId].
+  void _showCollection(String? id, {String? folderId}) => setState(() {
+    _folderId = folderId;
     _collectionId = id;
   });
+
+  /// What is open in the side list, a collection's tree and all clips'
+  /// groups — kept between runs on this device.
+  MidiTreeState get _tree => ref.watch(midiTreeStateProvider);
+
+  void _updateTree(MidiTreeState Function(MidiTreeState tree) change) =>
+      ref.read(midiTreeStateProvider.notifier).update(change);
+
+  /// The key a group of all clips is kept under: by project and by tempo
+  /// are different groupings.
+  String _groupKey(String? label) => '${_byTempo ? 't' : 'p'}:${label ?? ''}';
+
+  /// The heading [e] goes under in a grouped list: its project, or its tempo.
+  String? _groupLabelOf(_Entry e, AppLocalizations l10n) {
+    if (!_byTempo) return e.projectName;
+    final bpm = e.bpm;
+    return bpm == null
+        ? l10n.midiLibraryTempoUnknown
+        : l10n.midiLibraryTempoGroup(formatPreviewBpm(bpm));
+  }
+
+  /// Opens or closes everything in the list on show: [collection]'s
+  /// folders when it shows its tree, else the groups of [entries].
+  void _setAllOpen(
+    List<_Entry> entries,
+    MidiCollection? collection,
+    bool open,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final query = ref.read(midiLibrarySearchProvider);
+    if (collection != null && !_flat(query)) {
+      _updateTree(
+        (t) => t.setFolders([for (final f in collection.folders) f.id], open),
+      );
+    } else {
+      _updateTree(
+        (t) => t.setGroups({
+          for (final e in entries) _groupKey(_groupLabelOf(e, l10n)),
+        }, open),
+      );
+    }
+  }
+
   SynthVoice? _voiceFilter;
 
   /// By project (or, in a collection, as added) or by tempo. Session-only,
@@ -546,10 +594,184 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       hint: item.clip.label,
       helper: l10n.midiItemNameHint,
       allowBlank: true,
+      suggestion: _schemeNameOf(c, item),
+      suggestionLabel: l10n.midiNameFromScheme,
     );
     if (name == null) return;
     final repo = await ref.read(repositoryProvider.future);
     await repo.midiCollections.renameItem(c.id, item.id, name);
+  }
+
+  /// [item]'s name made from [c]'s naming scheme.
+  String _schemeNameOf(MidiCollection c, MidiCollectionItem item) =>
+      midiSchemeName(
+        c.naming,
+        midiNameParts(
+          item,
+          labels: midiNamingLabelsOf(AppLocalizations.of(context)!),
+          voice: _voiceOfItem(item),
+          bpm: _tempo ?? item.bpm,
+        ),
+      );
+
+  /// Renames the clips in [folderId] and every folder inside it (null: the
+  /// whole collection) by the naming scheme, after the user has looked at —
+  /// and corrected — every proposed name. Undoable.
+  Future<void> _bulkRename(MidiCollection c, {String? folderId}) async {
+    final l10n = AppLocalizations.of(context)!;
+    final scope = folderId == null ? null : c.folderAndDescendants(folderId);
+    final items = [
+      for (final i in c.items)
+        if (scope == null || scope.contains(c.folderById(i.folderId)?.id)) i,
+    ];
+    if (items.isEmpty) return;
+    final proposed = uniqueClipNames([
+      for (final i in items) _schemeNameOf(c, i),
+    ]);
+    final renames = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (_) => MidiBulkRenameDialog(
+        rows: [
+          for (final (n, i) in items.indexed)
+            MidiRenameRow(
+              itemId: i.id,
+              current: i.displayName,
+              proposed: proposed[n],
+              where: c.folderPath(i.folderId).map((f) => f.name).join(' / '),
+            ),
+        ],
+      ),
+    );
+    if (renames == null || renames.isEmpty) return;
+    final repo = await ref.read(repositoryProvider.future);
+    final before = await repo.midiCollections.renameItems(c.id, renames);
+    if (!mounted || before.isEmpty) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.midiBulkRenameDone(before.length)),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () => repo.midiCollections.renameItems(c.id, before),
+        ),
+      ),
+    );
+  }
+
+  List<MidiClipRowAction> _folderActions(
+    MidiCollection c,
+    MidiCollectionFolder f,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      MidiClipRowAction(
+        id: 'rename',
+        label: l10n.midiFolderRename,
+        icon: Icons.drive_file_rename_outline,
+        onSelected: () => _renameFolder(c, f),
+      ),
+      MidiClipRowAction(
+        id: 'move',
+        label: l10n.midiMoveTo,
+        icon: Icons.drive_file_move_outline,
+        onSelected: () => _moveFolder(c, f),
+      ),
+      MidiClipRowAction(
+        id: 'bulk-rename',
+        label: l10n.midiBulkRenameMenu,
+        icon: Icons.auto_fix_high_outlined,
+        onSelected: () => _bulkRename(c, folderId: f.id),
+      ),
+      MidiClipRowAction(
+        id: 'delete',
+        label: l10n.midiFolderDelete,
+        icon: Icons.delete_outline,
+        onSelected: () => _deleteFolder(c, f),
+      ),
+    ];
+  }
+
+  MidiCollection? _collectionById(String id) =>
+      (ref.read(midiCollectionsProvider).value ?? const <MidiCollection>[])
+          .where((c) => c.id == id)
+          .firstOrNull;
+
+  bool _canDrop(MidiDragData data, MidiDropTarget target) =>
+      canDropMidi(data, target, _collectionById(target.collectionId));
+
+  /// What a drop does: clips move (within a collection, or into another
+  /// one), folders move, and a clip from all clips is copied in.
+  Future<void> _drop(MidiDragData data, MidiDropTarget target) async {
+    final l10n = AppLocalizations.of(context)!;
+    final into = _collectionById(target.collectionId);
+    if (into == null) return;
+    final repo = await ref.read(repositoryProvider.future);
+    final store = repo.midiCollections;
+    switch (data) {
+      case MidiItemDragData d when d.collectionId == target.collectionId:
+        await store.moveItemsToFolder(
+          target.collectionId,
+          d.itemIds,
+          target.folderId,
+          beforeItemId: target.beforeItemId,
+        );
+      case MidiItemDragData d:
+        final moved = await store.moveItemsToCollection(
+          d.collectionId,
+          target.collectionId,
+          d.itemIds,
+          target.folderId,
+        );
+        _snack(
+          moved == 0
+              ? l10n.midiCollectionAlreadyIn(into.name)
+              : l10n.midiCollectionMoved(moved, into.name),
+        );
+      case MidiFolderDragData d:
+        await store.moveFolder(d.collectionId, d.folderId, target.folderId);
+      case MidiLibraryClipDragData d:
+        final added = await store.addItems(target.collectionId, [
+          d.item.copyWith(
+            folderId: target.folderId,
+            clearFolder: target.folderId == null,
+          ),
+        ]);
+        _snack(
+          added == 0
+              ? l10n.midiCollectionAlreadyIn(into.name)
+              : l10n.midiCollectionAdded(added, into.name),
+        );
+    }
+    // Into a closed folder: open it, so what went in can be seen there.
+    final folder = target.folderId;
+    if (mounted &&
+        folder != null &&
+        !ref.read(midiTreeStateProvider).folders.contains(folder)) {
+      _updateTree((t) => t.setFolders([folder], true));
+    }
+  }
+
+  /// What dragging row [e] carries: the clip of a collection, to move; a
+  /// clip of all clips, to copy into one.
+  MidiDragData _dragDataOf(_Entry e, MidiCollection? collection) {
+    final item = e.item;
+    if (collection != null && item != null) {
+      return MidiItemDragData(
+        collectionId: collection.id,
+        itemIds: [item.id],
+        label: item.displayName,
+      );
+    }
+    return MidiLibraryClipDragData(
+      label: e.clip.label,
+      item: collectionItemFor(
+        e.clip,
+        projectId: e.projectId,
+        projectName: e.projectName,
+        bpm: e.bpm,
+        musicalKey: e.musicalKey,
+        pickedVoice: _libraryVoices[e.key],
+      ),
+    );
   }
 
   Future<void> _pickRole(MidiCollection c, MidiCollectionItem item) async {
@@ -683,11 +905,8 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
   List<_Entry> _collectionEntries(MidiCollection c, String query) {
     final q = query.trim();
     final names = {for (final f in _plan(c)) f.item.id: f.fileName};
-    final shown = _flat(query)
-        ? c.items
-        : c.itemsIn(c.folderById(_folderId)?.id);
     return [
-      for (final item in shown)
+      for (final item in c.items)
         if ((q.isEmpty ||
                 fuzzyMatchAny([
                   item.title,
@@ -748,13 +967,37 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       allClipsCount: library.length,
       collectionsLabel: l10n.midiCollectionsTitle,
       newCollectionLabel: l10n.midiCollectionNew,
-      collections: [
-        for (final c in collections)
-          (id: c.id, name: c.name, count: c.items.length),
-      ],
+      collections: collections,
       selectedId: _collectionId,
+      selectedFolderId: _folderId,
       onSelect: _showCollection,
+      onSelectFolder: (c, f) => _showCollection(c, folderId: f),
       onNew: _newCollection,
+      expanded: _tree.nav,
+      onToggle: (id) => _updateTree((t) => t.toggleNav(id)),
+      onExpandAll: () => _updateTree(
+        (t) => t.setNav([
+          for (final c in collections) ...[
+            c.id,
+            for (final f in c.folders) f.id,
+          ],
+        ], true),
+      ),
+      onCollapseAll: () => _updateTree(
+        (t) => t.setNav([
+          for (final c in collections) ...[
+            c.id,
+            for (final f in c.folders) f.id,
+          ],
+        ], false),
+      ),
+      expandAllLabel: l10n.midiExpandAll,
+      collapseAllLabel: l10n.midiCollapseAll,
+      canDrop: _canDrop,
+      onDrop: _drop,
+      expandLabel: l10n.expand,
+      collapseLabel: l10n.collapse,
+      longPressDrag: isMobile,
       horizontal: isMobile,
     );
 
@@ -791,6 +1034,8 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     BuildContext context,
     List<_Entry> entries, {
     bool inCollection = false,
+    MidiCollection? collection,
+    bool canOpenAll = false,
   }) {
     final l10n = AppLocalizations.of(context)!;
     return Wrap(
@@ -798,6 +1043,24 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
+        if (canOpenAll)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                key: const ValueKey('midi-expand-all'),
+                tooltip: l10n.midiExpandAll,
+                icon: const Icon(Icons.unfold_more),
+                onPressed: () => _setAllOpen(entries, collection, true),
+              ),
+              IconButton(
+                key: const ValueKey('midi-collapse-all'),
+                tooltip: l10n.midiCollapseAll,
+                icon: const Icon(Icons.unfold_less),
+                onPressed: () => _setAllOpen(entries, collection, false),
+              ),
+            ],
+          ),
         DropdownButton<MidiLibraryArrangement>(
           key: const ValueKey('midi-library-arrangement'),
           value: _arrangement,
@@ -910,13 +1173,10 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       compact: isMobile,
       grouped: grouped || _byTempo,
       expandAllUpTo: 40,
-      groupLabelOf: (i) {
-        if (!_byTempo) return entries[i].projectName;
-        final bpm = entries[i].bpm;
-        return bpm == null
-            ? l10n.midiLibraryTempoUnknown
-            : l10n.midiLibraryTempoGroup(formatPreviewBpm(bpm));
-      },
+      groupLabelOf: (i) => _groupLabelOf(entries[i], l10n),
+      groupOpen: (label) => _tree.groups[_groupKey(label)],
+      onGroupToggled: (label, open) =>
+          _updateTree((t) => t.setGroups([_groupKey(label)], open)),
       detailPrefixOf: (i) {
         if (byProject) return entries[i].clip.trackName;
         final item = entries[i].item;
@@ -1005,6 +1265,29 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       onRemove: collection == null
           ? null
           : (i) => _removeItem(collection, entries[i].item!),
+      grabWrapper: (context, i, child) => midiDragSource(
+        data: _dragDataOf(entries[i], collection),
+        longPress: isMobile,
+        child: child,
+      ),
+      // Dropped on a row: in its folder, just before it. Not while every
+      // folder shows at once, in an order that isn't the folders'.
+      rowWrapper: collection == null || flat
+          ? null
+          : (context, i, row) {
+              final item = entries[i].item!;
+              return MidiDropZone(
+                target: MidiDropTarget(
+                  collection.id,
+                  folderId: collection.folderById(item.folderId)?.id,
+                  beforeItemId: item.id,
+                ),
+                canDrop: _canDrop,
+                onDrop: _drop,
+                lineAbove: true,
+                child: row,
+              );
+            },
       dragHandleBuilder: isMobile
           ? null
           : (context, index, handle) => DragItemWidget(
@@ -1046,7 +1329,7 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
           ],
         ),
         const SizedBox(height: 8),
-        _toolbar(context, entries),
+        _toolbar(context, entries, canOpenAll: entries.isNotEmpty),
         const SizedBox(height: 8),
         if (loading)
           const Padding(
@@ -1080,9 +1363,6 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
     final folderId = c.folderById(_folderId)?.id;
     final flat = _flat(query);
     final entries = _arranged(_collectionEntries(c, query));
-    final folders = flat
-        ? const <MidiCollectionFolder>[]
-        : c.foldersIn(folderId);
     final path = c.folderPath(folderId);
     return ListView(
       padding: MobileUtils.getResponsivePadding(context),
@@ -1090,20 +1370,41 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.library_music_outlined,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
+            // Dropped on the name: out of any folder, to the top level.
             Flexible(
-              child: Text(
-                c.name,
-                style: theme.textTheme.titleMedium,
-                overflow: TextOverflow.ellipsis,
+              child: MidiDropZone(
+                key: const ValueKey('midi-collection-top-drop'),
+                target: MidiDropTarget(c.id),
+                canDrop: _canDrop,
+                onDrop: _drop,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.library_music_outlined,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          c.name,
+                          style: theme.textTheme.titleMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${c.items.length}',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
+                ),
               ),
             ),
-            const SizedBox(width: 8),
-            Text('${c.items.length}', style: theme.textTheme.bodySmall),
             const Spacer(),
             IconButton(
               key: const ValueKey('midi-collection-new-clip'),
@@ -1171,28 +1472,65 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
               icon: const Icon(Icons.label_outline, size: 18),
               label: Text(l10n.midiNamingTitle),
             ),
+            if (c.items.isNotEmpty)
+              TextButton.icon(
+                key: const ValueKey('midi-collection-bulk-rename'),
+                onPressed: () => _bulkRename(c, folderId: folderId),
+                icon: const Icon(Icons.auto_fix_high_outlined, size: 18),
+                label: Text(l10n.midiBulkRenameMenu),
+              ),
           ],
         ),
         const SizedBox(height: 8),
-        _toolbar(context, entries, inCollection: true),
+        _toolbar(
+          context,
+          entries,
+          inCollection: true,
+          collection: c,
+          // Folders to open in the tree, or tempo groups while flat.
+          canOpenAll: flat
+              ? _byTempo && entries.isNotEmpty
+              : c.folders.isNotEmpty,
+        ),
         const SizedBox(height: 8),
-        if (!flat && path.isNotEmpty) _breadcrumb(context, c, path),
-        for (final f in folders) _folderTile(context, c, f),
         if (c.items.isEmpty && c.folders.isEmpty)
           _empty(context, l10n.midiCollectionEmpty)
-        else if (entries.isEmpty && folders.isEmpty)
-          _empty(
-            context,
-            flat ? l10n.midiLibraryNoMatches : l10n.midiCollectionEmpty,
-          )
-        else if (entries.isNotEmpty)
-          _list(context, entries, grouped: false, collection: c),
+        else if (flat)
+          entries.isEmpty
+              ? _empty(context, l10n.midiLibraryNoMatches)
+              : _list(context, entries, grouped: false, collection: c)
+        else ...[
+          if (path.isNotEmpty) _breadcrumb(context, c, path),
+          MidiCollectionTree(
+            collection: c,
+            rootFolderId: folderId,
+            expanded: _tree.folders,
+            onToggle: (id) => _updateTree((t) => t.toggleFolder(id)),
+            clipsIn: (context, inFolder) {
+              final here = [
+                for (final e in entries)
+                  if (c.folderById(e.item!.folderId)?.id == inFolder) e,
+              ];
+              return here.isEmpty
+                  ? null
+                  : _list(context, here, grouped: false, collection: c);
+            },
+            folderActions: (f) => _folderActions(c, f),
+            canDrop: _canDrop,
+            onDrop: _drop,
+            expandLabel: l10n.expand,
+            collapseLabel: l10n.collapse,
+            moreLabel: l10n.midiClipMoreActions,
+            longPressDrag: MobileUtils.isMobile(),
+          ),
+        ],
       ],
     );
   }
 
   /// Where in [c] the view is: the collection, then each folder down to
-  /// the one on show; any but the last goes back there.
+  /// the one on show; any but the last goes back there, and each takes
+  /// drops into it.
   Widget _breadcrumb(
     BuildContext context,
     MidiCollection c,
@@ -1211,66 +1549,30 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
           for (final (i, (id, name)) in steps.indexed) ...[
             if (i > 0)
               Icon(Icons.chevron_right, size: 18, color: theme.hintColor),
-            if (i == steps.length - 1)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  name,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-            else
-              TextButton(
-                key: ValueKey('midi-breadcrumb-${id ?? 'top'}'),
-                onPressed: () => setState(() => _folderId = id),
-                child: Text(name),
-              ),
+            MidiDropZone(
+              target: MidiDropTarget(c.id, folderId: id),
+              canDrop: _canDrop,
+              onDrop: _drop,
+              child: i == steps.length - 1
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 8,
+                      ),
+                      child: Text(
+                        name,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : TextButton(
+                      key: ValueKey('midi-breadcrumb-${id ?? 'top'}'),
+                      onPressed: () => setState(() => _folderId = id),
+                      child: Text(name),
+                    ),
+            ),
           ],
-        ],
-      ),
-    );
-  }
-
-  Widget _folderTile(
-    BuildContext context,
-    MidiCollection c,
-    MidiCollectionFolder f,
-  ) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final count = c.itemsIn(f.id).length + c.foldersIn(f.id).length;
-    return ListTile(
-      key: ValueKey('midi-folder-${f.id}'),
-      dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-      leading: Icon(Icons.folder_outlined, color: theme.colorScheme.primary),
-      title: Text(f.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-      onTap: () => setState(() => _folderId = f.id),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('$count', style: theme.textTheme.bodySmall),
-          PopupMenuButton<void Function()>(
-            key: ValueKey('midi-folder-menu-${f.id}'),
-            icon: const Icon(Icons.more_vert),
-            onSelected: (run) => run(),
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: () => _renameFolder(c, f),
-                child: Text(l10n.midiFolderRename),
-              ),
-              PopupMenuItem(
-                value: () => _moveFolder(c, f),
-                child: Text(l10n.midiMoveTo),
-              ),
-              PopupMenuItem(
-                value: () => _deleteFolder(c, f),
-                child: Text(l10n.midiFolderDelete),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -1286,114 +1588,4 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
       ),
     ),
   );
-}
-
-/// "All clips" plus every collection, and a way to make a new one — a side
-/// list on desktop, a row of chips on a phone ([horizontal]).
-///
-/// A plain view: names, counts and callbacks, no Hive.
-class MidiCollectionNavigator extends StatelessWidget {
-  const MidiCollectionNavigator({
-    super.key,
-    required this.allClipsLabel,
-    required this.allClipsCount,
-    required this.collectionsLabel,
-    required this.newCollectionLabel,
-    required this.collections,
-    required this.selectedId,
-    required this.onSelect,
-    required this.onNew,
-    this.horizontal = false,
-  });
-
-  final String allClipsLabel;
-  final int allClipsCount;
-  final String collectionsLabel;
-  final String newCollectionLabel;
-  final List<({String id, String name, int count})> collections;
-
-  /// The collection on show, or null for all clips.
-  final String? selectedId;
-  final ValueChanged<String?> onSelect;
-  final VoidCallback onNew;
-  final bool horizontal;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    if (horizontal) {
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          children: [
-            ChoiceChip(
-              label: Text('$allClipsLabel ($allClipsCount)'),
-              selected: selectedId == null,
-              onSelected: (_) => onSelect(null),
-            ),
-            for (final c in collections) ...[
-              const SizedBox(width: 8),
-              ChoiceChip(
-                avatar: const Icon(Icons.library_music_outlined, size: 16),
-                label: Text('${c.name} (${c.count})'),
-                selected: selectedId == c.id,
-                onSelected: (_) => onSelect(c.id),
-              ),
-            ],
-            const SizedBox(width: 8),
-            ActionChip(
-              avatar: const Icon(Icons.add, size: 16),
-              label: Text(newCollectionLabel),
-              onPressed: onNew,
-            ),
-          ],
-        ),
-      );
-    }
-    return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      children: [
-        ListTile(
-          dense: true,
-          leading: const Icon(Icons.piano),
-          title: Text(allClipsLabel),
-          trailing: Text('$allClipsCount', style: theme.textTheme.bodySmall),
-          selected: selectedId == null,
-          onTap: () => onSelect(null),
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 4, 8, 4),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  collectionsLabel,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ),
-              IconButton(
-                tooltip: newCollectionLabel,
-                icon: const Icon(Icons.add, size: 20),
-                onPressed: onNew,
-              ),
-            ],
-          ),
-        ),
-        for (final c in collections)
-          ListTile(
-            dense: true,
-            leading: const Icon(Icons.library_music_outlined),
-            title: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-            trailing: Text('${c.count}', style: theme.textTheme.bodySmall),
-            selected: selectedId == c.id,
-            onTap: () => onSelect(c.id),
-          ),
-      ],
-    );
-  }
 }

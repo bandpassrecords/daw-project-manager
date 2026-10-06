@@ -6,6 +6,7 @@ import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/models/midi_clip_naming.dart';
 import 'package:daw_project_manager/models/midi_collection.dart';
 import 'package:daw_project_manager/services/midi/synth_voice.dart';
+import 'package:daw_project_manager/ui/midi_collection_actions.dart';
 import 'package:daw_project_manager/ui/midi_collection_naming.dart';
 import 'package:daw_project_manager/ui/widgets/midi_clip_list.dart';
 
@@ -236,6 +237,116 @@ void main() {
     await tester.pumpAndSettle();
     expect(result, isNotNull);
     expect(result!.role, isNull);
+  });
+
+  group('MidiBulkRenameDialog', () {
+    const rows = [
+      MidiRenameRow(itemId: 'a', current: 'MIDI 01', proposed: 'Bass - 140BPM'),
+      MidiRenameRow(
+        itemId: 'b',
+        current: 'Track 2',
+        proposed: 'Chords - 140BPM',
+        where: 'Keys',
+      ),
+      MidiRenameRow(itemId: 'c', current: 'Pad', proposed: 'Pad'),
+    ];
+
+    testWidgets('proposes, takes corrections, leaves out what is unticked', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1200, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      Map<String, String>? result;
+      await tester.pumpWidget(
+        _app((context) async {
+          result = await showDialog<Map<String, String>>(
+            context: context,
+            builder: (_) => const MidiBulkRenameDialog(rows: rows),
+          );
+        }),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Keys / Track 2'), findsOneWidget, reason: 'its folder');
+      expect(
+        find.text('Rename 2 clips'),
+        findsOneWidget,
+        reason: 'one already has its scheme name',
+      );
+
+      await tester.enterText(
+        find.byKey(const ValueKey('midi-bulk-rename-name-a')),
+        'Acid bass - 140BPM',
+      );
+      await tester.tap(find.byKey(const ValueKey('midi-bulk-rename-on-b')));
+      await tester.pump();
+      expect(find.text('Rename 1 clip'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('midi-bulk-rename-apply')));
+      await tester.pumpAndSettle();
+      expect(result, {'a': 'Acid bass - 140BPM'});
+    });
+
+    testWidgets('all ticks and unticks every clip', (tester) async {
+      tester.view.physicalSize = const Size(1200, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        _app(
+          (context) => showDialog<Map<String, String>>(
+            context: context,
+            builder: (_) => const MidiBulkRenameDialog(rows: rows),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('midi-bulk-rename-all')));
+      await tester.pump();
+      expect(
+        find.text('Rename 2 clips'),
+        findsOneWidget,
+        reason: 'all ticked; the unchanged one renames nothing',
+      );
+      await tester.tap(find.byKey(const ValueKey('midi-bulk-rename-all')));
+      await tester.pump();
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.byKey(const ValueKey('midi-bulk-rename-apply')),
+            )
+            .onPressed,
+        isNull,
+      );
+    });
+  });
+
+  testWidgets('the rename dialog fills in the scheme name on request', (
+    tester,
+  ) async {
+    String? result;
+    await tester.pumpWidget(
+      _app((context) async {
+        result = await promptCollectionName(
+          context,
+          title: 'Rename',
+          action: 'Rename',
+          initial: 'MIDI 01',
+          allowBlank: true,
+          suggestion: 'Bass - 140BPM - Am',
+          suggestionLabel: 'From the naming scheme',
+        );
+      }),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('From the naming scheme'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilledButton, 'Rename'));
+    await tester.pumpAndSettle();
+    expect(result, 'Bass - 140BPM - Am');
   });
 
   group('MidiClipList row actions', () {

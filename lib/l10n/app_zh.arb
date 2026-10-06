@@ -4149,5 +4149,15 @@
   "midiItemRename": "重命名",
   "midiItemNameHint": "留空：使用片段自身的名称",
   "midiSaveClipTitle": "保存片段",
-  "midiSaveFileName": "文件名"
+  "midiSaveFileName": "文件名",
+  "midiBulkRenameMenu": "按方案重命名…",
+  "midiBulkRenameTitle": "按命名方案重命名",
+  "midiBulkRenameHint": "每个名称都根据该合集的命名方案提出。可先编辑任意名称，并取消勾选需要保持不变的片段。",
+  "midiBulkRenameApply": "{count, plural, other{重命名 {count} 个片段}}",
+  "midiBulkRenameDone": "{count, plural, other{已重命名 {count} 个片段}}",
+  "midiBulkRenameSelectAll": "全部",
+  "midiNameFromScheme": "按命名方案",
+  "midiCollectionMoved": "{count, plural, other{已将 {count} 个片段移至 {name}}}",
+  "midiExpandAll": "全部展开",
+  "midiCollapseAll": "全部折叠"
 }

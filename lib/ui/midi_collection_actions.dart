@@ -33,21 +33,20 @@ MidiCollectionItem collectionItemFor(
   String? musicalKey,
   SynthVoice? pickedVoice,
   TimeSignature? timeSignature,
-}) =>
-    MidiCollectionItem(
-      id: MidiCollectionStore.newItemId(),
-      clip: clip,
-      addedAt: DateTime.now(),
-      sourceProjectId: projectId,
-      sourceProjectName: projectName,
-      bpm: bpm,
-      musicalKey: musicalKey,
-      voice: pickedVoice?.name,
-      // 4/4 goes unsaid, as it does for every clip copied from a project.
-      timeSignature: timeSignature == null || timeSignature == TimeSignature.common
-          ? null
-          : timeSignature.text,
-    );
+}) => MidiCollectionItem(
+  id: MidiCollectionStore.newItemId(),
+  clip: clip,
+  addedAt: DateTime.now(),
+  sourceProjectId: projectId,
+  sourceProjectName: projectName,
+  bpm: bpm,
+  musicalKey: musicalKey,
+  voice: pickedVoice?.name,
+  // 4/4 goes unsaid, as it does for every clip copied from a project.
+  timeSignature: timeSignature == null || timeSignature == TimeSignature.common
+      ? null
+      : timeSignature.text,
+);
 
 /// Asks which collection to put [items] in — every existing one, or a new
 /// one — and adds them there. Shows what happened in a snackbar. Resolves
@@ -70,7 +69,8 @@ Future<bool> addToCollectionFlow(
   if (!context.mounted) return false;
 
   const newChoice = '\u0000new';
-  final anchor = origin ??
+  final anchor =
+      origin ??
       Rect.fromCenter(
         center: overlay.size.center(Offset.zero),
         width: 1,
@@ -123,24 +123,28 @@ Future<bool> addToCollectionFlow(
   final collectionId = target.id;
   // Only when there is a MIDI tab to open it in (the user may hide it).
   final canOpen = ref.read(visibleTabsProvider).contains(AppTab.midi);
-  messenger.showSnackBar(SnackBar(
-    content: Text(
-      added == 0
-          ? l10n.midiCollectionAlreadyIn(target.name)
-          : l10n.midiCollectionAdded(added, target.name),
+  messenger.showSnackBar(
+    SnackBar(
+      content: Text(
+        added == 0
+            ? l10n.midiCollectionAlreadyIn(target.name)
+            : l10n.midiCollectionAdded(added, target.name),
+      ),
+      action: canOpen
+          ? SnackBarAction(
+              label: l10n.midiCollectionOpen,
+              onPressed: () {
+                // Back to the dashboard (from a project page, say), then let
+                // it and the MIDI tab take the request.
+                navigator.popUntil((route) => route.isFirst);
+                ref
+                    .read(midiCollectionToOpenProvider.notifier)
+                    .open(collectionId);
+              },
+            )
+          : null,
     ),
-    action: canOpen
-        ? SnackBarAction(
-            label: l10n.midiCollectionOpen,
-            onPressed: () {
-              // Back to the dashboard (from a project page, say), then let
-              // it and the MIDI tab take the request.
-              navigator.popUntil((route) => route.isFirst);
-              ref.read(midiCollectionToOpenProvider.notifier).open(collectionId);
-            },
-          )
-        : null,
-  ));
+  );
   return true;
 }
 
@@ -154,18 +158,21 @@ Future<String?> promptCollectionName(
   String? hint,
   String? helper,
   bool allowBlank = false,
-}) =>
-    showDialog<String>(
-      context: context,
-      builder: (_) => CollectionNameDialog(
-        title: title,
-        action: action,
-        initial: initial,
-        hint: hint,
-        helper: helper,
-        allowBlank: allowBlank,
-      ),
-    );
+  String? suggestion,
+  String? suggestionLabel,
+}) => showDialog<String>(
+  context: context,
+  builder: (_) => CollectionNameDialog(
+    title: title,
+    action: action,
+    initial: initial,
+    hint: hint,
+    helper: helper,
+    allowBlank: allowBlank,
+    suggestion: suggestion,
+    suggestionLabel: suggestionLabel,
+  ),
+);
 
 /// The dialog behind [promptCollectionName].
 ///
@@ -181,6 +188,8 @@ class CollectionNameDialog extends StatefulWidget {
     this.hint,
     this.helper,
     this.allowBlank = false,
+    this.suggestion,
+    this.suggestionLabel,
   });
 
   final String title;
@@ -197,13 +206,19 @@ class CollectionNameDialog extends StatefulWidget {
   /// name that falls back to another when left blank.
   final bool allowBlank;
 
+  /// A name to fill in with one press of a button labelled
+  /// [suggestionLabel] — a clip's name from its collection's naming scheme.
+  final String? suggestion;
+  final String? suggestionLabel;
+
   @override
   State<CollectionNameDialog> createState() => _CollectionNameDialogState();
 }
 
 class _CollectionNameDialogState extends State<CollectionNameDialog> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.initial);
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initial,
+  );
 
   @override
   void dispose() {
@@ -224,15 +239,36 @@ class _CollectionNameDialogState extends State<CollectionNameDialog> {
     final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       title: Text(widget.title),
-      content: TextField(
-        controller: _controller,
-        autofocus: true,
-        decoration: InputDecoration(
-          hintText: widget.hint ?? l10n.midiCollectionNameHint,
-          helperText: widget.helper,
-        ),
-        onChanged: (_) => setState(() {}),
-        onSubmitted: (_) => _submit(),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            key: const ValueKey('collection-name-field'),
+            controller: _controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: widget.hint ?? l10n.midiCollectionNameHint,
+              helperText: widget.helper,
+            ),
+            onChanged: (_) => setState(() {}),
+            onSubmitted: (_) => _submit(),
+          ),
+          if (widget.suggestion case final suggestion?) ...[
+            const SizedBox(height: 8),
+            TextButton.icon(
+              key: const ValueKey('collection-name-suggestion'),
+              icon: const Icon(Icons.auto_fix_high_outlined, size: 18),
+              label: Text(widget.suggestionLabel ?? suggestion),
+              onPressed: () => setState(() {
+                _controller.text = suggestion;
+                _controller.selection = TextSelection.collapsed(
+                  offset: suggestion.length,
+                );
+              }),
+            ),
+          ],
+        ],
       ),
       actions: [
         TextButton(
@@ -283,16 +319,16 @@ Future<bool> confirmDeleteCollection(
 /// any project: no source project, the file's name instead, and the tempo
 /// and key the file declares.
 List<MidiCollectionItem> collectionItemsForImport(ImportedMidiFile file) => [
-      for (final clip in file.clips)
-        MidiCollectionItem(
-          id: MidiCollectionStore.newItemId(),
-          clip: clip,
-          addedAt: DateTime.now(),
-          sourceFileName: file.fileName,
-          bpm: file.bpm,
-          musicalKey: file.musicalKey,
-        ),
-    ];
+  for (final clip in file.clips)
+    MidiCollectionItem(
+      id: MidiCollectionStore.newItemId(),
+      clip: clip,
+      addedAt: DateTime.now(),
+      sourceFileName: file.fileName,
+      bpm: file.bpm,
+      musicalKey: file.musicalKey,
+    ),
+];
 
 /// Lets the user pick `.mid` files from anywhere and adds their clips to
 /// [into], or — with no collection given — to one they choose, as "Add to
@@ -332,7 +368,8 @@ Future<void> importMidiFilesFlow(
   if (!context.mounted) return;
   if (skipped.isNotEmpty) {
     messenger.showSnackBar(
-        SnackBar(content: Text(l10n.midiImportSkipped(skipped.join(', ')))));
+      SnackBar(content: Text(l10n.midiImportSkipped(skipped.join(', ')))),
+    );
   }
   if (items.isEmpty) return;
 
@@ -342,9 +379,13 @@ Future<void> importMidiFilesFlow(
   }
   final repo = await ref.read(repositoryProvider.future);
   final added = await repo.midiCollections.addItems(into.id, items);
-  messenger.showSnackBar(SnackBar(
-    content: Text(added == 0
-        ? l10n.midiCollectionAlreadyIn(into.name)
-        : l10n.midiCollectionAdded(added, into.name)),
-  ));
+  messenger.showSnackBar(
+    SnackBar(
+      content: Text(
+        added == 0
+            ? l10n.midiCollectionAlreadyIn(into.name)
+            : l10n.midiCollectionAdded(added, into.name),
+      ),
+    ),
+  );
 }

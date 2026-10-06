@@ -6581,4 +6581,55 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiSaveFileName => '文件名';
+
+  @override
+  String get midiBulkRenameMenu => '按方案重命名…';
+
+  @override
+  String get midiBulkRenameTitle => '按命名方案重命名';
+
+  @override
+  String get midiBulkRenameHint => '每个名称都根据该合集的命名方案提出。可先编辑任意名称，并取消勾选需要保持不变的片段。';
+
+  @override
+  String midiBulkRenameApply(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '重命名 $count 个片段',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiBulkRenameDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已重命名 $count 个片段',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiBulkRenameSelectAll => '全部';
+
+  @override
+  String get midiNameFromScheme => '按命名方案';
+
+  @override
+  String midiCollectionMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已将 $count 个片段移至 $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiExpandAll => '全部展开';
+
+  @override
+  String get midiCollapseAll => '全部折叠';
 }

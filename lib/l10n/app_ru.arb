@@ -4149,5 +4149,15 @@
   "midiItemRename": "Переименовать",
   "midiItemNameHint": "Пусто: собственное имя клипа",
   "midiSaveClipTitle": "Сохранить клип",
-  "midiSaveFileName": "Имя файла"
+  "midiSaveFileName": "Имя файла",
+  "midiBulkRenameMenu": "Переименовать по схеме…",
+  "midiBulkRenameTitle": "Переименовать по схеме имён",
+  "midiBulkRenameHint": "Каждое имя предложено по схеме имён коллекции. Сначала можно отредактировать любое и снять отметку с клипов, которые нужно оставить как есть.",
+  "midiBulkRenameApply": "{count, plural, one{Переименовать {count} клип} few{Переименовать {count} клипа} many{Переименовать {count} клипов} other{Переименовать {count} клипа}}",
+  "midiBulkRenameDone": "{count, plural, one{Переименован {count} клип} few{Переименовано {count} клипа} many{Переименовано {count} клипов} other{Переименовано {count} клипа}}",
+  "midiBulkRenameSelectAll": "Все",
+  "midiNameFromScheme": "По схеме имён",
+  "midiCollectionMoved": "{count, plural, one{Перемещён {count} клип в {name}} few{Перемещено {count} клипа в {name}} many{Перемещено {count} клипов в {name}} other{Перемещено {count} клипа в {name}}}",
+  "midiExpandAll": "Развернуть все",
+  "midiCollapseAll": "Свернуть все"
 }

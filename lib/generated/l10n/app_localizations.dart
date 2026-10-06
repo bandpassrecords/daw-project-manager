@@ -11488,6 +11488,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'File name'**
   String get midiSaveFileName;
+
+  /// Button and menu entry: rename many clips from the naming scheme at once
+  ///
+  /// In en, this message translates to:
+  /// **'Rename by scheme…'**
+  String get midiBulkRenameMenu;
+
+  /// Dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Rename by naming scheme'**
+  String get midiBulkRenameTitle;
+
+  /// Explains the bulk rename dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Each name is proposed from the collection\'s naming scheme. Edit any of them first, and untick the clips to leave as they are.'**
+  String get midiBulkRenameHint;
+
+  /// Button: apply the renames
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Rename 1 clip} other{Rename {count} clips}}'**
+  String midiBulkRenameApply(int count);
+
+  /// Snackbar after a bulk rename
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Renamed 1 clip} other{Renamed {count} clips}}'**
+  String midiBulkRenameDone(int count);
+
+  /// Checkbox: tick or untick every clip in the list
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get midiBulkRenameSelectAll;
+
+  /// Button in the rename dialog: fill in a name made from the naming scheme
+  ///
+  /// In en, this message translates to:
+  /// **'From the naming scheme'**
+  String get midiNameFromScheme;
+
+  /// Snackbar: clips dragged into another collection
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Moved to {name}} other{Moved {count} clips to {name}}}'**
+  String midiCollectionMoved(int count, String name);
+
+  /// Button: open every collection, folder or group in a MIDI list
+  ///
+  /// In en, this message translates to:
+  /// **'Expand all'**
+  String get midiExpandAll;
+
+  /// Button: close every collection, folder or group in a MIDI list
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse all'**
+  String get midiCollapseAll;
 }
 
 class _AppLocalizationsDelegate

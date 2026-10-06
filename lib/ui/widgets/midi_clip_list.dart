@@ -118,6 +118,10 @@ class MidiClipList extends StatefulWidget {
     this.titleOf,
     this.fileNameOf,
     this.actionsOf,
+    this.grabWrapper,
+    this.rowWrapper,
+    this.groupOpen,
+    this.onGroupToggled,
   });
 
   final List<MidiClip> clips;
@@ -190,6 +194,22 @@ class MidiClipList extends StatefulWidget {
   /// its own; phone: after the rest of the overflow menu).
   final List<MidiClipRowAction> Function(int index)? actionsOf;
 
+  /// Wraps the part of a row that drags — its thumbnail and names — in
+  /// what makes it draggable (moving it into a folder or collection). The
+  /// handle, when there is one, still drags the file out of the app.
+  final Widget Function(BuildContext context, int index, Widget child)?
+  grabWrapper;
+
+  /// Wraps a whole row — a drop target that puts what is dropped before it.
+  final Widget Function(BuildContext context, int index, Widget row)?
+  rowWrapper;
+
+  /// Whether the caller keeps group [label] open or closed — null: the
+  /// list's default. With [onGroupToggled], the caller keeps the groups'
+  /// state (between runs, say) instead of the list.
+  final bool? Function(String? label)? groupOpen;
+  final void Function(String? label, bool open)? onGroupToggled;
+
   @override
   State<MidiClipList> createState() => _MidiClipListState();
 }
@@ -213,6 +233,9 @@ class _MidiClipListState extends State<MidiClipList> {
 
   bool _isOpen(String? label) {
     final byDefault = widget.clips.length <= widget.expandAllUpTo;
+    if (widget.onGroupToggled != null) {
+      return widget.groupOpen?.call(label) ?? byDefault;
+    }
     return _toggled.contains(label) ? !byDefault : byDefault;
   }
 
@@ -268,9 +291,16 @@ class _MidiClipListState extends State<MidiClipList> {
       waitDuration: const Duration(milliseconds: 600),
       child: InkWell(
         borderRadius: BorderRadius.circular(6),
-        onTap: () => setState(() {
-          if (!_toggled.remove(group.label)) _toggled.add(group.label);
-        }),
+        onTap: () {
+          final kept = widget.onGroupToggled;
+          if (kept != null) {
+            kept(group.label, !open);
+            return;
+          }
+          setState(() {
+            if (!_toggled.remove(group.label)) _toggled.add(group.label);
+          });
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
           child: Row(
@@ -351,7 +381,7 @@ class _MidiClipListState extends State<MidiClipList> {
             onPressed: () => widget.onPlay(index),
           );
 
-    return Padding(
+    final row = Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -375,55 +405,65 @@ class _MidiClipListState extends State<MidiClipList> {
                 ),
               ),
             ),
-          _openable(
-            index,
-            MidiClipThumbnail(
-              clip: clip,
-              width: compact ? 44 : 72,
-              height: compact ? 28 : 32,
-              color: playing
-                  ? theme.colorScheme.secondary
-                  : theme.colorScheme.primary,
-            ),
-          ),
-          SizedBox(width: compact ? 8 : 12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _maybeTooltip(
-                  clip.otherNames.isEmpty
-                      ? null
-                      : labels.alsoAs(clip.otherNames.join(', ')),
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+            child: _grab(
+              context,
+              index,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _openable(
+                    index,
+                    MidiClipThumbnail(
+                      clip: clip,
+                      width: compact ? 44 : 72,
+                      height: compact ? 28 : 32,
+                      color: playing
+                          ? theme.colorScheme.secondary
+                          : theme.colorScheme.primary,
                     ),
                   ),
-                ),
-                Text(
-                  details.join(' · '),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall,
-                ),
-                if (fileName != null)
-                  Text(
-                    fileName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontFamily: 'monospace',
-                      color: theme.textTheme.bodySmall?.color?.withValues(
-                        alpha: 0.7,
-                      ),
+                  SizedBox(width: compact ? 8 : 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _maybeTooltip(
+                          clip.otherNames.isEmpty
+                              ? null
+                              : labels.alsoAs(clip.otherNames.join(', ')),
+                          Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          details.join(' · '),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall,
+                        ),
+                        if (fileName != null)
+                          Text(
+                            fileName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontFamily: 'monospace',
+                              color: theme.textTheme.bodySmall?.color
+                                  ?.withValues(alpha: 0.7),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-              ],
+                ],
+              ),
             ),
           ),
           playButton,
@@ -482,7 +522,11 @@ class _MidiClipListState extends State<MidiClipList> {
         ],
       ),
     );
+    return widget.rowWrapper?.call(context, index, row) ?? row;
   }
+
+  Widget _grab(BuildContext context, int index, Widget child) =>
+      widget.grabWrapper?.call(context, index, child) ?? child;
 
   Widget _openable(int index, Widget thumbnail) {
     final onOpen = widget.onOpen;

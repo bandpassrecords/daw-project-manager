@@ -6853,4 +6853,65 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiSaveFileName => 'Имя файла';
+
+  @override
+  String get midiBulkRenameMenu => 'Переименовать по схеме…';
+
+  @override
+  String get midiBulkRenameTitle => 'Переименовать по схеме имён';
+
+  @override
+  String get midiBulkRenameHint =>
+      'Каждое имя предложено по схеме имён коллекции. Сначала можно отредактировать любое и снять отметку с клипов, которые нужно оставить как есть.';
+
+  @override
+  String midiBulkRenameApply(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Переименовать $count клипа',
+      many: 'Переименовать $count клипов',
+      few: 'Переименовать $count клипа',
+      one: 'Переименовать $count клип',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiBulkRenameDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Переименовано $count клипа',
+      many: 'Переименовано $count клипов',
+      few: 'Переименовано $count клипа',
+      one: 'Переименован $count клип',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiBulkRenameSelectAll => 'Все';
+
+  @override
+  String get midiNameFromScheme => 'По схеме имён';
+
+  @override
+  String midiCollectionMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Перемещено $count клипа в $name',
+      many: 'Перемещено $count клипов в $name',
+      few: 'Перемещено $count клипа в $name',
+      one: 'Перемещён $count клип в $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiExpandAll => 'Развернуть все';
+
+  @override
+  String get midiCollapseAll => 'Свернуть все';
 }

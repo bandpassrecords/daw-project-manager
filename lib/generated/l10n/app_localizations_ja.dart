@@ -6655,4 +6655,56 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiSaveFileName => 'ファイル名';
+
+  @override
+  String get midiBulkRenameMenu => 'スキームで名前を変更…';
+
+  @override
+  String get midiBulkRenameTitle => '命名スキームで名前を変更';
+
+  @override
+  String get midiBulkRenameHint =>
+      '各名前はコレクションの命名スキームから提案されます。先に自由に編集でき、そのままにしたいクリップはチェックを外してください。';
+
+  @override
+  String midiBulkRenameApply(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個のクリップの名前を変更',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiBulkRenameDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個のクリップの名前を変更しました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiBulkRenameSelectAll => 'すべて';
+
+  @override
+  String get midiNameFromScheme => '命名スキームから';
+
+  @override
+  String midiCollectionMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個を $name に移動しました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiExpandAll => 'すべて展開';
+
+  @override
+  String get midiCollapseAll => 'すべて折りたたむ';
 }

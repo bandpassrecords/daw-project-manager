@@ -480,6 +480,167 @@ Future<({String? id})?> pickMidiFolder(
   );
 }
 
+/// One clip in [MidiBulkRenameDialog]: its name now and the one proposed.
+class MidiRenameRow {
+  const MidiRenameRow({
+    required this.itemId,
+    required this.current,
+    required this.proposed,
+    this.where = '',
+  });
+
+  final String itemId;
+  final String current;
+  final String proposed;
+
+  /// Which folder it is in, to tell same-named clips apart ('' at the top).
+  final String where;
+}
+
+/// Renames many clips at once from the naming scheme: each row shows the
+/// clip's name now and a field holding the proposed one, to correct before
+/// anything is renamed, and a tick to leave it out. Pops item id → new
+/// name for the ticked rows that change, or null when cancelled.
+class MidiBulkRenameDialog extends StatefulWidget {
+  const MidiBulkRenameDialog({super.key, required this.rows});
+
+  final List<MidiRenameRow> rows;
+
+  @override
+  State<MidiBulkRenameDialog> createState() => _MidiBulkRenameDialogState();
+}
+
+class _MidiBulkRenameDialogState extends State<MidiBulkRenameDialog> {
+  late final List<TextEditingController> _names = [
+    for (final r in widget.rows) TextEditingController(text: r.proposed),
+  ];
+
+  /// Ticked to start with: every clip the scheme would rename.
+  late final List<bool> _on = [
+    for (final r in widget.rows) r.proposed.trim() != r.current.trim(),
+  ];
+
+  @override
+  void dispose() {
+    for (final c in _names) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  Map<String, String> get _renames => {
+    for (var i = 0; i < widget.rows.length; i++)
+      if (_on[i] &&
+          _names[i].text.trim().isNotEmpty &&
+          _names[i].text.trim() != widget.rows[i].current.trim())
+        widget.rows[i].itemId: _names[i].text.trim(),
+  };
+
+  bool? get _allState {
+    if (_on.every((on) => on)) return true;
+    if (_on.every((on) => !on)) return false;
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final renames = _renames;
+    return AlertDialog(
+      title: Text(l10n.midiBulkRenameTitle),
+      content: SizedBox(
+        width: 640,
+        height: 460,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l10n.midiBulkRenameHint, style: theme.textTheme.bodySmall),
+            CheckboxListTile(
+              key: const ValueKey('midi-bulk-rename-all'),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              tristate: true,
+              value: _allState,
+              title: Text(l10n.midiBulkRenameSelectAll),
+              onChanged: (_) => setState(() {
+                final to = _allState != true;
+                for (var i = 0; i < _on.length; i++) {
+                  _on[i] = to;
+                }
+              }),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.rows.length,
+                itemBuilder: (context, i) {
+                  final row = widget.rows[i];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Checkbox(
+                          key: ValueKey('midi-bulk-rename-on-${row.itemId}'),
+                          value: _on[i],
+                          onChanged: (v) => setState(() => _on[i] = v ?? false),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                [
+                                  row.where,
+                                  row.current,
+                                ].where((s) => s.isNotEmpty).join(' / '),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                              TextField(
+                                key: ValueKey(
+                                  'midi-bulk-rename-name-${row.itemId}',
+                                ),
+                                controller: _names[i],
+                                enabled: _on[i],
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                ),
+                                onChanged: (_) => setState(() {}),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          key: const ValueKey('midi-bulk-rename-apply'),
+          onPressed: renames.isEmpty
+              ? null
+              : () => Navigator.of(context).pop(renames),
+          child: Text(l10n.midiBulkRenameApply(renames.length)),
+        ),
+      ],
+    );
+  }
+}
+
 /// Confirms deleting [folder]; what is inside it moves up, so nothing but
 /// the folder goes.
 Future<bool> confirmDeleteMidiFolder(

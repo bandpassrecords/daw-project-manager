@@ -277,30 +277,102 @@ class MidiCollectionStore {
         );
       });
 
-  /// Moves clips into [folderId] (null: the top level), after what is
-  /// already there, keeping their order.
+  /// Moves clips into [folderId] (null: the top level), keeping their
+  /// order: after what is already there, or — given [beforeItemId], a clip
+  /// of that folder — just before it (a drop between two clips).
   Future<void> moveItemsToFolder(
     String id,
     Iterable<String> itemIds,
+    String? folderId, {
+    String? beforeItemId,
+  }) =>
+      _update(id, (c, now) {
+        final target = c.folderById(folderId)?.id;
+        final ids = itemIds.toSet();
+        final moving = [
+          for (final i in c.items)
+            if (ids.contains(i.id))
+              i.copyWith(folderId: target, clearFolder: target == null),
+        ];
+        if (moving.isEmpty) return null;
+        final rest = [
+          for (final i in c.items)
+            if (!ids.contains(i.id)) i,
+        ];
+        var at = beforeItemId == null
+            ? -1
+            : rest.indexWhere((i) => i.id == beforeItemId);
+        if (at < 0) at = rest.length;
+        return c.copyWith(
+          items: [...rest.take(at), ...moving, ...rest.skip(at)],
+          updatedAt: now,
+        );
+      });
+
+  /// Moves clips from collection [fromId] into folder [folderId] of
+  /// collection [toId], at its end. A clip [toId] already plays stays
+  /// where it was. Returns how many moved.
+  Future<int> moveItemsToCollection(
+    String fromId,
+    String toId,
+    Iterable<String> itemIds,
     String? folderId,
-  ) => _update(id, (c, now) {
-    final target = c.folderById(folderId)?.id;
+  ) async {
+    if (fromId == toId) return 0;
+    final from = await get(fromId);
+    final to = await get(toId);
+    if (from == null || to == null) return 0;
     final ids = itemIds.toSet();
-    final moving = [
-      for (final i in c.items)
-        if (ids.contains(i.id))
-          i.copyWith(folderId: target, clearFolder: target == null),
-    ];
-    if (moving.isEmpty) return null;
-    return c.copyWith(
-      items: [
-        for (final i in c.items)
-          if (!ids.contains(i.id)) i,
-        ...moving,
-      ],
+    final target = to.folderById(folderId)?.id;
+    final next = [...to.items];
+    final moved = <String>{};
+    for (final item in from.items) {
+      if (!ids.contains(item.id)) continue;
+      final key = item.clip.contentKey;
+      if (next.any((i) => i.clip.contentKey == key)) continue;
+      next.add(item.copyWith(folderId: target, clearFolder: target == null));
+      moved.add(item.id);
+    }
+    if (moved.isEmpty) return 0;
+    final now = _now();
+    // Into the new one first: a crash between the two writes leaves a
+    // copy behind, never a clip lost.
+    await put(to.copyWith(items: next, updatedAt: now));
+    await put(from.copyWith(
+      items: [for (final i in from.items) if (!moved.contains(i.id)) i],
       updatedAt: now,
-    );
-  });
+    ));
+    return moved.length;
+  }
+
+  /// Gives several clips names at once ([titles]: item id → name, blank
+  /// for the clip's own). Returns the names they had, for an undo.
+  Future<Map<String, String?>> renameItems(
+    String id,
+    Map<String, String?> titles,
+  ) async {
+    final before = <String, String?>{};
+    await _update(id, (c, now) {
+      var changed = false;
+      final items = [
+        for (final i in c.items)
+          if (titles.containsKey(i.id))
+            () {
+              final t = titles[i.id]?.trim() ?? '';
+              final next = i.copyWith(title: t, clearTitle: t.isEmpty);
+              if (next.title != i.title) {
+                before[i.id] = i.title;
+                changed = true;
+              }
+              return next;
+            }()
+          else
+            i,
+      ];
+      return changed ? c.copyWith(items: items, updatedAt: now) : null;
+    });
+    return before;
+  }
 
   /// Moves the clip at [from] in folder [folderId] to [to] (both positions
   /// among that folder's clips, as `ReorderableListView` reports them:
