@@ -271,7 +271,12 @@ class MidiPreviewPlayer extends ChangeNotifier {
     _lastPosition = positionOf(key) ?? _lastPosition;
     paused = true;
     _notify();
-    await _player?.pause();
+    final player = _player;
+    if (player == null) return;
+    await _fadeOut(player);
+    await player.pause();
+    // Back to full for when it resumes.
+    await player.setVolume(volume);
   }
 
   /// Carries on from where [pause] left off.
@@ -296,7 +301,23 @@ class MidiPreviewPlayer extends ChangeNotifier {
     playingKey = null;
     paused = false;
     _notify();
-    await _player?.stop();
+    final player = _player;
+    if (player == null) return;
+    await _fadeOut(player);
+    await player.stop();
+  }
+
+  /// A quick fade to silence before stopping or pausing: cut off mid-wave,
+  /// the sound ends in a click.
+  Future<void> _fadeOut(AudioPlayer player) async {
+    try {
+      for (final share in const [0.6, 0.3, 0.1]) {
+        await player.setVolume(volume * share);
+        await Future<void>.delayed(const Duration(milliseconds: 15));
+      }
+    } catch (_) {
+      // A player that can't fade still stops.
+    }
   }
 
   void _notify() {

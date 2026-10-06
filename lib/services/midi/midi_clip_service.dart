@@ -69,6 +69,11 @@ class MidiClipService {
   /// path — one seamless pass when [loop] is set (see
   /// [MidiClipSynth.renderWav]). Reuses an earlier render of the same clip,
   /// tempo, voice and loop setting.
+  /// Bumped whenever the synth sounds different — a voice retuned, a fade
+  /// added — so previews cached before are rendered again rather than
+  /// played as they were.
+  static const kPreviewRenderVersion = 2;
+
   static Future<String> renderPreview(
     MidiClip clip, {
     double? bpm,
@@ -76,7 +81,8 @@ class MidiClipService {
     bool loop = false,
     required Directory directory,
   }) async {
-    final name = 'preview_${_fnv1a(clip.contentKey)}'
+    final name = 'preview_v$kPreviewRenderVersion'
+        '_${_fnv1a(clip.contentKey)}'
         '_${(bpm ?? 120).toStringAsFixed(2)}_${voice.name}'
         '${loop ? '_loop' : ''}.wav';
     final out = File(p.join(directory.path, name));

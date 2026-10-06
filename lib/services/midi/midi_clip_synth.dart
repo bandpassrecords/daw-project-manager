@@ -112,6 +112,16 @@ class MidiClipSynth {
     }
     final scale = peak > 0.9 ? 0.9 / peak : 1.0;
 
+    // The very end fades to silence: whatever still rings there — a held
+    // pedal, a cymbal, a kick's tail — would otherwise stop dead on its
+    // last sample, a click. A loop runs straight on into its start instead.
+    if (!loop) {
+      final fade = math.min(frames, (kEndFadeSeconds * sampleRate).round());
+      for (var i = 0; i < fade; i++) {
+        mix[frames - 1 - i] *= i / fade;
+      }
+    }
+
     final pcm = ByteData(frames * 2);
     for (var i = 0; i < frames; i++) {
       final v = (mix[i] * scale * 32767).round().clamp(-32768, 32767);
@@ -129,7 +139,8 @@ class MidiClipSynth {
     final sr = sampleRate.toDouble();
     final release = math.max(1, (patch.release * sr).round());
     final end = math.min(mix.length, start + held + release);
-    final baseFreq = 440.0 * math.pow(2, (pitch - 69) / 12);
+    final baseFreq =
+        440.0 * math.pow(2, (pitch - 69) / 12) / patch.tableDivisor;
     final table = patch.table;
     final size = table.length - 1;
     final voices = patch.detuneCents.length;
@@ -171,6 +182,11 @@ class MidiClipSynth {
         env = levelAtRelease * (1 - (t - held) / release);
       }
       if (env <= 0) continue;
+      if (patch.tremoloDepth > 0) {
+        env *= 1 -
+            patch.tremoloDepth *
+                (0.5 + 0.5 * math.sin(2 * math.pi * patch.tremoloHz * t / sr));
+      }
 
       // Vibrato eases in after its delay so short notes stay steady.
       var pitchMod = 1.0;
@@ -315,7 +331,8 @@ class MidiClipSynth {
 enum _Drum { kick, snare, clap, closedHat, openHat, cymbal, tom, perc }
 
 /// One tonal voice: a single-cycle wavetable built from harmonic
-/// amplitudes, an ADSR envelope, optional unison detune and vibrato.
+/// amplitudes, an ADSR envelope, optional unison detune, vibrato and
+/// tremolo.
 class _Patch {
   _Patch({
     required List<double> harmonics,
@@ -328,28 +345,42 @@ class _Patch {
     this.vibratoCents = 0,
     this.vibratoHz = 5,
     this.vibratoDelay = 0.25,
+    this.tremoloDepth = 0,
+    this.tremoloHz = 5,
     List<double>? partialRatios,
-  }) : table = _buildTable(harmonics, partialRatios);
+    this.tableDivisor = 1,
+  }) : table = _buildTable(harmonics, partialRatios, tableDivisor);
 
   final double attack, decay, sustain, release;
   final bool exponentialDecay;
   final List<double> detuneCents;
   final double vibratoCents, vibratoHz, vibratoDelay;
+
+  /// Loudness wobbling by up to this share at [tremoloHz] — an electric
+  /// piano's tremolo, an organ's rotary speaker.
+  final double tremoloDepth, tremoloHz;
+
+  /// The table holds one cycle of the note's frequency divided by this: a
+  /// table cycling slower than the note can hold partials between its
+  /// harmonics — a bell's — as whole numbers of its own cycles.
+  final int tableDivisor;
   final Float64List table;
 
   static const _tableSize = 2048;
 
-  /// [ratios] lets a partial sit off the harmonic series (bells). Off-series
-  /// ratios are rounded to the nearest whole number of cycles per table, so
-  /// the table still loops cleanly — the slight inharmonicity survives.
-  static Float64List _buildTable(List<double> amps, List<double>? ratios) {
+  /// [ratios] lets a partial sit off the harmonic series (bells). Each is
+  /// placed at the nearest whole number of table cycles — with a
+  /// [divisor] of 4, a quarter of a harmonic apart — so the table still
+  /// loops cleanly and the partials stay out of tune, as a bell's are.
+  static Float64List _buildTable(
+      List<double> amps, List<double>? ratios, int divisor) {
     final table = Float64List(_tableSize + 1);
     var peak = 0.0;
     for (var i = 0; i < _tableSize; i++) {
       final phase = 2 * math.pi * i / _tableSize;
       var v = 0.0;
       for (var h = 0; h < amps.length; h++) {
-        final ratio = ratios != null ? ratios[h].roundToDouble() : (h + 1).toDouble();
+        final ratio = ((ratios?[h] ?? (h + 1)) * divisor).roundToDouble();
         v += amps[h] * math.sin(phase * ratio);
       }
       table[i] = v;
@@ -368,47 +399,64 @@ class _Patch {
 List<double> _saw(int n, [double rolloff = 1]) =>
     [for (var h = 1; h <= n; h++) 1 / math.pow(h, rolloff).toDouble()];
 
+/// How long the end of a rendered preview takes to fade to silence.
+const double kEndFadeSeconds = 0.02;
+
 final Map<SynthVoice, _Patch> _patches = {
+  // Bright and held, with a centre voice so its detuned pair can't beat it
+  // down to nothing — the dip that made a short lead note sound plucked.
   SynthVoice.lead: _Patch(
     harmonics: _saw(14),
     attack: 0.004,
     decay: 0.08,
     sustain: 0.8,
     release: 0.12,
-    detuneCents: const [-7, 7],
+    detuneCents: const [-7, 0, 7],
     vibratoCents: 12,
     vibratoHz: 5.5,
   ),
+  // Dark and round, with a punch at the front that settles: a bass.
   SynthVoice.bass: _Patch(
-    harmonics: const [1.0, 0.55, 0.25, 0.12, 0.05],
-    attack: 0.003,
-    decay: 0.15,
-    sustain: 0.75,
-    release: 0.06,
+    harmonics: const [1.0, 0.26, 0.05, 0.015],
+    attack: 0.002,
+    decay: 0.09,
+    sustain: 0.55,
+    release: 0.05,
   ),
+  // Darker and slower than the strings, three detuned voices wide.
   SynthVoice.pad: _Patch(
-    harmonics: _saw(8, 1.6),
-    attack: 0.35,
-    decay: 0.4,
-    sustain: 0.8,
-    release: 0.7,
-    detuneCents: const [-11, 0, 11],
+    harmonics: _saw(8, 2.0),
+    attack: 0.6,
+    decay: 0.5,
+    sustain: 0.85,
+    release: 1.0,
+    detuneCents: const [-14, 0, 14],
   ),
+  // Snaps and is gone.
   SynthVoice.pluck: _Patch(
     harmonics: _saw(10, 1.2),
     attack: 0.002,
-    decay: 0.18,
+    decay: 0.1,
     sustain: 0,
     release: 0.1,
     exponentialDecay: true,
   ),
+  // An electric piano: bright and glassy, its upper partials (the tine)
+  // strong, a little chorus and tremolo, dying away like a struck key —
+  // not a bass with a decay, which is what it used to be.
   SynthVoice.keys: _Patch(
-    harmonics: const [1.0, 0.5, 0.28, 0.16, 0.08, 0.04],
-    attack: 0.003,
-    decay: 0.7,
-    sustain: 0.12,
-    release: 0.25,
+    harmonics: const [
+      1.0, 0.55, 0.22, 0.38, 0.12, 0.2, 0.24, 0.06, 0.05, 0.08, 0.03, 0.03,
+      0.02, 0.1,
+    ],
+    attack: 0.002,
+    decay: 1.1,
+    sustain: 0,
+    release: 0.3,
     exponentialDecay: true,
+    detuneCents: const [-3, 3],
+    tremoloDepth: 0.22,
+    tremoloHz: 4.5,
   ),
   SynthVoice.organ: _Patch(
     // Drawbar-ish: fundamental, octave, twelfth, two octaves, …
@@ -417,17 +465,21 @@ final Map<SynthVoice, _Patch> _patches = {
     decay: 0.05,
     sustain: 1,
     release: 0.06,
+    // A rotary speaker's shimmer.
+    tremoloDepth: 0.12,
+    tremoloHz: 6.5,
   ),
+  // Brighter and quicker to speak than the pad, singing with vibrato.
   SynthVoice.strings: _Patch(
-    harmonics: _saw(10, 1.3),
-    attack: 0.2,
+    harmonics: _saw(12, 1.0),
+    attack: 0.12,
     decay: 0.3,
     sustain: 0.85,
-    release: 0.4,
-    detuneCents: const [-6, 6],
-    vibratoCents: 14,
-    vibratoHz: 5.2,
-    vibratoDelay: 0.3,
+    release: 0.35,
+    detuneCents: const [-5, 5],
+    vibratoCents: 18,
+    vibratoHz: 5.6,
+    vibratoDelay: 0.2,
   ),
   SynthVoice.brass: _Patch(
     harmonics: _saw(10, 0.9),
@@ -438,13 +490,17 @@ final Map<SynthVoice, _Patch> _patches = {
     vibratoCents: 8,
     vibratoDelay: 0.4,
   ),
+  // A bell's partials really are out of tune: the table cycles at a
+  // quarter of the note, so 2.76, 5.4 and 8.93 land within a quarter of a
+  // harmonic instead of being rounded onto 3, 5 and 9 (an organ's).
   SynthVoice.bell: _Patch(
-    harmonics: const [1.0, 0.5, 0.3, 0.15],
+    harmonics: const [1.0, 0.6, 0.35, 0.2],
     partialRatios: const [1, 2.76, 5.4, 8.93],
+    tableDivisor: 4,
     attack: 0.002,
-    decay: 0.9,
+    decay: 1.4,
     sustain: 0,
-    release: 0.8,
+    release: 1.0,
     exponentialDecay: true,
   ),
 };

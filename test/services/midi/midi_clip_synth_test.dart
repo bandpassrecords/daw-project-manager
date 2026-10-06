@@ -39,11 +39,11 @@ void main() {
   });
 
   test('lasts the clip length at the given tempo, plus the release tail', () {
-    // 4 beats at 120 BPM = 2 s, + the default voice's (keys) 0.25 s release.
+    // 4 beats at 120 BPM = 2 s, + the default voice's (keys) 0.3 s release.
     final seconds = synth.durationSeconds(_clip(const [], length: 1920), 120);
-    expect(seconds, closeTo(2.25, 1e-9));
+    expect(seconds, closeTo(2.3, 1e-9));
     final wav = synth.renderWav(_clip(const [], length: 1920), bpm: 120);
-    expect(_samples(wav).length, (2.25 * 8000).ceil());
+    expect(_samples(wav).length, (2.3 * 8000).ceil());
   });
 
   test('defaults to 120 BPM when the project tempo is unknown', () {
@@ -281,5 +281,39 @@ void main() {
       expect(synth.renderWav(high, bpm: 120, voice: SynthVoice.kick),
           synth.renderWav(low, bpm: 120, voice: SynthVoice.kick));
     });
+  });
+
+  test('ends in silence, however much still rings: no click', () {
+    // A cymbal rings for seconds; the render ends long before it would.
+    final wav = synth.renderWav(
+        _clip(const [
+          MidiNote(startTick: 0, lengthTicks: 480, pitch: 49, velocity: 127),
+          MidiNote(startTick: 1800, lengthTicks: 120, pitch: 49, velocity: 127),
+        ]),
+        voice: SynthVoice.drumKit);
+    final x = _samples(wav);
+    expect(x.last, 0);
+    final fade = (kEndFadeSeconds * 8000).round();
+    double loudness(int from) {
+      var s = 0.0;
+      for (var i = from; i < from + fade ~/ 4; i++) {
+        s += x[i].abs();
+      }
+      return s;
+    }
+
+    expect(loudness(x.length - fade ~/ 4), lessThan(loudness(x.length - fade)),
+        reason: 'fading towards the end');
+  });
+
+  test('a loop runs straight on: its end is not faded', () {
+    final wav = synth.renderWav(
+        _clip(const [
+          MidiNote(startTick: 0, lengthTicks: 1920, pitch: 60, velocity: 127),
+        ]),
+        voice: SynthVoice.organ,
+        loop: true);
+    final x = _samples(wav);
+    expect(x.sublist(x.length - 20).any((v) => v != 0), isTrue);
   });
 }

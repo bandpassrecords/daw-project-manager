@@ -157,5 +157,10 @@ void main() {
         bpm: 120, loop: true, directory: tempDir);
     expect(looped, isNot(first), reason: 'and whether it loops');
     expect(looped, endsWith('_loop.wav'));
+
+    // And how the synth sounds: a render from before a voice was retuned
+    // is never played again.
+    expect(p.basename(first),
+        startsWith('preview_v${MidiClipService.kPreviewRenderVersion}_'));
   });
 }
