@@ -477,4 +477,191 @@ void main() {
           [(0, 64)]);
     });
   });
+
+  group('the range tool', () {
+    test('a range widens to whole grid steps and selects what starts in it',
+        () {
+      final c = editingChord();
+      c.selectRange(500, 130); // either way round
+      expect(c.range, (start: 120, end: 600));
+      expect(c.selection, {1}, reason: 'only E3 starts inside');
+      c.selectRange(10, 10);
+      expect(c.range, (start: 0, end: 120), reason: 'at least one step');
+    });
+
+    test('anything else that selects lets the range go', () {
+      final c = editingChord()..selectRange(0, 960);
+      c.select(2);
+      expect(c.range, isNull);
+      c.selectRange(0, 960);
+      c.tool = MidiEditTool.pencil;
+      expect(c.range, isNull, reason: 'another tool');
+    });
+  });
+
+  group('duplicate', () {
+    test('a range is copied straight after itself, cut at its end, events '
+        'and all, and moves onto the copy', () {
+      final c = MidiClipEditController(const MidiClip(
+        name: 'Riff',
+        ppq: 480,
+        lengthTicks: 1920,
+        notes: [
+          MidiNote(startTick: 0, lengthTicks: 240, pitch: 60, velocity: 90),
+          MidiNote(startTick: 240, lengthTicks: 720, pitch: 62, velocity: 90),
+        ],
+        events: [
+          MidiEvent(tick: 120, kind: MidiEventKind.controller, number: 1, value: 64),
+          MidiEvent(tick: 360, kind: MidiEventKind.controller, number: 1, value: 0),
+        ],
+      ))
+        ..editing = true;
+      c.selectRange(0, 480);
+      c.duplicate();
+      expect(c.clip.notes.map((n) => (n.startTick, n.lengthTicks, n.pitch)), [
+        (0, 240, 60),
+        (240, 720, 62),
+        (480, 240, 60),
+        (720, 240, 62), // cut off at the range's end
+      ]);
+      expect(c.clip.events.map((e) => (e.tick, e.value)),
+          [(120, 64), (360, 0), (600, 64), (840, 0)]);
+      expect(c.range, (start: 480, end: 960));
+      expect(c.selection, {2, 3});
+
+      c.duplicate(); // and again: the pattern carries on
+      expect(c.clip.notes.map((n) => n.startTick), [0, 240, 480, 720, 960, 1200]);
+      c.undo();
+      c.undo();
+      expect(c.clip.notes, hasLength(2), reason: 'one undo step each');
+    });
+
+    test('selected notes are copied to start where the last one ends', () {
+      final c = editingChord()
+        ..select(0)
+        ..toggleSelected(1);
+      // C3 at 0 and E3 at 480, each 480 long: the pair ends at 960.
+      c.duplicate();
+      expect(c.clip.notes.map((n) => (n.startTick, n.pitch)).skip(3),
+          [(960, 60), (1440, 64)]);
+      expect(c.selection, {3, 4}, reason: 'the copies, ready to go again');
+      c.duplicate();
+      expect(c.clip.notes.map((n) => n.startTick).skip(5), [1920, 2400]);
+    });
+
+    test('on the grid when snapping, exactly at the end when not', () {
+      final c = MidiClipEditController(const MidiClip(
+        name: 'Short',
+        ppq: 480,
+        lengthTicks: 1920,
+        notes: [MidiNote(startTick: 0, lengthTicks: 100, pitch: 60, velocity: 90)],
+      ))
+        ..editing = true
+        ..select(0);
+      c.duplicate();
+      expect(c.clip.notes.last.startTick, 120, reason: 'the next 1/16');
+      c.undo();
+      c
+        ..snap = MidiSnap.off
+        ..select(0)
+        ..duplicate();
+      expect(c.clip.notes.last.startTick, 100);
+    });
+
+    test('nothing selected, or not editing: nothing happens', () {
+      final c = editingChord()..duplicate();
+      expect(c.edited, isFalse);
+      final viewing = MidiClipEditController(chord)..select(0);
+      viewing.duplicate();
+      expect(viewing.edited, isFalse);
+    });
+  });
+
+  group('the eraser', () {
+    test('notes erased in one drag are one undo step', () {
+      final c = editingChord()..beginGesture();
+      c.eraseNote(0);
+      c.eraseNote(0); // what was E3, now first
+      c.endGesture();
+      expect(c.clip.notes.map((n) => n.pitch), [67]);
+      c.undo();
+      expect(c.clip.notes, chord.notes);
+    });
+
+    test('over a lane it takes the points it passes', () {
+      final c = editingChord();
+      c.drawLane(MidiEventKind.controller, 1, 90, 100, fromTick: 0, fromValue: 10);
+      c.endGesture();
+      c.beginGesture();
+      c.eraseLane(MidiEventKind.controller, 1, 50, 30);
+      c.endGesture();
+      expect(c.clip.events.map((e) => e.tick), [0, 15, 60, 75, 90]);
+    });
+  });
+
+  group('quantize', () {
+    const loose = MidiClip(
+      name: 'Loose',
+      ppq: 480,
+      lengthTicks: 1920,
+      notes: [
+        MidiNote(startTick: 10, lengthTicks: 200, pitch: 60, velocity: 90),
+        MidiNote(startTick: 470, lengthTicks: 300, pitch: 64, velocity: 90),
+        MidiNote(startTick: 905, lengthTicks: 100, pitch: 67, velocity: 90),
+      ],
+    );
+
+    test('with nothing selected, every start goes to the nearest step; '
+        'lengths stay', () {
+      final c = MidiClipEditController(loose)..editing = true;
+      c.quantize();
+      expect(c.clip.notes.map((n) => (n.startTick, n.lengthTicks)),
+          [(0, 200), (480, 300), (960, 100)]);
+      c.undo();
+      expect(c.clip.notes, loose.notes, reason: 'one undo step');
+    });
+
+    test('only the selection, when there is one, on the grid set', () {
+      final c = MidiClipEditController(loose)
+        ..editing = true
+        ..snap = MidiSnap.quarter
+        ..select(2);
+      c.quantize();
+      expect(c.clip.notes.map((n) => n.startTick), [10, 470, 960]);
+      expect(c.selection, {2}, reason: 'still selected, to go again');
+    });
+
+    test('snapping off quantizes to 1/16; already on the grid is no step',
+        () {
+      final c = MidiClipEditController(loose)
+        ..editing = true
+        ..snap = MidiSnap.off;
+      c.quantize();
+      expect(c.clip.notes.map((n) => n.startTick), [0, 480, 960]);
+      c.quantize();
+      expect(c.canUndo, isTrue);
+      c.undo();
+      expect(c.canUndo, isFalse, reason: 'the second did nothing');
+    });
+  });
+
+  group('a clip grows with its notes', () {
+    test('a note past the end grows it to that bar; undo shrinks it', () {
+      final c = editingChord();
+      c.addNoteAt(1900, 72); // a 1/16 from 1800, ending past the bar
+      expect(c.clip.lengthTicks, 1920, reason: 'ends at 1920 exactly');
+      c.beginGesture();
+      c.resizeSelection(NoteEdge.end, 480);
+      c.endGesture();
+      expect(c.clip.lengthTicks, 3840);
+      c.addNoteAt(9000, 60);
+      expect(c.clip.lengthTicks, 9600);
+      c.undo();
+      expect(c.clip.lengthTicks, 3840);
+    });
+
+    test('nothing past the end: the very same clip', () {
+      expect(grownToNotes(chord), same(chord));
+    });
+  });
 }

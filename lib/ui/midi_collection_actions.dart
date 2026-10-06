@@ -13,6 +13,13 @@ import '../repository/midi_collection_store.dart';
 import '../services/midi/midi_file_import.dart';
 import '../services/midi/synth_voice.dart';
 
+/// The tempo a new idea is drafted at.
+const double kNewIdeaBpm = 120;
+
+/// A blank clip to draft an idea in: four empty bars of 4/4.
+MidiClip newMidiIdea(String name) =>
+    MidiClip(name: name, ppq: 480, lengthTicks: 4 * 4 * 480, notes: const []);
+
 /// A copy of [clip] ready to go into a collection, remembering where it came
 /// from, its project's tempo and key, and the instrument it was being heard
 /// with.

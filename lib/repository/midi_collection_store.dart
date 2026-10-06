@@ -95,6 +95,21 @@ class MidiCollectionStore {
     return added;
   }
 
+  /// Puts [item] in collection [id]: in place of the item with its id, or
+  /// at the end. A new idea saved again replaces what it saved before,
+  /// rather than piling up a copy per save.
+  Future<void> putItem(String id, MidiCollectionItem item) async {
+    final c = await get(id);
+    if (c == null) return;
+    final exists = c.items.any((i) => i.id == item.id);
+    await put(c.copyWith(
+      items: exists
+          ? [for (final i in c.items) i.id == item.id ? item : i]
+          : [...c.items, item],
+      updatedAt: _now(),
+    ));
+  }
+
   Future<void> removeItem(String id, String itemId) async {
     final c = await get(id);
     if (c == null) return;

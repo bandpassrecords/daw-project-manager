@@ -49,6 +49,7 @@ Future<void> showMidiPianoRoll(
   SynthVoice? voice,
   ValueChanged<SynthVoice>? onVoiceChanged,
   SaveEditedMidiClip? onSaveEdited,
+  bool startEditing = false,
 }) {
   final l10n = AppLocalizations.of(context)!;
   final body = MidiPianoRollWindow(
@@ -64,6 +65,7 @@ Future<void> showMidiPianoRoll(
     voice: voice,
     onVoiceChanged: onVoiceChanged,
     onSaveEdited: onSaveEdited,
+    startEditing: startEditing,
     // A phone has no keys to press; its gestures are the plain ones.
     onShowShortcuts: MobileUtils.isMobile()
         ? null
@@ -95,11 +97,19 @@ Future<void> showMidiPianoRoll(
         edit: l10n.midiEditNotes,
         undo: l10n.midiUndo,
         redo: l10n.midiRedo,
-        deleteNote: l10n.midiDeleteNote,
         snap: l10n.midiSnap,
         snapOff: l10n.midiSnapOff,
         toolSelect: l10n.midiToolSelect,
+        toolRange: l10n.midiToolRange,
+        toolEraser: l10n.midiToolEraser,
         toolPencil: l10n.midiToolPencil,
+        duplicate: l10n.midiDuplicate,
+        quantize: l10n.midiQuantize,
+        transpose: l10n.midiTranspose,
+        transposeUpSemitone: l10n.midiTransposeUpSemitone,
+        transposeDownSemitone: l10n.midiTransposeDownSemitone,
+        transposeUpOctave: l10n.midiTransposeUpOctave,
+        transposeDownOctave: l10n.midiTransposeDownOctave,
         acousticFeedback: l10n.midiAcousticFeedback,
       ),
       close: l10n.close,
@@ -245,6 +255,8 @@ List<MidiShortcutSection> midiShortcutSections(
   return [
     MidiShortcutSection(l10n.midiShortcutsTools, [
       MidiShortcut(const ['1'], l10n.midiShortcutSelectTool),
+      MidiShortcut(const ['2'], l10n.midiShortcutRangeTool),
+      MidiShortcut(const ['5'], l10n.midiShortcutEraserTool),
       MidiShortcut(const ['8'], l10n.midiShortcutPencilTool),
     ]),
     MidiShortcutSection(l10n.midiShortcutsNotes, [
@@ -255,6 +267,8 @@ List<MidiShortcutSection> midiShortcutSections(
       MidiShortcut([ctrl, drag], l10n.midiShortcutOffGrid),
       MidiShortcut(const [arrows], l10n.midiShortcutSemitone),
       MidiShortcut([shift, arrows], l10n.midiShortcutOctave),
+      MidiShortcut([ctrl, 'D'], l10n.midiShortcutDuplicate),
+      MidiShortcut(const ['Q'], l10n.midiShortcutQuantize),
       MidiShortcut([delete], l10n.midiShortcutDelete),
     ]),
     MidiShortcutSection(l10n.midiShortcutsSelecting, [
@@ -382,6 +396,7 @@ class MidiPianoRollWindow extends StatefulWidget {
     this.acousticFeedback = false,
     this.onAcousticFeedbackChanged,
     this.auditioner,
+    this.startEditing = false,
     this.fullScreen,
     this.onFullScreenChanged,
   });
@@ -422,6 +437,7 @@ class MidiPianoRollWindow extends StatefulWidget {
         acousticFeedback: base.acousticFeedback,
         onAcousticFeedbackChanged: base.onAcousticFeedbackChanged,
         auditioner: base.auditioner,
+        startEditing: base.startEditing,
         fullScreen: fullScreen,
         onFullScreenChanged: onFullScreenChanged,
       );
@@ -463,6 +479,9 @@ class MidiPianoRollWindow extends StatefulWidget {
 
   /// Sounds keys and edited notes; the window makes its own when null.
   final MidiNoteAuditioner? auditioner;
+
+  /// Opens already editing, pencil in hand — for a blank clip to draft in.
+  final bool startEditing;
 
   /// Makes the window an editor, saving edits through it. Null: view only.
   final SaveEditedMidiClip? onSaveEdited;
@@ -579,6 +598,11 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   @override
   void initState() {
     super.initState();
+    if (widget.startEditing && _editor != null) {
+      _editor
+        ..editing = true
+        ..tool = MidiEditTool.pencil;
+    }
     _editor?.addListener(_onEdit);
   }
 
@@ -750,6 +774,22 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                 _setTool(editor, MidiEditTool.select),
             const SingleActivator(LogicalKeyboardKey.numpad1): () =>
                 _setTool(editor, MidiEditTool.select),
+            const SingleActivator(LogicalKeyboardKey.digit2): () =>
+                _setTool(editor, MidiEditTool.range),
+            const SingleActivator(LogicalKeyboardKey.numpad2): () =>
+                _setTool(editor, MidiEditTool.range),
+            const SingleActivator(LogicalKeyboardKey.digit5): () =>
+                _setTool(editor, MidiEditTool.eraser),
+            const SingleActivator(LogicalKeyboardKey.numpad5): () =>
+                _setTool(editor, MidiEditTool.eraser),
+            const SingleActivator(LogicalKeyboardKey.keyQ): () {
+              if (editor.editing) editor.quantize();
+            },
+            // Duplicate: Ctrl+D, or Cmd+D on a Mac.
+            const SingleActivator(LogicalKeyboardKey.keyD, control: true):
+                editor.duplicate,
+            const SingleActivator(LogicalKeyboardKey.keyD, meta: true):
+                editor.duplicate,
             const SingleActivator(LogicalKeyboardKey.digit8): () =>
                 _setTool(editor, MidiEditTool.pencil),
             const SingleActivator(LogicalKeyboardKey.numpad8): () =>

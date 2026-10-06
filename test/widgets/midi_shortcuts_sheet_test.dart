@@ -33,7 +33,10 @@ void main() {
 
     test("covers the tools' keys, transposing, undo and the sheet itself", () {
       final keys = [for (final s in all(mac: false)) s.keys.join('+')];
-      expect(keys, containsAll(['1', '8', '↑ / ↓', 'Shift+↑ / ↓', 'Ctrl+Z', '?']));
+      expect(keys,
+          containsAll(['1', '2', '5', '8', '↑ / ↓', 'Shift+↑ / ↓', 'Ctrl+Z', 'Ctrl+D', '?']));
+      expect([for (final s in all(mac: true)) s.keys.join('+')], contains('⌘+D'),
+          reason: 'Cmd on a Mac');
     });
 
     test('keys are named as a Mac prints them on a Mac', () {

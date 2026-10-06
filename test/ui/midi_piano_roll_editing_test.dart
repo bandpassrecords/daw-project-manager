@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/services/midi/synth_voice.dart';
 import 'package:daw_project_manager/ui/midi_note_auditioner.dart';
+import 'package:daw_project_manager/ui/midi_collection_actions.dart';
+import 'package:daw_project_manager/ui/widgets/midi_tool_icons.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
@@ -63,11 +65,18 @@ const _labels = MidiPianoRollWindowLabels(
     edit: 'Edit',
     undo: 'Undo',
     redo: 'Redo',
-    deleteNote: 'Delete note',
     snap: 'Snap',
     snapOff: 'Off',
     toolSelect: 'Select',
+    toolRange: 'Range',
+    toolEraser: 'Eraser',
     toolPencil: 'Pencil',
+    duplicate: 'Duplicate',
+    transpose: 'Transpose',
+    transposeUpSemitone: 'Semitone up',
+    transposeDownSemitone: 'Semitone down',
+    transposeUpOctave: 'Octave up',
+    transposeDownOctave: 'Octave down',
     acousticFeedback: 'Feedback',
   ),
   close: 'Close',
@@ -113,6 +122,7 @@ void main() {
     MidiClip clip = _clip,
     MidiPianoRollWindowLabels labels = _labels,
     bool feedback = false,
+    bool startEditing = false,
   }) async {
     tester.view.physicalSize = const Size(1000, 700);
     tester.view.devicePixelRatio = 1;
@@ -146,6 +156,7 @@ void main() {
                     acousticFeedback: feedback,
                     onAcousticFeedbackChanged: feedbackChanges.add,
                     auditioner: ear,
+                    startEditing: startEditing,
                     onSaveEdited: editable
                         ? (clip, key, voice) async {
                             saved.add((clip, key));
@@ -225,7 +236,14 @@ void main() {
     await startEditing(tester);
     expect(find.byTooltip('Undo'), findsOneWidget);
     expect(find.byTooltip('Redo'), findsOneWidget);
-    expect(find.byTooltip('Delete note'), findsOneWidget);
+    for (final tool in ['select', 'range', 'eraser', 'pencil']) {
+      expect(find.byKey(ValueKey('midi-piano-roll-tool-$tool')), findsOneWidget,
+          reason: tool);
+    }
+    expect(find.byTooltip('Delete note'), findsNothing,
+        reason: 'the eraser took its place');
+    expect(find.byKey(const ValueKey('midi-piano-roll-duplicate')), findsOneWidget);
+    expect(find.byKey(const ValueKey('midi-piano-roll-transpose')), findsOneWidget);
     expect(find.byKey(const ValueKey('midi-piano-roll-snap')), findsOneWidget);
     expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsNothing);
   });
@@ -590,6 +608,177 @@ void main() {
     await save(tester);
     expect(saved.single.$1.notes.last.startTick, 1440);
   });
+
+  group('range, duplicate and eraser', () {
+    testWidgets('2, drag a range, Ctrl+D twice: the bar repeats',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit2);
+      await tester.pumpAndSettle();
+      final g = grid(tester);
+      // The first quarter of the bar: ticks 0–480.
+      await dragFrom(tester, Offset(g.left + 2, g.center.dy - 50),
+          Offset(g.width * 0.24, 0));
+      for (var i = 0; i < 2; i++) {
+        await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+        await tester.sendKeyEvent(LogicalKeyboardKey.keyD);
+        await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+        await tester.pumpAndSettle();
+      }
+      await save(tester);
+      expect(saved.single.$1.notes.map((n) => n.startTick), [0, 480, 960]);
+    });
+
+    testWidgets('the duplicate button copies the selection, for a phone',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await click(tester, noteMiddle(grid(tester)));
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-duplicate')));
+      await tester.pumpAndSettle();
+      await save(tester);
+      expect(saved.single.$1.notes.map((n) => n.startTick), [0, 240]);
+    });
+
+    testWidgets('the transpose menu moves the selection, for a phone',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      await click(tester, noteMiddle(grid(tester)));
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-transpose')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Octave up'));
+      await tester.pumpAndSettle();
+      await save(tester);
+      expect(saved.single.$1.notes.single.pitch, 72);
+    });
+
+    testWidgets('5, then one swipe erases every note it passes, one undo',
+        (tester) async {
+      await open(tester, clip: _fourNotes);
+      await startEditing(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit5);
+      await tester.pumpAndSettle();
+      final g = grid(tester);
+      await dragFrom(tester, Offset(g.left + 4, g.center.dy),
+          Offset(g.width * 0.85, 0));
+      await save(tester);
+      expect(saved.single.$1.notes, isEmpty);
+    });
+
+    testWidgets('the eraser deletes a note it clicks', (tester) async {
+      await open(tester, clip: _fourNotes);
+      await startEditing(tester);
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-tool-eraser')));
+      await tester.pumpAndSettle();
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.25 + 20, g.center.dy));
+      await save(tester);
+      expect(saved.single.$1.notes.map((n) => n.startTick), [0, 960, 1440]);
+    });
+
+    testWidgets('the pencil and the eraser are drawn under the mouse',
+        (tester) async {
+      await open(tester);
+      await startEditing(tester);
+      final g = grid(tester);
+      final mouse = TestPointer(1, PointerDeviceKind.mouse);
+      final cursor = find.byKey(const ValueKey('midi-piano-roll-tool-cursor'));
+      await tester.sendEventToBinding(mouse.hover(g.center + const Offset(0, -40)));
+      await tester.pump();
+      expect(cursor, findsNothing, reason: 'the select tool keeps the pointer');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit5);
+      await tester.sendEventToBinding(mouse.hover(g.center + const Offset(4, -40)));
+      await tester.pump();
+      expect(cursor, findsOneWidget);
+      expect(find.descendant(of: cursor, matching: find.byType(MidiToolIcon)),
+          findsWidgets);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
+      await tester.sendEventToBinding(mouse.hover(g.center + const Offset(8, -40)));
+      await tester.pump();
+      expect(find.descendant(of: cursor, matching: find.byIcon(Icons.edit)),
+          findsWidgets);
+    });
+  });
+
+  testWidgets('Q quantizes the notes to the grid', (tester) async {
+    await open(
+      tester,
+      clip: const MidiClip(
+        name: 'Loose',
+        ppq: 480,
+        lengthTicks: 1920,
+        notes: [MidiNote(startTick: 470, lengthTicks: 240, pitch: 60, velocity: 100)],
+      ),
+    );
+    await startEditing(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyQ);
+    await tester.pumpAndSettle();
+    await save(tester);
+    expect(saved.single.$1.notes.single.startTick, 480);
+  });
+
+  group('a new idea', () {
+    testWidgets('opens editing with the pencil: one click draws',
+        (tester) async {
+      await open(tester, startEditing: true);
+      expect(
+          tester
+              .widget<IconButton>(
+                  find.byKey(const ValueKey('midi-piano-roll-tool-pencil')))
+              .isSelected,
+          isTrue);
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.76, g.center.dy));
+      await save(tester);
+      expect(saved.single.$1.notes, hasLength(2));
+    });
+
+    testWidgets('a note dragged past the end grows the clip', (tester) async {
+      await open(tester, startEditing: true);
+      final g = grid(tester);
+      await dragFrom(tester, Offset(g.left + g.width * 0.9, g.center.dy),
+          Offset(g.width * 0.3, 0));
+      await save(tester);
+      expect(saved.single.$1.lengthTicks, 3840);
+    });
+
+    testWidgets('the canvas never ends: scroll on and keep drawing',
+        (tester) async {
+      await open(tester, startEditing: true);
+      final g = grid(tester);
+      for (var pass = 0; pass < 6; pass++) {
+        final middle = await tester.startGesture(
+            Offset(g.right - 4, g.center.dy),
+            kind: PointerDeviceKind.mouse,
+            buttons: kMiddleMouseButton);
+        for (var i = 0; i < 4; i++) {
+          await middle.moveBy(Offset(-(g.width - 8) / 4, 0));
+          await tester.pump();
+        }
+        await middle.up();
+        await tester.pumpAndSettle();
+      }
+      await click(tester, Offset(g.left + g.width * 0.5, g.center.dy));
+      await save(tester);
+      final drawn = saved.single.$1.notes.last;
+      expect(drawn.startTick, greaterThan(9600),
+          reason: 'well past the clip and its four spare bars');
+      expect(saved.single.$1.lengthTicks % 1920, 0);
+      expect(saved.single.$1.lengthTicks, greaterThanOrEqualTo(drawn.endTick));
+    });
+
+    test('a blank idea is four empty bars', () {
+      final idea = newMidiIdea('Idea 1');
+      expect(idea.notes, isEmpty);
+      expect(idea.lengthTicks, 4 * 4 * idea.ppq);
+      expect(idea.name, 'Idea 1');
+    });
+  });
+
 
   group('sound', () {
     testWidgets('dragging along the keyboard plays each key it passes',

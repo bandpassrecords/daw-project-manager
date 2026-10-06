@@ -6488,9 +6488,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get midiRedo => 'Повторить';
 
   @override
-  String get midiDeleteNote => 'Удалить ноту';
-
-  @override
   String get midiSnap => 'Привязка к сетке';
 
   @override
@@ -6658,4 +6655,55 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiExitFullScreen => 'Выйти из полноэкранного режима';
+
+  @override
+  String get midiToolRange => 'Диапазон (2)';
+
+  @override
+  String get midiToolEraser => 'Ластик (5)';
+
+  @override
+  String get midiDuplicate => 'Дублировать';
+
+  @override
+  String get midiTranspose => 'Транспонировать';
+
+  @override
+  String get midiTransposeUpSemitone => 'На полутон выше';
+
+  @override
+  String get midiTransposeDownSemitone => 'На полутон ниже';
+
+  @override
+  String get midiTransposeUpOctave => 'На октаву выше';
+
+  @override
+  String get midiTransposeDownOctave => 'На октаву ниже';
+
+  @override
+  String get midiShortcutRangeTool =>
+      'Диапазон: протащите, чтобы выделить отрезок времени и все ноты в нём';
+
+  @override
+  String get midiShortcutEraserTool =>
+      'Ластик: щёлкните или проведите по нотам, чтобы удалить их';
+
+  @override
+  String get midiShortcutDuplicate =>
+      'Дублировать: диапазон сразу за ним, или выделенные ноты сразу после последней';
+
+  @override
+  String get midiNewClip => 'Новый клип';
+
+  @override
+  String midiNewClipName(int number) {
+    return 'Идея $number';
+  }
+
+  @override
+  String get midiQuantize => 'Квантовать (Q)';
+
+  @override
+  String get midiShortcutQuantize =>
+      'Квантовать: привязать к сетке выделенные ноты (или все)';
 }

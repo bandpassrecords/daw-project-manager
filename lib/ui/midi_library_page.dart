@@ -12,6 +12,7 @@ import '../models/midi_clip.dart';
 import '../models/midi_collection.dart';
 import '../models/midi_library.dart';
 import '../providers/providers.dart';
+import '../repository/midi_collection_store.dart';
 import '../services/midi/midi_clip_service.dart';
 import '../services/midi/midi_file_writer.dart';
 import '../services/midi/synth_voice.dart';
@@ -143,6 +144,46 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
   void _snack(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// A blank clip to draft an idea in, for collection [c]: the piano roll
+  /// opens on it with the pencil in hand, and saving puts it in [c] — the
+  /// same item each time it's saved again, not a copy per save.
+  Future<void> _newClip(MidiCollection c) async {
+    final l10n = AppLocalizations.of(context)!;
+    final name = l10n.midiNewClipName(c.items.length + 1);
+    final clip = newMidiIdea(name);
+    final itemId = MidiCollectionStore.newItemId();
+    final playerKey = 'idea~$itemId';
+    final addedAt = DateTime.now();
+    await showMidiPianoRoll(
+      context,
+      clip: clip,
+      title: name,
+      subtitle: c.name,
+      player: _player,
+      playerKey: playerKey,
+      bpm: kNewIdeaBpm,
+      onPlay: (voice) => _player
+          .play(playerKey, clip, bpm: kNewIdeaBpm, voice: voice)
+          .catchError((Object _) {}),
+      startEditing: true,
+      onSaveEdited: (edited, musicalKey, voice) async {
+        final repo = await ref.read(repositoryProvider.future);
+        await repo.midiCollections.putItem(
+          c.id,
+          MidiCollectionItem(
+            id: itemId,
+            clip: edited.copyWith(name: name),
+            addedAt: addedAt,
+            bpm: kNewIdeaBpm,
+            musicalKey: musicalKey,
+            voice: voice.name,
+          ),
+        );
+        return true;
+      },
+    );
   }
 
   Future<void> _play(_Entry e, {SynthVoice? voice}) async {
@@ -689,6 +730,12 @@ class _MidiLibraryPageState extends ConsumerState<MidiLibraryPage> {
             const SizedBox(width: 8),
             Text('${c.items.length}', style: theme.textTheme.bodySmall),
             const Spacer(),
+            IconButton(
+              key: const ValueKey('midi-collection-new-clip'),
+              tooltip: l10n.midiNewClip,
+              icon: const Icon(Icons.add_circle_outline),
+              onPressed: () => _newClip(c),
+            ),
             IconButton(
               tooltip: l10n.midiImportFiles,
               icon: const Icon(Icons.file_open_outlined),

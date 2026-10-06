@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import '../../models/midi_clip.dart';
 import '../../utils/musical_scale.dart';
 import 'midi_clip_edit_controller.dart';
+import 'midi_tool_icons.dart';
 
 // --- pure helpers ------------------------------------------------------------
 
@@ -275,11 +276,19 @@ class MidiPianoRollLabels {
     this.edit = '',
     this.undo = '',
     this.redo = '',
-    this.deleteNote = '',
     this.snap = '',
     this.snapOff = '',
     this.toolSelect = '',
+    this.toolRange = '',
+    this.toolEraser = '',
     this.toolPencil = '',
+    this.duplicate = '',
+    this.quantize = '',
+    this.transpose = '',
+    this.transposeUpSemitone = '',
+    this.transposeDownSemitone = '',
+    this.transposeUpOctave = '',
+    this.transposeDownOctave = '',
     this.acousticFeedback = '',
   });
 
@@ -287,10 +296,17 @@ class MidiPianoRollLabels {
   final String acousticFeedback;
 
   /// Editing tools' tooltips; only shown with an editor.
-  final String edit, undo, redo, deleteNote, snap, snapOff;
+  final String edit, undo, redo, snap, snapOff;
 
-  /// The two tools' tooltips: "Select (1)", "Pencil (8)".
-  final String toolSelect, toolPencil;
+  /// The tools' tooltips: "Select (1)", "Range (2)", "Eraser (5)",
+  /// "Pencil (8)".
+  final String toolSelect, toolRange, toolEraser, toolPencil;
+
+  /// The duplicate button's tooltip, and the transpose menu's: buttons for
+  /// what a keyboard does with Ctrl/Cmd+D and the arrows, so a phone can.
+  final String duplicate, quantize, transpose;
+  final String transposeUpSemitone, transposeDownSemitone;
+  final String transposeUpOctave, transposeDownOctave;
 
 
   final String zoomIn;
@@ -555,13 +571,16 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     widget.editor?.removeListener(_onEdit);
     _ticker.dispose();
     _playhead.dispose();
+    _toolCursorAt.dispose();
     super.dispose();
   }
 
   int get _rows => _range.high - _range.low + 1;
   double get _px => _pxPerTick ?? _fitPxPerTick;
-  /// Ticks the view spans: the clip, plus a bar beyond its end (or its last
-  /// note) while editing, so a note can be added past the end.
+  /// Ticks the view spans: the clip — or, with an editor, an endless
+  /// canvas: four bars past the clip's end (or its last note), and always
+  /// another view's width past wherever it has been scrolled to, so a clip
+  /// can be drawn on and grown as far as wanted.
   int get _contentTicks {
     final clip = _shown;
     if (widget.editor == null) return clip.lengthTicks;
@@ -569,7 +588,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     for (final n in clip.notes) {
       if (n.endTick > end) end = n.endTick;
     }
-    return end + clip.ppq * 4;
+    final room = end + clip.ppq * 4 * 4;
+    final beyond = ((_scrollX + 2 * _gridWidth) / _px).ceil();
+    return math.max(room, beyond);
   }
 
   double get _contentWidth => _contentTicks * _px;
@@ -633,7 +654,10 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   /// pixels, grid-relative) where it is.
   void _zoom(double factor, {double? anchorX}) {
     final old = _px;
-    final next = (old * factor).clamp(_fitPxPerTick / 2, _fitPxPerTick * _maxZoom);
+    // With an editor, far out: the canvas is endless, and a long draft
+    // should fit on screen.
+    final widest = _fitPxPerTick / (widget.editor == null ? 2 : 16);
+    final next = (old * factor).clamp(widest, _fitPxPerTick * _maxZoom);
     if (next == old) return;
     // Around the pointer: where it is (wheel, pinch), or where it last was
     // over the notes (the buttons) — the middle when it hasn't been.
@@ -869,7 +893,21 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     }
     final p = e.localPosition;
     if (p.dx < _keyboardWidth || p.dy < _rulerHeight) return;
+    final tool = editor.tool;
     if (p.dy < _view.height) {
+      if (tool == MidiEditTool.range) {
+        // A stretch of time, across every key, from here to the release.
+        _drag = _EditDrag(_DragKind.range, p, null);
+        return;
+      }
+      if (tool == MidiEditTool.eraser) {
+        // Whatever the eraser touches, from here to the release, goes —
+        // as one undo step.
+        editor.beginGesture();
+        _drag = _EditDrag(_DragKind.erase, p, null)..lastAt = p;
+        _eraseAt(editor, p);
+        return;
+      }
       final hit = _noteAt(p);
       if (hit == null && _pencil) {
         // The pencil draws a note here, as long as the drag makes it.
@@ -908,7 +946,16 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       return;
     }
     final lane = _lane;
-    if (lane == null) return;
+    if (lane == null || tool == MidiEditTool.range) return;
+    if (tool == MidiEditTool.eraser) {
+      // Over a controller lane the eraser takes the points it passes.
+      if (lane.isVelocity || !_drawable(lane)) return;
+      final tick = _tickAtX(p.dx);
+      editor.beginGesture();
+      _drag = _EditDrag(_DragKind.eraseLane, p, null)..lastTick = tick;
+      editor.eraseLane(lane.kind!, lane.number, tick, tick);
+      return;
+    }
     if (lane.isVelocity) {
       // A pencil across the stems: every note the drag passes takes the
       // value under it. A click lands on the nearest stem (and the chord
@@ -948,6 +995,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       }
       return;
     }
+    if (_toolCursorAt.value != null) _toolCursorAt.value = e.localPosition;
     final drag = _drag;
     final editor = widget.editor;
     if (drag == null || editor == null || _pointers.length > 1) return;
@@ -1006,8 +1054,45 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
           highPitch: _pitchAtY(box.top),
           keep: _marqueeKeep,
         );
+      case _DragKind.range:
+        if (drag.moved) {
+          editor.selectRange(_tickAtX(drag.start.dx), _tickAtX(p.dx));
+        }
+      case _DragKind.erase:
+        _eraseAlong(editor, drag.lastAt!, p);
+        drag.lastAt = p;
+      case _DragKind.eraseLane:
+        if (lane != null && lane.kind != null) {
+          final tick = _tickAtX(p.dx);
+          editor.eraseLane(lane.kind!, lane.number, drag.lastTick, tick);
+          drag.lastTick = tick;
+        }
       case _DragKind.tapNote:
         break;
+    }
+  }
+
+  void _eraseAt(MidiClipEditController editor, Offset p) {
+    final hit = _noteAt(p);
+    if (hit != null) editor.eraseNote(hit.$1);
+  }
+
+  /// Erases every note between [from] and [to], so a quick swipe misses
+  /// none.
+  void _eraseAlong(MidiClipEditController editor, Offset from, Offset to) {
+    final steps = math.max(1, ((to - from).distance / 3).ceil());
+    for (var i = 1; i <= steps; i++) {
+      _eraseAt(editor, Offset.lerp(from, to, i / steps)!);
+    }
+  }
+
+  /// The transpose menu: the selection up or down, sounding it with
+  /// acoustic feedback on — what the arrow keys do, for a phone.
+  void _transposeBy(MidiClipEditController editor, int semitones) {
+    editor.transposeSelection(semitones);
+    for (final i in editor.selection.take(4)) {
+      final n = editor.clip.notes[i];
+      _feedback(n.pitch, n.velocity);
     }
   }
 
@@ -1049,7 +1134,13 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
             editor.deleteNote(drag.index!);
           }
         }
-      case _DragKind.velocity || _DragKind.lane:
+      case _DragKind.range:
+        // A click without a drag lets the range go.
+        if (!drag.moved) editor.select(null);
+      case _DragKind.velocity ||
+            _DragKind.lane ||
+            _DragKind.erase ||
+            _DragKind.eraseLane:
         editor.endGesture();
     }
   }
@@ -1070,26 +1161,87 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   }
 
   /// What the mouse pointer looks like while editing: a resize arrow on a
-  /// note's edge, so that edge is easy to find, and cross-hairs where the
-  /// pencil would draw.
+  /// note's edge, so that edge is easy to find, a text caret for the range
+  /// tool, and — for the pencil and the eraser — the tool itself, drawn
+  /// ([_toolCursorAt]) with the system pointer hidden.
   MouseCursor _cursor = MouseCursor.defer;
+
+  /// Where a drawn tool cursor is; null shows none.
+  final ValueNotifier<Offset?> _toolCursorAt = ValueNotifier(null);
 
   void _updateHover(Offset local) {
     if (_panning) return;
+    final editor = widget.editor;
     var cursor = MouseCursor.defer;
-    if (_editing &&
-        local.dx >= _keyboardWidth &&
+    Offset? drawn;
+    final overNotes = local.dx >= _keyboardWidth &&
         local.dy >= _rulerHeight &&
-        local.dy < _view.height) {
+        local.dy < _view.height;
+    if (_editing && overNotes) {
       final hit = _noteAt(local);
-      cursor = hit == null
-          ? (_pencil ? SystemMouseCursors.precise : MouseCursor.defer)
-          : hit.$2 != null
-              ? SystemMouseCursors.resizeLeftRight
-              : SystemMouseCursors.click;
+      switch (editor!.tool) {
+        case MidiEditTool.range:
+          cursor = SystemMouseCursors.text;
+        case MidiEditTool.eraser:
+          cursor = SystemMouseCursors.none;
+          drawn = local;
+        case MidiEditTool.pencil when hit?.$2 != null:
+          cursor = SystemMouseCursors.resizeLeftRight;
+        case MidiEditTool.pencil:
+          cursor = SystemMouseCursors.none;
+          drawn = local;
+        case MidiEditTool.select:
+          cursor = hit == null
+              ? MouseCursor.defer
+              : hit.$2 != null
+                  ? SystemMouseCursors.resizeLeftRight
+                  : SystemMouseCursors.click;
+      }
+    } else if (_editing &&
+        editor!.tool == MidiEditTool.eraser &&
+        local.dx >= _keyboardWidth &&
+        local.dy >= _view.height &&
+        _lane != null &&
+        !_lane!.isVelocity &&
+        _drawable(_lane!)) {
+      cursor = SystemMouseCursors.none;
+      drawn = local;
     }
+    _toolCursorAt.value = drawn;
     if (cursor != _cursor) setState(() => _cursor = cursor);
   }
+
+  /// The pencil or the eraser, drawn where the mouse is: Flutter has no
+  /// cursor images, and a tool should look like itself in the hand. Its
+  /// point is the icon's bottom-left corner, where the tip is.
+  Widget _toolCursorOverlay() => ValueListenableBuilder<Offset?>(
+        valueListenable: _toolCursorAt,
+        builder: (context, at, _) {
+          if (at == null || !_editing) return const SizedBox.shrink();
+          const size = 22.0;
+          final eraser = widget.editor!.tool == MidiEditTool.eraser;
+          Widget glyph(Color color) => eraser
+              ? MidiToolIcon(MidiToolGlyph.eraser, size: size, color: color)
+              : Icon(Icons.edit, size: size, color: color);
+          return Positioned(
+            left: at.dx - 3,
+            top: at.dy - size + 3,
+            child: IgnorePointer(
+              key: const ValueKey('midi-piano-roll-tool-cursor'),
+              child: Stack(
+                children: [
+                  // A dark copy behind, so it shows on light notes too.
+                  Transform.translate(
+                    offset: const Offset(1, 1),
+                    child: glyph(Colors.black87),
+                  ),
+                  glyph(Colors.white),
+                ],
+              ),
+            ),
+          );
+        },
+      );
 
   /// The row height slider, upright at the top of the right edge: drag up
   /// for taller rows.
@@ -1141,8 +1293,22 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
           key: const ValueKey('midi-piano-roll-tool-select'),
           tooltip: labels.toolSelect,
           isSelected: editor.tool == MidiEditTool.select,
-          icon: const Icon(Icons.highlight_alt),
+          icon: const MidiToolIcon(MidiToolGlyph.pointer),
           onPressed: () => editor.tool = MidiEditTool.select,
+        ),
+        IconButton(
+          key: const ValueKey('midi-piano-roll-tool-range'),
+          tooltip: labels.toolRange,
+          isSelected: editor.tool == MidiEditTool.range,
+          icon: const MidiToolIcon(MidiToolGlyph.caret),
+          onPressed: () => editor.tool = MidiEditTool.range,
+        ),
+        IconButton(
+          key: const ValueKey('midi-piano-roll-tool-eraser'),
+          tooltip: labels.toolEraser,
+          isSelected: editor.tool == MidiEditTool.eraser,
+          icon: const MidiToolIcon(MidiToolGlyph.eraser),
+          onPressed: () => editor.tool = MidiEditTool.eraser,
         ),
         IconButton(
           key: const ValueKey('midi-piano-roll-tool-pencil'),
@@ -1174,10 +1340,31 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
           onPressed: editor.canRedo ? editor.redo : null,
         ),
         IconButton(
-          tooltip: labels.deleteNote,
-          icon: const Icon(Icons.delete_outline),
-          onPressed:
-              editor.selection.isNotEmpty ? editor.deleteSelected : null,
+          key: const ValueKey('midi-piano-roll-duplicate'),
+          tooltip: labels.duplicate,
+          icon: const Icon(Icons.control_point_duplicate),
+          onPressed: editor.range != null || editor.selection.isNotEmpty
+              ? editor.duplicate
+              : null,
+        ),
+        IconButton(
+          key: const ValueKey('midi-piano-roll-quantize'),
+          tooltip: labels.quantize,
+          icon: const Icon(Icons.grid_on),
+          onPressed: editor.clip.notes.isEmpty ? null : editor.quantize,
+        ),
+        PopupMenuButton<int>(
+          key: const ValueKey('midi-piano-roll-transpose'),
+          tooltip: labels.transpose,
+          enabled: editor.selection.isNotEmpty,
+          icon: const Icon(Icons.swap_vert),
+          onSelected: (semitones) => _transposeBy(editor, semitones),
+          itemBuilder: (_) => [
+            PopupMenuItem(value: 12, child: Text(labels.transposeUpOctave)),
+            PopupMenuItem(value: 1, child: Text(labels.transposeUpSemitone)),
+            PopupMenuItem(value: -1, child: Text(labels.transposeDownSemitone)),
+            PopupMenuItem(value: -12, child: Text(labels.transposeDownOctave)),
+          ],
         ),
         Tooltip(
           message: labels.snap,
@@ -1282,9 +1469,12 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
             _scrollY = _scrollY.clamp(0.0, _maxScrollY);
 
             final colors = _RollColors.of(theme);
-            return ClipRect(
+            return Stack(
+              children: [
+                Positioned.fill(child: ClipRect(
               child: MouseRegion(
                 cursor: _cursor,
+                onExit: (_) => _toolCursorAt.value = null,
                 child: Listener(
                 onPointerSignal: _onPointerSignal,
                 onPointerHover: _onHover,
@@ -1325,6 +1515,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                                 : const {},
                             marquee: _marquee,
                             pressedKey: _pressedKey,
+                            range: _editing ? widget.editor!.range : null,
                             gridStepTicks: _editing &&
                                     widget.editor!.snap != MidiSnap.off
                                 ? widget.editor!.stepTicks
@@ -1411,6 +1602,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                 ),
                 ),
               ),
+                )),
+                _toolCursorOverlay(),
+              ],
             );
           }),
               ),
@@ -1478,7 +1672,18 @@ const _noteOrange = Color(0xFFFFA24C);
 /// note: black inside, its colour on the outline and the name.
 const _noteBorder = Color(0xFF101010);
 
-enum _DragKind { marquee, tapNote, move, resize, draw, velocity, lane }
+enum _DragKind {
+  marquee,
+  tapNote,
+  move,
+  resize,
+  draw,
+  velocity,
+  lane,
+  range,
+  erase,
+  eraseLane,
+}
 
 /// One editing gesture under way: what it does, where it started, on which
 /// note, and how.
@@ -1505,6 +1710,9 @@ class _EditDrag {
   /// Where a lane drag last drew, to draw on from there.
   double lastTick = 0;
   int lastValue = 0;
+
+  /// Where the eraser last was, to erase on from there.
+  Offset? lastAt;
 
   /// A moved note's key when the drag began, and how many keys it has
   /// been moved since — to sound each new key once.
@@ -1643,6 +1851,7 @@ class _RollPainter extends CustomPainter {
     this.selected = const {},
     this.marquee,
     this.pressedKey,
+    this.range,
     this.gridStepTicks,
     this.scale,
     required this.low,
@@ -1667,6 +1876,9 @@ class _RollPainter extends CustomPainter {
 
   /// The keyboard key held down, drawn pressed.
   final int? pressedKey;
+
+  /// The range tool's stretch of time, shaded across every key.
+  final MidiTickRange? range;
 
   /// The snap grid's step, drawn as faint lines between the beats; null
   /// draws beats and bars only.
@@ -1755,6 +1967,20 @@ class _RollPainter extends CustomPainter {
         Paint()
           ..color = colors.barLine
           ..strokeWidth = 2);
+
+    // The range tool's stretch, shaded under the notes.
+    final r = range;
+    if (r != null) {
+      final area = Rect.fromLTRB(
+          _xOf(r.start), rulerHeight, _xOf(r.end), size.height);
+      canvas.drawRect(
+          area, Paint()..color = colors.playhead.withValues(alpha: 0.14));
+      final edge = Paint()
+        ..color = colors.playhead.withValues(alpha: 0.75)
+        ..strokeWidth = 1.5;
+      canvas.drawLine(area.topLeft, area.bottomLeft, edge);
+      canvas.drawLine(area.topRight, area.bottomRight, edge);
+    }
 
     // Notes, culled to the view.
     final notePaint = Paint();
@@ -1958,6 +2184,7 @@ class _RollPainter extends CustomPainter {
       !setEquals(old.selected, selected) ||
       old.marquee != marquee ||
       old.pressedKey != pressedKey ||
+      old.range != range ||
       old.gridStepTicks != gridStepTicks ||
       old.colors.note != colors.note;
 }

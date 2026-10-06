@@ -6264,10 +6264,6 @@
   "@midiRedo": {
     "description": "Piano roll editing: redo the edit just undone"
   },
-  "midiDeleteNote": "Delete note",
-  "@midiDeleteNote": {
-    "description": "Piano roll editing: delete the selected note"
-  },
   "midiSnap": "Snap to grid",
   "@midiSnap": {
     "description": "Piano roll editing: the grid notes snap to (tooltip of the 1/4, 1/8, 1/16… picker)"
@@ -6484,5 +6480,70 @@
   "midiExitFullScreen": "Exit full screen",
   "@midiExitFullScreen": {
     "description": "Piano roll: toggle back from full screen"
+  },
+  "midiToolRange": "Range (2)",
+  "@midiToolRange": {
+    "description": "Piano roll: range tool button tooltip (key 2, as in Cubase)"
+  },
+  "midiToolEraser": "Eraser (5)",
+  "@midiToolEraser": {
+    "description": "Piano roll: eraser tool button tooltip (key 5, as in Cubase)"
+  },
+  "midiDuplicate": "Duplicate",
+  "@midiDuplicate": {
+    "description": "Piano roll: duplicate button tooltip"
+  },
+  "midiTranspose": "Transpose",
+  "@midiTranspose": {
+    "description": "Piano roll: transpose menu tooltip"
+  },
+  "midiTransposeUpSemitone": "Up a semitone",
+  "@midiTransposeUpSemitone": {
+    "description": "Piano roll transpose menu entry"
+  },
+  "midiTransposeDownSemitone": "Down a semitone",
+  "@midiTransposeDownSemitone": {
+    "description": "Piano roll transpose menu entry"
+  },
+  "midiTransposeUpOctave": "Up an octave",
+  "@midiTransposeUpOctave": {
+    "description": "Piano roll transpose menu entry"
+  },
+  "midiTransposeDownOctave": "Down an octave",
+  "@midiTransposeDownOctave": {
+    "description": "Piano roll transpose menu entry"
+  },
+  "midiShortcutRangeTool": "Range: drag across to select a stretch of time and every note in it",
+  "@midiShortcutRangeTool": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutEraserTool": "Eraser: click or drag over notes to delete them",
+  "@midiShortcutEraserTool": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutDuplicate": "Duplicate: a range right after itself, or the selected notes right after the last one",
+  "@midiShortcutDuplicate": {
+    "description": "Shortcut sheet action"
+  },
+  "midiNewClip": "New clip",
+  "@midiNewClip": {
+    "description": "MIDI tab, a collection: button that starts a blank clip to draft an idea in"
+  },
+  "midiNewClipName": "Idea {number}",
+  "@midiNewClipName": {
+    "description": "Name of a blank clip started in a collection. {number} counts them",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "midiQuantize": "Quantize (Q)",
+  "@midiQuantize": {
+    "description": "Piano roll: quantize button tooltip (key Q, as in Cubase)"
+  },
+  "midiShortcutQuantize": "Quantize: snap the selected notes (or every note) to the grid",
+  "@midiShortcutQuantize": {
+    "description": "Shortcut sheet action"
   }
 }

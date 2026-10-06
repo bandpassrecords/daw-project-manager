@@ -6230,9 +6230,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiRedo => '重做';
 
   @override
-  String get midiDeleteNote => '删除音符';
-
-  @override
   String get midiSnap => '吸附到网格';
 
   @override
@@ -6392,4 +6389,51 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiExitFullScreen => '退出全屏';
+
+  @override
+  String get midiToolRange => '范围 (2)';
+
+  @override
+  String get midiToolEraser => '橡皮擦 (5)';
+
+  @override
+  String get midiDuplicate => '复制';
+
+  @override
+  String get midiTranspose => '移调';
+
+  @override
+  String get midiTransposeUpSemitone => '升高一个半音';
+
+  @override
+  String get midiTransposeDownSemitone => '降低一个半音';
+
+  @override
+  String get midiTransposeUpOctave => '升高一个八度';
+
+  @override
+  String get midiTransposeDownOctave => '降低一个八度';
+
+  @override
+  String get midiShortcutRangeTool => '范围：拖动选择一段时间及其中所有音符';
+
+  @override
+  String get midiShortcutEraserTool => '橡皮擦：单击或拖过音符即可删除';
+
+  @override
+  String get midiShortcutDuplicate => '复制：范围紧接其后，或所选音符紧接最后一个之后';
+
+  @override
+  String get midiNewClip => '新建片段';
+
+  @override
+  String midiNewClipName(int number) {
+    return '灵感 $number';
+  }
+
+  @override
+  String get midiQuantize => '量化 (Q)';
+
+  @override
+  String get midiShortcutQuantize => '量化：将所选音符（或全部音符）对齐到网格';
 }

@@ -6300,9 +6300,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get midiRedo => 'やり直す';
 
   @override
-  String get midiDeleteNote => 'ノートを削除';
-
-  @override
   String get midiSnap => 'グリッドにスナップ';
 
   @override
@@ -6463,4 +6460,51 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiExitFullScreen => '全画面を終了';
+
+  @override
+  String get midiToolRange => '範囲 (2)';
+
+  @override
+  String get midiToolEraser => '消しゴム (5)';
+
+  @override
+  String get midiDuplicate => '複製';
+
+  @override
+  String get midiTranspose => 'トランスポーズ';
+
+  @override
+  String get midiTransposeUpSemitone => '半音上げる';
+
+  @override
+  String get midiTransposeDownSemitone => '半音下げる';
+
+  @override
+  String get midiTransposeUpOctave => '1オクターブ上げる';
+
+  @override
+  String get midiTransposeDownOctave => '1オクターブ下げる';
+
+  @override
+  String get midiShortcutRangeTool => '範囲：ドラッグして時間の区間とその中のノートをすべて選択';
+
+  @override
+  String get midiShortcutEraserTool => '消しゴム：ノートをクリックまたはドラッグでなぞって削除';
+
+  @override
+  String get midiShortcutDuplicate => '複製：範囲はその直後に、選択したノートは最後のノートの直後に';
+
+  @override
+  String get midiNewClip => '新しいクリップ';
+
+  @override
+  String midiNewClipName(int number) {
+    return 'アイデア $number';
+  }
+
+  @override
+  String get midiQuantize => 'クオンタイズ (Q)';
+
+  @override
+  String get midiShortcutQuantize => 'クオンタイズ：選択したノート（なければ全ノート）をグリッドに合わせる';
 }

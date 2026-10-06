@@ -10805,12 +10805,6 @@ abstract class AppLocalizations {
   /// **'Redo'**
   String get midiRedo;
 
-  /// Piano roll editing: delete the selected note
-  ///
-  /// In en, this message translates to:
-  /// **'Delete note'**
-  String get midiDeleteNote;
-
   /// Piano roll editing: the grid notes snap to (tooltip of the 1/4, 1/8, 1/16… picker)
   ///
   /// In en, this message translates to:
@@ -11128,6 +11122,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit full screen'**
   String get midiExitFullScreen;
+
+  /// Piano roll: range tool button tooltip (key 2, as in Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'Range (2)'**
+  String get midiToolRange;
+
+  /// Piano roll: eraser tool button tooltip (key 5, as in Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'Eraser (5)'**
+  String get midiToolEraser;
+
+  /// Piano roll: duplicate button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get midiDuplicate;
+
+  /// Piano roll: transpose menu tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Transpose'**
+  String get midiTranspose;
+
+  /// Piano roll transpose menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Up a semitone'**
+  String get midiTransposeUpSemitone;
+
+  /// Piano roll transpose menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Down a semitone'**
+  String get midiTransposeDownSemitone;
+
+  /// Piano roll transpose menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Up an octave'**
+  String get midiTransposeUpOctave;
+
+  /// Piano roll transpose menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Down an octave'**
+  String get midiTransposeDownOctave;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Range: drag across to select a stretch of time and every note in it'**
+  String get midiShortcutRangeTool;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Eraser: click or drag over notes to delete them'**
+  String get midiShortcutEraserTool;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate: a range right after itself, or the selected notes right after the last one'**
+  String get midiShortcutDuplicate;
+
+  /// MIDI tab, a collection: button that starts a blank clip to draft an idea in
+  ///
+  /// In en, this message translates to:
+  /// **'New clip'**
+  String get midiNewClip;
+
+  /// Name of a blank clip started in a collection. {number} counts them
+  ///
+  /// In en, this message translates to:
+  /// **'Idea {number}'**
+  String midiNewClipName(int number);
+
+  /// Piano roll: quantize button tooltip (key Q, as in Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'Quantize (Q)'**
+  String get midiQuantize;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Quantize: snap the selected notes (or every note) to the grid'**
+  String get midiShortcutQuantize;
 }
 
 class _AppLocalizationsDelegate

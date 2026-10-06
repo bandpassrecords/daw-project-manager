@@ -6500,9 +6500,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get midiRedo => 'Wiederholen';
 
   @override
-  String get midiDeleteNote => 'Note löschen';
-
-  @override
   String get midiSnap => 'Am Raster ausrichten';
 
   @override
@@ -6675,4 +6672,55 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiExitFullScreen => 'Vollbild beenden';
+
+  @override
+  String get midiToolRange => 'Bereich (2)';
+
+  @override
+  String get midiToolEraser => 'Radiergummi (5)';
+
+  @override
+  String get midiDuplicate => 'Duplizieren';
+
+  @override
+  String get midiTranspose => 'Transponieren';
+
+  @override
+  String get midiTransposeUpSemitone => 'Einen Halbton höher';
+
+  @override
+  String get midiTransposeDownSemitone => 'Einen Halbton tiefer';
+
+  @override
+  String get midiTransposeUpOctave => 'Eine Oktave höher';
+
+  @override
+  String get midiTransposeDownOctave => 'Eine Oktave tiefer';
+
+  @override
+  String get midiShortcutRangeTool =>
+      'Bereich: darüber ziehen, um einen Zeitabschnitt und alle Noten darin auszuwählen';
+
+  @override
+  String get midiShortcutEraserTool =>
+      'Radiergummi: Noten anklicken oder überstreichen, um sie zu löschen';
+
+  @override
+  String get midiShortcutDuplicate =>
+      'Duplizieren: einen Bereich direkt dahinter, oder die ausgewählten Noten direkt nach der letzten';
+
+  @override
+  String get midiNewClip => 'Neuer Clip';
+
+  @override
+  String midiNewClipName(int number) {
+    return 'Idee $number';
+  }
+
+  @override
+  String get midiQuantize => 'Quantisieren (Q)';
+
+  @override
+  String get midiShortcutQuantize =>
+      'Quantisieren: die ausgewählten Noten (oder alle) aufs Raster setzen';
 }

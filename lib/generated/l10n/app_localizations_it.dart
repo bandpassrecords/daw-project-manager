@@ -6502,9 +6502,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get midiRedo => 'Ripeti';
 
   @override
-  String get midiDeleteNote => 'Elimina nota';
-
-  @override
   String get midiSnap => 'Aggancia alla griglia';
 
   @override
@@ -6676,4 +6673,55 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get midiExitFullScreen => 'Esci da schermo intero';
+
+  @override
+  String get midiToolRange => 'Intervallo (2)';
+
+  @override
+  String get midiToolEraser => 'Gomma (5)';
+
+  @override
+  String get midiDuplicate => 'Duplica';
+
+  @override
+  String get midiTranspose => 'Trasponi';
+
+  @override
+  String get midiTransposeUpSemitone => 'Su di un semitono';
+
+  @override
+  String get midiTransposeDownSemitone => 'Giù di un semitono';
+
+  @override
+  String get midiTransposeUpOctave => 'Su di un’ottava';
+
+  @override
+  String get midiTransposeDownOctave => 'Giù di un’ottava';
+
+  @override
+  String get midiShortcutRangeTool =>
+      'Intervallo: trascina per selezionare un tratto di tempo e tutte le sue note';
+
+  @override
+  String get midiShortcutEraserTool =>
+      'Gomma: fai clic o trascina sulle note per eliminarle';
+
+  @override
+  String get midiShortcutDuplicate =>
+      'Duplica: un intervallo subito dopo sé stesso, o le note selezionate subito dopo l’ultima';
+
+  @override
+  String get midiNewClip => 'Nuova clip';
+
+  @override
+  String midiNewClipName(int number) {
+    return 'Idea $number';
+  }
+
+  @override
+  String get midiQuantize => 'Quantizza (Q)';
+
+  @override
+  String get midiShortcutQuantize =>
+      'Quantizza: aggancia alla griglia le note selezionate (o tutte)';
 }

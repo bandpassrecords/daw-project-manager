@@ -6457,9 +6457,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get midiRedo => 'Redo';
 
   @override
-  String get midiDeleteNote => 'Delete note';
-
-  @override
   String get midiSnap => 'Snap to grid';
 
   @override
@@ -6628,4 +6625,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get midiExitFullScreen => 'Exit full screen';
+
+  @override
+  String get midiToolRange => 'Range (2)';
+
+  @override
+  String get midiToolEraser => 'Eraser (5)';
+
+  @override
+  String get midiDuplicate => 'Duplicate';
+
+  @override
+  String get midiTranspose => 'Transpose';
+
+  @override
+  String get midiTransposeUpSemitone => 'Up a semitone';
+
+  @override
+  String get midiTransposeDownSemitone => 'Down a semitone';
+
+  @override
+  String get midiTransposeUpOctave => 'Up an octave';
+
+  @override
+  String get midiTransposeDownOctave => 'Down an octave';
+
+  @override
+  String get midiShortcutRangeTool =>
+      'Range: drag across to select a stretch of time and every note in it';
+
+  @override
+  String get midiShortcutEraserTool =>
+      'Eraser: click or drag over notes to delete them';
+
+  @override
+  String get midiShortcutDuplicate =>
+      'Duplicate: a range right after itself, or the selected notes right after the last one';
+
+  @override
+  String get midiNewClip => 'New clip';
+
+  @override
+  String midiNewClipName(int number) {
+    return 'Idea $number';
+  }
+
+  @override
+  String get midiQuantize => 'Quantize (Q)';
+
+  @override
+  String get midiShortcutQuantize =>
+      'Quantize: snap the selected notes (or every note) to the grid';
 }

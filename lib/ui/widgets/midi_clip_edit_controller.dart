@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 
 import '../../models/midi_clip.dart';
@@ -28,11 +30,16 @@ enum MidiSnap {
 /// Which edge of a note a resize drags.
 enum NoteEdge { start, end }
 
-/// What a click on the notes does, as with Cubase's toolbox: [select]
-/// selects, moves and resizes (a double-click adds or deletes); [pencil]
-/// adds a note with a single click (a drag makes it longer) and erases one
-/// clicked on.
-enum MidiEditTool { select, pencil }
+/// What a click on the notes does, as with Cubase's toolbox (its keys in
+/// brackets): [select] (1) selects, moves and resizes — a double-click adds
+/// or deletes; [range] (2) selects a stretch of time and every note in it,
+/// for [MidiClipEditController.duplicate]; [eraser] (5) deletes whatever it
+/// clicks or is dragged over; [pencil] (8) adds a note with a single click
+/// (a drag makes it longer) and erases one clicked on.
+enum MidiEditTool { select, range, eraser, pencil }
+
+/// A stretch of the clip, in ticks: [start] inclusive, [end] exclusive.
+typedef MidiTickRange = ({int start, int end});
 
 /// Edits one MIDI clip in the piano roll the way Cubase's key editor does:
 /// notes added and deleted, a selection of any number of notes moved,
@@ -92,7 +99,10 @@ class MidiClipEditController extends ChangeNotifier {
   set editing(bool value) {
     if (_editing == value) return;
     _editing = value;
-    if (!value) _selection.clear();
+    if (!value) {
+      _selection.clear();
+      _range = null;
+    }
     notifyListeners();
   }
 
@@ -101,7 +111,38 @@ class MidiClipEditController extends ChangeNotifier {
   set tool(MidiEditTool value) {
     if (_tool == value) return;
     _tool = value;
+    _range = null;
     notifyListeners();
+  }
+
+  /// The stretch of time the range tool selected, if any; its notes are
+  /// the selection. Anything else that changes the selection drops it.
+  MidiTickRange? get range => _range;
+  MidiTickRange? _range;
+
+  /// Selects the stretch between [fromTick] and [toTick] (either way
+  /// round), widened to whole grid steps, and every note starting in it.
+  void selectRange(double fromTick, double toTick) {
+    final step = stepTicks;
+    final lo = fromTick < toTick ? fromTick : toTick;
+    final hi = fromTick < toTick ? toTick : fromTick;
+    final start = snapDown(lo);
+    var end = ((hi < 0 ? 0 : hi) / step).ceil() * step;
+    if (end <= start) end = start + step;
+    final next = (start: start, end: end);
+    if (next == _range) return;
+    _range = next;
+    _selection
+      ..clear()
+      ..addAll(_notesStartingIn(_clip, next));
+    notifyListeners();
+  }
+
+  static Iterable<int> _notesStartingIn(MidiClip clip, MidiTickRange r) sync* {
+    for (var i = 0; i < clip.notes.length; i++) {
+      final t = clip.notes[i].startTick;
+      if (t >= r.start && t < r.end) yield i;
+    }
   }
 
   MidiSnap get snap => _snap;
@@ -129,7 +170,9 @@ class MidiClipEditController extends ChangeNotifier {
   /// Selects [index] alone, or nothing for null.
   void select(int? index) {
     final next = {if (index != null && _valid(index)) index};
-    if (setEquals(next, _selection)) return;
+    final hadRange = _range != null;
+    _range = null;
+    if (setEquals(next, _selection) && !hadRange) return;
     _selection
       ..clear()
       ..addAll(next);
@@ -139,12 +182,14 @@ class MidiClipEditController extends ChangeNotifier {
   /// Adds [index] to the selection, or takes it out — Shift-click.
   void toggleSelected(int index) {
     if (!_valid(index)) return;
+    _range = null;
     if (!_selection.remove(index)) _selection.add(index);
     notifyListeners();
   }
 
   /// Ctrl/Cmd+A.
   void selectAll() {
+    _range = null;
     _selection
       ..clear()
       ..addAll([for (var i = 0; i < _clip.notes.length; i++) i]);
@@ -161,6 +206,7 @@ class MidiClipEditController extends ChangeNotifier {
     required int highPitch,
     Set<int> keep = const {},
   }) {
+    _range = null;
     final next = <int>{...keep.where(_valid)};
     final notes = _clip.notes;
     for (var i = 0; i < notes.length; i++) {
@@ -223,6 +269,7 @@ class MidiClipEditController extends ChangeNotifier {
   /// [pitch], and selects it — a double-click on an empty spot.
   void addNoteAt(double tick, int pitch) {
     _apply(_committed.copyWith(notes: [..._committed.notes, _newNote(tick, pitch)]));
+    _range = null;
     _selection
       ..clear()
       ..add(_clip.notes.length - 1);
@@ -237,6 +284,7 @@ class MidiClipEditController extends ChangeNotifier {
         notes: [..._committed.notes, _newNote(tick, pitch)]);
     _duplicating = false;
     _adding = true;
+    _range = null;
     _selection
       ..clear()
       ..add(_base.notes.length - 1);
@@ -259,6 +307,7 @@ class MidiClipEditController extends ChangeNotifier {
   void deleteNote(int index) {
     if (!_editing || index < 0 || index >= _committed.notes.length) return;
     _selection.clear();
+    _range = null;
     _apply(_committed.copyWith(notes: [..._committed.notes]..removeAt(index)));
     _commit();
   }
@@ -271,8 +320,144 @@ class MidiClipEditController extends ChangeNotifier {
         if (!_selection.contains(i)) _committed.notes[i],
     ];
     _selection.clear();
+    _range = null;
     _apply(_committed.copyWith(notes: notes));
     _commit();
+  }
+
+  /// Ctrl/Cmd+D, as in Cubase. With a [range]: its notes (cut off at its
+  /// end) and controller events are copied straight after it, and the
+  /// range moves onto the copy — so pressing it again carries on the
+  /// pattern. Otherwise the selected notes are copied to start where the
+  /// last of them ends (on the grid, when snapping), and the copies become
+  /// the selection. One undo step either way.
+  void duplicate() {
+    if (!_editing) return;
+    final r = _range;
+    if (r != null) {
+      _duplicateRange(r);
+    } else if (_selection.isNotEmpty) {
+      _duplicateSelection();
+    }
+  }
+
+  void _duplicateRange(MidiTickRange r) {
+    final length = r.end - r.start;
+    final source = _committed;
+    final copies = [
+      for (final i in _notesStartingIn(source, r))
+        _note(
+          source.notes[i],
+          start: source.notes[i].startTick + length,
+          length: math.min(
+              source.notes[i].lengthTicks, r.end - source.notes[i].startTick),
+        ),
+    ];
+    final events = [
+      for (final e in source.events)
+        if (e.tick >= r.start && e.tick < r.end)
+          MidiEvent(
+              tick: e.tick + length, kind: e.kind, number: e.number, value: e.value),
+    ];
+    if (copies.isEmpty && events.isEmpty) {
+      // Nothing in it: the range still moves on, as an empty bar would.
+      _range = (start: r.end, end: r.end + length);
+      notifyListeners();
+      return;
+    }
+    final first = source.notes.length;
+    _apply(source.copyWith(
+      notes: [...source.notes, ...copies],
+      events: normalizeMidiEvents([...source.events, ...events]),
+    ));
+    _commit();
+    _range = (start: r.end, end: r.end + length);
+    _selection
+      ..clear()
+      ..addAll([for (var i = 0; i < copies.length; i++) first + i]);
+    notifyListeners();
+  }
+
+  void _duplicateSelection() {
+    final source = _committed;
+    final picked = _selection.toList()..sort();
+    var start = 1 << 30, end = 0;
+    for (final i in picked) {
+      final n = source.notes[i];
+      if (n.startTick < start) start = n.startTick;
+      if (n.endTick > end) end = n.endTick;
+    }
+    var offset = end - start;
+    if (_snap != MidiSnap.off) {
+      final step = stepTicks;
+      offset = (offset / step).ceil() * step;
+    }
+    if (offset < 1) offset = 1;
+    final first = source.notes.length;
+    _apply(source.copyWith(notes: [
+      ...source.notes,
+      for (final i in picked)
+        _note(source.notes[i], start: source.notes[i].startTick + offset),
+    ]));
+    _selection
+      ..clear()
+      ..addAll([for (var i = 0; i < picked.length; i++) first + i]);
+    _commit();
+  }
+
+  /// Q, as in Cubase: moves the start of every selected note — or of every
+  /// note, with none selected — to the nearest grid step, keeping lengths.
+  /// With snapping off, to the 1/16 grid. One undo step.
+  void quantize() {
+    if (!_editing) return;
+    final step = _snap == MidiSnap.off
+        ? (_clip.ppq * MidiSnap.sixteenth.beats).round().clamp(1, 1 << 30)
+        : stepTicks;
+    final source = _committed;
+    final targets = _selection.isEmpty
+        ? [for (var i = 0; i < source.notes.length; i++) i]
+        : _selection.toList();
+    final notes = [...source.notes];
+    var changed = false;
+    for (final i in targets) {
+      final n = notes[i];
+      final start = (n.startTick / step).round() * step;
+      if (start == n.startTick) continue;
+      notes[i] = _note(n, start: start);
+      changed = true;
+    }
+    if (!changed) return;
+    _apply(source.copyWith(notes: notes));
+    _commit();
+  }
+
+  /// The eraser, mid-gesture: removes note [index] of [clip]. A drag erases
+  /// note after note; [endGesture] makes it all one undo step.
+  void eraseNote(int index) {
+    if (index < 0 || index >= _clip.notes.length) return;
+    _selection.clear();
+    _range = null;
+    _apply(_clip.copyWith(notes: [..._clip.notes]..removeAt(index)));
+  }
+
+  /// The eraser over a controller lane: removes the lane's events between
+  /// [fromTick] and [toTick], the stretch the drag just crossed.
+  void eraseLane(MidiEventKind kind, int number, double fromTick, double toTick) {
+    final lo = fromTick < toTick ? fromTick : toTick;
+    final hi = fromTick < toTick ? toTick : fromTick;
+    final step = laneStepTicks;
+    final first = (((lo < 0 ? 0 : lo)) / step).floor() * step;
+    final last = (((hi < 0 ? 0 : hi)) / step).floor() * step + step;
+    bool doomed(MidiEvent e) =>
+        e.kind == kind &&
+        (kind != MidiEventKind.controller || e.number == number) &&
+        e.tick >= first &&
+        e.tick < last;
+    if (!_clip.events.any(doomed)) return;
+    _apply(_clip.copyWith(events: [
+      for (final e in _clip.events)
+        if (!doomed(e)) e,
+    ]));
   }
 
   /// Moves the selection up or down by [semitones] — ↑/↓, or Shift+↑/↓ for
@@ -296,6 +481,7 @@ class MidiClipEditController extends ChangeNotifier {
     _redo.add(_committed);
     _committed = _clip = _base = _undo.removeLast();
     _selection.clear();
+    _range = null;
     notifyListeners();
   }
 
@@ -304,6 +490,7 @@ class MidiClipEditController extends ChangeNotifier {
     _undo.add(_committed);
     _committed = _clip = _base = _redo.removeLast();
     _selection.clear();
+    _range = null;
     notifyListeners();
   }
 
@@ -538,8 +725,22 @@ class MidiClipEditController extends ChangeNotifier {
   void _commit() {
     _undo.add(_committed);
     _redo.clear();
-    _committed = _clip;
+    _committed = _clip = grownToNotes(_clip);
     _base = _committed;
     notifyListeners();
   }
+}
+
+/// [clip], grown to the end of the bar its last note ends in when a note
+/// runs past its end — so a clip being drawn keeps growing as notes go past
+/// it, bar by bar, and its end line, playback and saving follow. [clip]
+/// itself when nothing runs past.
+MidiClip grownToNotes(MidiClip clip) {
+  var end = clip.lengthTicks;
+  for (final n in clip.notes) {
+    if (n.endTick > end) end = n.endTick;
+  }
+  if (end <= clip.lengthTicks) return clip;
+  final bar = clip.ppq * 4;
+  return clip.copyWith(lengthTicks: ((end + bar - 1) ~/ bar) * bar);
 }

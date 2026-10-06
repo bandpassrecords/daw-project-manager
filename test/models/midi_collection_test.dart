@@ -159,6 +159,19 @@ void main() {
       expect((await store.get(c.id))!.items.single.voice, isNull);
     });
 
+    test('putItem replaces the item with its id, or adds it', () async {
+      final c = await store.create('Ideas');
+      await store.putItem(c.id, _item('idea', _clip('Idea 1', 60)));
+      now = now.add(const Duration(minutes: 1));
+      await store.putItem(c.id, _item('idea', _clip('Idea 1', 64)));
+      await store.putItem(c.id, _item('other', _clip('Idea 2', 67)));
+      final saved = (await store.get(c.id))!;
+      expect(saved.items.map((i) => i.id), ['idea', 'other'],
+          reason: 'saving the same idea again replaces it, in its place');
+      expect(saved.items.first.clip.notes.single.pitch, 64);
+      expect(saved.updatedAt, now, reason: 'a change that syncs');
+    });
+
     test('deleting leaves a tombstone: gone from view, still there to sync', () async {
       final c = await store.create('Riffs');
       await store.addItems(c.id, [_item('i1', _clip('a', 40))]);
