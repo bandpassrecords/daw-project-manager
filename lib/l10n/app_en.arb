@@ -6389,7 +6389,7 @@
   "@midiShortcutPencilTool": {
     "description": "Shortcut sheet action"
   },
-  "midiShortcutDoubleClick": "On empty space: add a note (hold and drag to set its length; Ctrl: off the grid). On a note: delete it",
+  "midiShortcutDoubleClick": "On empty space: add a note (hold and drag: across for length, up or down for velocity; Ctrl: off the grid). On a note: delete it",
   "@midiShortcutDoubleClick": {
     "description": "Shortcut sheet action"
   },

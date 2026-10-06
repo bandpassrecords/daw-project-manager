@@ -312,8 +312,9 @@ class MidiClipEditController extends ChangeNotifier {
 
   /// Adds a note one step long at the grid step [tick] falls in, on
   /// [pitch], and selects it — a double-click on an empty spot.
-  void addNoteAt(double tick, int pitch) {
-    _apply(_committed.copyWith(notes: [..._committed.notes, _newNote(tick, pitch)]));
+  void addNoteAt(double tick, int pitch, {bool free = false}) {
+    _apply(_committed.copyWith(
+        notes: [..._committed.notes, _newNote(tick, pitch, free: free)]));
     _range = null;
     _selection
       ..clear()
@@ -324,9 +325,11 @@ class MidiClipEditController extends ChangeNotifier {
   /// The pencil: starts a gesture with a new note at the grid step [tick]
   /// falls in, one step long and selected, for [resizeSelection] to
   /// stretch as the pointer drags; [endGesture] keeps it as one undo step.
-  void beginNote(double tick, int pitch) {
+  /// With [free] (Ctrl held) the note starts right at [tick], off the
+  /// grid, as a drag with Ctrl moves one.
+  void beginNote(double tick, int pitch, {bool free = false}) {
     _base = _committed.copyWith(
-        notes: [..._committed.notes, _newNote(tick, pitch)]);
+        notes: [..._committed.notes, _newNote(tick, pitch, free: free)]);
     _duplicating = false;
     _adding = true;
     _range = null;
@@ -352,10 +355,10 @@ class MidiClipEditController extends ChangeNotifier {
 
   /// A note one step long (a 16th with snapping off) at the grid step
   /// [tick] falls in, at the velocity last used.
-  MidiNote _newNote(double tick, int pitch) {
+  MidiNote _newNote(double tick, int pitch, {bool free = false}) {
     final length = _snap == MidiSnap.off ? _clip.ppq ~/ 4 : stepTicks;
     return MidiNote(
-      startTick: snapDown(tick),
+      startTick: free ? (tick < 0 ? 0 : tick.round()) : snapDown(tick),
       lengthTicks: length < 1 ? 1 : length,
       pitch: pitch.clamp(0, 127),
       velocity: velocity.clamp(1, 127),

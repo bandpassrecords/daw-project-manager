@@ -6395,7 +6395,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiShortcutDoubleClick =>
-      '空いている所：ノートを追加（押したままドラッグで長さ、Ctrl でグリッド無視）。ノートの上：削除';
+      '空いている所：ノートを追加（押したままドラッグ：横で長さ、上下でベロシティ、Ctrl でグリッド無視）。ノートの上：削除';
 
   @override
   String get midiShortcutMove => 'ノート：選択中のノートごと移動';

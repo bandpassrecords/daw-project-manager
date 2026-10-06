@@ -10988,7 +10988,7 @@ abstract class AppLocalizations {
   /// Shortcut sheet action
   ///
   /// In en, this message translates to:
-  /// **'On empty space: add a note (hold and drag to set its length; Ctrl: off the grid). On a note: delete it'**
+  /// **'On empty space: add a note (hold and drag: across for length, up or down for velocity; Ctrl: off the grid). On a note: delete it'**
   String get midiShortcutDoubleClick;
 
   /// Shortcut sheet action

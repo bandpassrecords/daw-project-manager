@@ -760,4 +760,14 @@ void main() {
       expect(fittedToNotes(clip, barTicks: 1920).lengthTicks, 1920);
     });
   });
+
+  test('a note placed with Ctrl starts right where it was put', () {
+    final c = editingChord()..beginNote(250, 70, free: true);
+    c.endGesture();
+    expect(c.clip.notes.last.startTick, 250);
+    c.addNoteAt(1001.6, 72, free: true);
+    expect(c.clip.notes.last.startTick, 1002);
+    c.addNoteAt(1001.6, 74);
+    expect(c.clip.notes.last.startTick, 960, reason: 'without: on the grid');
+  });
 }

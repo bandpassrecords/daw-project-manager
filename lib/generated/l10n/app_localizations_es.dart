@@ -6612,7 +6612,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get midiShortcutDoubleClick =>
-      'En un espacio vacío: añadir una nota (mantén y arrastra para fijar su duración; Ctrl: fuera de la cuadrícula). Sobre una nota: borrarla';
+      'En un espacio vacío: añadir una nota (mantén y arrastra: a los lados la duración, arriba o abajo la velocidad; Ctrl: fuera de la cuadrícula). Sobre una nota: borrarla';
 
   @override
   String get midiShortcutMove =>

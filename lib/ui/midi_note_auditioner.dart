@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../models/midi_clip.dart';
+import '../services/audio_fade.dart';
 import '../services/midi/midi_clip_service.dart';
 import '../services/midi/synth_voice.dart';
 
@@ -29,7 +30,9 @@ class MidiNoteAuditioner {
   /// 0…1: the preview volume.
   double volume;
 
-  static const _players = 4;
+  // Enough that a note still ringing out isn't cut off (a click) by a
+  // quick run of new ones taking its player.
+  static const _players = 8;
   final List<AudioPlayer> _pool = [];
   int _next = 0;
   bool _disposed = false;
@@ -62,7 +65,7 @@ class MidiNoteAuditioner {
     try {
       final path = await _render(clipFor(pitch, velocity));
       if (_disposed) return;
-      final player = _nextPlayer();
+      final player = _nextPlayer(Object());
       await player.stop();
       await player.setVolume(volume);
       await player.play(DeviceFileSource(path));
@@ -89,12 +92,12 @@ class MidiNoteAuditioner {
         await play(pitch, velocity: velocity);
         return;
       }
-      final player = _nextPlayer();
+      final player = _nextPlayer(note);
       note._player = player;
       await player.stop();
       await player.setVolume(volume);
       await player.play(DeviceFileSource(path));
-      if (note._released) await _fadeOut(player);
+      if (note._released) await _fadeOut(player, note);
     } catch (e) {
       debugPrint('[MidiNoteAuditioner] failed to hold $pitch: $e');
     }
@@ -105,20 +108,17 @@ class MidiNoteAuditioner {
     if (note._released) return;
     note._released = true;
     final player = note._player;
-    if (player != null && !_disposed) await _fadeOut(player);
+    if (player != null && !_disposed) await _fadeOut(player, note);
   }
 
-  Future<void> _fadeOut(AudioPlayer player) async {
-    try {
-      for (final share in const [0.55, 0.25, 0.08]) {
-        await player.setVolume(volume * share);
-        await Future<void>.delayed(const Duration(milliseconds: 15));
-      }
-      await player.stop();
-    } catch (e) {
-      debugPrint('[MidiNoteAuditioner] failed to let go: $e');
-    }
-  }
+  /// Which sound each player is playing now: a fade lets go of a player
+  /// handed on to a newer one.
+  final Map<AudioPlayer, Object> _playing = {};
+
+  Future<void> _fadeOut(AudioPlayer player, MidiHeldNote note) =>
+      fadeOutAndStop(player, volume,
+          over: const Duration(milliseconds: 60),
+          abandoned: () => _disposed || !identical(_playing[player], note));
 
   Future<String> _render(MidiClip clip) async => MidiClipService.renderPreview(
         clip,
@@ -127,13 +127,17 @@ class MidiNoteAuditioner {
         directory: await _directory(),
       );
 
-  AudioPlayer _nextPlayer() {
+  /// A player for [sound], taken from whatever it was playing.
+  AudioPlayer _nextPlayer(Object sound) {
+    final AudioPlayer player;
     if (_pool.length < _players) {
-      final player = AudioPlayer();
+      player = AudioPlayer();
       _pool.add(player);
-      return player;
+    } else {
+      player = _pool[_next++ % _players];
     }
-    return _pool[_next++ % _players];
+    _playing[player] = sound;
+    return player;
   }
 
   void dispose() {

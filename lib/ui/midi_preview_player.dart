@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../models/midi_clip.dart';
 import '../services/app_audio_focus.dart';
+import '../services/audio_fade.dart';
 import '../services/midi/midi_clip_service.dart';
 import '../services/midi/midi_clip_synth.dart';
 import '../services/midi/synth_voice.dart';
@@ -273,8 +274,12 @@ class MidiPreviewPlayer extends ChangeNotifier {
     _notify();
     final player = _player;
     if (player == null) return;
-    await _fadeOut(player);
-    await player.pause();
+    final generation = _generation;
+    await fadeOutAndStop(player, volume,
+        pause: true,
+        // Resumed, or something else played, before the fade was done.
+        abandoned: () => !paused || generation != _generation || _disposed);
+    if (!paused || generation != _generation) return;
     // Back to full for when it resumes.
     await player.setVolume(volume);
   }
@@ -303,21 +308,11 @@ class MidiPreviewPlayer extends ChangeNotifier {
     _notify();
     final player = _player;
     if (player == null) return;
-    await _fadeOut(player);
-    await player.stop();
-  }
-
-  /// A quick fade to silence before stopping or pausing: cut off mid-wave,
-  /// the sound ends in a click.
-  Future<void> _fadeOut(AudioPlayer player) async {
-    try {
-      for (final share in const [0.6, 0.3, 0.1]) {
-        await player.setVolume(volume * share);
-        await Future<void>.delayed(const Duration(milliseconds: 15));
-      }
-    } catch (_) {
-      // A player that can't fade still stops.
-    }
+    // Faded to silence first: cut off mid-wave, it ends in a click. A play
+    // started meanwhile owns the player, and the fade lets it be.
+    final generation = _generation;
+    await fadeOutAndStop(player, volume,
+        abandoned: () => generation != _generation || _disposed);
   }
 
   void _notify() {

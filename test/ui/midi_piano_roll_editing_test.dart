@@ -656,7 +656,7 @@ void main() {
     expect(fullScreenChanges, [true]);
   });
 
-  testWidgets('a middle-button drag shows only a grabbing hand, any tool',
+  testWidgets('a middle-button drag shows only a drawn hand, any tool',
       (tester) async {
     await open(tester);
     await startEditing(tester);
@@ -672,18 +672,25 @@ void main() {
     final middle = await tester.startGesture(at,
         kind: PointerDeviceKind.mouse, buttons: kMiddleMouseButton);
     await tester.pump();
-    MouseCursor shown() => tester
-        .widget<MouseRegion>(find.byWidgetPredicate((w) =>
-            w is MouseRegion && w.cursor == SystemMouseCursors.grabbing))
-        .cursor;
-    expect(cursor, findsNothing, reason: 'no pencil left behind');
-    expect(shown(), SystemMouseCursors.grabbing);
+    final hand = find.descendant(of: cursor, matching: find.byIcon(Icons.pan_tool));
+    expect(hand, findsWidgets, reason: 'a hand, drawn — not the pencil');
+    expect(find.descendant(of: cursor, matching: find.byIcon(Icons.edit)),
+        findsNothing);
+    expect(
+        find.byWidgetPredicate((w) =>
+            w is MouseRegion && w.cursor == SystemMouseCursors.none),
+        findsWidgets,
+        reason: 'the system pointer hidden under it');
+    final before = tester.getTopLeft(cursor);
     await middle.moveBy(const Offset(-40, 0));
     await tester.pump();
-    expect(cursor, findsNothing);
+    expect(tester.getTopLeft(cursor).dx, closeTo(before.dx - 40, 0.5),
+        reason: 'the hand moves with the drag');
     await middle.up();
     await tester.pump();
-    expect(cursor, findsOneWidget, reason: 'the pencil again, once let go');
+    expect(hand, findsNothing);
+    expect(find.descendant(of: cursor, matching: find.byIcon(Icons.edit)),
+        findsWidgets, reason: 'the pencil again, once let go');
   });
 
   testWidgets('over the velocity lane, the pencil shows whatever the tool',
@@ -940,6 +947,20 @@ void main() {
     });
   });
 
+  testWidgets('with Ctrl, the pencil places a note where it is clicked',
+      (tester) async {
+    await open(tester, startEditing: true);
+    final g = grid(tester);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    // 250 ticks in: between the 1/16 lines at 240 and 360.
+    await click(tester, Offset(g.left + g.width * 250 / 1920, g.center.dy - 60));
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await save(tester);
+    expect(
+        saved.single.$1.notes.map((n) => n.startTick),
+        contains(closeTo(250, 2)));
+  });
+
   testWidgets('the pencil dragged up draws a louder note', (tester) async {
     await open(tester, startEditing: true);
     final g = grid(tester);
@@ -1187,21 +1208,21 @@ void main() {
       expect(saved.single.$1.notes.last.startTick, 960);
     });
 
-    testWidgets('held and dragged, sets how long the new note is',
+    testWidgets('held and dragged, draws it as the pencil does',
         (tester) async {
       await open(tester);
       await startEditing(tester);
       final g = grid(tester);
       final press =
           await secondPress(tester, Offset(g.left + g.width * 0.5 + 2, g.center.dy));
-      await press.moveBy(Offset(g.width / 8, -30)); // up as well: no velocity
+      await press.moveBy(Offset(g.width / 8, -30)); // across, and up
       await tester.pump();
       await press.up();
       await tester.pumpAndSettle();
       await save(tester);
       final drawn = saved.single.$1.notes.last;
       expect((drawn.startTick, drawn.lengthTicks), (960, 360));
-      expect(drawn.velocity, 100, reason: 'only the pencil sets velocity');
+      expect(drawn.velocity, 115, reason: 'up 30 px: 15 louder, as the pencil');
     });
 
     testWidgets('with Ctrl held, off the grid', (tester) async {

@@ -1095,13 +1095,14 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     _pointers.add(e.pointer);
     if (e.buttons & kMiddleMouseButton != 0) {
       // The middle button grabs the canvas and moves it, as in a DAW — a
-      // grabbing hand and nothing else, whatever the tool: the drawn pencil
-      // or eraser would only sit there while the view slid under it.
-      _toolCursorAt.value = null;
+      // hand and nothing else, whatever the tool. It is drawn, like the
+      // pencil: Windows has no grabbing cursor, and asking for one there
+      // showed the plain arrow.
       setState(() {
         _panning = true;
-        _cursor = SystemMouseCursors.grabbing;
+        _cursor = SystemMouseCursors.none;
       });
+      _toolCursorAt.value = e.localPosition;
       return;
     }
     final k = e.localPosition;
@@ -1145,20 +1146,20 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       }
       final hit = _noteAt(p);
       if (hit == null && _pencil) {
-        // The pencil draws a note here, as long as the drag makes it.
-        editor.beginNote(_tickAtX(p.dx), _pitchAtY(p.dy));
+        // The pencil draws a note here, as long as the drag makes it — on
+        // the grid, or with Ctrl right where it was clicked.
+        editor.beginNote(_tickAtX(p.dx), _pitchAtY(p.dy), free: _free);
         _drag = _EditDrag(_DragKind.draw, p, null)..lastValue = editor.velocity;
         _holdSound(_pitchAtY(p.dy));
         return;
       }
       if (hit == null && !_keys.isShiftPressed && _secondPress(e.timeStamp, p)) {
         // A double-click on empty space adds a note — on the second press,
-        // not its release, so holding on and dragging sets how long it is
-        // (Ctrl: off the grid).
-        editor.beginNote(_tickAtX(p.dx), _pitchAtY(p.dy));
-        _drag = _EditDrag(_DragKind.draw, p, null)
-          ..lastValue = editor.velocity
-          ..lengthOnly = true;
+        // not its release, so holding on and dragging draws it as the pencil
+        // does: across for its length, up and down for its velocity, Ctrl
+        // for off the grid.
+        editor.beginNote(_tickAtX(p.dx), _pitchAtY(p.dy), free: _free);
+        _drag = _EditDrag(_DragKind.draw, p, null)..lastValue = editor.velocity;
         _holdSound(_pitchAtY(p.dy));
         return;
       }
@@ -1236,6 +1237,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   void _onEditMove(PointerMoveEvent e) {
     if (_panning) {
       _scrollBy(-e.delta.dx, -e.delta.dy);
+      _toolCursorAt.value = e.localPosition;
       return;
     }
     if (_pressedKey != null) {
@@ -1288,7 +1290,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         if (drag.moved) {
           // Up or down while drawing sets how hard it plays, as in Cubase;
           // across, how long it is.
-          if (!drag.lengthOnly && d.dy.abs() > 4) {
+          if (d.dy.abs() > 4) {
             editor.setDrawnVelocity(drag.lastValue - (d.dy / 2).round());
           }
           editor.resizeSelection(NoteEdge.end, d.dx / _px, free: _free);
@@ -1431,6 +1433,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     _pointers.remove(e.pointer);
     _stopAutoScroll();
     if (_panning) {
+      _toolCursorAt.value = null;
       setState(() {
         _panning = false;
         _cursor = MouseCursor.defer;
@@ -1569,15 +1572,21 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   Widget _toolCursorOverlay() => ValueListenableBuilder<Offset?>(
         valueListenable: _toolCursorAt,
         builder: (context, at, _) {
-          if (at == null || !_editing) return const SizedBox.shrink();
+          if (at == null || (!_editing && !_panning)) {
+            return const SizedBox.shrink();
+          }
           const size = 22.0;
-          final eraser = widget.editor!.tool == MidiEditTool.eraser;
-          Widget glyph(Color color) => eraser
-              ? MidiToolIcon(MidiToolGlyph.eraser, size: size, color: color)
-              : Icon(Icons.edit, size: size, color: color);
+          // Moving the canvas: a hand, held at its middle.
+          final hand = _panning;
+          final eraser = !hand && widget.editor!.tool == MidiEditTool.eraser;
+          Widget glyph(Color color) => hand
+              ? Icon(Icons.pan_tool, size: size, color: color)
+              : eraser
+                  ? MidiToolIcon(MidiToolGlyph.eraser, size: size, color: color)
+                  : Icon(Icons.edit, size: size, color: color);
           return Positioned(
-            left: at.dx - 3,
-            top: at.dy - size + 3,
+            left: hand ? at.dx - size / 2 : at.dx - 3,
+            top: hand ? at.dy - size / 2 : at.dy - size + 3,
             child: IgnorePointer(
               key: const ValueKey('midi-piano-roll-tool-cursor'),
               child: Stack(
@@ -2161,10 +2170,6 @@ class _EditDrag {
 
   /// Where the eraser last was, to erase on from there.
   Offset? lastAt;
-
-  /// A note drawn by a double-click with the select tool: a drag sets only
-  /// its length, not (as the pencil's does) its velocity too.
-  bool lengthOnly = false;
 
   /// The view's scroll when the drag began.
   Offset scrollStart = Offset.zero;

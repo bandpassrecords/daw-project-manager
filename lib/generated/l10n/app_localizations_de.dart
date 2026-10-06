@@ -6595,7 +6595,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiShortcutDoubleClick =>
-      'Auf freier Fläche: Note hinzufügen (gedrückt halten und ziehen legt die Länge fest; Strg: frei vom Raster). Auf einer Note: sie löschen';
+      'Auf freier Fläche: Note hinzufügen (gedrückt halten und ziehen: seitlich die Länge, hoch/runter die Anschlagstärke; Strg: frei vom Raster). Auf einer Note: sie löschen';
 
   @override
   String get midiShortcutMove =>

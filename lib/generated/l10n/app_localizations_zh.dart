@@ -6322,7 +6322,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiShortcutPencilTool => '铅笔：单击添加音符；横向拖动可延长，上下拖动调整力度；单击音符将其选中';
 
   @override
-  String get midiShortcutDoubleClick => '空白处：添加音符（按住拖动设定时值；Ctrl：不吸附网格）。音符上：删除它';
+  String get midiShortcutDoubleClick =>
+      '空白处：添加音符（按住拖动：横向调时值，上下调力度；Ctrl：不吸附网格）。音符上：删除它';
 
   @override
   String get midiShortcutMove => '音符：与所有选中音符一起移动';
