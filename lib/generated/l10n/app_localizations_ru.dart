@@ -6719,4 +6719,8 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get midiShortcutLoopDrag =>
       'Фиолетовая полоса цикла: тяните края, чтобы изменить длину, середину — чтобы сдвинуть (при включённом цикле звучит только она)';
+
+  @override
+  String get midiShortcutLoopToggle =>
+      'Верхняя половина полосы цикла: включить или выключить цикл (серая, пока выключен)';
 }

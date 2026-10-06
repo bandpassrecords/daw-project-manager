@@ -6739,4 +6739,8 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get midiShortcutLoopDrag =>
       'La barra viola del loop: trascina gli estremi per ridimensionarla, il centro per spostarla (con il loop attivo, suona solo lei)';
+
+  @override
+  String get midiShortcutLoopToggle =>
+      'Metà superiore della barra del loop: attiva o disattiva il loop (grigia quando è spento)';
 }

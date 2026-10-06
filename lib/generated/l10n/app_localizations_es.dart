@@ -6753,4 +6753,8 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get midiShortcutLoopDrag =>
       'La barra morada del bucle: arrastra sus extremos para cambiar su tamaño y el centro para moverla (con el bucle activo, solo suena ella)';
+
+  @override
+  String get midiShortcutLoopToggle =>
+      'Mitad superior de la barra del bucle: activar o desactivar el bucle (gris si está apagado)';
 }

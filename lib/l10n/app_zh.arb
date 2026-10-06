@@ -4107,5 +4107,6 @@
   "midiTimeSignature": "拍号",
   "midiShortcutLoopStart": "在标尺上：设置循环起点",
   "midiShortcutLoopEnd": "在标尺上：设置循环终点",
-  "midiShortcutLoopDrag": "循环的紫色条：拖动两端调整长度，拖动中间移动位置（开启循环时只播放该段）"
+  "midiShortcutLoopDrag": "循环的紫色条：拖动两端调整长度，拖动中间移动位置（开启循环时只播放该段）",
+  "midiShortcutLoopToggle": "循环条的上半部分：开启或关闭循环（关闭时为灰色）"
 }

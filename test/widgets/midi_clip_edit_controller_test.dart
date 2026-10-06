@@ -708,16 +708,18 @@ void main() {
   });
 
   group('the pencil sets how hard', () {
-    test('up and down while drawing, remembered for the next note', () {
+    test('up and down while drawing: that note only, the next starts fresh',
+        () {
       final c = editingChord()..beginNote(0, 50);
       c.setDrawnVelocity(127);
       c.resizeSelection(NoteEdge.end, 240);
       c.endGesture();
       expect(c.clip.notes.last.velocity, 127);
       expect(c.clip.notes.last.lengthTicks, 360, reason: 'length kept too');
-      expect(c.velocity, 127);
-      c.addNoteAt(960, 52);
-      expect(c.clip.notes.last.velocity, 127);
+      expect(c.velocity, 100, reason: 'not carried over');
+      c.beginNote(960, 52);
+      c.endGesture();
+      expect(c.clip.notes.last.velocity, 100);
     });
 
     test('only while drawing', () {

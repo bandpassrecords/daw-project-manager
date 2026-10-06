@@ -337,13 +337,12 @@ class MidiClipEditController extends ChangeNotifier {
   }
 
   /// The pencil, mid-draw: how hard the note being drawn plays — dragged
-  /// up for louder, down for softer, as in Cubase. Remembered for the next
-  /// note.
+  /// up for louder, down for softer, as in Cubase. That note only: the next
+  /// one starts from the usual [velocity] again, not from this one.
   void setDrawnVelocity(int value) {
     if (!_adding || _selection.length != 1) return;
     final i = _selection.first;
     final v = value.clamp(1, 127);
-    velocity = v;
     if (_base.notes[i].velocity == v) return;
     _base = _base.copyWith(
         notes: [..._base.notes]..[i] = _note(_base.notes[i], velocity: v));

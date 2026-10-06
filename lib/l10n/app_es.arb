@@ -4107,5 +4107,6 @@
   "midiTimeSignature": "Compás",
   "midiShortcutLoopStart": "En la regla: fijar dónde empieza el bucle",
   "midiShortcutLoopEnd": "En la regla: fijar dónde termina el bucle",
-  "midiShortcutLoopDrag": "La barra morada del bucle: arrastra sus extremos para cambiar su tamaño y el centro para moverla (con el bucle activo, solo suena ella)"
+  "midiShortcutLoopDrag": "La barra morada del bucle: arrastra sus extremos para cambiar su tamaño y el centro para moverla (con el bucle activo, solo suena ella)",
+  "midiShortcutLoopToggle": "Mitad superior de la barra del bucle: activar o desactivar el bucle (gris si está apagado)"
 }

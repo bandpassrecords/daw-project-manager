@@ -6522,4 +6522,7 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get midiShortcutLoopDrag =>
       'ループの紫のバー：端をドラッグで長さを変更、中央をドラッグで移動（ループ再生中はその範囲だけ再生）';
+
+  @override
+  String get midiShortcutLoopToggle => 'ループのバーの上半分：ループのオン・オフ（オフの間はグレー）';
 }

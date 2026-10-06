@@ -6689,4 +6689,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get midiShortcutLoopDrag =>
       'The loop\'s purple bar: drag its ends to resize it, its middle to move it (with looping on, only the loop plays)';
+
+  @override
+  String get midiShortcutLoopToggle =>
+      'The loop\'s bar, top half: turn looping on or off (grey while off)';
 }

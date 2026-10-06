@@ -6448,4 +6448,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiShortcutLoopDrag => '循环的紫色条：拖动两端调整长度，拖动中间移动位置（开启循环时只播放该段）';
+
+  @override
+  String get midiShortcutLoopToggle => '循环条的上半部分：开启或关闭循环（关闭时为灰色）';
 }

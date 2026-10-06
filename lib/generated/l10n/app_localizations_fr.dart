@@ -6767,4 +6767,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get midiShortcutLoopDrag =>
       'La barre violette de la boucle : glissez ses extrémités pour la redimensionner, son milieu pour la déplacer (boucle activée, seule elle est jouée)';
+
+  @override
+  String get midiShortcutLoopToggle =>
+      'Moitié haute de la barre de boucle : activer ou désactiver la boucle (grise quand elle est coupée)';
 }

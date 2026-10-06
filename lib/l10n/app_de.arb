@@ -4107,5 +4107,6 @@
   "midiTimeSignature": "Taktart",
   "midiShortcutLoopStart": "Auf dem Lineal: den Anfang der Schleife setzen",
   "midiShortcutLoopEnd": "Auf dem Lineal: das Ende der Schleife setzen",
-  "midiShortcutLoopDrag": "Der lila Schleifenbalken: an den Enden ziehen ändert die Länge, in der Mitte verschiebt ihn (mit Schleife an spielt nur sie)"
+  "midiShortcutLoopDrag": "Der lila Schleifenbalken: an den Enden ziehen ändert die Länge, in der Mitte verschiebt ihn (mit Schleife an spielt nur sie)",
+  "midiShortcutLoopToggle": "Obere Hälfte des Schleifenbalkens: Schleife ein- oder ausschalten (grau, wenn aus)"
 }

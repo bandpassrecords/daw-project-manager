@@ -111,6 +111,7 @@ void main() {
   late List<EditedMidiClip> edits;
   late List<double> playedAt;
   late int shortcutSheets;
+  late List<bool> loopChanges;
   late List<bool> fullScreenChanges;
   late List<bool> feedbackChanges;
   late _Ear ear;
@@ -123,6 +124,7 @@ void main() {
     edits = [];
     playedAt = [];
     shortcutSheets = 0;
+    loopChanges = [];
     fullScreenChanges = [];
     feedbackChanges = [];
     ear = _Ear();
@@ -138,6 +140,7 @@ void main() {
     bool feedback = false,
     bool startEditing = false,
     bool lengthFollowsNotes = false,
+    bool? loop,
   }) async {
     tester.view.physicalSize = const Size(1000, 700);
     tester.view.devicePixelRatio = 1;
@@ -173,6 +176,9 @@ void main() {
                     auditioner: ear,
                     startEditing: startEditing,
                     lengthFollowsNotes: lengthFollowsNotes,
+                    loop: loop,
+                    onLoopChanged: loop == null ? null : loopChanges.add,
+                    loopTooltip: loop == null ? null : 'Loop',
                     onSaveEdited: editable
                         ? (edit) async {
                             saved.add((edit.clip, edit.musicalKey));
@@ -864,6 +870,13 @@ void main() {
     final drawn = saved.single.$1.notes.last;
     expect(drawn.velocity, 120, reason: '100, plus one for every 2 px up');
     expect(drawn.lengthTicks, 120, reason: 'straight up: no longer');
+
+    // The next note starts from the usual velocity, not this one's.
+    await click(tester, Offset(g.left + g.width * 0.25 + 2, g.center.dy - 60));
+    await save(tester);
+    expect(
+        saved.last.$1.notes.firstWhere((n) => n.startTick == 480).velocity,
+        100);
   });
 
   testWidgets('Ctrl+click adds notes to the selection one by one',
@@ -942,6 +955,19 @@ void main() {
       await tester.pump();
       expect(loopOf(tester), (start: 480, end: 2400),
           reason: 'moved whole, by whole grid steps');
+    });
+
+    testWidgets('a click on its top half turns looping on or off',
+        (tester) async {
+      await open(tester, clip: _fourNotes, loop: false);
+      final r = ruler(tester);
+      final middle = r.left + r.width * 0.5;
+      await tester.tapAt(Offset(middle, r.top + 3));
+      await tester.pump();
+      expect(loopChanges, [true], reason: 'top half: the switch');
+      await tester.tapAt(Offset(middle, r.bottom - 3));
+      await tester.pump();
+      expect(loopChanges, [true], reason: 'bottom half: a jump, not the switch');
     });
 
     testWidgets('a hand only over its ends', (tester) async {

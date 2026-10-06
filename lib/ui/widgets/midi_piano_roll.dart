@@ -414,6 +414,8 @@ class MidiPianoRoll extends StatefulWidget {
     this.timeSignature = TimeSignature.common,
     this.loopRegion,
     this.onLoopRegionChanged,
+    this.loopActive = true,
+    this.onLoopToggled,
     this.minViewTicks,
     this.acousticFeedback = false,
     this.onAcousticFeedbackChanged,
@@ -434,6 +436,14 @@ class MidiPianoRoll extends StatefulWidget {
   /// its start, Alt-click its end; its ends drag to resize it, its middle to
   /// move it. Null: no loop region.
   final ValueChanged<MidiTickRange>? onLoopRegionChanged;
+
+  /// Whether looping is on: the loop region is purple and plays alone, or
+  /// light grey and only marked.
+  final bool loopActive;
+
+  /// A plain click on the top half of the loop region turns looping on or
+  /// off, as clicking Cubase's cycle bar does. Null: it doesn't.
+  final VoidCallback? onLoopToggled;
 
   /// At least this much is shown when the roll fits the clip — so a clip
   /// drafted from nothing, one bar long, opens on room to draw in rather
@@ -695,7 +705,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
   /// The ruler was clicked: Ctrl/Cmd-click sets the loop region's start,
   /// Alt-click its end (as in Cubase); a plain click jumps there.
-  void _rulerTap(double x) {
+  void _rulerTap(Offset at) {
+    final x = at.dx;
     if (widget.onLoopRegionChanged != null) {
       if (_keys.isControlPressed || _keys.isMetaPressed) {
         _setLoopEdge(NoteEdge.start, _loopTickAtRulerX(x));
@@ -705,6 +716,16 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
         _setLoopEdge(NoteEdge.end, _loopTickAtRulerX(x));
         return;
       }
+    }
+    // The top half of the loop region turns looping on or off; the bottom
+    // half, like the rest of the ruler, jumps there.
+    final toggle = widget.onLoopToggled;
+    if (toggle != null &&
+        at.dy < _rulerHeight / 2 &&
+        _onLoopBody(x) &&
+        _loopEdgeAt(x) == null) {
+      toggle();
+      return;
     }
     _seekTo(_tickAtRulerX(x));
   }
@@ -1823,6 +1844,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                             pressedKey: _pressedKey,
                             timeSignature: widget.timeSignature,
                             loopRegion: widget.loopRegion,
+                            loopActive: widget.loopActive,
                             showClipEnd: !_editing,
                             range: _editing ? widget.editor!.range : null,
                             gridStepTicks: _editing &&
@@ -1899,7 +1921,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                               // it became a drag: grabbing a loop end means
                               // pressing on it.
                               dragStartBehavior: DragStartBehavior.down,
-                              onTapUp: (d) => _rulerTap(d.localPosition.dx),
+                              onTapUp: (d) => _rulerTap(d.localPosition),
                               onHorizontalDragStart: (d) {
                                 final x = d.localPosition.dx;
                                 _loopEdge = _loopEdgeAt(x);
@@ -2044,6 +2066,9 @@ const _noteGreen = Color(0xFF8FE3A0);
 
 /// The loop region's colour, as Cubase draws its locators.
 const _loopPurple = Color(0xFFA56CFF);
+
+/// The loop region while looping is off: still there, only marked.
+const _loopOff = Color(0xFFC8C8C8);
 const _noteOrange = Color(0xFFFFA24C);
 
 /// Every note's outline, and a selected note's fill — selecting inverts a
@@ -2245,6 +2270,7 @@ class _RollPainter extends CustomPainter {
     this.showClipEnd = true,
     this.timeSignature = TimeSignature.common,
     this.loopRegion,
+    this.loopActive = true,
     this.range,
     this.gridStepTicks,
     this.scale,
@@ -2276,8 +2302,10 @@ class _RollPainter extends CustomPainter {
 
   final TimeSignature timeSignature;
 
-  /// The loop region, purple over the ruler.
+  /// The loop region, purple over the ruler — light grey while looping is
+  /// off ([loopActive]).
   final MidiTickRange? loopRegion;
+  final bool loopActive;
 
   /// Whether the clip's end is marked (not while editing).
   final bool showClipEnd;
@@ -2382,7 +2410,7 @@ class _RollPainter extends CustomPainter {
     final loopAt = loopRegion;
     if (loopAt != null) {
       final line = Paint()
-        ..color = _loopPurple.withValues(alpha: 0.6)
+        ..color = (loopActive ? _loopPurple : _loopOff).withValues(alpha: 0.6)
         ..strokeWidth = 1;
       for (final tick in [loopAt.start, loopAt.end]) {
         final x = _xOf(tick);
@@ -2569,8 +2597,9 @@ class _RollPainter extends CustomPainter {
     if (loop != null) {
       final band = Rect.fromLTRB(
           _xOf(loop.start), 2, _xOf(loop.end), rulerHeight - 2);
-      canvas.drawRect(band, Paint()..color = _loopPurple.withValues(alpha: 0.45));
-      final handle = Paint()..color = _loopPurple;
+      final hue = loopActive ? _loopPurple : _loopOff;
+      canvas.drawRect(band, Paint()..color = hue.withValues(alpha: 0.45));
+      final handle = Paint()..color = hue;
       for (final x in [band.left, band.right]) {
         canvas.drawRRect(
           RRect.fromRectAndRadius(
@@ -2631,6 +2660,7 @@ class _RollPainter extends CustomPainter {
       old.range != range ||
       old.timeSignature != timeSignature ||
       old.loopRegion != loopRegion ||
+      old.loopActive != loopActive ||
       old.showClipEnd != showClipEnd ||
       old.gridStepTicks != gridStepTicks ||
       old.colors.note != colors.note;

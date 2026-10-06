@@ -302,6 +302,7 @@ List<MidiShortcutSection> midiShortcutSections(
       MidiShortcut([ctrl, click], l10n.midiShortcutLoopStart),
       MidiShortcut([alt, click], l10n.midiShortcutLoopEnd),
       MidiShortcut([drag], l10n.midiShortcutLoopDrag),
+      MidiShortcut([click], l10n.midiShortcutLoopToggle),
       MidiShortcut([ctrl, l10n.midiGestureWheel], l10n.midiShortcutZoom),
       MidiShortcut([shift, l10n.midiGestureWheel], l10n.midiShortcutScroll),
       MidiShortcut(const ['?'], l10n.midiShortcutShowSheet),
@@ -1009,6 +1010,11 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                     },
                     loopRegion: _loopRegion,
                     onLoopRegionChanged: _setLoopRegion,
+                    // The loop button and the region's bar are one switch.
+                    loopActive: widget.loop ?? false,
+                    onLoopToggled: widget.onLoopChanged == null
+                        ? null
+                        : () => widget.onLoopChanged!(!(widget.loop ?? false)),
                     // A drafted clip opens on room to draw in: four bars.
                     minViewTicks: widget.lengthFollowsNotes
                         ? _timeSignature.barTicks(_ppq) * 4

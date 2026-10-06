@@ -6561,5 +6561,9 @@
   "midiShortcutLoopDrag": "The loop's purple bar: drag its ends to resize it, its middle to move it (with looping on, only the loop plays)",
   "@midiShortcutLoopDrag": {
     "description": "Shortcut sheet action: dragging the purple loop ends on the ruler"
+  },
+  "midiShortcutLoopToggle": "The loop's bar, top half: turn looping on or off (grey while off)",
+  "@midiShortcutLoopToggle": {
+    "description": "Shortcut sheet action: a plain click on the top half of the loop bar on the ruler"
   }
 }
