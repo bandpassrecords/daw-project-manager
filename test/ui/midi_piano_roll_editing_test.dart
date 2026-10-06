@@ -1111,6 +1111,25 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
     });
 
+    testWidgets(
+        'a new clip: a click on the ruler past its one bar starts play there',
+        (tester) async {
+      await open(tester, startEditing: true, lengthFollowsNotes: true);
+      final r = ruler(tester);
+      // Four bars across: three quarters in is the fourth bar, at 6 s.
+      await tester.tapAt(Offset(r.left + r.width * 0.75, r.bottom - 4));
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(player.requestedStart!.inMilliseconds, closeTo(6000, 30),
+          reason: 'not held at the one bar the clip has so far');
+      expect(player.requestedClip!.lengthTicks,
+          greaterThan(5760 + 8 * 1920 - 1),
+          reason: 'rendered on from where it starts');
+      await player.stop();
+      await tester.pump(const Duration(seconds: 1));
+    });
+
     testWidgets('editing any clip, playback runs on past its end',
         (tester) async {
       await open(tester, loop: false);

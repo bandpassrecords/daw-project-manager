@@ -199,6 +199,14 @@ double verticalZoomScroll({
   return next < 0 ? 0 : next;
 }
 
+/// The tick the playhead stands at [position] into playback at [bpm] —
+/// never past [clipEnd] when the clip has one (null: it plays on past it).
+double playheadTick(Duration position, double bpm, int ppq, {int? clipEnd}) {
+  final tick = ticksAt(position, bpm, ppq);
+  if (tick < 0) return 0;
+  return clipEnd == null ? tick : math.min(tick, clipEnd.toDouble());
+}
+
 /// The x a zoom keeps still (grid-relative pixels): the pointer's, when it
 /// is over the grid, else the middle of the view.
 double zoomAnchorX({required double? pointerX, required double viewWidth}) {
@@ -423,6 +431,7 @@ class MidiPianoRoll extends StatefulWidget {
     this.loopActive = true,
     this.onLoopToggled,
     this.minViewTicks,
+    this.restTick,
     this.acousticFeedback = false,
     this.onAcousticFeedbackChanged,
   });
@@ -450,6 +459,10 @@ class MidiPianoRoll extends StatefulWidget {
   /// A plain click on the top half of the loop region turns looping on or
   /// off, as clicking Cubase's cycle bar does. Null: it doesn't.
   final VoidCallback? onLoopToggled;
+
+  /// Where the playback line rests while stopped — where the next play
+  /// starts. Null: where the ruler was last clicked, if it was.
+  final double? restTick;
 
   /// At least this much is shown when the roll fits the clip — so a clip
   /// drafted from nothing, one bar long, opens on room to draw in rather
@@ -586,6 +599,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   void initState() {
     super.initState();
     _ticker = createTicker(_tick);
+    _playhead.value = widget.restTick;
     widget.playback?.addListener(_syncTicker);
     widget.editor?.addListener(_onEdit);
     _syncTicker();
@@ -641,7 +655,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       _ticker.stop();
       _wasPlaying = false;
       // Stopped: the line rests where the next play starts.
-      _playhead.value = _cursorTick;
+      _playhead.value = _restTick;
     }
   }
 
@@ -656,6 +670,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     if (old.editor != widget.editor) {
       old.editor?.removeListener(_onEdit);
       widget.editor?.addListener(_onEdit);
+    }
+    if (old.restTick != widget.restTick && !_ticker.isActive) {
+      _playhead.value = _restTick;
     }
     if (!identical(old.clip, widget.clip)) {
       _range = _rangeFor(_shown);
@@ -726,8 +743,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     // While the ruler is being dragged the line follows the pointer, not
     // the audio, until the drag lets go and the player jumps there.
     final tick = _scrubTick ??
-        ticksAt(position, widget.bpm, _shown.ppq)
-            .clamp(0.0, _shown.lengthTicks.toDouble());
+        playheadTick(position, widget.bpm, _shown.ppq, clipEnd: _clipEnd);
     _playhead.value = tick;
     if (_follow) {
       final next = followScroll(
@@ -741,7 +757,14 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
 
   /// The tick under the ruler at [x] (ruler-relative pixels), in the clip.
   double _tickAtRulerX(double x) =>
-      ((_scrollX + x) / _px).clamp(0.0, _shown.lengthTicks.toDouble());
+      ((_scrollX + x) / _px).clamp(0.0, (_clipEnd ?? _contentTicks).toDouble());
+
+  /// Where the playhead and the ruler stop: the clip's end — but with an
+  /// editor there is none (null). A clip being edited plays on past its
+  /// end (one drafted from nothing is a bar long until drawn on), and a
+  /// line held at the end looked like playback had stopped at its first
+  /// bar.
+  int? get _clipEnd => widget.editor == null ? _shown.lengthTicks : null;
 
   double? _scrubTick;
 
@@ -868,6 +891,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   /// Where a click on the ruler put the start: the line rests there while
   /// stopped, as a DAW's cursor does.
   double? _cursorTick;
+
+  double? get _restTick => widget.restTick ?? _cursorTick;
 
   void _seekTo(double tick) {
     _scrubTick = null;

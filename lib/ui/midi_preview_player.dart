@@ -86,6 +86,10 @@ class MidiPreviewPlayer extends ChangeNotifier {
   @visibleForTesting
   bool? requestedLoop;
 
+  /// Where that play was asked to start ([startAt]), if anywhere.
+  @visibleForTesting
+  Duration? requestedStart;
+
   /// What [play] was last asked to play, so [setLoop] can carry on with it.
   (String, MidiClip, double?, SynthVoice)? _current;
 
@@ -184,6 +188,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
                     .round())
         : null;
     final requested = pendingStartFor(key);
+    requestedStart = requested;
     final startAt =
         requested == null ? null : wrapLoopPosition(requested, loopLength);
     _startAt = null;

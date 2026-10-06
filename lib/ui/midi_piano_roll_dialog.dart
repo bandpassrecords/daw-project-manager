@@ -806,6 +806,14 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     } else if (openEnded) {
       _horizonTicks =
           openEndedHorizon(clip, current: _horizonTicks, step: _horizonStep);
+      // Started further on than that (a click on the ruler past the notes):
+      // rendered on from there too, or it would have nothing to play.
+      if (from != null) {
+        final start = ticksAt(from, _bpm, _ppq).ceil();
+        if (start + _horizonStep > _horizonTicks) {
+          _horizonTicks = start + _horizonStep;
+        }
+      }
       clip = clip.copyWith(lengthTicks: _horizonTicks);
     }
     if (from != null) _player.startAt(key, from);
@@ -878,7 +886,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   /// itself. Either way the next play starts from it. Cycling a loop
   /// region, the spot is found in it (its start, outside it).
   void _seek(Duration position) {
-    _startFrom = position;
+    setState(() => _startFrom = position);
     final playing = _player.playingKey;
     if (_isOurs && playing != null) {
       _player.seek(playing, _between(position, null, _playingRegion));
@@ -886,6 +894,14 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   }
 
   Timer? _regionRestart;
+
+  void _stopOrRewind() {
+    if (_isOurs || _preparing) {
+      _player.stop();
+    } else {
+      setState(() => _startFrom = null);
+    }
+  }
 
   /// A new loop region. Cycling, playback carries on in it — once it has
   /// settled, not on every step of a drag along the ruler (each would mean
@@ -1120,6 +1136,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                     },
                     loopRegion: _loopRegion,
                     onLoopRegionChanged: _setLoopRegion,
+                    restTick: ticksAt(_startFrom ?? Duration.zero, _bpm, _ppq),
                     // The loop button and the region's bar are one switch.
                     loopActive: widget.loop ?? false,
                     onLoopToggled: widget.onLoopChanged == null
@@ -1185,12 +1202,14 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                   : Icons.play_circle_outline),
               onPressed: _playPause,
             ),
-            if (_isOurs)
-              IconButton(
-                tooltip: labels.stop,
-                icon: const Icon(Icons.stop_circle_outlined),
-                onPressed: _player.stop,
-              ),
+            // Always there, as in a DAW: playing, it stops; stopped, it
+            // takes the start back to the beginning.
+            IconButton(
+              key: const ValueKey('midi-piano-roll-stop'),
+              tooltip: labels.stop,
+              icon: const Icon(Icons.stop_circle_outlined),
+              onPressed: _stopOrRewind,
+            ),
           ],
         );
       },

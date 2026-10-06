@@ -588,6 +588,49 @@ void main() {
       expect(find.byIcon(Icons.my_location), findsNothing);
     });
 
+    test('the playhead stops at the clip end, unless the clip has none', () {
+      // 5 s at 120 BPM: ten beats, 4800 ticks — past a one-bar clip.
+      const at = Duration(seconds: 5);
+      expect(playheadTick(at, 120, 480, clipEnd: 1920), 1920);
+      expect(playheadTick(at, 120, 480), 4800,
+          reason: 'being edited, it plays on past the end');
+    });
+
+    testWidgets(
+        'with an editor, playback past a one-bar clip carries the view on '
+        '(it used to stop at bar one)', (tester) async {
+      final seeks = <Duration>[];
+      final playback = ValueNotifier(false);
+      const draft = MidiClip(name: 'Idea', ppq: 480, lengthTicks: 1920, notes: []);
+      final editor = MidiClipEditController(draft);
+      addTearDown(editor.dispose);
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 800,
+            height: 500,
+            child: MidiPianoRoll(
+              clip: draft,
+              labels: _labels,
+              editor: editor,
+              bpm: 120,
+              playback: playback,
+              onSeek: seeks.add,
+              // Ten beats in: two and a half bars past the clip's one.
+              positionOf: () => const Duration(seconds: 5),
+            ),
+          ),
+        ),
+      ));
+      playback.value = true;
+      await tester.pumpAndSettle();
+      final ruler =
+          tester.getRect(find.byKey(const ValueKey('midi-piano-roll-ruler')));
+      await tester.tapAt(ruler.centerLeft + const Offset(2, 0));
+      expect(seeks.single.inMilliseconds, greaterThan(3000),
+          reason: 'the view followed the playhead past bar one');
+    });
+
     testWidgets('paused, it stops drawing a frame at a time', (tester) async {
       final playback = ValueNotifier(false);
       await tester.pumpWidget(wrap(

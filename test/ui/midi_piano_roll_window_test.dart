@@ -205,9 +205,9 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('stop shows only while this clip plays', (tester) async {
+    testWidgets('stop is always there: playing, it stops', (tester) async {
       await open(tester);
-      expect(find.byTooltip('Stop'), findsNothing);
+      expect(find.byTooltip('Stop'), findsOneWidget, reason: 'stopped too');
       player.playingKey = 'k';
       player.notifyListeners();
       await tester.pump();
@@ -215,6 +215,20 @@ void main() {
       await tester.tap(find.byTooltip('Stop'));
       await tester.pumpAndSettle();
       expect(player.playingKey, isNull);
+    });
+
+    testWidgets('stopped, stop takes the start back to the beginning',
+        (tester) async {
+      await open(tester);
+      await tester.tapAt(rulerMiddle(tester));
+      await tester.pump();
+      await tester.tap(find.byTooltip('Stop'));
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(plays, 1);
+      expect(player.pendingStartFor('k'), isNull,
+          reason: 'from the beginning, not where the ruler was clicked');
     });
 
     testWidgets('Esc stops a playing clip first, then closes the window',
