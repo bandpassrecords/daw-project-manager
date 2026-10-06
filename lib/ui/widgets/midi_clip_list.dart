@@ -544,9 +544,14 @@ class MidiVoicePicker extends StatelessWidget {
     required this.voiceName,
     required this.tooltip,
     required this.onChanged,
+    this.showName = false,
   });
 
   final SynthVoice voice;
+
+  /// Shows the instrument's name ("Keys ▾") rather than its family's icon —
+  /// where there is room for it, as in the piano roll window.
+  final bool showName;
 
   /// "Bass", "Pad"…
   final String Function(SynthVoice voice) voiceName;
@@ -559,7 +564,20 @@ class MidiVoicePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<SynthVoice>(
       tooltip: tooltip(voiceName(voice)),
-      icon: Icon(_voiceIcon(voice)),
+      icon: showName ? null : Icon(_voiceIcon(voice)),
+      child: showName
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(voiceName(voice),
+                      style: Theme.of(context).textTheme.labelLarge),
+                  const Icon(Icons.arrow_drop_down),
+                ],
+              ),
+            )
+          : null,
       initialValue: voice,
       onSelected: onChanged,
       itemBuilder: (context) => [

@@ -781,8 +781,8 @@ Future<void> _main(List<String> args) async {
   await PlayerVolumeStore.load();
   await MidiPreviewVolumeStore.load();
   await MidiPreviewLoopStore.load();
-  await MidiEditHintsStore.load();
   await MidiAcousticFeedbackStore.load();
+  await MidiPianoRollFullScreenStore.load();
 
   // Decided now, before this run writes a single setting: an empty settings
   // box means a first-ever launch. An install that has run before, but on a

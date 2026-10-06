@@ -6527,54 +6527,135 @@ class AppLocalizationsRu extends AppLocalizations {
   String get midiAcousticFeedback => 'Слышать ноты при редактировании';
 
   @override
-  String get midiHintGotIt => 'Понятно';
+  String get midiShortcuts => 'Сочетания клавиш (?)';
 
   @override
-  String get midiHintPencil =>
-      'Выберите карандаш, чтобы добавлять ноты одним щелчком.';
+  String get midiShortcutsTitle => 'Сочетания клавиш пианоролла';
 
   @override
-  String get midiHintDoubleClick =>
-      'Двойной щелчок по пустому месту добавляет ноту, по ноте — удаляет её.';
+  String get midiShortcutsTools => 'Инструменты';
 
   @override
-  String get midiHintBoxSelect =>
-      'Протащите по пустому месту, чтобы выделить сразу несколько нот.';
+  String get midiShortcutsNotes => 'Ноты';
 
   @override
-  String get midiHintPencilDraw =>
-      'Щёлкните, чтобы добавить ноту; потяните вправо, чтобы удлинить её.';
+  String get midiShortcutsSelecting => 'Выделение';
 
   @override
-  String get midiHintPencilErase =>
-      'Щёлкните по ноте, чтобы стереть её, или перетащите, чтобы сдвинуть.';
+  String get midiShortcutsLanes => 'Дорожки громкости и контроллеров';
 
   @override
-  String get midiHintResize =>
-      'Потяните за край ноты, чтобы укоротить или удлинить её.';
+  String get midiShortcutsEditing => 'Правка';
 
   @override
-  String get midiHintTranspose =>
-      '↑/↓ сдвигает выделенные ноты на полутон, Shift+↑/↓ — на октаву.';
+  String get midiShortcutsPlayback => 'Воспроизведение и вид';
 
   @override
-  String midiHintAltCopy(String key) {
-    return 'Удерживайте $key при перетаскивании, чтобы скопировать выделенные ноты.';
-  }
+  String get midiKeyCtrl => 'Ctrl';
 
   @override
-  String midiHintCtrlFree(String key) {
-    return 'Удерживайте $key при перетаскивании, чтобы двигать без привязки к сетке.';
-  }
+  String get midiKeyShift => 'Shift';
 
   @override
-  String get midiHintVelocity =>
-      'Проведите по столбикам, чтобы задать громкость каждой ноты на пути.';
+  String get midiKeyAlt => 'Alt';
 
   @override
-  String get midiHintLane => 'Протащите, чтобы нарисовать кривую.';
+  String get midiKeyDelete => 'Delete';
 
   @override
-  String get midiHintPitchBend =>
-      'Протащите, чтобы нарисовать изгиб; у средней линии он возвращается к нулю.';
+  String get midiKeySpace => 'Пробел';
+
+  @override
+  String get midiKeyEsc => 'Esc';
+
+  @override
+  String get midiGestureClick => 'Щелчок';
+
+  @override
+  String get midiGestureDoubleClick => 'Двойной щелчок';
+
+  @override
+  String get midiGestureDrag => 'Перетаскивание';
+
+  @override
+  String get midiGestureWheel => 'Колесо мыши';
+
+  @override
+  String get midiShortcutSelectTool => 'Инструмент выделения';
+
+  @override
+  String get midiShortcutPencilTool =>
+      'Карандаш: щелчок добавляет ноту (протяните, чтобы удлинить), щелчок по ноте стирает её';
+
+  @override
+  String get midiShortcutDoubleClick =>
+      'На пустом месте: добавить ноту. По ноте: удалить её';
+
+  @override
+  String get midiShortcutMove => 'Ноту: сдвинуть вместе со всеми выделенными';
+
+  @override
+  String get midiShortcutResize => 'Край ноты: укоротить или удлинить';
+
+  @override
+  String get midiShortcutCopy => 'Ноту: скопировать выделенные ноты';
+
+  @override
+  String get midiShortcutOffGrid =>
+      'Двигать или менять длину без привязки к сетке';
+
+  @override
+  String get midiShortcutSemitone => 'Сдвинуть выделенные ноты на полутон';
+
+  @override
+  String get midiShortcutOctave => 'Сдвинуть выделенные ноты на октаву';
+
+  @override
+  String get midiShortcutDelete => 'Удалить выделенные ноты';
+
+  @override
+  String get midiShortcutBox => 'На пустом месте: выделить ноты в рамке';
+
+  @override
+  String get midiShortcutToggle => 'Добавить ноту к выделению или убрать её';
+
+  @override
+  String get midiShortcutSelectAll => 'Выделить все ноты';
+
+  @override
+  String get midiShortcutVelocity =>
+      'По столбикам громкости: задать громкость каждой ноты на пути';
+
+  @override
+  String get midiShortcutLane =>
+      'На дорожке контроллера или изгиба: нарисовать кривую (изгиб возвращается к середине)';
+
+  @override
+  String get midiShortcutPlay => 'Воспроизведение или пауза';
+
+  @override
+  String get midiShortcutStop =>
+      'Остановить; если уже остановлено — закрыть окно';
+
+  @override
+  String get midiShortcutKeyboard =>
+      'На клавиатуре: сыграть клавишу (протяните, чтобы сыграть клавиши на пути)';
+
+  @override
+  String get midiShortcutRuler => 'На линейке: перейти туда';
+
+  @override
+  String get midiShortcutZoom => 'Масштаб вокруг указателя мыши';
+
+  @override
+  String get midiShortcutScroll => 'Прокрутка по горизонтали';
+
+  @override
+  String get midiShortcutShowSheet => 'Показать эти сочетания клавиш';
+
+  @override
+  String get midiFullScreen => 'Во весь экран';
+
+  @override
+  String get midiExitFullScreen => 'Выйти из полноэкранного режима';
 }

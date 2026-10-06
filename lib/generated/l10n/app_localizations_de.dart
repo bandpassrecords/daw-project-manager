@@ -6539,54 +6539,140 @@ class AppLocalizationsDe extends AppLocalizations {
   String get midiAcousticFeedback => 'Noten beim Bearbeiten hören';
 
   @override
-  String get midiHintGotIt => 'Verstanden';
+  String get midiShortcuts => 'Tastenkürzel (?)';
 
   @override
-  String get midiHintPencil =>
-      'Wähle den Stift, um Noten mit einem einzigen Klick hinzuzufügen.';
+  String get midiShortcutsTitle => 'Tastenkürzel der Pianorolle';
 
   @override
-  String get midiHintDoubleClick =>
-      'Doppelklick auf eine freie Stelle fügt eine Note hinzu, auf eine Note löscht sie.';
+  String get midiShortcutsTools => 'Werkzeuge';
 
   @override
-  String get midiHintBoxSelect =>
-      'Ziehe über eine freie Fläche, um mehrere Noten auf einmal auszuwählen.';
+  String get midiShortcutsNotes => 'Noten';
 
   @override
-  String get midiHintPencilDraw =>
-      'Klicke, um eine Note hinzuzufügen – ziehe dabei nach rechts, um sie zu verlängern.';
+  String get midiShortcutsSelecting => 'Auswählen';
 
   @override
-  String get midiHintPencilErase =>
-      'Klicke auf eine Note, um sie zu löschen, oder ziehe sie, um sie zu verschieben.';
+  String get midiShortcutsLanes => 'Anschlag- und Controller-Spuren';
 
   @override
-  String get midiHintResize =>
-      'Ziehe am Rand einer Note, um sie kürzer oder länger zu machen.';
+  String get midiShortcutsEditing => 'Bearbeiten';
 
   @override
-  String get midiHintTranspose =>
-      '↑/↓ verschiebt die ausgewählten Noten um einen Halbton, Umschalt+↑/↓ um eine Oktave.';
+  String get midiShortcutsPlayback => 'Wiedergabe und Ansicht';
 
   @override
-  String midiHintAltCopy(String key) {
-    return 'Halte $key beim Ziehen gedrückt, um die ausgewählten Noten zu kopieren.';
-  }
+  String get midiKeyCtrl => 'Strg';
 
   @override
-  String midiHintCtrlFree(String key) {
-    return 'Halte $key beim Ziehen gedrückt, um frei vom Raster zu verschieben.';
-  }
+  String get midiKeyShift => 'Umschalt';
 
   @override
-  String get midiHintVelocity =>
-      'Ziehe über die Balken, um die Anschlagstärke jeder überstrichenen Note zu setzen.';
+  String get midiKeyAlt => 'Alt';
 
   @override
-  String get midiHintLane => 'Ziehe, um die Kurve zu zeichnen.';
+  String get midiKeyDelete => 'Entf';
 
   @override
-  String get midiHintPitchBend =>
-      'Ziehe, um das Pitchbending zu zeichnen – nahe der Mittellinie rastet es auf „kein Bend“ ein.';
+  String get midiKeySpace => 'Leertaste';
+
+  @override
+  String get midiKeyEsc => 'Esc';
+
+  @override
+  String get midiGestureClick => 'Klick';
+
+  @override
+  String get midiGestureDoubleClick => 'Doppelklick';
+
+  @override
+  String get midiGestureDrag => 'Ziehen';
+
+  @override
+  String get midiGestureWheel => 'Mausrad';
+
+  @override
+  String get midiShortcutSelectTool => 'Auswahlwerkzeug';
+
+  @override
+  String get midiShortcutPencilTool =>
+      'Stift: Klick fügt eine Note hinzu (ziehen verlängert sie), Klick auf eine Note löscht sie';
+
+  @override
+  String get midiShortcutDoubleClick =>
+      'Auf freier Fläche: Note hinzufügen. Auf einer Note: sie löschen';
+
+  @override
+  String get midiShortcutMove =>
+      'Eine Note: verschieben, mit allen ausgewählten Noten';
+
+  @override
+  String get midiShortcutResize =>
+      'Den Rand einer Note: kürzer oder länger machen';
+
+  @override
+  String get midiShortcutCopy => 'Eine Note: die ausgewählten Noten kopieren';
+
+  @override
+  String get midiShortcutOffGrid =>
+      'Verschieben oder Länge ändern, ohne am Raster einzurasten';
+
+  @override
+  String get midiShortcutSemitone =>
+      'Ausgewählte Noten um einen Halbton verschieben';
+
+  @override
+  String get midiShortcutOctave =>
+      'Ausgewählte Noten um eine Oktave verschieben';
+
+  @override
+  String get midiShortcutDelete => 'Ausgewählte Noten löschen';
+
+  @override
+  String get midiShortcutBox =>
+      'Auf freier Fläche: die Noten im Rahmen auswählen';
+
+  @override
+  String get midiShortcutToggle =>
+      'Eine Note zur Auswahl hinzufügen oder herausnehmen';
+
+  @override
+  String get midiShortcutSelectAll => 'Alle Noten auswählen';
+
+  @override
+  String get midiShortcutVelocity =>
+      'Über die Anschlagbalken: Anschlagstärke jeder überstrichenen Note setzen';
+
+  @override
+  String get midiShortcutLane =>
+      'In einer Controller- oder Pitchbend-Spur: die Kurve zeichnen (ein Bend rastet in der Mitte ein)';
+
+  @override
+  String get midiShortcutPlay => 'Abspielen oder pausieren';
+
+  @override
+  String get midiShortcutStop => 'Stoppen; gestoppt das Fenster schließen';
+
+  @override
+  String get midiShortcutKeyboard =>
+      'Auf der Klaviatur: die Taste spielen (ziehen spielt die überstrichenen Tasten)';
+
+  @override
+  String get midiShortcutRuler => 'Auf dem Lineal: dorthin springen';
+
+  @override
+  String get midiShortcutZoom => 'Um den Mauszeiger hinein- oder herauszoomen';
+
+  @override
+  String get midiShortcutScroll => 'Seitwärts scrollen';
+
+  @override
+  String get midiShortcutShowSheet => 'Diese Tastenkürzel anzeigen';
+
+  @override
+  String get midiFullScreen => 'Vollbild';
+
+  @override
+  String get midiExitFullScreen => 'Vollbild beenden';
 }

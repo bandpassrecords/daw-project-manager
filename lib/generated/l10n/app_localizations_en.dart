@@ -6496,54 +6496,136 @@ class AppLocalizationsEn extends AppLocalizations {
   String get midiAcousticFeedback => 'Hear notes as you edit them';
 
   @override
-  String get midiHintGotIt => 'Got it';
+  String get midiShortcuts => 'Keyboard shortcuts (?)';
 
   @override
-  String get midiHintPencil =>
-      'Pick the pencil to add notes with a single click.';
+  String get midiShortcutsTitle => 'Piano roll shortcuts';
 
   @override
-  String get midiHintDoubleClick =>
-      'Double-click empty space to add a note, or a note to delete it.';
+  String get midiShortcutsTools => 'Tools';
 
   @override
-  String get midiHintBoxSelect =>
-      'Drag across empty space to select several notes at once.';
+  String get midiShortcutsNotes => 'Notes';
 
   @override
-  String get midiHintPencilDraw =>
-      'Click to add a note — drag to the right as you click to make it longer.';
+  String get midiShortcutsSelecting => 'Selecting';
 
   @override
-  String get midiHintPencilErase =>
-      'Click a note to erase it, or drag it to move it.';
+  String get midiShortcutsLanes => 'Velocity and controller lanes';
 
   @override
-  String get midiHintResize =>
-      'Drag a note\'s edge to make it shorter or longer.';
+  String get midiShortcutsEditing => 'Editing';
 
   @override
-  String get midiHintTranspose =>
-      '↑/↓ moves the selected notes a semitone, Shift+↑/↓ an octave.';
+  String get midiShortcutsPlayback => 'Playback and view';
 
   @override
-  String midiHintAltCopy(String key) {
-    return 'Hold $key while dragging to copy the selected notes.';
-  }
+  String get midiKeyCtrl => 'Ctrl';
 
   @override
-  String midiHintCtrlFree(String key) {
-    return 'Hold $key while dragging to move off the grid.';
-  }
+  String get midiKeyShift => 'Shift';
 
   @override
-  String get midiHintVelocity =>
-      'Drag across the bars to set the velocity of every note you pass.';
+  String get midiKeyAlt => 'Alt';
 
   @override
-  String get midiHintLane => 'Drag to draw the curve.';
+  String get midiKeyDelete => 'Delete';
 
   @override
-  String get midiHintPitchBend =>
-      'Drag to draw the bend — near the middle line it snaps back to no bend.';
+  String get midiKeySpace => 'Space';
+
+  @override
+  String get midiKeyEsc => 'Esc';
+
+  @override
+  String get midiGestureClick => 'Click';
+
+  @override
+  String get midiGestureDoubleClick => 'Double-click';
+
+  @override
+  String get midiGestureDrag => 'Drag';
+
+  @override
+  String get midiGestureWheel => 'Wheel';
+
+  @override
+  String get midiShortcutSelectTool => 'Select tool';
+
+  @override
+  String get midiShortcutPencilTool =>
+      'Pencil: click to add a note (drag to make it longer), click a note to erase it';
+
+  @override
+  String get midiShortcutDoubleClick =>
+      'On empty space: add a note. On a note: delete it';
+
+  @override
+  String get midiShortcutMove => 'A note: move it, with every selected note';
+
+  @override
+  String get midiShortcutResize => 'A note\'s edge: make it shorter or longer';
+
+  @override
+  String get midiShortcutCopy => 'A note: copy the selected notes';
+
+  @override
+  String get midiShortcutOffGrid =>
+      'Move or resize without snapping to the grid';
+
+  @override
+  String get midiShortcutSemitone => 'Move the selected notes a semitone';
+
+  @override
+  String get midiShortcutOctave => 'Move the selected notes an octave';
+
+  @override
+  String get midiShortcutDelete => 'Delete the selected notes';
+
+  @override
+  String get midiShortcutBox =>
+      'On empty space: select the notes inside the box';
+
+  @override
+  String get midiShortcutToggle =>
+      'Add a note to the selection, or take it out';
+
+  @override
+  String get midiShortcutSelectAll => 'Select every note';
+
+  @override
+  String get midiShortcutVelocity =>
+      'Across the velocity bars: set the velocity of every note passed';
+
+  @override
+  String get midiShortcutLane =>
+      'In a controller or pitch bend lane: draw the curve (a bend snaps back to the middle)';
+
+  @override
+  String get midiShortcutPlay => 'Play or pause';
+
+  @override
+  String get midiShortcutStop => 'Stop; when stopped, close the window';
+
+  @override
+  String get midiShortcutKeyboard =>
+      'On the keyboard: play the key (drag to play the keys passed)';
+
+  @override
+  String get midiShortcutRuler => 'On the ruler: jump there';
+
+  @override
+  String get midiShortcutZoom => 'Zoom in or out around the mouse';
+
+  @override
+  String get midiShortcutScroll => 'Scroll sideways';
+
+  @override
+  String get midiShortcutShowSheet => 'Show these shortcuts';
+
+  @override
+  String get midiFullScreen => 'Full screen';
+
+  @override
+  String get midiExitFullScreen => 'Exit full screen';
 }

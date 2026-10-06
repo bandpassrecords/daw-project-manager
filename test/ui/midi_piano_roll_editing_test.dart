@@ -9,7 +9,6 @@ import 'package:daw_project_manager/ui/midi_note_auditioner.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
-import 'package:daw_project_manager/utils/midi_edit_hints.dart';
 import 'package:daw_project_manager/utils/musical_scale.dart';
 
 /// One bar at 480 PPQ with one note: C3 (60) on beat 1.
@@ -23,7 +22,6 @@ const _clip = MidiClip(
 String _laneName(MidiLane lane) => lane.toString();
 String _scaleTypeName(ScaleType type) => type.name;
 String _edited(String name) => '$name (edited)';
-String _hintText(MidiEditHint hint) => 'hint:${hint.name}';
 String _voiceName(SynthVoice voice) => voice.name;
 String _instrument(String name) => 'Instrument: $name';
 
@@ -87,50 +85,12 @@ const _labels = MidiPianoRollWindowLabels(
   instrument: _instrument,
 );
 
-/// [_labels] with the hints on.
-const _hintLabels = MidiPianoRollWindowLabels(
-  roll: MidiPianoRollLabels(
-    zoomIn: 'In',
-    zoomOut: 'Out',
-    fit: 'Fit',
-    follow: 'Follow',
-    lane: 'Lane',
-    laneNone: 'None',
-    laneName: _laneName,
-    scale: 'Scale',
-    scaleNone: 'No scale',
-    scaleRoot: 'Root',
-    scaleType: 'Type',
-    scaleTypeName: _scaleTypeName,
-    edit: 'Edit',
-    undo: 'Undo',
-    redo: 'Redo',
-    deleteNote: 'Delete note',
-    snap: 'Snap',
-    snapOff: 'Off',
-    toolSelect: 'Select',
-    toolPencil: 'Pencil',
-    hintText: _hintText,
-    hintDismiss: 'Got it',
-  ),
-  close: 'Close',
-  play: 'Play',
-  pause: 'Pause',
-  stop: 'Stop',
-  openProject: 'Open project',
-  saveAsNew: 'Save as new clip',
-  editedName: _edited,
-  discardTitle: 'Discard?',
-  discardBody: 'Not saved.',
-  keepEditing: 'Keep editing',
-  discard: 'Discard',
-);
-
 void main() {
   late MidiPreviewPlayer player;
   late List<(MidiClip, String?)> saved;
   late List<SynthVoice> savedVoices, voiceChanges;
-  late List<Set<MidiEditHint>> learned;
+  late int shortcutSheets;
+  late List<bool> fullScreenChanges;
   late List<bool> feedbackChanges;
   late _Ear ear;
 
@@ -139,7 +99,8 @@ void main() {
     saved = [];
     savedVoices = [];
     voiceChanges = [];
-    learned = [];
+    shortcutSheets = 0;
+    fullScreenChanges = [];
     feedbackChanges = [];
     ear = _Ear();
   });
@@ -179,7 +140,9 @@ void main() {
                     musicalKey: 'A minor',
                     voice: SynthVoice.keys,
                     onVoiceChanged: voiceChanges.add,
-                    onHintsLearned: learned.add,
+                    onShowShortcuts: () => shortcutSheets++,
+                    fullScreen: false,
+                    onFullScreenChanged: fullScreenChanges.add,
                     acousticFeedback: feedback,
                     onAcousticFeedbackChanged: feedbackChanges.add,
                     auditioner: ear,
@@ -570,45 +533,88 @@ void main() {
     expect(bend.last.value, 8192, reason: 'snapped to no bend');
   });
 
-  group('hints', () {
-    Finder hint(String name) => find.text('hint:$name');
+  testWidgets('the shortcut sheet opens from its button, ? and F1',
+      (tester) async {
+    await open(tester);
+    await tester.tap(find.byKey(const ValueKey('midi-piano-roll-shortcuts')));
+    await tester.pump();
+    expect(shortcutSheets, 1);
+    await tester.sendKeyEvent(LogicalKeyboardKey.f1);
+    await tester.pump();
+    expect(shortcutSheets, 2);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.slash, character: '?');
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.pump();
+    expect(shortcutSheets, 3);
+  });
 
-    testWidgets('one at a time, each gone once done or dismissed',
-        (tester) async {
-      await open(tester, labels: _hintLabels);
-      expect(find.byKey(const ValueKey('midi-piano-roll-hint')), findsNothing,
-          reason: 'only while editing');
-      await startEditing(tester);
-      expect(hint('pencil'), findsOneWidget);
+  testWidgets('no hint pops up while editing', (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    final g = grid(tester);
+    await doubleClick(tester, Offset(g.left + g.width * 0.5, g.center.dy));
+    expect(find.byIcon(Icons.lightbulb_outline), findsNothing);
+  });
 
-      await tester
-          .tap(find.byKey(const ValueKey('midi-piano-roll-hint-dismiss')));
-      await tester.pumpAndSettle();
-      expect(hint('pencil'), findsNothing);
-      expect(hint('doubleClick'), findsOneWidget, reason: 'the next one');
-      expect(learned.last, {MidiEditHint.pencil});
+  testWidgets('the full screen toggle asks for the other state',
+      (tester) async {
+    await open(tester);
+    final toggle = find.byKey(const ValueKey('midi-piano-roll-fullscreen'));
+    expect(find.descendant(of: toggle, matching: find.byIcon(Icons.fullscreen)),
+        findsOneWidget);
+    await tester.tap(toggle);
+    await tester.pump();
+    expect(fullScreenChanges, [true]);
+  });
 
-      // With the pencil in hand, its own hint; drawing a note retires it.
-      await tester
-          .tap(find.byKey(const ValueKey('midi-piano-roll-tool-pencil')));
-      await tester.pumpAndSettle();
-      expect(hint('pencilDraw'), findsOneWidget);
-      final g = grid(tester);
-      await click(tester, Offset(g.left + g.width * 0.5, g.center.dy - 60));
-      expect(hint('pencilDraw'), findsNothing);
-      expect(learned.last, contains(MidiEditHint.pencilDraw));
-    });
+  testWidgets('a middle-button drag moves the canvas, and edits nothing',
+      (tester) async {
+    await open(tester);
+    await startEditing(tester);
+    final g = grid(tester);
+    final middle = await tester.startGesture(
+        Offset(g.left + g.width * 0.5, g.center.dy),
+        kind: PointerDeviceKind.mouse,
+        buttons: kMiddleMouseButton);
+    for (var i = 1; i <= 4; i++) {
+      await middle.moveBy(Offset(-g.width * 0.25 / 4, 0));
+      await tester.pump();
+    }
+    await middle.up();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('midi-piano-roll-save')), findsNothing);
 
-    testWidgets('picking the pencil teaches the pencil hint', (tester) async {
-      await open(tester, labels: _hintLabels);
-      await startEditing(tester);
-      await tester.sendKeyEvent(LogicalKeyboardKey.digit8);
-      await tester.pumpAndSettle();
-      expect(learned.last, {MidiEditHint.pencil});
-    });
+    // Scrolled a quarter of the view: the middle is now tick 1440, not 960.
+    await doubleClick(tester, Offset(g.left + g.width * 0.5 + 2, g.center.dy));
+    await save(tester);
+    expect(saved.single.$1.notes.last.startTick, 1440);
   });
 
   group('sound', () {
+    testWidgets('dragging along the keyboard plays each key it passes',
+        (tester) async {
+      await open(tester);
+      final g = grid(tester);
+      final drag = await tester.startGesture(Offset(g.left - 10, g.center.dy));
+      for (var i = 1; i <= 3; i++) {
+        await drag.moveBy(const Offset(0, 14)); // one row down each time
+        await tester.pump();
+      }
+      await drag.up();
+      await tester.pumpAndSettle();
+      expect(ear.heard, [60, 59, 58, 57]);
+    });
+
+    testWidgets('the window names the instrument it plays', (tester) async {
+      await open(tester);
+      expect(
+          find.descendant(
+              of: find.byKey(const ValueKey('midi-piano-roll-voice')),
+              matching: find.text('keys')),
+          findsOneWidget);
+    });
+
     testWidgets('a key on the keyboard plays, editing or not',
         (tester) async {
       await open(tester);
@@ -660,12 +666,17 @@ void main() {
     });
   });
 
-  testWidgets('the vertical zoom stands upright on the right', (tester) async {
+  testWidgets('the vertical zoom stands upright at the top of the right side',
+      (tester) async {
     await open(tester);
     final zoom = find.byKey(const ValueKey('midi-piano-roll-vertical-zoom'));
     final box = tester.getRect(zoom);
+    final g = grid(tester);
     expect(box.height, greaterThan(box.width * 4));
-    expect(box.left, greaterThan(grid(tester).right - 1));
+    expect(box.bottom, lessThan(g.bottom - 100),
+        reason: 'its old length, not stretched down the whole side');
+    expect(box.top, lessThan(g.top + 4));
+    expect(box.left, greaterThan(g.right - 1));
     expect(find.descendant(of: zoom, matching: find.byType(RotatedBox)),
         findsOneWidget);
   });

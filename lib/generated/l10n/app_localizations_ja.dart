@@ -6339,45 +6339,128 @@ class AppLocalizationsJa extends AppLocalizations {
   String get midiAcousticFeedback => '編集中のノートを鳴らす';
 
   @override
-  String get midiHintGotIt => 'OK';
+  String get midiShortcuts => 'キーボードショートカット (?)';
 
   @override
-  String get midiHintPencil => '鉛筆を選ぶと、1回のクリックでノートを追加できます。';
+  String get midiShortcutsTitle => 'ピアノロールのショートカット';
 
   @override
-  String get midiHintDoubleClick => '空いている所をダブルクリックでノートを追加、ノートをダブルクリックで削除します。';
+  String get midiShortcutsTools => 'ツール';
 
   @override
-  String get midiHintBoxSelect => '空いている所をドラッグすると、複数のノートをまとめて選択できます。';
+  String get midiShortcutsNotes => 'ノート';
 
   @override
-  String get midiHintPencilDraw => 'クリックでノートを追加。クリックしたまま右へドラッグすると長くなります。';
+  String get midiShortcutsSelecting => '選択';
 
   @override
-  String get midiHintPencilErase => 'ノートをクリックで消去、ドラッグで移動します。';
+  String get midiShortcutsLanes => 'ベロシティとコントローラーのレーン';
 
   @override
-  String get midiHintResize => 'ノートの端をドラッグすると、短く・長くできます。';
+  String get midiShortcutsEditing => '編集';
 
   @override
-  String get midiHintTranspose => '↑/↓ で選択したノートを半音、Shift+↑/↓ で1オクターブ移動します。';
+  String get midiShortcutsPlayback => '再生と表示';
 
   @override
-  String midiHintAltCopy(String key) {
-    return '$key を押しながらドラッグすると、選択したノートをコピーします。';
-  }
+  String get midiKeyCtrl => 'Ctrl';
 
   @override
-  String midiHintCtrlFree(String key) {
-    return '$key を押しながらドラッグすると、グリッドに合わせずに動かせます。';
-  }
+  String get midiKeyShift => 'Shift';
 
   @override
-  String get midiHintVelocity => 'バーの上をドラッグすると、通ったノートすべてのベロシティを設定します。';
+  String get midiKeyAlt => 'Alt';
 
   @override
-  String get midiHintLane => 'ドラッグしてカーブを描きます。';
+  String get midiKeyDelete => 'Delete';
 
   @override
-  String get midiHintPitchBend => 'ドラッグでピッチベンドを描きます。中央の線の近くでは「ベンドなし」に吸着します。';
+  String get midiKeySpace => 'スペース';
+
+  @override
+  String get midiKeyEsc => 'Esc';
+
+  @override
+  String get midiGestureClick => 'クリック';
+
+  @override
+  String get midiGestureDoubleClick => 'ダブルクリック';
+
+  @override
+  String get midiGestureDrag => 'ドラッグ';
+
+  @override
+  String get midiGestureWheel => 'ホイール';
+
+  @override
+  String get midiShortcutSelectTool => '選択ツール';
+
+  @override
+  String get midiShortcutPencilTool => '鉛筆：クリックでノートを追加（ドラッグで長く）、ノートをクリックで消去';
+
+  @override
+  String get midiShortcutDoubleClick => '空いている所：ノートを追加。ノートの上：削除';
+
+  @override
+  String get midiShortcutMove => 'ノート：選択中のノートごと移動';
+
+  @override
+  String get midiShortcutResize => 'ノートの端：短く・長くする';
+
+  @override
+  String get midiShortcutCopy => 'ノート：選択中のノートをコピー';
+
+  @override
+  String get midiShortcutOffGrid => 'グリッドに合わせずに移動・長さ変更';
+
+  @override
+  String get midiShortcutSemitone => '選択中のノートを半音移動';
+
+  @override
+  String get midiShortcutOctave => '選択中のノートを1オクターブ移動';
+
+  @override
+  String get midiShortcutDelete => '選択中のノートを削除';
+
+  @override
+  String get midiShortcutBox => '空いている所：枠内のノートを選択';
+
+  @override
+  String get midiShortcutToggle => 'ノートを選択に追加、または選択から外す';
+
+  @override
+  String get midiShortcutSelectAll => 'すべてのノートを選択';
+
+  @override
+  String get midiShortcutVelocity => 'ベロシティのバーの上：通ったノートすべてのベロシティを設定';
+
+  @override
+  String get midiShortcutLane => 'コントローラーやピッチベンドのレーン：カーブを描く（ベンドは中央に吸着）';
+
+  @override
+  String get midiShortcutPlay => '再生・一時停止';
+
+  @override
+  String get midiShortcutStop => '停止。停止中ならウィンドウを閉じる';
+
+  @override
+  String get midiShortcutKeyboard => '鍵盤の上：その鍵盤を鳴らす（ドラッグで通った鍵盤を鳴らす）';
+
+  @override
+  String get midiShortcutRuler => 'ルーラーの上：その位置へ移動';
+
+  @override
+  String get midiShortcutZoom => 'マウスの位置を中心に拡大・縮小';
+
+  @override
+  String get midiShortcutScroll => '横にスクロール';
+
+  @override
+  String get midiShortcutShowSheet => 'このショートカット一覧を表示';
+
+  @override
+  String get midiFullScreen => '全画面';
+
+  @override
+  String get midiExitFullScreen => '全画面を終了';
 }

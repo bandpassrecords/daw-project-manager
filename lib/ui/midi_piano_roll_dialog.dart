@@ -7,7 +7,6 @@ import '../generated/l10n/app_localizations.dart';
 import '../models/midi_clip.dart';
 import '../providers/providers.dart';
 import '../services/midi_editor_prefs_store.dart';
-import '../utils/midi_edit_hints.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/musical_scale.dart';
 import '../services/midi/synth_voice.dart';
@@ -17,6 +16,7 @@ import 'widgets/midi_clip_edit_controller.dart';
 import 'widgets/midi_clip_list.dart';
 import 'widgets/midi_clips_section.dart' show synthVoiceName;
 import 'widgets/midi_piano_roll.dart';
+import 'widgets/midi_shortcuts_sheet.dart';
 import 'widgets/midi_loop_toggle.dart';
 import 'widgets/midi_volume_control.dart';
 
@@ -64,9 +64,18 @@ Future<void> showMidiPianoRoll(
     voice: voice,
     onVoiceChanged: onVoiceChanged,
     onSaveEdited: onSaveEdited,
-    learnedHints: MidiEditHintsStore.current,
-    onHintsLearned: MidiEditHintsStore.save,
-    keyboardHints: !MobileUtils.isMobile(),
+    // A phone has no keys to press; its gestures are the plain ones.
+    onShowShortcuts: MobileUtils.isMobile()
+        ? null
+        : () => showDialog<void>(
+              context: context,
+              builder: (_) => MidiShortcutsSheet(
+                title: l10n.midiShortcutsTitle,
+                close: l10n.close,
+                sections: midiShortcutSections(l10n,
+                    mac: defaultTargetPlatform == TargetPlatform.macOS),
+              ),
+            ),
     acousticFeedback: MidiAcousticFeedbackStore.current,
     onAcousticFeedbackChanged: MidiAcousticFeedbackStore.save,
     labels: MidiPianoRollWindowLabels(
@@ -91,8 +100,6 @@ Future<void> showMidiPianoRoll(
         snapOff: l10n.midiSnapOff,
         toolSelect: l10n.midiToolSelect,
         toolPencil: l10n.midiToolPencil,
-        hintText: (hint) => midiEditHintText(l10n, hint),
-        hintDismiss: l10n.midiHintGotIt,
         acousticFeedback: l10n.midiAcousticFeedback,
       ),
       close: l10n.close,
@@ -108,15 +115,29 @@ Future<void> showMidiPianoRoll(
       discard: l10n.midiDiscardEdits,
       voiceName: (v) => synthVoiceName(l10n, v),
       instrument: l10n.midiClipInstrumentTooltip,
+      shortcuts: l10n.midiShortcuts,
+      fullScreen: l10n.midiFullScreen,
+      exitFullScreen: l10n.midiExitFullScreen,
     ),
   );
+  final mobile = MobileUtils.isMobile();
+  // The whole app window, or a large dialog in it — remembered on this
+  // device. A phone always has the whole screen.
+  final fullScreen = ValueNotifier(MidiPianoRollFullScreenStore.current);
   // The shared preview volume and loop setting, live: the window's controls
   // and the list's move together, and either one changes what is playing.
-  final withVolume = Consumer(
+  Widget content(bool full) => Consumer(
     builder: (context, ref, _) {
       final volume = ref.watch(midiPreviewVolumeProvider);
       return MidiPianoRollWindow.copyOf(
         body,
+        fullScreen: mobile ? null : full,
+        onFullScreenChanged: mobile
+            ? null
+            : (v) {
+                fullScreen.value = v;
+                MidiPianoRollFullScreenStore.save(v);
+              },
         volume: volume,
         onVolumeChanged: (v) {
           ref.read(midiPreviewVolumeProvider.notifier).set(v);
@@ -139,18 +160,27 @@ Future<void> showMidiPianoRoll(
   return showDialog<void>(
     context: context,
     builder: (context) {
-      if (MobileUtils.isMobile()) return Dialog.fullscreen(child: withVolume);
-      final size = MediaQuery.sizeOf(context);
-      return Dialog(
-        insetPadding: const EdgeInsets.all(24),
-        child: SizedBox(
-          width: size.width * 0.9,
-          height: size.height * 0.85,
-          child: withVolume,
-        ),
+      if (mobile) return Dialog.fullscreen(child: content(true));
+      // One Dialog either way — only its insets and size change — so
+      // switching keeps the window's state, unsaved edits included.
+      return ValueListenableBuilder<bool>(
+        valueListenable: fullScreen,
+        builder: (context, full, _) {
+          final size = MediaQuery.sizeOf(context);
+          return Dialog(
+            insetPadding: full ? EdgeInsets.zero : const EdgeInsets.all(24),
+            shape: full ? const RoundedRectangleBorder() : null,
+            child: SizedBox(
+              width: full ? size.width : size.width * 0.9,
+              height: full ? size.height : size.height * 0.85,
+              child: content(full),
+            ),
+          );
+        },
       );
     },
   ).whenComplete(() {
+    fullScreen.dispose();
     // Sound with nothing on screen to stop it is the bug this prevents —
     // the clip as opened, or its edited version.
     final edited = MidiPianoRollWindow.editedKeyOf(playerKey);
@@ -199,24 +229,57 @@ String? _controllerName(AppLocalizations l10n, int number) => switch (number) {
       _ => null,
     };
 
-/// What an editing hint says. The modifier keys are named the way this
-/// platform's keyboard prints them.
-String midiEditHintText(AppLocalizations l10n, MidiEditHint hint) {
-  final mac = defaultTargetPlatform == TargetPlatform.macOS;
-  return switch (hint) {
-    MidiEditHint.pencil => l10n.midiHintPencil,
-    MidiEditHint.doubleClick => l10n.midiHintDoubleClick,
-    MidiEditHint.boxSelect => l10n.midiHintBoxSelect,
-    MidiEditHint.pencilDraw => l10n.midiHintPencilDraw,
-    MidiEditHint.pencilErase => l10n.midiHintPencilErase,
-    MidiEditHint.resize => l10n.midiHintResize,
-    MidiEditHint.transpose => l10n.midiHintTranspose,
-    MidiEditHint.altCopy => l10n.midiHintAltCopy(mac ? '⌥ Option' : 'Alt'),
-    MidiEditHint.ctrlFree => l10n.midiHintCtrlFree(mac ? '⌘ Cmd' : 'Ctrl'),
-    MidiEditHint.velocity => l10n.midiHintVelocity,
-    MidiEditHint.lane => l10n.midiHintLane,
-    MidiEditHint.pitchBend => l10n.midiHintPitchBend,
-  };
+/// Every shortcut and gesture of the piano roll, for its sheet. Keys are
+/// named the way this platform's keyboard prints them ([mac]: ⌘ ⌥ ⇧ ⌫).
+List<MidiShortcutSection> midiShortcutSections(
+  AppLocalizations l10n, {
+  required bool mac,
+}) {
+  final ctrl = mac ? '⌘' : l10n.midiKeyCtrl;
+  final alt = mac ? '⌥' : l10n.midiKeyAlt;
+  final shift = mac ? '⇧' : l10n.midiKeyShift;
+  final delete = mac ? '⌫' : l10n.midiKeyDelete;
+  final click = l10n.midiGestureClick;
+  final drag = l10n.midiGestureDrag;
+  const arrows = '↑ / ↓';
+  return [
+    MidiShortcutSection(l10n.midiShortcutsTools, [
+      MidiShortcut(const ['1'], l10n.midiShortcutSelectTool),
+      MidiShortcut(const ['8'], l10n.midiShortcutPencilTool),
+    ]),
+    MidiShortcutSection(l10n.midiShortcutsNotes, [
+      MidiShortcut([l10n.midiGestureDoubleClick], l10n.midiShortcutDoubleClick),
+      MidiShortcut([drag], l10n.midiShortcutMove),
+      MidiShortcut([drag], l10n.midiShortcutResize),
+      MidiShortcut([alt, drag], l10n.midiShortcutCopy),
+      MidiShortcut([ctrl, drag], l10n.midiShortcutOffGrid),
+      MidiShortcut(const [arrows], l10n.midiShortcutSemitone),
+      MidiShortcut([shift, arrows], l10n.midiShortcutOctave),
+      MidiShortcut([delete], l10n.midiShortcutDelete),
+    ]),
+    MidiShortcutSection(l10n.midiShortcutsSelecting, [
+      MidiShortcut([drag], l10n.midiShortcutBox),
+      MidiShortcut([shift, click], l10n.midiShortcutToggle),
+      MidiShortcut([ctrl, 'A'], l10n.midiShortcutSelectAll),
+    ]),
+    MidiShortcutSection(l10n.midiShortcutsLanes, [
+      MidiShortcut([drag], l10n.midiShortcutVelocity),
+      MidiShortcut([drag], l10n.midiShortcutLane),
+    ]),
+    MidiShortcutSection(l10n.midiShortcutsEditing, [
+      MidiShortcut([ctrl, 'Z'], l10n.midiUndo),
+      MidiShortcut([ctrl, shift, 'Z'], l10n.midiRedo),
+    ]),
+    MidiShortcutSection(l10n.midiShortcutsPlayback, [
+      MidiShortcut([l10n.midiKeySpace], l10n.midiShortcutPlay),
+      MidiShortcut([l10n.midiKeyEsc], l10n.midiShortcutStop),
+      MidiShortcut([click], l10n.midiShortcutKeyboard),
+      MidiShortcut([click], l10n.midiShortcutRuler),
+      MidiShortcut([ctrl, l10n.midiGestureWheel], l10n.midiShortcutZoom),
+      MidiShortcut([shift, l10n.midiGestureWheel], l10n.midiShortcutScroll),
+      MidiShortcut(const ['?'], l10n.midiShortcutShowSheet),
+    ]),
+  ];
 }
 
 /// A scale type's name in the piano roll's scale chooser.
@@ -251,7 +314,16 @@ class MidiPianoRollWindowLabels {
     this.discard = '',
     this.voiceName,
     this.instrument,
+    this.shortcuts = '',
+    this.fullScreen = '',
+    this.exitFullScreen = '',
   });
+
+  /// The shortcut sheet button's tooltip.
+  final String shortcuts;
+
+  /// The full screen toggle's tooltips.
+  final String fullScreen, exitFullScreen;
 
   final MidiPianoRollLabels roll;
 
@@ -306,12 +378,12 @@ class MidiPianoRollWindow extends StatefulWidget {
     this.voice,
     this.onVoiceChanged,
     this.onSaveEdited,
-    this.learnedHints = const {},
-    this.onHintsLearned,
-    this.keyboardHints = true,
+    this.onShowShortcuts,
     this.acousticFeedback = false,
     this.onAcousticFeedbackChanged,
     this.auditioner,
+    this.fullScreen,
+    this.onFullScreenChanged,
   });
 
   /// [base] with a volume control added.
@@ -323,6 +395,8 @@ class MidiPianoRollWindow extends StatefulWidget {
     bool? loop,
     ValueChanged<bool>? onLoopChanged,
     String? loopTooltip,
+    bool? fullScreen,
+    ValueChanged<bool>? onFullScreenChanged,
   }) =>
       MidiPianoRollWindow(
         clip: base.clip,
@@ -344,12 +418,12 @@ class MidiPianoRollWindow extends StatefulWidget {
         voice: base.voice,
         onVoiceChanged: base.onVoiceChanged,
         onSaveEdited: base.onSaveEdited,
-        learnedHints: base.learnedHints,
-        onHintsLearned: base.onHintsLearned,
-        keyboardHints: base.keyboardHints,
+        onShowShortcuts: base.onShowShortcuts,
         acousticFeedback: base.acousticFeedback,
         onAcousticFeedbackChanged: base.onAcousticFeedbackChanged,
         auditioner: base.auditioner,
+        fullScreen: fullScreen,
+        onFullScreenChanged: onFullScreenChanged,
       );
 
   /// The shared preview volume; the control shows only when all three of
@@ -373,12 +447,15 @@ class MidiPianoRollWindow extends StatefulWidget {
   /// Told when the instrument is changed in the window.
   final ValueChanged<SynthVoice>? onVoiceChanged;
 
-  /// The editing hints already learned, and where to remember new ones.
-  final Set<MidiEditHint> learnedHints;
-  final ValueChanged<Set<MidiEditHint>>? onHintsLearned;
+  /// Whether the window fills the whole app window; the toggle shows when
+  /// both this and [onFullScreenChanged] are given (not on a phone, where
+  /// it always does).
+  final bool? fullScreen;
+  final ValueChanged<bool>? onFullScreenChanged;
 
-  /// Whether hints about keys are worth showing (not on a phone).
-  final bool keyboardHints;
+  /// Opens the sheet of every shortcut and gesture (also on `?` and F1);
+  /// null leaves its button out.
+  final VoidCallback? onShowShortcuts;
 
   /// Whether notes sound as they are edited, and where to remember it.
   final bool acousticFeedback;
@@ -427,11 +504,6 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   /// The instrument both versions of the clip play with.
   late SynthVoice _voice = widget.voice ?? inferSynthVoice(widget.clip);
 
-  late final MidiEditHints? _hints = _editor == null
-      ? null
-      : MidiEditHints(
-          learned: widget.learnedHints, onChanged: widget.onHintsLearned);
-
   late bool _feedback = widget.acousticFeedback;
 
   MidiNoteAuditioner? _ownAuditioner;
@@ -470,7 +542,6 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   void _transpose(MidiClipEditController editor, int semitones) {
     if (!editor.editing || editor.selection.isEmpty) return;
     editor.transposeSelection(semitones);
-    _hints?.learn(MidiEditHint.transpose);
     if (!_feedback) return;
     for (final i in editor.selection.take(4)) {
       final n = editor.clip.notes[i];
@@ -515,7 +586,6 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   void dispose() {
     _editor?.removeListener(_onEdit);
     _editor?.dispose();
-    _hints?.dispose();
     _ownAuditioner?.dispose();
     super.dispose();
   }
@@ -528,16 +598,19 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     final editor = _editor!;
     if (_player.playingKey != _editKey || _player.paused) return;
     if (identical(_playedEdit, editor.committed)) return;
-    _playEdited(from: _player.positionOf(_editKey));
+    _playEdited(takeOver: true);
   }
 
-  void _playEdited({Duration? from}) {
+  /// Plays the edited clip — or, [takeOver], swaps it in for the version
+  /// playing without a gap (see [MidiPreviewPlayer.play]).
+  void _playEdited({Duration? from, bool takeOver = false}) {
     final editor = _editor!;
     _playedEdit = editor.committed;
     final clip = editor.finished;
     if (from != null) _player.startAt(_editKey, from);
     _player
-        .play(_editKey, clip, bpm: widget.bpm, voice: _voice)
+        .play(_editKey, clip,
+            bpm: widget.bpm, voice: _voice, takeOver: takeOver)
         .catchError((Object _) {});
   }
 
@@ -641,6 +714,11 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
         bindings: {
           const SingleActivator(LogicalKeyboardKey.space): _playPause,
           const SingleActivator(LogicalKeyboardKey.escape): _escape,
+          if (widget.onShowShortcuts != null) ...{
+            const CharacterActivator('?'): widget.onShowShortcuts!,
+            const SingleActivator(LogicalKeyboardKey.f1):
+                widget.onShowShortcuts!,
+          },
           if (editor != null) ...{
             const SingleActivator(LogicalKeyboardKey.delete): () {
               if (editor.editing) editor.deleteSelected();
@@ -713,8 +791,6 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                     onSeek: _seek,
                     initialScale: scaleFromKey(widget.musicalKey),
                     onScaleChanged: (s) => _scale = s,
-                    hints: _hints,
-                    keyboardHints: widget.keyboardHints,
                     onAudition: _audition,
                     acousticFeedback: _feedback,
                     onAcousticFeedbackChanged: editor == null
@@ -800,6 +876,7 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
           voiceName: labels.voiceName!,
           tooltip: labels.instrument!,
           onChanged: _setVoice,
+          showName: true,
         ),
       if (widget.loop != null &&
           widget.onLoopChanged != null &&
@@ -826,6 +903,13 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
           color: theme.colorScheme.primary,
           onPressed: _save,
         ),
+      if (widget.onShowShortcuts != null)
+        IconButton(
+          key: const ValueKey('midi-piano-roll-shortcuts'),
+          tooltip: labels.shortcuts,
+          icon: const Icon(Icons.keyboard_outlined),
+          onPressed: widget.onShowShortcuts,
+        ),
       if (widget.onOpenProject != null)
         IconButton(
           tooltip: labels.openProject,
@@ -838,6 +922,15 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
           },
         ),
     ];
+    final full = widget.fullScreen;
+    if (full != null && widget.onFullScreenChanged != null) {
+      controls.add(IconButton(
+        key: const ValueKey('midi-piano-roll-fullscreen'),
+        tooltip: full ? labels.exitFullScreen : labels.fullScreen,
+        icon: Icon(full ? Icons.fullscreen_exit : Icons.fullscreen),
+        onPressed: () => widget.onFullScreenChanged!(!full),
+      ));
+    }
     final close = IconButton(
       tooltip: labels.close,
       icon: const Icon(Icons.close),

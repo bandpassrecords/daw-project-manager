@@ -139,9 +139,17 @@ class MidiPreviewPlayer extends ChangeNotifier {
 
   /// Renders and plays [clip]. Throws what rendering or playback threw, so
   /// the caller can tell the user.
+  ///
+  /// With [takeOver], and something playing, [clip] replaces it the way an
+  /// edit should: what plays carries on while [clip] renders — no stop, no
+  /// "preparing" — and [clip] then starts from wherever playback has got to
+  /// by then. Without it, deleting a note mid-playback cut the sound out
+  /// and flickered the transport.
   Future<void> play(String key, MidiClip clip,
-      {double? bpm, required SynthVoice voice}) async {
+      {double? bpm, required SynthVoice voice, bool takeOver = false}) async {
     final generation = ++_generation;
+    final takingOver = takeOver && playingKey != null && !paused;
+    final heldKey = playingKey;
     final looping = loop;
     final loopLength = looping
         ? Duration(
@@ -155,9 +163,11 @@ class MidiPreviewPlayer extends ChangeNotifier {
     _startAt = null;
     _current = (key, clip, bpm, voice);
     _loopChangedWhilePaused = false;
-    preparingKey = key;
-    paused = false;
-    _notify();
+    if (!takingOver) {
+      preparingKey = key;
+      paused = false;
+      _notify();
+    }
     try {
       final path = await MidiClipService.renderPreview(
         clip,
@@ -184,13 +194,18 @@ class MidiPreviewPlayer extends ChangeNotifier {
       _loopLength = loopLength;
       _lastPosition = Duration.zero;
       _lastPositionAt = DateTime.now();
+      // Taking over: carry on from where the held clip is by now (the render
+      // took a moment), not from where it was when it began.
+      final from = takingOver && heldKey != null && playingKey == heldKey
+          ? wrapLoopPosition(positionOf(heldKey) ?? Duration.zero, loopLength)
+          : startAt;
       await player.play(DeviceFileSource(path));
       if (generation != _generation || _disposed) return;
-      if (startAt != null && startAt > Duration.zero) {
-        await player.seek(startAt);
+      if (from != null && from > Duration.zero) {
+        await player.seek(from);
         if (generation != _generation || _disposed) return;
       }
-      _lastPosition = startAt ?? Duration.zero;
+      _lastPosition = from ?? Duration.zero;
       _lastPositionAt = DateTime.now();
       playingKey = key;
       AppAudioFocus.claim(this);

@@ -10877,83 +10877,257 @@ abstract class AppLocalizations {
   /// **'Hear notes as you edit them'**
   String get midiAcousticFeedback;
 
-  /// Piano roll hint: button that dismisses the hint for good
+  /// Piano roll: tooltip of the button that opens the shortcut sheet
   ///
   /// In en, this message translates to:
-  /// **'Got it'**
-  String get midiHintGotIt;
+  /// **'Keyboard shortcuts (?)'**
+  String get midiShortcuts;
 
-  /// Piano roll hint (select tool)
+  /// Piano roll shortcut sheet: dialog title
   ///
   /// In en, this message translates to:
-  /// **'Pick the pencil to add notes with a single click.'**
-  String get midiHintPencil;
+  /// **'Piano roll shortcuts'**
+  String get midiShortcutsTitle;
 
-  /// Piano roll hint (select tool)
+  /// Shortcut sheet section
   ///
   /// In en, this message translates to:
-  /// **'Double-click empty space to add a note, or a note to delete it.'**
-  String get midiHintDoubleClick;
+  /// **'Tools'**
+  String get midiShortcutsTools;
 
-  /// Piano roll hint (select tool)
+  /// Shortcut sheet section
   ///
   /// In en, this message translates to:
-  /// **'Drag across empty space to select several notes at once.'**
-  String get midiHintBoxSelect;
+  /// **'Notes'**
+  String get midiShortcutsNotes;
 
-  /// Piano roll hint (pencil tool)
+  /// Shortcut sheet section
   ///
   /// In en, this message translates to:
-  /// **'Click to add a note — drag to the right as you click to make it longer.'**
-  String get midiHintPencilDraw;
+  /// **'Selecting'**
+  String get midiShortcutsSelecting;
 
-  /// Piano roll hint (pencil tool, over a note)
+  /// Shortcut sheet section: the lane under the notes
   ///
   /// In en, this message translates to:
-  /// **'Click a note to erase it, or drag it to move it.'**
-  String get midiHintPencilErase;
+  /// **'Velocity and controller lanes'**
+  String get midiShortcutsLanes;
 
-  /// Piano roll hint (over a note edge)
+  /// Shortcut sheet section: undo and redo
   ///
   /// In en, this message translates to:
-  /// **'Drag a note\'s edge to make it shorter or longer.'**
-  String get midiHintResize;
+  /// **'Editing'**
+  String get midiShortcutsEditing;
 
-  /// Piano roll hint (notes selected)
+  /// Shortcut sheet section
   ///
   /// In en, this message translates to:
-  /// **'↑/↓ moves the selected notes a semitone, Shift+↑/↓ an octave.'**
-  String get midiHintTranspose;
+  /// **'Playback and view'**
+  String get midiShortcutsPlayback;
 
-  /// Piano roll hint (notes selected). {key} is the modifier key name, e.g. Alt
+  /// Keycap: the Control key, as printed on keyboards in this language
   ///
   /// In en, this message translates to:
-  /// **'Hold {key} while dragging to copy the selected notes.'**
-  String midiHintAltCopy(String key);
+  /// **'Ctrl'**
+  String get midiKeyCtrl;
 
-  /// Piano roll hint (over a note). {key} is the modifier key name, e.g. Ctrl
+  /// Keycap: the Shift key
   ///
   /// In en, this message translates to:
-  /// **'Hold {key} while dragging to move off the grid.'**
-  String midiHintCtrlFree(String key);
+  /// **'Shift'**
+  String get midiKeyShift;
 
-  /// Piano roll hint (over the velocity lane)
+  /// Keycap: the Alt key
   ///
   /// In en, this message translates to:
-  /// **'Drag across the bars to set the velocity of every note you pass.'**
-  String get midiHintVelocity;
+  /// **'Alt'**
+  String get midiKeyAlt;
 
-  /// Piano roll hint (over a controller lane)
+  /// Keycap: the Delete key
   ///
   /// In en, this message translates to:
-  /// **'Drag to draw the curve.'**
-  String get midiHintLane;
+  /// **'Delete'**
+  String get midiKeyDelete;
 
-  /// Piano roll hint (over the pitch bend lane)
+  /// Keycap: the space bar
   ///
   /// In en, this message translates to:
-  /// **'Drag to draw the bend — near the middle line it snaps back to no bend.'**
-  String get midiHintPitchBend;
+  /// **'Space'**
+  String get midiKeySpace;
+
+  /// Keycap: the Escape key
+  ///
+  /// In en, this message translates to:
+  /// **'Esc'**
+  String get midiKeyEsc;
+
+  /// Shortcut sheet keycap: a mouse click
+  ///
+  /// In en, this message translates to:
+  /// **'Click'**
+  String get midiGestureClick;
+
+  /// Shortcut sheet keycap: a double-click
+  ///
+  /// In en, this message translates to:
+  /// **'Double-click'**
+  String get midiGestureDoubleClick;
+
+  /// Shortcut sheet keycap: dragging with the mouse
+  ///
+  /// In en, this message translates to:
+  /// **'Drag'**
+  String get midiGestureDrag;
+
+  /// Shortcut sheet keycap: the mouse wheel
+  ///
+  /// In en, this message translates to:
+  /// **'Wheel'**
+  String get midiGestureWheel;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Select tool'**
+  String get midiShortcutSelectTool;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Pencil: click to add a note (drag to make it longer), click a note to erase it'**
+  String get midiShortcutPencilTool;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'On empty space: add a note. On a note: delete it'**
+  String get midiShortcutDoubleClick;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'A note: move it, with every selected note'**
+  String get midiShortcutMove;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'A note\'s edge: make it shorter or longer'**
+  String get midiShortcutResize;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'A note: copy the selected notes'**
+  String get midiShortcutCopy;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Move or resize without snapping to the grid'**
+  String get midiShortcutOffGrid;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Move the selected notes a semitone'**
+  String get midiShortcutSemitone;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Move the selected notes an octave'**
+  String get midiShortcutOctave;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Delete the selected notes'**
+  String get midiShortcutDelete;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'On empty space: select the notes inside the box'**
+  String get midiShortcutBox;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Add a note to the selection, or take it out'**
+  String get midiShortcutToggle;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Select every note'**
+  String get midiShortcutSelectAll;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Across the velocity bars: set the velocity of every note passed'**
+  String get midiShortcutVelocity;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'In a controller or pitch bend lane: draw the curve (a bend snaps back to the middle)'**
+  String get midiShortcutLane;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Play or pause'**
+  String get midiShortcutPlay;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Stop; when stopped, close the window'**
+  String get midiShortcutStop;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'On the keyboard: play the key (drag to play the keys passed)'**
+  String get midiShortcutKeyboard;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'On the ruler: jump there'**
+  String get midiShortcutRuler;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in or out around the mouse'**
+  String get midiShortcutZoom;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll sideways'**
+  String get midiShortcutScroll;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Show these shortcuts'**
+  String get midiShortcutShowSheet;
+
+  /// Piano roll: toggle that makes the window fill the whole app window
+  ///
+  /// In en, this message translates to:
+  /// **'Full screen'**
+  String get midiFullScreen;
+
+  /// Piano roll: toggle back from full screen
+  ///
+  /// In en, this message translates to:
+  /// **'Exit full screen'**
+  String get midiExitFullScreen;
 }
 
 class _AppLocalizationsDelegate

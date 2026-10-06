@@ -6268,45 +6268,128 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiAcousticFeedback => '编辑时播放音符';
 
   @override
-  String get midiHintGotIt => '知道了';
+  String get midiShortcuts => '键盘快捷键 (?)';
 
   @override
-  String get midiHintPencil => '选择铅笔，单击即可添加音符。';
+  String get midiShortcutsTitle => '钢琴卷帘快捷键';
 
   @override
-  String get midiHintDoubleClick => '双击空白处添加音符，双击音符将其删除。';
+  String get midiShortcutsTools => '工具';
 
   @override
-  String get midiHintBoxSelect => '在空白处拖动可一次选择多个音符。';
+  String get midiShortcutsNotes => '音符';
 
   @override
-  String get midiHintPencilDraw => '单击添加音符；单击时向右拖动可延长它。';
+  String get midiShortcutsSelecting => '选择';
 
   @override
-  String get midiHintPencilErase => '单击音符将其擦除，拖动则移动它。';
+  String get midiShortcutsLanes => '力度与控制器轨道';
 
   @override
-  String get midiHintResize => '拖动音符的边缘可缩短或延长它。';
+  String get midiShortcutsEditing => '编辑';
 
   @override
-  String get midiHintTranspose => '↑/↓ 将所选音符移动一个半音，Shift+↑/↓ 移动一个八度。';
+  String get midiShortcutsPlayback => '播放与视图';
 
   @override
-  String midiHintAltCopy(String key) {
-    return '拖动时按住 $key 可复制所选音符。';
-  }
+  String get midiKeyCtrl => 'Ctrl';
 
   @override
-  String midiHintCtrlFree(String key) {
-    return '拖动时按住 $key 可不受网格限制地移动。';
-  }
+  String get midiKeyShift => 'Shift';
 
   @override
-  String get midiHintVelocity => '在竖条上拖动，可设置经过的每个音符的力度。';
+  String get midiKeyAlt => 'Alt';
 
   @override
-  String get midiHintLane => '拖动以绘制曲线。';
+  String get midiKeyDelete => 'Delete';
 
   @override
-  String get midiHintPitchBend => '拖动以绘制弯音；靠近中线时会吸附回无弯音。';
+  String get midiKeySpace => '空格';
+
+  @override
+  String get midiKeyEsc => 'Esc';
+
+  @override
+  String get midiGestureClick => '单击';
+
+  @override
+  String get midiGestureDoubleClick => '双击';
+
+  @override
+  String get midiGestureDrag => '拖动';
+
+  @override
+  String get midiGestureWheel => '滚轮';
+
+  @override
+  String get midiShortcutSelectTool => '选择工具';
+
+  @override
+  String get midiShortcutPencilTool => '铅笔：单击添加音符（拖动可延长），单击音符将其擦除';
+
+  @override
+  String get midiShortcutDoubleClick => '空白处：添加音符。音符上：删除它';
+
+  @override
+  String get midiShortcutMove => '音符：与所有选中音符一起移动';
+
+  @override
+  String get midiShortcutResize => '音符边缘：缩短或延长';
+
+  @override
+  String get midiShortcutCopy => '音符：复制所选音符';
+
+  @override
+  String get midiShortcutOffGrid => '移动或调整长度时不吸附网格';
+
+  @override
+  String get midiShortcutSemitone => '将所选音符移动一个半音';
+
+  @override
+  String get midiShortcutOctave => '将所选音符移动一个八度';
+
+  @override
+  String get midiShortcutDelete => '删除所选音符';
+
+  @override
+  String get midiShortcutBox => '空白处：选择框内的音符';
+
+  @override
+  String get midiShortcutToggle => '将音符加入选择或移出选择';
+
+  @override
+  String get midiShortcutSelectAll => '选择全部音符';
+
+  @override
+  String get midiShortcutVelocity => '在力度竖条上：设置经过的每个音符的力度';
+
+  @override
+  String get midiShortcutLane => '在控制器或弯音轨道中：绘制曲线（弯音会吸附回中间）';
+
+  @override
+  String get midiShortcutPlay => '播放或暂停';
+
+  @override
+  String get midiShortcutStop => '停止；已停止时关闭窗口';
+
+  @override
+  String get midiShortcutKeyboard => '在琴键上：弹奏该键（拖动可弹奏经过的键）';
+
+  @override
+  String get midiShortcutRuler => '在标尺上：跳到该处';
+
+  @override
+  String get midiShortcutZoom => '以鼠标为中心放大或缩小';
+
+  @override
+  String get midiShortcutScroll => '横向滚动';
+
+  @override
+  String get midiShortcutShowSheet => '显示这些快捷键';
+
+  @override
+  String get midiFullScreen => '全屏';
+
+  @override
+  String get midiExitFullScreen => '退出全屏';
 }
