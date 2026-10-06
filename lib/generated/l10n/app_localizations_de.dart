@@ -6739,4 +6739,137 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get midiShortcutLoopToggle =>
       'Obere Hälfte des Schleifenbalkens: Schleife ein- oder ausschalten (grau, wenn aus)';
+
+  @override
+  String get midiRoleMelody => 'Melodie';
+
+  @override
+  String get midiRoleBass => 'Bass';
+
+  @override
+  String get midiRoleChords => 'Akkorde';
+
+  @override
+  String get midiRoleArp => 'Arp';
+
+  @override
+  String get midiRoleLead => 'Lead';
+
+  @override
+  String get midiRolePad => 'Pad';
+
+  @override
+  String get midiRoleDrums => 'Drums';
+
+  @override
+  String get midiRoleFx => 'FX';
+
+  @override
+  String get midiRoleOther => 'Sonstiges';
+
+  @override
+  String get midiRoleLabel => 'Rolle';
+
+  @override
+  String midiRoleAutomatic(String role) {
+    return 'Automatisch ($role)';
+  }
+
+  @override
+  String midiItemRoleMenu(String role) {
+    return 'Rolle: $role';
+  }
+
+  @override
+  String get midiNameFree => 'frei';
+
+  @override
+  String get midiNamingTitle => 'Dateibenennung';
+
+  @override
+  String get midiNamingNumbered => 'Dateien nummerieren';
+
+  @override
+  String get midiNamingNumberedHint =>
+      '01, 02 … in der Reihenfolge jedes Ordners, damit ein Dateibrowser sie so auflistet';
+
+  @override
+  String get midiNamingSeparator => 'Trennzeichen';
+
+  @override
+  String get midiNamingFields => 'Im Namen';
+
+  @override
+  String get midiNamingFieldsHint => 'Ziehen, um die Reihenfolge zu ändern';
+
+  @override
+  String get midiNameFieldName => 'Name';
+
+  @override
+  String get midiNameFieldBpm => 'Tempo (BPM)';
+
+  @override
+  String get midiNameFieldKey => 'Tonart';
+
+  @override
+  String get midiNameFieldBars => 'Länge in Takten';
+
+  @override
+  String get midiNameFieldTimeSignature => 'Taktart (wenn nicht 4/4)';
+
+  @override
+  String get midiNameFieldGrid => 'Quantisierung (1-16, frei …)';
+
+  @override
+  String get midiNameFieldInstrument => 'Instrument';
+
+  @override
+  String get midiNamingPreview => 'Beispiel';
+
+  @override
+  String get midiNamingReset => 'Standard';
+
+  @override
+  String get midiFolderNew => 'Neuer Ordner';
+
+  @override
+  String get midiFolderRename => 'Ordner umbenennen';
+
+  @override
+  String get midiFolderDelete => 'Ordner löschen';
+
+  @override
+  String midiFolderDeleteConfirm(String name) {
+    return 'Den Ordner „$name“ löschen? Seine Clips und Ordner rücken eine Ebene nach oben.';
+  }
+
+  @override
+  String get midiFolderName => 'Ordnername';
+
+  @override
+  String get midiFolderLabel => 'Ordner';
+
+  @override
+  String get midiFolderTopLevel => 'Oberste Ebene';
+
+  @override
+  String get midiMoveTo => 'Verschieben nach …';
+
+  @override
+  String get midiMoveUp => 'Nach oben';
+
+  @override
+  String get midiMoveDown => 'Nach unten';
+
+  @override
+  String get midiItemRename => 'Umbenennen';
+
+  @override
+  String get midiItemNameHint => 'Leer: der eigene Name des Clips';
+
+  @override
+  String get midiSaveClipTitle => 'Clip speichern';
+
+  @override
+  String get midiSaveFileName => 'Dateiname';
 }

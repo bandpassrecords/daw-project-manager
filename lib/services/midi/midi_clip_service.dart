@@ -123,11 +123,23 @@ class MidiClipService {
     Directory directory,
   ) async {
     await directory.create(recursive: true);
-    final names = uniqueFileNames([for (final e in exports) e.fileName]);
+    // Unique within each folder: the same name in two folders is two files.
+    final byFolder = <String, List<int>>{};
+    for (var i = 0; i < exports.length; i++) {
+      byFolder.putIfAbsent(exports[i].folders.join('/'), () => []).add(i);
+    }
+    final names = List<String>.filled(exports.length, '');
+    for (final indices in byFolder.values) {
+      final unique = uniqueFileNames([for (final i in indices) exports[i].fileName]);
+      for (var k = 0; k < indices.length; k++) {
+        names[indices[k]] = unique[k];
+      }
+    }
     final written = <File>[];
     for (var i = 0; i < exports.length; i++) {
-      written.add(
-          await writeMidiFile(exports[i], p.join(directory.path, names[i])));
+      final folder = p.joinAll([directory.path, ...exports[i].folders]);
+      await Directory(folder).create(recursive: true);
+      written.add(await writeMidiFile(exports[i], p.join(folder, names[i])));
     }
     return written;
   }

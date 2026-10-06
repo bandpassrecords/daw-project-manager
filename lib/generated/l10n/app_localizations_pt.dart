@@ -6718,4 +6718,138 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get midiShortcutLoopToggle =>
       'Metade de cima da barra do loop: ligar ou desligar o loop (cinza quando desligado)';
+
+  @override
+  String get midiRoleMelody => 'Melodia';
+
+  @override
+  String get midiRoleBass => 'Baixo';
+
+  @override
+  String get midiRoleChords => 'Acordes';
+
+  @override
+  String get midiRoleArp => 'Arpejo';
+
+  @override
+  String get midiRoleLead => 'Lead';
+
+  @override
+  String get midiRolePad => 'Pad';
+
+  @override
+  String get midiRoleDrums => 'Bateria';
+
+  @override
+  String get midiRoleFx => 'FX';
+
+  @override
+  String get midiRoleOther => 'Outro';
+
+  @override
+  String get midiRoleLabel => 'Função';
+
+  @override
+  String midiRoleAutomatic(String role) {
+    return 'Automático ($role)';
+  }
+
+  @override
+  String midiItemRoleMenu(String role) {
+    return 'Função: $role';
+  }
+
+  @override
+  String get midiNameFree => 'livre';
+
+  @override
+  String get midiNamingTitle => 'Nomes de arquivo';
+
+  @override
+  String get midiNamingNumbered => 'Numerar os arquivos';
+
+  @override
+  String get midiNamingNumberedHint =>
+      '01, 02… na ordem de cada pasta, para o gerenciador de arquivos listá-los assim';
+
+  @override
+  String get midiNamingSeparator => 'Separador';
+
+  @override
+  String get midiNamingFields => 'No nome';
+
+  @override
+  String get midiNamingFieldsHint => 'Arraste para mudar a ordem';
+
+  @override
+  String get midiNameFieldName => 'Nome';
+
+  @override
+  String get midiNameFieldBpm => 'Andamento (BPM)';
+
+  @override
+  String get midiNameFieldKey => 'Tom';
+
+  @override
+  String get midiNameFieldBars => 'Duração em compassos';
+
+  @override
+  String get midiNameFieldTimeSignature =>
+      'Fórmula de compasso (quando não for 4/4)';
+
+  @override
+  String get midiNameFieldGrid => 'Quantização (1-16, livre…)';
+
+  @override
+  String get midiNameFieldInstrument => 'Instrumento';
+
+  @override
+  String get midiNamingPreview => 'Exemplo';
+
+  @override
+  String get midiNamingReset => 'Padrão';
+
+  @override
+  String get midiFolderNew => 'Nova pasta';
+
+  @override
+  String get midiFolderRename => 'Renomear pasta';
+
+  @override
+  String get midiFolderDelete => 'Excluir pasta';
+
+  @override
+  String midiFolderDeleteConfirm(String name) {
+    return 'Excluir a pasta \"$name\"? Os clipes e pastas dentro dela sobem um nível.';
+  }
+
+  @override
+  String get midiFolderName => 'Nome da pasta';
+
+  @override
+  String get midiFolderLabel => 'Pasta';
+
+  @override
+  String get midiFolderTopLevel => 'Nível superior';
+
+  @override
+  String get midiMoveTo => 'Mover para…';
+
+  @override
+  String get midiMoveUp => 'Mover para cima';
+
+  @override
+  String get midiMoveDown => 'Mover para baixo';
+
+  @override
+  String get midiItemRename => 'Renomear';
+
+  @override
+  String get midiItemNameHint => 'Em branco: o nome do próprio clipe';
+
+  @override
+  String get midiSaveClipTitle => 'Salvar clipe';
+
+  @override
+  String get midiSaveFileName => 'Nome do arquivo';
 }

@@ -9,8 +9,14 @@ import '../../utils/time_signature.dart';
 /// about it: the tempo to write and the project's key. Each clip of a shared
 /// collection carries its own, since they come from different projects.
 class MidiExport {
-  const MidiExport(this.clip,
-      {this.bpm, this.musicalKey, this.timeSignature = TimeSignature.common});
+  const MidiExport(
+    this.clip, {
+    this.bpm,
+    this.musicalKey,
+    this.timeSignature = TimeSignature.common,
+    this.name,
+    this.folders = const [],
+  });
 
   final MidiClip clip;
   final double? bpm;
@@ -21,7 +27,15 @@ class MidiExport {
   /// The project's key as written there ("A minor", "F#m"…), or null.
   final String? musicalKey;
 
-  String get fileName => midiClipFileName(clip, musicalKey: musicalKey);
+  /// The file name chosen for it (a collection's naming template), with
+  /// `.mid`; null names it after the clip and its key.
+  final String? name;
+
+  /// The folders it goes in, outermost first, inside wherever it is
+  /// exported — a collection's folders. Each is already a safe name.
+  final List<String> folders;
+
+  String get fileName => name ?? midiClipFileName(clip, musicalKey: musicalKey);
 
   Uint8List encode() => encodeMidiClip(clip,
       bpm: bpm, musicalKey: musicalKey, timeSignature: timeSignature);

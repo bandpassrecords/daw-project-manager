@@ -6768,4 +6768,138 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get midiShortcutLoopToggle =>
       'Moitié haute de la barre de boucle : activer ou désactiver la boucle (grise quand elle est coupée)';
+
+  @override
+  String get midiRoleMelody => 'Mélodie';
+
+  @override
+  String get midiRoleBass => 'Basse';
+
+  @override
+  String get midiRoleChords => 'Accords';
+
+  @override
+  String get midiRoleArp => 'Arpège';
+
+  @override
+  String get midiRoleLead => 'Lead';
+
+  @override
+  String get midiRolePad => 'Pad';
+
+  @override
+  String get midiRoleDrums => 'Batterie';
+
+  @override
+  String get midiRoleFx => 'FX';
+
+  @override
+  String get midiRoleOther => 'Autre';
+
+  @override
+  String get midiRoleLabel => 'Rôle';
+
+  @override
+  String midiRoleAutomatic(String role) {
+    return 'Automatique ($role)';
+  }
+
+  @override
+  String midiItemRoleMenu(String role) {
+    return 'Rôle : $role';
+  }
+
+  @override
+  String get midiNameFree => 'libre';
+
+  @override
+  String get midiNamingTitle => 'Noms de fichiers';
+
+  @override
+  String get midiNamingNumbered => 'Numéroter les fichiers';
+
+  @override
+  String get midiNamingNumberedHint =>
+      '01, 02… dans l\'ordre de chaque dossier, pour qu\'un explorateur de fichiers les affiche ainsi';
+
+  @override
+  String get midiNamingSeparator => 'Séparateur';
+
+  @override
+  String get midiNamingFields => 'Dans le nom';
+
+  @override
+  String get midiNamingFieldsHint => 'Faites glisser pour changer l\'ordre';
+
+  @override
+  String get midiNameFieldName => 'Nom';
+
+  @override
+  String get midiNameFieldBpm => 'Tempo (BPM)';
+
+  @override
+  String get midiNameFieldKey => 'Tonalité';
+
+  @override
+  String get midiNameFieldBars => 'Longueur en mesures';
+
+  @override
+  String get midiNameFieldTimeSignature =>
+      'Signature rythmique (si autre que 4/4)';
+
+  @override
+  String get midiNameFieldGrid => 'Quantification (1-16, libre…)';
+
+  @override
+  String get midiNameFieldInstrument => 'Instrument';
+
+  @override
+  String get midiNamingPreview => 'Exemple';
+
+  @override
+  String get midiNamingReset => 'Par défaut';
+
+  @override
+  String get midiFolderNew => 'Nouveau dossier';
+
+  @override
+  String get midiFolderRename => 'Renommer le dossier';
+
+  @override
+  String get midiFolderDelete => 'Supprimer le dossier';
+
+  @override
+  String midiFolderDeleteConfirm(String name) {
+    return 'Supprimer le dossier « $name » ? Ses clips et dossiers remontent d\'un niveau.';
+  }
+
+  @override
+  String get midiFolderName => 'Nom du dossier';
+
+  @override
+  String get midiFolderLabel => 'Dossier';
+
+  @override
+  String get midiFolderTopLevel => 'Niveau supérieur';
+
+  @override
+  String get midiMoveTo => 'Déplacer vers…';
+
+  @override
+  String get midiMoveUp => 'Monter';
+
+  @override
+  String get midiMoveDown => 'Descendre';
+
+  @override
+  String get midiItemRename => 'Renommer';
+
+  @override
+  String get midiItemNameHint => 'Vide : le nom du clip';
+
+  @override
+  String get midiSaveClipTitle => 'Enregistrer le clip';
+
+  @override
+  String get midiSaveFileName => 'Nom du fichier';
 }

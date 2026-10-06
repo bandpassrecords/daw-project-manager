@@ -386,4 +386,18 @@ void main() {
     expect(archive.files.map((f) => f.name), ['A.mid', 'B.mid']);
     expect(archive.findFile('B.mid')!.content, [4, 5]);
   });
+
+  test('zipMidiFiles keeps the folders below its root', () async {
+    final dir = await Directory.systemTemp.createTemp('midi_zip_');
+    addTearDown(() => dir.delete(recursive: true));
+    final sub = Directory('${dir.path}/Bass/Acid')..createSync(recursive: true);
+    final a = File('${sub.path}/01 A.mid')..writeAsBytesSync([1]);
+    final b = File('${dir.path}/01 B.mid')..writeAsBytesSync([2]);
+    final out = Directory('${dir.path}/zip')..createSync();
+
+    final zip = await zipMidiFiles([a, b], out, 'Pack', root: dir);
+
+    final archive = ZipDecoder().decodeBytes(zip.readAsBytesSync());
+    expect(archive.files.map((f) => f.name), ['Bass/Acid/01 A.mid', '01 B.mid']);
+  });
 }

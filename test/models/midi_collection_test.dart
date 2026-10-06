@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/models/midi_clip.dart';
+import 'package:daw_project_manager/models/midi_clip_naming.dart';
 import 'package:daw_project_manager/models/midi_collection.dart';
 import 'package:daw_project_manager/repository/midi_collection_store.dart';
 
@@ -109,6 +110,103 @@ void main() {
     });
   });
 
+  group('folders, names and roles', () {
+    MidiCollection pack({
+      List<MidiCollectionFolder> folders = const [],
+      List<MidiCollectionItem> items = const [],
+    }) =>
+        MidiCollection(
+          id: 'c1',
+          name: 'Pack',
+          createdAt: DateTime.utc(2026),
+          updatedAt: DateTime.utc(2026),
+          folders: folders,
+          items: items,
+        );
+
+    test('round-trip through JSON with the folders, naming, names and roles', () {
+      final item = MidiCollectionItem(
+        id: 'i1',
+        clip: _clip('Line', 36),
+        addedAt: DateTime.utc(2026, 10, 6),
+        title: 'Acid',
+        role: 'bass',
+        folderId: 'f2',
+      );
+      final c = pack(
+        folders: const [
+          MidiCollectionFolder(id: 'f1', name: 'Bass'),
+          MidiCollectionFolder(id: 'f2', name: 'Acid', parentId: 'f1'),
+        ],
+        items: [item],
+      ).copyWith(
+        naming: const MidiNamingTemplate(numbered: false, separator: '_'),
+        updatedAt: DateTime.utc(2026),
+      );
+      final back = MidiCollection.tryParse(jsonDecode(jsonEncode(c.toJson())))!;
+      expect(back.folders.map((f) => (f.id, f.name, f.parentId)),
+          [('f1', 'Bass', null), ('f2', 'Acid', 'f1')]);
+      expect(back.naming, c.naming);
+      final i = back.items.single;
+      expect((i.title, i.role, i.folderId), ('Acid', 'bass', 'f2'));
+      expect(i.displayName, 'Acid');
+      expect(i.chosenRole, MidiClipRole.bass);
+    });
+
+    test('a collection from before folders reads flat, with the standard naming',
+        () {
+      final json = pack(items: [_item('i1', _clip('Line', 36))]).toJson();
+      expect(json.containsKey('folders'), isFalse);
+      expect(json.containsKey('naming'), isFalse, reason: 'the default goes unsaid');
+      final back = MidiCollection.tryParse(json)!;
+      expect(back.folders, isEmpty);
+      expect(back.naming, MidiNamingTemplate.standard);
+      final i = back.items.single;
+      expect(i.folderId, isNull);
+      expect(i.displayName, 'Bass – Line');
+      expect(i.chosenRole, isNull);
+      expect(i.copyWith(role: 'mystery').chosenRole, isNull,
+          reason: 'a role this build lacks is suggested again');
+    });
+
+    test('folder paths, contents and the tree', () {
+      final c = pack(
+        folders: const [
+          MidiCollectionFolder(id: 'a', name: 'A'),
+          MidiCollectionFolder(id: 'b', name: 'B', parentId: 'a'),
+          MidiCollectionFolder(id: 'c', name: 'C', parentId: 'b'),
+          MidiCollectionFolder(id: 'd', name: 'D'),
+          MidiCollectionFolder(id: 'orphan', name: 'O', parentId: 'gone'),
+        ],
+        items: [
+          MidiCollectionItem(
+              id: 'x', clip: _clip('x', 40), addedAt: DateTime.utc(2026), folderId: 'b'),
+          MidiCollectionItem(
+              id: 'y', clip: _clip('y', 41), addedAt: DateTime.utc(2026), folderId: 'gone'),
+        ],
+      );
+      expect(c.folderPath('c').map((f) => f.name), ['A', 'B', 'C']);
+      expect(c.folderPath(null), isEmpty);
+      expect(c.foldersIn(null).map((f) => f.id), ['a', 'd', 'orphan']);
+      expect(c.itemsIn('b').map((i) => i.id), ['x']);
+      expect(c.itemsIn(null).map((i) => i.id), ['y'], reason: 'its folder is gone');
+      expect(c.folderAndDescendants('a'), {'a', 'b', 'c'});
+      expect(c.folderTree().map((e) => '${e.folder.id}${e.depth}'),
+          ['a0', 'b1', 'c2', 'd0', 'orphan0']);
+    });
+
+    test('a parent loop (two devices moving folders) neither hangs nor hides',
+        () {
+      final c = pack(folders: const [
+        MidiCollectionFolder(id: 'a', name: 'A', parentId: 'b'),
+        MidiCollectionFolder(id: 'b', name: 'B', parentId: 'a'),
+      ]);
+      expect(c.folderPath('a').map((f) => f.id), ['b', 'a']);
+      expect(c.foldersIn(null).map((f) => f.id), ['a', 'b'],
+          reason: 'shown at the top level rather than nowhere');
+    });
+  });
+
   group('MidiCollectionStore', () {
     late Directory tempDir;
     late DateTime now;
@@ -184,6 +282,99 @@ void main() {
       expect(tombstone.deleted, isTrue);
       expect(tombstone.items, isEmpty, reason: 'no clip data kept for a deleted collection');
       expect(tombstone.updatedAt, now);
+    });
+
+    group('folders, names, roles and order', () {
+      late String id;
+
+      setUp(() async {
+        id = (await store.create('Pack')).id;
+        await store.addItems(id, [
+          _item('i1', _clip('a', 40)),
+          _item('i2', _clip('b', 41)),
+          _item('i3', _clip('c', 42)),
+          _item('i4', _clip('d', 43)),
+        ]);
+      });
+
+      Future<MidiCollection> pack() async => (await store.get(id))!;
+
+      test('folders nest, rename and move — never into themselves', () async {
+        final bass = (await store.addFolder(id, ' Bass '))!;
+        final acid = (await store.addFolder(id, 'Acid', parentId: bass))!;
+        expect(await store.addFolder(id, '  '), isNull);
+        await store.renameFolder(id, acid, 'Acid lines');
+        var c = await pack();
+        expect(c.folderPath(acid).map((f) => f.name), ['Bass', 'Acid lines']);
+
+        await store.moveFolder(id, bass, acid);
+        expect((await pack()).folderById(bass)!.parentId, isNull,
+            reason: 'into its own child: refused');
+        await store.moveFolder(id, acid, null);
+        c = await pack();
+        expect(c.folderById(acid)!.parentId, isNull);
+      });
+
+      test('moving clips puts them at the end of the folder, in order', () async {
+        final f = (await store.addFolder(id, 'Keep'))!;
+        await store.moveItemsToFolder(id, ['i3'], f);
+        now = now.add(const Duration(minutes: 1));
+        await store.moveItemsToFolder(id, ['i4', 'i1'], f);
+        final c = await pack();
+        expect(c.itemsIn(f).map((i) => i.id), ['i3', 'i1', 'i4']);
+        expect(c.itemsIn(null).map((i) => i.id), ['i2']);
+        expect(c.updatedAt, now, reason: 'a move syncs');
+      });
+
+      test('deleting a folder moves what it held up a level', () async {
+        final outer = (await store.addFolder(id, 'Outer'))!;
+        final inner = (await store.addFolder(id, 'Inner', parentId: outer))!;
+        final deep = (await store.addFolder(id, 'Deep', parentId: inner))!;
+        await store.moveItemsToFolder(id, ['i1'], inner);
+        await store.deleteFolder(id, inner);
+        final c = await pack();
+        expect(c.folderById(inner), isNull);
+        expect(c.folderById(deep)!.parentId, outer);
+        expect(c.items.firstWhere((i) => i.id == 'i1').folderId, outer);
+        expect(c.items, hasLength(4), reason: 'no clip is lost');
+      });
+
+      test('reordering within a folder leaves the others where they were',
+          () async {
+        final f = (await store.addFolder(id, 'F'))!;
+        await store.moveItemsToFolder(id, ['i2', 'i4'], f);
+        // Top level: i1, i3. F: i2, i4.
+        await store.reorderInFolder(id, null, 1, 0);
+        var c = await pack();
+        expect(c.itemsIn(null).map((i) => i.id), ['i3', 'i1']);
+        expect(c.itemsIn(f).map((i) => i.id), ['i2', 'i4']);
+
+        // ReorderableListView's "down one": to counts the moved row.
+        await store.reorderInFolder(id, f, 0, 2);
+        c = await pack();
+        expect(c.itemsIn(f).map((i) => i.id), ['i4', 'i2']);
+      });
+
+      test('names, roles and the naming template', () async {
+        await store.renameItem(id, 'i1', '  Big riff ');
+        await store.setItemRole(id, 'i1', MidiClipRole.lead);
+        var item = (await pack()).items.first;
+        expect(item.title, 'Big riff');
+        expect(item.chosenRole, MidiClipRole.lead);
+
+        await store.renameItem(id, 'i1', ' ');
+        await store.setItemRole(id, 'i1', null);
+        item = (await pack()).items.first;
+        expect(item.title, isNull, reason: 'blank: back to its own name');
+        expect(item.role, isNull, reason: 'back to suggesting');
+
+        const naming = MidiNamingTemplate(numbered: false);
+        now = now.add(const Duration(minutes: 1));
+        await store.setNaming(id, naming);
+        final c = await pack();
+        expect(c.naming, naming);
+        expect(c.updatedAt, now);
+      });
     });
 
     group('mergeIncoming', () {

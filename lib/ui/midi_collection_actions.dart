@@ -151,6 +151,9 @@ Future<String?> promptCollectionName(
   required String title,
   required String action,
   String initial = '',
+  String? hint,
+  String? helper,
+  bool allowBlank = false,
 }) =>
     showDialog<String>(
       context: context,
@@ -158,6 +161,9 @@ Future<String?> promptCollectionName(
         title: title,
         action: action,
         initial: initial,
+        hint: hint,
+        helper: helper,
+        allowBlank: allowBlank,
       ),
     );
 
@@ -172,11 +178,24 @@ class CollectionNameDialog extends StatefulWidget {
     required this.title,
     required this.action,
     this.initial = '',
+    this.hint,
+    this.helper,
+    this.allowBlank = false,
   });
 
   final String title;
   final String action;
   final String initial;
+
+  /// In the empty field; the collection name hint unless given.
+  final String? hint;
+
+  /// Under the field.
+  final String? helper;
+
+  /// Whether a blank name can be confirmed (it comes back as '') — for a
+  /// name that falls back to another when left blank.
+  final bool allowBlank;
 
   @override
   State<CollectionNameDialog> createState() => _CollectionNameDialogState();
@@ -194,8 +213,10 @@ class _CollectionNameDialogState extends State<CollectionNameDialog> {
 
   String get _name => _controller.text.trim();
 
+  bool get _canSubmit => widget.allowBlank || _name.isNotEmpty;
+
   void _submit() {
-    if (_name.isNotEmpty) Navigator.of(context).pop(_name);
+    if (_canSubmit) Navigator.of(context).pop(_name);
   }
 
   @override
@@ -206,7 +227,10 @@ class _CollectionNameDialogState extends State<CollectionNameDialog> {
       content: TextField(
         controller: _controller,
         autofocus: true,
-        decoration: InputDecoration(hintText: l10n.midiCollectionNameHint),
+        decoration: InputDecoration(
+          hintText: widget.hint ?? l10n.midiCollectionNameHint,
+          helperText: widget.helper,
+        ),
         onChanged: (_) => setState(() {}),
         onSubmitted: (_) => _submit(),
       ),
@@ -216,7 +240,7 @@ class _CollectionNameDialogState extends State<CollectionNameDialog> {
           child: Text(l10n.cancel),
         ),
         FilledButton(
-          onPressed: _name.isEmpty ? null : _submit,
+          onPressed: _canSubmit ? _submit : null,
           child: Text(widget.action),
         ),
       ],

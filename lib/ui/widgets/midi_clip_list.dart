@@ -74,6 +74,24 @@ class MidiClipListLabels {
 /// wraps the drag handle in whatever makes it draggable (the page passes a
 /// `DragItemWidget`, which needs a native plugin and so can't run in widget
 /// tests); null hides the handle, as on mobile.
+/// One more thing a row can do — a collection's rename, role, move… —
+/// listed in the row's menu.
+class MidiClipRowAction {
+  const MidiClipRowAction({
+    required this.label,
+    required this.icon,
+    required this.onSelected,
+    this.id,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onSelected;
+
+  /// Names the menu entry for tests (`midi-row-action-<id>`).
+  final String? id;
+}
+
 class MidiClipList extends StatefulWidget {
   const MidiClipList({
     super.key,
@@ -97,6 +115,9 @@ class MidiClipList extends StatefulWidget {
     this.detailPrefixOf,
     this.compact = false,
     this.expandAllUpTo = 12,
+    this.titleOf,
+    this.fileNameOf,
+    this.actionsOf,
   });
 
   final List<MidiClip> clips;
@@ -146,7 +167,7 @@ class MidiClipList extends StatefulWidget {
   final int? preparingIndex;
 
   final Widget Function(BuildContext context, int index, Widget handle)?
-      dragHandleBuilder;
+  dragHandleBuilder;
 
   /// The heading clip [index] is listed under; defaults to its track.
   final String? Function(int index)? groupLabelOf;
@@ -158,6 +179,16 @@ class MidiClipList extends StatefulWidget {
 
   final bool compact;
   final int expandAllUpTo;
+
+  /// The row's name in place of the clip's (a collection item's own).
+  final String Function(int index)? titleOf;
+
+  /// The file the clip exports as, shown under its details.
+  final String? Function(int index)? fileNameOf;
+
+  /// More things the row can do, in its menu (desktop: a menu button of
+  /// its own; phone: after the rest of the overflow menu).
+  final List<MidiClipRowAction> Function(int index)? actionsOf;
 
   @override
   State<MidiClipList> createState() => _MidiClipListState();
@@ -206,8 +237,7 @@ class _MidiClipListState extends State<MidiClipList> {
         ],
       );
     }
-    final labelOf =
-        widget.groupLabelOf ?? (int i) => widget.clips[i].trackName;
+    final labelOf = widget.groupLabelOf ?? (int i) => widget.clips[i].trackName;
     final groups = groupMidiClips(widget.clips.length, labelOf);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,9 +251,7 @@ class _MidiClipListState extends State<MidiClipList> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (final i in group.clipIndices) _row(context, i),
-                ],
+                children: [for (final i in group.clipIndices) _row(context, i)],
               ),
             ),
         ],
@@ -262,8 +290,7 @@ class _MidiClipListState extends State<MidiClipList> {
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontStyle:
-                        group.label == null ? FontStyle.italic : null,
+                    fontStyle: group.label == null ? FontStyle.italic : null,
                   ),
                 ),
               ),
@@ -299,7 +326,12 @@ class _MidiClipListState extends State<MidiClipList> {
       labels.notes(clip.notes.length),
       if (clip.occurrences > 1) labels.usedTimes(clip.occurrences),
     ];
-    final title = clip.name.isNotEmpty ? clip.name : (clip.trackName ?? '');
+    final title =
+        widget.titleOf?.call(index) ??
+        (clip.name.isNotEmpty ? clip.name : (clip.trackName ?? ''));
+    final fileName = widget.fileNameOf?.call(index);
+    final actions =
+        widget.actionsOf?.call(index) ?? const <MidiClipRowAction>[];
 
     final handle = widget.dragHandleBuilder;
     final playButton = preparing
@@ -379,6 +411,18 @@ class _MidiClipListState extends State<MidiClipList> {
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall,
                 ),
+                if (fileName != null)
+                  Text(
+                    fileName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontFamily: 'monospace',
+                      color: theme.textTheme.bodySmall?.color?.withValues(
+                        alpha: 0.7,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -397,10 +441,8 @@ class _MidiClipListState extends State<MidiClipList> {
                 builder: (buttonContext) => IconButton(
                   tooltip: labels.addToCollection,
                   icon: const Icon(Icons.playlist_add),
-                  onPressed: () => widget.onAddToCollection!(
-                    index,
-                    _rectOf(buttonContext),
-                  ),
+                  onPressed: () =>
+                      widget.onAddToCollection!(index, _rectOf(buttonContext)),
                 ),
               ),
             if (widget.onRemove != null)
@@ -428,6 +470,14 @@ class _MidiClipListState extends State<MidiClipList> {
                 icon: const Icon(Icons.save_alt),
                 onPressed: () => widget.onSave!(index),
               ),
+            if (actions.isNotEmpty)
+              PopupMenuButton<MidiClipRowAction>(
+                key: ValueKey('midi-row-actions-$index'),
+                tooltip: labels.more,
+                icon: const Icon(Icons.more_vert),
+                onSelected: (a) => a.onSelected(),
+                itemBuilder: (_) => [for (final a in actions) _actionItem(a)],
+              ),
           ],
         ],
       ),
@@ -450,13 +500,20 @@ class _MidiClipListState extends State<MidiClipList> {
   /// Phones: instrument, collection, share and save behind one button.
   Widget _overflowMenu(BuildContext context, int index) {
     final labels = widget.labels;
+    final actions =
+        widget.actionsOf?.call(index) ?? const <MidiClipRowAction>[];
     return Builder(
-      builder: (menuContext) => PopupMenuButton<_RowAction>(
+      builder: (menuContext) => PopupMenuButton<Object>(
+        key: ValueKey('midi-row-actions-$index'),
         tooltip: labels.more,
         icon: const Icon(Icons.more_vert),
-        onSelected: (action) async {
+        onSelected: (selected) async {
           final origin = _rectOf(menuContext);
-          switch (action) {
+          if (selected is MidiClipRowAction) {
+            selected.onSelected();
+            return;
+          }
+          switch (selected as _RowAction) {
             case _RowAction.instrument:
               final voice = await showDialog<SynthVoice>(
                 context: context,
@@ -510,10 +567,24 @@ class _MidiClipListState extends State<MidiClipList> {
             ),
           if (widget.onSave != null)
             PopupMenuItem(value: _RowAction.save, child: Text(labels.save)),
+          if (actions.isNotEmpty) const PopupMenuDivider(),
+          for (final a in actions) _actionItem(a),
         ],
       ),
     );
   }
+
+  PopupMenuItem<T> _actionItem<T>(MidiClipRowAction a) => PopupMenuItem<T>(
+    key: a.id == null ? null : ValueKey('midi-row-action-${a.id}'),
+    value: a as T,
+    child: Row(
+      children: [
+        Icon(a.icon, size: 18),
+        const SizedBox(width: 12),
+        Flexible(child: Text(a.label)),
+      ],
+    ),
+  );
 }
 
 enum _RowAction { open, instrument, share, openProject, add, remove, save }
@@ -525,14 +596,14 @@ Rect? _rectOf(BuildContext context) {
 }
 
 IconData _voiceIcon(SynthVoice voice) => switch (voice) {
-      SynthVoice.keys || SynthVoice.organ => Icons.piano,
-      SynthVoice.bass => Icons.graphic_eq,
-      SynthVoice.pad || SynthVoice.strings => Icons.waves,
-      SynthVoice.bell || SynthVoice.pluck => Icons.notifications_none,
-      SynthVoice.lead || SynthVoice.brass => Icons.campaign_outlined,
-      _ when voice.isDrum => Icons.album_outlined,
-      _ => Icons.tune,
-    };
+  SynthVoice.keys || SynthVoice.organ => Icons.piano,
+  SynthVoice.bass => Icons.graphic_eq,
+  SynthVoice.pad || SynthVoice.strings => Icons.waves,
+  SynthVoice.bell || SynthVoice.pluck => Icons.notifications_none,
+  SynthVoice.lead || SynthVoice.brass => Icons.campaign_outlined,
+  _ when voice.isDrum => Icons.album_outlined,
+  _ => Icons.tune,
+};
 
 /// The instrument a clip previews with: an icon for its family, and a menu
 /// of every voice with the current one checked. The clip list's rows and
@@ -571,8 +642,10 @@ class MidiVoicePicker extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(voiceName(voice),
-                      style: Theme.of(context).textTheme.labelLarge),
+                  Text(
+                    voiceName(voice),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
                   const Icon(Icons.arrow_drop_down),
                 ],
               ),
@@ -681,7 +754,10 @@ class _PianoRollPainter extends CustomPainter {
     final length = clip.lengthTicks.toDouble();
     for (final n in notes) {
       final x = 2 + (size.width - 4) * n.startTick / length;
-      final w = ((size.width - 4) * n.lengthTicks / length).clamp(1.5, size.width);
+      final w = ((size.width - 4) * n.lengthTicks / length).clamp(
+        1.5,
+        size.width,
+      );
       final y = 2 + (hi - n.pitch) * rowHeight + (rowHeight - barHeight) / 2;
       canvas.drawRect(Rect.fromLTWH(x, y, w, barHeight), paint);
     }

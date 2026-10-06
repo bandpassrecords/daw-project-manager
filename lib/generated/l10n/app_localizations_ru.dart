@@ -6720,4 +6720,137 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get midiShortcutLoopToggle =>
       'Верхняя половина полосы цикла: включить или выключить цикл (серая, пока выключен)';
+
+  @override
+  String get midiRoleMelody => 'Мелодия';
+
+  @override
+  String get midiRoleBass => 'Бас';
+
+  @override
+  String get midiRoleChords => 'Аккорды';
+
+  @override
+  String get midiRoleArp => 'Арпеджио';
+
+  @override
+  String get midiRoleLead => 'Лид';
+
+  @override
+  String get midiRolePad => 'Пэд';
+
+  @override
+  String get midiRoleDrums => 'Ударные';
+
+  @override
+  String get midiRoleFx => 'FX';
+
+  @override
+  String get midiRoleOther => 'Другое';
+
+  @override
+  String get midiRoleLabel => 'Роль';
+
+  @override
+  String midiRoleAutomatic(String role) {
+    return 'Автоматически ($role)';
+  }
+
+  @override
+  String midiItemRoleMenu(String role) {
+    return 'Роль: $role';
+  }
+
+  @override
+  String get midiNameFree => 'свободно';
+
+  @override
+  String get midiNamingTitle => 'Имена файлов';
+
+  @override
+  String get midiNamingNumbered => 'Нумеровать файлы';
+
+  @override
+  String get midiNamingNumberedHint =>
+      '01, 02… в порядке каждой папки, чтобы файловый менеджер показывал их так же';
+
+  @override
+  String get midiNamingSeparator => 'Разделитель';
+
+  @override
+  String get midiNamingFields => 'В имени';
+
+  @override
+  String get midiNamingFieldsHint => 'Перетащите, чтобы изменить порядок';
+
+  @override
+  String get midiNameFieldName => 'Название';
+
+  @override
+  String get midiNameFieldBpm => 'Темп (BPM)';
+
+  @override
+  String get midiNameFieldKey => 'Тональность';
+
+  @override
+  String get midiNameFieldBars => 'Длина в тактах';
+
+  @override
+  String get midiNameFieldTimeSignature => 'Размер (если не 4/4)';
+
+  @override
+  String get midiNameFieldGrid => 'Квантизация (1-16, свободно…)';
+
+  @override
+  String get midiNameFieldInstrument => 'Инструмент';
+
+  @override
+  String get midiNamingPreview => 'Пример';
+
+  @override
+  String get midiNamingReset => 'По умолчанию';
+
+  @override
+  String get midiFolderNew => 'Новая папка';
+
+  @override
+  String get midiFolderRename => 'Переименовать папку';
+
+  @override
+  String get midiFolderDelete => 'Удалить папку';
+
+  @override
+  String midiFolderDeleteConfirm(String name) {
+    return 'Удалить папку «$name»? Её клипы и папки переместятся на уровень выше.';
+  }
+
+  @override
+  String get midiFolderName => 'Имя папки';
+
+  @override
+  String get midiFolderLabel => 'Папка';
+
+  @override
+  String get midiFolderTopLevel => 'Верхний уровень';
+
+  @override
+  String get midiMoveTo => 'Переместить в…';
+
+  @override
+  String get midiMoveUp => 'Переместить вверх';
+
+  @override
+  String get midiMoveDown => 'Переместить вниз';
+
+  @override
+  String get midiItemRename => 'Переименовать';
+
+  @override
+  String get midiItemNameHint => 'Пусто: собственное имя клипа';
+
+  @override
+  String get midiSaveClipTitle => 'Сохранить клип';
+
+  @override
+  String get midiSaveFileName => 'Имя файла';
 }

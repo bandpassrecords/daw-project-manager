@@ -11236,6 +11236,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The loop\'s bar, top half: turn looping on or off (grey while off)'**
   String get midiShortcutLoopToggle;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Melody'**
+  String get midiRoleMelody;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Bass'**
+  String get midiRoleBass;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Chords'**
+  String get midiRoleChords;
+
+  /// MIDI clip role: an arpeggio
+  ///
+  /// In en, this message translates to:
+  /// **'Arp'**
+  String get midiRoleArp;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Lead'**
+  String get midiRoleLead;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Pad'**
+  String get midiRolePad;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Drums'**
+  String get midiRoleDrums;
+
+  /// MIDI clip role: sound effects
+  ///
+  /// In en, this message translates to:
+  /// **'FX'**
+  String get midiRoleFx;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get midiRoleOther;
+
+  /// Label: what part a MIDI clip plays (melody, bass…)
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get midiRoleLabel;
+
+  /// Role choice that lets the app suggest one; {role} is what it suggests now
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic ({role})'**
+  String midiRoleAutomatic(String role);
+
+  /// Clip menu entry showing the current role
+  ///
+  /// In en, this message translates to:
+  /// **'Role: {role}'**
+  String midiItemRoleMenu(String role);
+
+  /// In a MIDI file name: the notes keep to no quantization grid
+  ///
+  /// In en, this message translates to:
+  /// **'free'**
+  String get midiNameFree;
+
+  /// Dialog title and button: how a collection names its exported MIDI files
+  ///
+  /// In en, this message translates to:
+  /// **'File naming'**
+  String get midiNamingTitle;
+
+  /// Switch: start each exported file name with its number
+  ///
+  /// In en, this message translates to:
+  /// **'Number the files'**
+  String get midiNamingNumbered;
+
+  /// Explains the numbering switch
+  ///
+  /// In en, this message translates to:
+  /// **'01, 02… in each folder\'s order, so a file browser lists them that way'**
+  String get midiNamingNumberedHint;
+
+  /// Label: what goes between the parts of a file name
+  ///
+  /// In en, this message translates to:
+  /// **'Separator'**
+  String get midiNamingSeparator;
+
+  /// Heading: the parts a file name is made of
+  ///
+  /// In en, this message translates to:
+  /// **'In the name'**
+  String get midiNamingFields;
+
+  /// Hint under the list of file name parts
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to change the order'**
+  String get midiNamingFieldsHint;
+
+  /// File name part: the clip name
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get midiNameFieldName;
+
+  /// File name part: the tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo (BPM)'**
+  String get midiNameFieldBpm;
+
+  /// File name part: the musical key or scale
+  ///
+  /// In en, this message translates to:
+  /// **'Key'**
+  String get midiNameFieldKey;
+
+  /// File name part: how many bars long
+  ///
+  /// In en, this message translates to:
+  /// **'Length in bars'**
+  String get midiNameFieldBars;
+
+  /// File name part: the time signature, written only when it is not 4/4
+  ///
+  /// In en, this message translates to:
+  /// **'Time signature (when not 4/4)'**
+  String get midiNameFieldTimeSignature;
+
+  /// File name part: the finest grid the notes start on
+  ///
+  /// In en, this message translates to:
+  /// **'Quantization (1-16, free…)'**
+  String get midiNameFieldGrid;
+
+  /// File name part: the preview instrument
+  ///
+  /// In en, this message translates to:
+  /// **'Instrument'**
+  String get midiNameFieldInstrument;
+
+  /// Label above an example file name
+  ///
+  /// In en, this message translates to:
+  /// **'Example'**
+  String get midiNamingPreview;
+
+  /// Button: back to the default file naming
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get midiNamingReset;
+
+  /// Button: a new folder inside a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'New folder'**
+  String get midiFolderNew;
+
+  /// Menu entry and dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Rename folder'**
+  String get midiFolderRename;
+
+  /// Menu entry and dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete folder'**
+  String get midiFolderDelete;
+
+  /// Confirms deleting a folder of a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'Delete the folder \"{name}\"? Its clips and folders move up one level.'**
+  String midiFolderDeleteConfirm(String name);
+
+  /// Text field label
+  ///
+  /// In en, this message translates to:
+  /// **'Folder name'**
+  String get midiFolderName;
+
+  /// Label: the folder a clip goes in
+  ///
+  /// In en, this message translates to:
+  /// **'Folder'**
+  String get midiFolderLabel;
+
+  /// The collection's top level, outside any folder
+  ///
+  /// In en, this message translates to:
+  /// **'Top level'**
+  String get midiFolderTopLevel;
+
+  /// Menu entry: move a clip or folder into another folder
+  ///
+  /// In en, this message translates to:
+  /// **'Move to…'**
+  String get midiMoveTo;
+
+  /// Menu entry: earlier in the order
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get midiMoveUp;
+
+  /// Menu entry: later in the order
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get midiMoveDown;
+
+  /// Menu entry and dialog title: rename a clip in a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get midiItemRename;
+
+  /// Helper text under the clip name field
+  ///
+  /// In en, this message translates to:
+  /// **'Blank: the clip\'s own name'**
+  String get midiItemNameHint;
+
+  /// Dialog title: saving a newly drawn clip into a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Save clip'**
+  String get midiSaveClipTitle;
+
+  /// Label above the file name a clip will export as
+  ///
+  /// In en, this message translates to:
+  /// **'File name'**
+  String get midiSaveFileName;
 }
 
 class _AppLocalizationsDelegate

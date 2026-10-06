@@ -6522,4 +6522,137 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiShortcutLoopToggle => 'ループのバーの上半分：ループのオン・オフ（オフの間はグレー）';
+
+  @override
+  String get midiRoleMelody => 'メロディ';
+
+  @override
+  String get midiRoleBass => 'ベース';
+
+  @override
+  String get midiRoleChords => 'コード';
+
+  @override
+  String get midiRoleArp => 'アルペジオ';
+
+  @override
+  String get midiRoleLead => 'リード';
+
+  @override
+  String get midiRolePad => 'パッド';
+
+  @override
+  String get midiRoleDrums => 'ドラム';
+
+  @override
+  String get midiRoleFx => 'FX';
+
+  @override
+  String get midiRoleOther => 'その他';
+
+  @override
+  String get midiRoleLabel => '役割';
+
+  @override
+  String midiRoleAutomatic(String role) {
+    return '自動（$role）';
+  }
+
+  @override
+  String midiItemRoleMenu(String role) {
+    return '役割: $role';
+  }
+
+  @override
+  String get midiNameFree => 'フリー';
+
+  @override
+  String get midiNamingTitle => 'ファイル名の付け方';
+
+  @override
+  String get midiNamingNumbered => 'ファイルに番号を付ける';
+
+  @override
+  String get midiNamingNumberedHint =>
+      '各フォルダーの並び順で 01, 02… と付け、ファイルブラウザーでもその順に並ぶようにします';
+
+  @override
+  String get midiNamingSeparator => '区切り文字';
+
+  @override
+  String get midiNamingFields => '名前に含める項目';
+
+  @override
+  String get midiNamingFieldsHint => 'ドラッグで順序を変更';
+
+  @override
+  String get midiNameFieldName => '名前';
+
+  @override
+  String get midiNameFieldBpm => 'テンポ (BPM)';
+
+  @override
+  String get midiNameFieldKey => 'キー';
+
+  @override
+  String get midiNameFieldBars => '小節数';
+
+  @override
+  String get midiNameFieldTimeSignature => '拍子（4/4 以外のとき）';
+
+  @override
+  String get midiNameFieldGrid => 'クオンタイズ（1-16、フリー…）';
+
+  @override
+  String get midiNameFieldInstrument => '楽器';
+
+  @override
+  String get midiNamingPreview => '例';
+
+  @override
+  String get midiNamingReset => 'デフォルト';
+
+  @override
+  String get midiFolderNew => '新しいフォルダー';
+
+  @override
+  String get midiFolderRename => 'フォルダー名を変更';
+
+  @override
+  String get midiFolderDelete => 'フォルダーを削除';
+
+  @override
+  String midiFolderDeleteConfirm(String name) {
+    return 'フォルダー「$name」を削除しますか？中のクリップとフォルダーは1つ上の階層に移動します。';
+  }
+
+  @override
+  String get midiFolderName => 'フォルダー名';
+
+  @override
+  String get midiFolderLabel => 'フォルダー';
+
+  @override
+  String get midiFolderTopLevel => '最上位';
+
+  @override
+  String get midiMoveTo => '移動…';
+
+  @override
+  String get midiMoveUp => '上へ移動';
+
+  @override
+  String get midiMoveDown => '下へ移動';
+
+  @override
+  String get midiItemRename => '名前を変更';
+
+  @override
+  String get midiItemNameHint => '空欄: クリップ本来の名前';
+
+  @override
+  String get midiSaveClipTitle => 'クリップを保存';
+
+  @override
+  String get midiSaveFileName => 'ファイル名';
 }

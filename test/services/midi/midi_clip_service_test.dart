@@ -129,6 +129,32 @@ void main() {
     }
   });
 
+  test('exportAll writes a collection\'s folders, names unique per folder',
+      () async {
+    const clip = MidiClip(
+      name: 'Riff',
+      ppq: 480,
+      lengthTicks: 480,
+      notes: [MidiNote(startTick: 0, lengthTicks: 10, pitch: 60, velocity: 100)],
+    );
+    final out = Directory(p.join(tempDir.path, 'pack'));
+    final written = await MidiClipService.exportAll(
+      [
+        const MidiExport(clip, name: '01 Riff.mid', folders: ['Bass', 'Acid']),
+        const MidiExport(clip, name: '01 Riff.mid'),
+        const MidiExport(clip, name: '01 Riff.mid', folders: ['Bass', 'Acid']),
+      ],
+      out,
+    );
+    expect(
+      written.map((f) => p.relative(f.path, from: out.path).replaceAll(r'\', '/')),
+      ['Bass/Acid/01 Riff.mid', '01 Riff.mid', 'Bass/Acid/01 Riff (2).mid'],
+    );
+    for (final f in written) {
+      expect(f.readAsBytesSync().sublist(0, 4), 'MThd'.codeUnits);
+    }
+  });
+
   test('renderPreview writes a WAV once and reuses it for the same clip',
       () async {
     const clip = MidiClip(

@@ -6449,4 +6449,136 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiShortcutLoopToggle => '循环条的上半部分：开启或关闭循环（关闭时为灰色）';
+
+  @override
+  String get midiRoleMelody => '旋律';
+
+  @override
+  String get midiRoleBass => '贝斯';
+
+  @override
+  String get midiRoleChords => '和弦';
+
+  @override
+  String get midiRoleArp => '琶音';
+
+  @override
+  String get midiRoleLead => '主音';
+
+  @override
+  String get midiRolePad => '铺底';
+
+  @override
+  String get midiRoleDrums => '鼓';
+
+  @override
+  String get midiRoleFx => 'FX';
+
+  @override
+  String get midiRoleOther => '其他';
+
+  @override
+  String get midiRoleLabel => '角色';
+
+  @override
+  String midiRoleAutomatic(String role) {
+    return '自动（$role）';
+  }
+
+  @override
+  String midiItemRoleMenu(String role) {
+    return '角色：$role';
+  }
+
+  @override
+  String get midiNameFree => '自由';
+
+  @override
+  String get midiNamingTitle => '文件命名';
+
+  @override
+  String get midiNamingNumbered => '为文件编号';
+
+  @override
+  String get midiNamingNumberedHint => '按每个文件夹中的顺序编号 01、02…，让文件浏览器按此顺序显示';
+
+  @override
+  String get midiNamingSeparator => '分隔符';
+
+  @override
+  String get midiNamingFields => '名称中包含';
+
+  @override
+  String get midiNamingFieldsHint => '拖动以更改顺序';
+
+  @override
+  String get midiNameFieldName => '名称';
+
+  @override
+  String get midiNameFieldBpm => '速度 (BPM)';
+
+  @override
+  String get midiNameFieldKey => '调性';
+
+  @override
+  String get midiNameFieldBars => '小节数';
+
+  @override
+  String get midiNameFieldTimeSignature => '拍号（非 4/4 时）';
+
+  @override
+  String get midiNameFieldGrid => '量化（1-16、自由…）';
+
+  @override
+  String get midiNameFieldInstrument => '乐器';
+
+  @override
+  String get midiNamingPreview => '示例';
+
+  @override
+  String get midiNamingReset => '默认';
+
+  @override
+  String get midiFolderNew => '新建文件夹';
+
+  @override
+  String get midiFolderRename => '重命名文件夹';
+
+  @override
+  String get midiFolderDelete => '删除文件夹';
+
+  @override
+  String midiFolderDeleteConfirm(String name) {
+    return '删除文件夹“$name”？其中的片段和文件夹会上移一级。';
+  }
+
+  @override
+  String get midiFolderName => '文件夹名称';
+
+  @override
+  String get midiFolderLabel => '文件夹';
+
+  @override
+  String get midiFolderTopLevel => '顶层';
+
+  @override
+  String get midiMoveTo => '移动到…';
+
+  @override
+  String get midiMoveUp => '上移';
+
+  @override
+  String get midiMoveDown => '下移';
+
+  @override
+  String get midiItemRename => '重命名';
+
+  @override
+  String get midiItemNameHint => '留空：使用片段自身的名称';
+
+  @override
+  String get midiSaveClipTitle => '保存片段';
+
+  @override
+  String get midiSaveFileName => '文件名';
 }
