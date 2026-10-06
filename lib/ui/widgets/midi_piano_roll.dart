@@ -169,6 +169,10 @@ MidiClip loopRegionClip(MidiClip clip, MidiTickRange region) {
   );
 }
 
+/// How tall the strip along the top of the ruler the loop region lives in
+/// is: the rest of the ruler is the bar numbers.
+const double kLoopStripHeight = 9;
+
 /// How far across the keyboard a black key reaches, as on a piano.
 const kBlackKeyWidthFraction = 0.6;
 
@@ -504,7 +508,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     with SingleTickerProviderStateMixin {
   // A touch wider than it needs to be, so the keys read as a piano.
   static const _keyboardWidth = 55.0;
-  static const _rulerHeight = 24.0;
+  static const _rulerHeight = 30.0;
   static const _maxZoom = 32.0;
 
   late final Ticker _ticker;
@@ -626,6 +630,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   }
 
   /// Runs the frame ticker exactly while the clip is playing.
+  /// The position last drawn, to notice a pause.
+  Duration? _lastTickPosition;
+
   void _syncTicker() {
     final playing = widget.positionOf?.call() != null;
     if (playing && !_ticker.isActive) {
@@ -708,6 +715,14 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
       _syncTicker();
       return;
     }
+    if (position == _lastTickPosition) {
+      // Paused: the position holds still, so does the line — no drawing a
+      // frame a time for nothing. The player's next notice (resume) starts
+      // the ticker again.
+      _ticker.stop();
+      return;
+    }
+    _lastTickPosition = position;
     // While the ruler is being dragged the line follows the pointer, not
     // the audio, until the drag lets go and the player jumps there.
     final tick = _scrubTick ??
@@ -753,9 +768,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     // half, like the rest of the ruler, jumps there.
     final toggle = widget.onLoopToggled;
     if (toggle != null &&
-        at.dy < _rulerHeight / 2 &&
-        _onLoopBody(x) &&
-        _loopEdgeAt(x) == null) {
+        _inLoopStrip(at.dy) &&
+        _onLoopBody(x, at.dy) &&
+        _loopEdgeAt(x, at.dy) == null) {
       toggle();
       return;
     }
@@ -766,9 +781,14 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   NoteEdge? _loopEdge;
 
   /// Which end of the loop region the ruler at [x] grabs, if either.
-  NoteEdge? _loopEdgeAt(double x) {
+  /// Whether a press at height [y] on the ruler is on the loop's strip
+  /// along its top — the rest is the bar numbers, where a click jumps.
+  static bool _inLoopStrip(double y) => y <= kLoopStripHeight + 2;
+
+  NoteEdge? _loopEdgeAt(double x, double y) {
     final r = widget.loopRegion;
     if (r == null || widget.onLoopRegionChanged == null) return null;
+    if (!_inLoopStrip(y)) return null;
     double xOf(int tick) => tick * _px - _scrollX;
     if ((x - xOf(r.end)).abs() <= 8) return NoteEdge.end;
     if ((x - xOf(r.start)).abs() <= 8) return NoteEdge.start;
@@ -786,9 +806,10 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   (double, MidiTickRange)? _loopMoveFrom;
 
   /// Whether the ruler at [x] is on the loop region, between its ends.
-  bool _onLoopBody(double x) {
+  bool _onLoopBody(double x, double y) {
     final r = widget.loopRegion;
     if (r == null || widget.onLoopRegionChanged == null) return false;
+    if (!_inLoopStrip(y)) return false;
     return x > r.start * _px - _scrollX && x < r.end * _px - _scrollX;
   }
 
@@ -816,8 +837,8 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   /// be grabbed; the plain pointer everywhere else, its middle included.
   MouseCursor _rulerCursor = SystemMouseCursors.basic;
 
-  void _updateRulerCursor(double x) {
-    final next = _loopEdgeAt(x) != null
+  void _updateRulerCursor(Offset at) {
+    final next = _loopEdgeAt(at.dx, at.dy) != null
         ? SystemMouseCursors.click
         : SystemMouseCursors.basic;
     if (next != _rulerCursor) setState(() => _rulerCursor = next);
@@ -1973,7 +1994,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                           child: MouseRegion(
                             cursor: _rulerCursor,
                             onHover: (e) =>
-                                _updateRulerCursor(e.localPosition.dx),
+                                _updateRulerCursor(e.localPosition),
                             child: GestureDetector(
                               key: const ValueKey('midi-piano-roll-ruler'),
                               behavior: HitTestBehavior.opaque,
@@ -1984,10 +2005,11 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                               onTapUp: (d) => _rulerTap(d.localPosition),
                               onHorizontalDragStart: (d) {
                                 final x = d.localPosition.dx;
-                                _loopEdge = _loopEdgeAt(x);
+                                final y = d.localPosition.dy;
+                                _loopEdge = _loopEdgeAt(x, y);
                                 if (_loopEdge != null) return;
                                 final r = widget.loopRegion;
-                                if (r != null && _onLoopBody(x)) {
+                                if (r != null && _onLoopBody(x, y)) {
                                   _loopMoveFrom = (x, r);
                                 } else {
                                   _scrubTo(x);
@@ -2643,16 +2665,18 @@ class _RollPainter extends CustomPainter {
         bar++) {
       if (bar % barStep != 0) continue;
       final x = _xOf(bar * beatsPerBar * beatTicks);
-      canvas.drawLine(Offset(x, rulerHeight * 0.45), Offset(x, rulerHeight),
+      canvas.drawLine(Offset(x, kLoopStripHeight), Offset(x, rulerHeight),
           Paint()..color = colors.barLine);
-      _text(canvas, '${bar + 1}', Offset(x + 3, rulerHeight / 2));
+      // Below the loop's strip, never under it.
+      _text(canvas, '${bar + 1}',
+          Offset(x + 3, kLoopStripHeight + (rulerHeight - kLoopStripHeight) / 2));
     }
-    // The loop region, over the bar numbers as in Cubase: a purple band
-    // with a handle at each end to drag.
+    // The loop region, in its own strip along the top as in Cubase — the bar
+    // numbers stay readable below: a purple band with a handle at each end.
     final loop = loopRegion;
     if (loop != null) {
       final band = Rect.fromLTRB(
-          _xOf(loop.start), 2, _xOf(loop.end), rulerHeight - 2);
+          _xOf(loop.start), 1, _xOf(loop.end), kLoopStripHeight);
       final hue = loopActive ? _loopPurple : _loopOff;
       canvas.drawRect(band, Paint()..color = hue.withValues(alpha: 0.45));
       final handle = Paint()..color = hue;
@@ -2660,9 +2684,9 @@ class _RollPainter extends CustomPainter {
         canvas.drawRRect(
           RRect.fromRectAndRadius(
               Rect.fromCenter(
-                  center: Offset(x, rulerHeight / 2),
+                  center: Offset(x, (1 + kLoopStripHeight) / 2),
                   width: 5,
-                  height: rulerHeight - 4),
+                  height: kLoopStripHeight),
               const Radius.circular(2)),
           handle,
         );

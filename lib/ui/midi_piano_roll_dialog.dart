@@ -742,12 +742,23 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   void _onEdit() {
     if (!mounted) return;
     setState(() {});
-    // A finished edit while the edited clip plays: carry on with the new
-    // notes from where it was.
-    final editor = _editor!;
-    if (_player.playingKey != _editKey || _player.paused) return;
-    if (identical(_playedEdit, editor.committed)) return;
-    _playHere(takeOver: true);
+    // What plays must be what is on screen: a finished edit — or an undo
+    // back to the clip as opened — takes over from wherever playback is,
+    // whichever version was playing. Only an edited version playing used to
+    // be swapped: start playback, then edit, and deleted notes went on
+    // sounding (for ever, looping) — ghosts.
+    if (_player.playingKey == null || !_isOurs || _player.paused) return;
+    if (_playingStale) _playHere(takeOver: true);
+  }
+
+  /// Whether the clip loaded in the player is no longer what is on screen:
+  /// edited (or undone) since it was rendered.
+  bool get _playingStale {
+    final playing = _player.playingKey;
+    if (playing == null || !_isOurs) return false;
+    final showing = _differs ? _editor!.committed : widget.clip;
+    final played = playing == _editKey ? _playedEdit : widget.clip;
+    return !identical(showing, played);
   }
 
   /// The loop region (Cubase's locators), set on the ruler. With looping on,
@@ -920,7 +931,15 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     if (!_isOurs) {
       _start();
     } else if (_player.paused) {
-      _player.resume();
+      if (_playingStale) {
+        // Edited while paused: resuming would play the notes as they were.
+        // Start what is on screen from the same spot instead.
+        final at = _player.positionOf(_player.playingKey!);
+        _player.stop();
+        _playHere(from: at);
+      } else {
+        _player.resume();
+      }
     } else {
       _player.pause();
     }

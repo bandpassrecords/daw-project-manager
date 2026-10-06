@@ -481,6 +481,58 @@ void main() {
     expect(saved.single.$1.notes.last.startTick, 1440);
   });
 
+  group('no ghost notes', () {
+    testWidgets(
+        'notes deleted while the clip as opened plays stop sounding: the '
+        'edit takes over', (tester) async {
+      await open(tester, clip: _fourNotes);
+      player.playingKey = 'k'; // the clip as opened, playing
+      await startEditing(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit5);
+      await tester.pumpAndSettle();
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.25 + 20, g.center.dy));
+      expect(player.requestedClip, isNotNull,
+          reason: 'what plays was swapped for what is on screen');
+      expect(player.requestedClip!.notes.map((n) => n.startTick),
+          [0, 960, 1440], reason: 'without the note just erased');
+      await player.stop();
+      await tester.pump(const Duration(seconds: 1));
+    });
+
+    testWidgets('edited while paused, resuming plays the edit, not the old',
+        (tester) async {
+      await open(tester, clip: _fourNotes);
+      player.playingKey = 'k';
+      await player.pause();
+      await startEditing(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.digit5);
+      await tester.pumpAndSettle();
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.25 + 20, g.center.dy));
+      expect(player.requestedClip, isNull, reason: 'paused: nothing yet');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(player.requestedClip!.notes.map((n) => n.startTick),
+          [0, 960, 1440]);
+      await player.stop();
+      await tester.pump(const Duration(seconds: 1));
+    });
+
+    testWidgets('nothing changed: nothing is swapped', (tester) async {
+      await open(tester, clip: _fourNotes);
+      player.playingKey = 'k';
+      await startEditing(tester);
+      final g = grid(tester);
+      await click(tester, Offset(g.left + g.width * 0.25 + 20, g.center.dy));
+      expect(player.requestedClip, isNull,
+          reason: 'a click that only selects changes no notes');
+      await player.stop();
+      await tester.pump(const Duration(seconds: 1));
+    });
+  });
+
   group('the pencil', () {
     Future<void> pickPencil(WidgetTester tester) async {
       // Cubase's key for the draw tool.
@@ -1096,10 +1148,10 @@ void main() {
     testWidgets('its middle drags it along, on the grid', (tester) async {
       await open(tester, clip: _fourNotes);
       final r = ruler(tester);
-      final drag = await tester
-          .startGesture(Offset(r.left + r.width * 0.5, r.center.dy));
+      final drag =
+          await tester.startGesture(Offset(r.left + r.width * 0.5, r.top + 4));
       await drag.moveTo(Offset(r.left + r.width * 0.5 + r.width * 0.25 + 9,
-          r.center.dy)); // a beat and a bit
+          r.top + 4)); // a beat and a bit
       await tester.pump();
       await drag.up();
       await tester.pump();
@@ -1107,7 +1159,7 @@ void main() {
           reason: 'moved whole, by whole grid steps');
     });
 
-    testWidgets('a click on its top half turns looping on or off',
+    testWidgets('a click on its strip turns looping on or off; below, no',
         (tester) async {
       await open(tester, clip: _fourNotes, loop: false);
       final r = ruler(tester);
@@ -1117,7 +1169,11 @@ void main() {
       expect(loopChanges, [true], reason: 'top half: the switch');
       await tester.tapAt(Offset(middle, r.bottom - 3));
       await tester.pump();
-      expect(loopChanges, [true], reason: 'bottom half: a jump, not the switch');
+      expect(loopChanges, [true],
+          reason: 'below the strip (the bar numbers): a jump, not the switch');
+      await tester.tapAt(Offset(middle, r.top + kLoopStripHeight + 6));
+      await tester.pump();
+      expect(loopChanges, [true], reason: 'just under the strip: no switch');
     });
 
     testWidgets('a hand only over its ends', (tester) async {
@@ -1131,22 +1187,27 @@ void main() {
                   matching: find.byType(MouseRegion))
               .first)
           .cursor;
-      await tester.sendEventToBinding(
-          mouse.hover(Offset(r.right - 3, r.center.dy)));
+      await tester.sendEventToBinding(mouse.hover(Offset(r.right - 3, r.top + 4)));
       await tester.pump();
       expect(cursor(), SystemMouseCursors.click, reason: 'its end');
       await tester.sendEventToBinding(
-          mouse.hover(Offset(r.left + r.width * 0.5, r.center.dy)));
+          mouse.hover(Offset(r.left + r.width * 0.5, r.top + 4)));
       await tester.pump();
       expect(cursor(), SystemMouseCursors.basic, reason: 'its middle');
+      await tester.sendEventToBinding(
+          mouse.hover(Offset(r.right - 3, r.bottom - 4)));
+      await tester.pump();
+      expect(cursor(), SystemMouseCursors.basic,
+          reason: 'below the strip, the bar numbers: no loop to grab');
     });
 
     testWidgets('Ctrl-click sets its start, Alt-click its end, an end drags',
         (tester) async {
       await open(tester, clip: _fourNotes);
       final r = ruler(tester);
+      // On the loop's strip along the top of the ruler.
       Offset at(double fraction) =>
-          Offset(r.left + r.width * fraction, r.center.dy);
+          Offset(r.left + r.width * fraction, r.top + 4);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
       await tester.tapAt(at(0.25));
       await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);

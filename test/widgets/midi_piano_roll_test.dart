@@ -588,6 +588,20 @@ void main() {
       expect(find.byIcon(Icons.my_location), findsNothing);
     });
 
+    testWidgets('paused, it stops drawing a frame at a time', (tester) async {
+      final playback = ValueNotifier(false);
+      await tester.pumpWidget(wrap(
+        _clip(),
+        playback: playback,
+        // Paused: a position, but one that never moves.
+        positionOf: () => const Duration(seconds: 1),
+      ));
+      playback.value = true;
+      // Would time out if the ticker kept asking for frames.
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('ticks only while playing', (tester) async {
       final playback = ValueNotifier(false);
       var polls = 0;
