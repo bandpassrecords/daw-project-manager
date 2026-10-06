@@ -11234,7 +11234,7 @@ abstract class AppLocalizations {
   /// Shortcut sheet action: dragging the purple loop ends on the ruler
   ///
   /// In en, this message translates to:
-  /// **'The loop\'s purple ends: fine-tune them (with looping on, only the loop plays)'**
+  /// **'The loop\'s purple bar: drag its ends to resize it, its middle to move it (with looping on, only the loop plays)'**
   String get midiShortcutLoopDrag;
 }
 

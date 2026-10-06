@@ -6737,5 +6737,5 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiShortcutLoopDrag =>
-      'Die lila Enden der Schleife: feinjustieren (mit Schleife an spielt nur sie)';
+      'Der lila Schleifenbalken: an den Enden ziehen ändert die Länge, in der Mitte verschiebt ihn (mit Schleife an spielt nur sie)';
 }

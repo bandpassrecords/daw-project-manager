@@ -6519,5 +6519,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get midiShortcutLoopEnd => 'ルーラーの上：ループの終了位置を設定';
 
   @override
-  String get midiShortcutLoopDrag => 'ループの紫の端：微調整（ループ再生中はその範囲だけ再生）';
+  String get midiShortcutLoopDrag =>
+      'ループの紫のバー：端をドラッグで長さを変更、中央をドラッグで移動（ループ再生中はその範囲だけ再生）';
 }

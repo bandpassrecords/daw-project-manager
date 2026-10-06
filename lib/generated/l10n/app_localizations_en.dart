@@ -6688,5 +6688,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get midiShortcutLoopDrag =>
-      'The loop\'s purple ends: fine-tune them (with looping on, only the loop plays)';
+      'The loop\'s purple bar: drag its ends to resize it, its middle to move it (with looping on, only the loop plays)';
 }

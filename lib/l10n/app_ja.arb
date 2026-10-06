@@ -4107,5 +4107,5 @@
   "midiTimeSignature": "拍子",
   "midiShortcutLoopStart": "ルーラーの上：ループの開始位置を設定",
   "midiShortcutLoopEnd": "ルーラーの上：ループの終了位置を設定",
-  "midiShortcutLoopDrag": "ループの紫の端：微調整（ループ再生中はその範囲だけ再生）"
+  "midiShortcutLoopDrag": "ループの紫のバー：端をドラッグで長さを変更、中央をドラッグで移動（ループ再生中はその範囲だけ再生）"
 }

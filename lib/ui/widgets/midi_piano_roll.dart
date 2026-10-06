@@ -414,6 +414,7 @@ class MidiPianoRoll extends StatefulWidget {
     this.timeSignature = TimeSignature.common,
     this.loopRegion,
     this.onLoopRegionChanged,
+    this.minViewTicks,
     this.acousticFeedback = false,
     this.onAcousticFeedbackChanged,
   });
@@ -430,9 +431,14 @@ class MidiPianoRoll extends StatefulWidget {
   final MidiTickRange? loopRegion;
 
   /// Lets the ruler set the loop region as Cubase does: Ctrl/Cmd-click sets
-  /// its start, Alt-click its end, and its ends can be dragged. Null: no
-  /// loop region.
+  /// its start, Alt-click its end; its ends drag to resize it, its middle to
+  /// move it. Null: no loop region.
   final ValueChanged<MidiTickRange>? onLoopRegionChanged;
+
+  /// At least this much is shown when the roll fits the clip — so a clip
+  /// drafted from nothing, one bar long, opens on room to draw in rather
+  /// than zoomed in on that bar.
+  final int? minViewTicks;
 
   /// Cubase's "acoustic feedback": notes sound as they are edited.
   final bool acousticFeedback;
@@ -690,18 +696,17 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
   /// The ruler was clicked: Ctrl/Cmd-click sets the loop region's start,
   /// Alt-click its end (as in Cubase); a plain click jumps there.
   void _rulerTap(double x) {
-    final tick = _tickAtRulerX(x);
     if (widget.onLoopRegionChanged != null) {
       if (_keys.isControlPressed || _keys.isMetaPressed) {
-        _setLoopEdge(NoteEdge.start, tick);
+        _setLoopEdge(NoteEdge.start, _loopTickAtRulerX(x));
         return;
       }
       if (_keys.isAltPressed) {
-        _setLoopEdge(NoteEdge.end, tick);
+        _setLoopEdge(NoteEdge.end, _loopTickAtRulerX(x));
         return;
       }
     }
-    _seekTo(tick);
+    _seekTo(_tickAtRulerX(x));
   }
 
   /// The loop region's end being dragged on the ruler, if one is.
@@ -717,19 +722,60 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
     return null;
   }
 
+  /// Not clamped to the clip, unlike [_tickAtRulerX]: a clip being edited
+  /// grows, and its loop can be dragged out ahead of it.
+  double _loopTickAtRulerX(double x) => math.max(0, (_scrollX + x) / _px);
+
   void _moveLoopEdge(NoteEdge edge, double x) =>
-      _setLoopEdge(edge, _tickAtRulerX(x), dragging: true);
+      _setLoopEdge(edge, _loopTickAtRulerX(x), dragging: true);
+
+  /// Where a drag of the loop region's middle began, and the region then.
+  (double, MidiTickRange)? _loopMoveFrom;
+
+  /// Whether the ruler at [x] is on the loop region, between its ends.
+  bool _onLoopBody(double x) {
+    final r = widget.loopRegion;
+    if (r == null || widget.onLoopRegionChanged == null) return false;
+    return x > r.start * _px - _scrollX && x < r.end * _px - _scrollX;
+  }
+
+  /// The loop region dragged by its middle: moved whole, by grid steps,
+  /// never before the start.
+  void _moveLoop(double x) {
+    final from = _loopMoveFrom!;
+    final r = from.$2;
+    final step = _loopStep();
+    final delta = ((x - from.$1) / _px / step).round() * step;
+    final start = math.max(0, r.start + delta);
+    final next = (start: start, end: start + (r.end - r.start));
+    if (next != widget.loopRegion) widget.onLoopRegionChanged!(next);
+  }
+
+  /// The grid the loop region snaps to: the snap setting, or the beat.
+  int _loopStep() {
+    final editor = widget.editor;
+    return editor != null && editor.snap != MidiSnap.off
+        ? editor.stepTicks
+        : widget.timeSignature.beatTicks(_shown.ppq);
+  }
+
+  /// The ruler's pointer: a hand on the loop region's ends, where they can
+  /// be grabbed; the plain pointer everywhere else, its middle included.
+  MouseCursor _rulerCursor = SystemMouseCursors.basic;
+
+  void _updateRulerCursor(double x) {
+    final next = _loopEdgeAt(x) != null
+        ? SystemMouseCursors.click
+        : SystemMouseCursors.basic;
+    if (next != _rulerCursor) setState(() => _rulerCursor = next);
+  }
 
   /// Puts one end of the loop region at [tick], on the grid (the snap, or
   /// the beat). The other end stays — a bar away when there is none yet —
   /// unless that would leave nothing between them.
   void _setLoopEdge(NoteEdge edge, double tick, {bool dragging = false}) {
-    final ppq = _shown.ppq;
-    final editor = widget.editor;
-    final step = editor != null && editor.snap != MidiSnap.off
-        ? editor.stepTicks
-        : widget.timeSignature.beatTicks(ppq);
-    final bar = widget.timeSignature.barTicks(ppq);
+    final step = _loopStep();
+    final bar = widget.timeSignature.barTicks(_shown.ppq);
     final at = math.max(0, (tick / step).round() * step);
     final r = widget.loopRegion;
     MidiTickRange next;
@@ -1688,9 +1734,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
             final laneHeight = _laneHeightFor(total.height);
             _view = Size(total.width, math.max(0, total.height - laneHeight));
             _laneHeight = laneHeight;
-            final fit = _shown.lengthTicks <= 0
-                ? 0.1
-                : _gridWidth / _shown.lengthTicks;
+            final viewTicks =
+                math.max(_shown.lengthTicks, widget.minViewTicks ?? 0);
+            final fit = viewTicks <= 0 ? 0.1 : _gridWidth / viewTicks;
             if (fit > 0) _fitPxPerTick = fit;
             if (_pxPerTick == null && fit > 0) {
               _pxPerTick = fit;
@@ -1814,7 +1860,9 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                           right: 0,
                           height: _rulerHeight,
                           child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
+                            cursor: _rulerCursor,
+                            onHover: (e) =>
+                                _updateRulerCursor(e.localPosition.dx),
                             child: GestureDetector(
                               key: const ValueKey('midi-piano-roll-ruler'),
                               behavior: HitTestBehavior.opaque,
@@ -1824,22 +1872,31 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                               dragStartBehavior: DragStartBehavior.down,
                               onTapUp: (d) => _rulerTap(d.localPosition.dx),
                               onHorizontalDragStart: (d) {
-                                _loopEdge = _loopEdgeAt(d.localPosition.dx);
-                                if (_loopEdge == null) {
-                                  _scrubTo(d.localPosition.dx);
+                                final x = d.localPosition.dx;
+                                _loopEdge = _loopEdgeAt(x);
+                                if (_loopEdge != null) return;
+                                final r = widget.loopRegion;
+                                if (r != null && _onLoopBody(x)) {
+                                  _loopMoveFrom = (x, r);
+                                } else {
+                                  _scrubTo(x);
                                 }
                               },
                               onHorizontalDragUpdate: (d) {
+                                final x = d.localPosition.dx;
                                 final edge = _loopEdge;
                                 if (edge != null) {
-                                  _moveLoopEdge(edge, d.localPosition.dx);
+                                  _moveLoopEdge(edge, x);
+                                } else if (_loopMoveFrom != null) {
+                                  _moveLoop(x);
                                 } else {
-                                  _scrubTo(d.localPosition.dx);
+                                  _scrubTo(x);
                                 }
                               },
                               onHorizontalDragEnd: (_) {
-                                if (_loopEdge != null) {
+                                if (_loopEdge != null || _loopMoveFrom != null) {
                                   _loopEdge = null;
+                                  _loopMoveFrom = null;
                                   return;
                                 }
                                 final tick = _scrubTick;
@@ -1847,6 +1904,7 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
                               },
                               onHorizontalDragCancel: () {
                                 _loopEdge = null;
+                                _loopMoveFrom = null;
                                 _scrubTick = null;
                               },
                             ),

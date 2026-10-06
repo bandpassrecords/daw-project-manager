@@ -4107,5 +4107,5 @@
   "midiTimeSignature": "Tempo in chiave",
   "midiShortcutLoopStart": "Sul righello: imposta dove inizia il loop",
   "midiShortcutLoopEnd": "Sul righello: imposta dove finisce il loop",
-  "midiShortcutLoopDrag": "Gli estremi viola del loop: regolali (con il loop attivo, suona solo lui)"
+  "midiShortcutLoopDrag": "La barra viola del loop: trascina gli estremi per ridimensionarla, il centro per spostarla (con il loop attivo, suona solo lei)"
 }

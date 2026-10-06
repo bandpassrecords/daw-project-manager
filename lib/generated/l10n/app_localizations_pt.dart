@@ -6716,5 +6716,5 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get midiShortcutLoopDrag =>
-      'As pontas roxas do loop: ajustá-las (com o loop ligado, só ele toca)';
+      'A barra roxa do loop: arraste as pontas para redimensioná-la e o meio para movê-la (com o loop ligado, só ela toca)';
 }

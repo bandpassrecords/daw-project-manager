@@ -6447,5 +6447,5 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiShortcutLoopEnd => '在标尺上：设置循环终点';
 
   @override
-  String get midiShortcutLoopDrag => '循环的紫色两端：微调（开启循环时只播放该段）';
+  String get midiShortcutLoopDrag => '循环的紫色条：拖动两端调整长度，拖动中间移动位置（开启循环时只播放该段）';
 }

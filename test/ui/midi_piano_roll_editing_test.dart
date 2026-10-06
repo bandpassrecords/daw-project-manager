@@ -12,6 +12,7 @@ import 'package:daw_project_manager/ui/widgets/midi_tempo_control.dart';
 import 'package:daw_project_manager/utils/time_signature.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
+import 'package:daw_project_manager/ui/widgets/midi_clip_edit_controller.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
 import 'package:daw_project_manager/utils/musical_scale.dart';
 
@@ -136,6 +137,7 @@ void main() {
     MidiPianoRollWindowLabels labels = _labels,
     bool feedback = false,
     bool startEditing = false,
+    bool lengthFollowsNotes = false,
   }) async {
     tester.view.physicalSize = const Size(1000, 700);
     tester.view.devicePixelRatio = 1;
@@ -170,6 +172,7 @@ void main() {
                     onAcousticFeedbackChanged: feedbackChanges.add,
                     auditioner: ear,
                     startEditing: startEditing,
+                    lengthFollowsNotes: lengthFollowsNotes,
                     onSaveEdited: editable
                         ? (edit) async {
                             saved.add((edit.clip, edit.musicalKey));
@@ -903,6 +906,64 @@ void main() {
   group('the loop region', () {
     Rect ruler(WidgetTester tester) =>
         tester.getRect(find.byKey(const ValueKey('midi-piano-roll-ruler')));
+
+    MidiTickRange? loopOf(WidgetTester tester) =>
+        tester.widget<MidiPianoRoll>(find.byType(MidiPianoRoll)).loopRegion;
+
+    testWidgets('a clip with a length opens with the loop spanning it',
+        (tester) async {
+      await open(tester, clip: _fourNotes);
+      expect(loopOf(tester), (start: 0, end: 1920));
+    });
+
+    testWidgets(
+        'a drafted clip opens unbounded on four bars, and is looped where '
+        'its notes end once saved', (tester) async {
+      await open(tester, startEditing: true, lengthFollowsNotes: true);
+      expect(loopOf(tester), isNull, reason: 'nothing bounds a new idea');
+      final g = grid(tester);
+      // Four bars across: three quarters in is the fourth bar.
+      await click(tester, Offset(g.left + g.width * 0.76, g.center.dy));
+      await save(tester);
+      expect(saved.single.$1.notes.last.startTick, 5760);
+      expect(saved.single.$1.lengthTicks, 7680);
+      expect(loopOf(tester), (start: 0, end: 7680));
+    });
+
+    testWidgets('its middle drags it along, on the grid', (tester) async {
+      await open(tester, clip: _fourNotes);
+      final r = ruler(tester);
+      final drag = await tester
+          .startGesture(Offset(r.left + r.width * 0.5, r.center.dy));
+      await drag.moveTo(Offset(r.left + r.width * 0.5 + r.width * 0.25 + 9,
+          r.center.dy)); // a beat and a bit
+      await tester.pump();
+      await drag.up();
+      await tester.pump();
+      expect(loopOf(tester), (start: 480, end: 2400),
+          reason: 'moved whole, by whole grid steps');
+    });
+
+    testWidgets('a hand only over its ends', (tester) async {
+      await open(tester, clip: _fourNotes);
+      final r = ruler(tester);
+      final mouse = TestPointer(1, PointerDeviceKind.mouse);
+      MouseCursor cursor() => tester
+          .widget<MouseRegion>(find
+              .ancestor(
+                  of: find.byKey(const ValueKey('midi-piano-roll-ruler')),
+                  matching: find.byType(MouseRegion))
+              .first)
+          .cursor;
+      await tester.sendEventToBinding(
+          mouse.hover(Offset(r.right - 3, r.center.dy)));
+      await tester.pump();
+      expect(cursor(), SystemMouseCursors.click, reason: 'its end');
+      await tester.sendEventToBinding(
+          mouse.hover(Offset(r.left + r.width * 0.5, r.center.dy)));
+      await tester.pump();
+      expect(cursor(), SystemMouseCursors.basic, reason: 'its middle');
+    });
 
     testWidgets('Ctrl-click sets its start, Alt-click its end, an end drags',
         (tester) async {

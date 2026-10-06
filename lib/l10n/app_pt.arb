@@ -4131,5 +4131,5 @@
   "midiTimeSignature": "Fórmula de compasso",
   "midiShortcutLoopStart": "Na régua: definir onde o loop começa",
   "midiShortcutLoopEnd": "Na régua: definir onde o loop termina",
-  "midiShortcutLoopDrag": "As pontas roxas do loop: ajustá-las (com o loop ligado, só ele toca)"
+  "midiShortcutLoopDrag": "A barra roxa do loop: arraste as pontas para redimensioná-la e o meio para movê-la (com o loop ligado, só ela toca)"
 }

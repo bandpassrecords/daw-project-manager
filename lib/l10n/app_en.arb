@@ -6558,7 +6558,7 @@
   "@midiShortcutLoopEnd": {
     "description": "Shortcut sheet action: Alt-click on the bar ruler"
   },
-  "midiShortcutLoopDrag": "The loop's purple ends: fine-tune them (with looping on, only the loop plays)",
+  "midiShortcutLoopDrag": "The loop's purple bar: drag its ends to resize it, its middle to move it (with looping on, only the loop plays)",
   "@midiShortcutLoopDrag": {
     "description": "Shortcut sheet action: dragging the purple loop ends on the ruler"
   }

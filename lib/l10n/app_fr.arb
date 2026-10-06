@@ -4107,5 +4107,5 @@
   "midiTimeSignature": "Signature rythmique",
   "midiShortcutLoopStart": "Sur la règle : placer le début de la boucle",
   "midiShortcutLoopEnd": "Sur la règle : placer la fin de la boucle",
-  "midiShortcutLoopDrag": "Les extrémités violettes de la boucle : les ajuster (boucle activée, seule elle est jouée)"
+  "midiShortcutLoopDrag": "La barre violette de la boucle : glissez ses extrémités pour la redimensionner, son milieu pour la déplacer (boucle activée, seule elle est jouée)"
 }

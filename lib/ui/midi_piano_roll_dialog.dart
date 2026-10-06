@@ -707,8 +707,14 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
   }
 
   /// The loop region (Cubase's locators), set on the ruler. With looping on,
-  /// playback cycles just this stretch.
-  MidiTickRange? _loopRegion;
+  /// playback cycles just this stretch. A clip with a length of its own
+  /// opens with it spanning that length; a clip drafted from nothing opens
+  /// with none (nothing bounds it while it is drawn), and gets one up to
+  /// the end of its last bar with notes once it is saved.
+  late MidiTickRange? _loopRegion =
+      widget.lengthFollowsNotes || widget.clip.lengthTicks <= 0
+          ? null
+          : (start: 0, end: widget.clip.lengthTicks);
 
   /// The region the playing preview was cut to, if it was: positions in it
   /// are offset by its start in the whole clip.
@@ -827,14 +833,20 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
     final save = widget.onSaveEdited;
     if (editor == null || save == null) return;
     final name = labels.editedName?.call(widget.clip.name) ?? widget.clip.name;
+    final clip = editor.finished.copyWith(name: name);
     final saved = await save(EditedMidiClip(
-      clip: editor.finished.copyWith(name: name),
+      clip: clip,
       musicalKey: _scale?.keyText ?? widget.musicalKey,
       voice: _voice,
       bpm: _bpm,
       timeSignature: _timeSignature,
     ));
-    if (saved && mounted) editor.markSaved();
+    if (!saved || !mounted) return;
+    editor.markSaved();
+    // A drafted clip now has a length: the loop spans it.
+    if (widget.lengthFollowsNotes && clip.notes.isNotEmpty) {
+      setState(() => _loopRegion = (start: 0, end: clip.lengthTicks));
+    }
   }
 
   /// Asks before unsaved edits are thrown away. True: go ahead.
@@ -985,6 +997,10 @@ class _MidiPianoRollWindowState extends State<MidiPianoRollWindow> {
                     },
                     loopRegion: _loopRegion,
                     onLoopRegionChanged: _setLoopRegion,
+                    // A drafted clip opens on room to draw in: four bars.
+                    minViewTicks: widget.lengthFollowsNotes
+                        ? _timeSignature.barTicks(_ppq) * 4
+                        : null,
                     playback: _player,
                     onSeek: _seek,
                     initialScale: scaleFromKey(widget.musicalKey),

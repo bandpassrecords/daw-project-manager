@@ -6752,5 +6752,5 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get midiShortcutLoopDrag =>
-      'Los extremos morados del bucle: ajustarlos (con el bucle activo, solo suena él)';
+      'La barra morada del bucle: arrastra sus extremos para cambiar su tamaño y el centro para moverla (con el bucle activo, solo suena ella)';
 }
