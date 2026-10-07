@@ -3025,6 +3025,9 @@ class BreadcrumbTrailNotifier extends Notifier<List<Breadcrumb>> {
   /// id (a page whose title changed while open — a release being renamed, for
   /// instance).
   void push(Breadcrumb crumb) {
+    // Title bars write here from post-frame callbacks, which can run after
+    // the container is gone (a test's teardown): nothing to update then.
+    if (!ref.mounted) return;
     final existing = state.indexWhere((c) => c.id == crumb.id);
     if (existing >= 0) {
       if (state[existing] == crumb) return;
@@ -3043,6 +3046,7 @@ class BreadcrumbTrailNotifier extends Notifier<List<Breadcrumb>> {
   /// Removing only its own entry would leave orphans pointing at pages that
   /// no longer exist.
   void remove(String id) {
+    if (!ref.mounted) return;
     final index = state.indexWhere((c) => c.id == id);
     if (index < 0) return;
     state = state.sublist(0, index);

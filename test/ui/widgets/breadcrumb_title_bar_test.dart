@@ -18,9 +18,7 @@ class _Page extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        children: [
-          DesktopTitleBar(title: title, showBack: showBack),
-        ],
+        children: [DesktopTitleBar(title: title, showBack: showBack)],
       ),
     );
   }
@@ -29,13 +27,19 @@ class _Page extends StatelessWidget {
 void main() {
   late ProviderContainer container;
 
-  setUp(() => container = ProviderContainer());
-  tearDown(() => container.dispose());
+  setUp(() {
+    container = ProviderContainer();
+    // The Windows/Linux bar, whatever machine runs the tests: macOS draws
+    // no title on the root page (see the macOS group below).
+    DesktopTitleBar.debugMacOSOverride = false;
+  });
+  tearDown(() {
+    container.dispose();
+    DesktopTitleBar.debugMacOSOverride = null;
+  });
 
-  List<String> labels() => container
-      .read(breadcrumbTrailProvider)
-      .map((c) => c.label)
-      .toList();
+  List<String> labels() =>
+      container.read(breadcrumbTrailProvider).map((c) => c.label).toList();
 
   Future<void> pumpApp(WidgetTester tester, Widget home) async {
     await tester.pumpWidget(
@@ -61,10 +65,12 @@ void main() {
     late BuildContext ctx;
     await pumpApp(
       tester,
-      Builder(builder: (context) {
-        ctx = context;
-        return const _Page(title: 'Home', showBack: false);
-      }),
+      Builder(
+        builder: (context) {
+          ctx = context;
+          return const _Page(title: 'Home', showBack: false);
+        },
+      ),
     );
 
     Navigator.of(ctx).push(
@@ -81,10 +87,12 @@ void main() {
     late BuildContext ctx;
     await pumpApp(
       tester,
-      Builder(builder: (context) {
-        ctx = context;
-        return const _Page(title: 'Home', showBack: false);
-      }),
+      Builder(
+        builder: (context) {
+          ctx = context;
+          return const _Page(title: 'Home', showBack: false);
+        },
+      ),
     );
 
     Navigator.of(ctx).push(
@@ -99,23 +107,27 @@ void main() {
     expect(labels(), ['Home']);
   });
 
-  testWidgets('a trail of one renders as a plain title, not a crumb',
-      (tester) async {
+  testWidgets('a trail of one renders as a plain title, not a crumb', (
+    tester,
+  ) async {
     await pumpApp(tester, const _Page(title: 'Home', showBack: false));
 
     expect(find.text('Home'), findsOneWidget);
     expect(find.byIcon(Icons.chevron_right), findsNothing);
   });
 
-  testWidgets('a deeper trail renders separators between the crumbs',
-      (tester) async {
+  testWidgets('a deeper trail renders separators between the crumbs', (
+    tester,
+  ) async {
     late BuildContext ctx;
     await pumpApp(
       tester,
-      Builder(builder: (context) {
-        ctx = context;
-        return const _Page(title: 'Home', showBack: false);
-      }),
+      Builder(
+        builder: (context) {
+          ctx = context;
+          return const _Page(title: 'Home', showBack: false);
+        },
+      ),
     );
 
     Navigator.of(ctx).push(
@@ -135,10 +147,12 @@ void main() {
     late BuildContext ctx;
     await pumpApp(
       tester,
-      Builder(builder: (context) {
-        ctx = context;
-        return const _Page(title: 'Home', showBack: false);
-      }),
+      Builder(
+        builder: (context) {
+          ctx = context;
+          return const _Page(title: 'Home', showBack: false);
+        },
+      ),
     );
 
     Navigator.of(ctx).push(
@@ -163,13 +177,64 @@ void main() {
     expect(labels(), ['Home']);
   });
 
-  testWidgets('a page renamed while open updates its crumb in place',
-      (tester) async {
+  testWidgets('a page renamed while open updates its crumb in place', (
+    tester,
+  ) async {
     await pumpApp(tester, const _Page(title: 'Untitled', showBack: false));
     expect(labels(), ['Untitled']);
 
     await pumpApp(tester, const _Page(title: 'Summer EP', showBack: false));
 
     expect(labels(), ['Summer EP']);
+  });
+
+  group('macOS', () {
+    setUp(() => DesktopTitleBar.debugMacOSOverride = true);
+
+    testWidgets('the root page leaves the title to the window', (tester) async {
+      await pumpApp(tester, const _Page(title: 'Home', showBack: false));
+
+      expect(find.text('Home'), findsNothing);
+      expect(labels(), ['Home'], reason: "it is still the trail's root");
+    });
+
+    testWidgets('a pushed page shows its back button and the trail', (
+      tester,
+    ) async {
+      late BuildContext ctx;
+      await pumpApp(
+        tester,
+        Builder(
+          builder: (context) {
+            ctx = context;
+            return const _Page(title: 'Home', showBack: false);
+          },
+        ),
+      );
+      Navigator.of(ctx).push(
+        MaterialPageRoute(
+          builder: (_) => const _Page(title: 'Summer EP', showBack: true),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+      expect(find.text('Summer EP'), findsOneWidget);
+      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+    });
+  });
+
+  // Regression: a title bar removes its crumb in a post-frame callback,
+  // which can run after its container is disposed (a failed test's
+  // teardown); that threw into whichever test ran next.
+  test('the trail ignores writes once its container is gone', () {
+    final gone = ProviderContainer();
+    final trail = gone.read(breadcrumbTrailProvider.notifier);
+    gone.dispose();
+    expect(() => trail.remove('x'), returnsNormally);
+    expect(
+      () => trail.push(const Breadcrumb(id: 'x', label: 'X', isRoot: true)),
+      returnsNormally,
+    );
   });
 }

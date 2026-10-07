@@ -47,6 +47,15 @@ class DesktopTitleBar extends ConsumerStatefulWidget {
     this.actions = const [],
   });
 
+  /// Which platform's bar to draw, for tests: true draws the macOS one,
+  /// false the Windows/Linux one, null (the default) the real platform's.
+  /// Tests run on every desktop OS, and macOS draws a different bar — no
+  /// title at all on the root page, where the window shows its own.
+  @visibleForTesting
+  static bool? debugMacOSOverride;
+
+  static bool get _isMacOS => debugMacOSOverride ?? Platform.isMacOS;
+
   @override
   ConsumerState<DesktopTitleBar> createState() => _DesktopTitleBarState();
 }
@@ -176,7 +185,7 @@ class _DesktopTitleBarState extends ConsumerState<DesktopTitleBar>
     // macOS: TitleBarStyle.hidden + fullSizeContentView means Flutter content
     // starts at y=0, with the traffic lights floating over the top-left area.
     // Reserve 28pt at the top so content doesn't slide under the buttons.
-    if (Platform.isMacOS) {
+    if (DesktopTitleBar._isMacOS) {
       if (!widget.showBack) {
         // Drag and double-click-to-maximize are handled natively in
         // MainFlutterWindow.swift via NSEvent monitors — no Flutter
@@ -250,8 +259,9 @@ class _DesktopTitleBarState extends ConsumerState<DesktopTitleBar>
                       ),
                     Flexible(
                       child: Padding(
-                        padding:
-                            EdgeInsets.only(left: widget.showBack ? 4 : 12),
+                        padding: EdgeInsets.only(
+                          left: widget.showBack ? 4 : 12,
+                        ),
                         child: _TitleOrTrail(
                           title: widget.title,
                           fontSize: 16,
@@ -293,8 +303,11 @@ class _WindowControlButtons extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(Icons.minimize, size: 18,
-              color: Theme.of(context).textTheme.bodyMedium?.color),
+          icon: Icon(
+            Icons.minimize,
+            size: 18,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+          ),
           onPressed: () => windowManager.minimize(),
         ),
         IconButton(
@@ -306,8 +319,11 @@ class _WindowControlButtons extends StatelessWidget {
           onPressed: onToggleMaximize,
         ),
         IconButton(
-          icon: Icon(Icons.close, size: 18,
-              color: Theme.of(context).textTheme.bodyMedium?.color),
+          icon: Icon(
+            Icons.close,
+            size: 18,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+          ),
           onPressed: () => windowManager.close(),
           highlightColor: const Color(0xFFC42B1C),
         ),
@@ -360,7 +376,6 @@ class _TitleOrTrail extends ConsumerWidget {
     if (trail.length < 2) return plain;
     if (trail.last.label != title) return plain;
 
-
     final muted = color?.withValues(alpha: 0.6);
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -401,9 +416,8 @@ class _TitleOrTrail extends ConsumerWidget {
 /// The root page's own title is the app name and version — a product banner,
 /// fine as the only thing in the bar and wrong as the head of a path. Every
 /// other crumb shows the title its page set.
-String _crumbLabel(BuildContext context, Breadcrumb crumb) => crumb.isRoot
-    ? AppLocalizations.of(context)!.breadcrumbHome
-    : crumb.label;
+String _crumbLabel(BuildContext context, Breadcrumb crumb) =>
+    crumb.isRoot ? AppLocalizations.of(context)!.breadcrumbHome : crumb.label;
 
 /// A crumb you can click, which says so on hover.
 ///
@@ -454,7 +468,7 @@ class _CrumbLinkState extends State<_CrumbLink> {
             decoration: BoxDecoration(
               color: _hovered
                   ? (widget.hoverColor?.withValues(alpha: 0.10) ??
-                      Colors.transparent)
+                        Colors.transparent)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(4),
             ),
