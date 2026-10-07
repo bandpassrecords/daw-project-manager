@@ -10,6 +10,7 @@ Instructions for AI assistants working on this codebase.
 - Every bug fix must include a regression test that would have caught the bug.
 - Every new feature must include tests covering its logic in full.
 - Run `flutter test` before every commit — only commit if all tests pass.
+- CI runs the **whole** suite on Linux, Windows and macOS (the `unit_tests` matrix in `release.yml`), and every build and release job waits for all three. Write tests that hold on each: build expected paths with `package:path` (`p.normalize`, `p.join`), never POSIX literals — six archive/move tests once failed on every Windows run because CI only ran on Linux.
 - If logic is too deep in the widget tree to unit test, write the closest possible test (model/service/repository level) and note explicitly what cannot be automated.
 
 ### Always use AppLocalizations for UI strings

@@ -41,11 +41,21 @@ env:
 
 # 2. Jobs
 jobs:
-  # Unit Tests — runs on PRs, push to main, and tag releases
+  # Unit Tests — runs on PRs, push to main, and tag releases, on all three
+  # desktop platforms. Every build and release job `needs:` this, so a
+  # release is only built once the whole suite has passed on Linux, Windows
+  # and macOS. Path handling, key names and file APIs differ between them,
+  # and a test that only held on Linux (separators, say) went unnoticed
+  # while CI ran on Linux alone.
   unit_tests:
-    name: Unit Tests
+    name: Unit Tests (${{ matrix.os }})
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
+    strategy:
+      # Let every platform finish: one failing says nothing about the others.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +71,7 @@ jobs:
       # it's forgotten, rather than shipping a Flatpak build silently
       # stamped with a stale version.
       - name: Verify metainfo.xml version matches the tag
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') && runner.os == 'Linux'
         run: |
           TAG_VERSION="${GITHUB_REF#refs/tags/v}"
           METAINFO_VERSION=$(grep -o '<release version="[^"]*"' flatpak/com.bandpassrecords.dpm.metainfo.xml | head -1 | sed -E 's/.*version="([^"]*)".*/\1/')
@@ -79,8 +89,9 @@ jobs:
       # ships a build whose one-time "here's what changed" dialog has nothing to
       # say — and the omission is invisible until someone updates.
       #   Add one with: python scripts/new_changelog_entry.py <version> --highlight "..."
+      # These gates read files, not the platform: checked once, on Linux.
       - name: Verify changelog has an entry for the tag
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') && runner.os == 'Linux'
         run: |
           TAG_VERSION="${GITHUB_REF#refs/tags/v}"
           CHANGELOG_VERSION=$(python3 -c "import json;print(json.load(open('assets/changelog/changelog.json'))['releases'][0]['version'])")
@@ -99,7 +110,22 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Inject OAuth Credentials
+      # The same per-platform scripts the release builds use.
+      - name: Inject OAuth Credentials (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          powershell -ExecutionPolicy Bypass -File scripts/inject_oauth_config.ps1 `
+            -DesktopClientId "${{ secrets.DESKTOP_CLIENT_ID }}" `
+            -DesktopClientSecret "${{ secrets.DESKTOP_CLIENT_SECRET }}" `
+            -AndroidWebClientId "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+        env:
+          DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
+          DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
+          ANDROID_WEB_CLIENT_ID: ${{ secrets.ANDROID_WEB_CLIENT_ID }}
+
+      - name: Inject OAuth Credentials (macOS/Linux)
+        if: runner.os != 'Windows'
         run: |
           chmod +x scripts/inject_oauth_config.sh
           ./scripts/inject_oauth_config.sh -d "${{ secrets.DESKTOP_CLIENT_ID }}" -s "${{ secrets.DESKTOP_CLIENT_SECRET }}" -a "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
@@ -114,8 +140,10 @@ jobs:
       - name: Generate Localizations
         run: flutter gen-l10n
 
-      - name: Run unit tests
-        run: flutter test test/models/ test/services/ test/repository/
+      # The whole suite — models, services and repository, and the UI,
+      # widget, utility and provider tests that used to run only locally.
+      - name: Run tests
+        run: flutter test
 
   # Job de Teste de Integração (para Pull Requests)
   test_pr_build:
