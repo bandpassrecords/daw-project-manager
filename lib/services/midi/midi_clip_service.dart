@@ -69,14 +69,38 @@ class MidiClipService {
   /// path — one seamless pass when [loop] is set (see
   /// [MidiClipSynth.renderWav]). Reuses an earlier render of the same clip,
   /// tempo, voice and loop setting.
+  /// Bumped whenever the synth sounds different — a voice retuned, a fade
+  /// added — so previews cached before are rendered again rather than
+  /// played as they were.
+  static const kPreviewRenderVersion = 3;
+
+  /// The loop a held [heldClip] carries on in once its render runs out (see
+  /// [sustainLoopWav]), rendered once and cached like a preview.
+  static Future<String> renderSustainLoop(
+    MidiClip heldClip, {
+    SynthVoice voice = SynthVoice.keys,
+    required Directory directory,
+  }) async {
+    final name = 'sustain_v$kPreviewRenderVersion'
+        '_${_fnv1a(heldClip.contentKey)}_${voice.name}.wav';
+    final out = File(p.join(directory.path, name));
+    if (await out.exists()) return out.path;
+    final bytes = await Isolate.run(() => sustainLoopWav(
+        const MidiClipSynth().renderWav(heldClip, bpm: 120, voice: voice)));
+    await directory.create(recursive: true);
+    await out.writeAsBytes(bytes, flush: true);
+    return out.path;
+  }
+
   static Future<String> renderPreview(
     MidiClip clip, {
     double? bpm,
-    SynthVoice voice = SynthVoice.synth,
+    SynthVoice voice = SynthVoice.keys,
     bool loop = false,
     required Directory directory,
   }) async {
-    final name = 'preview_${_fnv1a(clip.contentKey)}'
+    final name = 'preview_v$kPreviewRenderVersion'
+        '_${_fnv1a(clip.contentKey)}'
         '_${(bpm ?? 120).toStringAsFixed(2)}_${voice.name}'
         '${loop ? '_loop' : ''}.wav';
     final out = File(p.join(directory.path, name));
@@ -99,11 +123,23 @@ class MidiClipService {
     Directory directory,
   ) async {
     await directory.create(recursive: true);
-    final names = uniqueFileNames([for (final e in exports) e.fileName]);
+    // Unique within each folder: the same name in two folders is two files.
+    final byFolder = <String, List<int>>{};
+    for (var i = 0; i < exports.length; i++) {
+      byFolder.putIfAbsent(exports[i].folders.join('/'), () => []).add(i);
+    }
+    final names = List<String>.filled(exports.length, '');
+    for (final indices in byFolder.values) {
+      final unique = uniqueFileNames([for (final i in indices) exports[i].fileName]);
+      for (var k = 0; k < indices.length; k++) {
+        names[indices[k]] = unique[k];
+      }
+    }
     final written = <File>[];
     for (var i = 0; i < exports.length; i++) {
-      written.add(
-          await writeMidiFile(exports[i], p.join(directory.path, names[i])));
+      final folder = p.joinAll([directory.path, ...exports[i].folders]);
+      await Directory(folder).create(recursive: true);
+      written.add(await writeMidiFile(exports[i], p.join(folder, names[i])));
     }
     return written;
   }

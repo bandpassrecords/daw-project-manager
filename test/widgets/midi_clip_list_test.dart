@@ -162,6 +162,53 @@ void main() {
     );
   });
 
+  testWidgets('an opened group stays open when the page rebuilds its list',
+      (tester) async {
+    // The MIDI tab builds a new list of the same clips on every rebuild —
+    // starting playback is one. That used to fold the group back up.
+    final clips = [
+      clip('A1', track: 'Drums'),
+      clip('A2', track: 'Drums'),
+      clip('B1', track: 'Keys'),
+    ];
+    await tester.pumpWidget(wrap([...clips], expandAllUpTo: 2));
+    await tester.tap(find.text('Drums'));
+    await tester.pump();
+    expect(find.text('A1'), findsOneWidget);
+
+    // Same clips, new list, now with the first one playing.
+    await tester.pumpWidget(wrap([...clips], expandAllUpTo: 2, playing: 0));
+    expect(find.text('A1'), findsOneWidget, reason: 'still open');
+    expect(find.text('B1'), findsNothing);
+  });
+
+  testWidgets('different clips start from the defaults again', (tester) async {
+    await tester.pumpWidget(wrap([
+      clip('A1', track: 'Drums'),
+      clip('A2', track: 'Drums'),
+      clip('B1', track: 'Keys'),
+    ], expandAllUpTo: 2));
+    await tester.tap(find.text('Drums'));
+    await tester.pump();
+
+    await tester.pumpWidget(wrap([
+      clip('A1', track: 'Drums'),
+      clip('A3', track: 'Drums'),
+      clip('B1', track: 'Keys'),
+    ], expandAllUpTo: 2));
+    expect(find.text('A1'), findsNothing, reason: 'a new set: collapsed again');
+  });
+
+  test('sameClips compares the clips held, not the list holding them', () {
+    final a = clip('A');
+    final b = clip('B');
+    expect(sameClips([a, b], [a, b]), isTrue);
+    expect(sameClips([a, b], [b, a]), isFalse);
+    expect(sameClips([a], [a, b]), isFalse);
+    expect(sameClips([a], [clip('A')]), isFalse,
+        reason: 'an equal-looking clip read again is a new clip');
+  });
+
   testWidgets('a long list starts collapsed to its track headers',
       (tester) async {
     await tester.pumpWidget(wrap([

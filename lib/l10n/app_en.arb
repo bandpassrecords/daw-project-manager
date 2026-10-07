@@ -5154,7 +5154,6 @@
   "discardArchiveConfirmTitle": "Discard archive?",
   "discardArchiveConfirmMessage": "Deletes the zip and clears the archived flag. The project's own files stay where they are.",
   "discardArchiveDone": "Archive discarded",
-
   "whatsNewTitle": "What's New",
   "whatsNewTitleWithVersion": "What's New in {version}",
   "@whatsNewTitleWithVersion": {
@@ -5207,7 +5206,6 @@
   "releaseArtworkCarryOverSkip": "No artwork",
   "tracksViewList": "List view",
   "tracksViewTable": "Table view",
-
   "partsColumn": "Parts",
   "partsNeededCount": "{count, plural, =1{1 part still needed} other{{count} parts still needed}}",
   "@partsNeededCount": {
@@ -5218,7 +5216,6 @@
       }
     }
   },
-
   "songLength": "Length",
   "songLengthColumn": "Length",
   "songLengthHint": "3:45",
@@ -5243,7 +5240,6 @@
       }
     }
   },
-
   "breadcrumbHome": "Home",
   "breadcrumbGoTo": "Go to {label}",
   "@breadcrumbGoTo": {
@@ -5254,20 +5250,14 @@
       }
     }
   },
-
   "scrollForMore": "Scroll for more",
-
   "shortcutPlayerMono": "Toggle mono playback",
   "shortcutPlayerVolume": "Adjust volume",
   "shortcutMouseWheel": "Wheel",
-
   "releaseTotalLengthLabel": "Total length",
   "releaseLengthNone": "No track has a length yet — play a track or type its length on the project page",
-
   "songLengthHowItWorks": "Filled in automatically from the preview song — when it is played, or when a release containing this track is opened. You can also type it: 3:45, 1:02:03, or seconds.",
-
   "changelogSectionSubtitle": "Everything that changed in each version, newest first.",
-
   "changelogSearchHint": "Search the changelog",
   "changelogNoMatches": "No changes match \"{query}\"",
   "@changelogNoMatches": {
@@ -5278,12 +5268,9 @@
       }
     }
   },
-
   "projectFileMenu": "File",
   "moreActions": "More actions",
-
   "sectionRailResizeHint": "Drag to resize · double-click to reset",
-
   "stackMetadataCoverArtLabel": "cover art",
   "@stackMetadataCoverArtLabel": {
     "description": "Stack chooser: this version has its own cover art"
@@ -5657,10 +5644,6 @@
         "type": "String"
       }
     }
-  },
-  "synthVoiceSynth": "Synth",
-  "@synthVoiceSynth": {
-    "description": "Built-in preview instrument name: Generic synth"
   },
   "synthVoiceLead": "Lead",
   "@synthVoiceLead": {
@@ -6196,5 +6179,636 @@
   "columnsInReleaseTracks": "Release tracks",
   "@columnsInReleaseTracks": {
     "description": "Settings > Columns & fields: header over the checkboxes that show a field in release tracklists"
+  },
+  "projectContentsRead": "Read project contents",
+  "@projectContentsRead": {
+    "description": "Project page button that reads tracks, plug-ins and MIDI clips from the project file, shown while nothing has been read yet"
+  },
+  "projectContentsReadHint": "Reads the tracks, plug-ins and MIDI clips from the project file. They're kept with the project, so they sync to your other devices.",
+  "@projectContentsReadHint": {
+    "description": "Hint under the \"Read project contents\" button"
+  },
+  "projectContentsNoneRead": "Nothing has been read from this project yet. Run a deep scan, or extract its metadata, on the computer that has the project file.",
+  "@projectContentsNoneRead": {
+    "description": "Project page, when nothing has been read from the project file yet and this device cannot read it (a phone, an archived project)"
+  },
+  "midiScale": "Scale",
+  "@midiScale": {
+    "description": "Piano roll: the scale button (no scale set) and the scale chooser title"
+  },
+  "midiScaleNone": "No scale",
+  "@midiScaleNone": {
+    "description": "Scale chooser action that turns scale highlighting off"
+  },
+  "midiScaleRoot": "Root",
+  "@midiScaleRoot": {
+    "description": "Scale chooser field: the root note of the scale"
+  },
+  "midiScaleType": "Scale type",
+  "@midiScaleType": {
+    "description": "Scale chooser field: which scale (major, minor, Dorian…)"
+  },
+  "scaleMajor": "Major",
+  "@scaleMajor": {
+    "description": "Scale name"
+  },
+  "scaleMinor": "Minor",
+  "@scaleMinor": {
+    "description": "Scale name (natural minor)"
+  },
+  "scaleHarmonicMinor": "Harmonic minor",
+  "@scaleHarmonicMinor": {
+    "description": "Scale name"
+  },
+  "scaleMelodicMinor": "Melodic minor",
+  "@scaleMelodicMinor": {
+    "description": "Scale name"
+  },
+  "scaleDorian": "Dorian",
+  "@scaleDorian": {
+    "description": "Scale name (mode)"
+  },
+  "scalePhrygian": "Phrygian",
+  "@scalePhrygian": {
+    "description": "Scale name (mode)"
+  },
+  "scaleLydian": "Lydian",
+  "@scaleLydian": {
+    "description": "Scale name (mode)"
+  },
+  "scaleMixolydian": "Mixolydian",
+  "@scaleMixolydian": {
+    "description": "Scale name (mode)"
+  },
+  "scaleLocrian": "Locrian",
+  "@scaleLocrian": {
+    "description": "Scale name (mode)"
+  },
+  "scaleMajorPentatonic": "Major pentatonic",
+  "@scaleMajorPentatonic": {
+    "description": "Scale name"
+  },
+  "scaleMinorPentatonic": "Minor pentatonic",
+  "@scaleMinorPentatonic": {
+    "description": "Scale name"
+  },
+  "scaleBlues": "Blues",
+  "@scaleBlues": {
+    "description": "Scale name"
+  },
+  "midiEditNotes": "Edit notes",
+  "@midiEditNotes": {
+    "description": "Piano roll: toggle that turns note editing on and off"
+  },
+  "midiUndo": "Undo",
+  "@midiUndo": {
+    "description": "Piano roll editing: undo the last edit"
+  },
+  "midiRedo": "Redo",
+  "@midiRedo": {
+    "description": "Piano roll editing: redo the edit just undone"
+  },
+  "midiSnap": "Snap to grid",
+  "@midiSnap": {
+    "description": "Piano roll editing: the grid notes snap to (tooltip of the 1/4, 1/8, 1/16… picker)"
+  },
+  "midiSnapOff": "Off",
+  "@midiSnapOff": {
+    "description": "Piano roll editing: the snap picker entry that turns snapping off"
+  },
+  "midiSaveAsNewClip": "Save as new clip",
+  "@midiSaveAsNewClip": {
+    "description": "Piano roll: save the edited clip as a new clip in a collection (the original is kept)"
+  },
+  "midiClipEditedName": "{name} (edited)",
+  "@midiClipEditedName": {
+    "description": "Name given to an edited copy of a MIDI clip",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiDiscardEditsTitle": "Discard your changes?",
+  "@midiDiscardEditsTitle": {
+    "description": "Title of the question asked before closing the piano roll with unsaved edits"
+  },
+  "midiDiscardEditsBody": "The edited clip hasn't been saved. Save it as a new clip to keep it.",
+  "@midiDiscardEditsBody": {
+    "description": "Body of the question asked before closing the piano roll with unsaved edits"
+  },
+  "midiKeepEditing": "Keep editing",
+  "@midiKeepEditing": {
+    "description": "Answer that keeps the piano roll open with its unsaved edits"
+  },
+  "midiDiscardEdits": "Discard",
+  "@midiDiscardEdits": {
+    "description": "Answer that closes the piano roll and throws the unsaved edits away"
+  },
+  "midiToolSelect": "Select (1)",
+  "@midiToolSelect": {
+    "description": "Piano roll: the select tool button tooltip (key 1, as in Cubase)"
+  },
+  "midiToolPencil": "Pencil (8)",
+  "@midiToolPencil": {
+    "description": "Piano roll: the pencil (draw) tool button tooltip (key 8, as in Cubase)"
+  },
+  "midiAcousticFeedback": "Hear notes as you edit them",
+  "@midiAcousticFeedback": {
+    "description": "Piano roll: toggle that plays notes as they are added, clicked or moved"
+  },
+  "midiShortcuts": "Keyboard shortcuts (?)",
+  "@midiShortcuts": {
+    "description": "Piano roll: tooltip of the button that opens the shortcut sheet"
+  },
+  "midiShortcutsTitle": "Piano roll shortcuts",
+  "@midiShortcutsTitle": {
+    "description": "Piano roll shortcut sheet: dialog title"
+  },
+  "midiShortcutsTools": "Tools",
+  "@midiShortcutsTools": {
+    "description": "Shortcut sheet section"
+  },
+  "midiShortcutsNotes": "Notes",
+  "@midiShortcutsNotes": {
+    "description": "Shortcut sheet section"
+  },
+  "midiShortcutsSelecting": "Selecting",
+  "@midiShortcutsSelecting": {
+    "description": "Shortcut sheet section"
+  },
+  "midiShortcutsLanes": "Velocity and controller lanes",
+  "@midiShortcutsLanes": {
+    "description": "Shortcut sheet section: the lane under the notes"
+  },
+  "midiShortcutsEditing": "Editing",
+  "@midiShortcutsEditing": {
+    "description": "Shortcut sheet section: undo and redo"
+  },
+  "midiShortcutsPlayback": "Playback and view",
+  "@midiShortcutsPlayback": {
+    "description": "Shortcut sheet section"
+  },
+  "midiKeyCtrl": "Ctrl",
+  "@midiKeyCtrl": {
+    "description": "Keycap: the Control key, as printed on keyboards in this language"
+  },
+  "midiKeyShift": "Shift",
+  "@midiKeyShift": {
+    "description": "Keycap: the Shift key"
+  },
+  "midiKeyAlt": "Alt",
+  "@midiKeyAlt": {
+    "description": "Keycap: the Alt key"
+  },
+  "midiKeyDelete": "Delete",
+  "@midiKeyDelete": {
+    "description": "Keycap: the Delete key"
+  },
+  "midiKeySpace": "Space",
+  "@midiKeySpace": {
+    "description": "Keycap: the space bar"
+  },
+  "midiKeyEsc": "Esc",
+  "@midiKeyEsc": {
+    "description": "Keycap: the Escape key"
+  },
+  "midiGestureClick": "Click",
+  "@midiGestureClick": {
+    "description": "Shortcut sheet keycap: a mouse click"
+  },
+  "midiGestureDoubleClick": "Double-click",
+  "@midiGestureDoubleClick": {
+    "description": "Shortcut sheet keycap: a double-click"
+  },
+  "midiGestureDrag": "Drag",
+  "@midiGestureDrag": {
+    "description": "Shortcut sheet keycap: dragging with the mouse"
+  },
+  "midiGestureWheel": "Wheel",
+  "@midiGestureWheel": {
+    "description": "Shortcut sheet keycap: the mouse wheel"
+  },
+  "midiShortcutSelectTool": "Select tool",
+  "@midiShortcutSelectTool": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutPencilTool": "Pencil: click to add a note — drag across to lengthen it, up or down for how hard it plays; a click on a note selects it",
+  "@midiShortcutPencilTool": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutDoubleClick": "On empty space: add a note (hold and drag: across for length, up or down for velocity; Ctrl: off the grid). On a note: delete it",
+  "@midiShortcutDoubleClick": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutMove": "A note: move it, with every selected note",
+  "@midiShortcutMove": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutResize": "A note's edge: make it shorter or longer",
+  "@midiShortcutResize": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutCopy": "A note: copy the selected notes",
+  "@midiShortcutCopy": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutOffGrid": "Move or resize without snapping to the grid",
+  "@midiShortcutOffGrid": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutSemitone": "Move the selected notes a semitone",
+  "@midiShortcutSemitone": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutOctave": "Move the selected notes an octave",
+  "@midiShortcutOctave": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutDelete": "Delete the selected notes",
+  "@midiShortcutDelete": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutBox": "On empty space: select the notes inside the box",
+  "@midiShortcutBox": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutToggle": "Add a note to the selection, or take it out",
+  "@midiShortcutToggle": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutSelectAll": "Select every note",
+  "@midiShortcutSelectAll": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutVelocity": "Across the velocity bars: set the velocity of every note passed",
+  "@midiShortcutVelocity": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutLane": "In a controller or pitch bend lane: draw the curve (a bend snaps back to the middle)",
+  "@midiShortcutLane": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutPlay": "Play or pause",
+  "@midiShortcutPlay": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutStop": "Stop; when stopped, close the window",
+  "@midiShortcutStop": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutKeyboard": "On the keyboard: play the key (drag to play the keys passed)",
+  "@midiShortcutKeyboard": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutRuler": "On the ruler: jump there",
+  "@midiShortcutRuler": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutZoom": "Zoom in or out around the mouse",
+  "@midiShortcutZoom": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutScroll": "Scroll sideways",
+  "@midiShortcutScroll": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutShowSheet": "Show these shortcuts",
+  "@midiShortcutShowSheet": {
+    "description": "Shortcut sheet action"
+  },
+  "midiFullScreen": "Full screen",
+  "@midiFullScreen": {
+    "description": "Piano roll: toggle that makes the window fill the whole app window"
+  },
+  "midiExitFullScreen": "Exit full screen",
+  "@midiExitFullScreen": {
+    "description": "Piano roll: toggle back from full screen"
+  },
+  "midiToolRange": "Range (2)",
+  "@midiToolRange": {
+    "description": "Piano roll: range tool button tooltip (key 2, as in Cubase)"
+  },
+  "midiToolEraser": "Eraser (5)",
+  "@midiToolEraser": {
+    "description": "Piano roll: eraser tool button tooltip (key 5, as in Cubase)"
+  },
+  "midiDuplicate": "Duplicate",
+  "@midiDuplicate": {
+    "description": "Piano roll: duplicate button tooltip"
+  },
+  "midiTranspose": "Transpose",
+  "@midiTranspose": {
+    "description": "Piano roll: transpose menu tooltip"
+  },
+  "midiTransposeUpSemitone": "Up a semitone",
+  "@midiTransposeUpSemitone": {
+    "description": "Piano roll transpose menu entry"
+  },
+  "midiTransposeDownSemitone": "Down a semitone",
+  "@midiTransposeDownSemitone": {
+    "description": "Piano roll transpose menu entry"
+  },
+  "midiTransposeUpOctave": "Up an octave",
+  "@midiTransposeUpOctave": {
+    "description": "Piano roll transpose menu entry"
+  },
+  "midiTransposeDownOctave": "Down an octave",
+  "@midiTransposeDownOctave": {
+    "description": "Piano roll transpose menu entry"
+  },
+  "midiShortcutRangeTool": "Range: drag across to select a stretch of time and every note in it",
+  "@midiShortcutRangeTool": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutEraserTool": "Eraser: click or drag over notes to delete them",
+  "@midiShortcutEraserTool": {
+    "description": "Shortcut sheet action"
+  },
+  "midiShortcutDuplicate": "Duplicate: a range right after itself, or the selected notes right after the last one",
+  "@midiShortcutDuplicate": {
+    "description": "Shortcut sheet action"
+  },
+  "midiNewClip": "New clip",
+  "@midiNewClip": {
+    "description": "MIDI tab, a collection: button that starts a blank clip to draft an idea in"
+  },
+  "midiNewClipName": "Idea {number}",
+  "@midiNewClipName": {
+    "description": "Name of a blank clip started in a collection. {number} counts them",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "midiQuantize": "Quantize (Q)",
+  "@midiQuantize": {
+    "description": "Piano roll: quantize button tooltip (key Q, as in Cubase)"
+  },
+  "midiShortcutQuantize": "Quantize: snap the selected notes (or every note) to the grid",
+  "@midiShortcutQuantize": {
+    "description": "Shortcut sheet action"
+  },
+  "midiTimeSignature": "Time signature",
+  "@midiTimeSignature": {
+    "description": "Piano roll: tooltip of the time signature picker (3/4, 4/4, 6/8…)"
+  },
+  "midiShortcutLoopStart": "On the ruler: set where the loop starts",
+  "@midiShortcutLoopStart": {
+    "description": "Shortcut sheet action: Ctrl/Cmd-click on the bar ruler"
+  },
+  "midiShortcutLoopEnd": "On the ruler: set where the loop ends",
+  "@midiShortcutLoopEnd": {
+    "description": "Shortcut sheet action: Alt-click on the bar ruler"
+  },
+  "midiShortcutLoopDrag": "The loop's purple bar: drag its ends to resize it, its middle to move it (with looping on, only the loop plays)",
+  "@midiShortcutLoopDrag": {
+    "description": "Shortcut sheet action: dragging the purple loop ends on the ruler"
+  },
+  "midiShortcutLoopToggle": "The loop's bar, top half: turn looping on or off (grey while off)",
+  "@midiShortcutLoopToggle": {
+    "description": "Shortcut sheet action: a plain click on the top half of the loop bar on the ruler"
+  },
+  "midiRoleMelody": "Melody",
+  "@midiRoleMelody": {
+    "description": "MIDI clip role"
+  },
+  "midiRoleBass": "Bass",
+  "@midiRoleBass": {
+    "description": "MIDI clip role"
+  },
+  "midiRoleChords": "Chords",
+  "@midiRoleChords": {
+    "description": "MIDI clip role"
+  },
+  "midiRoleArp": "Arp",
+  "@midiRoleArp": {
+    "description": "MIDI clip role: an arpeggio"
+  },
+  "midiRoleLead": "Lead",
+  "@midiRoleLead": {
+    "description": "MIDI clip role"
+  },
+  "midiRolePad": "Pad",
+  "@midiRolePad": {
+    "description": "MIDI clip role"
+  },
+  "midiRoleDrums": "Drums",
+  "@midiRoleDrums": {
+    "description": "MIDI clip role"
+  },
+  "midiRoleFx": "FX",
+  "@midiRoleFx": {
+    "description": "MIDI clip role: sound effects"
+  },
+  "midiRoleOther": "Other",
+  "@midiRoleOther": {
+    "description": "MIDI clip role"
+  },
+  "midiRoleLabel": "Role",
+  "@midiRoleLabel": {
+    "description": "Label: what part a MIDI clip plays (melody, bass…)"
+  },
+  "midiRoleAutomatic": "Automatic ({role})",
+  "@midiRoleAutomatic": {
+    "description": "Role choice that lets the app suggest one; {role} is what it suggests now",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "midiItemRoleMenu": "Role: {role}",
+  "@midiItemRoleMenu": {
+    "description": "Clip menu entry showing the current role",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "midiNameFree": "free",
+  "@midiNameFree": {
+    "description": "In a MIDI file name: the notes keep to no quantization grid"
+  },
+  "midiNamingTitle": "File naming",
+  "@midiNamingTitle": {
+    "description": "Dialog title and button: how a collection names its exported MIDI files"
+  },
+  "midiNamingNumbered": "Number the files",
+  "@midiNamingNumbered": {
+    "description": "Switch: start each exported file name with its number"
+  },
+  "midiNamingNumberedHint": "01, 02… in each folder's order, so a file browser lists them that way",
+  "@midiNamingNumberedHint": {
+    "description": "Explains the numbering switch"
+  },
+  "midiNamingSeparator": "Separator",
+  "@midiNamingSeparator": {
+    "description": "Label: what goes between the parts of a file name"
+  },
+  "midiNamingFields": "In the name",
+  "@midiNamingFields": {
+    "description": "Heading: the parts a file name is made of"
+  },
+  "midiNamingFieldsHint": "Drag to change the order",
+  "@midiNamingFieldsHint": {
+    "description": "Hint under the list of file name parts"
+  },
+  "midiNameFieldName": "Name",
+  "@midiNameFieldName": {
+    "description": "File name part: the clip name"
+  },
+  "midiNameFieldBpm": "Tempo (BPM)",
+  "@midiNameFieldBpm": {
+    "description": "File name part: the tempo"
+  },
+  "midiNameFieldKey": "Key",
+  "@midiNameFieldKey": {
+    "description": "File name part: the musical key or scale"
+  },
+  "midiNameFieldBars": "Length in bars",
+  "@midiNameFieldBars": {
+    "description": "File name part: how many bars long"
+  },
+  "midiNameFieldTimeSignature": "Time signature (when not 4/4)",
+  "@midiNameFieldTimeSignature": {
+    "description": "File name part: the time signature, written only when it is not 4/4"
+  },
+  "midiNameFieldGrid": "Quantization (1-16, free…)",
+  "@midiNameFieldGrid": {
+    "description": "File name part: the finest grid the notes start on"
+  },
+  "midiNameFieldInstrument": "Instrument",
+  "@midiNameFieldInstrument": {
+    "description": "File name part: the preview instrument"
+  },
+  "midiNamingPreview": "Example",
+  "@midiNamingPreview": {
+    "description": "Label above an example file name"
+  },
+  "midiNamingReset": "Default",
+  "@midiNamingReset": {
+    "description": "Button: back to the default file naming"
+  },
+  "midiFolderNew": "New folder",
+  "@midiFolderNew": {
+    "description": "Button: a new folder inside a MIDI collection"
+  },
+  "midiFolderRename": "Rename folder",
+  "@midiFolderRename": {
+    "description": "Menu entry and dialog title"
+  },
+  "midiFolderDelete": "Delete folder",
+  "@midiFolderDelete": {
+    "description": "Menu entry and dialog title"
+  },
+  "midiFolderDeleteConfirm": "Delete the folder \"{name}\"? Its clips and folders move up one level.",
+  "@midiFolderDeleteConfirm": {
+    "description": "Confirms deleting a folder of a MIDI collection",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiFolderName": "Folder name",
+  "@midiFolderName": {
+    "description": "Text field label"
+  },
+  "midiFolderLabel": "Folder",
+  "@midiFolderLabel": {
+    "description": "Label: the folder a clip goes in"
+  },
+  "midiFolderTopLevel": "Top level",
+  "@midiFolderTopLevel": {
+    "description": "The collection's top level, outside any folder"
+  },
+  "midiMoveTo": "Move to…",
+  "@midiMoveTo": {
+    "description": "Menu entry: move a clip or folder into another folder"
+  },
+  "midiMoveUp": "Move up",
+  "@midiMoveUp": {
+    "description": "Menu entry: earlier in the order"
+  },
+  "midiMoveDown": "Move down",
+  "@midiMoveDown": {
+    "description": "Menu entry: later in the order"
+  },
+  "midiItemRename": "Rename",
+  "@midiItemRename": {
+    "description": "Menu entry and dialog title: rename a clip in a collection"
+  },
+  "midiItemNameHint": "Blank: the clip's own name",
+  "@midiItemNameHint": {
+    "description": "Helper text under the clip name field"
+  },
+  "midiSaveClipTitle": "Save clip",
+  "@midiSaveClipTitle": {
+    "description": "Dialog title: saving a newly drawn clip into a collection"
+  },
+  "midiSaveFileName": "File name",
+  "@midiSaveFileName": {
+    "description": "Label above the file name a clip will export as"
+  },
+  "midiBulkRenameMenu": "Rename by scheme…",
+  "@midiBulkRenameMenu": {
+    "description": "Button and menu entry: rename many clips from the naming scheme at once"
+  },
+  "midiBulkRenameTitle": "Rename by naming scheme",
+  "@midiBulkRenameTitle": {
+    "description": "Dialog title"
+  },
+  "midiBulkRenameHint": "Each name is proposed from the collection's naming scheme. Edit any of them first, and untick the clips to leave as they are.",
+  "@midiBulkRenameHint": {
+    "description": "Explains the bulk rename dialog"
+  },
+  "midiBulkRenameApply": "{count, plural, =1{Rename 1 clip} other{Rename {count} clips}}",
+  "@midiBulkRenameApply": {
+    "description": "Button: apply the renames",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiBulkRenameDone": "{count, plural, =1{Renamed 1 clip} other{Renamed {count} clips}}",
+  "@midiBulkRenameDone": {
+    "description": "Snackbar after a bulk rename",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "midiBulkRenameSelectAll": "All",
+  "@midiBulkRenameSelectAll": {
+    "description": "Checkbox: tick or untick every clip in the list"
+  },
+  "midiNameFromScheme": "From the naming scheme",
+  "@midiNameFromScheme": {
+    "description": "Button in the rename dialog: fill in a name made from the naming scheme"
+  },
+  "midiCollectionMoved": "{count, plural, =1{Moved to {name}} other{Moved {count} clips to {name}}}",
+  "@midiCollectionMoved": {
+    "description": "Snackbar: clips dragged into another collection",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "midiExpandAll": "Expand all",
+  "@midiExpandAll": {
+    "description": "Button: open every collection, folder or group in a MIDI list"
+  },
+  "midiCollapseAll": "Collapse all",
+  "@midiCollapseAll": {
+    "description": "Button: close every collection, folder or group in a MIDI list"
   }
 }

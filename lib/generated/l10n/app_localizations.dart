@@ -9977,12 +9977,6 @@ abstract class AppLocalizations {
   /// **'Instrument: {name}'**
   String midiClipInstrumentTooltip(String name);
 
-  /// Built-in preview instrument name: Generic synth
-  ///
-  /// In en, this message translates to:
-  /// **'Synth'**
-  String get synthVoiceSynth;
-
   /// Built-in preview instrument name: Lead synth
   ///
   /// In en, this message translates to:
@@ -10684,6 +10678,888 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Release tracks'**
   String get columnsInReleaseTracks;
+
+  /// Project page button that reads tracks, plug-ins and MIDI clips from the project file, shown while nothing has been read yet
+  ///
+  /// In en, this message translates to:
+  /// **'Read project contents'**
+  String get projectContentsRead;
+
+  /// Hint under the "Read project contents" button
+  ///
+  /// In en, this message translates to:
+  /// **'Reads the tracks, plug-ins and MIDI clips from the project file. They\'re kept with the project, so they sync to your other devices.'**
+  String get projectContentsReadHint;
+
+  /// Project page, when nothing has been read from the project file yet and this device cannot read it (a phone, an archived project)
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing has been read from this project yet. Run a deep scan, or extract its metadata, on the computer that has the project file.'**
+  String get projectContentsNoneRead;
+
+  /// Piano roll: the scale button (no scale set) and the scale chooser title
+  ///
+  /// In en, this message translates to:
+  /// **'Scale'**
+  String get midiScale;
+
+  /// Scale chooser action that turns scale highlighting off
+  ///
+  /// In en, this message translates to:
+  /// **'No scale'**
+  String get midiScaleNone;
+
+  /// Scale chooser field: the root note of the scale
+  ///
+  /// In en, this message translates to:
+  /// **'Root'**
+  String get midiScaleRoot;
+
+  /// Scale chooser field: which scale (major, minor, Dorian…)
+  ///
+  /// In en, this message translates to:
+  /// **'Scale type'**
+  String get midiScaleType;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Major'**
+  String get scaleMajor;
+
+  /// Scale name (natural minor)
+  ///
+  /// In en, this message translates to:
+  /// **'Minor'**
+  String get scaleMinor;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Harmonic minor'**
+  String get scaleHarmonicMinor;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Melodic minor'**
+  String get scaleMelodicMinor;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Dorian'**
+  String get scaleDorian;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Phrygian'**
+  String get scalePhrygian;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Lydian'**
+  String get scaleLydian;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Mixolydian'**
+  String get scaleMixolydian;
+
+  /// Scale name (mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Locrian'**
+  String get scaleLocrian;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Major pentatonic'**
+  String get scaleMajorPentatonic;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Minor pentatonic'**
+  String get scaleMinorPentatonic;
+
+  /// Scale name
+  ///
+  /// In en, this message translates to:
+  /// **'Blues'**
+  String get scaleBlues;
+
+  /// Piano roll: toggle that turns note editing on and off
+  ///
+  /// In en, this message translates to:
+  /// **'Edit notes'**
+  String get midiEditNotes;
+
+  /// Piano roll editing: undo the last edit
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get midiUndo;
+
+  /// Piano roll editing: redo the edit just undone
+  ///
+  /// In en, this message translates to:
+  /// **'Redo'**
+  String get midiRedo;
+
+  /// Piano roll editing: the grid notes snap to (tooltip of the 1/4, 1/8, 1/16… picker)
+  ///
+  /// In en, this message translates to:
+  /// **'Snap to grid'**
+  String get midiSnap;
+
+  /// Piano roll editing: the snap picker entry that turns snapping off
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get midiSnapOff;
+
+  /// Piano roll: save the edited clip as a new clip in a collection (the original is kept)
+  ///
+  /// In en, this message translates to:
+  /// **'Save as new clip'**
+  String get midiSaveAsNewClip;
+
+  /// Name given to an edited copy of a MIDI clip
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (edited)'**
+  String midiClipEditedName(String name);
+
+  /// Title of the question asked before closing the piano roll with unsaved edits
+  ///
+  /// In en, this message translates to:
+  /// **'Discard your changes?'**
+  String get midiDiscardEditsTitle;
+
+  /// Body of the question asked before closing the piano roll with unsaved edits
+  ///
+  /// In en, this message translates to:
+  /// **'The edited clip hasn\'t been saved. Save it as a new clip to keep it.'**
+  String get midiDiscardEditsBody;
+
+  /// Answer that keeps the piano roll open with its unsaved edits
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get midiKeepEditing;
+
+  /// Answer that closes the piano roll and throws the unsaved edits away
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get midiDiscardEdits;
+
+  /// Piano roll: the select tool button tooltip (key 1, as in Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'Select (1)'**
+  String get midiToolSelect;
+
+  /// Piano roll: the pencil (draw) tool button tooltip (key 8, as in Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'Pencil (8)'**
+  String get midiToolPencil;
+
+  /// Piano roll: toggle that plays notes as they are added, clicked or moved
+  ///
+  /// In en, this message translates to:
+  /// **'Hear notes as you edit them'**
+  String get midiAcousticFeedback;
+
+  /// Piano roll: tooltip of the button that opens the shortcut sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard shortcuts (?)'**
+  String get midiShortcuts;
+
+  /// Piano roll shortcut sheet: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Piano roll shortcuts'**
+  String get midiShortcutsTitle;
+
+  /// Shortcut sheet section
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get midiShortcutsTools;
+
+  /// Shortcut sheet section
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get midiShortcutsNotes;
+
+  /// Shortcut sheet section
+  ///
+  /// In en, this message translates to:
+  /// **'Selecting'**
+  String get midiShortcutsSelecting;
+
+  /// Shortcut sheet section: the lane under the notes
+  ///
+  /// In en, this message translates to:
+  /// **'Velocity and controller lanes'**
+  String get midiShortcutsLanes;
+
+  /// Shortcut sheet section: undo and redo
+  ///
+  /// In en, this message translates to:
+  /// **'Editing'**
+  String get midiShortcutsEditing;
+
+  /// Shortcut sheet section
+  ///
+  /// In en, this message translates to:
+  /// **'Playback and view'**
+  String get midiShortcutsPlayback;
+
+  /// Keycap: the Control key, as printed on keyboards in this language
+  ///
+  /// In en, this message translates to:
+  /// **'Ctrl'**
+  String get midiKeyCtrl;
+
+  /// Keycap: the Shift key
+  ///
+  /// In en, this message translates to:
+  /// **'Shift'**
+  String get midiKeyShift;
+
+  /// Keycap: the Alt key
+  ///
+  /// In en, this message translates to:
+  /// **'Alt'**
+  String get midiKeyAlt;
+
+  /// Keycap: the Delete key
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get midiKeyDelete;
+
+  /// Keycap: the space bar
+  ///
+  /// In en, this message translates to:
+  /// **'Space'**
+  String get midiKeySpace;
+
+  /// Keycap: the Escape key
+  ///
+  /// In en, this message translates to:
+  /// **'Esc'**
+  String get midiKeyEsc;
+
+  /// Shortcut sheet keycap: a mouse click
+  ///
+  /// In en, this message translates to:
+  /// **'Click'**
+  String get midiGestureClick;
+
+  /// Shortcut sheet keycap: a double-click
+  ///
+  /// In en, this message translates to:
+  /// **'Double-click'**
+  String get midiGestureDoubleClick;
+
+  /// Shortcut sheet keycap: dragging with the mouse
+  ///
+  /// In en, this message translates to:
+  /// **'Drag'**
+  String get midiGestureDrag;
+
+  /// Shortcut sheet keycap: the mouse wheel
+  ///
+  /// In en, this message translates to:
+  /// **'Wheel'**
+  String get midiGestureWheel;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Select tool'**
+  String get midiShortcutSelectTool;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Pencil: click to add a note — drag across to lengthen it, up or down for how hard it plays; a click on a note selects it'**
+  String get midiShortcutPencilTool;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'On empty space: add a note (hold and drag: across for length, up or down for velocity; Ctrl: off the grid). On a note: delete it'**
+  String get midiShortcutDoubleClick;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'A note: move it, with every selected note'**
+  String get midiShortcutMove;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'A note\'s edge: make it shorter or longer'**
+  String get midiShortcutResize;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'A note: copy the selected notes'**
+  String get midiShortcutCopy;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Move or resize without snapping to the grid'**
+  String get midiShortcutOffGrid;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Move the selected notes a semitone'**
+  String get midiShortcutSemitone;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Move the selected notes an octave'**
+  String get midiShortcutOctave;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Delete the selected notes'**
+  String get midiShortcutDelete;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'On empty space: select the notes inside the box'**
+  String get midiShortcutBox;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Add a note to the selection, or take it out'**
+  String get midiShortcutToggle;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Select every note'**
+  String get midiShortcutSelectAll;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Across the velocity bars: set the velocity of every note passed'**
+  String get midiShortcutVelocity;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'In a controller or pitch bend lane: draw the curve (a bend snaps back to the middle)'**
+  String get midiShortcutLane;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Play or pause'**
+  String get midiShortcutPlay;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Stop; when stopped, close the window'**
+  String get midiShortcutStop;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'On the keyboard: play the key (drag to play the keys passed)'**
+  String get midiShortcutKeyboard;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'On the ruler: jump there'**
+  String get midiShortcutRuler;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in or out around the mouse'**
+  String get midiShortcutZoom;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll sideways'**
+  String get midiShortcutScroll;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Show these shortcuts'**
+  String get midiShortcutShowSheet;
+
+  /// Piano roll: toggle that makes the window fill the whole app window
+  ///
+  /// In en, this message translates to:
+  /// **'Full screen'**
+  String get midiFullScreen;
+
+  /// Piano roll: toggle back from full screen
+  ///
+  /// In en, this message translates to:
+  /// **'Exit full screen'**
+  String get midiExitFullScreen;
+
+  /// Piano roll: range tool button tooltip (key 2, as in Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'Range (2)'**
+  String get midiToolRange;
+
+  /// Piano roll: eraser tool button tooltip (key 5, as in Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'Eraser (5)'**
+  String get midiToolEraser;
+
+  /// Piano roll: duplicate button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get midiDuplicate;
+
+  /// Piano roll: transpose menu tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Transpose'**
+  String get midiTranspose;
+
+  /// Piano roll transpose menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Up a semitone'**
+  String get midiTransposeUpSemitone;
+
+  /// Piano roll transpose menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Down a semitone'**
+  String get midiTransposeDownSemitone;
+
+  /// Piano roll transpose menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Up an octave'**
+  String get midiTransposeUpOctave;
+
+  /// Piano roll transpose menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Down an octave'**
+  String get midiTransposeDownOctave;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Range: drag across to select a stretch of time and every note in it'**
+  String get midiShortcutRangeTool;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Eraser: click or drag over notes to delete them'**
+  String get midiShortcutEraserTool;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate: a range right after itself, or the selected notes right after the last one'**
+  String get midiShortcutDuplicate;
+
+  /// MIDI tab, a collection: button that starts a blank clip to draft an idea in
+  ///
+  /// In en, this message translates to:
+  /// **'New clip'**
+  String get midiNewClip;
+
+  /// Name of a blank clip started in a collection. {number} counts them
+  ///
+  /// In en, this message translates to:
+  /// **'Idea {number}'**
+  String midiNewClipName(int number);
+
+  /// Piano roll: quantize button tooltip (key Q, as in Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'Quantize (Q)'**
+  String get midiQuantize;
+
+  /// Shortcut sheet action
+  ///
+  /// In en, this message translates to:
+  /// **'Quantize: snap the selected notes (or every note) to the grid'**
+  String get midiShortcutQuantize;
+
+  /// Piano roll: tooltip of the time signature picker (3/4, 4/4, 6/8…)
+  ///
+  /// In en, this message translates to:
+  /// **'Time signature'**
+  String get midiTimeSignature;
+
+  /// Shortcut sheet action: Ctrl/Cmd-click on the bar ruler
+  ///
+  /// In en, this message translates to:
+  /// **'On the ruler: set where the loop starts'**
+  String get midiShortcutLoopStart;
+
+  /// Shortcut sheet action: Alt-click on the bar ruler
+  ///
+  /// In en, this message translates to:
+  /// **'On the ruler: set where the loop ends'**
+  String get midiShortcutLoopEnd;
+
+  /// Shortcut sheet action: dragging the purple loop ends on the ruler
+  ///
+  /// In en, this message translates to:
+  /// **'The loop\'s purple bar: drag its ends to resize it, its middle to move it (with looping on, only the loop plays)'**
+  String get midiShortcutLoopDrag;
+
+  /// Shortcut sheet action: a plain click on the top half of the loop bar on the ruler
+  ///
+  /// In en, this message translates to:
+  /// **'The loop\'s bar, top half: turn looping on or off (grey while off)'**
+  String get midiShortcutLoopToggle;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Melody'**
+  String get midiRoleMelody;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Bass'**
+  String get midiRoleBass;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Chords'**
+  String get midiRoleChords;
+
+  /// MIDI clip role: an arpeggio
+  ///
+  /// In en, this message translates to:
+  /// **'Arp'**
+  String get midiRoleArp;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Lead'**
+  String get midiRoleLead;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Pad'**
+  String get midiRolePad;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Drums'**
+  String get midiRoleDrums;
+
+  /// MIDI clip role: sound effects
+  ///
+  /// In en, this message translates to:
+  /// **'FX'**
+  String get midiRoleFx;
+
+  /// MIDI clip role
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get midiRoleOther;
+
+  /// Label: what part a MIDI clip plays (melody, bass…)
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get midiRoleLabel;
+
+  /// Role choice that lets the app suggest one; {role} is what it suggests now
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic ({role})'**
+  String midiRoleAutomatic(String role);
+
+  /// Clip menu entry showing the current role
+  ///
+  /// In en, this message translates to:
+  /// **'Role: {role}'**
+  String midiItemRoleMenu(String role);
+
+  /// In a MIDI file name: the notes keep to no quantization grid
+  ///
+  /// In en, this message translates to:
+  /// **'free'**
+  String get midiNameFree;
+
+  /// Dialog title and button: how a collection names its exported MIDI files
+  ///
+  /// In en, this message translates to:
+  /// **'File naming'**
+  String get midiNamingTitle;
+
+  /// Switch: start each exported file name with its number
+  ///
+  /// In en, this message translates to:
+  /// **'Number the files'**
+  String get midiNamingNumbered;
+
+  /// Explains the numbering switch
+  ///
+  /// In en, this message translates to:
+  /// **'01, 02… in each folder\'s order, so a file browser lists them that way'**
+  String get midiNamingNumberedHint;
+
+  /// Label: what goes between the parts of a file name
+  ///
+  /// In en, this message translates to:
+  /// **'Separator'**
+  String get midiNamingSeparator;
+
+  /// Heading: the parts a file name is made of
+  ///
+  /// In en, this message translates to:
+  /// **'In the name'**
+  String get midiNamingFields;
+
+  /// Hint under the list of file name parts
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to change the order'**
+  String get midiNamingFieldsHint;
+
+  /// File name part: the clip name
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get midiNameFieldName;
+
+  /// File name part: the tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo (BPM)'**
+  String get midiNameFieldBpm;
+
+  /// File name part: the musical key or scale
+  ///
+  /// In en, this message translates to:
+  /// **'Key'**
+  String get midiNameFieldKey;
+
+  /// File name part: how many bars long
+  ///
+  /// In en, this message translates to:
+  /// **'Length in bars'**
+  String get midiNameFieldBars;
+
+  /// File name part: the time signature, written only when it is not 4/4
+  ///
+  /// In en, this message translates to:
+  /// **'Time signature (when not 4/4)'**
+  String get midiNameFieldTimeSignature;
+
+  /// File name part: the finest grid the notes start on
+  ///
+  /// In en, this message translates to:
+  /// **'Quantization (1-16, free…)'**
+  String get midiNameFieldGrid;
+
+  /// File name part: the preview instrument
+  ///
+  /// In en, this message translates to:
+  /// **'Instrument'**
+  String get midiNameFieldInstrument;
+
+  /// Label above an example file name
+  ///
+  /// In en, this message translates to:
+  /// **'Example'**
+  String get midiNamingPreview;
+
+  /// Button: back to the default file naming
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get midiNamingReset;
+
+  /// Button: a new folder inside a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'New folder'**
+  String get midiFolderNew;
+
+  /// Menu entry and dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Rename folder'**
+  String get midiFolderRename;
+
+  /// Menu entry and dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete folder'**
+  String get midiFolderDelete;
+
+  /// Confirms deleting a folder of a MIDI collection
+  ///
+  /// In en, this message translates to:
+  /// **'Delete the folder \"{name}\"? Its clips and folders move up one level.'**
+  String midiFolderDeleteConfirm(String name);
+
+  /// Text field label
+  ///
+  /// In en, this message translates to:
+  /// **'Folder name'**
+  String get midiFolderName;
+
+  /// Label: the folder a clip goes in
+  ///
+  /// In en, this message translates to:
+  /// **'Folder'**
+  String get midiFolderLabel;
+
+  /// The collection's top level, outside any folder
+  ///
+  /// In en, this message translates to:
+  /// **'Top level'**
+  String get midiFolderTopLevel;
+
+  /// Menu entry: move a clip or folder into another folder
+  ///
+  /// In en, this message translates to:
+  /// **'Move to…'**
+  String get midiMoveTo;
+
+  /// Menu entry: earlier in the order
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get midiMoveUp;
+
+  /// Menu entry: later in the order
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get midiMoveDown;
+
+  /// Menu entry and dialog title: rename a clip in a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get midiItemRename;
+
+  /// Helper text under the clip name field
+  ///
+  /// In en, this message translates to:
+  /// **'Blank: the clip\'s own name'**
+  String get midiItemNameHint;
+
+  /// Dialog title: saving a newly drawn clip into a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Save clip'**
+  String get midiSaveClipTitle;
+
+  /// Label above the file name a clip will export as
+  ///
+  /// In en, this message translates to:
+  /// **'File name'**
+  String get midiSaveFileName;
+
+  /// Button and menu entry: rename many clips from the naming scheme at once
+  ///
+  /// In en, this message translates to:
+  /// **'Rename by scheme…'**
+  String get midiBulkRenameMenu;
+
+  /// Dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Rename by naming scheme'**
+  String get midiBulkRenameTitle;
+
+  /// Explains the bulk rename dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Each name is proposed from the collection\'s naming scheme. Edit any of them first, and untick the clips to leave as they are.'**
+  String get midiBulkRenameHint;
+
+  /// Button: apply the renames
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Rename 1 clip} other{Rename {count} clips}}'**
+  String midiBulkRenameApply(int count);
+
+  /// Snackbar after a bulk rename
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Renamed 1 clip} other{Renamed {count} clips}}'**
+  String midiBulkRenameDone(int count);
+
+  /// Checkbox: tick or untick every clip in the list
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get midiBulkRenameSelectAll;
+
+  /// Button in the rename dialog: fill in a name made from the naming scheme
+  ///
+  /// In en, this message translates to:
+  /// **'From the naming scheme'**
+  String get midiNameFromScheme;
+
+  /// Snackbar: clips dragged into another collection
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Moved to {name}} other{Moved {count} clips to {name}}}'**
+  String midiCollectionMoved(int count, String name);
+
+  /// Button: open every collection, folder or group in a MIDI list
+  ///
+  /// In en, this message translates to:
+  /// **'Expand all'**
+  String get midiExpandAll;
+
+  /// Button: close every collection, folder or group in a MIDI list
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse all'**
+  String get midiCollapseAll;
 }
 
 class _AppLocalizationsDelegate

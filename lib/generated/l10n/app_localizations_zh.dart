@@ -5780,9 +5780,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get synthVoiceSynth => '合成器';
-
-  @override
   String get synthVoiceLead => '主音';
 
   @override
@@ -6166,4 +6163,479 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get columnsInReleaseTracks => '发行曲目';
+
+  @override
+  String get projectContentsRead => '读取项目内容';
+
+  @override
+  String get projectContentsReadHint =>
+      '从项目文件读取轨道、插件和 MIDI 片段。它们随项目保存，并同步到你的其他设备。';
+
+  @override
+  String get projectContentsNoneRead =>
+      '尚未从此项目读取任何内容。请在存有项目文件的电脑上进行深度扫描或提取其元数据。';
+
+  @override
+  String get midiScale => '音阶';
+
+  @override
+  String get midiScaleNone => '无音阶';
+
+  @override
+  String get midiScaleRoot => '主音';
+
+  @override
+  String get midiScaleType => '音阶类型';
+
+  @override
+  String get scaleMajor => '大调';
+
+  @override
+  String get scaleMinor => '小调';
+
+  @override
+  String get scaleHarmonicMinor => '和声小调';
+
+  @override
+  String get scaleMelodicMinor => '旋律小调';
+
+  @override
+  String get scaleDorian => '多利亚';
+
+  @override
+  String get scalePhrygian => '弗里几亚';
+
+  @override
+  String get scaleLydian => '利底亚';
+
+  @override
+  String get scaleMixolydian => '混合利底亚';
+
+  @override
+  String get scaleLocrian => '洛克里亚';
+
+  @override
+  String get scaleMajorPentatonic => '大调五声';
+
+  @override
+  String get scaleMinorPentatonic => '小调五声';
+
+  @override
+  String get scaleBlues => '布鲁斯';
+
+  @override
+  String get midiEditNotes => '编辑音符';
+
+  @override
+  String get midiUndo => '撤销';
+
+  @override
+  String get midiRedo => '重做';
+
+  @override
+  String get midiSnap => '吸附到网格';
+
+  @override
+  String get midiSnapOff => '关';
+
+  @override
+  String get midiSaveAsNewClip => '另存为新片段';
+
+  @override
+  String midiClipEditedName(String name) {
+    return '$name（已编辑）';
+  }
+
+  @override
+  String get midiDiscardEditsTitle => '放弃更改？';
+
+  @override
+  String get midiDiscardEditsBody => '编辑后的片段尚未保存。将其另存为新片段即可保留。';
+
+  @override
+  String get midiKeepEditing => '继续编辑';
+
+  @override
+  String get midiDiscardEdits => '放弃';
+
+  @override
+  String get midiToolSelect => '选择 (1)';
+
+  @override
+  String get midiToolPencil => '铅笔 (8)';
+
+  @override
+  String get midiAcousticFeedback => '编辑时播放音符';
+
+  @override
+  String get midiShortcuts => '键盘快捷键 (?)';
+
+  @override
+  String get midiShortcutsTitle => '钢琴卷帘快捷键';
+
+  @override
+  String get midiShortcutsTools => '工具';
+
+  @override
+  String get midiShortcutsNotes => '音符';
+
+  @override
+  String get midiShortcutsSelecting => '选择';
+
+  @override
+  String get midiShortcutsLanes => '力度与控制器轨道';
+
+  @override
+  String get midiShortcutsEditing => '编辑';
+
+  @override
+  String get midiShortcutsPlayback => '播放与视图';
+
+  @override
+  String get midiKeyCtrl => 'Ctrl';
+
+  @override
+  String get midiKeyShift => 'Shift';
+
+  @override
+  String get midiKeyAlt => 'Alt';
+
+  @override
+  String get midiKeyDelete => 'Delete';
+
+  @override
+  String get midiKeySpace => '空格';
+
+  @override
+  String get midiKeyEsc => 'Esc';
+
+  @override
+  String get midiGestureClick => '单击';
+
+  @override
+  String get midiGestureDoubleClick => '双击';
+
+  @override
+  String get midiGestureDrag => '拖动';
+
+  @override
+  String get midiGestureWheel => '滚轮';
+
+  @override
+  String get midiShortcutSelectTool => '选择工具';
+
+  @override
+  String get midiShortcutPencilTool => '铅笔：单击添加音符；横向拖动可延长，上下拖动调整力度；单击音符将其选中';
+
+  @override
+  String get midiShortcutDoubleClick =>
+      '空白处：添加音符（按住拖动：横向调时值，上下调力度；Ctrl：不吸附网格）。音符上：删除它';
+
+  @override
+  String get midiShortcutMove => '音符：与所有选中音符一起移动';
+
+  @override
+  String get midiShortcutResize => '音符边缘：缩短或延长';
+
+  @override
+  String get midiShortcutCopy => '音符：复制所选音符';
+
+  @override
+  String get midiShortcutOffGrid => '移动或调整长度时不吸附网格';
+
+  @override
+  String get midiShortcutSemitone => '将所选音符移动一个半音';
+
+  @override
+  String get midiShortcutOctave => '将所选音符移动一个八度';
+
+  @override
+  String get midiShortcutDelete => '删除所选音符';
+
+  @override
+  String get midiShortcutBox => '空白处：选择框内的音符';
+
+  @override
+  String get midiShortcutToggle => '将音符加入选择或移出选择';
+
+  @override
+  String get midiShortcutSelectAll => '选择全部音符';
+
+  @override
+  String get midiShortcutVelocity => '在力度竖条上：设置经过的每个音符的力度';
+
+  @override
+  String get midiShortcutLane => '在控制器或弯音轨道中：绘制曲线（弯音会吸附回中间）';
+
+  @override
+  String get midiShortcutPlay => '播放或暂停';
+
+  @override
+  String get midiShortcutStop => '停止；已停止时关闭窗口';
+
+  @override
+  String get midiShortcutKeyboard => '在琴键上：弹奏该键（拖动可弹奏经过的键）';
+
+  @override
+  String get midiShortcutRuler => '在标尺上：跳到该处';
+
+  @override
+  String get midiShortcutZoom => '以鼠标为中心放大或缩小';
+
+  @override
+  String get midiShortcutScroll => '横向滚动';
+
+  @override
+  String get midiShortcutShowSheet => '显示这些快捷键';
+
+  @override
+  String get midiFullScreen => '全屏';
+
+  @override
+  String get midiExitFullScreen => '退出全屏';
+
+  @override
+  String get midiToolRange => '范围 (2)';
+
+  @override
+  String get midiToolEraser => '橡皮擦 (5)';
+
+  @override
+  String get midiDuplicate => '复制';
+
+  @override
+  String get midiTranspose => '移调';
+
+  @override
+  String get midiTransposeUpSemitone => '升高一个半音';
+
+  @override
+  String get midiTransposeDownSemitone => '降低一个半音';
+
+  @override
+  String get midiTransposeUpOctave => '升高一个八度';
+
+  @override
+  String get midiTransposeDownOctave => '降低一个八度';
+
+  @override
+  String get midiShortcutRangeTool => '范围：拖动选择一段时间及其中所有音符';
+
+  @override
+  String get midiShortcutEraserTool => '橡皮擦：单击或拖过音符即可删除';
+
+  @override
+  String get midiShortcutDuplicate => '复制：范围紧接其后，或所选音符紧接最后一个之后';
+
+  @override
+  String get midiNewClip => '新建片段';
+
+  @override
+  String midiNewClipName(int number) {
+    return '灵感 $number';
+  }
+
+  @override
+  String get midiQuantize => '量化 (Q)';
+
+  @override
+  String get midiShortcutQuantize => '量化：将所选音符（或全部音符）对齐到网格';
+
+  @override
+  String get midiTimeSignature => '拍号';
+
+  @override
+  String get midiShortcutLoopStart => '在标尺上：设置循环起点';
+
+  @override
+  String get midiShortcutLoopEnd => '在标尺上：设置循环终点';
+
+  @override
+  String get midiShortcutLoopDrag => '循环的紫色条：拖动两端调整长度，拖动中间移动位置（开启循环时只播放该段）';
+
+  @override
+  String get midiShortcutLoopToggle => '循环条的上半部分：开启或关闭循环（关闭时为灰色）';
+
+  @override
+  String get midiRoleMelody => '旋律';
+
+  @override
+  String get midiRoleBass => '贝斯';
+
+  @override
+  String get midiRoleChords => '和弦';
+
+  @override
+  String get midiRoleArp => '琶音';
+
+  @override
+  String get midiRoleLead => '主音';
+
+  @override
+  String get midiRolePad => '铺底';
+
+  @override
+  String get midiRoleDrums => '鼓';
+
+  @override
+  String get midiRoleFx => 'FX';
+
+  @override
+  String get midiRoleOther => '其他';
+
+  @override
+  String get midiRoleLabel => '角色';
+
+  @override
+  String midiRoleAutomatic(String role) {
+    return '自动（$role）';
+  }
+
+  @override
+  String midiItemRoleMenu(String role) {
+    return '角色：$role';
+  }
+
+  @override
+  String get midiNameFree => '自由';
+
+  @override
+  String get midiNamingTitle => '文件命名';
+
+  @override
+  String get midiNamingNumbered => '为文件编号';
+
+  @override
+  String get midiNamingNumberedHint => '按每个文件夹中的顺序编号 01、02…，让文件浏览器按此顺序显示';
+
+  @override
+  String get midiNamingSeparator => '分隔符';
+
+  @override
+  String get midiNamingFields => '名称中包含';
+
+  @override
+  String get midiNamingFieldsHint => '拖动以更改顺序';
+
+  @override
+  String get midiNameFieldName => '名称';
+
+  @override
+  String get midiNameFieldBpm => '速度 (BPM)';
+
+  @override
+  String get midiNameFieldKey => '调性';
+
+  @override
+  String get midiNameFieldBars => '小节数';
+
+  @override
+  String get midiNameFieldTimeSignature => '拍号（非 4/4 时）';
+
+  @override
+  String get midiNameFieldGrid => '量化（1-16、自由…）';
+
+  @override
+  String get midiNameFieldInstrument => '乐器';
+
+  @override
+  String get midiNamingPreview => '示例';
+
+  @override
+  String get midiNamingReset => '默认';
+
+  @override
+  String get midiFolderNew => '新建文件夹';
+
+  @override
+  String get midiFolderRename => '重命名文件夹';
+
+  @override
+  String get midiFolderDelete => '删除文件夹';
+
+  @override
+  String midiFolderDeleteConfirm(String name) {
+    return '删除文件夹“$name”？其中的片段和文件夹会上移一级。';
+  }
+
+  @override
+  String get midiFolderName => '文件夹名称';
+
+  @override
+  String get midiFolderLabel => '文件夹';
+
+  @override
+  String get midiFolderTopLevel => '顶层';
+
+  @override
+  String get midiMoveTo => '移动到…';
+
+  @override
+  String get midiMoveUp => '上移';
+
+  @override
+  String get midiMoveDown => '下移';
+
+  @override
+  String get midiItemRename => '重命名';
+
+  @override
+  String get midiItemNameHint => '留空：使用片段自身的名称';
+
+  @override
+  String get midiSaveClipTitle => '保存片段';
+
+  @override
+  String get midiSaveFileName => '文件名';
+
+  @override
+  String get midiBulkRenameMenu => '按方案重命名…';
+
+  @override
+  String get midiBulkRenameTitle => '按命名方案重命名';
+
+  @override
+  String get midiBulkRenameHint => '每个名称都根据该合集的命名方案提出。可先编辑任意名称，并取消勾选需要保持不变的片段。';
+
+  @override
+  String midiBulkRenameApply(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '重命名 $count 个片段',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiBulkRenameDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已重命名 $count 个片段',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiBulkRenameSelectAll => '全部';
+
+  @override
+  String get midiNameFromScheme => '按命名方案';
+
+  @override
+  String midiCollectionMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已将 $count 个片段移至 $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiExpandAll => '全部展开';
+
+  @override
+  String get midiCollapseAll => '全部折叠';
 }

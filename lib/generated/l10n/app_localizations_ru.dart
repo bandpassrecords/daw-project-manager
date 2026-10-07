@@ -6025,9 +6025,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get synthVoiceSynth => 'Синтезатор';
-
-  @override
   String get synthVoiceLead => 'Лид';
 
   @override
@@ -6424,4 +6421,503 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get columnsInReleaseTracks => 'Треки релизов';
+
+  @override
+  String get projectContentsRead => 'Прочитать содержимое проекта';
+
+  @override
+  String get projectContentsReadHint =>
+      'Читает дорожки, плагины и MIDI-клипы из файла проекта. Они хранятся вместе с проектом и синхронизируются с другими устройствами.';
+
+  @override
+  String get projectContentsNoneRead =>
+      'Из этого проекта ещё ничего не прочитано. Выполните глубокое сканирование или извлеките метаданные на компьютере, где есть файл проекта.';
+
+  @override
+  String get midiScale => 'Гамма';
+
+  @override
+  String get midiScaleNone => 'Без гаммы';
+
+  @override
+  String get midiScaleRoot => 'Тоника';
+
+  @override
+  String get midiScaleType => 'Тип гаммы';
+
+  @override
+  String get scaleMajor => 'Мажор';
+
+  @override
+  String get scaleMinor => 'Минор';
+
+  @override
+  String get scaleHarmonicMinor => 'Гармонический минор';
+
+  @override
+  String get scaleMelodicMinor => 'Мелодический минор';
+
+  @override
+  String get scaleDorian => 'Дорийский';
+
+  @override
+  String get scalePhrygian => 'Фригийский';
+
+  @override
+  String get scaleLydian => 'Лидийский';
+
+  @override
+  String get scaleMixolydian => 'Миксолидийский';
+
+  @override
+  String get scaleLocrian => 'Локрийский';
+
+  @override
+  String get scaleMajorPentatonic => 'Мажорная пентатоника';
+
+  @override
+  String get scaleMinorPentatonic => 'Минорная пентатоника';
+
+  @override
+  String get scaleBlues => 'Блюз';
+
+  @override
+  String get midiEditNotes => 'Редактировать ноты';
+
+  @override
+  String get midiUndo => 'Отменить';
+
+  @override
+  String get midiRedo => 'Повторить';
+
+  @override
+  String get midiSnap => 'Привязка к сетке';
+
+  @override
+  String get midiSnapOff => 'Выкл.';
+
+  @override
+  String get midiSaveAsNewClip => 'Сохранить как новый клип';
+
+  @override
+  String midiClipEditedName(String name) {
+    return '$name (изменён)';
+  }
+
+  @override
+  String get midiDiscardEditsTitle => 'Сбросить изменения?';
+
+  @override
+  String get midiDiscardEditsBody =>
+      'Изменённый клип не сохранён. Сохраните его как новый клип, чтобы не потерять.';
+
+  @override
+  String get midiKeepEditing => 'Продолжить редактирование';
+
+  @override
+  String get midiDiscardEdits => 'Сбросить';
+
+  @override
+  String get midiToolSelect => 'Выделение (1)';
+
+  @override
+  String get midiToolPencil => 'Карандаш (8)';
+
+  @override
+  String get midiAcousticFeedback => 'Слышать ноты при редактировании';
+
+  @override
+  String get midiShortcuts => 'Сочетания клавиш (?)';
+
+  @override
+  String get midiShortcutsTitle => 'Сочетания клавиш пианоролла';
+
+  @override
+  String get midiShortcutsTools => 'Инструменты';
+
+  @override
+  String get midiShortcutsNotes => 'Ноты';
+
+  @override
+  String get midiShortcutsSelecting => 'Выделение';
+
+  @override
+  String get midiShortcutsLanes => 'Дорожки громкости и контроллеров';
+
+  @override
+  String get midiShortcutsEditing => 'Правка';
+
+  @override
+  String get midiShortcutsPlayback => 'Воспроизведение и вид';
+
+  @override
+  String get midiKeyCtrl => 'Ctrl';
+
+  @override
+  String get midiKeyShift => 'Shift';
+
+  @override
+  String get midiKeyAlt => 'Alt';
+
+  @override
+  String get midiKeyDelete => 'Delete';
+
+  @override
+  String get midiKeySpace => 'Пробел';
+
+  @override
+  String get midiKeyEsc => 'Esc';
+
+  @override
+  String get midiGestureClick => 'Щелчок';
+
+  @override
+  String get midiGestureDoubleClick => 'Двойной щелчок';
+
+  @override
+  String get midiGestureDrag => 'Перетаскивание';
+
+  @override
+  String get midiGestureWheel => 'Колесо мыши';
+
+  @override
+  String get midiShortcutSelectTool => 'Инструмент выделения';
+
+  @override
+  String get midiShortcutPencilTool =>
+      'Карандаш: щелчок добавляет ноту; протяните вбок, чтобы удлинить, вверх или вниз — громкость; щелчок по ноте выделяет её';
+
+  @override
+  String get midiShortcutDoubleClick =>
+      'На пустом месте: добавить ноту (удерживайте и тяните: вбок — длина, вверх/вниз — громкость; Ctrl — без сетки). По ноте: удалить её';
+
+  @override
+  String get midiShortcutMove => 'Ноту: сдвинуть вместе со всеми выделенными';
+
+  @override
+  String get midiShortcutResize => 'Край ноты: укоротить или удлинить';
+
+  @override
+  String get midiShortcutCopy => 'Ноту: скопировать выделенные ноты';
+
+  @override
+  String get midiShortcutOffGrid =>
+      'Двигать или менять длину без привязки к сетке';
+
+  @override
+  String get midiShortcutSemitone => 'Сдвинуть выделенные ноты на полутон';
+
+  @override
+  String get midiShortcutOctave => 'Сдвинуть выделенные ноты на октаву';
+
+  @override
+  String get midiShortcutDelete => 'Удалить выделенные ноты';
+
+  @override
+  String get midiShortcutBox => 'На пустом месте: выделить ноты в рамке';
+
+  @override
+  String get midiShortcutToggle => 'Добавить ноту к выделению или убрать её';
+
+  @override
+  String get midiShortcutSelectAll => 'Выделить все ноты';
+
+  @override
+  String get midiShortcutVelocity =>
+      'По столбикам громкости: задать громкость каждой ноты на пути';
+
+  @override
+  String get midiShortcutLane =>
+      'На дорожке контроллера или изгиба: нарисовать кривую (изгиб возвращается к середине)';
+
+  @override
+  String get midiShortcutPlay => 'Воспроизведение или пауза';
+
+  @override
+  String get midiShortcutStop =>
+      'Остановить; если уже остановлено — закрыть окно';
+
+  @override
+  String get midiShortcutKeyboard =>
+      'На клавиатуре: сыграть клавишу (протяните, чтобы сыграть клавиши на пути)';
+
+  @override
+  String get midiShortcutRuler => 'На линейке: перейти туда';
+
+  @override
+  String get midiShortcutZoom => 'Масштаб вокруг указателя мыши';
+
+  @override
+  String get midiShortcutScroll => 'Прокрутка по горизонтали';
+
+  @override
+  String get midiShortcutShowSheet => 'Показать эти сочетания клавиш';
+
+  @override
+  String get midiFullScreen => 'Во весь экран';
+
+  @override
+  String get midiExitFullScreen => 'Выйти из полноэкранного режима';
+
+  @override
+  String get midiToolRange => 'Диапазон (2)';
+
+  @override
+  String get midiToolEraser => 'Ластик (5)';
+
+  @override
+  String get midiDuplicate => 'Дублировать';
+
+  @override
+  String get midiTranspose => 'Транспонировать';
+
+  @override
+  String get midiTransposeUpSemitone => 'На полутон выше';
+
+  @override
+  String get midiTransposeDownSemitone => 'На полутон ниже';
+
+  @override
+  String get midiTransposeUpOctave => 'На октаву выше';
+
+  @override
+  String get midiTransposeDownOctave => 'На октаву ниже';
+
+  @override
+  String get midiShortcutRangeTool =>
+      'Диапазон: протащите, чтобы выделить отрезок времени и все ноты в нём';
+
+  @override
+  String get midiShortcutEraserTool =>
+      'Ластик: щёлкните или проведите по нотам, чтобы удалить их';
+
+  @override
+  String get midiShortcutDuplicate =>
+      'Дублировать: диапазон сразу за ним, или выделенные ноты сразу после последней';
+
+  @override
+  String get midiNewClip => 'Новый клип';
+
+  @override
+  String midiNewClipName(int number) {
+    return 'Идея $number';
+  }
+
+  @override
+  String get midiQuantize => 'Квантовать (Q)';
+
+  @override
+  String get midiShortcutQuantize =>
+      'Квантовать: привязать к сетке выделенные ноты (или все)';
+
+  @override
+  String get midiTimeSignature => 'Размер';
+
+  @override
+  String get midiShortcutLoopStart => 'На линейке: задать начало цикла';
+
+  @override
+  String get midiShortcutLoopEnd => 'На линейке: задать конец цикла';
+
+  @override
+  String get midiShortcutLoopDrag =>
+      'Фиолетовая полоса цикла: тяните края, чтобы изменить длину, середину — чтобы сдвинуть (при включённом цикле звучит только она)';
+
+  @override
+  String get midiShortcutLoopToggle =>
+      'Верхняя половина полосы цикла: включить или выключить цикл (серая, пока выключен)';
+
+  @override
+  String get midiRoleMelody => 'Мелодия';
+
+  @override
+  String get midiRoleBass => 'Бас';
+
+  @override
+  String get midiRoleChords => 'Аккорды';
+
+  @override
+  String get midiRoleArp => 'Арпеджио';
+
+  @override
+  String get midiRoleLead => 'Лид';
+
+  @override
+  String get midiRolePad => 'Пэд';
+
+  @override
+  String get midiRoleDrums => 'Ударные';
+
+  @override
+  String get midiRoleFx => 'FX';
+
+  @override
+  String get midiRoleOther => 'Другое';
+
+  @override
+  String get midiRoleLabel => 'Роль';
+
+  @override
+  String midiRoleAutomatic(String role) {
+    return 'Автоматически ($role)';
+  }
+
+  @override
+  String midiItemRoleMenu(String role) {
+    return 'Роль: $role';
+  }
+
+  @override
+  String get midiNameFree => 'свободно';
+
+  @override
+  String get midiNamingTitle => 'Имена файлов';
+
+  @override
+  String get midiNamingNumbered => 'Нумеровать файлы';
+
+  @override
+  String get midiNamingNumberedHint =>
+      '01, 02… в порядке каждой папки, чтобы файловый менеджер показывал их так же';
+
+  @override
+  String get midiNamingSeparator => 'Разделитель';
+
+  @override
+  String get midiNamingFields => 'В имени';
+
+  @override
+  String get midiNamingFieldsHint => 'Перетащите, чтобы изменить порядок';
+
+  @override
+  String get midiNameFieldName => 'Название';
+
+  @override
+  String get midiNameFieldBpm => 'Темп (BPM)';
+
+  @override
+  String get midiNameFieldKey => 'Тональность';
+
+  @override
+  String get midiNameFieldBars => 'Длина в тактах';
+
+  @override
+  String get midiNameFieldTimeSignature => 'Размер (если не 4/4)';
+
+  @override
+  String get midiNameFieldGrid => 'Квантизация (1-16, свободно…)';
+
+  @override
+  String get midiNameFieldInstrument => 'Инструмент';
+
+  @override
+  String get midiNamingPreview => 'Пример';
+
+  @override
+  String get midiNamingReset => 'По умолчанию';
+
+  @override
+  String get midiFolderNew => 'Новая папка';
+
+  @override
+  String get midiFolderRename => 'Переименовать папку';
+
+  @override
+  String get midiFolderDelete => 'Удалить папку';
+
+  @override
+  String midiFolderDeleteConfirm(String name) {
+    return 'Удалить папку «$name»? Её клипы и папки переместятся на уровень выше.';
+  }
+
+  @override
+  String get midiFolderName => 'Имя папки';
+
+  @override
+  String get midiFolderLabel => 'Папка';
+
+  @override
+  String get midiFolderTopLevel => 'Верхний уровень';
+
+  @override
+  String get midiMoveTo => 'Переместить в…';
+
+  @override
+  String get midiMoveUp => 'Переместить вверх';
+
+  @override
+  String get midiMoveDown => 'Переместить вниз';
+
+  @override
+  String get midiItemRename => 'Переименовать';
+
+  @override
+  String get midiItemNameHint => 'Пусто: собственное имя клипа';
+
+  @override
+  String get midiSaveClipTitle => 'Сохранить клип';
+
+  @override
+  String get midiSaveFileName => 'Имя файла';
+
+  @override
+  String get midiBulkRenameMenu => 'Переименовать по схеме…';
+
+  @override
+  String get midiBulkRenameTitle => 'Переименовать по схеме имён';
+
+  @override
+  String get midiBulkRenameHint =>
+      'Каждое имя предложено по схеме имён коллекции. Сначала можно отредактировать любое и снять отметку с клипов, которые нужно оставить как есть.';
+
+  @override
+  String midiBulkRenameApply(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Переименовать $count клипа',
+      many: 'Переименовать $count клипов',
+      few: 'Переименовать $count клипа',
+      one: 'Переименовать $count клип',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiBulkRenameDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Переименовано $count клипа',
+      many: 'Переименовано $count клипов',
+      few: 'Переименовано $count клипа',
+      one: 'Переименован $count клип',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiBulkRenameSelectAll => 'Все';
+
+  @override
+  String get midiNameFromScheme => 'По схеме имён';
+
+  @override
+  String midiCollectionMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Перемещено $count клипа в $name',
+      many: 'Перемещено $count клипов в $name',
+      few: 'Перемещено $count клипа в $name',
+      one: 'Перемещён $count клип в $name',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiExpandAll => 'Развернуть все';
+
+  @override
+  String get midiCollapseAll => 'Свернуть все';
 }
