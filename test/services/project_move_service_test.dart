@@ -8,6 +8,12 @@ import 'package:daw_project_manager/utils/project_folder_utils.dart';
 
 import '../helpers/test_factories.dart';
 
+/// [path] as this platform writes it. A rewritten path is normalised with
+/// the host's separator (a backslash on Windows), which is right there; the
+/// tests are written with POSIX paths, so they compare against the same
+/// normalisation rather than a literal that only holds on macOS and Linux.
+String _native(String path) => p.normalize(path);
+
 void main() {
   // -------------------------------------------------------------------------
   // Pure path rewriting — the half a move gets wrong silently.
@@ -25,7 +31,7 @@ void main() {
         to: '/archive/Midnight.als',
       );
 
-      expect(moved.filePath, '/archive/Midnight.als');
+      expect(moved.filePath, _native('/archive/Midnight.als'));
       expect(moved.fileName, 'Midnight.als');
     });
 
@@ -42,9 +48,15 @@ void main() {
         to: '/archive/Midnight',
       );
 
-      expect(moved.filePath, '/archive/Midnight/Midnight.als');
-      expect(moved.previewSongPath, '/archive/Midnight/Bounces/rough.wav');
-      expect(moved.previewSongAutoPath, '/archive/Midnight/Bounces/auto.wav');
+      expect(moved.filePath, _native('/archive/Midnight/Midnight.als'));
+      expect(
+        moved.previewSongPath,
+        _native('/archive/Midnight/Bounces/rough.wav'),
+      );
+      expect(
+        moved.previewSongAutoPath,
+        _native('/archive/Midnight/Bounces/auto.wav'),
+      );
     });
 
     test('leaves a preview song outside the moved prefix alone', () {
@@ -61,7 +73,8 @@ void main() {
         to: '/archive/Midnight',
       );
 
-      expect(moved.filePath, '/archive/Midnight/Midnight.als');
+      expect(moved.filePath, _native('/archive/Midnight/Midnight.als'));
+      // Not rewritten, so exactly as stored: not even normalised.
       expect(moved.previewSongPath, '/Users/me/Renders/midnight_master.wav');
     });
 
@@ -185,7 +198,9 @@ void main() {
       );
 
       expect(bundle.existsSync(), isFalse);
-      final movedBundle = Directory(p.join(destination.path, 'Midnight.logicx'));
+      final movedBundle = Directory(
+        p.join(destination.path, 'Midnight.logicx'),
+      );
       expect(movedBundle.existsSync(), isTrue);
       expect(
         File(p.join(movedBundle.path, 'ProjectData')).existsSync(),
@@ -194,39 +209,42 @@ void main() {
       expect(result.project.filePath, movedBundle.path);
     });
 
-    test('moves the whole containing folder and repaths nested files', () async {
-      final folder = Directory(p.join(library.path, 'Midnight'));
-      final bounces = Directory(p.join(folder.path, 'Bounces'));
-      await bounces.create(recursive: true);
-      final projectFile = File(p.join(folder.path, 'Midnight.als'));
-      await projectFile.writeAsString('als');
-      final bounce = File(p.join(bounces.path, 'rough.wav'));
-      await bounce.writeAsString('wav');
+    test(
+      'moves the whole containing folder and repaths nested files',
+      () async {
+        final folder = Directory(p.join(library.path, 'Midnight'));
+        final bounces = Directory(p.join(folder.path, 'Bounces'));
+        await bounces.create(recursive: true);
+        final projectFile = File(p.join(folder.path, 'Midnight.als'));
+        await projectFile.writeAsString('als');
+        final bounce = File(p.join(bounces.path, 'rough.wav'));
+        await bounce.writeAsString('wav');
 
-      final project = TestFactories.makeProject(
-        filePath: projectFile.path,
-        previewSongPath: bounce.path,
-      );
+        final project = TestFactories.makeProject(
+          filePath: projectFile.path,
+          previewSongPath: bounce.path,
+        );
 
-      final result = await moveProject(
-        project,
-        destination.path,
-        moveContainingFolder: true,
-      );
+        final result = await moveProject(
+          project,
+          destination.path,
+          moveContainingFolder: true,
+        );
 
-      expect(folder.existsSync(), isFalse);
-      final movedFolder = Directory(p.join(destination.path, 'Midnight'));
-      expect(movedFolder.existsSync(), isTrue);
-      expect(
-        result.project.filePath,
-        p.join(movedFolder.path, 'Midnight.als'),
-      );
-      expect(
-        result.project.previewSongPath,
-        p.join(movedFolder.path, 'Bounces', 'rough.wav'),
-      );
-      expect(File(result.project.previewSongPath!).existsSync(), isTrue);
-    });
+        expect(folder.existsSync(), isFalse);
+        final movedFolder = Directory(p.join(destination.path, 'Midnight'));
+        expect(movedFolder.existsSync(), isTrue);
+        expect(
+          result.project.filePath,
+          p.join(movedFolder.path, 'Midnight.als'),
+        );
+        expect(
+          result.project.previewSongPath,
+          p.join(movedFolder.path, 'Bounces', 'rough.wav'),
+        );
+        expect(File(result.project.previewSongPath!).existsSync(), isTrue);
+      },
+    );
 
     test('refuses when the destination already holds that name', () async {
       final src = File(p.join(library.path, 'Midnight.als'));
@@ -335,7 +353,9 @@ void main() {
     late Directory tempDir;
 
     setUp(() async {
-      tempDir = await Directory.systemTemp.createTemp('project_move_copy_test_');
+      tempDir = await Directory.systemTemp.createTemp(
+        'project_move_copy_test_',
+      );
     });
 
     tearDown(() async {

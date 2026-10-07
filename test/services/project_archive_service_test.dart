@@ -10,11 +10,11 @@ import 'package:daw_project_manager/services/project_archive_service.dart';
 import '../helpers/test_factories.dart';
 
 ScanRoot _root(String path) => ScanRoot(
-      id: 'root-${path.hashCode}',
-      path: path,
-      addedAt: DateTime(2025, 1, 1),
-      scanDepth: 0,
-    );
+  id: 'root-${path.hashCode}',
+  path: path,
+  addedAt: DateTime(2025, 1, 1),
+  scanDepth: 0,
+);
 
 void main() {
   // -------------------------------------------------------------------------
@@ -70,14 +70,20 @@ void main() {
   group('archiveSourceFor', () {
     test('folder scope resolves to the containing folder', () {
       expect(
-        archiveSourceFor('/lib/Midnight/Midnight.als', ArchiveScope.containingFolder),
+        archiveSourceFor(
+          '/lib/Midnight/Midnight.als',
+          ArchiveScope.containingFolder,
+        ),
         '/lib/Midnight',
       );
     });
 
     test('file scope resolves to the project entity itself', () {
       expect(
-        archiveSourceFor('/lib/Midnight/Midnight.als', ArchiveScope.projectFileOnly),
+        archiveSourceFor(
+          '/lib/Midnight/Midnight.als',
+          ArchiveScope.projectFileOnly,
+        ),
         '/lib/Midnight/Midnight.als',
       );
     });
@@ -125,14 +131,18 @@ void main() {
   group('archiveFileNameFor', () {
     test('uses the display name', () {
       expect(
-        archiveFileNameFor(TestFactories.makeProject(customDisplayName: 'Midnight Drive')),
+        archiveFileNameFor(
+          TestFactories.makeProject(customDisplayName: 'Midnight Drive'),
+        ),
         'Midnight Drive.zip',
       );
     });
 
     test('strips characters a filesystem would reject', () {
       expect(
-        archiveFileNameFor(TestFactories.makeProject(customDisplayName: 'A/B: C?')),
+        archiveFileNameFor(
+          TestFactories.makeProject(customDisplayName: 'A/B: C?'),
+        ),
         'A_B_ C_.zip',
       );
     });
@@ -153,13 +163,16 @@ void main() {
       library = Directory(p.join(tempDir.path, 'Library'));
       archiveDir = Directory(p.join(tempDir.path, 'Archive'));
       projectFolder = Directory(p.join(library.path, 'Midnight'));
-      await Directory(p.join(projectFolder.path, 'Samples')).create(recursive: true);
+      await Directory(
+        p.join(projectFolder.path, 'Samples'),
+      ).create(recursive: true);
       await archiveDir.create(recursive: true);
 
       projectFile = File(p.join(projectFolder.path, 'Midnight.als'));
       await projectFile.writeAsString('project data');
-      await File(p.join(projectFolder.path, 'Samples', 'kick.wav'))
-          .writeAsString('kick audio');
+      await File(
+        p.join(projectFolder.path, 'Samples', 'kick.wav'),
+      ).writeAsString('kick audio');
     });
 
     tearDown(() async {
@@ -179,30 +192,35 @@ void main() {
       }
     }
 
-    test('zips the whole folder and records where the project file sits',
-        () async {
-      final project = TestFactories.makeProject(
-        filePath: projectFile.path,
-        customDisplayName: 'Midnight',
-      );
+    test(
+      'zips the whole folder and records where the project file sits',
+      () async {
+        final project = TestFactories.makeProject(
+          filePath: projectFile.path,
+          customDisplayName: 'Midnight',
+        );
 
-      final result = await archiveProject(
-        project,
-        archiveDir.path,
-        scope: ArchiveScope.containingFolder,
-        deleteOriginals: false,
-      );
+        final result = await archiveProject(
+          project,
+          archiveDir.path,
+          scope: ArchiveScope.containingFolder,
+          deleteOriginals: false,
+        );
 
-      expect(File(result.archivePath).existsSync(), isTrue);
-      expect(
-        await entriesOf(result.archivePath),
-        containsAll(<String>['Midnight/Midnight.als', 'Midnight/Samples/kick.wav']),
-      );
-      expect(result.project.isArchived, isTrue);
-      expect(result.project.archiveEntryPath, 'Midnight/Midnight.als');
-      expect(result.project.archivedAt, isNotNull);
-      expect(result.originalsDeleted, isFalse);
-    });
+        expect(File(result.archivePath).existsSync(), isTrue);
+        expect(
+          await entriesOf(result.archivePath),
+          containsAll(<String>[
+            'Midnight/Midnight.als',
+            'Midnight/Samples/kick.wav',
+          ]),
+        );
+        expect(result.project.isArchived, isTrue);
+        expect(result.project.archiveEntryPath, 'Midnight/Midnight.als');
+        expect(result.project.archivedAt, isNotNull);
+        expect(result.originalsDeleted, isFalse);
+      },
+    );
 
     test('zips only the project file under file scope', () async {
       final project = TestFactories.makeProject(
@@ -261,7 +279,11 @@ void main() {
         scope: ArchiveScope.containingFolder,
         deleteOriginals: false,
       );
-      expect(projectFolder.existsSync(), isTrue, reason: 'unticked box keeps originals');
+      expect(
+        projectFolder.existsSync(),
+        isTrue,
+        reason: 'unticked box keeps originals',
+      );
       await File(kept.archivePath).delete();
 
       final removed = await archiveProject(
@@ -274,31 +296,33 @@ void main() {
       expect(removed.originalsDeleted, isTrue);
     });
 
-    test('refuses a destination inside a scan root, before writing anything',
-        () async {
-      final project = TestFactories.makeProject(filePath: projectFile.path);
-      final inside = Directory(p.join(library.path, 'Archive'));
+    test(
+      'refuses a destination inside a scan root, before writing anything',
+      () async {
+        final project = TestFactories.makeProject(filePath: projectFile.path);
+        final inside = Directory(p.join(library.path, 'Archive'));
 
-      await expectLater(
-        archiveProject(
-          project,
-          inside.path,
-          scope: ArchiveScope.containingFolder,
-          deleteOriginals: true,
-          scanRoots: [_root(library.path)],
-        ),
-        throwsA(
-          isA<ProjectArchiveException>().having(
-            (e) => e.reason,
-            'reason',
-            ArchiveError.destinationInScanRoot,
+        await expectLater(
+          archiveProject(
+            project,
+            inside.path,
+            scope: ArchiveScope.containingFolder,
+            deleteOriginals: true,
+            scanRoots: [_root(library.path)],
           ),
-        ),
-      );
+          throwsA(
+            isA<ProjectArchiveException>().having(
+              (e) => e.reason,
+              'reason',
+              ArchiveError.destinationInScanRoot,
+            ),
+          ),
+        );
 
-      expect(inside.existsSync(), isFalse);
-      expect(projectFolder.existsSync(), isTrue);
-    });
+        expect(inside.existsSync(), isFalse);
+        expect(projectFolder.existsSync(), isTrue);
+      },
+    );
 
     test('refuses when an archive of that name is already there', () async {
       final project = TestFactories.makeProject(
@@ -373,8 +397,11 @@ void main() {
 
       final leftovers = archiveDir.listSync().map((e) => p.basename(e.path));
       expect(leftovers, isEmpty);
-      expect(projectFolder.existsSync(), isTrue,
-          reason: 'a cancelled archive must never delete originals');
+      expect(
+        projectFolder.existsSync(),
+        isTrue,
+        reason: 'a cancelled archive must never delete originals',
+      );
     });
 
     test('reports progress through to done', () async {
@@ -434,10 +461,9 @@ void main() {
       await encoder.addDirectory(source);
       await encoder.close();
 
-      expect(
-        await verifyArchive(zipPath, ['Song/a.als', 'Song/missing.wav']),
-        ['Song/missing.wav'],
-      );
+      expect(await verifyArchive(zipPath, ['Song/a.als', 'Song/missing.wav']), [
+        'Song/missing.wav',
+      ]);
     });
 
     test('a corrupt archive verifies as nothing having arrived', () async {
@@ -445,10 +471,7 @@ void main() {
       final zipPath = p.join(tempDir.path, 'Corrupt.zip');
       await File(zipPath).writeAsString('this is not a zip file at all');
 
-      expect(
-        await verifyArchive(zipPath, ['Song/a.als']),
-        ['Song/a.als'],
-      );
+      expect(await verifyArchive(zipPath, ['Song/a.als']), ['Song/a.als']);
     });
   });
 
@@ -476,7 +499,9 @@ void main() {
       final source = Directory(p.join(tempDir.path, 'Midnight'));
       await Directory(p.join(source.path, 'Samples')).create(recursive: true);
       await File(p.join(source.path, 'Midnight.als')).writeAsString('als');
-      await File(p.join(source.path, 'Samples', 'kick.wav')).writeAsString('kick');
+      await File(
+        p.join(source.path, 'Samples', 'kick.wav'),
+      ).writeAsString('kick');
 
       final original = TestFactories.makeProject(
         filePath: p.join(source.path, 'Midnight.als'),
@@ -487,8 +512,7 @@ void main() {
         archiveDir.path,
         scope: ArchiveScope.containingFolder,
         deleteOriginals: true,
-      ))
-          .project;
+      )).project;
 
       final restored = await restoreProject(archived, restoreDir.path);
 
@@ -502,8 +526,9 @@ void main() {
       expect(File(restored.filePath).existsSync(), isTrue);
       expect(await File(restored.filePath).readAsString(), 'als');
       expect(
-        File(p.join(restoreDir.path, 'Midnight', 'Samples', 'kick.wav'))
-            .existsSync(),
+        File(
+          p.join(restoreDir.path, 'Midnight', 'Samples', 'kick.wav'),
+        ).existsSync(),
         isTrue,
       );
       // fileName follows filePath, or the row would show the archive's name.
@@ -541,38 +566,40 @@ void main() {
       );
     });
 
-    test('refuses to overwrite something already at the restore path', () async {
-      final source = Directory(p.join(tempDir.path, 'Midnight'));
-      await source.create(recursive: true);
-      await File(p.join(source.path, 'Midnight.als')).writeAsString('als');
+    test(
+      'refuses to overwrite something already at the restore path',
+      () async {
+        final source = Directory(p.join(tempDir.path, 'Midnight'));
+        await source.create(recursive: true);
+        await File(p.join(source.path, 'Midnight.als')).writeAsString('als');
 
-      final archived = (await archiveProject(
-        TestFactories.makeProject(
-          filePath: p.join(source.path, 'Midnight.als'),
-          customDisplayName: 'Midnight',
-        ),
-        archiveDir.path,
-        scope: ArchiveScope.containingFolder,
-        deleteOriginals: true,
-      ))
-          .project;
-
-      final clash = File(p.join(restoreDir.path, 'Midnight', 'Midnight.als'));
-      await clash.parent.create(recursive: true);
-      await clash.writeAsString('someone else');
-
-      await expectLater(
-        restoreProject(archived, restoreDir.path),
-        throwsA(
-          isA<ProjectArchiveException>().having(
-            (e) => e.reason,
-            'reason',
-            ArchiveError.destinationOccupied,
+        final archived = (await archiveProject(
+          TestFactories.makeProject(
+            filePath: p.join(source.path, 'Midnight.als'),
+            customDisplayName: 'Midnight',
           ),
-        ),
-      );
-      expect(await clash.readAsString(), 'someone else');
-    });
+          archiveDir.path,
+          scope: ArchiveScope.containingFolder,
+          deleteOriginals: true,
+        )).project;
+
+        final clash = File(p.join(restoreDir.path, 'Midnight', 'Midnight.als'));
+        await clash.parent.create(recursive: true);
+        await clash.writeAsString('someone else');
+
+        await expectLater(
+          restoreProject(archived, restoreDir.path),
+          throwsA(
+            isA<ProjectArchiveException>().having(
+              (e) => e.reason,
+              'reason',
+              ArchiveError.destinationOccupied,
+            ),
+          ),
+        );
+        expect(await clash.readAsString(), 'someone else');
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -588,7 +615,8 @@ void main() {
         archiveEntryPath: 'Midnight/Midnight.als',
       );
 
-      expect(originalRestoreFolderFor(project), '/lib');
+      // Normalised with the host's separator, a backslash on Windows.
+      expect(originalRestoreFolderFor(project), p.normalize('/lib'));
     });
 
     test('file-scoped archive resolves to the containing folder', () {
@@ -598,7 +626,7 @@ void main() {
         archiveEntryPath: 'one.flp',
       );
 
-      expect(originalRestoreFolderFor(project), '/lib/Flat');
+      expect(originalRestoreFolderFor(project), p.normalize('/lib/Flat'));
     });
 
     test('a deeply nested project file resolves correctly', () {
@@ -608,7 +636,7 @@ void main() {
         archiveEntryPath: 'Midnight/Sessions/Take 3/Midnight.als',
       );
 
-      expect(originalRestoreFolderFor(project), '/lib');
+      expect(originalRestoreFolderFor(project), p.normalize('/lib'));
     });
 
     test('is null for a project that was never archived', () {
@@ -628,13 +656,16 @@ void main() {
       library = Directory(p.join(tempDir.path, 'Library'));
       archiveDir = Directory(p.join(tempDir.path, 'Archive'));
       projectFolder = Directory(p.join(library.path, 'Midnight'));
-      await Directory(p.join(projectFolder.path, 'Samples')).create(recursive: true);
+      await Directory(
+        p.join(projectFolder.path, 'Samples'),
+      ).create(recursive: true);
       await archiveDir.create(recursive: true);
 
       projectFile = File(p.join(projectFolder.path, 'Midnight.als'));
       await projectFile.writeAsString('project data');
-      await File(p.join(projectFolder.path, 'Samples', 'kick.wav'))
-          .writeAsString('kick audio');
+      await File(
+        p.join(projectFolder.path, 'Samples', 'kick.wav'),
+      ).writeAsString('kick audio');
     });
 
     tearDown(() async {
@@ -650,8 +681,7 @@ void main() {
         archiveDir.path,
         scope: ArchiveScope.containingFolder,
         deleteOriginals: true,
-      ))
-          .project;
+      )).project;
       expect(projectFolder.existsSync(), isFalse);
 
       final reverted = await undoArchive(archived);
@@ -663,8 +693,9 @@ void main() {
       expect(reverted.filePath, projectFile.path);
       expect(await File(projectFile.path).readAsString(), 'project data');
       expect(
-        await File(p.join(projectFolder.path, 'Samples', 'kick.wav'))
-            .readAsString(),
+        await File(
+          p.join(projectFolder.path, 'Samples', 'kick.wav'),
+        ).readAsString(),
         'kick audio',
       );
       expect(File(archived.archivePath!).existsSync(), isFalse);
@@ -679,8 +710,7 @@ void main() {
         archiveDir.path,
         scope: ArchiveScope.containingFolder,
         deleteOriginals: false,
-      ))
-          .project;
+      )).project;
 
       final reverted = await undoArchive(archived);
 
@@ -699,8 +729,7 @@ void main() {
         archiveDir.path,
         scope: ArchiveScope.containingFolder,
         deleteOriginals: false,
-      ))
-          .project;
+      )).project;
 
       final reverted = await undoArchive(archived, deleteArchiveFile: false);
 
@@ -733,8 +762,7 @@ void main() {
         archiveDir.path,
         scope: ArchiveScope.containingFolder,
         deleteOriginals: true,
-      ))
-          .project;
+      )).project;
       await File(archived.archivePath!).delete();
 
       await expectLater(
@@ -769,7 +797,9 @@ void main() {
       final folder = Directory(p.join(tempDir.path, 'Song'));
       await Directory(p.join(folder.path, 'Samples')).create(recursive: true);
       await File(p.join(folder.path, 'Song.als')).writeAsString('12345');
-      await File(p.join(folder.path, 'Samples', 'kick.wav')).writeAsString('123');
+      await File(
+        p.join(folder.path, 'Samples', 'kick.wav'),
+      ).writeAsString('123');
 
       final size = await archiveSizeOf(
         p.join(folder.path, 'Song.als'),
