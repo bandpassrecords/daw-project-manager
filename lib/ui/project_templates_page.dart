@@ -11,6 +11,7 @@ import 'package:path/path.dart' as p;
 import 'package:trina_grid/trina_grid.dart';
 import 'package:uuid/uuid.dart';
 
+import '../utils/column_widths.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart' show camelotCodeForKey;
 import '../models/project_template.dart';
@@ -72,6 +73,10 @@ class _SearchAction extends Action<_SearchIntent> {
 }
 
 class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
+
+  /// Column widths as the user left them, kept across tab switches and
+  /// restarts (device-local).
+  final _columnWidths = ColumnWidthMemory('projectTemplates');
   final _uuid = const Uuid();
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
@@ -108,6 +113,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
 
   @override
   void dispose() {
+    _columnWidths.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
     _tableStateManager?.removeListener(_onTableStateManagerChanged);
@@ -1180,7 +1186,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                                     'project_templates_grid_${l10n.localeName}_${themeSpec.identityKey}_'
                                     '${filtered.map((t) => '${t.id}_${t.updatedAt}').join(',')}_${selectedIds.join(',')}',
                                   ),
-                                  columns: _buildColumns(l10n, orderedIds),
+                                  columns: _columnWidths.apply(_buildColumns(l10n, orderedIds)),
                                   rows: _buildRows(filtered),
                                   columnMenuDelegate:
                                       const FitAllColumnsMenuDelegate(),
@@ -1237,6 +1243,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                                       _onTableStateManagerChanged,
                                     );
                                     _tableStateManager = event.stateManager;
+                                    _columnWidths.attach(event.stateManager);
                                     // Same as the projects grid: nothing here
                                     // acts on a cell/row range — bulk actions
                                     // go through the checkbox selection — so

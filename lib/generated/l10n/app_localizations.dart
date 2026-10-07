@@ -10232,13 +10232,13 @@ abstract class AppLocalizations {
   /// Settings: heading of the built-in projects table columns list
   ///
   /// In en, this message translates to:
-  /// **'Projects table columns'**
+  /// **'Table columns'**
   String get projectsTableColumnsTitle;
 
   /// Settings: explains the built-in columns list
   ///
   /// In en, this message translates to:
-  /// **'Choose which columns the projects table shows and drag them into the order you want. Name and actions are always shown. Applies to this device only.'**
+  /// **'Choose which columns the projects table and release tracklists show, and drag them into the order you want — the order applies to both. Name and actions are always shown. Applies to this device only.'**
   String get projectsTableColumnsDescription;
 
   /// Heading for the user-defined custom fields (Settings and project page)
@@ -10666,6 +10666,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loop playback'**
   String get midiPreviewLoop;
+
+  /// Settings > Columns & fields: header over the checkboxes that show a field in the projects table
+  ///
+  /// In en, this message translates to:
+  /// **'Projects'**
+  String get columnsInProjectsTable;
+
+  /// Settings > Columns & fields: header over the checkboxes that show a field in release tracklists
+  ///
+  /// In en, this message translates to:
+  /// **'Release tracks'**
+  String get columnsInReleaseTracks;
 
   /// Project page button that reads tracks, plug-ins and MIDI clips from the project file, shown while nothing has been read yet
   ///

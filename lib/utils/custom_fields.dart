@@ -104,12 +104,15 @@ int compareCustomFieldValues(CustomFieldType type, Object? a, Object? b) {
   return as.toLowerCase().compareTo(bs.toLowerCase());
 }
 
-// ── Built-in projects-table columns ───────────────────────────────────────
+// ── Built-in table columns ────────────────────────────────────────────────
 
-/// The projects table's built-in columns the user may hide and reorder, in
-/// their default order. The checkbox and Name columns (frozen at the start)
-/// and the actions column (at the end) are not in it: a table without names
-/// or actions is not a table anyone wants.
+/// The built-in columns the user may show, hide and reorder, in their
+/// default order — in the projects table and in a release's tracklist alike:
+/// every field can be switched on in either, independently
+/// ([TableColumnSetting.visible] / [TableColumnSetting.inReleaseTracks]), in
+/// one shared order. The checkbox and Name columns (frozen at the start, the
+/// tracklist's # and Title) and the actions column (at the end) are not in
+/// it: a table without names or actions is not a table anyone wants.
 const List<String> kProjectsTableBuiltInColumns = [
   'status',
   'dawType',
@@ -118,36 +121,68 @@ const List<String> kProjectsTableBuiltInColumns = [
   'tags',
   'lastModified',
   'deadline',
+  // The columns a release's tracklist has, offered here too.
+  'notes',
+  'length',
+  'parts',
 ];
 
-/// One built-in column's place and visibility. Device-local, in the
+/// Built-ins that start hidden: added after users had arranged their table,
+/// they shouldn't appear in it uninvited. Switched on in Settings > Columns
+/// & fields like any other.
+const Set<String> kProjectsTableHiddenByDefault = {'notes', 'length', 'parts'};
+
+/// Built-ins a release's tracklist starts without: the ones it never had
+/// before every field could be shown in either table.
+const Set<String> kReleaseTracksHiddenByDefault = {'tags', 'deadline'};
+
+/// One built-in column's place and where it shows. Device-local, in the
 /// `settings` box: which columns fit is a question about this screen.
 class TableColumnSetting {
-  const TableColumnSetting(this.id, {this.visible = true});
+  const TableColumnSetting(
+    this.id, {
+    this.visible = true,
+    this.inReleaseTracks = true,
+  });
 
   final String id;
+
+  /// Shown in the projects table.
   final bool visible;
 
+  /// Shown in a release's tracklist.
+  final bool inReleaseTracks;
+
   TableColumnSetting withVisible(bool value) =>
-      TableColumnSetting(id, visible: value);
+      TableColumnSetting(id, visible: value, inReleaseTracks: inReleaseTracks);
+
+  TableColumnSetting withInReleaseTracks(bool value) =>
+      TableColumnSetting(id, visible: visible, inReleaseTracks: value);
 
   @override
   bool operator ==(Object other) =>
-      other is TableColumnSetting && other.id == id && other.visible == visible;
+      other is TableColumnSetting &&
+      other.id == id &&
+      other.visible == visible &&
+      other.inReleaseTracks == inReleaseTracks;
 
   @override
-  int get hashCode => Object.hash(id, visible);
+  int get hashCode => Object.hash(id, visible, inReleaseTracks);
 
   @override
-  String toString() => '$id${visible ? '' : ' (hidden)'}';
+  String toString() =>
+      '$id${visible ? '' : ' (hidden)'}${inReleaseTracks ? '' : ' (not in tracks)'}';
 }
 
 /// [stored] made complete and safe: unknown or repeated ids dropped, and every
-/// built-in it lacks (one added by a newer version) appended at the end,
-/// visible.
+/// built-in it lacks (one added by a newer version) appended at the end —
+/// shown in each table unless it is one of that table's hidden-by-default
+/// ([hiddenByDefault], [tracksHiddenByDefault]).
 List<TableColumnSetting> normalizeColumnLayout(
   Iterable<TableColumnSetting> stored, {
   List<String> builtIns = kProjectsTableBuiltInColumns,
+  Set<String> hiddenByDefault = kProjectsTableHiddenByDefault,
+  Set<String> tracksHiddenByDefault = kReleaseTracksHiddenByDefault,
 }) {
   final seen = <String>{};
   final result = <TableColumnSetting>[];
@@ -156,7 +191,13 @@ List<TableColumnSetting> normalizeColumnLayout(
     result.add(setting);
   }
   for (final id in builtIns) {
-    if (seen.add(id)) result.add(TableColumnSetting(id));
+    if (seen.add(id)) {
+      result.add(TableColumnSetting(
+        id,
+        visible: !hiddenByDefault.contains(id),
+        inReleaseTracks: !tracksHiddenByDefault.contains(id),
+      ));
+    }
   }
   return result;
 }
@@ -170,9 +211,14 @@ List<TableColumnSetting> decodeColumnLayout(String? raw) {
       if (decoded is List) {
         for (final entry in decoded) {
           if (entry is Map && entry['id'] is String) {
+            final id = entry['id'] as String;
             stored.add(TableColumnSetting(
-              entry['id'] as String,
+              id,
               visible: entry['visible'] as bool? ?? true,
+              // Saved before the tracklist could be arranged: what it used
+              // to show.
+              inReleaseTracks: entry['tracks'] as bool? ??
+                  !kReleaseTracksHiddenByDefault.contains(id),
             ));
           }
         }
@@ -185,7 +231,8 @@ List<TableColumnSetting> decodeColumnLayout(String? raw) {
 }
 
 String encodeColumnLayout(List<TableColumnSetting> layout) => jsonEncode([
-      for (final s in layout) {'id': s.id, 'visible': s.visible},
+      for (final s in layout)
+        {'id': s.id, 'visible': s.visible, 'tracks': s.inReleaseTracks},
     ]);
 
 /// [layout] with the entry at [oldIndex] moved to [newIndex], using
@@ -238,4 +285,15 @@ List<String> visibleBuiltInColumns(
     [
       for (final s in layout)
         if (s.visible && (s.id != 'tags' || tagsEnabled)) s.id,
+    ];
+
+/// [visibleBuiltInColumns] for a release's tracklist: the built-ins switched
+/// on for it, in the shared order.
+List<String> releaseTracksBuiltInColumns(
+  List<TableColumnSetting> layout, {
+  required bool tagsEnabled,
+}) =>
+    [
+      for (final s in layout)
+        if (s.inReleaseTracks && (s.id != 'tags' || tagsEnabled)) s.id,
     ];

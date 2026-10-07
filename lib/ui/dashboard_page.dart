@@ -20,6 +20,7 @@ import 'package:archive/archive_io.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 
+import '../utils/column_widths.dart';
 import '../services/app_audio_focus.dart';
 import '../services/scanner_service.dart';
 import '../services/changelog_service.dart';
@@ -28,6 +29,7 @@ import '../services/audio_analysis_service.dart';
 import '../services/metadata_extractor.dart';
 import '../services/mixdown_detector_service.dart';
 import 'row_click_selection.dart';
+import 'widgets/project_info_columns.dart';
 import 'widgets/on_art_marker.dart';
 import 'widgets/stack_version_badge.dart';
 import 'widgets/now_playing_icon.dart';
@@ -6669,6 +6671,10 @@ List<TrinaRow> groupRowsToExpand(
 
 class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
     with RouteAwareDropTargetState<_PlutoProjectsTable> {
+
+  /// Column widths as the user left them, kept across tab switches and
+  /// restarts (device-local).
+  final _columnWidths = ColumnWidthMemory('projects');
   TrinaGridStateManager? stateManager;
   bool _isRebuildingRows = false;
 
@@ -7214,9 +7220,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         'dawType': TrinaCell(value: dawDisplay),
         'bpm': TrinaCell(value: p.bpm?.toString() ?? ''),
         'key': TrinaCell(value: p.musicalKey ?? ''),
-        'tags': TrinaCell(value: p.tags.join(', ')),
         'lastModified': TrinaCell(value: p.lastModifiedAt),
-        'deadline': TrinaCell(value: p.deadlineStatus ?? ''),
+        // Tags, deadline, length, notes and parts: shared with a release's
+        // tracklist.
+        ...projectInfoCells(p),
         for (final f in _tableCustomFields)
           customFieldColumnField(f.id): TrinaCell(value: customFieldValue(p, f)),
         'launch': TrinaCell(value: ''),
@@ -7326,9 +7333,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
             'dawType': TrinaCell(value: ''),
             'bpm': TrinaCell(value: ''),
             'key': TrinaCell(value: ''),
-            'tags': TrinaCell(value: ''),
             'lastModified': TrinaCell(value: latestModified),
-            'deadline': TrinaCell(value: ''),
+            ...emptyProjectInfoCells(),
             for (final f in _tableCustomFields)
               customFieldColumnField(f.id): TrinaCell(value: ''),
             'launch': TrinaCell(value: ''),
@@ -7992,44 +7998,13 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       // Tags (#109). The cell value is the tags joined, which is what the
       // header sorts by; the chips are drawn by the renderer, and clicking one
       // filters the list to that tag.
-      TrinaColumn(
+      projectTagsColumn(
         title: l10n.projectTags,
-        field: 'tags',
-        type: TrinaColumnType.text(),
         // Hidden rather than left out, so every row's cells still match the
         // column set; the grid key below rebuilds the grid when this flips.
         hide: !ref.watch(tagsEnabledProvider),
-        enableEditingMode: false,
-        width: 180,
-        minWidth: 100,
-        renderer: (rendererContext) {
-          final project =
-              rendererContext.row.cells['data']?.value as MusicProject?;
-          if (project == null || project.tags.isEmpty) {
-            return const SizedBox.shrink();
-          }
-          // A scroll view that never scrolls: it clips chips past the cell's
-          // edge without the overflow error a bare Row would raise. Widening
-          // the column shows the rest.
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const NeverScrollableScrollPhysics(),
-            child: Row(
-              children: [
-                for (final tag in project.tags)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: _TagCellChip(
-                      tag: tag,
-                      tooltip: l10n.filterByThisTagTooltip(tag),
-                      onTap: () =>
-                          ref.read(tagFilterProvider.notifier).setTag(tag),
-                    ),
-                  ),
-              ],
-            ),
-          );
-        },
+        tagTooltip: l10n.filterByThisTagTooltip,
+        onTagTap: (tag) => ref.read(tagFilterProvider.notifier).setTag(tag),
       ),
       TrinaColumn(
         title: AppLocalizations.of(context)!.lastModifiedColumn,
@@ -8098,79 +8073,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           );
         },
       ),
-      TrinaColumn(
-        title: AppLocalizations.of(context)!.deadline,
-        field: 'deadline',
-        type: TrinaColumnType.text(),
-        enableEditingMode: false,
-        width: 120,
-        minWidth: 100,
-        renderer: (rendererContext) {
-          final project =
-              rendererContext.row.cells['data']?.value as MusicProject?;
-          if (project == null || project.deadline == null) {
-            return const SizedBox.shrink();
-          }
-          return Consumer(
-            builder: (context, ref, _) {
-              final finishedPhases = ref.watch(finishedPhaseProvider);
-              if (finishedPhases.contains(project.status))
-                return const SizedBox.shrink();
-
-              final daysUntil = project.daysUntilDeadline ?? 0;
-
-              Color iconColor;
-              IconData iconData;
-              String text;
-
-              if (daysUntil < 0) {
-                iconColor = Colors.red;
-                iconData = Icons.warning;
-                text = AppLocalizations.of(context)!.daysLate(daysUntil.abs());
-              } else if (daysUntil == 0) {
-                iconColor = Colors.red;
-                iconData = Icons.today;
-                text = AppLocalizations.of(context)!.dueToday;
-              } else if (daysUntil <= 7) {
-                iconColor = Colors.orange;
-                iconData = Icons.schedule;
-                text = AppLocalizations.of(context)!.daysLeft(daysUntil);
-              } else {
-                iconColor = Colors.blue;
-                iconData = Icons.calendar_today;
-                text = '${daysUntil}d left';
-              }
-
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: iconColor.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(iconData, size: 12, color: iconColor),
-                    const SizedBox(width: 3),
-                    Text(
-                      text,
-                      style: TextStyle(
-                        color: iconColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      ),
+      projectDeadlineColumn(title: AppLocalizations.of(context)!.deadline),
       TrinaColumn(
         title: AppLocalizations.of(context)!.actions,
         field: 'launch',
@@ -8416,6 +8319,18 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           );
         },
       ),
+      // The same columns a release's tracklist has, so a song's notes, length
+      // and parts can be seen here too (user feedback: notes visible in a
+      // release could not be shown in the projects table). Hidden until
+      // switched on in Settings > Columns & fields.
+      projectNotesColumn(
+        title: AppLocalizations.of(context)!.notes,
+        textStyle: Theme.of(context).textTheme.bodySmall,
+      ),
+      projectLengthColumn(
+        title: AppLocalizations.of(context)!.songLengthColumn,
+      ),
+      projectPartsColumn(title: AppLocalizations.of(context)!.partsColumn),
       // Hidden backing column for passing the model instance
       TrinaColumn(
         title: 'data',
@@ -8547,7 +8462,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         '_${encodeColumnLayout(columnLayout)}_${customFieldColumnsSignature(_tableCustomFields)}',
       ),
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
-      columns: arrangedColumns,
+      columns: _columnWidths.apply(arrangedColumns),
       rows: initialRows,
       // Ctrl/cmd- and shift-click anywhere on a row extend the checkbox
       // selection, so building a multi-selection doesn't mean aiming at the
@@ -8592,6 +8507,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       },
       onLoaded: (TrinaGridOnLoadedEvent event) {
         stateManager = event.stateManager;
+        _columnWidths.attach(event.stateManager);
         // TrinaGrid defaults to cell selection, so dragging across the table
         // paints a range and leaves cells outlined. Nothing here acts on a
         // selected range — bulk actions go through the checkbox column — so
@@ -8838,6 +8754,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
 
   @override
   void dispose() {
+    _columnWidths.dispose();
     stateManager?.removeListener(_onStateManagerChanged);
     _parkingFocusNode?.removeListener(_onGridFocusChanged);
     super.dispose();
@@ -13458,44 +13375,3 @@ class _PendingFolderRow extends ConsumerWidget {
 }
 
 
-/// One tag in the projects table's Tags column (#109): a compact pill that
-/// filters the list to its tag when clicked.
-///
-/// Deliberately smaller than a Material chip — it has to sit several abreast
-/// inside a table row without making the row taller.
-class _TagCellChip extends StatelessWidget {
-  const _TagCellChip({
-    required this.tag,
-    required this.tooltip,
-    required this.onTap,
-  });
-
-  final String tag;
-  final String tooltip;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Tooltip(
-      message: tooltip,
-      waitDuration: const Duration(milliseconds: 400),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-          decoration: BoxDecoration(
-            color: scheme.secondaryContainer.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            tag,
-            maxLines: 1,
-            style: TextStyle(fontSize: 11, color: scheme.onSecondaryContainer),
-          ),
-        ),
-      ),
-    );
-  }
-}

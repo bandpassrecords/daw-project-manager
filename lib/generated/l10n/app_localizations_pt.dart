@@ -6167,11 +6167,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get columnsAndFieldsTabLabel => 'Colunas e campos';
 
   @override
-  String get projectsTableColumnsTitle => 'Colunas da tabela de projetos';
+  String get projectsTableColumnsTitle => 'Colunas das tabelas';
 
   @override
   String get projectsTableColumnsDescription =>
-      'Escolha quais colunas a tabela de projetos mostra e arraste-as na ordem que preferir. Nome e ações sempre aparecem. Vale só para este dispositivo.';
+      'Escolha quais colunas a tabela de projetos e as listas de faixas dos lançamentos mostram e arraste-as na ordem que preferir — a ordem vale para as duas. Nome e ações sempre aparecem. Vale só para este dispositivo.';
 
   @override
   String get customFieldsTitle => 'Campos personalizados';
@@ -6411,6 +6411,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'Reproduzir em loop';
+
+  @override
+  String get columnsInProjectsTable => 'Projetos';
+
+  @override
+  String get columnsInReleaseTracks => 'Faixas dos lançamentos';
 
   @override
   String get projectContentsRead => 'Ler o conteúdo do projeto';

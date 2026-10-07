@@ -6172,11 +6172,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get columnsAndFieldsTabLabel => 'Столбцы и поля';
 
   @override
-  String get projectsTableColumnsTitle => 'Столбцы таблицы проектов';
+  String get projectsTableColumnsTitle => 'Столбцы таблиц';
 
   @override
   String get projectsTableColumnsDescription =>
-      'Выберите, какие столбцы показывает таблица проектов, и перетащите их в нужном порядке. Название и действия показываются всегда. Только для этого устройства.';
+      'Выберите, какие столбцы показывают таблица проектов и трек-листы релизов, и перетащите их в нужном порядке — он общий для обеих. Название и действия показываются всегда. Только для этого устройства.';
 
   @override
   String get customFieldsTitle => 'Свои поля';
@@ -6415,6 +6415,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'Воспроизведение по кругу';
+
+  @override
+  String get columnsInProjectsTable => 'Проекты';
+
+  @override
+  String get columnsInReleaseTracks => 'Треки релизов';
 
   @override
   String get projectContentsRead => 'Прочитать содержимое проекта';

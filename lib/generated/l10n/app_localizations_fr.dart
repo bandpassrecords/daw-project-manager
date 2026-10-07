@@ -6213,11 +6213,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get columnsAndFieldsTabLabel => 'Colonnes et champs';
 
   @override
-  String get projectsTableColumnsTitle => 'Colonnes du tableau des projets';
+  String get projectsTableColumnsTitle => 'Colonnes des tableaux';
 
   @override
   String get projectsTableColumnsDescription =>
-      'Choisissez les colonnes affichées dans le tableau des projets et faites-les glisser dans l\'ordre voulu. Le nom et les actions sont toujours affichés. S\'applique à cet appareil uniquement.';
+      'Choisissez les colonnes affichées dans le tableau des projets et dans les listes de pistes des sorties, et faites-les glisser dans l\'ordre voulu, commun aux deux. Le nom et les actions sont toujours affichés. S\'applique à cet appareil uniquement.';
 
   @override
   String get customFieldsTitle => 'Champs personnalisés';
@@ -6457,6 +6457,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'Lecture en boucle';
+
+  @override
+  String get columnsInProjectsTable => 'Projets';
+
+  @override
+  String get columnsInReleaseTracks => 'Pistes des sorties';
 
   @override
   String get projectContentsRead => 'Lire le contenu du projet';

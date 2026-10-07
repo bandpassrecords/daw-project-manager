@@ -5,18 +5,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:trina_grid/trina_grid.dart';
 
+import '../../utils/column_widths.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
 import '../../models/custom_field.dart';
 import '../../utils/custom_fields.dart';
 import 'custom_field_column.dart';
-import '../../providers/providers.dart' show activeCustomFieldsProvider;
+import '../../providers/providers.dart'
+    show activeCustomFieldsProvider, projectsTableColumnsProvider, tagsEnabledProvider;
 import '../../providers/theme_provider.dart';
-import '../../utils/project_summary_text.dart';
-import '../../utils/track_duration.dart';
 import '../../utils/theme_derivations.dart';
 import '../../utils/trina_grid_locale.dart';
-import 'release_track_parts_chip.dart';
+import 'project_info_columns.dart';
 import 'trina_grid_menu_delegate.dart';
 
 /// A release's tracks as a sortable table, mirroring the main dashboard's
@@ -70,6 +70,16 @@ class ReleaseTracksTable extends ConsumerStatefulWidget {
 }
 
 class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
+
+  /// Column widths as the user left them, kept across tab switches and
+  /// restarts (device-local).
+  final _columnWidths = ColumnWidthMemory('releaseTracks');
+
+  @override
+  void dispose() {
+    _columnWidths.dispose();
+    super.dispose();
+  }
   TrinaGridStateManager? _stateManager;
 
   /// Custom fields with a column here, as of the last build — rows get
@@ -92,24 +102,16 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
           cells: {
             'position': TrinaCell(value: i + 1),
             'title': TrinaCell(value: projects[i].displayName),
-            'daw': TrinaCell(value: _dawLabel(projects[i])),
+            'dawType': TrinaCell(value: _dawLabel(projects[i])),
             // Stored as a number so the column sorts numerically rather than
             // as "100" < "90"; the renderer formats it.
             'bpm': TrinaCell(value: projects[i].bpm ?? 0),
             'key': TrinaCell(value: projects[i].musicalKey ?? ''),
-            // Milliseconds so the column sorts by real length rather than by
-            // the "3:45" string; the renderer formats it.
-            'length': TrinaCell(
-              value: effectiveTrackDuration(projects[i])?.inMilliseconds ?? 0,
-            ),
             'status': TrinaCell(value: projects[i].status),
-            'notes': TrinaCell(value: projectNoteExcerpt(projects[i]) ?? ''),
-            // Sorted by how many parts are still *needed*, not by progress:
-            // "what does this release still owe me" is the question a
-            // tracklist gets read for. A project with no parts listed sorts
-            // alongside a finished one, both being zero.
-            'parts': TrinaCell(value: ReleaseTrackPartsChip.neededCount(projects[i])),
-            'modified': TrinaCell(value: projects[i].lastModifiedAt),
+            // Tags, deadline, length, notes and parts: shared with the
+            // projects table.
+            ...projectInfoCells(projects[i]),
+            'lastModified': TrinaCell(value: projects[i].lastModifiedAt),
             for (final f in _fields)
               customFieldColumnField(f.id):
                   TrinaCell(value: customFieldValue(projects[i], f)),
@@ -211,7 +213,7 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
       ),
       TrinaColumn(
         title: l10n.daw,
-        field: 'daw',
+        field: 'dawType',
         type: TrinaColumnType.text(),
         enableEditingMode: false,
         width: 160,
@@ -242,21 +244,7 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
         width: 90,
         minWidth: 70,
       ),
-      TrinaColumn(
-        title: l10n.songLengthColumn,
-        field: 'length',
-        type: TrinaColumnType.number(),
-        enableEditingMode: false,
-        width: 90,
-        minWidth: 70,
-        renderer: (ctx) {
-          final ms = (ctx.cell.value as num?)?.toInt() ?? 0;
-          // 0 is the "no length yet" sentinel the cell value uses so the
-          // column can sort numerically — never shown as a time.
-          if (ms <= 0) return const SizedBox.shrink();
-          return Text(formatTrackDuration(Duration(milliseconds: ms)));
-        },
-      ),
+      projectLengthColumn(title: l10n.songLengthColumn),
       TrinaColumn(
         title: l10n.phase,
         field: 'status',
@@ -276,56 +264,22 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
           );
         },
       ),
-      TrinaColumn(
+      projectNotesColumn(
         title: l10n.notes,
-        field: 'notes',
-        type: TrinaColumnType.text(),
-        enableEditingMode: false,
-        width: 260,
-        minWidth: 140,
-        renderer: (ctx) {
-          final text = '${ctx.cell.value}';
-          if (text.isEmpty) return const SizedBox.shrink();
-          final project = _projectOf(ctx);
-          // The excerpt is already one line and already capped; the tooltip
-          // carries the rest so a long note is readable without leaving the
-          // table.
-          final full = project == null ? text : (projectNoteFullText(project) ?? text);
-          return Tooltip(
-            message: full,
-            waitDuration: const Duration(milliseconds: 400),
-            child: Text(
-              text,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall,
-            ),
-          );
-        },
+        textStyle: theme.textTheme.bodySmall,
       ),
-      TrinaColumn(
+      // Same chip the tracklist's subtitle uses, so the two views of a
+      // release can't disagree about a song's instrumentation.
+      projectPartsColumn(
         title: l10n.partsColumn,
-        field: 'parts',
-        type: TrinaColumnType.number(),
-        enableEditingMode: false,
-        width: 120,
-        minWidth: 100,
-        renderer: (ctx) {
-          final project = _projectOf(ctx);
-          if (project == null) return const SizedBox.shrink();
-          // Same widget the tracklist's subtitle uses, so the two views of a
-          // release can't disagree about a song's instrumentation.
-          return Align(
-            alignment: Alignment.centerLeft,
-            child: ReleaseTrackPartsChip(
-              project: project,
-              onTap: () => widget.onOpenParts(project),
-            ),
-          );
-        },
+        onOpenParts: widget.onOpenParts,
       ),
+      // Off unless switched on for release tracklists in Settings.
+      projectTagsColumn(title: l10n.projectTags),
+      projectDeadlineColumn(title: l10n.deadline),
       TrinaColumn(
         title: l10n.lastModifiedColumn,
-        field: 'modified',
+        field: 'lastModified',
         type: TrinaColumnType.date(),
         enableEditingMode: false,
         width: 150,
@@ -380,21 +334,37 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
         },
       ),
     ];
-    // Custom field columns go just before the frozen actions column.
-    columns.insertAll(
-      columns.length - 1,
+    // Settings > Columns & fields: the built-ins switched on for release
+    // tracklists, in the order shared with the projects table (hidden ones
+    // kept, so every row's cells still match a column), then the custom
+    // fields, then the actions.
+    final layout = ref.watch(projectsTableColumnsProvider);
+    final tagsEnabled = ref.watch(tagsEnabledProvider);
+    final shown = releaseTracksBuiltInColumns(layout, tagsEnabled: tagsEnabled);
+    for (final column in columns) {
+      if (kProjectsTableBuiltInColumns.contains(column.field)) {
+        column.hide = !shown.contains(column.field);
+      }
+    }
+    final arranged = arrangeTableColumns<TrinaColumn>(
+      columns,
+      (c) => c.field,
+      [for (final s in layout) s.id],
       [for (final f in _fields) customFieldTrinaColumn(f)],
     );
 
     return TrinaGrid(
-      // Columns are fixed once a grid mounts.
+      // Columns are fixed once a grid mounts: a changed layout or custom
+      // field set needs a fresh one.
       key: ValueKey(
-          'release_tracks_${customFieldColumnsSignature(_fields)}'),
-      columns: columns,
+          'release_tracks_${customFieldColumnsSignature(_fields)}'
+          '_${encodeColumnLayout(layout)}_$tagsEnabled'),
+      columns: _columnWidths.apply(arranged),
       rows: _mapToRows(widget.projects),
       columnMenuDelegate: const FitAllColumnsMenuDelegate(),
       onLoaded: (event) {
         _stateManager = event.stateManager;
+        _columnWidths.attach(event.stateManager);
         // Nothing here acts on a cell range, so TrinaGrid's own selection is
         // off — same as every other grid in the app.
         _stateManager!.setSelectingMode(TrinaGridSelectingMode.none);

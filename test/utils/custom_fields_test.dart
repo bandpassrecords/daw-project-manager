@@ -150,12 +150,85 @@ void main() {
   });
 
   group('projects table column layout', () {
-    test('an empty store is every built-in, visible, in default order', () {
+    test('an empty store is every built-in in default order, the opt-in ones hidden',
+        () {
       expect(decodeColumnLayout(null).map((s) => s.id),
           kProjectsTableBuiltInColumns);
-      expect(decodeColumnLayout(null).every((s) => s.visible), isTrue);
+      expect(
+        {for (final s in decodeColumnLayout(null)) if (!s.visible) s.id},
+        kProjectsTableHiddenByDefault,
+      );
       expect(decodeColumnLayout('garbage').map((s) => s.id),
           kProjectsTableBuiltInColumns);
+    });
+
+    test('notes, length and parts (the tracklist columns) are on offer',
+        () {
+      expect(kProjectsTableBuiltInColumns,
+          containsAll(['notes', 'length', 'parts']));
+      expect(kProjectsTableHiddenByDefault, {'notes', 'length', 'parts'});
+    });
+
+    test('a layout saved before them gets them appended, hidden', () {
+      // Arranged and stored by an older version: bpm hidden, deadline first.
+      final older = normalizeColumnLayout(const [
+        TableColumnSetting('deadline'),
+        TableColumnSetting('bpm', visible: false),
+      ]);
+      expect(older.take(2).map((s) => s.toString()), ['deadline', 'bpm (hidden)']);
+      expect(older.sublist(older.length - 3).map((s) => s.toString()),
+          ['notes (hidden)', 'length (hidden)', 'parts (hidden)']);
+      expect(older.firstWhere((s) => s.id == 'status').visible, isTrue,
+          reason: 'older built-ins it lacked still come in visible');
+    });
+
+    test('a layout saved before tracklists could be arranged keeps what they showed',
+        () {
+      // An older build wrote only id + visible.
+      final layout = decodeColumnLayout(
+          '[{"id":"status","visible":true},{"id":"tags","visible":true},'
+          '{"id":"deadline","visible":false},{"id":"bpm","visible":true}]');
+      final tracks = {for (final s in layout) s.id: s.inReleaseTracks};
+      expect(tracks['status'], isTrue);
+      expect(tracks['bpm'], isTrue);
+      expect(tracks['tags'], isFalse, reason: 'tracklists never had tags');
+      expect(tracks['deadline'], isFalse);
+      expect(layout.firstWhere((s) => s.id == 'deadline').visible, isFalse,
+          reason: 'the projects table setting is untouched');
+    });
+
+    test('the release tracklist setting round-trips, independently', () {
+      final layout = normalizeColumnLayout(const [
+        TableColumnSetting('bpm', visible: false, inReleaseTracks: true),
+        TableColumnSetting('key', visible: true, inReleaseTracks: false),
+      ]);
+      final back = decodeColumnLayout(encodeColumnLayout(layout));
+      expect(back, layout);
+      expect(back.first.toString(), 'bpm (hidden)');
+      expect(back[1].toString(), 'key (not in tracks)');
+    });
+
+    test('releaseTracksBuiltInColumns: what the tracklist draws, in order', () {
+      final layout = normalizeColumnLayout(const [
+        TableColumnSetting('tags', inReleaseTracks: true),
+        TableColumnSetting('bpm', inReleaseTracks: false),
+      ]);
+      final shown = releaseTracksBuiltInColumns(layout, tagsEnabled: true);
+      expect(shown.first, 'tags');
+      expect(shown, isNot(contains('bpm')));
+      expect(shown, isNot(contains('deadline')), reason: 'off by default there');
+      expect(shown, containsAll(['notes', 'length', 'parts']),
+          reason: 'the tracklist had these before');
+      expect(releaseTracksBuiltInColumns(layout, tagsEnabled: false),
+          isNot(contains('tags')),
+          reason: 'tags switched off app-wide hide everywhere');
+    });
+
+    test('once switched on, an opt-in column stays on', () {
+      final layout = normalizeColumnLayout(const [
+        TableColumnSetting('notes'),
+      ]);
+      expect(layout.first, const TableColumnSetting('notes'));
     });
 
     test('round-trips order and visibility', () {

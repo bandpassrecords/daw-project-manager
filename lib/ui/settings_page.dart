@@ -3063,6 +3063,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       columns: ref.watch(projectsTableColumnsProvider),
       columnLabel: (id) => _builtInColumnLabel(id, l10n),
       onColumnVisibleChanged: columnsNotifier.setVisible,
+      onColumnInReleaseTracksChanged: columnsNotifier.setInReleaseTracks,
       onColumnsReordered: columnsNotifier.reorder,
       onResetColumns: columnsNotifier.reset,
       fields: fields,
@@ -3102,6 +3103,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return l10n.lastModifiedColumn;
       case 'deadline':
         return l10n.deadline;
+      case 'notes':
+        return l10n.notes;
+      case 'length':
+        return l10n.songLengthColumn;
+      case 'parts':
+        return l10n.partsColumn;
     }
     return id;
   }

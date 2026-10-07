@@ -5844,11 +5844,11 @@
   "@columnsAndFieldsTabLabel": {
     "description": "Settings: nav label for the table columns and custom fields section"
   },
-  "projectsTableColumnsTitle": "Projects table columns",
+  "projectsTableColumnsTitle": "Table columns",
   "@projectsTableColumnsTitle": {
     "description": "Settings: heading of the built-in projects table columns list"
   },
-  "projectsTableColumnsDescription": "Choose which columns the projects table shows and drag them into the order you want. Name and actions are always shown. Applies to this device only.",
+  "projectsTableColumnsDescription": "Choose which columns the projects table and release tracklists show, and drag them into the order you want — the order applies to both. Name and actions are always shown. Applies to this device only.",
   "@projectsTableColumnsDescription": {
     "description": "Settings: explains the built-in columns list"
   },
@@ -6171,6 +6171,14 @@
   "midiPreviewLoop": "Loop playback",
   "@midiPreviewLoop": {
     "description": "Tooltip of the toggle that makes MIDI clip previews repeat until stopped"
+  },
+  "columnsInProjectsTable": "Projects",
+  "@columnsInProjectsTable": {
+    "description": "Settings > Columns & fields: header over the checkboxes that show a field in the projects table"
+  },
+  "columnsInReleaseTracks": "Release tracks",
+  "@columnsInReleaseTracks": {
+    "description": "Settings > Columns & fields: header over the checkboxes that show a field in release tracklists"
   },
   "projectContentsRead": "Read project contents",
   "@projectContentsRead": {
