@@ -7,9 +7,23 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../models/midi_clip.dart';
+import '../services/app_audio_focus.dart';
+import '../services/audio_fade.dart';
 import '../services/midi/midi_clip_service.dart';
 import '../services/midi/midi_clip_synth.dart';
 import '../services/midi/synth_voice.dart';
+
+/// Where a [MidiPreviewPlayer.play] starts: where the clip it takes over
+/// had got to ([held]), when it takes one over, else where it was asked to
+/// ([requested]) — inside one pass of a loop of [loopLength].
+Duration? takeOverStart({
+  required Duration? held,
+  required Duration? requested,
+  Duration? loopLength,
+}) {
+  final at = held ?? requested;
+  return at == null ? null : wrapLoopPosition(at, loopLength);
+}
 
 /// Plays MIDI clip previews — renders through the built-in synth, then plays
 /// the WAV — for any list of clips. Shared by a project's clip section and
@@ -23,6 +37,15 @@ import '../services/midi/synth_voice.dart';
 /// [play] or [stop] is dropped. That is what makes "change the tempo while it
 /// renders" and "tap another clip while one renders" both come out right.
 class MidiPreviewPlayer extends ChangeNotifier {
+  /// Joins the app-wide one-sound-at-a-time rule ([AppAudioFocus]): a song
+  /// or another preview starting stops this one, and this one starting
+  /// pauses them.
+  MidiPreviewPlayer() {
+    AppAudioFocus.register(this, () {
+      if (playingKey != null || preparingKey != null) stop();
+    });
+  }
+
   AudioPlayer? _player;
   StreamSubscription<void>? _completeSub;
   StreamSubscription<Duration>? _positionSub;
@@ -56,6 +79,20 @@ class MidiPreviewPlayer extends ChangeNotifier {
 
   /// Whether previews play on repeat until stopped. Set with [setLoop].
   bool loop = false;
+
+  /// Between stopping the old audio and starting the new: position reports
+  /// then are the swap's, not playback's, and are ignored.
+  bool _swapping = false;
+
+  /// The clip [play] was last asked for, and whether it was to loop.
+  @visibleForTesting
+  MidiClip? requestedClip;
+  @visibleForTesting
+  bool? requestedLoop;
+
+  /// Where that play was asked to start ([startAt]), if anywhere.
+  @visibleForTesting
+  Duration? requestedStart;
 
   /// What [play] was last asked to play, so [setLoop] can carry on with it.
   (String, MidiClip, double?, SynthVoice)? _current;
@@ -129,10 +166,25 @@ class MidiPreviewPlayer extends ChangeNotifier {
 
   /// Renders and plays [clip]. Throws what rendering or playback threw, so
   /// the caller can tell the user.
+  ///
+  /// With [takeOver], and something playing, [clip] replaces it the way an
+  /// edit should: what plays carries on while [clip] renders — no stop, no
+  /// "preparing" — and [clip] then starts from wherever playback has got to
+  /// by then. Without it, deleting a note mid-playback cut the sound out
+  /// and flickered the transport.
   Future<void> play(String key, MidiClip clip,
-      {double? bpm, required SynthVoice voice}) async {
+      {double? bpm,
+      required SynthVoice voice,
+      bool takeOver = false,
+      bool? loop}) async {
     final generation = ++_generation;
-    final looping = loop;
+    final takingOver = takeOver && playingKey != null && !paused;
+    final heldKey = playingKey;
+    // [loop] overrides the player's setting for this play: an open-ended
+    // draft never cycles, whatever the loop button says.
+    final looping = loop ?? this.loop;
+    requestedClip = clip;
+    requestedLoop = looping;
     final loopLength = looping
         ? Duration(
             microseconds:
@@ -140,14 +192,17 @@ class MidiPreviewPlayer extends ChangeNotifier {
                     .round())
         : null;
     final requested = pendingStartFor(key);
+    requestedStart = requested;
     final startAt =
         requested == null ? null : wrapLoopPosition(requested, loopLength);
     _startAt = null;
     _current = (key, clip, bpm, voice);
     _loopChangedWhilePaused = false;
-    preparingKey = key;
-    paused = false;
-    _notify();
+    if (!takingOver) {
+      preparingKey = key;
+      paused = false;
+      _notify();
+    }
     try {
       final path = await MidiClipService.renderPreview(
         clip,
@@ -164,26 +219,57 @@ class MidiPreviewPlayer extends ChangeNotifier {
         _notify();
       });
       _positionSub ??= player.onPositionChanged.listen((p) {
+        // Mid-swap the player reports the stop's rewind (0) and the new
+        // audio's first steps: the line jumped to the start and back, the
+        // view with it, on every note drawn while playing.
+        if (_swapping) return;
         _lastPosition = p;
         _lastPositionAt = DateTime.now();
       });
+      // Taking over: carry on from where the held clip is by now (the render
+      // took a moment), not from where it was when it began. Read before
+      // anything below stops it or resets the position — read after, it
+      // was always 0, and every edit, undo or redo restarted the clip.
+      var from = takeOverStart(
+        held: takingOver && heldKey != null && playingKey == heldKey
+            ? positionOf(heldKey)
+            : null,
+        requested: startAt,
+        loopLength: loopLength,
+      );
+      _swapping = true;
       await player.stop();
       await player.setVolume(volume);
       await player
           .setReleaseMode(looping ? ReleaseMode.loop : ReleaseMode.stop);
       _loopLength = loopLength;
-      _lastPosition = Duration.zero;
-      _lastPositionAt = DateTime.now();
-      await player.play(DeviceFileSource(path));
-      if (generation != _generation || _disposed) return;
-      if (startAt != null && startAt > Duration.zero) {
-        await player.seek(startAt);
-        if (generation != _generation || _disposed) return;
+      if (takingOver && heldKey != null && playingKey == heldKey) {
+        // Still the held clip's spot, extrapolated on through the swap
+        // (its reports are ignored meanwhile) — taken now, just before the
+        // new audio starts, not before the stop.
+        from = wrapLoopPosition(positionOf(heldKey) ?? Duration.zero, loopLength);
+      } else {
+        _lastPosition = Duration.zero;
+        _lastPositionAt = DateTime.now();
       }
-      _lastPosition = startAt ?? Duration.zero;
+      if (from != null && from > Duration.zero) {
+        // Loaded, moved, then started: playing first and seeking after
+        // sounded the clip's first moments — a restart — before the jump.
+        await player.setSource(DeviceFileSource(path));
+        if (generation != _generation || _disposed) return;
+        await player.seek(from);
+        if (generation != _generation || _disposed) return;
+        await player.resume();
+      } else {
+        await player.play(DeviceFileSource(path));
+      }
+      if (generation != _generation || _disposed) return;
+      _lastPosition = from ?? Duration.zero;
       _lastPositionAt = DateTime.now();
       playingKey = key;
+      AppAudioFocus.claim(this);
     } finally {
+      if (generation == _generation) _swapping = false;
       if (generation == _generation && preparingKey == key) preparingKey = null;
       _notify();
     }
@@ -208,7 +294,16 @@ class MidiPreviewPlayer extends ChangeNotifier {
     _lastPosition = positionOf(key) ?? _lastPosition;
     paused = true;
     _notify();
-    await _player?.pause();
+    final player = _player;
+    if (player == null) return;
+    final generation = _generation;
+    await fadeOutAndStop(player, volume,
+        pause: true,
+        // Resumed, or something else played, before the fade was done.
+        abandoned: () => !paused || generation != _generation || _disposed);
+    if (!paused || generation != _generation) return;
+    // Back to full for when it resumes.
+    await player.setVolume(volume);
   }
 
   /// Carries on from where [pause] left off.
@@ -223,6 +318,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
     paused = false;
     _lastPositionAt = DateTime.now();
     _notify();
+    AppAudioFocus.claim(this);
     await _player?.resume();
   }
 
@@ -232,7 +328,13 @@ class MidiPreviewPlayer extends ChangeNotifier {
     playingKey = null;
     paused = false;
     _notify();
-    await _player?.stop();
+    final player = _player;
+    if (player == null) return;
+    // Faded to silence first: cut off mid-wave, it ends in a click. A play
+    // started meanwhile owns the player, and the fade lets it be.
+    final generation = _generation;
+    await fadeOutAndStop(player, volume,
+        abandoned: () => generation != _generation || _disposed);
   }
 
   void _notify() {
@@ -246,6 +348,7 @@ class MidiPreviewPlayer extends ChangeNotifier {
 
   @override
   void dispose() {
+    AppAudioFocus.unregister(this);
     _disposed = true;
     _generation++;
     _completeSub?.cancel();

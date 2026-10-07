@@ -20,6 +20,7 @@ import 'package:archive/archive_io.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 
+import '../services/app_audio_focus.dart';
 import '../services/scanner_service.dart';
 import '../services/changelog_service.dart';
 import '../services/release_artwork_service.dart';
@@ -8969,6 +8970,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
     player.onPlayerStateChanged.listen((state) {
       if (gen != _playerGen || !mounted) return;
       setState(() => _isPlaying = state == PlayerState.playing);
+      if (state == PlayerState.playing) AppAudioFocus.claim(this);
     });
     player.onDurationChanged.listen((d) {
       if (gen != _playerGen || !mounted) return;
@@ -8990,6 +8992,10 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
   @override
   void initState() {
     super.initState();
+    // Pause when another player in the app starts making sound.
+    AppAudioFocus.register(this, () {
+      if (_audioPlayer.state == PlayerState.playing) _audioPlayer.pause();
+    });
     _attachListeners(_audioPlayer, _playerGen);
     if (widget.project.previewSongPath?.isNotEmpty == true) {
       _startPlayback();
@@ -9235,6 +9241,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
     _audioPlayer.dispose();
     _warmPlayer?.dispose();
     widget.onClose();
+    AppAudioFocus.unregister(this);
     super.dispose();
   }
 
@@ -10230,6 +10237,10 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   @override
   void initState() {
     super.initState();
+    // Pause when another player in the app starts making sound.
+    AppAudioFocus.register(this, () {
+      if (_player.state == PlayerState.playing) _player.pause();
+    });
     _isPlayingNotifier = ref.read(desktopIsPlayingProvider.notifier);
     _positionNotifier = ref.read(desktopPlayerPositionProvider.notifier);
     _durationNotifier = ref.read(desktopPlayerDurationProvider.notifier);
@@ -10241,6 +10252,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       final playing = s == PlayerState.playing;
       setState(() => _isPlaying = playing);
       _isPlayingNotifier.set(playing);
+      if (playing) AppAudioFocus.claim(this);
     });
     _player.onDurationChanged.listen((d) {
       if (!mounted) return;
@@ -10321,6 +10333,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     // above defers its own notifier writes, just via a Future here since
     // there's no guarantee another frame gets scheduled after disposal.
     Future(() => _isPlayingNotifier.set(false));
+    AppAudioFocus.unregister(this);
     super.dispose();
   }
 

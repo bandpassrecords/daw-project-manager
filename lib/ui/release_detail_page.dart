@@ -14,6 +14,7 @@ import 'package:uuid/uuid.dart';
 import 'package:archive/archive.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/release.dart';
+import '../services/app_audio_focus.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/mixdown_detector_service.dart';
 import '../services/scanner_service.dart';
@@ -2137,6 +2138,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     player.onPlayerStateChanged.listen((state) {
       if (gen != _playerGen || !mounted) return;
       setState(() => _isPlaying = state == PlayerState.playing);
+      if (state == PlayerState.playing) AppAudioFocus.claim(this);
     });
     player.onDurationChanged.listen((d) {
       if (gen != _playerGen || !mounted) return;
@@ -2209,6 +2211,10 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
   @override
   void initState() {
     super.initState();
+    // Pause when another player in the app starts making sound.
+    AppAudioFocus.register(this, () {
+      if (_audioPlayer.state == PlayerState.playing) _audioPlayer.pause();
+    });
     HardwareKeyboard.instance.addHandler(_handleKeyboard);
     _attachListeners(_audioPlayer, _playerGen);
     _startBackgroundPrep();
@@ -2395,6 +2401,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     ref.read(playingReleaseAudioProvider.notifier).releaseFloor(widget.file.id);
     _warmPlayer?.dispose();
     _audioPlayer.dispose();
+    AppAudioFocus.unregister(this);
     super.dispose();
   }
 

@@ -129,6 +129,32 @@ void main() {
     }
   });
 
+  test('exportAll writes a collection\'s folders, names unique per folder',
+      () async {
+    const clip = MidiClip(
+      name: 'Riff',
+      ppq: 480,
+      lengthTicks: 480,
+      notes: [MidiNote(startTick: 0, lengthTicks: 10, pitch: 60, velocity: 100)],
+    );
+    final out = Directory(p.join(tempDir.path, 'pack'));
+    final written = await MidiClipService.exportAll(
+      [
+        const MidiExport(clip, name: '01 Riff.mid', folders: ['Bass', 'Acid']),
+        const MidiExport(clip, name: '01 Riff.mid'),
+        const MidiExport(clip, name: '01 Riff.mid', folders: ['Bass', 'Acid']),
+      ],
+      out,
+    );
+    expect(
+      written.map((f) => p.relative(f.path, from: out.path).replaceAll(r'\', '/')),
+      ['Bass/Acid/01 Riff.mid', '01 Riff.mid', 'Bass/Acid/01 Riff (2).mid'],
+    );
+    for (final f in written) {
+      expect(f.readAsBytesSync().sublist(0, 4), 'MThd'.codeUnits);
+    }
+  });
+
   test('renderPreview writes a WAV once and reuses it for the same clip',
       () async {
     const clip = MidiClip(
@@ -157,5 +183,27 @@ void main() {
         bpm: 120, loop: true, directory: tempDir);
     expect(looped, isNot(first), reason: 'and whether it loops');
     expect(looped, endsWith('_loop.wav'));
+
+    // A held note's loop is rendered once, too.
+    final held = await MidiClipService.renderSustainLoop(
+        const MidiClip(name: 'h', ppq: 480, lengthTicks: 3840, notes: [
+          MidiNote(startTick: 0, lengthTicks: 3840, pitch: 60, velocity: 100),
+        ]),
+        voice: SynthVoice.organ,
+        directory: tempDir);
+    expect(p.basename(held), startsWith('sustain_v'));
+    expect(
+        await MidiClipService.renderSustainLoop(
+            const MidiClip(name: 'h', ppq: 480, lengthTicks: 3840, notes: [
+              MidiNote(startTick: 0, lengthTicks: 3840, pitch: 60, velocity: 100),
+            ]),
+            voice: SynthVoice.organ,
+            directory: tempDir),
+        held);
+
+    // And how the synth sounds: a render from before a voice was retuned
+    // is never played again.
+    expect(p.basename(first),
+        startsWith('preview_v${MidiClipService.kPreviewRenderVersion}_'));
   });
 }

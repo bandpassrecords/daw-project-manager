@@ -4,9 +4,11 @@ import '../../models/midi_clip.dart';
 ///
 /// Rough sketches of each family, not samples — enough to tell a bassline
 /// from a pad from a hi-hat pattern while auditioning.
+///
+/// There used to be a plain `synth` voice too, the fallback. It sounded all
+/// but the same as [bass] and was retired; a stored pick of it no longer
+/// names a voice and is inferred again, like any name this build lacks.
 enum SynthVoice {
-  /// The neutral fallback when nothing about the clip says what it is.
-  synth,
   lead,
   bass,
   pad,
@@ -83,7 +85,7 @@ SynthVoice? voiceFromName(String? name) {
 /// Picks the voice a clip most likely wants: its track's name first (that is
 /// what usually says what a part is for), then the clip's own name. Failing
 /// both, a clip that sits entirely low is played as a bass, and anything
-/// else as the neutral [SynthVoice.synth].
+/// else on [SynthVoice.keys], the most neutral of the rest.
 SynthVoice inferSynthVoice(MidiClip clip) {
   final fromName = voiceFromName(clip.trackName) ?? voiceFromName(clip.name);
   if (fromName != null) return fromName;
@@ -91,5 +93,5 @@ SynthVoice inferSynthVoice(MidiClip clip) {
       clip.notes.every((n) => n.pitch < 48)) {
     return SynthVoice.bass;
   }
-  return SynthVoice.synth;
+  return SynthVoice.keys;
 }

@@ -76,7 +76,7 @@ void main() {
     });
 
     test('anything else gets the default synth', () {
-      expect(inferSynthVoice(_clip(track: 'Serum 01')), SynthVoice.synth);
+      expect(inferSynthVoice(_clip(track: 'Serum 01')), SynthVoice.keys);
     });
   });
 
@@ -84,5 +84,12 @@ void main() {
     expect(SynthVoice.kick.isDrum, isTrue);
     expect(SynthVoice.drumKit.isDrum, isTrue);
     expect(SynthVoice.bell.isDrum, isFalse);
+  });
+
+  test('synth is retired: it sounded the same as bass', () {
+    expect(SynthVoice.values.map((v) => v.name), isNot(contains('synth')));
+    expect(SynthVoice.values.where((v) => v.name == 'synth').firstOrNull,
+        isNull,
+        reason: 'a stored pick of it names no voice, so it is inferred again');
   });
 }

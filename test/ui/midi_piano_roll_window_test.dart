@@ -10,6 +10,8 @@ import 'package:daw_project_manager/ui/midi_clip_share.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
+import 'package:daw_project_manager/utils/musical_scale.dart';
+import 'package:daw_project_manager/ui/widgets/midi_volume_control.dart';
 
 const _clip = MidiClip(
   name: 'Riff',
@@ -20,6 +22,8 @@ const _clip = MidiClip(
 
 String _laneName(MidiLane lane) => lane.toString();
 
+String _scaleTypeName(ScaleType type) => type.name;
+
 const _labels = MidiPianoRollWindowLabels(
   roll: MidiPianoRollLabels(
     zoomIn: 'In',
@@ -29,6 +33,11 @@ const _labels = MidiPianoRollWindowLabels(
     lane: 'Lane',
     laneNone: 'None',
     laneName: _laneName,
+    scale: 'Scale',
+    scaleNone: 'No scale',
+    scaleRoot: 'Root',
+    scaleType: 'Type',
+    scaleTypeName: _scaleTypeName,
   ),
   close: 'Close',
   play: 'Play',
@@ -128,7 +137,7 @@ void main() {
                         playerKey: 'k',
                         bpm: 120,
                         labels: _labels,
-                        onPlay: () => plays++,
+                        onPlay: (_, __) => plays++,
                         onOpenProject: withActions ? () => opens++ : null,
                       ),
                     ),
@@ -169,13 +178,18 @@ void main() {
     Offset rulerMiddle(WidgetTester tester) =>
         tester.getCenter(find.byKey(const ValueKey('midi-piano-roll-ruler')));
 
-    testWidgets('clicking the ruler while stopped starts playback there',
+    testWidgets('clicking the ruler while stopped moves the start, plays nothing',
         (tester) async {
       await open(tester);
       await tester.tapAt(rulerMiddle(tester));
       await tester.pump();
+      expect(plays, 0, reason: 'a click on the ruler never starts playback');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
       expect(plays, 1);
-      expect(player.pendingStartFor('k')!.inMilliseconds, closeTo(1000, 5));
+      expect(player.pendingStartFor('k')!.inMilliseconds, closeTo(1000, 5),
+          reason: 'play starts where the ruler was clicked');
     });
 
     testWidgets('clicking the ruler while playing jumps there', (tester) async {
@@ -191,9 +205,9 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('stop shows only while this clip plays', (tester) async {
+    testWidgets('stop is always there: playing, it stops', (tester) async {
       await open(tester);
-      expect(find.byTooltip('Stop'), findsNothing);
+      expect(find.byTooltip('Stop'), findsOneWidget, reason: 'stopped too');
       player.playingKey = 'k';
       player.notifyListeners();
       await tester.pump();
@@ -201,6 +215,36 @@ void main() {
       await tester.tap(find.byTooltip('Stop'));
       await tester.pumpAndSettle();
       expect(player.playingKey, isNull);
+    });
+
+    // Regression: while a preview rendered, the whole transport became a
+    // spinner, so stop vanished and came back on every render.
+    testWidgets('stop stays while a preview renders, and cancels it',
+        (tester) async {
+      await open(tester);
+      player.preparingKey = 'k';
+      player.notifyListeners();
+      await tester.pump();
+      expect(find.byKey(const ValueKey('midi-piano-roll-preparing')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey('midi-piano-roll-stop')), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('midi-piano-roll-stop')));
+      await tester.pump();
+      expect(player.preparingKey, isNull);
+    });
+
+    testWidgets('stopped, stop takes the start back to the beginning',
+        (tester) async {
+      await open(tester);
+      await tester.tapAt(rulerMiddle(tester));
+      await tester.pump();
+      await tester.tap(find.byTooltip('Stop'));
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(plays, 1);
+      expect(player.pendingStartFor('k'), isNull,
+          reason: 'from the beginning, not where the ruler was clicked');
     });
 
     testWidgets('Esc stops a playing clip first, then closes the window',
@@ -247,6 +291,104 @@ void main() {
     });
   });
 
+  group('header layout', () {
+    test('stacks below 600 pixels wide', () {
+      expect(pianoRollHeaderStacked(360), isTrue);
+      expect(pianoRollHeaderStacked(999), isTrue);
+      expect(pianoRollHeaderStacked(1000), isFalse);
+      expect(pianoRollHeaderStacked(1200), isFalse);
+    });
+
+    const longTitle = 'Lead Synth Arp – Chorus Variation With A Long Name';
+
+    Future<void> pumpAt(WidgetTester tester, double width) async {
+      tester.view.physicalSize = Size(width, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final player = MidiPreviewPlayer();
+      addTearDown(player.dispose);
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: MidiPianoRollWindow(
+            clip: _clip,
+            title: longTitle,
+            subtitle: 'Night Drive (Extended Mix) – Final Version',
+            player: player,
+            playerKey: 'k',
+            bpm: 120,
+            labels: _labels,
+            onPlay: (_, __) {},
+            onOpenProject: () {},
+            volume: 0.8,
+            onVolumeChanged: (_) {},
+            volumeLabels: const MidiVolumeLabels(
+                volume: 'Volume', mute: 'Mute', unmute: 'Unmute'),
+            loop: false,
+            onLoopChanged: (_) {},
+            loopTooltip: 'Loop',
+          ),
+        ),
+      ));
+    }
+
+    Text title(WidgetTester tester) =>
+        tester.widget<Text>(find.byKey(const ValueKey('midi-piano-roll-title')));
+
+    testWidgets('on a phone the title gets a line of its own, two lines deep',
+        (tester) async {
+      await pumpAt(tester, 360);
+      expect(title(tester).maxLines, 2);
+      final width =
+          tester.getSize(find.byKey(const ValueKey('midi-piano-roll-title'))).width;
+      expect(width, greaterThan(250),
+          reason: 'not squeezed between the controls any more');
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('even the narrowest phone does not overflow', (tester) async {
+      await pumpAt(tester, 320);
+      expect(tester.takeException(), isNull);
+      expect(find.byTooltip('Loop'), findsOneWidget);
+      expect(find.byTooltip('Open project'), findsOneWidget);
+    });
+
+    testWidgets('a wide window keeps the single row', (tester) async {
+      await pumpAt(tester, 1200);
+      expect(title(tester).maxLines, 1);
+      final titleTop =
+          tester.getTopLeft(find.byKey(const ValueKey('midi-piano-roll-title'))).dy;
+      final closeTop = tester.getTopLeft(find.byTooltip('Close')).dy;
+      final loopTop = tester.getTopLeft(find.byTooltip('Loop')).dy;
+      expect((loopTop - closeTop).abs(), lessThan(1),
+          reason: 'controls share the row with the close button');
+      expect(titleTop, lessThan(closeTop + 40));
+    });
+  });
+
+  group('open-ended playback', () {
+    const draft = MidiClip(
+      name: 'Idea',
+      ppq: 480,
+      lengthTicks: 1920,
+      notes: [MidiNote(startTick: 5000, lengthTicks: 240, pitch: 60, velocity: 90)],
+    );
+
+    test('renders past the last note, and never back', () {
+      expect(openEndedHorizon(draft, current: 0, step: 15360), 5240 + 15360);
+      expect(openEndedHorizon(draft, current: 40000, step: 15360), 40000,
+          reason: 'what was reached stays reached');
+      const empty = MidiClip(name: 'x', ppq: 480, lengthTicks: 1920, notes: []);
+      expect(openEndedHorizon(empty, current: 0, step: 15360), 15360);
+    });
+
+    test('renders further a few seconds before the end', () {
+      const rendered = Duration(seconds: 16);
+      expect(needsLongerHorizon(const Duration(seconds: 12), rendered), isFalse);
+      expect(needsLongerHorizon(const Duration(seconds: 13), rendered), isTrue);
+      expect(needsLongerHorizon(null, rendered), isFalse);
+    });
+  });
+
   test('zipMidiFiles packs the files under a filesystem-safe name', () async {
     final dir = await Directory.systemTemp.createTemp('midi_zip_');
     addTearDown(() => dir.delete(recursive: true));
@@ -259,5 +401,19 @@ void main() {
     final archive = ZipDecoder().decodeBytes(zip.readAsBytesSync());
     expect(archive.files.map((f) => f.name), ['A.mid', 'B.mid']);
     expect(archive.findFile('B.mid')!.content, [4, 5]);
+  });
+
+  test('zipMidiFiles keeps the folders below its root', () async {
+    final dir = await Directory.systemTemp.createTemp('midi_zip_');
+    addTearDown(() => dir.delete(recursive: true));
+    final sub = Directory('${dir.path}/Bass/Acid')..createSync(recursive: true);
+    final a = File('${sub.path}/01 A.mid')..writeAsBytesSync([1]);
+    final b = File('${dir.path}/01 B.mid')..writeAsBytesSync([2]);
+    final out = Directory('${dir.path}/zip')..createSync();
+
+    final zip = await zipMidiFiles([a, b], out, 'Pack', root: dir);
+
+    final archive = ZipDecoder().decodeBytes(zip.readAsBytesSync());
+    expect(archive.files.map((f) => f.name), ['Bass/Acid/01 A.mid', '01 B.mid']);
   });
 }

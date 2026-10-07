@@ -8,13 +8,17 @@ import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/ui/midi_piano_roll_dialog.dart';
 import 'package:daw_project_manager/ui/midi_preview_player.dart';
+import 'package:daw_project_manager/ui/widgets/midi_clip_edit_controller.dart';
 import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
+import 'package:daw_project_manager/utils/musical_scale.dart';
 
 String _laneName(MidiLane lane) => lane.isVelocity
     ? 'Velocity'
     : lane.kind == MidiEventKind.controller
         ? 'CC ${lane.number}'
         : lane.kind!.name;
+
+String _scaleTypeName(ScaleType type) => type.name;
 
 const _labels = MidiPianoRollLabels(
   zoomIn: 'Zoom in',
@@ -24,6 +28,11 @@ const _labels = MidiPianoRollLabels(
   lane: 'Lane',
   laneNone: 'None',
   laneName: _laneName,
+  scale: 'Scale',
+  scaleNone: 'No scale',
+  scaleRoot: 'Root',
+  scaleType: 'Type',
+  scaleTypeName: _scaleTypeName,
 );
 
 const _expressive = MidiClip(
@@ -64,6 +73,121 @@ void main() {
       expect(midiNoteName(61), 'C#3');
       expect(midiNoteName(0), 'C-2');
       expect(midiNoteName(127), 'G8');
+    });
+
+    test("the keyboard names only the C's, however far it is zoomed", () {
+      for (final rowHeight in [14.0, 28.0]) {
+        expect([for (var p = 60; p < 72; p++) showsKeyName(p, rowHeight)],
+            [true, ...List.filled(11, false)],
+            reason: 'rows $rowHeight px tall');
+      }
+      // Squeezed: not even the C's fit.
+      expect(showsKeyName(60, 6), isFalse);
+    });
+
+    test('a note shows its name once there is room, across and down', () {
+      // "C#3" at the labels' size is about 20 px wide.
+      expect(noteLabelFits(noteWidth: 60, rowHeight: 18, labelWidth: 20), isTrue);
+      expect(noteLabelFits(noteWidth: 60, rowHeight: 12, labelWidth: 20), isFalse,
+          reason: 'too short a row: zoom in vertically');
+      expect(noteLabelFits(noteWidth: 24, rowHeight: 18, labelWidth: 20), isFalse,
+          reason: 'too short a note: zoom in horizontally');
+      expect(noteLabelFits(noteWidth: 26, rowHeight: 13, labelWidth: 20), isTrue,
+          reason: 'just fits: the label plus its padding on both sides');
+    });
+
+    test('the name is dark on a loud note, light on a quiet one', () {
+      expect(noteLabelColor(1.0), noteLabelColor(0.8));
+      expect(noteLabelColor(0.4), isNot(noteLabelColor(1.0)));
+      expect(noteLabelColor(0.4).computeLuminance(),
+          greaterThan(noteLabelColor(1.0).computeLuminance()));
+    });
+
+    test("a note's edges: its outer quarter, at most 8 px, the end first", () {
+      expect(noteEdgeAt(x: 103, left: 100, right: 200), NoteEdge.start);
+      expect(noteEdgeAt(x: 150, left: 100, right: 200), isNull);
+      expect(noteEdgeAt(x: 195, left: 100, right: 200), NoteEdge.end);
+      expect(noteEdgeAt(x: 203, left: 100, right: 200), NoteEdge.end,
+          reason: 'just past the end still catches it');
+      expect(noteEdgeAt(x: 109, left: 100, right: 200), isNull,
+          reason: 'never more than 8 px in');
+      // A 12 px note: a 3 px edge each side, the middle still a move.
+      expect(noteEdgeAt(x: 106, left: 100, right: 112), isNull);
+      expect(noteEdgeAt(x: 110, left: 100, right: 112), NoteEdge.end);
+      // A 2 px note still has an end to catch.
+      expect(noteEdgeAt(x: 102, left: 100, right: 102), NoteEdge.end);
+    });
+
+    test('a double-click: soon enough after, close enough to the first', () {
+      const at = Offset(50, 50);
+      const t = Duration(seconds: 3);
+      bool second(Duration time, Offset where) => isDoubleTap(
+          previousTime: t, previousAt: at, time: time, at: where);
+      expect(second(t + const Duration(milliseconds: 200), at), isTrue);
+      expect(second(t + const Duration(milliseconds: 400), at), isFalse);
+      expect(second(t + const Duration(milliseconds: 200), at + const Offset(20, 0)),
+          isFalse);
+      expect(
+          isDoubleTap(previousTime: null, previousAt: null, time: t, at: at),
+          isFalse,
+          reason: 'the first click');
+    });
+
+    test('zoom keeps the pointer still, or the middle without one', () {
+      expect(zoomAnchorX(pointerX: 640, viewWidth: 800), 640);
+      expect(zoomAnchorX(pointerX: null, viewWidth: 800), 400);
+      expect(zoomAnchorX(pointerX: 900, viewWidth: 800), 400,
+          reason: 'off the grid');
+    });
+
+    test('a bend drawn near the middle snaps to no bend; nothing else snaps',
+        () {
+      const bend = MidiLane.of(MidiEventKind.pitchBend);
+      expect(snapLaneValue(bend, 8500), 8192);
+      expect(snapLaneValue(bend, 7800), 8192);
+      expect(snapLaneValue(bend, 9500), 9500);
+      expect(snapLaneValue(const MidiLane.of(MidiEventKind.controller, 1), 64),
+          64);
+    });
+
+    test('out of scale: only with a scale, by pitch class', () {
+      const aMinor = MusicalScale(9, ScaleType.minor);
+      expect(noteOutOfScale(aMinor, 69), isFalse); // A
+      expect(noteOutOfScale(aMinor, 70), isTrue); // A#
+      expect(noteOutOfScale(null, 70), isFalse);
+      const notes = [
+        MidiNote(startTick: 0, lengthTicks: 1, pitch: 60, velocity: 1),
+        MidiNote(startTick: 0, lengthTicks: 1, pitch: 61, velocity: 1),
+      ];
+      expect(outOfScaleFlags(notes, aMinor), [false, true]);
+      expect(outOfScaleFlags(notes, null), isNull);
+    });
+
+    test('vertical zoom keeps the row being looked at still', () {
+      // Row 20 (of 14 px) sits 80 px down the view at a scroll of 200.
+      const anchor = 20 * 14.0 - 200;
+      final scroll = verticalZoomScroll(
+          scrollY: 200, oldRow: 14, newRow: 28, anchorY: anchor);
+      expect(20 * 28 - scroll, anchor);
+      expect(
+          verticalZoomScroll(scrollY: 0, oldRow: 28, newRow: 6, anchorY: 10),
+          0,
+          reason: 'never above the top');
+    });
+
+    test('the keyboard parts white keys where a piano does', () {
+      // Under C and F: the two places white keys meet with no black key.
+      expect([for (var p = 60; p < 72; p++) if (!isBlackKey(p) && whiteKeySeamBelow(p)) p],
+          [60, 65]);
+      expect(kBlackKeyWidthFraction, inInclusiveRange(0.5, 0.7));
+    });
+
+    test('the snap grid draws its divisions between the beats', () {
+      expect(gridDivisionTicks(stepTicks: 120, beatTicks: 480, pxPerTick: 0.1), 120);
+      expect(gridDivisionTicks(stepTicks: 480, beatTicks: 480, pxPerTick: 1), isNull,
+          reason: 'a quarter-note grid is the beat lines');
+      expect(gridDivisionTicks(stepTicks: 60, beatTicks: 480, pxPerTick: 0.05), isNull,
+          reason: 'too close together to see');
     });
 
     test('black keys', () {
@@ -146,8 +270,13 @@ void main() {
       ]);
     });
 
-    test('a clip of notes alone offers velocity only', () {
-      expect(availableMidiLanes(_clip()), const [MidiLane.velocity()]);
+    test('a clip of notes alone still offers pitch bend and the mod wheel', () {
+      // Empty, but there to look at — and to draw in while editing.
+      expect(availableMidiLanes(_clip()), const [
+        MidiLane.velocity(),
+        MidiLane.of(MidiEventKind.pitchBend),
+        MidiLane.of(MidiEventKind.controller, 1),
+      ]);
     });
 
     test('points are note velocities or the lane\'s own events', () {
@@ -321,6 +450,120 @@ void main() {
       });
     });
 
+    group('scale', () {
+      Widget withScale(MusicalScale? scale, List<MusicalScale?> changes) =>
+          MaterialApp(
+            home: Scaffold(
+              body: SizedBox(
+                width: 800,
+                height: 500,
+                child: MidiPianoRoll(
+                  clip: _clip(),
+                  labels: _labels,
+                  initialScale: scale,
+                  onScaleChanged: changes.add,
+                ),
+              ),
+            ),
+          );
+      final button = find.byKey(const ValueKey('midi-piano-roll-scale'));
+
+      testWidgets('opens on the given scale and says which', (tester) async {
+        await tester.pumpWidget(
+            withScale(const MusicalScale(9, ScaleType.minor), []));
+        expect(find.descendant(of: button, matching: find.text('A minor')),
+            findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('without one the button just says Scale', (tester) async {
+        await tester.pumpWidget(withScale(null, []));
+        expect(find.descendant(of: button, matching: find.text('Scale')),
+            findsOneWidget);
+      });
+
+      testWidgets('the chooser changes it, and No scale turns it off',
+          (tester) async {
+        final changes = <MusicalScale?>[];
+        await tester.pumpWidget(
+            withScale(const MusicalScale(9, ScaleType.minor), changes));
+
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('midi-scale-type')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('dorian').last);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('OK'));
+        await tester.pumpAndSettle();
+        expect(changes, [const MusicalScale(9, ScaleType.dorian)]);
+        expect(find.descendant(of: button, matching: find.text('A dorian')),
+            findsOneWidget);
+
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('No scale'));
+        await tester.pumpAndSettle();
+        expect(changes.last, isNull);
+        expect(find.descendant(of: button, matching: find.text('Scale')),
+            findsOneWidget);
+      });
+
+      testWidgets('cancelling the chooser changes nothing', (tester) async {
+        final changes = <MusicalScale?>[];
+        await tester.pumpWidget(
+            withScale(const MusicalScale(0, ScaleType.major), changes));
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+        expect(changes, isEmpty);
+      });
+    });
+
+    testWidgets('zoomed right in, notes are drawn with their names',
+        (tester) async {
+      await tester.pumpWidget(wrap(_clip()));
+      // Tallest rows, and wide notes.
+      tester.widget<Slider>(find.byType(Slider)).onChanged!(28);
+      await tester.pump();
+      for (var i = 0; i < 4; i++) {
+        await tester.tap(find.byTooltip('Zoom in'));
+        await tester.pump();
+      }
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('selected and out-of-scale notes, stems and the snap grid '
+        'paint', (tester) async {
+      final editor = MidiClipEditController(_clip())
+        ..editing = true
+        ..selectAll()
+        ..snap = MidiSnap.thirtySecond;
+      addTearDown(editor.dispose);
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 800,
+            height: 500,
+            child: MidiPianoRoll(
+              clip: _clip(),
+              labels: _labels,
+              editor: editor,
+              initialScale: const MusicalScale(0, ScaleType.majorPentatonic),
+            ),
+          ),
+        ),
+      ));
+      tester.widget<Slider>(find.byType(Slider)).onChanged!(28);
+      await tester.pump();
+      for (var i = 0; i < 3; i++) {
+        await tester.tap(find.byTooltip('Zoom in'));
+        await tester.pump();
+      }
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('an empty clip still lays out', (tester) async {
       await tester.pumpWidget(wrap(const MidiClip(name: 'x', ppq: 480, lengthTicks: 0, notes: [])));
       expect(tester.takeException(), isNull);
@@ -334,6 +577,72 @@ void main() {
       await tester.tap(find.byTooltip('Follow'));
       await tester.pump();
       expect(tester.widgetList(find.byIcon(Icons.my_location)), isEmpty);
+    });
+
+    testWidgets('zooming switches follow off, so it does not snap back',
+        (tester) async {
+      await tester.pumpWidget(wrap(_clip()));
+      expect(find.byIcon(Icons.my_location), findsOneWidget);
+      await tester.tap(find.byTooltip('Zoom in'));
+      await tester.pump();
+      expect(find.byIcon(Icons.my_location), findsNothing);
+    });
+
+    test('the playhead stops at the clip end, unless the clip has none', () {
+      // 5 s at 120 BPM: ten beats, 4800 ticks — past a one-bar clip.
+      const at = Duration(seconds: 5);
+      expect(playheadTick(at, 120, 480, clipEnd: 1920), 1920);
+      expect(playheadTick(at, 120, 480), 4800,
+          reason: 'being edited, it plays on past the end');
+    });
+
+    testWidgets(
+        'with an editor, playback past a one-bar clip carries the view on '
+        '(it used to stop at bar one)', (tester) async {
+      final seeks = <Duration>[];
+      final playback = ValueNotifier(false);
+      const draft = MidiClip(name: 'Idea', ppq: 480, lengthTicks: 1920, notes: []);
+      final editor = MidiClipEditController(draft);
+      addTearDown(editor.dispose);
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 800,
+            height: 500,
+            child: MidiPianoRoll(
+              clip: draft,
+              labels: _labels,
+              editor: editor,
+              bpm: 120,
+              playback: playback,
+              onSeek: seeks.add,
+              // Ten beats in: two and a half bars past the clip's one.
+              positionOf: () => const Duration(seconds: 5),
+            ),
+          ),
+        ),
+      ));
+      playback.value = true;
+      await tester.pumpAndSettle();
+      final ruler =
+          tester.getRect(find.byKey(const ValueKey('midi-piano-roll-ruler')));
+      await tester.tapAt(ruler.centerLeft + const Offset(2, 0));
+      expect(seeks.single.inMilliseconds, greaterThan(3000),
+          reason: 'the view followed the playhead past bar one');
+    });
+
+    testWidgets('paused, it stops drawing a frame at a time', (tester) async {
+      final playback = ValueNotifier(false);
+      await tester.pumpWidget(wrap(
+        _clip(),
+        playback: playback,
+        // Paused: a position, but one that never moves.
+        positionOf: () => const Duration(seconds: 1),
+      ));
+      playback.value = true;
+      // Would time out if the ticker kept asking for frames.
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('ticks only while playing', (tester) async {
@@ -383,7 +692,7 @@ void main() {
                 player: player,
                 playerKey: 'k',
                 bpm: 120,
-                onPlay: () {},
+                onPlay: (_, __) {},
               ),
               child: const Text('open'),
             ),
@@ -421,7 +730,8 @@ void main() {
                 player: player,
                 playerKey: 'k',
                 bpm: 128,
-                onPlay: () => toggles++,
+                onPlay: (_, __) => toggles++,
+                musicalKey: 'A minor',
               ),
               child: const Text('open'),
             ),
@@ -438,6 +748,8 @@ void main() {
       expect(find.text('Night Drive'), findsOneWidget);
       expect(find.text('Velocity'), findsOneWidget,
           reason: 'the lane picker, named through the app\'s strings');
+      expect(find.text('A Minor'), findsOneWidget,
+          reason: 'opens on the project key, named in the app strings');
 
       await tester.tap(find.byIcon(Icons.play_circle_outline));
       expect(toggles, 1);

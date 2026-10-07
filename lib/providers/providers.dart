@@ -29,6 +29,8 @@ import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
 import '../models/midi_collection.dart';
 import '../models/midi_library.dart';
+import '../services/midi_tree_state_store.dart';
+import '../services/app_audio_focus.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/player_volume_store.dart';
 import '../services/thumbnail_toolbar_service.dart';
@@ -414,10 +416,11 @@ class ArchiveFolderNotifier extends Notifier<String?> {
   }
 }
 
-final archiveFolderProvider =
-    NotifierProvider<ArchiveFolderNotifier, String?>(() {
-      return ArchiveFolderNotifier();
-    });
+final archiveFolderProvider = NotifierProvider<ArchiveFolderNotifier, String?>(
+  () {
+    return ArchiveFolderNotifier();
+  },
+);
 
 // REMOVEMOS: projectsWatchProvider (substituído pela reatividade do stream abaixo)
 
@@ -496,7 +499,6 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
   // still here). The library rules have their own watch on it.
   final fileExistenceCache = ref.watch(fileExistenceCacheProvider);
 
-
   // 4. Usa .whenData para acessar a lista quando estiver pronta e aplicar o filtro/ordenação
   return allProjectsAsync
       .whenData((_) {
@@ -564,7 +566,9 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
           ref.watch(availableTagsProvider),
         );
         if (tagFilter != null) {
-          projects = projects.where((p) => projectHasTag(p, tagFilter)).toList();
+          projects = projects
+              .where((p) => projectHasTag(p, tagFilter))
+              .toList();
         }
 
         // --- Filter by deadline ---
@@ -1146,8 +1150,9 @@ final finishedPhaseProvider = Provider<Set<String>>((ref) {
 
 /// Shows only projects holding MIDI (see `projectHasMidi`). Session-only,
 /// like the other dashboard filters.
-final hasMidiFilterProvider =
-    NotifierProvider<HasMidiFilterNotifier, bool>(HasMidiFilterNotifier.new);
+final hasMidiFilterProvider = NotifierProvider<HasMidiFilterNotifier, bool>(
+  HasMidiFilterNotifier.new,
+);
 
 class HasMidiFilterNotifier extends Notifier<bool> {
   @override
@@ -2097,8 +2102,8 @@ class NameDateStrippingNotifier extends Notifier<bool> {
 
 final nameDateStrippingProvider =
     NotifierProvider<NameDateStrippingNotifier, bool>(() {
-  return NameDateStrippingNotifier();
-});
+      return NameDateStrippingNotifier();
+    });
 
 /// Whether project tags (#109) are shown at all. Off by default: tags are for
 /// people who organise that way, and everyone else shouldn't meet a filter,
@@ -2166,7 +2171,8 @@ class CustomFieldDefinitionsNotifier
     try {
       if (Hive.isBoxOpen(boxName)) {
         return decodeCustomFieldDefinitions(
-            Hive.box<String>(boxName).get(customFieldDefinitionsStorageKey));
+          Hive.box<String>(boxName).get(customFieldDefinitionsStorageKey),
+        );
       }
     } catch (_) {
       // Fall through to the async load.
@@ -2181,13 +2187,14 @@ class CustomFieldDefinitionsNotifier
       final box = await Hive.openBox<String>(boxName);
       if (!ref.mounted) return;
       state = decodeCustomFieldDefinitions(
-          box.get(customFieldDefinitionsStorageKey));
-      _subscription ??= box
-          .watch(key: customFieldDefinitionsStorageKey)
-          .listen((event) {
-        if (!ref.mounted) return;
-        state = decodeCustomFieldDefinitions(event.value as String?);
-      });
+        box.get(customFieldDefinitionsStorageKey),
+      );
+      _subscription ??= box.watch(key: customFieldDefinitionsStorageKey).listen(
+        (event) {
+          if (!ref.mounted) return;
+          state = decodeCustomFieldDefinitions(event.value as String?);
+        },
+      );
     } catch (_) {
       // Keep the empty list if loading fails.
     }
@@ -2216,10 +2223,9 @@ class CustomFieldDefinitionsNotifier
     if (index >= 0) {
       next[index] = field.copyWith(updatedAt: now);
     } else {
-      next.add(field.copyWith(
-        order: activeCustomFields(state).length,
-        updatedAt: now,
-      ));
+      next.add(
+        field.copyWith(order: activeCustomFields(state).length, updatedAt: now),
+      );
     }
     await _persist(next);
   }
@@ -2247,10 +2253,11 @@ class CustomFieldDefinitionsNotifier
   }
 }
 
-final customFieldDefinitionsProvider = NotifierProvider<
-    CustomFieldDefinitionsNotifier, List<CustomFieldDefinition>>(
-  CustomFieldDefinitionsNotifier.new,
-);
+final customFieldDefinitionsProvider =
+    NotifierProvider<
+      CustomFieldDefinitionsNotifier,
+      List<CustomFieldDefinition>
+    >(CustomFieldDefinitionsNotifier.new);
 
 /// The fields the user can see: no tombstones, in their Settings order.
 final activeCustomFieldsProvider = Provider<List<CustomFieldDefinition>>(
@@ -2262,8 +2269,7 @@ final activeCustomFieldsProvider = Provider<List<CustomFieldDefinition>>(
 ///
 /// Device-local, in the `settings` box like the dashboard view mode: what
 /// fits is a question about this screen, so it is not synced or backed up.
-class ProjectsTableColumnsNotifier
-    extends Notifier<List<TableColumnSetting>> {
+class ProjectsTableColumnsNotifier extends Notifier<List<TableColumnSetting>> {
   static const boxKey = 'projectsTableColumns';
 
   @override
@@ -2288,8 +2294,8 @@ class ProjectsTableColumnsNotifier
   }
 
   Future<void> setVisible(String id, bool visible) => _persist([
-        for (final s in state) s.id == id ? s.withVisible(visible) : s,
-      ]);
+    for (final s in state) s.id == id ? s.withVisible(visible) : s,
+  ]);
 
   Future<void> reorder(int oldIndex, int newIndex) =>
       _persist(reorderColumnLayout(state, oldIndex, newIndex));
@@ -2299,8 +2305,8 @@ class ProjectsTableColumnsNotifier
 
 final projectsTableColumnsProvider =
     NotifierProvider<ProjectsTableColumnsNotifier, List<TableColumnSetting>>(
-  ProjectsTableColumnsNotifier.new,
-);
+      ProjectsTableColumnsNotifier.new,
+    );
 
 // ---------------------------------------------------------------------------
 // Tab Visibility
@@ -2784,8 +2790,8 @@ class MidiLibrarySearchNotifier extends Notifier<String> {
 /// What the dashboard search box holds while the MIDI tab is showing.
 final midiLibrarySearchProvider =
     NotifierProvider<MidiLibrarySearchNotifier, String>(
-  MidiLibrarySearchNotifier.new,
-);
+      MidiLibrarySearchNotifier.new,
+    );
 
 // ---------------------------------------------------------------------------
 // MIDI library
@@ -2845,8 +2851,8 @@ class MidiCollectionRequestNotifier extends Notifier<String?> {
 
 final midiCollectionToOpenProvider =
     NotifierProvider<MidiCollectionRequestNotifier, String?>(
-  MidiCollectionRequestNotifier.new,
-);
+      MidiCollectionRequestNotifier.new,
+    );
 
 /// The current profile's MIDI collections, live.
 final midiCollectionsProvider = StreamProvider<List<MidiCollection>>((
@@ -2870,8 +2876,8 @@ class QueueDueFilterNotifier extends Notifier<QueueDueFilter> {
 
 final queueDueFilterProvider =
     NotifierProvider<QueueDueFilterNotifier, QueueDueFilter>(
-  QueueDueFilterNotifier.new,
-);
+      QueueDueFilterNotifier.new,
+    );
 
 // ─── Desktop embedded player ──────────────────────────────────────────────────
 
@@ -3106,8 +3112,7 @@ bool releaseRowHandlesKeys({
   required String fileId,
   required String? owner,
   required bool isFallbackRow,
-}) =>
-    owner == null ? isFallbackRow : owner == fileId;
+}) => owner == null ? isFallbackRow : owner == fileId;
 
 /// Whether an item holding [fileId] should pause because [owner] has the
 /// floor. Pure — the rule the release page's audio items share.
@@ -3262,8 +3267,8 @@ class MidiPreviewVolumeNotifier extends Notifier<double> {
 
 final midiPreviewVolumeProvider =
     NotifierProvider<MidiPreviewVolumeNotifier, double>(
-  MidiPreviewVolumeNotifier.new,
-);
+      MidiPreviewVolumeNotifier.new,
+    );
 
 /// Whether MIDI previews loop; one setting for every preview in the app,
 /// remembered on this device ([MidiPreviewLoopStore]).
@@ -3281,6 +3286,23 @@ class MidiPreviewLoopNotifier extends Notifier<bool> {
 final midiPreviewLoopProvider = NotifierProvider<MidiPreviewLoopNotifier, bool>(
   MidiPreviewLoopNotifier.new,
 );
+
+/// Which parts of the MIDI tab's trees are open, kept between runs on this
+/// device ([MidiTreeStateStore]).
+class MidiTreeStateNotifier extends Notifier<MidiTreeState> {
+  @override
+  MidiTreeState build() => MidiTreeStateStore.current;
+
+  void update(MidiTreeState Function(MidiTreeState state) change) {
+    state = change(state);
+    MidiTreeStateStore.save(state);
+  }
+}
+
+final midiTreeStateProvider =
+    NotifierProvider<MidiTreeStateNotifier, MidiTreeState>(
+      MidiTreeStateNotifier.new,
+    );
 
 final desktopPlayerVolumeProvider =
     NotifierProvider<DesktopPlayerVolumeNotifier, double>(
@@ -3822,8 +3844,9 @@ class WaveformStereoNotifier extends Notifier<bool> {
   }
 }
 
-final waveformStereoProvider =
-    NotifierProvider<WaveformStereoNotifier, bool>(WaveformStereoNotifier.new);
+final waveformStereoProvider = NotifierProvider<WaveformStereoNotifier, bool>(
+  WaveformStereoNotifier.new,
+);
 
 // ---------------------------------------------------------------------------
 // Mobile Preview Player (global singleton — persists across navigation)
@@ -3993,6 +4016,12 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
   @override
   MobilePlayerState build() {
     ref.onDispose(_dispose);
+    // One sound at a time (AppAudioFocus): pause when a MIDI preview or
+    // another player in the app starts.
+    AppAudioFocus.register(this, () {
+      if (state.isPlaying) unawaited(pause());
+    });
+    ref.onDispose(() => AppAudioFocus.unregister(this));
     if (_isAndroid) {
       _jaPlayer = ja.AudioPlayer();
       _attachJaListeners();
@@ -4033,6 +4062,7 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     });
     _jaPlayingSub = p.playingStream.listen((playing) {
       state = state.copyWith(isPlaying: playing);
+      if (playing) AppAudioFocus.claim(this);
     });
     _jaPosSub = p.positionStream.listen((pos) {
       state = state.copyWith(position: pos);
@@ -4070,6 +4100,7 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     final p = _fallbackPlayer!;
     _fbStateSub = p.onPlayerStateChanged.listen((s) {
       state = state.copyWith(isPlaying: s == PlayerState.playing);
+      if (s == PlayerState.playing) AppAudioFocus.claim(this);
     });
     _fbPosSub = p.onPositionChanged.listen((pos) {
       state = state.copyWith(position: pos);
@@ -4319,7 +4350,8 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
         return;
       }
       // An override equal to the track's own file is just "back to stereo".
-      final isOverride = path.isNotEmpty && path != resolvedPreviewPath(current);
+      final isOverride =
+          path.isNotEmpty && path != resolvedPreviewPath(current);
       _sourceOverrideProjectId = isOverride ? current.id : null;
       _sourceOverridePath = isOverride ? path : null;
       try {
@@ -4372,7 +4404,9 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     state = state.copyWith(queue: ordered, queueIndex: idx, playbackMode: mode);
     if (_useJa) {
       try {
-        _jaSource = ja.ConcatenatingAudioSource(children: _buildSources(ordered));
+        _jaSource = ja.ConcatenatingAudioSource(
+          children: _buildSources(ordered),
+        );
         await _jaPlayer!.setAudioSource(
           _jaSource!,
           initialIndex: idx,

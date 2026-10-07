@@ -28,6 +28,7 @@ import '../utils/attachment_launcher.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/player_shortcuts.dart';
+import '../services/app_audio_focus.dart';
 import '../services/player_volume_store.dart';
 import '../utils/project_tags.dart';
 import '../utils/track_duration.dart';
@@ -2454,6 +2455,10 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
   @override
   void initState() {
     super.initState();
+    // Pause when another player in the app starts making sound.
+    AppAudioFocus.register(this, () {
+      if (_audioPlayer.state == PlayerState.playing) _audioPlayer.pause();
+    });
     _attachListeners(_audioPlayer, _playerGen);
     _adoptStoredAutoPath();
     _startBackgroundPrep();
@@ -2521,6 +2526,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     player.onPlayerStateChanged.listen((state) {
       if (gen != _playerGen || !mounted) return;
       setState(() => _isPlaying = state == PlayerState.playing);
+      if (state == PlayerState.playing) AppAudioFocus.claim(this);
     });
     player.onDurationChanged.listen((d) {
       if (gen != _playerGen || !mounted) return;
@@ -2544,6 +2550,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     _warmPlayer?.dispose();
     _audioPlayer.dispose();
     _focusNode.dispose();
+    AppAudioFocus.unregister(this);
     super.dispose();
   }
 

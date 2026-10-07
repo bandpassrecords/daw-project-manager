@@ -3,29 +3,49 @@ import 'dart:typed_data';
 
 import '../../models/midi_clip.dart';
 import '../../utils/musical_key.dart';
+import '../../utils/time_signature.dart';
 
 /// A clip on its way out to a `.mid` file, with what the file should say
 /// about it: the tempo to write and the project's key. Each clip of a shared
 /// collection carries its own, since they come from different projects.
 class MidiExport {
-  const MidiExport(this.clip, {this.bpm, this.musicalKey});
+  const MidiExport(
+    this.clip, {
+    this.bpm,
+    this.musicalKey,
+    this.timeSignature = TimeSignature.common,
+    this.name,
+    this.folders = const [],
+  });
 
   final MidiClip clip;
   final double? bpm;
 
+  /// The bars the clip was written in: 4/4 unless it was given another.
+  final TimeSignature timeSignature;
+
   /// The project's key as written there ("A minor", "F#m"…), or null.
   final String? musicalKey;
 
-  String get fileName => midiClipFileName(clip, musicalKey: musicalKey);
+  /// The file name chosen for it (a collection's naming template), with
+  /// `.mid`; null names it after the clip and its key.
+  final String? name;
 
-  Uint8List encode() => encodeMidiClip(clip, bpm: bpm, musicalKey: musicalKey);
+  /// The folders it goes in, outermost first, inside wherever it is
+  /// exported — a collection's folders. Each is already a safe name.
+  final List<String> folders;
+
+  String get fileName => name ?? midiClipFileName(clip, musicalKey: musicalKey);
+
+  Uint8List encode() => encodeMidiClip(clip,
+      bpm: bpm, musicalKey: musicalKey, timeSignature: timeSignature);
 }
 
 /// Encodes a [MidiClip] as a Standard MIDI File (format 0, one track) that
 /// any DAW can import or have dropped onto it.
 ///
-/// The file carries the clip's own PPQ, a track-name meta event, a 4/4 time
-/// signature and — when [bpm] is given — the project's tempo, so dragging it
+/// The file carries the clip's own PPQ, a track-name meta event, its
+/// [timeSignature] (4/4 unless given) and — when [bpm] is given — the project's tempo, so dragging it
 /// into an empty project lands at the right speed. The end-of-track event
 /// sits at the clip's length rather than at the last note-off, so a clip
 /// ending in a rest keeps its rest. The clip's events — controllers, pitch
@@ -34,7 +54,12 @@ class MidiExport {
 /// [musicalKey], the project's key, becomes a key-signature event when it
 /// reads as one (see [keySignatureOf]), so a DAW that shows or uses the key
 /// gets it with the notes.
-Uint8List encodeMidiClip(MidiClip clip, {double? bpm, String? musicalKey}) {
+Uint8List encodeMidiClip(
+  MidiClip clip, {
+  double? bpm,
+  String? musicalKey,
+  TimeSignature timeSignature = TimeSignature.common,
+}) {
   final track = BytesBuilder();
 
   void meta(int type, List<int> data) {
@@ -56,8 +81,7 @@ Uint8List encodeMidiClip(MidiClip clip, {double? bpm, String? musicalKey}) {
       microsPerQuarter & 0xFF,
     ]);
   }
-  // 4/4, 24 MIDI clocks per click, 8 32nds per quarter.
-  meta(0x58, [4, 2, 24, 8]);
+  meta(0x58, timeSignature.midiMetaData);
   final signature = keySignatureOf(musicalKey);
   if (signature != null) {
     meta(0x59, [signature.sharps & 0xFF, signature.minor ? 1 : 0]);

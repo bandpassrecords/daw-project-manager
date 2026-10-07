@@ -44,13 +44,22 @@ ShareFollowUp shareFollowUp({required bool tried, ShareResultStatus? status}) {
 
 /// Packs [files] into `<zipName>.zip` inside [dir] — one attachment for a
 /// whole collection, which chat apps and mail take far better than a pile
-/// of loose files. Entry names are the files' own (already unique).
+/// of loose files. Entries keep their path below [root] — a collection's
+/// folders — or, without one, are the files' own names (already unique).
 @visibleForTesting
-Future<File> zipMidiFiles(List<File> files, Directory dir, String zipName) async {
+Future<File> zipMidiFiles(
+  List<File> files,
+  Directory dir,
+  String zipName, {
+  Directory? root,
+}) async {
   final archive = Archive();
   for (final f in files) {
     final bytes = await f.readAsBytes();
-    archive.addFile(ArchiveFile(p.basename(f.path), bytes.length, bytes));
+    final entry = root == null
+        ? p.basename(f.path)
+        : p.split(p.relative(f.path, from: root.path)).join('/');
+    archive.addFile(ArchiveFile(entry, bytes.length, bytes));
   }
   final safe = zipName
       .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
@@ -91,7 +100,7 @@ Future<void> shareMidiClips(
     if (zipName != null) {
       final zipDir = Directory(p.join(dir.path, 'zip'));
       await zipDir.create();
-      files = [await zipMidiFiles(files, zipDir, zipName)];
+      files = [await zipMidiFiles(files, zipDir, zipName, root: dir)];
     }
 
     final tried = shareSheetWorthTrying(isLinux: Platform.isLinux);

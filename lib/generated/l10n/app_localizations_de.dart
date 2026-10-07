@@ -6038,9 +6038,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get synthVoiceSynth => 'Synth';
-
-  @override
   String get synthVoiceLead => 'Lead';
 
   @override
@@ -6430,4 +6427,504 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiPreviewLoop => 'Wiedergabe in Schleife';
+
+  @override
+  String get projectContentsRead => 'Projektinhalt lesen';
+
+  @override
+  String get projectContentsReadHint =>
+      'Liest Spuren, Plug-ins und MIDI-Clips aus der Projektdatei. Sie werden mit dem Projekt gespeichert und auf deine anderen Geräte synchronisiert.';
+
+  @override
+  String get projectContentsNoneRead =>
+      'Aus diesem Projekt wurde noch nichts gelesen. Führe auf dem Computer mit der Projektdatei einen Tiefenscan aus oder extrahiere seine Metadaten.';
+
+  @override
+  String get midiScale => 'Skala';
+
+  @override
+  String get midiScaleNone => 'Keine Skala';
+
+  @override
+  String get midiScaleRoot => 'Grundton';
+
+  @override
+  String get midiScaleType => 'Skalentyp';
+
+  @override
+  String get scaleMajor => 'Dur';
+
+  @override
+  String get scaleMinor => 'Moll';
+
+  @override
+  String get scaleHarmonicMinor => 'Harmonisch Moll';
+
+  @override
+  String get scaleMelodicMinor => 'Melodisch Moll';
+
+  @override
+  String get scaleDorian => 'Dorisch';
+
+  @override
+  String get scalePhrygian => 'Phrygisch';
+
+  @override
+  String get scaleLydian => 'Lydisch';
+
+  @override
+  String get scaleMixolydian => 'Mixolydisch';
+
+  @override
+  String get scaleLocrian => 'Lokrisch';
+
+  @override
+  String get scaleMajorPentatonic => 'Dur-Pentatonik';
+
+  @override
+  String get scaleMinorPentatonic => 'Moll-Pentatonik';
+
+  @override
+  String get scaleBlues => 'Blues';
+
+  @override
+  String get midiEditNotes => 'Noten bearbeiten';
+
+  @override
+  String get midiUndo => 'Rückgängig';
+
+  @override
+  String get midiRedo => 'Wiederholen';
+
+  @override
+  String get midiSnap => 'Am Raster ausrichten';
+
+  @override
+  String get midiSnapOff => 'Aus';
+
+  @override
+  String get midiSaveAsNewClip => 'Als neuen Clip speichern';
+
+  @override
+  String midiClipEditedName(String name) {
+    return '$name (bearbeitet)';
+  }
+
+  @override
+  String get midiDiscardEditsTitle => 'Änderungen verwerfen?';
+
+  @override
+  String get midiDiscardEditsBody =>
+      'Der bearbeitete Clip wurde nicht gespeichert. Speichere ihn als neuen Clip, um ihn zu behalten.';
+
+  @override
+  String get midiKeepEditing => 'Weiter bearbeiten';
+
+  @override
+  String get midiDiscardEdits => 'Verwerfen';
+
+  @override
+  String get midiToolSelect => 'Auswählen (1)';
+
+  @override
+  String get midiToolPencil => 'Stift (8)';
+
+  @override
+  String get midiAcousticFeedback => 'Noten beim Bearbeiten hören';
+
+  @override
+  String get midiShortcuts => 'Tastenkürzel (?)';
+
+  @override
+  String get midiShortcutsTitle => 'Tastenkürzel der Pianorolle';
+
+  @override
+  String get midiShortcutsTools => 'Werkzeuge';
+
+  @override
+  String get midiShortcutsNotes => 'Noten';
+
+  @override
+  String get midiShortcutsSelecting => 'Auswählen';
+
+  @override
+  String get midiShortcutsLanes => 'Anschlag- und Controller-Spuren';
+
+  @override
+  String get midiShortcutsEditing => 'Bearbeiten';
+
+  @override
+  String get midiShortcutsPlayback => 'Wiedergabe und Ansicht';
+
+  @override
+  String get midiKeyCtrl => 'Strg';
+
+  @override
+  String get midiKeyShift => 'Umschalt';
+
+  @override
+  String get midiKeyAlt => 'Alt';
+
+  @override
+  String get midiKeyDelete => 'Entf';
+
+  @override
+  String get midiKeySpace => 'Leertaste';
+
+  @override
+  String get midiKeyEsc => 'Esc';
+
+  @override
+  String get midiGestureClick => 'Klick';
+
+  @override
+  String get midiGestureDoubleClick => 'Doppelklick';
+
+  @override
+  String get midiGestureDrag => 'Ziehen';
+
+  @override
+  String get midiGestureWheel => 'Mausrad';
+
+  @override
+  String get midiShortcutSelectTool => 'Auswahlwerkzeug';
+
+  @override
+  String get midiShortcutPencilTool =>
+      'Stift: Klick fügt eine Note hinzu – seitlich ziehen verlängert sie, nach oben oder unten ändert die Anschlagstärke; Klick auf eine Note wählt sie aus';
+
+  @override
+  String get midiShortcutDoubleClick =>
+      'Auf freier Fläche: Note hinzufügen (gedrückt halten und ziehen: seitlich die Länge, hoch/runter die Anschlagstärke; Strg: frei vom Raster). Auf einer Note: sie löschen';
+
+  @override
+  String get midiShortcutMove =>
+      'Eine Note: verschieben, mit allen ausgewählten Noten';
+
+  @override
+  String get midiShortcutResize =>
+      'Den Rand einer Note: kürzer oder länger machen';
+
+  @override
+  String get midiShortcutCopy => 'Eine Note: die ausgewählten Noten kopieren';
+
+  @override
+  String get midiShortcutOffGrid =>
+      'Verschieben oder Länge ändern, ohne am Raster einzurasten';
+
+  @override
+  String get midiShortcutSemitone =>
+      'Ausgewählte Noten um einen Halbton verschieben';
+
+  @override
+  String get midiShortcutOctave =>
+      'Ausgewählte Noten um eine Oktave verschieben';
+
+  @override
+  String get midiShortcutDelete => 'Ausgewählte Noten löschen';
+
+  @override
+  String get midiShortcutBox =>
+      'Auf freier Fläche: die Noten im Rahmen auswählen';
+
+  @override
+  String get midiShortcutToggle =>
+      'Eine Note zur Auswahl hinzufügen oder herausnehmen';
+
+  @override
+  String get midiShortcutSelectAll => 'Alle Noten auswählen';
+
+  @override
+  String get midiShortcutVelocity =>
+      'Über die Anschlagbalken: Anschlagstärke jeder überstrichenen Note setzen';
+
+  @override
+  String get midiShortcutLane =>
+      'In einer Controller- oder Pitchbend-Spur: die Kurve zeichnen (ein Bend rastet in der Mitte ein)';
+
+  @override
+  String get midiShortcutPlay => 'Abspielen oder pausieren';
+
+  @override
+  String get midiShortcutStop => 'Stoppen; gestoppt das Fenster schließen';
+
+  @override
+  String get midiShortcutKeyboard =>
+      'Auf der Klaviatur: die Taste spielen (ziehen spielt die überstrichenen Tasten)';
+
+  @override
+  String get midiShortcutRuler => 'Auf dem Lineal: dorthin springen';
+
+  @override
+  String get midiShortcutZoom => 'Um den Mauszeiger hinein- oder herauszoomen';
+
+  @override
+  String get midiShortcutScroll => 'Seitwärts scrollen';
+
+  @override
+  String get midiShortcutShowSheet => 'Diese Tastenkürzel anzeigen';
+
+  @override
+  String get midiFullScreen => 'Vollbild';
+
+  @override
+  String get midiExitFullScreen => 'Vollbild beenden';
+
+  @override
+  String get midiToolRange => 'Bereich (2)';
+
+  @override
+  String get midiToolEraser => 'Radiergummi (5)';
+
+  @override
+  String get midiDuplicate => 'Duplizieren';
+
+  @override
+  String get midiTranspose => 'Transponieren';
+
+  @override
+  String get midiTransposeUpSemitone => 'Einen Halbton höher';
+
+  @override
+  String get midiTransposeDownSemitone => 'Einen Halbton tiefer';
+
+  @override
+  String get midiTransposeUpOctave => 'Eine Oktave höher';
+
+  @override
+  String get midiTransposeDownOctave => 'Eine Oktave tiefer';
+
+  @override
+  String get midiShortcutRangeTool =>
+      'Bereich: darüber ziehen, um einen Zeitabschnitt und alle Noten darin auszuwählen';
+
+  @override
+  String get midiShortcutEraserTool =>
+      'Radiergummi: Noten anklicken oder überstreichen, um sie zu löschen';
+
+  @override
+  String get midiShortcutDuplicate =>
+      'Duplizieren: einen Bereich direkt dahinter, oder die ausgewählten Noten direkt nach der letzten';
+
+  @override
+  String get midiNewClip => 'Neuer Clip';
+
+  @override
+  String midiNewClipName(int number) {
+    return 'Idee $number';
+  }
+
+  @override
+  String get midiQuantize => 'Quantisieren (Q)';
+
+  @override
+  String get midiShortcutQuantize =>
+      'Quantisieren: die ausgewählten Noten (oder alle) aufs Raster setzen';
+
+  @override
+  String get midiTimeSignature => 'Taktart';
+
+  @override
+  String get midiShortcutLoopStart =>
+      'Auf dem Lineal: den Anfang der Schleife setzen';
+
+  @override
+  String get midiShortcutLoopEnd =>
+      'Auf dem Lineal: das Ende der Schleife setzen';
+
+  @override
+  String get midiShortcutLoopDrag =>
+      'Der lila Schleifenbalken: an den Enden ziehen ändert die Länge, in der Mitte verschiebt ihn (mit Schleife an spielt nur sie)';
+
+  @override
+  String get midiShortcutLoopToggle =>
+      'Obere Hälfte des Schleifenbalkens: Schleife ein- oder ausschalten (grau, wenn aus)';
+
+  @override
+  String get midiRoleMelody => 'Melodie';
+
+  @override
+  String get midiRoleBass => 'Bass';
+
+  @override
+  String get midiRoleChords => 'Akkorde';
+
+  @override
+  String get midiRoleArp => 'Arp';
+
+  @override
+  String get midiRoleLead => 'Lead';
+
+  @override
+  String get midiRolePad => 'Pad';
+
+  @override
+  String get midiRoleDrums => 'Drums';
+
+  @override
+  String get midiRoleFx => 'FX';
+
+  @override
+  String get midiRoleOther => 'Sonstiges';
+
+  @override
+  String get midiRoleLabel => 'Rolle';
+
+  @override
+  String midiRoleAutomatic(String role) {
+    return 'Automatisch ($role)';
+  }
+
+  @override
+  String midiItemRoleMenu(String role) {
+    return 'Rolle: $role';
+  }
+
+  @override
+  String get midiNameFree => 'frei';
+
+  @override
+  String get midiNamingTitle => 'Dateibenennung';
+
+  @override
+  String get midiNamingNumbered => 'Dateien nummerieren';
+
+  @override
+  String get midiNamingNumberedHint =>
+      '01, 02 … in der Reihenfolge jedes Ordners, damit ein Dateibrowser sie so auflistet';
+
+  @override
+  String get midiNamingSeparator => 'Trennzeichen';
+
+  @override
+  String get midiNamingFields => 'Im Namen';
+
+  @override
+  String get midiNamingFieldsHint => 'Ziehen, um die Reihenfolge zu ändern';
+
+  @override
+  String get midiNameFieldName => 'Name';
+
+  @override
+  String get midiNameFieldBpm => 'Tempo (BPM)';
+
+  @override
+  String get midiNameFieldKey => 'Tonart';
+
+  @override
+  String get midiNameFieldBars => 'Länge in Takten';
+
+  @override
+  String get midiNameFieldTimeSignature => 'Taktart (wenn nicht 4/4)';
+
+  @override
+  String get midiNameFieldGrid => 'Quantisierung (1-16, frei …)';
+
+  @override
+  String get midiNameFieldInstrument => 'Instrument';
+
+  @override
+  String get midiNamingPreview => 'Beispiel';
+
+  @override
+  String get midiNamingReset => 'Standard';
+
+  @override
+  String get midiFolderNew => 'Neuer Ordner';
+
+  @override
+  String get midiFolderRename => 'Ordner umbenennen';
+
+  @override
+  String get midiFolderDelete => 'Ordner löschen';
+
+  @override
+  String midiFolderDeleteConfirm(String name) {
+    return 'Den Ordner „$name“ löschen? Seine Clips und Ordner rücken eine Ebene nach oben.';
+  }
+
+  @override
+  String get midiFolderName => 'Ordnername';
+
+  @override
+  String get midiFolderLabel => 'Ordner';
+
+  @override
+  String get midiFolderTopLevel => 'Oberste Ebene';
+
+  @override
+  String get midiMoveTo => 'Verschieben nach …';
+
+  @override
+  String get midiMoveUp => 'Nach oben';
+
+  @override
+  String get midiMoveDown => 'Nach unten';
+
+  @override
+  String get midiItemRename => 'Umbenennen';
+
+  @override
+  String get midiItemNameHint => 'Leer: der eigene Name des Clips';
+
+  @override
+  String get midiSaveClipTitle => 'Clip speichern';
+
+  @override
+  String get midiSaveFileName => 'Dateiname';
+
+  @override
+  String get midiBulkRenameMenu => 'Nach Schema umbenennen …';
+
+  @override
+  String get midiBulkRenameTitle => 'Nach Benennungsschema umbenennen';
+
+  @override
+  String get midiBulkRenameHint =>
+      'Jeder Name wird aus dem Benennungsschema der Sammlung vorgeschlagen. Bearbeite sie vorher nach Belieben und entferne den Haken bei Clips, die bleiben sollen, wie sie sind.';
+
+  @override
+  String midiBulkRenameApply(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Clips umbenennen',
+      one: '1 Clip umbenennen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String midiBulkRenameDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Clips umbenannt',
+      one: '1 Clip umbenannt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiBulkRenameSelectAll => 'Alle';
+
+  @override
+  String get midiNameFromScheme => 'Aus dem Benennungsschema';
+
+  @override
+  String midiCollectionMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Clips nach $name verschoben',
+      one: 'Nach $name verschoben',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get midiExpandAll => 'Alle aufklappen';
+
+  @override
+  String get midiCollapseAll => 'Alle zuklappen';
 }

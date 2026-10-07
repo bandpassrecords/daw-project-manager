@@ -38,6 +38,8 @@ import 'services/quick_action.dart';
 import 'services/tray_notice.dart';
 import 'services/changelog_service.dart';
 import 'services/player_volume_store.dart';
+import 'services/midi_editor_prefs_store.dart';
+import 'services/midi_tree_state_store.dart';
 import 'services/tray_service.dart';
 import 'services/folder_watcher_service.dart';
 import 'services/auto_start_service.dart';
@@ -780,6 +782,9 @@ Future<void> _main(List<String> args) async {
   await PlayerVolumeStore.load();
   await MidiPreviewVolumeStore.load();
   await MidiPreviewLoopStore.load();
+  await MidiAcousticFeedbackStore.load();
+  await MidiPianoRollFullScreenStore.load();
+  await MidiTreeStateStore.load();
 
   // Decided now, before this run writes a single setting: an empty settings
   // box means a first-ever launch. An install that has run before, but on a
