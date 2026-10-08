@@ -4241,6 +4241,30 @@ abstract class AppLocalizations {
   /// **'Press kit file removed'**
   String get pressKitFileRemoved;
 
+  /// Profile page: subtitle under a press kit file in the list of a profile's files
+  ///
+  /// In en, this message translates to:
+  /// **'Press kit file'**
+  String get pressKitFile;
+
+  /// Title of the system save dialog when saving one of a profile's files
+  ///
+  /// In en, this message translates to:
+  /// **'Save File'**
+  String get saveFileDialogTitle;
+
+  /// Title of the system save dialog when saving all of a profile's files as one ZIP
+  ///
+  /// In en, this message translates to:
+  /// **'Save All Files as ZIP'**
+  String get saveAllFilesAsZipDialogTitle;
+
+  /// Title of the system save dialog when saving the selected files of a profile as one ZIP
+  ///
+  /// In en, this message translates to:
+  /// **'Save Selected Files as ZIP'**
+  String get saveSelectedFilesAsZipDialogTitle;
+
   /// Error message when removing press kit file fails
   ///
   /// In en, this message translates to:

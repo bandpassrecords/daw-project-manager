@@ -1707,6 +1707,10 @@
   "@pressKitFileRemoved": {
     "description": "Success message when a press kit file is removed"
   },
+  "pressKitFile": "File della cartella stampa",
+  "saveFileDialogTitle": "Salva file",
+  "saveAllFilesAsZipDialogTitle": "Salva tutti i file come ZIP",
+  "saveSelectedFilesAsZipDialogTitle": "Salva i file selezionati come ZIP",
   "failedToRemovePressKitFile": "Impossibile rimuovere il file press kit: {error}",
   "@failedToRemovePressKitFile": {
     "description": "Error message when removing press kit file fails",

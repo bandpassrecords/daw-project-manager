@@ -2531,6 +2531,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pressKitFileRemoved => 'Press kit file removed';
 
   @override
+  String get pressKitFile => 'Press kit file';
+
+  @override
+  String get saveFileDialogTitle => 'Save File';
+
+  @override
+  String get saveAllFilesAsZipDialogTitle => 'Save All Files as ZIP';
+
+  @override
+  String get saveSelectedFilesAsZipDialogTitle => 'Save Selected Files as ZIP';
+
+  @override
   String failedToRemovePressKitFile(String error) {
     return 'Failed to remove press kit file: $error';
   }

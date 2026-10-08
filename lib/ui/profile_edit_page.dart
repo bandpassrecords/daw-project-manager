@@ -225,6 +225,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
   }
 
   Future<void> _downloadFile(String filePath, String suggestedFileName) async {
+    final dialogTitle = AppLocalizations.of(context)!.saveFileDialogTitle;
     try {
       final sourceFile = File(filePath);
       if (!await sourceFile.exists()) {
@@ -237,7 +238,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
       }
 
       final savePath = await FilePicker.saveFile(
-        dialogTitle: 'Save File',
+        dialogTitle: dialogTitle,
         fileName: suggestedFileName,
         type: FileType.any,
       );
@@ -262,6 +263,8 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
   }
 
   Future<void> _downloadAllFiles(Profile profile) async {
+    final dialogTitle =
+        AppLocalizations.of(context)!.saveAllFilesAsZipDialogTitle;
     final filesToDownload = <MapEntry<String, String>>[];
 
     // Add biography if present
@@ -306,7 +309,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
 
     final safeName = profile.name.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
     final savePath = await FilePicker.saveFile(
-      dialogTitle: 'Save All Files as ZIP',
+      dialogTitle: dialogTitle,
       fileName: '${safeName}_profile_assets.zip',
       type: FileType.any,
     );
@@ -592,7 +595,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
                         final fileExists = File(artworkPath).existsSync();
                         return CheckboxListTile(
                           title: Text(fileName),
-                          subtitle: Text(fileExists ? path.basename(artworkPath) : 'File not found'),
+                          subtitle: Text(fileExists ? path.basename(artworkPath) : AppLocalizations.of(context)!.fileNotFound),
                           value: selectedFiles.containsKey(fileName),
                           enabled: fileExists,
                           onChanged: fileExists ? (value) {
@@ -618,7 +621,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
                         final fileExists = File(pressKitPath).existsSync();
                         return CheckboxListTile(
                           title: Text(fileName),
-                          subtitle: Text(fileExists ? 'Press kit file' : 'File not found'),
+                          subtitle: Text(fileExists ? AppLocalizations.of(context)!.pressKitFile : AppLocalizations.of(context)!.fileNotFound),
                           value: selectedFiles.containsKey(fileName),
                           enabled: fileExists,
                           onChanged: fileExists ? (value) {
@@ -645,7 +648,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
                         final fileExists = File(assetPath).existsSync();
                         return CheckboxListTile(
                           title: Text(assetName),
-                          subtitle: Text(fileExists ? path.basename(assetPath) : 'File not found'),
+                          subtitle: Text(fileExists ? path.basename(assetPath) : AppLocalizations.of(context)!.fileNotFound),
                           value: selectedFiles.containsKey(fileName),
                           enabled: fileExists,
                           onChanged: fileExists ? (value) {
@@ -699,10 +702,12 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
 
   Future<void> _downloadSelectedFiles(Profile profile, Map<String, String> selectedFiles) async {
     if (selectedFiles.isEmpty) return;
+    final dialogTitle =
+        AppLocalizations.of(context)!.saveSelectedFilesAsZipDialogTitle;
 
     final safeName = profile.name.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
     final savePath = await FilePicker.saveFile(
-      dialogTitle: 'Save Selected Files as ZIP',
+      dialogTitle: dialogTitle,
       fileName: '${safeName}_selected_files.zip',
       type: FileType.any,
     );
@@ -1414,7 +1419,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
                                           leading: const Icon(Icons.description),
                                           title: Text(path.basename(pressKitPath)),
                                           subtitle: Text(
-                                            'Press kit file',
+                                            AppLocalizations.of(context)!.pressKitFile,
                                             style: Theme.of(context).textTheme.bodySmall,
                                           ),
                                           trailing: Row(
@@ -1486,7 +1491,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
                                       ),
                                       title: Text(entry.key),
                                       subtitle: Text(
-                                        fileExists ? path.basename(entry.value) : 'File not found',
+                                        fileExists ? path.basename(entry.value) : AppLocalizations.of(context)!.fileNotFound,
                                         style: TextStyle(
                                           color: fileExists
                                               ? null
