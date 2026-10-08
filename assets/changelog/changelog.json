@@ -15,6 +15,20 @@
   ],
   "releases": [
     {
+      "version": "2.9.3",
+      "date": "2026-10-08",
+      "highlights": {
+        "en": [
+          "Edit MIDI clips in the piano roll: draw, select, move, resize and delete notes with select, range, pencil and eraser tools, then save the result as a new clip in a collection.",
+          "The piano roll has its own tempo, time signature and loop region, highlights the project's scale, plays the notes you click, and lists every shortcut under ? or F1.",
+          "Start a new clip from scratch in any collection.",
+          "Collections get folders, clip roles and file-name templates: drag clips and folders around, and rename many clips to your naming scheme at once.",
+          "Table column widths are remembered, and every column, including your own fields, can be switched on separately in the projects table and the release tracklist.",
+          "On Windows, if you installed with the .exe installer, the update prompt now offers the new installer instead of the Microsoft Store."
+        ]
+      }
+    },
+    {
       "version": "2.9.2",
       "date": "2026-10-03",
       "highlights": {
