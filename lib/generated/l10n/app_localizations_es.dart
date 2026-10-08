@@ -3750,6 +3750,16 @@ class AppLocalizationsEs extends AppLocalizations {
       'Abre Microsoft Store y actualiza DAW Project Manager, o haz clic abajo.';
 
   @override
+  String get updateWindowsInstallerSourceLabel => 'Instalador de Windows';
+
+  @override
+  String get updateWindowsInstallerInstructions =>
+      'Descarga el nuevo instalador y ejecútalo. Actualiza esta instalación sin perder tu biblioteca.';
+
+  @override
+  String get updateDownloadInstaller => 'Descargar instalador';
+
+  @override
   String get updateMacInstructions =>
       'Descarga la última versión desde GitHub y reemplaza la app actual.';
 

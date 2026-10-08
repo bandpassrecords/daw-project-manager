@@ -1399,7 +1399,7 @@ jobs:
           echo "Program membership, a distribution certificate and a" >> $GITHUB_STEP_SUMMARY
           echo "provisioning profile added as repository secrets." >> $GITHUB_STEP_SUMMARY
 
-  # Update the macOS and Linux download links on the gh-pages website after every tag release
+  # Update the macOS, Linux and Windows installer download links on the gh-pages website after every tag release
   update-gh-pages:
     name: Update gh-pages download link
     needs: [release_build_upload, build_linux]
@@ -1432,6 +1432,18 @@ jobs:
           echo "Updated download URLs to: ${NEW_URL}"
           grep -n "DAW_Project_Manager_Linux" index.html
 
+      # The Windows card's main button is the Microsoft Store; its note offers
+      # this installer to anyone who'd rather not use the Store.
+      - name: Update Windows installer download URL in index.html
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          NEW_URL="https://github.com/bandpassrecords/daw-project-manager/releases/download/${TAG}/DAW_Project_Manager_Installer_${TAG}.exe"
+          # Replace every hardcoded Windows installer URL (any previous version) with the new one
+          sed -i "s|https://github\.com/bandpassrecords/daw-project-manager/releases/download/[^/]*/DAW_Project_Manager_Installer_[^\"]*\.exe|${NEW_URL}|g" index.html
+          echo "Updated download URLs to: ${NEW_URL}"
+          grep -n "DAW_Project_Manager_Installer" index.html
+
       - name: Commit and push to gh-pages
         env:
           TAG: ${{ github.ref_name }}
@@ -1440,4 +1452,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --staged --quiet && echo "No changes to commit" || \
-            git commit -m "Update macOS/Linux download links to ${TAG}" && git push
+            git commit -m "Update download links to ${TAG}" && git push

@@ -3609,6 +3609,16 @@ class AppLocalizationsZh extends AppLocalizations {
       '打开 Microsoft Store 更新 DAW Project Manager，或点击下方按钮。';
 
   @override
+  String get updateWindowsInstallerSourceLabel => 'Windows 安装程序';
+
+  @override
+  String get updateWindowsInstallerInstructions =>
+      '下载新的安装程序并运行。它会直接更新当前安装，并保留你的资料库。';
+
+  @override
+  String get updateDownloadInstaller => '下载安装程序';
+
+  @override
   String get updateMacInstructions => '从 GitHub 下载最新版本并替换当前应用。';
 
   @override

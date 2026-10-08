@@ -3733,6 +3733,16 @@ class AppLocalizationsRu extends AppLocalizations {
       'Откройте Microsoft Store и обновите DAW Project Manager, или нажмите кнопку ниже.';
 
   @override
+  String get updateWindowsInstallerSourceLabel => 'Установщик Windows';
+
+  @override
+  String get updateWindowsInstallerInstructions =>
+      'Скачайте новый установщик и запустите его. Он обновит эту установку и сохранит вашу библиотеку.';
+
+  @override
+  String get updateDownloadInstaller => 'Скачать установщик';
+
+  @override
   String get updateMacInstructions =>
       'Скачайте последнюю версию с GitHub и замените текущее приложение.';
 

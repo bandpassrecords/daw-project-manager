@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/appimage_update_service.dart';
+import '../../utils/windows_install.dart';
 import 'appimage_self_update_dialog.dart';
 
 const String _kWindowsStoreId =
@@ -16,10 +17,48 @@ const String _kGithubRepo =
 const String _kCurrentVersion =
     String.fromEnvironment('APP_VERSION', defaultValue: '0.0.0');
 
+/// How this copy of the app gets a new version — which decides what the
+/// update dialog tells the user to do.
+enum UpdateRoute {
+  /// The MSIX package: the Microsoft Store updates it.
+  microsoftStore,
+
+  /// The `.exe` installer's copy: running the newer installer upgrades it in
+  /// place. Sending it to the Store would install a second copy instead.
+  windowsInstaller,
+
+  /// The AppImage updates itself.
+  appImage,
+
+  /// Everything else (macOS, the Linux tarball): download from GitHub.
+  gitHub,
+}
+
+UpdateRoute updateRouteFor({
+  required bool isWindows,
+  required bool isMsix,
+  required bool isAppImage,
+}) {
+  if (isWindows) {
+    return isMsix ? UpdateRoute.microsoftStore : UpdateRoute.windowsInstaller;
+  }
+  return isAppImage ? UpdateRoute.appImage : UpdateRoute.gitHub;
+}
+
+UpdateRoute get _currentUpdateRoute => updateRouteFor(
+      isWindows: Platform.isWindows,
+      isMsix: isRunningAsMsix,
+      isAppImage:
+          Platform.isLinux && AppImageUpdateService.isRunningAsAppImage,
+    );
+
 class UpdateAvailableDialog extends StatelessWidget {
   final String version;
 
-  const UpdateAvailableDialog({super.key, required this.version});
+  /// Overrides the detected [UpdateRoute]; for tests.
+  final UpdateRoute? route;
+
+  const UpdateAvailableDialog({super.key, required this.version, this.route});
 
   /// Show the dialog from anywhere using any valid BuildContext.
   static void show(BuildContext context, String version) {
@@ -37,27 +76,24 @@ class UpdateAvailableDialog extends StatelessWidget {
     }
   }
 
-  Future<void> _openStoreLink(BuildContext context) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final couldNotOpenLinkMessage = AppLocalizations.of(context)!.couldNotOpenLink;
-    Uri uri;
-    if (Platform.isWindows && _kWindowsStoreId.isNotEmpty) {
-      uri = Uri.parse('https://www.microsoft.com/store/apps/$_kWindowsStoreId');
-    } else if (_kGithubOwner.isNotEmpty && _kGithubRepo.isNotEmpty) {
-      uri = Uri.parse(
-          'https://github.com/$_kGithubOwner/$_kGithubRepo/releases/tag/v$version');
-    } else {
-      return;
-    }
-    await _launch(uri, messenger, couldNotOpenLinkMessage);
-  }
-
   Future<void> _openGitHubRelease(BuildContext context) async {
     if (_kGithubOwner.isEmpty || _kGithubRepo.isEmpty) return;
     final messenger = ScaffoldMessenger.of(context);
     final couldNotOpenLinkMessage = AppLocalizations.of(context)!.couldNotOpenLink;
     final uri = Uri.parse(
         'https://github.com/$_kGithubOwner/$_kGithubRepo/releases/tag/v$version');
+    await _launch(uri, messenger, couldNotOpenLinkMessage);
+  }
+
+  Future<void> _downloadWindowsInstaller(BuildContext context) async {
+    if (_kGithubOwner.isEmpty || _kGithubRepo.isEmpty) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final couldNotOpenLinkMessage = AppLocalizations.of(context)!.couldNotOpenLink;
+    final uri = windowsInstallerDownloadUrl(
+      owner: _kGithubOwner,
+      repo: _kGithubRepo,
+      version: version,
+    );
     await _launch(uri, messenger, couldNotOpenLinkMessage);
   }
 
@@ -79,11 +115,8 @@ class UpdateAvailableDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isWindows = !kIsDesktopOverride && Platform.isWindows;
-    final isMacOS = !kIsDesktopOverride && Platform.isMacOS;
-    final isAppImage = !kIsDesktopOverride &&
-        Platform.isLinux &&
-        AppImageUpdateService.isRunningAsAppImage;
+    final route = this.route ?? _currentUpdateRoute;
+    final hasGitHub = _kGithubOwner.isNotEmpty && _kGithubRepo.isNotEmpty;
 
     return AlertDialog(
       backgroundColor: theme.cardColor,
@@ -151,21 +184,24 @@ class UpdateAvailableDialog extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        isWindows
-                            ? Icons.store
-                            : isAppImage
-                                ? Icons.system_update_alt
-                                : Icons.code,
+                        switch (route) {
+                          UpdateRoute.microsoftStore => Icons.store,
+                          UpdateRoute.windowsInstaller => Icons.install_desktop,
+                          UpdateRoute.appImage => Icons.system_update_alt,
+                          UpdateRoute.gitHub => Icons.code,
+                        },
                         size: 16,
                         color: theme.colorScheme.primary,
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        isWindows
-                            ? 'Microsoft Store'
-                            : isAppImage
-                                ? l10n.updateAppImageSourceLabel
-                                : 'GitHub Releases',
+                        switch (route) {
+                          UpdateRoute.microsoftStore => 'Microsoft Store',
+                          UpdateRoute.windowsInstaller =>
+                            l10n.updateWindowsInstallerSourceLabel,
+                          UpdateRoute.appImage => l10n.updateAppImageSourceLabel,
+                          UpdateRoute.gitHub => 'GitHub Releases',
+                        },
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: theme.colorScheme.primary,
@@ -176,16 +212,19 @@ class UpdateAvailableDialog extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    isWindows
-                        ? l10n.updateWindowsInstructions
-                        : isAppImage
-                            ? l10n.updateAppImageInstructions
-                            : l10n.updateMacInstructions,
+                    switch (route) {
+                      UpdateRoute.microsoftStore =>
+                        l10n.updateWindowsInstructions,
+                      UpdateRoute.windowsInstaller =>
+                        l10n.updateWindowsInstallerInstructions,
+                      UpdateRoute.appImage => l10n.updateAppImageInstructions,
+                      UpdateRoute.gitHub => l10n.updateMacInstructions,
+                    },
                     style: theme.textTheme.bodySmall,
                   ),
                   const SizedBox(height: 14),
                   // Primary CTA button
-                  if (isWindows)
+                  if (route == UpdateRoute.microsoftStore)
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
@@ -197,7 +236,19 @@ class UpdateAvailableDialog extends StatelessWidget {
                         ),
                       ),
                     )
-                  else if (isAppImage)
+                  else if (route == UpdateRoute.windowsInstaller && hasGitHub)
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        icon: const Icon(Icons.download, size: 18),
+                        label: Text(l10n.updateDownloadInstaller),
+                        onPressed: () => _downloadWindowsInstaller(context),
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    )
+                  else if (route == UpdateRoute.appImage)
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
@@ -212,13 +263,13 @@ class UpdateAvailableDialog extends StatelessWidget {
                         ),
                       ),
                     )
-                  else if (isMacOS || _kGithubOwner.isNotEmpty)
+                  else if (route == UpdateRoute.gitHub && hasGitHub)
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
                         icon: const Icon(Icons.download, size: 18),
                         label: Text(l10n.downloadFromGitHub),
-                        onPressed: () => _openStoreLink(context),
+                        onPressed: () => _openGitHubRelease(context),
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
@@ -231,7 +282,7 @@ class UpdateAvailableDialog extends StatelessWidget {
         ),
       ),
       actions: [
-        if (_kGithubOwner.isNotEmpty && _kGithubRepo.isNotEmpty)
+        if (hasGitHub)
           TextButton.icon(
             icon: const Icon(Icons.open_in_new, size: 14),
             label: Text(AppLocalizations.of(context)!.githubButtonLabel),
@@ -245,9 +296,6 @@ class UpdateAvailableDialog extends StatelessWidget {
     );
   }
 }
-
-// Allows overriding platform checks in tests; not used in production.
-const bool kIsDesktopOverride = false;
 
 class _VersionChip extends StatelessWidget {
   final String label;

@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:launch_at_startup/launch_at_startup.dart';
 
+import '../utils/windows_install.dart';
+
 /// Command-line flag the OS passes back to us on an auto-start launch when
 /// the user asked to start minimized. Baked into the registry value /
 /// .desktop `Exec=` / LaunchAgent plist at registration time, and read by
@@ -28,27 +30,21 @@ abstract class AutoStartBackend {
 
 /// Real backend, delegating to `launch_at_startup`:
 /// - Windows: `HKCU\...\CurrentVersion\Run` (or a Startup-folder shortcut when
-///   running from an MSIX install, which is why [_msixPackageName] must match
+///   running from an MSIX install, which is why [kMsixPackageName] must match
 ///   `msix_config.identity_name` in pubspec.yaml).
 /// - macOS: a login item registered through the plugin's method channel,
 ///   which `macos/Runner/MainFlutterWindow.swift` answers.
 /// - Linux: a `.desktop` file in `~/.config/autostart`.
 class _LaunchAtStartupBackend implements AutoStartBackend {
-  // Must stay in sync with pubspec.yaml → msix_config.identity_name.
-  // launch_at_startup only detects an MSIX install by matching this against
-  // the resolved executable path, and a mismatch would make it write a Run
-  // registry entry that a packaged (containerized) install cannot honour.
-  static const _msixPackageName = 'BandPassRecords.DAWProjectManager';
-
   // Same channel launch_at_startup's macOS backend talks on.
   static const _macChannel = MethodChannel('launch_at_startup');
 
-  /// Mirrors launch_at_startup's own (unexported) MSIX detection so the
-  /// quoting decision below matches the code path it will actually take.
-  bool get _isMsix =>
-      Platform.isWindows &&
-      Platform.resolvedExecutable.contains('WindowsApps') &&
-      Platform.resolvedExecutable.contains(_msixPackageName);
+  /// launch_at_startup only detects an MSIX install by matching
+  /// [kMsixPackageName] against the resolved executable path, the same test
+  /// as [isRunningAsMsix]. A mismatch would make it write a Run registry
+  /// entry that a packaged (containerized) install cannot honour, and using
+  /// the same test keeps the quoting decision below on the path it takes.
+  bool get _isMsix => isRunningAsMsix;
 
   @override
   Future<void> setup({required bool minimized}) async {
@@ -70,7 +66,7 @@ class _LaunchAtStartupBackend implements AutoStartBackend {
       // leave the app registered twice.
       appName: 'DAW Project Manager',
       appPath: appPath,
-      packageName: _msixPackageName,
+      packageName: kMsixPackageName,
       args: minimized ? const [kStartMinimizedFlag] : const [],
     );
 
