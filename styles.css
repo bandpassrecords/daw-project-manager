@@ -700,6 +700,16 @@ img.app-screenshot {
     line-height: 1.6;
 }
 
+.download-note-link {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.download-note-link:hover {
+    text-decoration: underline;
+}
+
 .download-note strong {
     color: var(--text-secondary);
     font-weight: 600;
