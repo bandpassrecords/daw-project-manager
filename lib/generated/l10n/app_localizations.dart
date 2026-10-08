@@ -10412,8 +10412,8 @@ abstract class AppLocalizations {
   /// Opens the detail page of the project a MIDI clip came from
   ///
   /// In en, this message translates to:
-  /// **'Open project'**
-  String get midiOpenSourceProject;
+  /// **'Project details'**
+  String get midiProjectDetails;
 
   /// Snackbar when the project a collection clip was copied from is no longer in the library
   ///

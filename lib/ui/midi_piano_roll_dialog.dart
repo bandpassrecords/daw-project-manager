@@ -126,7 +126,7 @@ Future<void> showMidiPianoRoll(
       play: l10n.midiClipPlay,
       pause: l10n.midiPianoRollPause,
       stop: l10n.midiClipStop,
-      openProject: l10n.midiOpenSourceProject,
+      openProject: l10n.midiProjectDetails,
       saveAsNew: l10n.midiSaveAsNewClip,
       editedName: l10n.midiClipEditedName,
       discardTitle: l10n.midiDiscardEditsTitle,

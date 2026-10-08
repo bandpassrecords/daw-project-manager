@@ -5969,8 +5969,8 @@
   "@midiPianoRollPause": {
     "description": "Piano roll: pause the playing preview"
   },
-  "midiOpenSourceProject": "Open project",
-  "@midiOpenSourceProject": {
+  "midiProjectDetails": "Project details",
+  "@midiProjectDetails": {
     "description": "Opens the detail page of the project a MIDI clip came from"
   },
   "midiSourceProjectGone": "The project this clip came from is no longer in your library.",

@@ -3970,7 +3970,7 @@
   "midiClipsShareOfferFolder": "Se non è comparsa la finestra di condivisione, i file sono pronti in una cartella.",
   "midiClipsShowInFolder": "Mostra nella cartella",
   "midiPianoRollPause": "Pausa",
-  "midiOpenSourceProject": "Apri progetto",
+  "midiProjectDetails": "Dettagli progetto",
   "midiSourceProjectGone": "Il progetto da cui proviene questa clip non è più nella tua libreria.",
   "midiCollectionShareZip": "Condividi come ZIP",
   "midiCollectionOpen": "Apri",

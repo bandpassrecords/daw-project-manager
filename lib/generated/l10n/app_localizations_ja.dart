@@ -6085,7 +6085,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get midiPianoRollPause => '一時停止';
 
   @override
-  String get midiOpenSourceProject => 'プロジェクトを開く';
+  String get midiProjectDetails => 'プロジェクトの詳細';
 
   @override
   String get midiSourceProjectGone => 'このクリップの元のプロジェクトはライブラリにありません。';

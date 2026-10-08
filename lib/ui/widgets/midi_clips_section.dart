@@ -643,7 +643,7 @@ MidiClipListLabels midiClipListLabelsOf(AppLocalizations l10n) =>
       removeFromCollection: l10n.midiCollectionRemoveFrom,
       more: l10n.midiClipMoreActions,
       openPianoRoll: l10n.midiPianoRollOpen,
-      openProject: l10n.midiOpenSourceProject,
+      openProject: l10n.midiProjectDetails,
     );
 
 String synthVoiceName(AppLocalizations l10n, SynthVoice v) => switch (v) {

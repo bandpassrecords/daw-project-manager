@@ -6015,7 +6015,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midiPianoRollPause => '暂停';
 
   @override
-  String get midiOpenSourceProject => '打开项目';
+  String get midiProjectDetails => '项目详情';
 
   @override
   String get midiSourceProjectGone => '此片段的来源项目已不在你的资料库中。';

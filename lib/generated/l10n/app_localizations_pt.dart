@@ -6265,7 +6265,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get midiPianoRollPause => 'Pausar';
 
   @override
-  String get midiOpenSourceProject => 'Abrir projeto';
+  String get midiProjectDetails => 'Detalhes do projeto';
 
   @override
   String get midiSourceProjectGone =>

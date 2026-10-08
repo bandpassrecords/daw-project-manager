@@ -3970,7 +3970,7 @@
   "midiClipsShareOfferFolder": "共有ウィンドウが表示されなかった場合、ファイルはフォルダに用意されています。",
   "midiClipsShowInFolder": "フォルダで表示",
   "midiPianoRollPause": "一時停止",
-  "midiOpenSourceProject": "プロジェクトを開く",
+  "midiProjectDetails": "プロジェクトの詳細",
   "midiSourceProjectGone": "このクリップの元のプロジェクトはライブラリにありません。",
   "midiCollectionShareZip": "ZIPで共有",
   "midiCollectionOpen": "開く",

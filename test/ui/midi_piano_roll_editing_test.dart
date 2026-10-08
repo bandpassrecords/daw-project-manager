@@ -106,7 +106,7 @@ const _labels = MidiPianoRollWindowLabels(
   play: 'Play',
   pause: 'Pause',
   stop: 'Stop',
-  openProject: 'Open project',
+  openProject: 'Project details',
   saveAsNew: 'Save as new clip',
   editedName: _edited,
   discardTitle: 'Discard?',
