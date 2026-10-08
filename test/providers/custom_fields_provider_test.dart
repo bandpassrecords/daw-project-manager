@@ -231,5 +231,41 @@ void main() {
       addTearDown(next.dispose);
       expect(next.read(releaseTracksMaximizedProvider), isTrue);
     });
+
+    test('the table/list choice is remembered, starting on the list',
+        () async {
+      final box = await Hive.openBox<String>('settings');
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      expect(container.read(releaseTracksAsTableProvider), isFalse);
+      await container.read(releaseTracksAsTableProvider.notifier).set(true);
+
+      expect(box.get(ReleaseTracksAsTableNotifier.boxKey), 'true');
+      // Leaving the release page and opening another one reads it afresh.
+      final next = ProviderContainer();
+      addTearDown(next.dispose);
+      expect(next.read(releaseTracksAsTableProvider), isTrue);
+
+      await next.read(releaseTracksAsTableProvider.notifier).set(false);
+      final again = ProviderContainer();
+      addTearDown(again.dispose);
+      expect(again.read(releaseTracksAsTableProvider), isFalse);
+    });
+
+    test('the table/list choice is not synced or backed up', () {
+      // Device-local, like the maximized pane: a key in the settings box,
+      // which neither Drive sync nor local backup reads.
+      for (final file in [
+        'lib/services/google_drive_sync_service.dart',
+        'lib/services/backup_service.dart',
+      ]) {
+        expect(
+          File(file).readAsStringSync(),
+          isNot(contains(ReleaseTracksAsTableNotifier.boxKey)),
+          reason: file,
+        );
+      }
+    });
   });
 }
