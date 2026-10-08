@@ -699,8 +699,7 @@ class GoogleDriveSyncService {
                 // Need to authorize scopes (following official example)
                 if (kDebugMode) print('Requesting scope authorization...');
                 try {
-                  final GoogleSignInClientAuthorization authorization = await _currentUser!
-                      .authorizationClient
+                  await _currentUser!.authorizationClient
                       .authorizeScopes(_scopes);
                   
                   // Initialize Drive API with authorization
@@ -1287,7 +1286,6 @@ class GoogleDriveSyncService {
   /// Refresh access token using refresh token
   Future<auth_io.AccessCredentials?> _refreshAccessToken(String refreshToken) async {
     try {
-      final clientId = auth_io.ClientId(_desktopClientId, _desktopClientSecret.isEmpty ? null : _desktopClientSecret);
       final tokenEndpoint = Uri.parse('https://oauth2.googleapis.com/token');
       
       final bodyParams = <String, String>{
@@ -2417,13 +2415,6 @@ class GoogleDriveSyncService {
   /// Format: "drive://{fileId}"
   bool _isDriveFileReference(String? path) {
     return path != null && path.startsWith('drive://');
-  }
-
-  /// Extract drive file ID from a drive file reference
-  /// Format: "drive://{fileId}" -> "{fileId}"
-  String? _extractDriveFileId(String path) {
-    if (!_isDriveFileReference(path)) return null;
-    return path.substring(8); // Remove "drive://" prefix
   }
 
   /// Create a drive file reference from a file ID
@@ -3965,8 +3956,8 @@ class GoogleDriveSyncService {
             }
           }
           
-          for (final release in releasesBox.values) {
-            // Releases don't have updatedAt, use a default
+          // Releases don't have updatedAt: any release counts as just now.
+          if (releasesBox.isNotEmpty) {
             final releaseTime = DateTime.now();
             if (lastModified == null || releaseTime.isAfter(lastModified)) {
               lastModified = releaseTime;
@@ -4415,12 +4406,10 @@ class GoogleDriveSyncService {
                         bool needsDownload = false;
                         
                         // First, check if file exists locally (especially on mobile)
-                        String? localFilePath;
                         if (previewSongPath != null && !_isDriveFileReference(previewSongPath)) {
                           // Path exists and is not a Drive reference - check if file actually exists
                           final localFile = File(previewSongPath);
                           if (await localFile.exists()) {
-                            localFilePath = previewSongPath;
                             // File exists locally - verify hash if we have expected hash
                             if (uploadedPreviewSongHash != null) {
                               // Fast path: if the hash we stored locally already equals the

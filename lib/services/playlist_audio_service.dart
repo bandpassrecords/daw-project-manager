@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
@@ -16,7 +15,6 @@ class PlaylistAudioService extends BaseAudioHandler with QueueHandler, SeekHandl
   final List<_PlaylistItem> _playlistItems = [];
   int _currentIndex = 0;
   bool _isPlaying = false;
-  Playlist? _currentPlaylist;
 
   // Stream controllers for communication with UI
   final _currentIndexController = StreamController<int>.broadcast();
@@ -110,7 +108,6 @@ class PlaylistAudioService extends BaseAudioHandler with QueueHandler, SeekHandl
   }
 
   Future<void> loadPlaylist(Playlist playlist) async {
-    _currentPlaylist = playlist;
     _playlistItems.clear();
     _currentIndex = 0;
 
@@ -226,27 +223,6 @@ class PlaylistAudioService extends BaseAudioHandler with QueueHandler, SeekHandl
     await stop();
     await super.onTaskRemoved();
   }
-
-  @override
-  Future<void> onPlay() async => await play();
-
-  @override
-  Future<void> onPause() async => await pause();
-
-  @override
-  Future<void> onStop() async => await stop();
-
-  @override
-  Future<void> onSkipToNext() async => await skipToNext();
-
-  @override
-  Future<void> onSkipToPrevious() async => await skipToPrevious();
-
-  @override
-  Future<void> onSeek(Duration position) async => await seek(position);
-
-  @override
-  Future<void> onSkipToQueueItem(int index) async => await playItemAtIndex(index);
 
   void dispose() {
     _audioPlayer.dispose();

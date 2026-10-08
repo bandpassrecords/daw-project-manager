@@ -1005,7 +1005,7 @@ class _HistoryPanelState extends ConsumerState<_HistoryPanel> {
 
     final selectedEvents = selectedProject != null
         ? (allEvents
-            .where((e) => e.projectId == selectedProject!.id)
+            .where((e) => e.projectId == selectedProject.id)
             .toList()
           ..sort((a, b) => b.occurredAt.compareTo(a.occurredAt)))
         : <ProjectEvent>[];
@@ -1020,7 +1020,7 @@ class _HistoryPanelState extends ConsumerState<_HistoryPanel> {
         ),
         if (selectedProject != null) ...[
           _EventHistorySection(
-            project: selectedProject!,
+            project: selectedProject,
             events: selectedEvents,
             onClose: () => onProjectSelected(null),
             onClearHistory: () async {
@@ -1043,7 +1043,7 @@ class _HistoryPanelState extends ConsumerState<_HistoryPanel> {
               if (confirmed == true) {
                 final repo =
                     await ref.read(repositoryProvider.future);
-                await repo.clearEventsForProject(selectedProject!.id);
+                await repo.clearEventsForProject(selectedProject.id);
               }
             },
             l10n: l10n,

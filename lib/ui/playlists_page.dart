@@ -706,22 +706,6 @@ class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
     });
   }
 
-  Future<void> _reloadPlaylist() async {
-    try {
-      final repo = await ref.read(repositoryProvider.future);
-      // Get playlist directly from repository
-      final updatedPlaylist = repo.getPlaylistById(widget.playlist.id);
-      
-      if (updatedPlaylist != null && mounted) {
-        setState(() {
-          _currentPlaylist = updatedPlaylist;
-        });
-      }
-    } catch (e) {
-      // If reload fails, keep current playlist
-    }
-  }
-
   Future<void> _reloadPlaylistAndItems() async {
     if (!mounted) return;
 
@@ -1427,7 +1411,6 @@ class _EditPlaylistForm extends ConsumerStatefulWidget {
 class _EditPlaylistFormState extends ConsumerState<_EditPlaylistForm> {
   late TextEditingController _nameController;
   late List<String> _orderedProjectIds;
-  final String _searchQuery = '';
 
   @override
   void initState() {
