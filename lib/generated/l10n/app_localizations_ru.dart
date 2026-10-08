@@ -2537,6 +2537,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pressKitFileRemoved => 'Файл пресс-кита удалён';
 
   @override
+  String get pressKitFile => 'Файл пресс-кита';
+
+  @override
+  String get saveFileDialogTitle => 'Сохранить файл';
+
+  @override
+  String get saveAllFilesAsZipDialogTitle => 'Сохранить все файлы в ZIP';
+
+  @override
+  String get saveSelectedFilesAsZipDialogTitle =>
+      'Сохранить выбранные файлы в ZIP';
+
+  @override
   String failedToRemovePressKitFile(String error) {
     return 'Не удалось удалить файл пресс-кита: $error';
   }

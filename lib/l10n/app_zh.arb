@@ -1707,6 +1707,10 @@
   "@pressKitFileRemoved": {
     "description": "Success message when a press kit file is removed"
   },
+  "pressKitFile": "媒体资料包文件",
+  "saveFileDialogTitle": "保存文件",
+  "saveAllFilesAsZipDialogTitle": "将所有文件保存为 ZIP",
+  "saveSelectedFilesAsZipDialogTitle": "将所选文件保存为 ZIP",
   "failedToRemovePressKitFile": "无法删除新闻资料袋文件：{error}",
   "@failedToRemovePressKitFile": {
     "description": "Error message when removing press kit file fails",

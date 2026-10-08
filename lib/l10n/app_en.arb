@@ -2525,6 +2525,22 @@
   "@pressKitFileRemoved": {
     "description": "Success message when a press kit file is removed"
   },
+  "pressKitFile": "Press kit file",
+  "@pressKitFile": {
+    "description": "Profile page: subtitle under a press kit file in the list of a profile's files"
+  },
+  "saveFileDialogTitle": "Save File",
+  "@saveFileDialogTitle": {
+    "description": "Title of the system save dialog when saving one of a profile's files"
+  },
+  "saveAllFilesAsZipDialogTitle": "Save All Files as ZIP",
+  "@saveAllFilesAsZipDialogTitle": {
+    "description": "Title of the system save dialog when saving all of a profile's files as one ZIP"
+  },
+  "saveSelectedFilesAsZipDialogTitle": "Save Selected Files as ZIP",
+  "@saveSelectedFilesAsZipDialogTitle": {
+    "description": "Title of the system save dialog when saving the selected files of a profile as one ZIP"
+  },
   "failedToRemovePressKitFile": "Failed to remove press kit file: {error}",
   "@failedToRemovePressKitFile": {
     "description": "Error message when removing press kit file fails",

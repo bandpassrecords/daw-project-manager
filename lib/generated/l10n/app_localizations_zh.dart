@@ -2454,6 +2454,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pressKitFileRemoved => '新闻资料袋文件已删除';
 
   @override
+  String get pressKitFile => '媒体资料包文件';
+
+  @override
+  String get saveFileDialogTitle => '保存文件';
+
+  @override
+  String get saveAllFilesAsZipDialogTitle => '将所有文件保存为 ZIP';
+
+  @override
+  String get saveSelectedFilesAsZipDialogTitle => '将所选文件保存为 ZIP';
+
+  @override
   String failedToRemovePressKitFile(String error) {
     return '无法删除新闻资料袋文件：$error';
   }

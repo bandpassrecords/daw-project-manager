@@ -1707,6 +1707,10 @@
   "@pressKitFileRemoved": {
     "description": "Success message when a press kit file is removed"
   },
+  "pressKitFile": "プレスキットのファイル",
+  "saveFileDialogTitle": "ファイルを保存",
+  "saveAllFilesAsZipDialogTitle": "すべてのファイルを ZIP で保存",
+  "saveSelectedFilesAsZipDialogTitle": "選択したファイルを ZIP で保存",
   "failedToRemovePressKitFile": "プレスキットファイルを削除できませんでした: {error}",
   "@failedToRemovePressKitFile": {
     "description": "Error message when removing press kit file fails",

@@ -2479,6 +2479,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pressKitFileRemoved => 'プレスキットファイルを削除しました';
 
   @override
+  String get pressKitFile => 'プレスキットのファイル';
+
+  @override
+  String get saveFileDialogTitle => 'ファイルを保存';
+
+  @override
+  String get saveAllFilesAsZipDialogTitle => 'すべてのファイルを ZIP で保存';
+
+  @override
+  String get saveSelectedFilesAsZipDialogTitle => '選択したファイルを ZIP で保存';
+
+  @override
   String failedToRemovePressKitFile(String error) {
     return 'プレスキットファイルを削除できませんでした: $error';
   }

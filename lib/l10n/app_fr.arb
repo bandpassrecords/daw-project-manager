@@ -1707,6 +1707,10 @@
   "@pressKitFileRemoved": {
     "description": "Success message when a press kit file is removed"
   },
+  "pressKitFile": "Fichier du dossier de presse",
+  "saveFileDialogTitle": "Enregistrer le fichier",
+  "saveAllFilesAsZipDialogTitle": "Enregistrer tous les fichiers en ZIP",
+  "saveSelectedFilesAsZipDialogTitle": "Enregistrer les fichiers sélectionnés en ZIP",
   "failedToRemovePressKitFile": "Échec de la suppression du fichier de presse : {error}",
   "@failedToRemovePressKitFile": {
     "description": "Error message when removing press kit file fails",

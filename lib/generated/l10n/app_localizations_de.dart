@@ -2551,6 +2551,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pressKitFileRemoved => 'Pressemappe-Datei entfernt';
 
   @override
+  String get pressKitFile => 'Pressemappen-Datei';
+
+  @override
+  String get saveFileDialogTitle => 'Datei speichern';
+
+  @override
+  String get saveAllFilesAsZipDialogTitle => 'Alle Dateien als ZIP speichern';
+
+  @override
+  String get saveSelectedFilesAsZipDialogTitle =>
+      'Ausgewählte Dateien als ZIP speichern';
+
+  @override
   String failedToRemovePressKitFile(String error) {
     return 'Pressemappe-Datei konnte nicht entfernt werden: $error';
   }
