@@ -169,12 +169,17 @@ class _Toggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!visible) return const SizedBox(width: 28);
+    // Exactly as wide as the placeholder: Material 3 otherwise pads the tap
+    // target to 40px (and a compact density shrinks it to 20), so a row
+    // with a toggle sat off from one without.
     return IconButton(
       key: ValueKey('midi-toggle-$id'),
       tooltip: open ? collapseLabel : expandLabel,
       iconSize: 18,
-      visualDensity: VisualDensity.compact,
       padding: EdgeInsets.zero,
+      style: const ButtonStyle(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
       constraints: const BoxConstraints.tightFor(width: 28, height: 28),
       icon: Icon(open ? Icons.expand_more : Icons.chevron_right),
       onPressed: () => onToggle(id),
@@ -565,11 +570,15 @@ class MidiCollectionNavigator extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _toggle(f.id, c.foldersIn(f.id).isNotEmpty),
-                Icon(
-                  expanded.contains(f.id)
-                      ? Icons.folder_open_outlined
-                      : Icons.folder_outlined,
-                  size: 20,
+                // As wide as a collection's icon, so names step evenly.
+                SizedBox(
+                  width: 24,
+                  child: Icon(
+                    expanded.contains(f.id)
+                        ? Icons.folder_open_outlined
+                        : Icons.folder_outlined,
+                    size: 20,
+                  ),
                 ),
               ],
             ),

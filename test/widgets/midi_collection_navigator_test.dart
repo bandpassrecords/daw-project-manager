@@ -163,6 +163,25 @@ void main() {
     expect(find.text('Acid'), findsNothing, reason: 'closed again');
   });
 
+  testWidgets('rows line up whether or not they have something to open', (
+    tester,
+  ) async {
+    // The toggle is an IconButton, which Material 3 pads to a 40px tap
+    // target; the placeholder for a row with nothing to open was 28px, so
+    // a collection or folder without children sat 12px left of its peers.
+    expanded.addAll(['c1', 'f1']);
+    await tester.pumpWidget(wrap());
+    double left(String text) => tester.getTopLeft(find.text(text)).dx;
+
+    expect(left('Pads'), left('Basslines'), reason: 'same level, same inset');
+    expect(
+      left('Deep acid') - left('Acid'),
+      left('Acid') - left('Basslines'),
+      reason: 'each level is indented by the same step',
+    );
+    expect(left('Acid'), greaterThan(left('Basslines')));
+  });
+
   testWidgets(
     'a clip dragged onto a folder or another collection drops there',
     (tester) async {
