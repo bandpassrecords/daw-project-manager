@@ -603,6 +603,7 @@
 
                 <p class="sidebar-section-title">More Features</p>
                 <ul class="sidebar-nav">
+                    <li><a href="#midi-clips">MIDI Clips</a></li>
                     <li><a href="#task-queue">Task Queue</a></li>
                     <li><a href="#music-player">Music Player</a></li>
                     <li><a href="#playlists">Playlists</a></li>
@@ -748,6 +749,8 @@
                     <li>BPM</li>
                     <li>Musical key</li>
                     <li>DAW version that saved the file</li>
+                    <li>Project notes and markers (where supported)</li>
+                    <li>What's inside the project — tracks by kind, plug-ins, and MIDI clips (where supported; see <a href="#midi-clips">MIDI Clips</a>)</li>
                 </ul>
                 <p>Deep scanning happens in the background and doesn't block the UI.</p>
 
@@ -1116,6 +1119,44 @@
 
                 <div class="callout callout-warning">
                     <strong>Note:</strong> The app stores references to file paths, not copies of the files themselves (except for artwork and preview songs, which are stored in the app database). If you move a release file, you will need to re-add it.
+                </div>
+            </div>
+
+            <!-- ================================================================
+                 MIDI CLIPS
+            ================================================================ -->
+            <div class="docs-section" id="midi-clips">
+                <h2>MIDI Clips</h2>
+                <p>For Ableton Live, Cubase, Nuendo, FL Studio and Reaper, a deep scan also reads every MIDI clip in the project. The riffs, chord progressions and drum patterns buried in old projects become something you can browse, play, edit and reuse without opening the DAW.</p>
+
+                <h3>Reading a Project's Clips</h3>
+                <ul>
+                    <li>Clips are read by <strong>Extract Metadata</strong> on a project, or by a <strong>Deep Scan</strong> of the library. A regular scan never reads them, because a project on a cloud drive would have to be downloaded first.</li>
+                    <li>A clip holds only what actually plays: material trimmed off a part's edges is dropped, loops are unrolled, and a clip that only repeats a shorter whole-bar pattern is shrunk to that pattern.</li>
+                    <li>Clips are unique by what they play, not by name, so the same pattern used ten times in a project shows up once. A transposed or re-voiced copy counts as a different clip.</li>
+                    <li>Controllers, pitch bend and aftertouch come along with the notes (Reaper and Ableton Live).</li>
+                    <li>Reaper MIDI items that point to a separate <code class="daw-ext">.mid</code> file are read from that file. If it can't be found, the project page says which ones are missing.</li>
+                    <li>The project's <strong>MIDI clips</strong> section lists them, and the Dashboard's <strong>Only projects with MIDI</strong> filter narrows the list to projects that have any.</li>
+                </ul>
+
+                <h3>The MIDI Tab</h3>
+                <p>The <strong>MIDI</strong> tab gathers the clips of every project in the profile into one searchable list. Arrange it by project, or by tempo to find everything at 140 BPM. Each clip plays through a built-in preview synth, with an instrument guessed from the track it came from (lead, bass, pad, pluck, keys, organ, strings, brass, bell or drum kit), which you can change per clip.</p>
+
+                <h3>Collections</h3>
+                <ul>
+                    <li>A <strong>collection</strong> is your own set of clips, like a sample pack in the making. It holds <em>copies</em>, so it keeps working after the source project is edited or deleted.</li>
+                    <li>Organise a collection into nested folders, and drag clips and folders around. Drag a clip from <strong>All clips</strong> onto a collection to copy it in.</li>
+                    <li>Collections name their files from a template you set up (role, tempo, key, bar count and so on, e.g. <code>Bass - 140BPM - Am - 4 bars</code>), and can rename many clips to that scheme at once.</li>
+                    <li><strong>Import MIDI files</strong> brings <code class="daw-ext">.mid</code> files from anywhere into a collection, one clip per track.</li>
+                    <li>Export a collection as <code class="daw-ext">.mid</code> files with its folder structure kept, or <strong>Share as ZIP</strong>. Every exported file carries the clip's tempo, time signature and key.</li>
+                </ul>
+
+                <h3>Piano Roll</h3>
+                <p>Click a clip's thumbnail to open it in the piano roll. Play it, loop a region, change the tempo and time signature, and see notes outside the project's scale highlighted. The editor works like a DAW's key editor: select, range, eraser and pencil tools, box selection, quantize, duplicate, transpose, and velocity, controller and pitch bend lanes you can draw in. <strong>New clip</strong> in a collection starts from a blank bar.</p>
+                <p>Editing never changes the project: the result is saved as a <strong>new clip</strong> in a collection. Press <kbd>?</kbd> or <kbd>F1</kbd> in the piano roll to see every shortcut and gesture.</p>
+
+                <div class="callout callout-info">
+                    <strong>Sync &amp; backup:</strong> Clips and collections are included in Google Drive sync and in local backup, so they come back on a new machine, even one without the project folders.
                 </div>
             </div>
 
@@ -1536,7 +1577,7 @@
             ================================================================ -->
             <div class="docs-section" id="supported-daws">
                 <h2>Supported DAWs</h2>
-                <p>DAW Project Manager detects project files by extension. The following 14 DAWs get full treatment — deep metadata extraction is available for seven of them (see <a href="#metadata-extraction">Metadata Extraction</a> below); the rest are detected and scanned the same way, just with BPM/key entered manually.</p>
+                <p>DAW Project Manager detects project files by extension. The following 14 DAWs get full treatment — deep metadata extraction is available for eight of them (see <a href="#metadata-extraction">Metadata Extraction</a> below); the rest are detected and scanned the same way, just with BPM/key entered manually.</p>
 
                 <div class="docs-table-wrap">
                     <table class="docs-table">
@@ -1551,7 +1592,7 @@
                             <tr>
                                 <td>Ableton Live</td>
                                 <td><code class="daw-ext">.als</code>, <code class="daw-ext">.alp</code></td>
-                                <td>BPM, key, and version extracted during deep scan.</td>
+                                <td>BPM, key, version, tracks, plug-ins and MIDI clips extracted during deep scan.</td>
                             </tr>
                             <tr>
                                 <td>Bitwig Studio</td>
@@ -1566,12 +1607,12 @@
                             <tr>
                                 <td>Cubase</td>
                                 <td><code class="daw-ext">.cpr</code></td>
-                                <td>BPM, key, version, and project notes (from the Notepad panel) extracted during deep scan.</td>
+                                <td>BPM, key, version, project notes (from the Notepad panel), tracks, plug-ins and MIDI clips extracted during deep scan.</td>
                             </tr>
                             <tr>
                                 <td>FL Studio</td>
                                 <td><code class="daw-ext">.flp</code></td>
-                                <td>BPM and version extracted during deep scan. Key is not.</td>
+                                <td>BPM, version, tracks, plug-ins and MIDI clips extracted during deep scan. Key is not.</td>
                             </tr>
                             <tr>
                                 <td>Logic Pro</td>
@@ -1591,7 +1632,7 @@
                             <tr>
                                 <td>Nuendo</td>
                                 <td><code class="daw-ext">.npr</code></td>
-                                <td>BPM, key, version, and project notes (from the Notepad panel) extracted during deep scan.</td>
+                                <td>BPM, key, version, project notes (from the Notepad panel), tracks, plug-ins and MIDI clips extracted during deep scan.</td>
                             </tr>
                             <tr>
                                 <td>Pro Tools</td>
@@ -1601,12 +1642,12 @@
                             <tr>
                                 <td>Reaper</td>
                                 <td><code class="daw-ext">.rpp</code></td>
-                                <td>BPM, key, version, and project notes extracted during deep scan. Plain-text format.</td>
+                                <td>BPM, key, version, project notes, markers, tracks, plug-ins and MIDI clips extracted during deep scan — including MIDI items that point to a separate <code class="daw-ext">.mid</code> file. Plain-text format.</td>
                             </tr>
                             <tr>
                                 <td>Studio One</td>
                                 <td><code class="daw-ext">.song</code></td>
-                                <td>Project file detected. No automatic extraction yet.</td>
+                                <td>BPM, version and tracks extracted during deep scan. Key, plug-ins and MIDI clips are not read yet.</td>
                             </tr>
                             <tr>
                                 <td>Tracktion Waveform</td>
@@ -1680,21 +1721,27 @@
                                 <th>Key</th>
                                 <th>DAW Version</th>
                                 <th>Project Notes</th>
+                                <th>Markers</th>
+                                <th>Tracks</th>
+                                <th>Plug-ins</th>
+                                <th>MIDI Clips</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td>Ableton Live</td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
-                            <tr><td>Bitwig Studio</td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
-                            <tr><td>Cubase / Nuendo</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                            <tr><td>FL Studio</td><td>✓</td><td></td><td>✓</td><td></td></tr>
-                            <tr><td>Logic Pro *</td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
-                            <tr><td>MAGDA</td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
-                            <tr><td>Reaper</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>Ableton Live</td><td>✓</td><td>✓</td><td>✓</td><td></td><td></td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>Bitwig Studio</td><td>✓</td><td>✓</td><td>✓</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>Cubase / Nuendo</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td></td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>FL Studio</td><td>✓</td><td></td><td>✓</td><td></td><td></td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>Logic Pro *</td><td>✓</td><td>✓</td><td>✓</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>MAGDA</td><td>✓</td><td>✓</td><td>✓</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>Reaper</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>Studio One</td><td>✓</td><td></td><td>✓</td><td></td><td></td><td>✓</td><td></td><td></td></tr>
                         </tbody>
                     </table>
                 </div>
 
                 <p>* Logic Pro extraction runs on macOS only — see <a href="#supported-daws">Logic Pro Note</a> above.</p>
+                <p><strong>Tracks</strong> are counted by kind — audio, MIDI, instrument, sampler, groups &amp; FX, folders — and <strong>Plug-ins</strong> lists every plug-in the project loads. Both show on the project's detail page. For <strong>MIDI Clips</strong>, see <a href="#midi-clips">MIDI Clips</a>.</p>
                 <p>All other supported DAWs — including the 14 <a href="#supported-daws">additional DAWs</a> above — are detected and scanned but rely on manual entry today.</p>
             </div>
 

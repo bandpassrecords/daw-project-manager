@@ -109,7 +109,7 @@
                     <div class="feature-copy">
                         <div class="feature-kicker">Metadata</div>
                         <h3>Advanced Metadata Extraction</h3>
-                        <p>DAW version, BPM, musical key, and project notes — extracted automatically for every project, no manual tagging. <a href="#metadata-extraction" class="feature-link">See which DAWs are supported</a>; the list keeps growing.</p>
+                        <p>DAW version, BPM, musical key, and project notes — extracted automatically for every project, no manual tagging. For Ableton Live, Cubase, Nuendo, FL Studio and Reaper it goes further: how many tracks of each kind, which plug-ins, and every MIDI clip, ready to preview, edit and export as <code class="daw-ext">.mid</code>. <a href="#metadata-extraction" class="feature-link">See which DAWs are supported</a>; the list keeps growing.</p>
                     </div>
                 </div>
 
@@ -331,7 +331,7 @@
 
             <div id="metadata-extraction" class="metadata-extraction">
                 <h3 class="metadata-extraction-title">Metadata Extraction Support</h3>
-                <p class="metadata-extraction-subtitle">These DAWs get automatic BPM, key, version, and (where supported) project notes extraction straight from the project file — the list keeps growing.</p>
+                <p class="metadata-extraction-subtitle">These DAWs get BPM, key and version read straight from the project file — and, where supported, project notes, the tracks and plug-ins the project uses, and its MIDI clips. The list keeps growing.</p>
 
                 <div class="metadata-table-wrap">
                     <table class="metadata-table">
@@ -342,6 +342,9 @@
                                 <th>Key</th>
                                 <th>Version</th>
                                 <th>Project Notes</th>
+                                <th>Tracks</th>
+                                <th>Plug-ins</th>
+                                <th>MIDI Clips</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -351,6 +354,9 @@
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-no">—</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
                             </tr>
                             <tr>
                                 <td class="metadata-daw"><img src="resources/daw/logos/bitwig-studio.png" alt="" class="metadata-daw-logo">Bitwig Studio</td>
@@ -358,9 +364,15 @@
                                 <td class="metadata-yes">✓*</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-no">—</td>
+                                <td class="metadata-no">—</td>
+                                <td class="metadata-no">—</td>
+                                <td class="metadata-no">—</td>
                             </tr>
                             <tr>
                                 <td class="metadata-daw"><img src="resources/daw/logos/cubase.png" alt="" class="metadata-daw-logo">Cubase</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
@@ -372,12 +384,18 @@
                                 <td class="metadata-no">—</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-no">—</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
                             </tr>
                             <tr>
                                 <td class="metadata-daw"><img src="resources/daw/logos/logic-pro.png" alt="" class="metadata-daw-logo">Logic Pro†</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
+                                <td class="metadata-no">—</td>
+                                <td class="metadata-no">—</td>
+                                <td class="metadata-no">—</td>
                                 <td class="metadata-no">—</td>
                             </tr>
                             <tr>
@@ -386,9 +404,15 @@
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-no">—</td>
+                                <td class="metadata-no">—</td>
+                                <td class="metadata-no">—</td>
+                                <td class="metadata-no">—</td>
                             </tr>
                             <tr>
                                 <td class="metadata-daw"><img src="resources/daw/logos/nuendo.png" alt="" class="metadata-daw-logo">Nuendo</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
@@ -400,6 +424,19 @@
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
                                 <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td class="metadata-daw"><img src="resources/daw/logos/studio-one.png" alt="" class="metadata-daw-logo">Studio One</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-no">—</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-no">—</td>
+                                <td class="metadata-yes">✓</td>
+                                <td class="metadata-no">—</td>
+                                <td class="metadata-no">—</td>
                             </tr>
                         </tbody>
                     </table>

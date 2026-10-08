@@ -570,7 +570,7 @@ img.app-screenshot {
 }
 
 .metadata-table-wrap {
-    max-width: 640px;
+    max-width: 860px;
     margin: 0 auto;
     overflow-x: auto;
 }
@@ -586,7 +586,7 @@ img.app-screenshot {
 
 .metadata-table th,
 .metadata-table td {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 0.85rem;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
 }
