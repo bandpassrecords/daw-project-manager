@@ -156,7 +156,6 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
 
   Future<void> _scanProfileRoots(ProjectRepository repo) async {
     final scanner = ScannerService();
-    int foundCount = 0;
     final ignoredPaths = repo.getIgnoredPaths().map((p) => p.path).toList(growable: false);
 
     // Scan all root folders for the current profile (same logic as dashboard)
@@ -169,7 +168,6 @@ class _ProfileManagerPageState extends ConsumerState<ProfileManagerPage> {
       }
       if (entities.isNotEmpty) {
         await repo.upsertManyFromFileSystemEntities(entities, fullMetadata: false);
-        foundCount += entities.length;
       }
       // Update lastScanAt timestamp for this root
       await repo.updateRootLastScanAt(root.id, scanTime);

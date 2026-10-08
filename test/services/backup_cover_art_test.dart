@@ -7,7 +7,6 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:daw_project_manager/services/backup_service.dart';
-import 'package:daw_project_manager/utils/app_paths.dart';
 
 import '../helpers/test_factories.dart';
 

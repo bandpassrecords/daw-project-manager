@@ -7,7 +7,6 @@ import 'package:daw_project_manager/models/project_part.dart';
 import 'package:daw_project_manager/repository/project_repository.dart';
 
 import '../helpers/hive_test_helper.dart';
-import '../helpers/test_factories.dart';
 
 /// A rescan must not destroy anything the user put on a project.
 ///

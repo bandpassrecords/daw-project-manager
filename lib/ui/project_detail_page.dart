@@ -2408,10 +2408,6 @@ class _PreviewSongPlayer extends ConsumerStatefulWidget {
   ConsumerState<_PreviewSongPlayer> createState() => _PreviewSongPlayerState();
 }
 
-class _TogglePlayPauseIntent extends Intent {
-  const _TogglePlayPauseIntent();
-}
-
 class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     with RouteAwareDropTargetState<_PreviewSongPlayer> {
   AudioPlayer _audioPlayer = AudioPlayer();

@@ -613,7 +613,6 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
                       Text(AppLocalizations.of(context)!.pressKitFiles, style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       ...allPressKitPaths.asMap().entries.map((entry) {
-                        final index = entry.key;
                         final pressKitPath = entry.value;
                         final fileName = path.basename(pressKitPath);
                         final fileExists = File(pressKitPath).existsSync();

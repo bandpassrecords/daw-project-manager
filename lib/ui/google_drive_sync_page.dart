@@ -220,16 +220,6 @@ class _GoogleDriveSyncSectionState extends ConsumerState<GoogleDriveSyncSection>
   /// This is called when user explicitly clicks sign in button
   /// On desktop, automatically restore session from saved credentials
   /// On mobile, just check session status
-  Future<void> _checkSessionStatus() async {
-    // If already signed in, don't check again
-    if (_isSignedIn) {
-      if (kDebugMode) print('Already signed in, skipping session check');
-      return;
-    }
-    
-    await _checkSessionStatusOnce();
-  }
-
   Future<void> _loadSyncStatus() async {
     if (mounted) setState(() => _loadingTimestamps = true);
     try {

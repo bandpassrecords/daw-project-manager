@@ -91,7 +91,6 @@ import 'midi_library_page.dart';
 import 'dialogs/bulk_tags_dialog.dart';
 import 'dialogs/create_project_dialog.dart';
 import 'dialogs/archive_project_dialog.dart';
-import 'dialogs/move_project_dialog.dart';
 import 'dialogs/stack_metadata_source_dialog.dart';
 import 'dialogs/preview_song_not_found_dialog.dart';
 import 'preview_share.dart';
@@ -222,10 +221,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   // so far, and how many there are in total. Both reset to 0 outside a scan.
   int _scanProgressCurrent = 0;
   int _scanProgressTotal = 0;
-  // Paths that failed to process during the most recently completed scan
-  // (e.g. a file deleted or locked mid-scan) — reported once the scan
-  // finishes rather than aborting the rest of the batch.
-  List<String> _lastScanFailures = const [];
   // Briefly true right after a scan finishes successfully, so the
   // corresponding button's icon can flash a checkmark — see rescanIconState/
   // deepScanIconState and _flashScanSuccess.
@@ -806,7 +801,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       _scanCancelRequested = false;
       _scanProgressCurrent = 0;
       _scanProgressTotal = 0;
-      _lastScanFailures = const [];
     });
     try {
       final scanner = ScannerService();
@@ -1107,8 +1101,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       }
 
       ref.invalidate(allProjectsStreamProvider);
-
-      if (mounted) setState(() => _lastScanFailures = allFailures);
 
       if (mounted) {
         final scanType = fullMetadata
@@ -8092,12 +8084,6 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
           final bool sourceFileExists =
               File(projectPath).existsSync() ||
               Directory(projectPath).existsSync();
-          final String folderPath =
-              FileSystemEntity.isDirectorySync(projectPath)
-              ? projectPath // Se for um diretório, usa o próprio caminho
-              : path.dirname(
-                  projectPath,
-                ); // Se for um arquivo, usa o diretório pai
 
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -8832,15 +8818,6 @@ class _ReleaseTitleDialogState extends State<_ReleaseTitleDialog> {
       ],
     );
   }
-}
-
-class _TogglePlayPauseIntent extends Intent {
-  const _TogglePlayPauseIntent();
-}
-
-class _SeekIntent extends Intent {
-  final int seconds;
-  const _SeekIntent(this.seconds);
 }
 
 class _PreviewSongDialog extends ConsumerStatefulWidget {
