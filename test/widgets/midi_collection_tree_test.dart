@@ -140,6 +140,19 @@ void main() {
     expect(find.text('clip squelch'), findsNothing);
   });
 
+  testWidgets('folders line up whether or not they have something to open', (
+    tester,
+  ) async {
+    // An empty folder's placeholder was narrower than the toggle's padded
+    // tap target, so it sat left of its peers.
+    expanded.add('bass');
+    await tester.pumpWidget(tree());
+    double left(String text) => tester.getTopLeft(find.text(text)).dx;
+
+    expect(left('Pads'), left('Bass'), reason: 'same level, same inset');
+    expect(left('Acid') - left('Bass'), 20, reason: 'one indent deeper');
+  });
+
   testWidgets('starting inside a folder shows what is in it', (tester) async {
     await tester.pumpWidget(tree(root: 'bass'));
     expect(find.text('Bass'), findsNothing);
