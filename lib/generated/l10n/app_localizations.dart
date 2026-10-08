@@ -6287,6 +6287,24 @@ abstract class AppLocalizations {
   /// **'Open the Microsoft Store and update DAW Project Manager, or click the button below.'**
   String get updateWindowsInstructions;
 
+  /// Update dialog: heading of the update section for a copy installed with the .exe installer (not the Microsoft Store)
+  ///
+  /// In en, this message translates to:
+  /// **'Windows installer'**
+  String get updateWindowsInstallerSourceLabel;
+
+  /// Update dialog: how a copy installed with the .exe installer is updated
+  ///
+  /// In en, this message translates to:
+  /// **'Download the new installer and run it. It updates this installation in place and keeps your library.'**
+  String get updateWindowsInstallerInstructions;
+
+  /// Update dialog: button that downloads the new version's .exe installer
+  ///
+  /// In en, this message translates to:
+  /// **'Download installer'**
+  String get updateDownloadInstaller;
+
   /// No description provided for @updateMacInstructions.
   ///
   /// In en, this message translates to:
