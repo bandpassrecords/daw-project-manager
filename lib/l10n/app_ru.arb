@@ -3970,7 +3970,7 @@
   "midiClipsShareOfferFolder": "Если окно «Поделиться» не появилось, файлы готовы в папке.",
   "midiClipsShowInFolder": "Показать в папке",
   "midiPianoRollPause": "Пауза",
-  "midiOpenSourceProject": "Открыть проект",
+  "midiProjectDetails": "Сведения о проекте",
   "midiSourceProjectGone": "Проекта, из которого взят этот клип, больше нет в библиотеке.",
   "midiCollectionShareZip": "Поделиться ZIP-архивом",
   "midiCollectionOpen": "Открыть",

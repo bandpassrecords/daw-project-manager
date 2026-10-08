@@ -28,7 +28,7 @@ void main() {
     removeFromCollection: 'Remove',
     more: 'More',
     openPianoRoll: 'Open piano roll',
-    openProject: 'Open project',
+    openProject: 'Project details',
   );
 
   MidiClip clip(String name, {String? track, int occurrences = 1, int beats = 16}) =>
@@ -393,7 +393,7 @@ void main() {
 
   testWidgets('open project reports the clip, and there is no copy', (tester) async {
     await tester.pumpWidget(wrap([clip('A'), clip('B')], projectActions: true));
-    await tester.tap(find.byTooltip('Open project').last);
+    await tester.tap(find.byTooltip('Project details').last);
     expect(projectsOpened, [1]);
     // Copying a clip as a .mid file was dropped: too few DAWs accept a
     // pasted file. Dragging and sharing are the ways out.
@@ -404,17 +404,17 @@ void main() {
     await tester.pumpWidget(wrap([clip('A')], compact: true, projectActions: true));
     await tester.tap(find.byTooltip('More'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Open project'));
+    await tester.tap(find.text('Project details'));
     await tester.pumpAndSettle();
     expect(projectsOpened, [0]);
   });
 
-  testWidgets('a clip with no project (imported from a file) offers no Open project',
+  testWidgets('a clip with no project (imported from a file) offers no Project details',
       (tester) async {
     await tester.pumpWidget(wrap([clip('A'), clip('B')],
         projectActions: true, canOpenProjectOf: (i) => i == 0));
-    expect(find.byTooltip('Open project'), findsOneWidget);
-    await tester.tap(find.byTooltip('Open project'));
+    expect(find.byTooltip('Project details'), findsOneWidget);
+    await tester.tap(find.byTooltip('Project details'));
     expect(projectsOpened, [0]);
   });
 }

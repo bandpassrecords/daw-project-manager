@@ -43,7 +43,7 @@ const _labels = MidiPianoRollWindowLabels(
   play: 'Play',
   pause: 'Pause',
   stop: 'Stop',
-  openProject: 'Open project',
+  openProject: 'Project details',
 );
 
 void main() {
@@ -279,7 +279,7 @@ void main() {
 
     testWidgets('open project closes the window first', (tester) async {
       await open(tester);
-      await tester.tap(find.byTooltip('Open project'));
+      await tester.tap(find.byTooltip('Project details'));
       await tester.pumpAndSettle();
       expect(opens, 1);
       expect(find.byType(MidiPianoRollWindow), findsNothing);
@@ -287,7 +287,7 @@ void main() {
 
     testWidgets('open project is hidden when not offered', (tester) async {
       await open(tester, withActions: false);
-      expect(find.byTooltip('Open project'), findsNothing);
+      expect(find.byTooltip('Project details'), findsNothing);
     });
   });
 
@@ -349,7 +349,7 @@ void main() {
       await pumpAt(tester, 320);
       expect(tester.takeException(), isNull);
       expect(find.byTooltip('Loop'), findsOneWidget);
-      expect(find.byTooltip('Open project'), findsOneWidget);
+      expect(find.byTooltip('Project details'), findsOneWidget);
     });
 
     testWidgets('a wide window keeps the single row', (tester) async {

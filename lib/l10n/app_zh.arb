@@ -3970,7 +3970,7 @@
   "midiClipsShareOfferFolder": "如果没有出现分享窗口，文件已在文件夹中准备好。",
   "midiClipsShowInFolder": "在文件夹中显示",
   "midiPianoRollPause": "暂停",
-  "midiOpenSourceProject": "打开项目",
+  "midiProjectDetails": "项目详情",
   "midiSourceProjectGone": "此片段的来源项目已不在你的资料库中。",
   "midiCollectionShareZip": "以 ZIP 分享",
   "midiCollectionOpen": "打开",

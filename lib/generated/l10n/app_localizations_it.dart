@@ -6283,7 +6283,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get midiPianoRollPause => 'Pausa';
 
   @override
-  String get midiOpenSourceProject => 'Apri progetto';
+  String get midiProjectDetails => 'Dettagli progetto';
 
   @override
   String get midiSourceProjectGone =>

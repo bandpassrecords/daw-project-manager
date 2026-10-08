@@ -6269,7 +6269,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get midiPianoRollPause => 'Пауза';
 
   @override
-  String get midiOpenSourceProject => 'Открыть проект';
+  String get midiProjectDetails => 'Сведения о проекте';
 
   @override
   String get midiSourceProjectGone =>

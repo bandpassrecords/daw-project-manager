@@ -6312,7 +6312,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get midiPianoRollPause => 'Pause';
 
   @override
-  String get midiOpenSourceProject => 'Ouvrir le projet';
+  String get midiProjectDetails => 'Détails du projet';
 
   @override
   String get midiSourceProjectGone =>
