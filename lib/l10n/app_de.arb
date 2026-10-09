@@ -4202,5 +4202,7 @@
   "referenceReadingTitle": "Cubase-Projekte werden gelesen",
   "referenceReadStop": "Anhalten und mit Gelesenem erstellen",
   "referenceDone": "Seite aus {count} Projekten erstellt",
-  "referenceNothing": "Keine lesbaren Cubase-Projekte gefunden"
+  "referenceNothing": "Keine lesbaren Cubase-Projekte gefunden",
+  "experimentalTabLabel": "Experimentell",
+  "experimentalSectionIntro": "Neue Werkzeuge, die funktionieren, aber noch erprobt werden. Sie können sich in einer späteren Version ändern oder entfallen."
 }

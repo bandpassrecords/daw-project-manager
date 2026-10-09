@@ -6855,4 +6855,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get referenceNothing => '読み取れるCubaseプロジェクトが見つかりません';
+
+  @override
+  String get experimentalTabLabel => '試験的機能';
+
+  @override
+  String get experimentalSectionIntro =>
+      '動作はしますが、まだ試用段階の新しいツールです。今後のバージョンで変更または削除される場合があります。';
 }

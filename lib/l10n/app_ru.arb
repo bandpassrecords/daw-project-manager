@@ -4202,5 +4202,7 @@
   "referenceReadingTitle": "Чтение проектов Cubase",
   "referenceReadStop": "Остановить и создать по прочитанному",
   "referenceDone": "Страница создана по проектам: {count}",
-  "referenceNothing": "Читаемые проекты Cubase не найдены"
+  "referenceNothing": "Читаемые проекты Cubase не найдены",
+  "experimentalTabLabel": "Экспериментальное",
+  "experimentalSectionIntro": "Новые инструменты, которые работают, но ещё проходят проверку. В будущих версиях они могут измениться или исчезнуть."
 }

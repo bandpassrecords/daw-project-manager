@@ -11806,6 +11806,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No readable Cubase projects found'**
   String get referenceNothing;
+
+  /// Settings nav label for features still being tried out
+  ///
+  /// In en, this message translates to:
+  /// **'Experimental'**
+  String get experimentalTabLabel;
+
+  /// Intro line of the experimental settings section
+  ///
+  /// In en, this message translates to:
+  /// **'New tools that work but are still being tried out. They may change or be removed in a later version.'**
+  String get experimentalSectionIntro;
 }
 
 class _AppLocalizationsDelegate

@@ -96,6 +96,8 @@ enum SettingsSection {
   workSessions,
   backup,
   dangerZone,
+  // Features still being tried out; see _buildExperimentalSection().
+  experimental,
   shortcuts,
   changelog,
   about,
@@ -1293,6 +1295,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         SettingsSection.workSessions,
         SettingsSection.backup,
         SettingsSection.dangerZone,
+        SettingsSection.experimental,
         SettingsSection.shortcuts,
         SettingsSection.changelog,
         SettingsSection.about,
@@ -1320,6 +1323,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return SectionNavItem(icon: Icons.backup_outlined, label: l10n.backupTabLabel, newGroup: true);
       case SettingsSection.dangerZone:
         return SectionNavItem(icon: Icons.warning_amber_rounded, label: l10n.pathsSettingsDangerZoneTitle);
+      case SettingsSection.experimental:
+        return SectionNavItem(icon: Icons.science_outlined, label: l10n.experimentalTabLabel);
       case SettingsSection.shortcuts:
         return SectionNavItem(icon: Icons.keyboard_outlined, label: l10n.keyboardShortcuts, newGroup: true);
       case SettingsSection.changelog:
@@ -1354,6 +1359,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return _buildBackupSection;
       case SettingsSection.dangerZone:
         return _buildDangerZoneSection;
+      case SettingsSection.experimental:
+        return _buildExperimentalSection;
       case SettingsSection.shortcuts:
         return _buildShortcutsSection;
       case SettingsSection.changelog:
@@ -1397,9 +1404,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.projectFolders, Icons.description_outlined, l10n.exportAllProjectsInfo, l10n.exportAllProjectsInfoSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.table_view_outlined, l10n.exportAllPartsCsv, l10n.exportAllPartsCsvSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.grid_on, l10n.exportAllPartsXlsx, l10n.exportAllPartsXlsxSubtitle),
-        _SearchEntry(SettingsSection.projectFolders, Icons.account_tree_outlined, l10n.templateExportTitle, l10n.templateExportSubtitle),
-        _SearchEntry(SettingsSection.projectFolders, Icons.piano_outlined, l10n.melodicExportTitle, l10n.melodicExportSubtitle),
-        _SearchEntry(SettingsSection.projectFolders, Icons.insights_outlined, l10n.referenceTitle, l10n.referenceSubtitle),
+        _SearchEntry(SettingsSection.experimental, Icons.account_tree_outlined, l10n.templateExportTitle, l10n.templateExportSubtitle),
+        _SearchEntry(SettingsSection.experimental, Icons.piano_outlined, l10n.melodicExportTitle, l10n.melodicExportSubtitle),
+        _SearchEntry(SettingsSection.experimental, Icons.insights_outlined, l10n.referenceTitle, l10n.referenceSubtitle),
         if (MobileUtils.isDesktop()) ...[
           _SearchEntry(SettingsSection.dawLaunchCommands, Icons.terminal_outlined, l10n.dawLaunchCommandsTabLabel, l10n.dawLaunchCommandsSectionDescription),
         ],
@@ -1420,6 +1427,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.dangerZone, Icons.warning_amber_rounded, l10n.pathsSettingsDangerZoneTitle, l10n.pathsSettingsDangerZoneSubtitle),
         _SearchEntry(SettingsSection.dangerZone, Icons.delete_forever, l10n.clearLibrary, l10n.clearLibraryMessage),
         _SearchEntry(SettingsSection.dangerZone, Icons.delete_sweep_rounded, l10n.deleteAllData, l10n.deleteAllDataSubtitle),
+        _SearchEntry(SettingsSection.experimental, Icons.science_outlined, l10n.experimentalTabLabel, l10n.experimentalSectionIntro),
         _SearchEntry(SettingsSection.shortcuts, Icons.keyboard_outlined, l10n.keyboardShortcuts, null),
         _SearchEntry(SettingsSection.changelog, Icons.auto_awesome, l10n.changelogPageTitle, l10n.changelogSectionSubtitle),
         _SearchEntry(SettingsSection.about, Icons.info_outline, l10n.aboutTabLabel, l10n.appDescription),
@@ -2298,9 +2306,24 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           onExport: ({required bool asXlsx}) =>
               _exportAllParts(asXlsx: asXlsx),
         ),
+      ],
+    );
+  }
 
-        const SizedBox(height: 12),
-
+  /// Features that work but are still being tried out: they may change or go.
+  /// Kept apart from the settings people rely on, so nobody mistakes them for
+  /// finished ones.
+  Widget _buildExperimentalSection(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            l10n.experimentalSectionIntro,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
         TemplateExportCard(
           busy: _busy,
           anonymize: _anonymizeTemplateExport,

@@ -6779,4 +6779,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get referenceNothing => '未找到可读取的 Cubase 项目';
+
+  @override
+  String get experimentalTabLabel => '实验性功能';
+
+  @override
+  String get experimentalSectionIntro => '这些新工具可以使用，但仍在试用阶段，可能会在后续版本中更改或移除。';
 }

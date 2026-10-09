@@ -7027,4 +7027,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get referenceNothing => 'No readable Cubase projects found';
+
+  @override
+  String get experimentalTabLabel => 'Experimental';
+
+  @override
+  String get experimentalSectionIntro =>
+      'New tools that work but are still being tried out. They may change or be removed in a later version.';
 }

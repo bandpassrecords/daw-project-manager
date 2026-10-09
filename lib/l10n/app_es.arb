@@ -4202,5 +4202,7 @@
   "referenceReadingTitle": "Leyendo proyectos de Cubase",
   "referenceReadStop": "Detener y generar con lo ya leído",
   "referenceDone": "Página generada a partir de {count} proyectos",
-  "referenceNothing": "No se encontraron proyectos de Cubase legibles"
+  "referenceNothing": "No se encontraron proyectos de Cubase legibles",
+  "experimentalTabLabel": "Experimental",
+  "experimentalSectionIntro": "Herramientas nuevas que funcionan, pero aún están en pruebas. Pueden cambiar o eliminarse en una versión futura."
 }

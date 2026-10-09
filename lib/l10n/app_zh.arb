@@ -4202,5 +4202,7 @@
   "referenceReadingTitle": "正在读取 Cubase 项目",
   "referenceReadStop": "停止并用已读取的内容生成",
   "referenceDone": "已根据 {count} 个项目生成页面",
-  "referenceNothing": "未找到可读取的 Cubase 项目"
+  "referenceNothing": "未找到可读取的 Cubase 项目",
+  "experimentalTabLabel": "实验性功能",
+  "experimentalSectionIntro": "这些新工具可以使用，但仍在试用阶段，可能会在后续版本中更改或移除。"
 }

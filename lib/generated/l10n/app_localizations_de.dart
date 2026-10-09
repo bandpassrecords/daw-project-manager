@@ -7079,4 +7079,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get referenceNothing => 'Keine lesbaren Cubase-Projekte gefunden';
+
+  @override
+  String get experimentalTabLabel => 'Experimentell';
+
+  @override
+  String get experimentalSectionIntro =>
+      'Neue Werkzeuge, die funktionieren, aber noch erprobt werden. Sie können sich in einer späteren Version ändern oder entfallen.';
 }

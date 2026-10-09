@@ -4202,5 +4202,7 @@
   "referenceReadingTitle": "Cubaseプロジェクトを読み込み中",
   "referenceReadStop": "停止して読み込み済みで生成",
   "referenceDone": "{count}件のプロジェクトからページを生成しました",
-  "referenceNothing": "読み取れるCubaseプロジェクトが見つかりません"
+  "referenceNothing": "読み取れるCubaseプロジェクトが見つかりません",
+  "experimentalTabLabel": "試験的機能",
+  "experimentalSectionIntro": "動作はしますが、まだ試用段階の新しいツールです。今後のバージョンで変更または削除される場合があります。"
 }
