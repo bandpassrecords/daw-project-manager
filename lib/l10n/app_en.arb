@@ -6972,5 +6972,66 @@
   "melodicReadStop": "Stop and export what's read",
   "@melodicReadStop": {
     "description": "Progress dialog button: stop reading and export what is read"
+  },
+  "referenceTitle": "Insert reference page",
+  "@referenceTitle": {
+    "description": "Settings card title: the insert reference page"
+  },
+  "referenceSubtitle": "Builds a web page from your Cubase projects: the plug-in chains per track role, the master chain, and every insert you have used. Opens in your browser.",
+  "@referenceSubtitle": {
+    "description": "Settings card subtitle"
+  },
+  "referenceButton": "Generate",
+  "@referenceButton": {
+    "description": "Generate button"
+  },
+  "referenceDialogTitle": "Choose a folder for the page",
+  "@referenceDialogTitle": {
+    "description": "Folder picker title"
+  },
+  "referenceReadTitle": "Read Cubase projects?",
+  "@referenceReadTitle": {
+    "description": "Dialog title: read Cubase projects before generating the page"
+  },
+  "referenceReadBody": "{count} Cubase projects ({size}) are new or changed since the last page. Reading opens each file; files on a cloud drive are downloaded first.",
+  "@referenceReadBody": {
+    "description": "Dialog body: how many projects need reading and their size",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "referenceReadAndGenerate": "Read and generate",
+  "@referenceReadAndGenerate": {
+    "description": "Dialog button: read, then generate"
+  },
+  "referenceUseRead": "Use what's read",
+  "@referenceUseRead": {
+    "description": "Dialog button: generate from what is already read"
+  },
+  "referenceReadingTitle": "Reading Cubase projects",
+  "@referenceReadingTitle": {
+    "description": "Progress dialog title"
+  },
+  "referenceReadStop": "Stop and generate with what's read",
+  "@referenceReadStop": {
+    "description": "Progress dialog button"
+  },
+  "referenceDone": "Page generated from {count} projects",
+  "@referenceDone": {
+    "description": "Snackbar after the page is generated",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "referenceNothing": "No readable Cubase projects found",
+  "@referenceNothing": {
+    "description": "Snackbar when no project could be read"
   }
 }

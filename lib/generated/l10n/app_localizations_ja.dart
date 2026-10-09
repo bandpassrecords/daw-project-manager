@@ -6814,4 +6814,45 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get melodicReadStop => '停止して読み込み済みを書き出す';
+
+  @override
+  String get referenceTitle => 'インサート参照ページ';
+
+  @override
+  String get referenceSubtitle =>
+      'Cubaseプロジェクトからウェブページを生成します。トラックの役割ごとのプラグインチェーン、マスターのチェーン、これまで使ったすべてのインサートを確認できます。ブラウザで開きます。';
+
+  @override
+  String get referenceButton => '生成';
+
+  @override
+  String get referenceDialogTitle => 'ページの保存先フォルダを選択';
+
+  @override
+  String get referenceReadTitle => 'Cubaseプロジェクトを読み込みますか？';
+
+  @override
+  String referenceReadBody(int count, String size) {
+    return '$count件のCubaseプロジェクト（$size）は前回のページ以降に新規または変更されています。読み込みは各ファイルを開きます。クラウド上のファイルは先にダウンロードされます。';
+  }
+
+  @override
+  String get referenceReadAndGenerate => '読み込んで生成';
+
+  @override
+  String get referenceUseRead => '読み込み済みを使う';
+
+  @override
+  String get referenceReadingTitle => 'Cubaseプロジェクトを読み込み中';
+
+  @override
+  String get referenceReadStop => '停止して読み込み済みで生成';
+
+  @override
+  String referenceDone(int count) {
+    return '$count件のプロジェクトからページを生成しました';
+  }
+
+  @override
+  String get referenceNothing => '読み取れるCubaseプロジェクトが見つかりません';
 }

@@ -6738,4 +6738,45 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get melodicReadStop => '停止并导出已读取的内容';
+
+  @override
+  String get referenceTitle => '插件插槽参考页';
+
+  @override
+  String get referenceSubtitle =>
+      '根据你的 Cubase 项目生成网页：按轨道角色列出插件链、母带链以及你用过的所有插件插槽。在浏览器中打开。';
+
+  @override
+  String get referenceButton => '生成';
+
+  @override
+  String get referenceDialogTitle => '选择页面保存文件夹';
+
+  @override
+  String get referenceReadTitle => '读取 Cubase 项目吗？';
+
+  @override
+  String referenceReadBody(int count, String size) {
+    return '有 $count 个 Cubase 项目（$size）自上次生成页面后为新增或已更改。读取会打开每个文件；云盘上的文件会先被下载。';
+  }
+
+  @override
+  String get referenceReadAndGenerate => '读取并生成';
+
+  @override
+  String get referenceUseRead => '使用已读取的内容';
+
+  @override
+  String get referenceReadingTitle => '正在读取 Cubase 项目';
+
+  @override
+  String get referenceReadStop => '停止并用已读取的内容生成';
+
+  @override
+  String referenceDone(int count) {
+    return '已根据 $count 个项目生成页面';
+  }
+
+  @override
+  String get referenceNothing => '未找到可读取的 Cubase 项目';
 }

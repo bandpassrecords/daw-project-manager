@@ -4190,5 +4190,17 @@
   "melodicExportReadOnly": "Exporter ce qui est déjà lu",
   "melodicReadingTitle": "Lecture du MIDI",
   "melodicReadingProgress": "{done} sur {total} : {name}",
-  "melodicReadStop": "Arrêter et exporter ce qui est lu"
+  "melodicReadStop": "Arrêter et exporter ce qui est lu",
+  "referenceTitle": "Page de référence des inserts",
+  "referenceSubtitle": "Génère une page web à partir de vos projets Cubase : les chaînes de plugins par rôle de piste, la chaîne du master et tous les inserts que vous avez utilisés. S'ouvre dans le navigateur.",
+  "referenceButton": "Générer",
+  "referenceDialogTitle": "Choisissez un dossier pour la page",
+  "referenceReadTitle": "Lire les projets Cubase ?",
+  "referenceReadBody": "{count} projets Cubase ({size}) sont nouveaux ou ont changé depuis la dernière page. La lecture ouvre chaque fichier ; les fichiers sur un cloud sont d'abord téléchargés.",
+  "referenceReadAndGenerate": "Lire et générer",
+  "referenceUseRead": "Utiliser ce qui est déjà lu",
+  "referenceReadingTitle": "Lecture des projets Cubase",
+  "referenceReadStop": "Arrêter et générer avec ce qui est lu",
+  "referenceDone": "Page générée à partir de {count} projets",
+  "referenceNothing": "Aucun projet Cubase lisible trouvé"
 }

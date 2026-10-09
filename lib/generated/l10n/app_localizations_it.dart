@@ -7041,4 +7041,45 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get melodicReadStop => 'Ferma ed esporta ciò che è letto';
+
+  @override
+  String get referenceTitle => 'Pagina di riferimento degli insert';
+
+  @override
+  String get referenceSubtitle =>
+      'Crea una pagina web dai tuoi progetti Cubase: le catene di plugin per ruolo di traccia, la catena del master e tutti gli insert che hai usato. Si apre nel browser.';
+
+  @override
+  String get referenceButton => 'Genera';
+
+  @override
+  String get referenceDialogTitle => 'Scegli una cartella per la pagina';
+
+  @override
+  String get referenceReadTitle => 'Leggere i progetti Cubase?';
+
+  @override
+  String referenceReadBody(int count, String size) {
+    return '$count progetti Cubase ($size) sono nuovi o cambiati dall\'ultima pagina. La lettura apre ogni file; i file su un cloud vengono prima scaricati.';
+  }
+
+  @override
+  String get referenceReadAndGenerate => 'Leggi e genera';
+
+  @override
+  String get referenceUseRead => 'Usa ciò che è già letto';
+
+  @override
+  String get referenceReadingTitle => 'Lettura dei progetti Cubase';
+
+  @override
+  String get referenceReadStop => 'Ferma e genera con ciò che è letto';
+
+  @override
+  String referenceDone(int count) {
+    return 'Pagina generata da $count progetti';
+  }
+
+  @override
+  String get referenceNothing => 'Nessun progetto Cubase leggibile trovato';
 }

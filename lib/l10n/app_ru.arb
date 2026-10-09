@@ -4190,5 +4190,17 @@
   "melodicExportReadOnly": "Экспортировать уже прочитанное",
   "melodicReadingTitle": "Чтение MIDI",
   "melodicReadingProgress": "{done} из {total}: {name}",
-  "melodicReadStop": "Остановить и экспортировать прочитанное"
+  "melodicReadStop": "Остановить и экспортировать прочитанное",
+  "referenceTitle": "Страница справки по инсертам",
+  "referenceSubtitle": "Создаёт веб-страницу из ваших проектов Cubase: цепочки плагинов по ролям дорожек, цепочку мастера и все использованные инсерты. Открывается в браузере.",
+  "referenceButton": "Создать",
+  "referenceDialogTitle": "Выберите папку для страницы",
+  "referenceReadTitle": "Прочитать проекты Cubase?",
+  "referenceReadBody": "Проектов Cubase: {count} ({size}) — новые или изменились с прошлой страницы. Чтение открывает каждый файл; файлы в облаке сначала скачиваются.",
+  "referenceReadAndGenerate": "Прочитать и создать",
+  "referenceUseRead": "Использовать уже прочитанное",
+  "referenceReadingTitle": "Чтение проектов Cubase",
+  "referenceReadStop": "Остановить и создать по прочитанному",
+  "referenceDone": "Страница создана по проектам: {count}",
+  "referenceNothing": "Читаемые проекты Cubase не найдены"
 }

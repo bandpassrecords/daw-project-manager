@@ -4190,5 +4190,17 @@
   "melodicExportReadOnly": "読み込み済みのものを書き出す",
   "melodicReadingTitle": "MIDIを読み込み中",
   "melodicReadingProgress": "{done} / {total}: {name}",
-  "melodicReadStop": "停止して読み込み済みを書き出す"
+  "melodicReadStop": "停止して読み込み済みを書き出す",
+  "referenceTitle": "インサート参照ページ",
+  "referenceSubtitle": "Cubaseプロジェクトからウェブページを生成します。トラックの役割ごとのプラグインチェーン、マスターのチェーン、これまで使ったすべてのインサートを確認できます。ブラウザで開きます。",
+  "referenceButton": "生成",
+  "referenceDialogTitle": "ページの保存先フォルダを選択",
+  "referenceReadTitle": "Cubaseプロジェクトを読み込みますか？",
+  "referenceReadBody": "{count}件のCubaseプロジェクト（{size}）は前回のページ以降に新規または変更されています。読み込みは各ファイルを開きます。クラウド上のファイルは先にダウンロードされます。",
+  "referenceReadAndGenerate": "読み込んで生成",
+  "referenceUseRead": "読み込み済みを使う",
+  "referenceReadingTitle": "Cubaseプロジェクトを読み込み中",
+  "referenceReadStop": "停止して読み込み済みで生成",
+  "referenceDone": "{count}件のプロジェクトからページを生成しました",
+  "referenceNothing": "読み取れるCubaseプロジェクトが見つかりません"
 }

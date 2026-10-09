@@ -11734,6 +11734,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stop and export what\'s read'**
   String get melodicReadStop;
+
+  /// Settings card title: the insert reference page
+  ///
+  /// In en, this message translates to:
+  /// **'Insert reference page'**
+  String get referenceTitle;
+
+  /// Settings card subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Builds a web page from your Cubase projects: the plug-in chains per track role, the master chain, and every insert you have used. Opens in your browser.'**
+  String get referenceSubtitle;
+
+  /// Generate button
+  ///
+  /// In en, this message translates to:
+  /// **'Generate'**
+  String get referenceButton;
+
+  /// Folder picker title
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a folder for the page'**
+  String get referenceDialogTitle;
+
+  /// Dialog title: read Cubase projects before generating the page
+  ///
+  /// In en, this message translates to:
+  /// **'Read Cubase projects?'**
+  String get referenceReadTitle;
+
+  /// Dialog body: how many projects need reading and their size
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Cubase projects ({size}) are new or changed since the last page. Reading opens each file; files on a cloud drive are downloaded first.'**
+  String referenceReadBody(int count, String size);
+
+  /// Dialog button: read, then generate
+  ///
+  /// In en, this message translates to:
+  /// **'Read and generate'**
+  String get referenceReadAndGenerate;
+
+  /// Dialog button: generate from what is already read
+  ///
+  /// In en, this message translates to:
+  /// **'Use what\'s read'**
+  String get referenceUseRead;
+
+  /// Progress dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Reading Cubase projects'**
+  String get referenceReadingTitle;
+
+  /// Progress dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Stop and generate with what\'s read'**
+  String get referenceReadStop;
+
+  /// Snackbar after the page is generated
+  ///
+  /// In en, this message translates to:
+  /// **'Page generated from {count} projects'**
+  String referenceDone(int count);
+
+  /// Snackbar when no project could be read
+  ///
+  /// In en, this message translates to:
+  /// **'No readable Cubase projects found'**
+  String get referenceNothing;
 }
 
 class _AppLocalizationsDelegate

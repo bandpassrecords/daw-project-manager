@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
@@ -19,7 +20,7 @@ import '../providers/theme_provider.dart';
 import '../repository/project_repository.dart';
 import '../services/auto_start_service.dart';
 import '../services/backup_service.dart';
-import '../utils/app_paths.dart' show canPickAppDataDir;
+import '../utils/app_paths.dart' show canPickAppDataDir, getAppSupportRoot;
 import 'dev_library_picker.dart' show DevLibraryCard;
 import '../services/changelog_service.dart';
 import '../services/crash_logger.dart';
@@ -31,6 +32,7 @@ import '../services/project_parts_xlsx_export_service.dart';
 import '../services/project_text_export_service.dart';
 import '../services/midi/melodic_midi_export.dart';
 import '../services/midi/melodic_midi_reading.dart';
+import '../services/template_export/reference_service.dart';
 import '../models/midi_clip_naming.dart' show MidiClipRole;
 import '../services/template_export/template_export_service.dart';
 import '../services/scan_import_service.dart';
@@ -55,6 +57,7 @@ import 'theme_labels.dart';
 import 'widgets/parts_export_card.dart';
 import 'widgets/melodic_export_card.dart';
 import 'widgets/midi_read_dialogs.dart';
+import 'widgets/reference_page_card.dart';
 import 'widgets/template_export_card.dart';
 import 'widgets/theme_preview_card.dart';
 import 'widgets/desktop_title_bar.dart';
@@ -500,6 +503,84 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           SnackBar(content: Text(l10n.failedToExportProjectInfo(e.toString()))),
         );
       }
+    }
+  }
+
+  /// The insert reference page: a web page built from the tracks and inserts
+  /// of every Cubase project, saved in a folder the person picks and opened in
+  /// the browser. Tracks come from a cache, so only new or changed projects
+  /// are read, and only after asking: reading opens each file and downloads
+  /// it from a cloud drive.
+  Future<void> _generateReferencePage() async {
+    if (_busy) return;
+    final l10n = AppLocalizations.of(context)!;
+    final repo = await ref.read(repositoryProvider.future);
+    final projects = repo.getAllProjects();
+    try {
+      final dir = await FilePicker.getDirectoryPath(
+        dialogTitle: l10n.referenceDialogTitle,
+      );
+      if (dir == null) return; // user cancelled
+      setState(() => _busy = true);
+
+      final support = await getAppSupportRoot();
+      final cache = await ReferenceCache.load(
+        File(p.join(support.path, 'insert_reference_cache.json')),
+      );
+      final stale = projectsToReadForReference(projects, cache);
+      if (stale.isNotEmpty && mounted) {
+        final choice = await askProjectRead(
+          context,
+          title: l10n.referenceReadTitle,
+          body: l10n.referenceReadBody(stale.length,
+              formatDataSize(stale.fold<int>(0, (sum, x) => sum + x.fileSizeBytes))),
+          readLabel: l10n.referenceReadAndGenerate,
+          skipLabel: l10n.referenceUseRead,
+        );
+        if (choice == MidiReadChoice.cancel || !mounted) return;
+        if (choice == MidiReadChoice.readThenExport) {
+          await showDialog<MidiReadOutcome>(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => MidiReadDialog(
+              projects: stale,
+              title: l10n.referenceReadingTitle,
+              stopLabel: l10n.referenceReadStop,
+              read: (project) => readProjectIntoCache(project, cache),
+            ),
+          );
+          cache.retainOnly({for (final x in projects) x.id});
+          await cache.save();
+        }
+      }
+
+      final template =
+          await rootBundle.loadString('assets/reference/index.template.html');
+      final page = buildReferencePage(projects, cache, template: template);
+      if (page.projects == 0) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.referenceNothing)),
+          );
+        }
+        return;
+      }
+      final out = File(p.join(dir, 'referencia_inserts.html'));
+      await out.writeAsString(page.html);
+      await launchUrl(Uri.file(out.path));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.referenceDone(page.projects))),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.failedToExportProjectInfo(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -1309,6 +1390,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.projectFolders, Icons.grid_on, l10n.exportAllPartsXlsx, l10n.exportAllPartsXlsxSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.account_tree_outlined, l10n.templateExportTitle, l10n.templateExportSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.piano_outlined, l10n.melodicExportTitle, l10n.melodicExportSubtitle),
+        _SearchEntry(SettingsSection.projectFolders, Icons.insights_outlined, l10n.referenceTitle, l10n.referenceSubtitle),
         if (MobileUtils.isDesktop()) ...[
           _SearchEntry(SettingsSection.dawLaunchCommands, Icons.terminal_outlined, l10n.dawLaunchCommandsTabLabel, l10n.dawLaunchCommandsSectionDescription),
         ],
@@ -2229,6 +2311,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           onIncludeBassChanged: (v) => setState(() => _melodicIncludeBass = v),
           onExport: _exportMelodicMidi,
         ),
+
+        const SizedBox(height: 12),
+
+        ReferencePageCard(busy: _busy, onGenerate: _generateReferencePage),
       ],
     );
   }

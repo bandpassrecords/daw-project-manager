@@ -1,0 +1,640 @@
+<title>Referência de Inserts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Conceito: rack de estúdio. Slots numerados, LEDs de ativo/bypass e barras de uso dentro de cada insert. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --surface-2:#f4f6f9; --line:#d3dae4; --line-2:#e3e8ef;
+  --ink:#141a23; --ink-2:#445063; --ink-3:#6b7788;
+  --accent:#0a7783; --accent-ink:#ffffff; --accent-soft:#cfe9ec;
+  --led:#d38608; --led-off:#b3bcc9;
+  --add:#17804a; --del:#b4382c;
+  --f-display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --f-body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1218; --surface:#161c25; --surface-2:#1b222d; --line:#2b3443; --line-2:#222b38;
+    --ink:#e9edf3; --ink-2:#aeb8c7; --ink-3:#7f8b9d;
+    --accent:#46c2cc; --accent-ink:#04161a; --accent-soft:#12393e;
+    --led:#f2ab3c; --led-off:#4a5565;
+    --add:#4cc486; --del:#ff8678; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1218; --surface:#161c25; --surface-2:#1b222d; --line:#2b3443; --line-2:#222b38;
+  --ink:#e9edf3; --ink-2:#aeb8c7; --ink-3:#7f8b9d;
+  --accent:#46c2cc; --accent-ink:#04161a; --accent-soft:#12393e;
+  --led:#f2ab3c; --led-off:#4a5565;
+  --add:#4cc486; --del:#ff8678; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f-body)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:28px}
+#view{display:flex;flex-direction:column;gap:34px;min-width:0}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font:600 .78rem/1 var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0}
+
+/* masthead */
+.mast{display:flex;flex-direction:column;gap:12px}
+.mast h1{font:700 clamp(2.1rem,6vw,3.4rem)/.95 var(--f-display);letter-spacing:.01em;margin:0;text-wrap:balance}
+.mast .lede{margin:0;max-width:62ch;color:var(--ink-2)}
+.vitals{display:flex;flex-wrap:wrap;gap:6px 22px;margin:4px 0 0;padding:12px 0 0;border-top:1px solid var(--line);list-style:none}
+.vitals li{display:flex;align-items:baseline;gap:8px;min-width:0}
+.vitals b{font:600 1.15rem/1 var(--f-mono)}
+.vitals span{font:500 .78rem/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+
+/* tabs */
+.tabs{display:flex;gap:4px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line)}
+.tab{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 14px;border:1px solid transparent;border-radius:8px 8px 0 0;background:transparent;cursor:pointer;text-align:left}
+.tab strong{font:700 1.3rem/1 var(--f-display);letter-spacing:.03em;text-transform:uppercase}
+.tab small{color:var(--ink-3);font-size:.78rem}
+.tab[aria-selected="true"]{background:var(--surface);border-color:var(--line);border-bottom-color:var(--surface);box-shadow:inset 0 3px 0 var(--accent)}
+@media (min-width:700px){.tab{flex:0 0 auto;min-width:220px}}
+
+/* panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.sec{display:flex;flex-direction:column;gap:14px;min-width:0}
+.sec>header{display:flex;flex-direction:column;gap:4px}
+.sec h2{font:700 1.7rem/1.05 var(--f-display);letter-spacing:.02em;margin:0;text-wrap:balance}
+.sec h2+p,.sub{margin:0;color:var(--ink-2);max-width:70ch}
+.sec h3{font:600 1.05rem/1.2 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);margin:6px 0 0}
+
+/* controls */
+.ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.lbl{font:600 .78rem/1 var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);min-width:64px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.chip{display:inline-flex;align-items:baseline;gap:7px;padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface-2);cursor:pointer;min-width:0}
+.chip b{font:600 .95rem/1 var(--f-display);letter-spacing:.04em}
+.chip i{font:400 .72rem/1 var(--f-mono);color:var(--ink-3);font-style:normal}
+.chip small{font-size:.72rem;color:var(--ink-3)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip[aria-pressed="true"] i,.chip[aria-pressed="true"] small{color:inherit;opacity:.8}
+.chip[disabled]{opacity:.45;cursor:default}
+.sw{display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--ink-2);font-size:.9rem}
+.sw input{width:18px;height:18px;accent-color:var(--accent);flex:none}
+.sw em{font-style:normal;color:var(--ink-3);font-size:.82rem}
+.scope{margin:0;padding-top:12px;border-top:1px dashed var(--line);color:var(--ink-2);font-size:.9rem}
+.scope b{font-family:var(--f-mono);color:var(--ink)}
+.range{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.range input{width:min(260px,100%);accent-color:var(--accent)}
+.range output{font:600 .95rem var(--f-mono);min-width:3.2ch}
+
+/* insert chip */
+.ins{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:5px 9px 5px 8px;border:1px solid var(--line);border-radius:6px;font-size:.84rem;line-height:1.2;
+  background:linear-gradient(90deg,var(--accent-soft) var(--p,0%),var(--surface-2) var(--p,0%))}
+.ins span{min-width:0;overflow-wrap:anywhere}
+.ins b{font:600 .72rem/1 var(--f-mono);color:var(--ink-2);flex:none}
+.led{width:9px;height:9px;border-radius:50%;background:var(--led-off);flex:none}
+.led.on{background:var(--led);box-shadow:0 0 0 3px color-mix(in srgb,var(--led) 22%,transparent)}
+.chain{display:flex;flex-wrap:wrap;gap:6px}
+.arrow{color:var(--ink-3);align-self:center;font:500 .8rem var(--f-mono)}
+
+/* role cards */
+.groups{display:flex;flex-direction:column;gap:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:12px}
+.role{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.role header{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.role h4{font:700 1.3rem/1 var(--f-display);letter-spacing:.03em;text-transform:uppercase;margin:0}
+.tier{font:600 .72rem/1 var(--f-mono);padding:4px 7px;border-radius:4px;border:1px solid var(--line);color:var(--ink-2);white-space:nowrap}
+.tier.core{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tier.common{border-color:var(--accent);color:var(--accent)}
+.meta{display:flex;flex-wrap:wrap;gap:4px 12px;margin:0;font:400 .76rem/1.3 var(--f-mono);color:var(--ink-3)}
+.none{margin:0;color:var(--ink-3);font-size:.84rem}
+.more{margin:0;color:var(--ink-3);font-size:.78rem}
+details.rare>summary{cursor:pointer;font:600 1rem/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);padding:6px 0}
+details.rare .grid{margin-top:10px}
+
+/* heatmap */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.heat{display:grid;grid-template-columns:minmax(170px,1.5fr) repeat(var(--cols),minmax(58px,1fr)) 70px;min-width:620px;font-size:.84rem}
+.heat>div{padding:7px 8px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;min-width:0}
+.heat .h{font:600 .74rem/1.15 var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);background:var(--surface-2);flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:2px;position:sticky;top:0}
+.heat .h small{font:400 .68rem var(--f-mono);letter-spacing:0;text-transform:none}
+.heat .nm{position:sticky;left:0;background:var(--surface);z-index:1;border-right:1px solid var(--line-2)}
+.heat .h.nm{background:var(--surface-2);z-index:2}
+.heat .nm button{all:unset;cursor:pointer;color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;overflow-wrap:anywhere}
+.heat .nm button:hover{text-decoration-color:var(--accent)}
+.heat .nm button:focus-visible{outline:2px solid var(--accent)}
+.heat .c{justify-content:center;font:500 .76rem var(--f-mono);font-variant-numeric:tabular-nums;background:color-mix(in srgb,var(--accent) calc(var(--v)*1%),var(--surface))}
+.heat .c.hi{color:var(--accent-ink)}
+.heat .c.z{color:var(--ink-3);background:var(--surface)}
+.heat .t{justify-content:flex-end;font:600 .78rem var(--f-mono)}
+.legend{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink-3)}
+.legend i{display:block;width:120px;height:10px;border-radius:3px;border:1px solid var(--line);background:linear-gradient(90deg,var(--surface),var(--accent))}
+
+/* explorer */
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font:600 .72rem/1 var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.field input,.field select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);min-width:0;width:min(280px,100%)}
+.count{margin-left:auto;font:400 .82rem var(--f-mono);color:var(--ink-3)}
+.xwrap{border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.xgrid{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,.9fr) minmax(0,.7fr) minmax(0,1.7fr) minmax(0,.55fr) minmax(0,.6fr) minmax(0,1.1fr);gap:0 12px;align-items:center}
+.xhd{padding:8px 14px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.xhd button{all:unset;cursor:pointer;font:600 .72rem/1.1 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.xhd button[aria-sort]{color:var(--ink)}
+.xhd button:focus-visible{outline:2px solid var(--accent)}
+.xrow{border-bottom:1px solid var(--line-2)}
+.xrow:last-child{border-bottom:0}
+.xtop{box-sizing:border-box;display:grid;width:100%;padding:9px 14px;cursor:pointer;background:none;border:0;border-radius:0;text-align:left;font:inherit;color:inherit}
+.xtop:hover{background:var(--surface-2)}
+.xtop:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.xtop>span{min-width:0;overflow-wrap:anywhere;font-size:.88rem}
+.xtop .pn{font-weight:600;display:flex;gap:8px;align-items:baseline}
+.xtop .pn::before{content:"▸";color:var(--ink-3);font-size:.72rem;transition:transform .12s}
+.xtop[aria-expanded="true"] .pn::before{transform:rotate(90deg)}
+.xtop small{color:var(--ink-3);font-weight:400}
+.mono{font:400 .8rem var(--f-mono)}
+.xdet{padding:4px 14px 16px 34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px}
+.xdet h5{font:600 .74rem/1 var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
+.bars{display:flex;flex-direction:column;gap:5px;margin:0;padding:0;list-style:none}
+.bars li{display:grid;grid-template-columns:minmax(0,1fr) 90px 3.2ch;gap:8px;align-items:center;font-size:.82rem}
+.bars span{overflow-wrap:anywhere}
+.bars i{display:block;height:8px;border-radius:2px;background:linear-gradient(90deg,var(--accent) var(--p),var(--line-2) var(--p))}
+.bars b{font:500 .74rem var(--f-mono);text-align:right}
+.plist{max-height:220px;overflow:auto;border:1px solid var(--line-2);border-radius:8px;margin:0;padding:6px 10px;list-style:none;font-size:.8rem}
+.plist li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--line-2)}
+.plist li:last-child{border-bottom:0}
+.plist span:first-child{min-width:0;overflow-wrap:anywhere}
+.plist .num{color:var(--ink-3);flex:none}
+.empty{padding:22px;text-align:center;color:var(--ink-3)}
+
+/* master */
+.rack{margin:0;padding:0;list-style:none;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.rrow{display:grid;grid-template-columns:3.4ch 14px minmax(0,1.6fr) minmax(0,1fr) 5ch minmax(0,.9fr);gap:12px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--line-2)}
+.rrow:last-child{border-bottom:0}
+.rrow.hd{background:var(--surface-2);font:600 .72rem/1.1 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.rrow .slot{font:600 .8rem var(--f-mono);color:var(--ink-3)}
+.rrow .rn{font-weight:600;overflow-wrap:anywhere;min-width:0}
+.rrow .rb{height:9px;border-radius:2px;background:linear-gradient(90deg,var(--accent) var(--p),var(--line-2) var(--p))}
+.rrow .rp,.rrow .ra{font:500 .78rem var(--f-mono);color:var(--ink-2)}
+.vars{display:flex;flex-direction:column;gap:12px}
+.var{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.var header{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline}
+.var h4{font:700 1.15rem/1 var(--f-display);letter-spacing:.04em;text-transform:uppercase;margin:0}
+.var .when{font:400 .78rem var(--f-mono);color:var(--ink-3)}
+.diff{display:flex;flex-wrap:wrap;gap:4px 10px;margin:0;font:400 .78rem/1.3 var(--f-mono)}
+.diff .a{color:var(--add)} .diff .d{color:var(--del);text-decoration:line-through}
+details.pj>summary{cursor:pointer;color:var(--ink-2);font-size:.84rem}
+details.pj ul{margin:8px 0 0;padding:0;list-style:none;font-size:.8rem;display:flex;flex-direction:column;gap:3px}
+details.pj li{display:flex;justify-content:space-between;gap:10px}
+.pill{font:600 .7rem/1 var(--f-mono);padding:3px 6px;border-radius:4px;background:var(--accent-soft);color:var(--ink);white-space:nowrap}
+
+/* markdown + notes */
+.md textarea{width:100%;min-height:240px;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);font:400 .8rem/1.5 var(--f-mono);resize:vertical}
+.btn{padding:8px 14px;border:1px solid var(--accent);border-radius:8px;background:var(--accent);color:var(--accent-ink);font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.notes{display:flex;flex-direction:column;gap:8px;margin:0;padding-left:1.1rem;color:var(--ink-2);font-size:.9rem;max-width:80ch}
+.notes b{color:var(--ink)}
+.alias{font:400 .8rem var(--f-mono);color:var(--ink-2)}
+
+/* mobile: explorer rows become cards */
+@media (max-width:760px){
+  .xhd{display:none}
+  .xtop{grid-template-columns:1fr 1fr;gap:6px 14px}
+  .xtop .pn{grid-column:1/-1;font-size:1rem}
+  .xtop>span[data-l]::before{content:attr(data-l);display:block;font:600 .66rem/1.2 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .xtop .roles{grid-column:1/-1}
+  .xdet{padding-left:14px}
+  .rrow{grid-template-columns:3ch 12px minmax(0,1fr) 5ch;gap:8px}
+  .rrow .rb,.rrow .ra{display:none}
+  .rrow.hd .rb,.rrow.hd .ra{display:none}
+  .lbl{min-width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <header class="mast">
+    <p class="eyebrow" id="eyebrow">DAW Project Manager · Cubase</p>
+    <h1>Referência de inserts</h1>
+    <p class="lede">Cadeias de plugins lidas dos seus projetos, para consultar ao montar um template. Todo insert entra em bypass no template: aqui eles servem de lembrete do que você já usou, em que tipo de trilha e em que ordem.</p>
+    <ul class="vitals" id="vitals"></ul>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Tipo de template">
+    <button class="tab" role="tab" id="tab-p" data-tab="p" aria-selected="true"><strong>Projeto</strong><small id="tabsub-p"></small></button>
+    <button class="tab" role="tab" id="tab-m" data-tab="m" aria-selected="false"><strong>Master</strong><small id="tabsub-m"></small></button>
+  </nav>
+
+  <main id="view" role="tabpanel" aria-live="polite"></main>
+</div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script>
+(()=>{
+'use strict';
+const D=JSON.parse(document.getElementById('data').textContent);
+const {R,T,S,PL,AL,P}=D;
+const $=(s,r=document)=>r.querySelector(s);
+const nf=n=>n.toLocaleString('pt-BR');
+const pc=x=>Math.round(x*100);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const inc=(m,k,n=1)=>m.set(k,(m.get(k)||0)+n);
+const med=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
+const topOf=m=>{let k=null,c=-1,tot=0;for(const [a,b] of m){tot+=b;if(b>c){c=b;k=a;}}return {k,c,tot};};
+const ym=d=>d.slice(0,7);
+
+const LABEL={kick:'Kick',bass:'Bass',drums:'Drums',hats:'Hats',snare:'Snare',clap:'Clap',crash:'Crash',percs:'Percs',toms:'Toms',cymbals:'Cymbals',drum_fill:'Drum fills',loops:'Loops',lead:'Leads',arp:'Arps',stabs:'Stabs',pluck:'Plucks',keys:'Keys',chords:'Chords',synth:'Synths',pad:'Pads',strings:'Strings',guitar:'Guitars',brass:'Brass',vocals:'Vocals',lead_vocal:'Lead vocal',backing_vocals:'Backing vocals',fx:'FX',fx_riser:'Risers',fx_impact:'Impacts',sweeps:'Sweeps',delay:'Delays',reverb:'Reverbs',master:'Master bus',reference:'Referências',samples:'Samples',unknown:'Sem papel'};
+const GROUPS=[['Kick e bass',['kick','bass']],['Bateria e percussão',['drums','hats','snare','clap','crash','cymbals','toms','percs','drum_fill','loops']],['Melodia e harmonia',['lead','arp','stabs','pluck','keys','chords','synth','pad','strings','guitar','brass']],['Vocais',['vocals','lead_vocal','backing_vocals']],['FX e retornos',['fx','fx_riser','fx_impact','sweeps','delay','reverb']],['Outros',['master','reference','samples']]];
+const rl=r=>LABEL[R[r]]||R[r];
+const GEN={3:{n:'Geração 3',d:'Pro-Q 3 · Ozone · Flatline · soothe2'},2:{n:'Geração 2',d:'base da geração 1 + soothe2 e Pro-L 2'},1:{n:'Geração 1',d:'bx_digital · Vertigo · VBC · elysia'},0:{n:'Sem cadeia lida',d:'nenhum insert encontrado'}};
+const CORE=.7,COMMON=.4;
+
+const st={tab:'p',era:'all',gen:'all',dedupe:false,scratch:false,thr:20,q:'',role:'all',sort:'projects',dir:-1,open:new Set()};
+try{if(localStorage.getItem('ref-tab')==='m')st.tab='m';}catch(e){}
+
+function eraOf(d){const y=+d.slice(0,4),m=+d.slice(5,7);return y<=2023?'2022–23':y+' H'+(m<=6?1:2);}
+
+function projectsOf(tab,withEra=true){
+  let ps=[];
+  P.forEach((p,i)=>{if(p.k===tab||(tab==='p'&&st.scratch&&p.k==='s'))ps.push({p,i});});
+  if(tab==='p'&&st.dedupe)ps=ps.filter(o=>o.p.l===1);
+  if(withEra){
+    if(tab==='p'&&st.era!=='all')ps=ps.filter(o=>eraOf(o.p.d)===st.era);
+    if(tab==='m'&&st.gen!=='all')ps=ps.filter(o=>String(o.p.g)===st.gen);
+  }
+  return ps;
+}
+function erasOf(ps){
+  const m=new Map();
+  for(const {p} of ps){const e=eraOf(p.d);let o=m.get(e);if(!o){o={e,n:0,v:new Set()};m.set(e,o);}o.n++;o.v.add(p.v);}
+  return [...m.values()].sort((a,b)=>a.e.localeCompare(b.e));
+}
+const vlabel=v=>'Cubase '+[...v].filter(x=>x>0).sort((a,b)=>a-b).join(' e ');
+
+function aggregate(ps,roleOnly=null){
+  const roles=new Map(),plugins=new Map();let nIns=0,nTr=0;
+  for(const {p,i} of ps){
+    const era=eraOf(p.d),per=new Map();
+    for(const t of p.t){
+      const r=t[0];nTr++;
+      let ro=roles.get(r);
+      if(!ro){ro={r,tracks:0,projects:0,counts:[],types:new Map(),outs:new Map(),parents:new Map(),pl:new Map()};roles.set(r,ro);}
+      ro.tracks++;inc(per,r);inc(ro.types,t[1]);
+      if(t[3]>=0)inc(ro.outs,t[3]);
+      if(t[2]>=0)inc(ro.parents,t[2]);
+      const f=t[4],seen=new Set();
+      for(let j=0;j<f.length;j+=3){
+        const s=f[j],pl=f[j+1],a=f[j+2];nIns++;
+        let rp=ro.pl.get(pl);if(!rp){rp={tracks:0,projs:new Set(),slots:[],act:0,occ:0};ro.pl.set(pl,rp);}
+        if(!seen.has(pl)){rp.tracks++;seen.add(pl);}
+        rp.projs.add(i);
+        rp.slots.push(s);rp.occ++;rp.act+=a;
+        if(roleOnly!==null&&r!==roleOnly)continue;
+        let g=plugins.get(pl);
+        if(!g){g={pl,occ:0,act:0,slots:[],projects:new Set(),roles:new Map(),eras:new Map(),first:p.d,last:p.d,list:new Map()};plugins.set(pl,g);}
+        g.occ++;g.act+=a;g.slots.push(s);g.projects.add(i);inc(g.roles,r);
+        let es=g.eras.get(era);if(!es){es=new Set();g.eras.set(era,es);}es.add(i);
+        if(p.d<g.first)g.first=p.d;if(p.d>g.last)g.last=p.d;
+        inc(g.list,i);
+      }
+    }
+    for(const [r,n] of per){const ro=roles.get(r);ro.projects++;ro.counts.push(n);}
+  }
+  return {N:ps.length,roles,plugins,nIns,nTr};
+}
+
+/* ---------- pieces ---------- */
+function insChip(name,share,active,title){
+  return `<span class="ins" style="--p:${Math.round(share*100)}%" title="${esc(title||'')}"><i class="led${active>=.5?' on':''}"></i><span>${esc(name)}</span><b>${pc(share)}%</b></span>`;
+}
+function roleCard(ro){
+  const N=ro._N,pres=ro.projects/N;
+  const tier=pres>=CORE?'core':pres>=COMMON?'common':'rare';
+  const tierTxt=tier==='core'?'núcleo':tier==='common'?'comum':'raro';
+  const cnt=Math.max(1,Math.round(med(ro.counts)));
+  const ty=topOf(ro.types),ou=topOf(ro.outs),pa=topOf(ro.parents);
+  const tys=[...ro.types.entries()].sort((a,b)=>b[1]-a[1]);
+  const tyTxt=tys[0][1]/ty.tot>=.7?T[tys[0][0]]:tys.slice(0,2).map(([k,c])=>`${T[k]} ${pc(c/ty.tot)}%`).join(' · ');
+  const meta=[`${cnt} ${cnt===1?'trilha':'trilhas'} típica${cnt===1?'':'s'}`,tyTxt];
+  if(ou.k!==null&&ou.c/ou.tot>=.4)meta.push(`→ ${S[ou.k]} ${pc(ou.c/ou.tot)}%`);
+  if(pa.k!==null&&pa.c/ro.tracks>=.5)meta.push(`pasta ${S[pa.k]} ${pc(pa.c/ro.tracks)}%`);
+  const items=[...ro.pl.entries()].map(([pl,v])=>({pl,share:v.projs.size/ro.projects,slot:med(v.slots),act:v.act/v.occ,n:v.projs.size,tk:v.tracks}));
+  const shown=items.filter(x=>x.share*100>=st.thr).sort((a,b)=>a.slot-b.slot||b.share-a.share);
+  const hidden=items.length-shown.length;
+  const chips=shown.map(x=>insChip(PL[x.pl],x.share,x.act,`${PL[x.pl]}: em ${x.n} de ${ro.projects} projetos com ${rl(ro.r)} (${x.tk} de ${ro.tracks} trilhas) · slot mediano ${x.slot} · ativo ao salvar em ${pc(x.act)}% das vezes`)).join('');
+  return `<article class="role"><header><h4>${esc(rl(ro.r))}</h4><span class="tier ${tier}">${tierTxt} · ${pc(pres)}%</span></header>
+    <p class="meta">${meta.map(m=>`<span>${esc(m)}</span>`).join('')}</p>
+    ${shown.length?`<div class="chain">${chips}</div>`:`<p class="none">${items.length?'Nenhum insert passa do limiar de uso.':'Sem inserts nesse papel.'}</p>`}
+    ${hidden>0&&shown.length?`<p class="more">+ ${hidden} ${hidden===1?'plugin':'plugins'} abaixo de ${st.thr}%</p>`:''}</article>`;
+}
+
+/* ---------- project tab ---------- */
+function renderControlsP(){
+  const all=projectsOf('p',false),eras=erasOf(all),ps=projectsOf('p'),A=aggregate(ps);
+  const known=[...A.roles.values()].filter(r=>R[r.r]!=='unknown').reduce((s,r)=>s+r.tracks,0);
+  const nLatest=P.filter(p=>p.k==='p'&&p.l===1).length,nAll=P.filter(p=>p.k==='p').length;
+  return `<section class="panel" id="sec-controls" aria-label="Filtros">
+    <div class="ctl"><span class="lbl">Período</span><div class="chips" role="group" aria-label="Período">
+      <button class="chip" data-era="all" aria-pressed="${st.era==='all'}"><b>Todos</b><i>${all.length}</i></button>
+      ${eras.map(e=>`<button class="chip" data-era="${esc(e.e)}" aria-pressed="${st.era===e.e}"><b>${esc(e.e)}</b><i>${e.n}</i><small>${vlabel(e.v)}</small></button>`).join('')}
+    </div></div>
+    <div class="ctl"><span class="lbl">Contagem</span>
+      <label class="sw"><input type="checkbox" id="sw-dedupe" ${st.dedupe?'checked':''}>Só a versão mais recente de cada música <em>(${nLatest} de ${nAll})</em></label>
+      <label class="sw"><input type="checkbox" id="sw-scratch" ${st.scratch?'checked':''}>Incluir rascunhos e testes <em>(+${P.filter(p=>p.k==='s').length})</em></label>
+    </div>
+    <p class="scope">Seleção: <b>${A.N}</b> projetos · <b>${nf(known)}</b> trilhas com papel · <b>${nf(A.nIns)}</b> inserts · <b>${A.plugins.size}</b> plugins</p>
+  </section>`;
+}
+function renderTpl(){
+  return `<header><p class="eyebrow">Template</p><h2>Template de projeto</h2>
+    <p>Papéis de trilha com o que costuma ficar em cada um. Cada insert mostra em quantos dos projetos com aquele papel ele apareceu em alguma trilha; a ordem segue o slot mediano. O ponto âmbar indica que ele costumava estar ativo ao salvar.</p></header>
+    <div class="range"><label class="lbl" for="thr">Mostrar a partir de</label><input type="range" id="thr" min="5" max="60" step="5" value="${st.thr}"><output class="num" id="thr-o">${st.thr}%</output><span class="sub">dos projetos que têm o papel</span></div>
+    <div id="tplbody">${tplBody()}</div>`;
+}
+function tplBody(){
+  const ps=projectsOf('p'),A=aggregate(ps);
+  A.roles.forEach(r=>r._N=A.N);
+  const byName=new Map([...A.roles.values()].map(r=>[R[r.r],r]));
+  let rare=[],html='';
+  for(const [g,names] of GROUPS){
+    const rs=names.map(n=>byName.get(n)).filter(Boolean).sort((a,b)=>b.projects-a.projects);
+    const main=rs.filter(r=>r.projects/A.N>=COMMON);
+    rare=rare.concat(rs.filter(r=>r.projects/A.N<COMMON));
+    if(main.length)html+=`<div><h3>${esc(g)}</h3><div class="grid">${main.map(roleCard).join('')}</div></div>`;
+  }
+  rare.sort((a,b)=>b.projects-a.projects);
+  if(rare.length)html+=`<details class="rare"><summary>Papéis raros, em menos de 40% dos projetos (${rare.length})</summary><div class="grid">${rare.map(roleCard).join('')}</div></details>`;
+  const unk=byName.get('unknown');
+  return `<div class="groups">${html||'<p class="empty">Nenhum papel nessa seleção.</p>'}</div>
+    ${unk?`<p class="sub">Trilhas sem papel reconhecido têm ${nf([...unk.pl.values()].reduce((s,v)=>s+v.occ,0))} inserts e aparecem na tabela abaixo como “Sem papel”.</p>`:''}`;
+}
+function renderHeat(){
+  const ps=projectsOf('p',false),A=aggregate(ps),eras=erasOf(ps);
+  const rows=[...A.plugins.values()].sort((a,b)=>b.projects.size-a.projects.size||b.occ-a.occ).slice(0,24);
+  let h=`<div class="heat" style="--cols:${eras.length}"><div class="h nm">Plugin</div>${eras.map(e=>`<div class="h">${esc(e.e)}<small>${e.n} proj.</small></div>`).join('')}<div class="h" style="align-items:flex-end">Total</div>`;
+  for(const g of rows){
+    h+=`<div class="nm"><button data-find="${g.pl}" title="Ver na tabela de ocorrências">${esc(PL[g.pl])}</button></div>`;
+    for(const e of eras){
+      const n=(g.eras.get(e.e)||{size:0}).size,v=Math.round(100*n/e.n);
+      h+=`<div class="c${v===0?' z':v>=55?' hi':''}" style="--v:${v}" title="${esc(PL[g.pl])} em ${n} de ${e.n} projetos (${esc(e.e)})">${v===0?'·':v}</div>`;
+    }
+    h+=`<div class="t">${g.projects.size}</div>`;
+  }
+  h+='</div>';
+  return `<header><p class="eyebrow">Evolução</p><h2>O que entrou e saiu ao longo do tempo</h2>
+    <p>Os 24 plugins em mais projetos. Cada célula é a porcentagem dos projetos daquele período que usam o plugin. A data é a do último salvamento de cada arquivo.</p></header>
+    <div class="legend"><span>0</span><i></i><span>100%</span></div><div class="scroll">${h}</div>`;
+}
+
+/* ---------- explorer (both tabs) ---------- */
+const SORTS={name:(a,b)=>PL[a.pl].localeCompare(PL[b.pl],'pt'),projects:(a,b)=>a.projects.size-b.projects.size||a.occ-b.occ,occ:(a,b)=>a.occ-b.occ,slot:(a,b)=>med(a.slots)-med(b.slots),act:(a,b)=>a.act/a.occ-b.act/b.occ,last:(a,b)=>a.last.localeCompare(b.last)};
+function explorerParts(){
+  const ps=projectsOf(st.tab),A0=aggregate(ps);
+  const roleIdx=st.role==='all'?null:R.indexOf(st.role);
+  const A=roleIdx===null?A0:aggregate(ps,roleIdx);
+  let rows=[...A.plugins.values()];
+  const q=st.q.trim().toLowerCase();
+  if(q)rows=rows.filter(g=>PL[g.pl].toLowerCase().includes(q)||(AL[g.pl]||[]).some(a=>a.toLowerCase().includes(q)));
+  rows.sort((a,b)=>st.dir*SORTS[st.sort](a,b)||PL[a.pl].localeCompare(PL[b.pl]));
+  return {ps,A0,A,rows};
+}
+function detailHtml(g,ps){
+  const roles=[...g.roles.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const rmax=roles[0]?roles[0][1]:1;
+  const eras=erasOf(ps);
+  const emax=Math.max(1,...eras.map(e=>(g.eras.get(e.e)||{size:0}).size));
+  const list=[...g.list.entries()].map(([i,n])=>({p:P[i],n})).sort((a,b)=>b.p.d.localeCompare(a.p.d));
+  const al=AL[g.pl]?`<p class="alias">Nomes unificados: ${AL[g.pl].map(esc).join(', ')}</p>`:'';
+  return `<div class="xdet">
+    <div><h5>Por papel de trilha</h5><ul class="bars">${roles.map(([r,n])=>`<li><span>${esc(rl(r))}</span><i style="--p:${Math.round(100*n/rmax)}%"></i><b>${n}</b></li>`).join('')}</ul>${al}</div>
+    <div><h5>Projetos por período</h5><ul class="bars">${eras.map(e=>{const n=(g.eras.get(e.e)||{size:0}).size;return `<li><span>${esc(e.e)}</span><i style="--p:${Math.round(100*n/emax)}%"></i><b>${n}</b></li>`;}).join('')}</ul></div>
+    <div><h5>Projetos (${list.length})</h5><ul class="plist">${list.map(x=>`<li><span>${esc(x.p.n)}</span><span class="num">${ym(x.p.d)} · ${x.n}×</span></li>`).join('')}</ul></div>
+  </div>`;
+}
+function renderRows(){
+  const {ps,A0,A,rows}=explorerParts();
+  const cols=[['name','Plugin'],['projects','Projetos'],['occ','Inserts'],[null,'Papéis mais comuns'],['slot','Slot'],['act','Ativo'],['last','Último uso']];
+  const hd=`<div class="xhd xgrid">${cols.map(([k,l])=>k?`<button data-sort="${k}" ${st.sort===k?`aria-sort="${st.dir<0?'descending':'ascending'}"`:''}>${l}${st.sort===k?(st.dir<0?' ↓':' ↑'):''}</button>`:`<span class="lbl" style="min-width:0">${l}</span>`).join('')}</div>`;
+  const body=rows.map(g=>{
+    const open=st.open.has(g.pl);
+    const roles=[...g.roles.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([r,n])=>`${rl(r)} ${n}`).join(' · ');
+    return `<div class="xrow"><button class="xtop xgrid" data-open="${g.pl}" aria-expanded="${open}">
+      <span class="pn"><span>${esc(PL[g.pl])}${AL[g.pl]?` <small>(+${AL[g.pl].length} ${AL[g.pl].length===1?'nome':'nomes'})</small>`:''}</span></span>
+      <span data-l="Projetos"><b class="num">${g.projects.size}</b> <small class="num">${pc(g.projects.size/A.N)}%</small></span>
+      <span data-l="Inserts" class="mono">${nf(g.occ)}</span>
+      <span class="roles" data-l="Papéis mais comuns">${esc(roles)}</span>
+      <span data-l="Slot" class="mono">${med(g.slots)}</span>
+      <span data-l="Ativo" class="mono">${pc(g.act/g.occ)}%</span>
+      <span data-l="Primeiro → último" class="mono">${ym(g.first)} → ${ym(g.last)}</span></button>
+      ${open?detailHtml(g,ps):''}</div>`;
+  }).join('');
+  return {count:`${rows.length} de ${A0.plugins.size} plugins`,html:`${hd}${body||'<p class="empty">Nenhum plugin com esse filtro.</p>'}`};
+}
+function renderExplorer(){
+  const ps=projectsOf(st.tab),A0=aggregate(ps);
+  const roleOpts=[...A0.roles.values()].sort((a,b)=>rl(a.r).localeCompare(rl(b.r),'pt')).map(r=>`<option value="${esc(R[r.r])}" ${st.role===R[r.r]?'selected':''}>${esc(rl(r.r))}</option>`).join('');
+  const r=renderRows();
+  return `<header><p class="eyebrow">Todas as ocorrências</p><h2>Todos os inserts que você já usou</h2>
+    <p>Cada plugin lido na seleção acima, com os papéis onde aparece, o slot mediano e quanto tempo ficou em uso. Toque numa linha para ver os projetos.</p></header>
+    <div class="tools">
+      <div class="field"><label for="q">Buscar plugin</label><input id="q" type="search" value="${esc(st.q)}" placeholder="ex.: Pro-Q, Valhalla" autocomplete="off"></div>
+      <div class="field"><label for="role">Papel da trilha</label><select id="role"><option value="all">Todos os papéis</option>${roleOpts}</select></div>
+      <span class="count" id="xcount">${r.count}</span>
+    </div>
+    <div class="xwrap" id="xbody">${r.html}</div>`;
+}
+
+/* ---------- markdown export ---------- */
+function mdProject(){
+  const ps=projectsOf('p'),A=aggregate(ps);A.roles.forEach(r=>r._N=A.N);
+  const scope=st.era==='all'?'todos os períodos':st.era;
+  let o=`# Template de projeto (${scope}, ${A.N} projetos)\n\nTodo insert entra em bypass; é só lembrete do que costuma ser usado. Mostrando plugins presentes em pelo menos ${st.thr}% dos projetos que têm o papel.\n`;
+  const byName=new Map([...A.roles.values()].map(r=>[R[r.r],r]));
+  for(const [g,names] of GROUPS){
+    const rs=names.map(n=>byName.get(n)).filter(r=>r&&r.projects/A.N>=COMMON).sort((a,b)=>b.projects-a.projects);
+    if(!rs.length)continue;
+    o+=`\n## ${g}\n`;
+    for(const ro of rs){
+      const cnt=Math.max(1,Math.round(med(ro.counts))),ty=topOf(ro.types),ou=topOf(ro.outs);
+      o+=`\n### ${rl(ro.r)} (${pc(ro.projects/A.N)}% dos projetos)\n- ${cnt} ${cnt===1?'trilha':'trilhas'} · ${T[ty.k]}${ou.k!==null&&ou.c/ou.tot>=.4?` · saída ${S[ou.k]}`:''}\n`;
+      const ch=[...ro.pl.entries()].map(([pl,v])=>({pl,share:v.projs.size/ro.projects,slot:med(v.slots)})).filter(x=>x.share*100>=st.thr).sort((a,b)=>a.slot-b.slot||b.share-a.share);
+      o+=ch.length?`- inserts: ${ch.map(x=>`${PL[x.pl]} (${pc(x.share)}%)`).join(' → ')}\n`:'- sem inserts frequentes\n';
+    }
+  }
+  return o;
+}
+function mdMaster(M){
+  if(!M.model)return `# Template de master\n\nNenhuma cadeia lida na seleção.\n`;
+  const scope=st.gen==='all'?'todas as gerações':GEN[st.gen].n;
+  let o=`# Template de master (${scope}, ${M.chains} masters com cadeia)\n\nCadeia do Master Bus, todos os inserts em bypass no template.\n\n`;
+  M.rows.forEach((r,i)=>{o+=`${i+1}. slot ${r.slot} · ${r.name} (presente em ${r.share}% dos masters da seleção)\n`;});
+  if(M.extra.length)o+=`\nOutros plugins vistos em variantes: ${M.extra.map(x=>`${x.name} (${x.share}%)`).join(', ')}\n`;
+  return o;
+}
+function renderMd(text){
+  return `<header><p class="eyebrow">Exportar</p><h2>Levar para o template</h2><p>Texto em Markdown com a seleção atual, no formato que o Claude lê para montar o template no Cubase.</p></header>
+    <textarea id="mdtext" readonly aria-label="Template em Markdown">${esc(text)}</textarea>
+    <div class="row"><button class="btn" id="copy">Copiar Markdown</button><span class="sub" id="copied" role="status"></span></div>`;
+}
+
+/* ---------- master tab ---------- */
+function carrier(p){let best=null,n=0;for(const t of p.t){const c=t[4].length/3;if(c>n){n=c;best=t;}}return best;}
+function chainOf(t){const o=[];for(let j=0;j<t[4].length;j+=3)o.push({s:t[4][j],pl:t[4][j+1],a:t[4][j+2]});return o;}
+function masterModel(){
+  const ps=projectsOf('m');
+  const vm=new Map();
+  for(const {p,i} of ps){
+    const t=carrier(p);if(!t)continue;
+    const ch=chainOf(t),key=ch.map(x=>x.pl).join(',');
+    let v=vm.get(key);if(!v){v={key,ch,g:p.g,items:[],first:p.d,last:p.d};vm.set(key,v);}
+    v.items.push({i,ch});if(p.d<v.first)v.first=p.d;if(p.d>v.last)v.last=p.d;
+  }
+  const vars=[...vm.values()].sort((a,b)=>a.g-b.g||a.first.localeCompare(b.first));
+  const chains=vars.reduce((s,v)=>s+v.items.length,0);
+  if(!vars.length)return {ps,vars,chains:0,model:null,rows:[],extra:[]};
+  const topGen=Math.max(...vars.map(v=>v.g));
+  const pool=vars.filter(v=>v.g===topGen);
+  const model=pool.slice().sort((a,b)=>b.items.length-a.items.length||b.last.localeCompare(a.last))[0];
+  const presence=new Map();
+  for(const v of vars)for(const it of v.items){new Set(it.ch.map(x=>x.pl)).forEach(pl=>inc(presence,pl));}
+  const rows=model.ch.map((x,idx)=>{
+    const act=model.items.reduce((s,it)=>s+(it.ch[idx]?it.ch[idx].a:0),0)/model.items.length;
+    return {slot:x.s,pl:x.pl,name:PL[x.pl],share:pc(presence.get(x.pl)/chains),act:pc(act)};
+  });
+  const inModel=new Set(model.ch.map(x=>x.pl));
+  const extra=[...presence.entries()].filter(([pl])=>!inModel.has(pl)).map(([pl,n])=>({name:PL[pl],share:pc(n/chains),n})).sort((a,b)=>b.n-a.n);
+  return {ps,vars,chains,model,rows,extra};
+}
+function renderMasterChain(M){
+  if(!M.model){
+    const ds=M.ps.map(o=>ym(o.p.d)),vs=new Set(M.ps.map(o=>o.p.v));
+    const when=[...new Set(ds)].sort().join(' e ');
+    return `<header><p class="eyebrow">Template</p><h2>Cadeia do Master Bus</h2><p>Nenhum insert foi lido nos ${M.ps.length} projetos dessa seleção (${vlabel(vs)}, salvos em ${when||'datas sem registro'}). Vale abrir um deles no Cubase para ver se o master foi feito sem inserts ou se a leitura do arquivo falhou.</p></header>`;
+  }
+  const m=M.model;
+  return `<header><p class="eyebrow">Template</p><h2>Cadeia do Master Bus</h2>
+    <p>${st.gen==='all'?'Modelo da geração mais recente':'Modelo mais usado nessa geração'}: ${m.items.length} ${m.items.length===1?'master':'masters'} com essa cadeia exata, de ${ym(m.first)} a ${ym(m.last)}. A porcentagem é a dos masters da seleção que têm o plugin na cadeia.</p></header>
+    <ol class="rack"><li class="rrow hd"><span>Slot</span><span></span><span>Plugin</span><span class="rb">Presença</span><span></span><span class="ra">Ativo ao salvar</span></li>
+    ${M.rows.map(r=>`<li class="rrow"><span class="slot">${String(r.slot).padStart(2,'0')}</span><i class="led${r.act>=50?' on':''}"></i><span class="rn">${esc(r.name)}</span><span class="rb" style="--p:${r.share}%"></span><span class="rp">${r.share}%</span><span class="ra">${r.act}%</span></li>`).join('')}</ol>
+    ${M.extra.length?`<div><h3>Também vistos em outras variantes</h3><div class="chain" style="margin-top:8px">${M.extra.map(x=>insChip(x.name,x.share/100,0,`${x.name}: em ${x.n} de ${M.chains} masters`)).join('')}</div></div>`:''}`;
+}
+function renderVariants(M){
+  if(!M.vars.length)return '';
+  let prev=null,h='';
+  const perGen={},seenGen={};
+  M.vars.forEach(v=>{perGen[v.g]=(perGen[v.g]||0)+1;});
+  M.vars.forEach(v=>{
+    seenGen[v.g]=(seenGen[v.g]||0)+1;
+    let diff='';
+    if(prev){
+      const a=new Set(prev.ch.map(x=>x.pl)),b=new Set(v.ch.map(x=>x.pl));
+      const add=[...b].filter(x=>!a.has(x)),del=[...a].filter(x=>!b.has(x));
+      diff=add.length||del.length?`<p class="diff">${add.map(x=>`<span class="a">+ ${esc(PL[x])}</span>`).join('')}${del.map(x=>`<span class="d">− ${esc(PL[x])}</span>`).join('')}<span style="color:var(--ink-3)">em relação à variante anterior</span></p>`:`<p class="diff"><span style="color:var(--ink-3)">mesmos plugins da variante anterior, em outra ordem</span></p>`;
+    }
+    const n=v.items.length;
+    const chips=v.ch.map(x=>`<span class="ins" style="--p:0%"><i class="led${x.a?' on':''}"></i><span>${esc(PL[x.pl])}</span></span>`).join('<span class="arrow">→</span>');
+    h+=`<article class="var"><header><h4>${esc(GEN[v.g].n)}${perGen[v.g]>1?` · variante ${seenGen[v.g]} de ${perGen[v.g]}`:''}</h4><span class="pill">${n} ${n===1?'master':'masters'}</span><span class="when">${ym(v.first)}${v.first!==v.last?' → '+ym(v.last):''} · ${v.ch.length} inserts</span></header>
+      ${diff}<div class="chain">${chips}</div>
+      <details class="pj"><summary>Ver os ${n} ${n===1?'projeto':'projetos'}</summary><ul>${v.items.map(it=>`<li><span>${esc(P[it.i].n)}</span><span class="num">${ym(P[it.i].d)}</span></li>`).join('')}</ul></details></article>`;
+    prev=v;
+  });
+  return `<header><p class="eyebrow">Versões</p><h2>Como a cadeia mudou</h2>
+    <p>Cada cartão é uma cadeia exata (mesmos plugins, mesma ordem). As gerações agrupam as variantes pelos plugins que marcam cada fase. A data é a do último salvamento, por isso as gerações se sobrepõem no tempo.</p></header><div class="vars">${h}</div>`;
+}
+function renderInputs(M){
+  const names=new Map();
+  for(const {p,i} of M.ps){
+    const ct=carrier(p),seen=new Set();
+    for(const t of p.t){
+      if(t===ct&&ct[4].length)continue;
+      let n=S[t[5]];
+      n=/^\d{4}_\d{3}/.test(n)||/\.cpr|Remix/i.test(n)?'Bounce do projeto (estéreo)':n.replace(/-\d{2,3}$/,'').trim();
+      if(!seen.has(n)){seen.add(n);inc(names,n);}
+    }
+  }
+  const top=[...names.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,16);
+  if(!top.length)return '';
+  const N=M.ps.length;
+  return `<header><p class="eyebrow">Entradas</p><h2>O que entra no projeto de master</h2><p>Nomes de trilha mais comuns fora do Master Bus, contados por projeto. </p></header>
+    <div class="chain">${top.map(([n,c])=>insChip(n,c/N,0,`${n}: em ${c} de ${N} projetos`)).join('')}</div>`;
+}
+function renderControlsM(){
+  const all=projectsOf('m',false);
+  const cnt=g=>all.filter(o=>o.p.g===g).length;
+  const gens=[3,2,1,0].filter(g=>cnt(g)>0);
+  const ps=projectsOf('m'),A=aggregate(ps);
+  return `<section class="panel" id="sec-controls" aria-label="Filtros">
+    <div class="ctl"><span class="lbl">Geração</span><div class="chips" role="group" aria-label="Geração da cadeia">
+      <button class="chip" data-gen="all" aria-pressed="${st.gen==='all'}"><b>Todas</b><i>${all.length}</i></button>
+      ${gens.map(g=>`<button class="chip" data-gen="${g}" aria-pressed="${st.gen===String(g)}" title="${esc(GEN[g].d)}"><b>${esc(GEN[g].n)}</b><i>${cnt(g)}</i><small>${esc(GEN[g].d)}</small></button>`).join('')}
+    </div></div>
+    <p class="scope">Seleção: <b>${A.N}</b> masters · <b>${nf(A.nIns)}</b> inserts · <b>${A.plugins.size}</b> plugins</p>
+  </section>`;
+}
+
+/* ---------- notes ---------- */
+function renderNotes(){
+  const al=Object.entries(AL).map(([k,v])=>`${PL[k]} ← ${v.join(', ')}`).join('; ');
+  const k=D.meta.kinds;
+  return `<header><p class="eyebrow">Sobre os dados</p><h2>Como ler esta página</h2></header>
+  <ul class="notes">
+    <li><b>Origem:</b> gerada pelo DAW Project Manager em ${D.meta.generated.split('-').reverse().join('/')}, com ${D.meta.n} projetos: ${k.p||0} de produção, ${k.m||0} de master e ${k.s||0} de rascunho ou teste. ${[...new Set(P.map(p=>p.v).filter(v=>v>0))].sort((a,b)=>a-b).map(v=>'Cubase '+v+' em '+P.filter(p=>p.v===v).length).join(' e ')}.</li>
+    <li><b>Datas:</b> são a do último salvamento do arquivo, não a de criação.</li>
+    <li><b>Classificação:</b> master é todo projeto com “(Master)”, “(M)” ou “M” no fim do nome. Rascunho ou teste é o que sobra com 25 trilhas ou menos, ou nome de teste.</li>
+    <li><b>Nomes unificados:</b> ${esc(al)}.</li>
+    <li><b>Papéis:</b> ${nf(D.meta.unknownTracks)} trilhas não tiveram papel reconhecido. Ficam fora dos cartões do template, mas os inserts delas entram na tabela como “Sem papel”.</li>
+    <li><b>Slot:</b> é o índice do slot no export, começando em 0, com lacunas quando há slots vazios entre dois inserts.</li>
+    <li><b>Ativo ao salvar:</b> vem do campo de bypass lido do arquivo. Não conferi contra um projeto aberto no Cubase, então trate como indicação.</li>
+  </ul>`;
+}
+
+/* ---------- shell ---------- */
+function setVitals(){
+  const k=D.meta.kinds;
+  const vs=[...new Set(P.map(p=>p.v).filter(v=>v>0))].sort((a,b)=>a-b);
+  if(vs.length)$('#eyebrow').textContent='DAW Project Manager · Cubase '+vs.join(' e ');
+  const nIns=P.reduce((s,p)=>s+p.t.reduce((a,t)=>a+t[4].length/3,0),0);
+  $('#vitals').innerHTML=[[k.p,'projetos'],[k.m,'masters'],[k.s,'testes'],[nf(nIns),'inserts'],[PL.length,'plugins']].map(([n,l])=>`<li><b>${n}</b><span>${l}</span></li>`).join('');
+  $('#tabsub-p').textContent=`${k.p} projetos de produção`;
+  $('#tabsub-m').textContent=`${k.m} projetos de master`;
+}
+function render(){
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===st.tab)));
+  const v=$('#view');
+  if(st.tab==='p'){
+    v.innerHTML=`${renderControlsP()}<section class="sec" id="sec-tpl">${renderTpl()}</section><section class="sec" id="sec-heat">${renderHeat()}</section><section class="sec" id="sec-exp">${renderExplorer()}</section><section class="sec md" id="sec-md">${renderMd(mdProject())}</section><section class="sec" id="sec-notes">${renderNotes()}</section>`;
+  }else{
+    const M=masterModel();
+    v.innerHTML=`${renderControlsM()}<section class="sec" id="sec-tpl">${renderMasterChain(M)}</section><section class="sec" id="sec-vars">${renderVariants(M)}</section><section class="sec" id="sec-in">${renderInputs(M)}</section><section class="sec" id="sec-exp">${renderExplorer()}</section><section class="sec md" id="sec-md">${renderMd(mdMaster(M))}</section><section class="sec" id="sec-notes">${renderNotes()}</section>`;
+  }
+}
+function refreshExplorerBody(){const r=renderRows();$('#xbody').innerHTML=r.html;$('#xcount').textContent=r.count;}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab],[data-era],[data-gen],[data-open],[data-sort],[data-find],#copy');
+  if(!t)return;
+  if(t.dataset.tab){st.tab=t.dataset.tab;st.q='';st.role='all';st.open.clear();try{localStorage.setItem('ref-tab',st.tab);}catch(_){}render();window.scrollTo({top:0});return;}
+  if(t.dataset.era!==undefined){st.era=t.dataset.era;render();return;}
+  if(t.dataset.gen!==undefined){st.gen=t.dataset.gen;render();return;}
+  if(t.dataset.open!==undefined){const id=+t.dataset.open;st.open.has(id)?st.open.delete(id):st.open.add(id);refreshExplorerBody();return;}
+  if(t.dataset.sort){if(st.sort===t.dataset.sort)st.dir*=-1;else{st.sort=t.dataset.sort;st.dir=t.dataset.sort==='name'?1:-1;}refreshExplorerBody();return;}
+  if(t.dataset.find!==undefined){st.q=PL[+t.dataset.find];st.role='all';st.open=new Set([+t.dataset.find]);$('#sec-exp').innerHTML=renderExplorer();$('#sec-exp').scrollIntoView({behavior:'smooth',block:'start'});return;}
+  if(t.id==='copy'){
+    const ta=$('#mdtext'),msg=$('#copied');
+    const fallback=()=>{ta.focus();ta.select();msg.textContent='Texto selecionado: copie com Ctrl+C.';};
+    try{navigator.clipboard.writeText(ta.value).then(()=>{msg.textContent='Copiado.';},fallback);}catch(_){fallback();}
+  }
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='sw-dedupe'){st.dedupe=e.target.checked;render();}
+  else if(e.target.id==='sw-scratch'){st.scratch=e.target.checked;render();}
+  else if(e.target.id==='role'){st.role=e.target.value;refreshExplorerBody();}
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='thr'){st.thr=+e.target.value;$('#thr-o').textContent=st.thr+'%';$('#tplbody').innerHTML=tplBody();$('#sec-md').innerHTML=renderMd(mdProject());}
+  else if(e.target.id==='q'){st.q=e.target.value;refreshExplorerBody();}
+});
+
+setVitals();render();
+window.__ref={D,st,aggregate,projectsOf,masterModel,render,eraOf};
+})();
+</script>

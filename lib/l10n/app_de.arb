@@ -4190,5 +4190,17 @@
   "melodicExportReadOnly": "Bereits Gelesenes exportieren",
   "melodicReadingTitle": "MIDI wird gelesen",
   "melodicReadingProgress": "{done} von {total}: {name}",
-  "melodicReadStop": "Anhalten und Gelesenes exportieren"
+  "melodicReadStop": "Anhalten und Gelesenes exportieren",
+  "referenceTitle": "Insert-Referenzseite",
+  "referenceSubtitle": "Erstellt eine Webseite aus deinen Cubase-Projekten: die Plugin-Ketten pro Spurrolle, die Master-Kette und alle Inserts, die du genutzt hast. Öffnet sich im Browser.",
+  "referenceButton": "Erstellen",
+  "referenceDialogTitle": "Ordner für die Seite wählen",
+  "referenceReadTitle": "Cubase-Projekte lesen?",
+  "referenceReadBody": "{count} Cubase-Projekte ({size}) sind neu oder haben sich seit der letzten Seite geändert. Das Lesen öffnet jede Datei; Dateien in einer Cloud werden zuerst heruntergeladen.",
+  "referenceReadAndGenerate": "Lesen und erstellen",
+  "referenceUseRead": "Bereits Gelesenes verwenden",
+  "referenceReadingTitle": "Cubase-Projekte werden gelesen",
+  "referenceReadStop": "Anhalten und mit Gelesenem erstellen",
+  "referenceDone": "Seite aus {count} Projekten erstellt",
+  "referenceNothing": "Keine lesbaren Cubase-Projekte gefunden"
 }

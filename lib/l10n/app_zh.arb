@@ -4190,5 +4190,17 @@
   "melodicExportReadOnly": "导出已读取的内容",
   "melodicReadingTitle": "正在读取 MIDI",
   "melodicReadingProgress": "{done} / {total}：{name}",
-  "melodicReadStop": "停止并导出已读取的内容"
+  "melodicReadStop": "停止并导出已读取的内容",
+  "referenceTitle": "插件插槽参考页",
+  "referenceSubtitle": "根据你的 Cubase 项目生成网页：按轨道角色列出插件链、母带链以及你用过的所有插件插槽。在浏览器中打开。",
+  "referenceButton": "生成",
+  "referenceDialogTitle": "选择页面保存文件夹",
+  "referenceReadTitle": "读取 Cubase 项目吗？",
+  "referenceReadBody": "有 {count} 个 Cubase 项目（{size}）自上次生成页面后为新增或已更改。读取会打开每个文件；云盘上的文件会先被下载。",
+  "referenceReadAndGenerate": "读取并生成",
+  "referenceUseRead": "使用已读取的内容",
+  "referenceReadingTitle": "正在读取 Cubase 项目",
+  "referenceReadStop": "停止并用已读取的内容生成",
+  "referenceDone": "已根据 {count} 个项目生成页面",
+  "referenceNothing": "未找到可读取的 Cubase 项目"
 }
