@@ -210,14 +210,49 @@ Map<String, Object?> buildReferenceData(
 
 String _modifiedText(CorpusProject p) => p.modified.toUtc().toIso8601String();
 
-/// The page: [template] with its one placeholder replaced by [data] as JSON.
-/// `<` is escaped so no project or plug-in name can close the script tag.
-String renderReferenceHtml(String template, Map<String, Object?> data) {
+/// The page's text in one language: [strings] is the whole dictionary (a
+/// language code → its entries, as shipped in `assets/reference/strings.json`)
+/// and [languageCode] the app's language.
+///
+/// English is the base, so a string a language lacks shows in English instead
+/// of as its key, and an unknown language is English throughout. A string is
+/// text, or an object of plural forms (`one`, `few`, `many`, `other`) that the
+/// page picks from with the browser's own plural rules.
+Map<String, Object?> referenceStrings(
+  Map<String, Object?> strings,
+  String languageCode,
+) {
+  final english = strings['en'] as Map<String, Object?>? ?? const {};
+  final own = languageCode == 'en'
+      ? null
+      : strings[languageCode] as Map<String, Object?>?;
+  return {
+    'lang': own == null ? 'en' : languageCode,
+    's': {...english, ...?own},
+  };
+}
+
+/// The page: [template] with its placeholders replaced — `__DATA__` by [data]
+/// and, when the template has one, `__I18N__` by [i18n] — as JSON. `<` is
+/// escaped so no project, plug-in or text can close the script tag.
+String renderReferenceHtml(
+  String template,
+  Map<String, Object?> data, {
+  Map<String, Object?>? i18n,
+}) {
+  String json(Object? value) =>
+      jsonEncode(value).replaceAll('<', r'\u' '003c');
+
+  // The text goes in first, so nothing in the data is ever looked at again.
+  var page = template;
+  const textPlaceholder = '__I18N__';
+  if (i18n != null && page.contains(textPlaceholder)) {
+    page = page.replaceFirst(textPlaceholder, json(i18n));
+  }
   const placeholder = '__DATA__';
-  final at = template.indexOf(placeholder);
+  final at = page.indexOf(placeholder);
   if (at < 0) throw ArgumentError('The template has no $placeholder.');
-  final json = jsonEncode(data).replaceAll('<', r'\u' '003c');
-  return template.substring(0, at) +
-      json +
-      template.substring(at + placeholder.length);
+  return page.substring(0, at) +
+      json(data) +
+      page.substring(at + placeholder.length);
 }

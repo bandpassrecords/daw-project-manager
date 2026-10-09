@@ -1,9 +1,9 @@
-<title>Referência de Inserts</title>
+<title>Insert reference</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Conceito: rack de estúdio. Slots numerados, LEDs de ativo/bypass e barras de uso dentro de cada insert. */
+/* Concept: a studio rack. Numbered slots, active/bypass LEDs and usage bars inside each insert. */
 :root{
   --bg:#eef1f5; --surface:#ffffff; --surface-2:#f4f6f9; --line:#d3dae4; --line-2:#e3e8ef;
   --ink:#141a23; --ink-2:#445063; --ink-3:#6b7788;
@@ -213,39 +213,56 @@ details.pj li{display:flex;justify-content:space-between;gap:10px}
 
 <div class="app">
   <header class="mast">
-    <p class="eyebrow" id="eyebrow">DAW Project Manager · Cubase</p>
-    <h1>Referência de inserts</h1>
-    <p class="lede">Cadeias de plugins lidas dos seus projetos, para consultar ao montar um template. Todo insert entra em bypass no template: aqui eles servem de lembrete do que você já usou, em que tipo de trilha e em que ordem.</p>
+    <p class="eyebrow" id="eyebrow"></p>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
     <ul class="vitals" id="vitals"></ul>
   </header>
 
-  <nav class="tabs" role="tablist" aria-label="Tipo de template">
-    <button class="tab" role="tab" id="tab-p" data-tab="p" aria-selected="true"><strong>Projeto</strong><small id="tabsub-p"></small></button>
-    <button class="tab" role="tab" id="tab-m" data-tab="m" aria-selected="false"><strong>Master</strong><small id="tabsub-m"></small></button>
+  <nav class="tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" id="tab-p" data-tab="p" aria-selected="true"><strong id="tabname-p"></strong><small id="tabsub-p"></small></button>
+    <button class="tab" role="tab" id="tab-m" data-tab="m" aria-selected="false"><strong id="tabname-m"></strong><small id="tabsub-m"></small></button>
   </nav>
 
   <main id="view" role="tabpanel" aria-live="polite"></main>
 </div>
 
+<script type="application/json" id="i18n">__I18N__</script>
 <script type="application/json" id="data">__DATA__</script>
 <script>
 (()=>{
 'use strict';
 const D=JSON.parse(document.getElementById('data').textContent);
+const I=JSON.parse(document.getElementById('i18n').textContent);
+const L=I.lang;
 const {R,T,S,PL,AL,P}=D;
 const $=(s,r=document)=>r.querySelector(s);
-const nf=n=>n.toLocaleString('pt-BR');
+const PRULES=new Intl.PluralRules(L);
+/* t(key, values): the page's text in the app's language. A string with a plural form is an
+   object of forms; the one used is picked by v.n. Values go in at {name}. */
+function t(k,v){
+  let s=I.s[k];
+  if(s===undefined)return k;
+  if(typeof s==='object')s=s[PRULES.select(v&&v.n!==undefined?v.n:0)]||s.other;
+  return v?s.replace(/\{(\w+)\}/g,(_,n)=>v[n]===undefined?'':v[n]):s;
+}
+const LF=new Intl.ListFormat(L,{style:'long',type:'conjunction'});
+const list=a=>LF.format(a);
+const nf=n=>n.toLocaleString(L);
 const pc=x=>Math.round(x*100);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const inc=(m,k,n=1)=>m.set(k,(m.get(k)||0)+n);
 const med=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
 const topOf=m=>{let k=null,c=-1,tot=0;for(const [a,b] of m){tot+=b;if(b>c){c=b;k=a;}}return {k,c,tot};};
 const ym=d=>d.slice(0,7);
+const dateText=d=>new Date(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8,10)).toLocaleDateString(L);
+const versionsOf=ps=>[...new Set(ps.map(p=>p.v).filter(v=>v>0))].sort((a,b)=>a-b);
 
-const LABEL={kick:'Kick',bass:'Bass',drums:'Drums',hats:'Hats',snare:'Snare',clap:'Clap',crash:'Crash',percs:'Percs',toms:'Toms',cymbals:'Cymbals',drum_fill:'Drum fills',loops:'Loops',lead:'Leads',arp:'Arps',stabs:'Stabs',pluck:'Plucks',keys:'Keys',chords:'Chords',synth:'Synths',pad:'Pads',strings:'Strings',guitar:'Guitars',brass:'Brass',vocals:'Vocals',lead_vocal:'Lead vocal',backing_vocals:'Backing vocals',fx:'FX',fx_riser:'Risers',fx_impact:'Impacts',sweeps:'Sweeps',delay:'Delays',reverb:'Reverbs',master:'Master bus',reference:'Referências',samples:'Samples',unknown:'Sem papel'};
-const GROUPS=[['Kick e bass',['kick','bass']],['Bateria e percussão',['drums','hats','snare','clap','crash','cymbals','toms','percs','drum_fill','loops']],['Melodia e harmonia',['lead','arp','stabs','pluck','keys','chords','synth','pad','strings','guitar','brass']],['Vocais',['vocals','lead_vocal','backing_vocals']],['FX e retornos',['fx','fx_riser','fx_impact','sweeps','delay','reverb']],['Outros',['master','reference','samples']]];
-const rl=r=>LABEL[R[r]]||R[r];
-const GEN={3:{n:'Geração 3',d:'Pro-Q 3 · Ozone · Flatline · soothe2'},2:{n:'Geração 2',d:'base da geração 1 + soothe2 e Pro-L 2'},1:{n:'Geração 1',d:'bx_digital · Vertigo · VBC · elysia'},0:{n:'Sem cadeia lida',d:'nenhum insert encontrado'}};
+/* Role names are the DAW's own vocabulary and stay as they are; only these two are words. */
+const LABEL={kick:'Kick',bass:'Bass',drums:'Drums',hats:'Hats',snare:'Snare',clap:'Clap',crash:'Crash',percs:'Percs',toms:'Toms',cymbals:'Cymbals',drum_fill:'Drum fills',loops:'Loops',lead:'Leads',arp:'Arps',stabs:'Stabs',pluck:'Plucks',keys:'Keys',chords:'Chords',synth:'Synths',pad:'Pads',strings:'Strings',guitar:'Guitars',brass:'Brass',vocals:'Vocals',lead_vocal:'Lead vocal',backing_vocals:'Backing vocals',fx:'FX',fx_riser:'Risers',fx_impact:'Impacts',sweeps:'Sweeps',delay:'Delays',reverb:'Reverbs',master:'Master bus',samples:'Samples'};
+const GROUPS=[['group.kickBass',['kick','bass']],['group.drums',['drums','hats','snare','clap','crash','cymbals','toms','percs','drum_fill','loops']],['group.melody',['lead','arp','stabs','pluck','keys','chords','synth','pad','strings','guitar','brass']],['group.vocals',['vocals','lead_vocal','backing_vocals']],['group.fx',['fx','fx_riser','fx_impact','sweeps','delay','reverb']],['group.other',['master','reference','samples']]];
+const rl=r=>R[r]==='unknown'?t('role.unknown'):R[r]==='reference'?t('role.reference'):(LABEL[R[r]]||R[r]);
+const GEN=g=>({n:t('genName'+g),d:t('genDesc'+g)});
 const CORE=.7,COMMON=.4;
 
 const st={tab:'p',era:'all',gen:'all',dedupe:false,scratch:false,thr:20,q:'',role:'all',sort:'projects',dir:-1,open:new Set()};
@@ -268,7 +285,7 @@ function erasOf(ps){
   for(const {p} of ps){const e=eraOf(p.d);let o=m.get(e);if(!o){o={e,n:0,v:new Set()};m.set(e,o);}o.n++;o.v.add(p.v);}
   return [...m.values()].sort((a,b)=>a.e.localeCompare(b.e));
 }
-const vlabel=v=>'Cubase '+[...v].filter(x=>x>0).sort((a,b)=>a-b).join(' e ');
+const vlabel=v=>'Cubase '+list(versionsOf([...v].map(x=>({v:x}))).map(String));
 
 function aggregate(ps,roleOnly=null){
   const roles=new Map(),plugins=new Map();let nIns=0,nTr=0;
@@ -309,22 +326,21 @@ function insChip(name,share,active,title){
 function roleCard(ro){
   const N=ro._N,pres=ro.projects/N;
   const tier=pres>=CORE?'core':pres>=COMMON?'common':'rare';
-  const tierTxt=tier==='core'?'núcleo':tier==='common'?'comum':'raro';
   const cnt=Math.max(1,Math.round(med(ro.counts)));
   const ty=topOf(ro.types),ou=topOf(ro.outs),pa=topOf(ro.parents);
   const tys=[...ro.types.entries()].sort((a,b)=>b[1]-a[1]);
   const tyTxt=tys[0][1]/ty.tot>=.7?T[tys[0][0]]:tys.slice(0,2).map(([k,c])=>`${T[k]} ${pc(c/ty.tot)}%`).join(' · ');
-  const meta=[`${cnt} ${cnt===1?'trilha':'trilhas'} típica${cnt===1?'':'s'}`,tyTxt];
+  const meta=[t('typicalTracks',{n:cnt}),tyTxt];
   if(ou.k!==null&&ou.c/ou.tot>=.4)meta.push(`→ ${S[ou.k]} ${pc(ou.c/ou.tot)}%`);
-  if(pa.k!==null&&pa.c/ro.tracks>=.5)meta.push(`pasta ${S[pa.k]} ${pc(pa.c/ro.tracks)}%`);
+  if(pa.k!==null&&pa.c/ro.tracks>=.5)meta.push(t('folderOf',{name:S[pa.k],p:pc(pa.c/ro.tracks)}));
   const items=[...ro.pl.entries()].map(([pl,v])=>({pl,share:v.projs.size/ro.projects,slot:med(v.slots),act:v.act/v.occ,n:v.projs.size,tk:v.tracks}));
   const shown=items.filter(x=>x.share*100>=st.thr).sort((a,b)=>a.slot-b.slot||b.share-a.share);
   const hidden=items.length-shown.length;
-  const chips=shown.map(x=>insChip(PL[x.pl],x.share,x.act,`${PL[x.pl]}: em ${x.n} de ${ro.projects} projetos com ${rl(ro.r)} (${x.tk} de ${ro.tracks} trilhas) · slot mediano ${x.slot} · ativo ao salvar em ${pc(x.act)}% das vezes`)).join('');
-  return `<article class="role"><header><h4>${esc(rl(ro.r))}</h4><span class="tier ${tier}">${tierTxt} · ${pc(pres)}%</span></header>
+  const chips=shown.map(x=>insChip(PL[x.pl],x.share,x.act,t('chipTitle',{plugin:PL[x.pl],n:x.n,total:ro.projects,role:rl(ro.r),tk:x.tk,tracks:ro.tracks,slot:x.slot,act:pc(x.act)}))).join('');
+  return `<article class="role"><header><h4>${esc(rl(ro.r))}</h4><span class="tier ${tier}">${t('tier.'+tier)} · ${pc(pres)}%</span></header>
     <p class="meta">${meta.map(m=>`<span>${esc(m)}</span>`).join('')}</p>
-    ${shown.length?`<div class="chain">${chips}</div>`:`<p class="none">${items.length?'Nenhum insert passa do limiar de uso.':'Sem inserts nesse papel.'}</p>`}
-    ${hidden>0&&shown.length?`<p class="more">+ ${hidden} ${hidden===1?'plugin':'plugins'} abaixo de ${st.thr}%</p>`:''}</article>`;
+    ${shown.length?`<div class="chain">${chips}</div>`:`<p class="none">${items.length?t('noneThreshold'):t('noneInserts')}</p>`}
+    ${hidden>0&&shown.length?`<p class="more">${t('moreBelow',{n:hidden,thr:st.thr})}</p>`:''}</article>`;
 }
 
 /* ---------- project tab ---------- */
@@ -332,22 +348,22 @@ function renderControlsP(){
   const all=projectsOf('p',false),eras=erasOf(all),ps=projectsOf('p'),A=aggregate(ps);
   const known=[...A.roles.values()].filter(r=>R[r.r]!=='unknown').reduce((s,r)=>s+r.tracks,0);
   const nLatest=P.filter(p=>p.k==='p'&&p.l===1).length,nAll=P.filter(p=>p.k==='p').length;
-  return `<section class="panel" id="sec-controls" aria-label="Filtros">
-    <div class="ctl"><span class="lbl">Período</span><div class="chips" role="group" aria-label="Período">
-      <button class="chip" data-era="all" aria-pressed="${st.era==='all'}"><b>Todos</b><i>${all.length}</i></button>
-      ${eras.map(e=>`<button class="chip" data-era="${esc(e.e)}" aria-pressed="${st.era===e.e}"><b>${esc(e.e)}</b><i>${e.n}</i><small>${vlabel(e.v)}</small></button>`).join('')}
+  return `<section class="panel" id="sec-controls" aria-label="${esc(t('filters'))}">
+    <div class="ctl"><span class="lbl">${t('period')}</span><div class="chips" role="group" aria-label="${esc(t('period'))}">
+      <button class="chip" data-era="all" aria-pressed="${st.era==='all'}"><b>${t('all')}</b><i>${all.length}</i></button>
+      ${eras.map(e=>`<button class="chip" data-era="${esc(e.e)}" aria-pressed="${st.era===e.e}"><b>${esc(e.e)}</b><i>${e.n}</i><small>${esc(vlabel(e.v))}</small></button>`).join('')}
     </div></div>
-    <div class="ctl"><span class="lbl">Contagem</span>
-      <label class="sw"><input type="checkbox" id="sw-dedupe" ${st.dedupe?'checked':''}>Só a versão mais recente de cada música <em>(${nLatest} de ${nAll})</em></label>
-      <label class="sw"><input type="checkbox" id="sw-scratch" ${st.scratch?'checked':''}>Incluir rascunhos e testes <em>(+${P.filter(p=>p.k==='s').length})</em></label>
+    <div class="ctl"><span class="lbl">${t('counting')}</span>
+      <label class="sw"><input type="checkbox" id="sw-dedupe" ${st.dedupe?'checked':''}>${t('onlyLatest')} <em>${t('ofTotal',{a:nLatest,b:nAll})}</em></label>
+      <label class="sw"><input type="checkbox" id="sw-scratch" ${st.scratch?'checked':''}>${t('includeScratch')} <em>(+${P.filter(p=>p.k==='s').length})</em></label>
     </div>
-    <p class="scope">Seleção: <b>${A.N}</b> projetos · <b>${nf(known)}</b> trilhas com papel · <b>${nf(A.nIns)}</b> inserts · <b>${A.plugins.size}</b> plugins</p>
+    <p class="scope">${t('scopeP',{n:A.N,t:nf(known),i:nf(A.nIns),p:A.plugins.size})}</p>
   </section>`;
 }
 function renderTpl(){
-  return `<header><p class="eyebrow">Template</p><h2>Template de projeto</h2>
-    <p>Papéis de trilha com o que costuma ficar em cada um. Cada insert mostra em quantos dos projetos com aquele papel ele apareceu em alguma trilha; a ordem segue o slot mediano. O ponto âmbar indica que ele costumava estar ativo ao salvar.</p></header>
-    <div class="range"><label class="lbl" for="thr">Mostrar a partir de</label><input type="range" id="thr" min="5" max="60" step="5" value="${st.thr}"><output class="num" id="thr-o">${st.thr}%</output><span class="sub">dos projetos que têm o papel</span></div>
+  return `<header><p class="eyebrow">${t('tplEyebrow')}</p><h2>${t('tplTitle')}</h2>
+    <p>${t('tplIntro')}</p></header>
+    <div class="range"><label class="lbl" for="thr">${t('showFrom')}</label><input type="range" id="thr" min="5" max="60" step="5" value="${st.thr}"><output class="num" id="thr-o">${st.thr}%</output><span class="sub">${t('ofProjectsWithRole')}</span></div>
     <div id="tplbody">${tplBody()}</div>`;
 }
 function tplBody(){
@@ -359,34 +375,34 @@ function tplBody(){
     const rs=names.map(n=>byName.get(n)).filter(Boolean).sort((a,b)=>b.projects-a.projects);
     const main=rs.filter(r=>r.projects/A.N>=COMMON);
     rare=rare.concat(rs.filter(r=>r.projects/A.N<COMMON));
-    if(main.length)html+=`<div><h3>${esc(g)}</h3><div class="grid">${main.map(roleCard).join('')}</div></div>`;
+    if(main.length)html+=`<div><h3>${esc(t(g))}</h3><div class="grid">${main.map(roleCard).join('')}</div></div>`;
   }
   rare.sort((a,b)=>b.projects-a.projects);
-  if(rare.length)html+=`<details class="rare"><summary>Papéis raros, em menos de 40% dos projetos (${rare.length})</summary><div class="grid">${rare.map(roleCard).join('')}</div></details>`;
+  if(rare.length)html+=`<details class="rare"><summary>${t('rareSummary',{n:rare.length})}</summary><div class="grid">${rare.map(roleCard).join('')}</div></details>`;
   const unk=byName.get('unknown');
-  return `<div class="groups">${html||'<p class="empty">Nenhum papel nessa seleção.</p>'}</div>
-    ${unk?`<p class="sub">Trilhas sem papel reconhecido têm ${nf([...unk.pl.values()].reduce((s,v)=>s+v.occ,0))} inserts e aparecem na tabela abaixo como “Sem papel”.</p>`:''}`;
+  return `<div class="groups">${html||`<p class="empty">${t('noRoles')}</p>`}</div>
+    ${unk?`<p class="sub">${t('unknownNote',{n:nf([...unk.pl.values()].reduce((s,v)=>s+v.occ,0))})}</p>`:''}`;
 }
 function renderHeat(){
   const ps=projectsOf('p',false),A=aggregate(ps),eras=erasOf(ps);
   const rows=[...A.plugins.values()].sort((a,b)=>b.projects.size-a.projects.size||b.occ-a.occ).slice(0,24);
-  let h=`<div class="heat" style="--cols:${eras.length}"><div class="h nm">Plugin</div>${eras.map(e=>`<div class="h">${esc(e.e)}<small>${e.n} proj.</small></div>`).join('')}<div class="h" style="align-items:flex-end">Total</div>`;
+  let h=`<div class="heat" style="--cols:${eras.length}"><div class="h nm">${t('colPlugin')}</div>${eras.map(e=>`<div class="h">${esc(e.e)}<small>${t('heatProj',{n:e.n})}</small></div>`).join('')}<div class="h" style="align-items:flex-end">${t('total')}</div>`;
   for(const g of rows){
-    h+=`<div class="nm"><button data-find="${g.pl}" title="Ver na tabela de ocorrências">${esc(PL[g.pl])}</button></div>`;
+    h+=`<div class="nm"><button data-find="${g.pl}" title="${esc(t('heatFind'))}">${esc(PL[g.pl])}</button></div>`;
     for(const e of eras){
       const n=(g.eras.get(e.e)||{size:0}).size,v=Math.round(100*n/e.n);
-      h+=`<div class="c${v===0?' z':v>=55?' hi':''}" style="--v:${v}" title="${esc(PL[g.pl])} em ${n} de ${e.n} projetos (${esc(e.e)})">${v===0?'·':v}</div>`;
+      h+=`<div class="c${v===0?' z':v>=55?' hi':''}" style="--v:${v}" title="${esc(t('heatCell',{plugin:PL[g.pl],n,total:e.n,era:e.e}))}">${v===0?'·':v}</div>`;
     }
     h+=`<div class="t">${g.projects.size}</div>`;
   }
   h+='</div>';
-  return `<header><p class="eyebrow">Evolução</p><h2>O que entrou e saiu ao longo do tempo</h2>
-    <p>Os 24 plugins em mais projetos. Cada célula é a porcentagem dos projetos daquele período que usam o plugin. A data é a do último salvamento de cada arquivo.</p></header>
+  return `<header><p class="eyebrow">${t('heatEyebrow')}</p><h2>${t('heatTitle')}</h2>
+    <p>${t('heatIntro')}</p></header>
     <div class="legend"><span>0</span><i></i><span>100%</span></div><div class="scroll">${h}</div>`;
 }
 
 /* ---------- explorer (both tabs) ---------- */
-const SORTS={name:(a,b)=>PL[a.pl].localeCompare(PL[b.pl],'pt'),projects:(a,b)=>a.projects.size-b.projects.size||a.occ-b.occ,occ:(a,b)=>a.occ-b.occ,slot:(a,b)=>med(a.slots)-med(b.slots),act:(a,b)=>a.act/a.occ-b.act/b.occ,last:(a,b)=>a.last.localeCompare(b.last)};
+const SORTS={name:(a,b)=>PL[a.pl].localeCompare(PL[b.pl],L),projects:(a,b)=>a.projects.size-b.projects.size||a.occ-b.occ,occ:(a,b)=>a.occ-b.occ,slot:(a,b)=>med(a.slots)-med(b.slots),act:(a,b)=>a.act/a.occ-b.act/b.occ,last:(a,b)=>a.last.localeCompare(b.last)};
 function explorerParts(){
   const ps=projectsOf(st.tab),A0=aggregate(ps);
   const roleIdx=st.role==='all'?null:R.indexOf(st.role);
@@ -403,41 +419,41 @@ function detailHtml(g,ps){
   const eras=erasOf(ps);
   const emax=Math.max(1,...eras.map(e=>(g.eras.get(e.e)||{size:0}).size));
   const list=[...g.list.entries()].map(([i,n])=>({p:P[i],n})).sort((a,b)=>b.p.d.localeCompare(a.p.d));
-  const al=AL[g.pl]?`<p class="alias">Nomes unificados: ${AL[g.pl].map(esc).join(', ')}</p>`:'';
+  const al=AL[g.pl]?`<p class="alias">${t('mergedNames',{names:AL[g.pl].map(esc).join(', ')})}</p>`:'';
   return `<div class="xdet">
-    <div><h5>Por papel de trilha</h5><ul class="bars">${roles.map(([r,n])=>`<li><span>${esc(rl(r))}</span><i style="--p:${Math.round(100*n/rmax)}%"></i><b>${n}</b></li>`).join('')}</ul>${al}</div>
-    <div><h5>Projetos por período</h5><ul class="bars">${eras.map(e=>{const n=(g.eras.get(e.e)||{size:0}).size;return `<li><span>${esc(e.e)}</span><i style="--p:${Math.round(100*n/emax)}%"></i><b>${n}</b></li>`;}).join('')}</ul></div>
-    <div><h5>Projetos (${list.length})</h5><ul class="plist">${list.map(x=>`<li><span>${esc(x.p.n)}</span><span class="num">${ym(x.p.d)} · ${x.n}×</span></li>`).join('')}</ul></div>
+    <div><h5>${t('byRole')}</h5><ul class="bars">${roles.map(([r,n])=>`<li><span>${esc(rl(r))}</span><i style="--p:${Math.round(100*n/rmax)}%"></i><b>${n}</b></li>`).join('')}</ul>${al}</div>
+    <div><h5>${t('perPeriod')}</h5><ul class="bars">${eras.map(e=>{const n=(g.eras.get(e.e)||{size:0}).size;return `<li><span>${esc(e.e)}</span><i style="--p:${Math.round(100*n/emax)}%"></i><b>${n}</b></li>`;}).join('')}</ul></div>
+    <div><h5>${t('projectsN',{n:list.length})}</h5><ul class="plist">${list.map(x=>`<li><span>${esc(x.p.n)}</span><span class="num">${ym(x.p.d)} · ${x.n}×</span></li>`).join('')}</ul></div>
   </div>`;
 }
 function renderRows(){
   const {ps,A0,A,rows}=explorerParts();
-  const cols=[['name','Plugin'],['projects','Projetos'],['occ','Inserts'],[null,'Papéis mais comuns'],['slot','Slot'],['act','Ativo'],['last','Último uso']];
+  const cols=[['name',t('colPlugin')],['projects',t('colProjects')],['occ',t('colInserts')],[null,t('colRoles')],['slot',t('colSlot')],['act',t('colActive')],['last',t('colLast')]];
   const hd=`<div class="xhd xgrid">${cols.map(([k,l])=>k?`<button data-sort="${k}" ${st.sort===k?`aria-sort="${st.dir<0?'descending':'ascending'}"`:''}>${l}${st.sort===k?(st.dir<0?' ↓':' ↑'):''}</button>`:`<span class="lbl" style="min-width:0">${l}</span>`).join('')}</div>`;
   const body=rows.map(g=>{
     const open=st.open.has(g.pl);
     const roles=[...g.roles.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([r,n])=>`${rl(r)} ${n}`).join(' · ');
     return `<div class="xrow"><button class="xtop xgrid" data-open="${g.pl}" aria-expanded="${open}">
-      <span class="pn"><span>${esc(PL[g.pl])}${AL[g.pl]?` <small>(+${AL[g.pl].length} ${AL[g.pl].length===1?'nome':'nomes'})</small>`:''}</span></span>
-      <span data-l="Projetos"><b class="num">${g.projects.size}</b> <small class="num">${pc(g.projects.size/A.N)}%</small></span>
-      <span data-l="Inserts" class="mono">${nf(g.occ)}</span>
-      <span class="roles" data-l="Papéis mais comuns">${esc(roles)}</span>
-      <span data-l="Slot" class="mono">${med(g.slots)}</span>
-      <span data-l="Ativo" class="mono">${pc(g.act/g.occ)}%</span>
-      <span data-l="Primeiro → último" class="mono">${ym(g.first)} → ${ym(g.last)}</span></button>
+      <span class="pn"><span>${esc(PL[g.pl])}${AL[g.pl]?` <small>${t('aliasCount',{n:AL[g.pl].length})}</small>`:''}</span></span>
+      <span data-l="${esc(t('colProjects'))}"><b class="num">${g.projects.size}</b> <small class="num">${pc(g.projects.size/A.N)}%</small></span>
+      <span data-l="${esc(t('colInserts'))}" class="mono">${nf(g.occ)}</span>
+      <span class="roles" data-l="${esc(t('colRoles'))}">${esc(roles)}</span>
+      <span data-l="${esc(t('colSlot'))}" class="mono">${med(g.slots)}</span>
+      <span data-l="${esc(t('colActive'))}" class="mono">${pc(g.act/g.occ)}%</span>
+      <span data-l="${esc(t('colFirstLast'))}" class="mono">${ym(g.first)} → ${ym(g.last)}</span></button>
       ${open?detailHtml(g,ps):''}</div>`;
   }).join('');
-  return {count:`${rows.length} de ${A0.plugins.size} plugins`,html:`${hd}${body||'<p class="empty">Nenhum plugin com esse filtro.</p>'}`};
+  return {count:t('pluginsCount',{n:rows.length,total:A0.plugins.size}),html:`${hd}${body||`<p class="empty">${t('noPlugins')}</p>`}`};
 }
 function renderExplorer(){
   const ps=projectsOf(st.tab),A0=aggregate(ps);
-  const roleOpts=[...A0.roles.values()].sort((a,b)=>rl(a.r).localeCompare(rl(b.r),'pt')).map(r=>`<option value="${esc(R[r.r])}" ${st.role===R[r.r]?'selected':''}>${esc(rl(r.r))}</option>`).join('');
+  const roleOpts=[...A0.roles.values()].sort((a,b)=>rl(a.r).localeCompare(rl(b.r),L)).map(r=>`<option value="${esc(R[r.r])}" ${st.role===R[r.r]?'selected':''}>${esc(rl(r.r))}</option>`).join('');
   const r=renderRows();
-  return `<header><p class="eyebrow">Todas as ocorrências</p><h2>Todos os inserts que você já usou</h2>
-    <p>Cada plugin lido na seleção acima, com os papéis onde aparece, o slot mediano e quanto tempo ficou em uso. Toque numa linha para ver os projetos.</p></header>
+  return `<header><p class="eyebrow">${t('expEyebrow')}</p><h2>${t('expTitle')}</h2>
+    <p>${t('expIntro')}</p></header>
     <div class="tools">
-      <div class="field"><label for="q">Buscar plugin</label><input id="q" type="search" value="${esc(st.q)}" placeholder="ex.: Pro-Q, Valhalla" autocomplete="off"></div>
-      <div class="field"><label for="role">Papel da trilha</label><select id="role"><option value="all">Todos os papéis</option>${roleOpts}</select></div>
+      <div class="field"><label for="q">${t('searchPlugin')}</label><input id="q" type="search" value="${esc(st.q)}" placeholder="${esc(t('searchPlaceholder'))}" autocomplete="off"></div>
+      <div class="field"><label for="role">${t('trackRole')}</label><select id="role"><option value="all">${t('allRoles')}</option>${roleOpts}</select></div>
       <span class="count" id="xcount">${r.count}</span>
     </div>
     <div class="xwrap" id="xbody">${r.html}</div>`;
@@ -446,34 +462,34 @@ function renderExplorer(){
 /* ---------- markdown export ---------- */
 function mdProject(){
   const ps=projectsOf('p'),A=aggregate(ps);A.roles.forEach(r=>r._N=A.N);
-  const scope=st.era==='all'?'todos os períodos':st.era;
-  let o=`# Template de projeto (${scope}, ${A.N} projetos)\n\nTodo insert entra em bypass; é só lembrete do que costuma ser usado. Mostrando plugins presentes em pelo menos ${st.thr}% dos projetos que têm o papel.\n`;
+  const scope=st.era==='all'?t('allPeriods'):st.era;
+  let o=`# ${t('mdProjectTitle',{scope,n:A.N})}\n\n${t('mdProjectIntro',{thr:st.thr})}\n`;
   const byName=new Map([...A.roles.values()].map(r=>[R[r.r],r]));
   for(const [g,names] of GROUPS){
     const rs=names.map(n=>byName.get(n)).filter(r=>r&&r.projects/A.N>=COMMON).sort((a,b)=>b.projects-a.projects);
     if(!rs.length)continue;
-    o+=`\n## ${g}\n`;
+    o+=`\n## ${t(g)}\n`;
     for(const ro of rs){
       const cnt=Math.max(1,Math.round(med(ro.counts))),ty=topOf(ro.types),ou=topOf(ro.outs);
-      o+=`\n### ${rl(ro.r)} (${pc(ro.projects/A.N)}% dos projetos)\n- ${cnt} ${cnt===1?'trilha':'trilhas'} · ${T[ty.k]}${ou.k!==null&&ou.c/ou.tot>=.4?` · saída ${S[ou.k]}`:''}\n`;
+      o+=`\n### ${rl(ro.r)} (${t('mdOfProjects',{p:pc(ro.projects/A.N)})})\n- ${t('typicalTracksShort',{n:cnt})} · ${T[ty.k]}${ou.k!==null&&ou.c/ou.tot>=.4?` · ${t('mdOutput',{name:S[ou.k]})}`:''}\n`;
       const ch=[...ro.pl.entries()].map(([pl,v])=>({pl,share:v.projs.size/ro.projects,slot:med(v.slots)})).filter(x=>x.share*100>=st.thr).sort((a,b)=>a.slot-b.slot||b.share-a.share);
-      o+=ch.length?`- inserts: ${ch.map(x=>`${PL[x.pl]} (${pc(x.share)}%)`).join(' → ')}\n`:'- sem inserts frequentes\n';
+      o+=ch.length?`- ${t('mdInserts')}: ${ch.map(x=>`${PL[x.pl]} (${pc(x.share)}%)`).join(' → ')}\n`:`- ${t('mdNoInserts')}\n`;
     }
   }
   return o;
 }
 function mdMaster(M){
-  if(!M.model)return `# Template de master\n\nNenhuma cadeia lida na seleção.\n`;
-  const scope=st.gen==='all'?'todas as gerações':GEN[st.gen].n;
-  let o=`# Template de master (${scope}, ${M.chains} masters com cadeia)\n\nCadeia do Master Bus, todos os inserts em bypass no template.\n\n`;
-  M.rows.forEach((r,i)=>{o+=`${i+1}. slot ${r.slot} · ${r.name} (presente em ${r.share}% dos masters da seleção)\n`;});
-  if(M.extra.length)o+=`\nOutros plugins vistos em variantes: ${M.extra.map(x=>`${x.name} (${x.share}%)`).join(', ')}\n`;
+  if(!M.model)return `# ${t('mdMasterTitleNone')}\n\n${t('mdMasterNone')}\n`;
+  const scope=st.gen==='all'?t('allGenerations'):GEN(st.gen).n;
+  let o=`# ${t('mdMasterTitle',{scope,n:M.chains})}\n\n${t('mdMasterIntro')}\n\n`;
+  M.rows.forEach((r,i)=>{o+=`${i+1}. ${t('mdMasterRow',{slot:r.slot,name:r.name,p:r.share})}\n`;});
+  if(M.extra.length)o+=`\n${t('mdMasterExtra',{list:M.extra.map(x=>`${x.name} (${x.share}%)`).join(', ')})}\n`;
   return o;
 }
 function renderMd(text){
-  return `<header><p class="eyebrow">Exportar</p><h2>Levar para o template</h2><p>Texto em Markdown com a seleção atual, no formato que o Claude lê para montar o template no Cubase.</p></header>
-    <textarea id="mdtext" readonly aria-label="Template em Markdown">${esc(text)}</textarea>
-    <div class="row"><button class="btn" id="copy">Copiar Markdown</button><span class="sub" id="copied" role="status"></span></div>`;
+  return `<header><p class="eyebrow">${t('mdEyebrow')}</p><h2>${t('mdTitle')}</h2><p>${t('mdIntro')}</p></header>
+    <textarea id="mdtext" readonly aria-label="${esc(t('mdAria'))}">${esc(text)}</textarea>
+    <div class="row"><button class="btn" id="copy">${t('mdCopy')}</button><span class="sub" id="copied" role="status"></span></div>`;
 }
 
 /* ---------- master tab ---------- */
@@ -507,15 +523,15 @@ function masterModel(){
 function renderMasterChain(M){
   if(!M.model){
     const ds=M.ps.map(o=>ym(o.p.d)),vs=new Set(M.ps.map(o=>o.p.v));
-    const when=[...new Set(ds)].sort().join(' e ');
-    return `<header><p class="eyebrow">Template</p><h2>Cadeia do Master Bus</h2><p>Nenhum insert foi lido nos ${M.ps.length} projetos dessa seleção (${vlabel(vs)}, salvos em ${when||'datas sem registro'}). Vale abrir um deles no Cubase para ver se o master foi feito sem inserts ou se a leitura do arquivo falhou.</p></header>`;
+    const when=[...new Set(ds)].sort();
+    return `<header><p class="eyebrow">${t('tplEyebrow')}</p><h2>${t('masterChainTitle')}</h2><p>${t('masterEmpty',{n:M.ps.length,versions:vlabel(vs),when:when.length?list(when):t('noDates')})}</p></header>`;
   }
   const m=M.model;
-  return `<header><p class="eyebrow">Template</p><h2>Cadeia do Master Bus</h2>
-    <p>${st.gen==='all'?'Modelo da geração mais recente':'Modelo mais usado nessa geração'}: ${m.items.length} ${m.items.length===1?'master':'masters'} com essa cadeia exata, de ${ym(m.first)} a ${ym(m.last)}. A porcentagem é a dos masters da seleção que têm o plugin na cadeia.</p></header>
-    <ol class="rack"><li class="rrow hd"><span>Slot</span><span></span><span>Plugin</span><span class="rb">Presença</span><span></span><span class="ra">Ativo ao salvar</span></li>
+  return `<header><p class="eyebrow">${t('tplEyebrow')}</p><h2>${t('masterChainTitle')}</h2>
+    <p>${t(st.gen==='all'?'masterModelLatest':'masterModelGen')}: ${t('masterModelDesc',{n:m.items.length,a:ym(m.first),b:ym(m.last)})}</p></header>
+    <ol class="rack"><li class="rrow hd"><span>${t('colSlot')}</span><span></span><span>${t('colPlugin')}</span><span class="rb">${t('presence')}</span><span></span><span class="ra">${t('activeWhenSaved')}</span></li>
     ${M.rows.map(r=>`<li class="rrow"><span class="slot">${String(r.slot).padStart(2,'0')}</span><i class="led${r.act>=50?' on':''}"></i><span class="rn">${esc(r.name)}</span><span class="rb" style="--p:${r.share}%"></span><span class="rp">${r.share}%</span><span class="ra">${r.act}%</span></li>`).join('')}</ol>
-    ${M.extra.length?`<div><h3>Também vistos em outras variantes</h3><div class="chain" style="margin-top:8px">${M.extra.map(x=>insChip(x.name,x.share/100,0,`${x.name}: em ${x.n} de ${M.chains} masters`)).join('')}</div></div>`:''}`;
+    ${M.extra.length?`<div><h3>${t('seenInOthers')}</h3><div class="chain" style="margin-top:8px">${M.extra.map(x=>insChip(x.name,x.share/100,0,t('mastersChipTitle',{name:x.name,n:x.n,total:M.chains}))).join('')}</div></div>`:''}`;
 }
 function renderVariants(M){
   if(!M.vars.length)return '';
@@ -528,46 +544,46 @@ function renderVariants(M){
     if(prev){
       const a=new Set(prev.ch.map(x=>x.pl)),b=new Set(v.ch.map(x=>x.pl));
       const add=[...b].filter(x=>!a.has(x)),del=[...a].filter(x=>!b.has(x));
-      diff=add.length||del.length?`<p class="diff">${add.map(x=>`<span class="a">+ ${esc(PL[x])}</span>`).join('')}${del.map(x=>`<span class="d">− ${esc(PL[x])}</span>`).join('')}<span style="color:var(--ink-3)">em relação à variante anterior</span></p>`:`<p class="diff"><span style="color:var(--ink-3)">mesmos plugins da variante anterior, em outra ordem</span></p>`;
+      diff=add.length||del.length?`<p class="diff">${add.map(x=>`<span class="a">+ ${esc(PL[x])}</span>`).join('')}${del.map(x=>`<span class="d">− ${esc(PL[x])}</span>`).join('')}<span style="color:var(--ink-3)">${t('vsPrevious')}</span></p>`:`<p class="diff"><span style="color:var(--ink-3)">${t('samePlugins')}</span></p>`;
     }
     const n=v.items.length;
     const chips=v.ch.map(x=>`<span class="ins" style="--p:0%"><i class="led${x.a?' on':''}"></i><span>${esc(PL[x.pl])}</span></span>`).join('<span class="arrow">→</span>');
-    h+=`<article class="var"><header><h4>${esc(GEN[v.g].n)}${perGen[v.g]>1?` · variante ${seenGen[v.g]} de ${perGen[v.g]}`:''}</h4><span class="pill">${n} ${n===1?'master':'masters'}</span><span class="when">${ym(v.first)}${v.first!==v.last?' → '+ym(v.last):''} · ${v.ch.length} inserts</span></header>
+    h+=`<article class="var"><header><h4>${esc(GEN(v.g).n)}${perGen[v.g]>1?` · ${t('variantOf',{i:seenGen[v.g],n:perGen[v.g]})}`:''}</h4><span class="pill">${t('mastersN',{n})}</span><span class="when">${ym(v.first)}${v.first!==v.last?' → '+ym(v.last):''} · ${t('insertsN',{n:v.ch.length})}</span></header>
       ${diff}<div class="chain">${chips}</div>
-      <details class="pj"><summary>Ver os ${n} ${n===1?'projeto':'projetos'}</summary><ul>${v.items.map(it=>`<li><span>${esc(P[it.i].n)}</span><span class="num">${ym(P[it.i].d)}</span></li>`).join('')}</ul></details></article>`;
+      <details class="pj"><summary>${t('seeProjects',{n})}</summary><ul>${v.items.map(it=>`<li><span>${esc(P[it.i].n)}</span><span class="num">${ym(P[it.i].d)}</span></li>`).join('')}</ul></details></article>`;
     prev=v;
   });
-  return `<header><p class="eyebrow">Versões</p><h2>Como a cadeia mudou</h2>
-    <p>Cada cartão é uma cadeia exata (mesmos plugins, mesma ordem). As gerações agrupam as variantes pelos plugins que marcam cada fase. A data é a do último salvamento, por isso as gerações se sobrepõem no tempo.</p></header><div class="vars">${h}</div>`;
+  return `<header><p class="eyebrow">${t('versionsEyebrow')}</p><h2>${t('versionsTitle')}</h2>
+    <p>${t('versionsIntro')}</p></header><div class="vars">${h}</div>`;
 }
 function renderInputs(M){
   const names=new Map();
   for(const {p,i} of M.ps){
     const ct=carrier(p),seen=new Set();
-    for(const t of p.t){
-      if(t===ct&&ct[4].length)continue;
-      let n=S[t[5]];
-      n=/^\d{4}_\d{3}/.test(n)||/\.cpr|Remix/i.test(n)?'Bounce do projeto (estéreo)':n.replace(/-\d{2,3}$/,'').trim();
+    for(const tr of p.t){
+      if(tr===ct&&ct[4].length)continue;
+      let n=S[tr[5]];
+      n=/^\d{4}_\d{3}/.test(n)||/\.cpr|Remix/i.test(n)?t('bounce'):n.replace(/-\d{2,3}$/,'').trim();
       if(!seen.has(n)){seen.add(n);inc(names,n);}
     }
   }
-  const top=[...names.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,16);
+  const top=[...names.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],L)).slice(0,16);
   if(!top.length)return '';
   const N=M.ps.length;
-  return `<header><p class="eyebrow">Entradas</p><h2>O que entra no projeto de master</h2><p>Nomes de trilha mais comuns fora do Master Bus, contados por projeto. </p></header>
-    <div class="chain">${top.map(([n,c])=>insChip(n,c/N,0,`${n}: em ${c} de ${N} projetos`)).join('')}</div>`;
+  return `<header><p class="eyebrow">${t('inputsEyebrow')}</p><h2>${t('inputsTitle')}</h2><p>${t('inputsIntro')}</p></header>
+    <div class="chain">${top.map(([n,c])=>insChip(n,c/N,0,t('inputChipTitle',{name:n,n:c,total:N}))).join('')}</div>`;
 }
 function renderControlsM(){
   const all=projectsOf('m',false);
   const cnt=g=>all.filter(o=>o.p.g===g).length;
   const gens=[3,2,1,0].filter(g=>cnt(g)>0);
   const ps=projectsOf('m'),A=aggregate(ps);
-  return `<section class="panel" id="sec-controls" aria-label="Filtros">
-    <div class="ctl"><span class="lbl">Geração</span><div class="chips" role="group" aria-label="Geração da cadeia">
-      <button class="chip" data-gen="all" aria-pressed="${st.gen==='all'}"><b>Todas</b><i>${all.length}</i></button>
-      ${gens.map(g=>`<button class="chip" data-gen="${g}" aria-pressed="${st.gen===String(g)}" title="${esc(GEN[g].d)}"><b>${esc(GEN[g].n)}</b><i>${cnt(g)}</i><small>${esc(GEN[g].d)}</small></button>`).join('')}
+  return `<section class="panel" id="sec-controls" aria-label="${esc(t('filters'))}">
+    <div class="ctl"><span class="lbl">${t('generation')}</span><div class="chips" role="group" aria-label="${esc(t('generationAria'))}">
+      <button class="chip" data-gen="all" aria-pressed="${st.gen==='all'}"><b>${t('all')}</b><i>${all.length}</i></button>
+      ${gens.map(g=>`<button class="chip" data-gen="${g}" aria-pressed="${st.gen===String(g)}" title="${esc(GEN(g).d)}"><b>${esc(GEN(g).n)}</b><i>${cnt(g)}</i><small>${esc(GEN(g).d)}</small></button>`).join('')}
     </div></div>
-    <p class="scope">Seleção: <b>${A.N}</b> masters · <b>${nf(A.nIns)}</b> inserts · <b>${A.plugins.size}</b> plugins</p>
+    <p class="scope">${t('scopeM',{n:A.N,i:nf(A.nIns),p:A.plugins.size})}</p>
   </section>`;
 }
 
@@ -575,27 +591,35 @@ function renderControlsM(){
 function renderNotes(){
   const al=Object.entries(AL).map(([k,v])=>`${PL[k]} ← ${v.join(', ')}`).join('; ');
   const k=D.meta.kinds;
-  return `<header><p class="eyebrow">Sobre os dados</p><h2>Como ler esta página</h2></header>
+  const vers=list(versionsOf(P).map(v=>t('cubaseIn',{v,n:P.filter(p=>p.v===v).length})));
+  return `<header><p class="eyebrow">${t('notesEyebrow')}</p><h2>${t('notesTitle')}</h2></header>
   <ul class="notes">
-    <li><b>Origem:</b> gerada pelo DAW Project Manager em ${D.meta.generated.split('-').reverse().join('/')}, com ${D.meta.n} projetos: ${k.p||0} de produção, ${k.m||0} de master e ${k.s||0} de rascunho ou teste. ${[...new Set(P.map(p=>p.v).filter(v=>v>0))].sort((a,b)=>a-b).map(v=>'Cubase '+v+' em '+P.filter(p=>p.v===v).length).join(' e ')}.</li>
-    <li><b>Datas:</b> são a do último salvamento do arquivo, não a de criação.</li>
-    <li><b>Classificação:</b> master é todo projeto com “(Master)”, “(M)” ou “M” no fim do nome. Rascunho ou teste é o que sobra com 25 trilhas ou menos, ou nome de teste.</li>
-    <li><b>Nomes unificados:</b> ${esc(al)}.</li>
-    <li><b>Papéis:</b> ${nf(D.meta.unknownTracks)} trilhas não tiveram papel reconhecido. Ficam fora dos cartões do template, mas os inserts delas entram na tabela como “Sem papel”.</li>
-    <li><b>Slot:</b> é o índice do slot no export, começando em 0, com lacunas quando há slots vazios entre dois inserts.</li>
-    <li><b>Ativo ao salvar:</b> vem do campo de bypass lido do arquivo. Não conferi contra um projeto aberto no Cubase, então trate como indicação.</li>
+    <li>${t('noteSource',{date:dateText(D.meta.generated),n:D.meta.n,p:k.p||0,m:k.m||0,s:k.s||0,versions:vers})}</li>
+    <li>${t('noteDates')}</li>
+    <li>${t('noteClassification')}</li>
+    ${al?`<li>${t('noteMerged',{list:esc(al)})}</li>`:''}
+    <li>${t('noteRoles',{n:nf(D.meta.unknownTracks)})}</li>
+    <li>${t('noteSlot')}</li>
+    <li>${t('noteActive')}</li>
   </ul>`;
 }
 
 /* ---------- shell ---------- */
 function setVitals(){
   const k=D.meta.kinds;
-  const vs=[...new Set(P.map(p=>p.v).filter(v=>v>0))].sort((a,b)=>a-b);
-  if(vs.length)$('#eyebrow').textContent='DAW Project Manager · Cubase '+vs.join(' e ');
+  const vs=versionsOf(P);
+  $('#eyebrow').textContent=vs.length?t('eyebrow',{versions:list(vs.map(String))}):t('eyebrowPlain');
+  document.title=t('title');
+  document.documentElement.lang=L;
+  $('#h1').textContent=t('title');
+  $('#lede').textContent=t('lede');
+  $('#tabs').setAttribute('aria-label',t('tabsLabel'));
+  $('#tabname-p').textContent=t('tabProject');
+  $('#tabname-m').textContent=t('tabMaster');
   const nIns=P.reduce((s,p)=>s+p.t.reduce((a,t)=>a+t[4].length/3,0),0);
-  $('#vitals').innerHTML=[[k.p,'projetos'],[k.m,'masters'],[k.s,'testes'],[nf(nIns),'inserts'],[PL.length,'plugins']].map(([n,l])=>`<li><b>${n}</b><span>${l}</span></li>`).join('');
-  $('#tabsub-p').textContent=`${k.p} projetos de produção`;
-  $('#tabsub-m').textContent=`${k.m} projetos de master`;
+  $('#vitals').innerHTML=[[k.p||0,'vitalProjects'],[k.m||0,'vitalMasters'],[k.s||0,'vitalTests'],[nf(nIns),'vitalInserts'],[PL.length,'vitalPlugins']].map(([n,l])=>`<li><b>${n}</b><span>${t(l)}</span></li>`).join('');
+  $('#tabsub-p').textContent=t('tabSubProject',{n:k.p||0});
+  $('#tabsub-m').textContent=t('tabSubMaster',{n:k.m||0});
 }
 function render(){
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===st.tab)));
@@ -610,18 +634,18 @@ function render(){
 function refreshExplorerBody(){const r=renderRows();$('#xbody').innerHTML=r.html;$('#xcount').textContent=r.count;}
 
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-tab],[data-era],[data-gen],[data-open],[data-sort],[data-find],#copy');
-  if(!t)return;
-  if(t.dataset.tab){st.tab=t.dataset.tab;st.q='';st.role='all';st.open.clear();try{localStorage.setItem('ref-tab',st.tab);}catch(_){}render();window.scrollTo({top:0});return;}
-  if(t.dataset.era!==undefined){st.era=t.dataset.era;render();return;}
-  if(t.dataset.gen!==undefined){st.gen=t.dataset.gen;render();return;}
-  if(t.dataset.open!==undefined){const id=+t.dataset.open;st.open.has(id)?st.open.delete(id):st.open.add(id);refreshExplorerBody();return;}
-  if(t.dataset.sort){if(st.sort===t.dataset.sort)st.dir*=-1;else{st.sort=t.dataset.sort;st.dir=t.dataset.sort==='name'?1:-1;}refreshExplorerBody();return;}
-  if(t.dataset.find!==undefined){st.q=PL[+t.dataset.find];st.role='all';st.open=new Set([+t.dataset.find]);$('#sec-exp').innerHTML=renderExplorer();$('#sec-exp').scrollIntoView({behavior:'smooth',block:'start'});return;}
-  if(t.id==='copy'){
+  const el=e.target.closest('[data-tab],[data-era],[data-gen],[data-open],[data-sort],[data-find],#copy');
+  if(!el)return;
+  if(el.dataset.tab){st.tab=el.dataset.tab;st.q='';st.role='all';st.open.clear();try{localStorage.setItem('ref-tab',st.tab);}catch(_){}render();window.scrollTo({top:0});return;}
+  if(el.dataset.era!==undefined){st.era=el.dataset.era;render();return;}
+  if(el.dataset.gen!==undefined){st.gen=el.dataset.gen;render();return;}
+  if(el.dataset.open!==undefined){const id=+el.dataset.open;st.open.has(id)?st.open.delete(id):st.open.add(id);refreshExplorerBody();return;}
+  if(el.dataset.sort){if(st.sort===el.dataset.sort)st.dir*=-1;else{st.sort=el.dataset.sort;st.dir=el.dataset.sort==='name'?1:-1;}refreshExplorerBody();return;}
+  if(el.dataset.find!==undefined){st.q=PL[+el.dataset.find];st.role='all';st.open=new Set([+el.dataset.find]);$('#sec-exp').innerHTML=renderExplorer();$('#sec-exp').scrollIntoView({behavior:'smooth',block:'start'});return;}
+  if(el.id==='copy'){
     const ta=$('#mdtext'),msg=$('#copied');
-    const fallback=()=>{ta.focus();ta.select();msg.textContent='Texto selecionado: copie com Ctrl+C.';};
-    try{navigator.clipboard.writeText(ta.value).then(()=>{msg.textContent='Copiado.';},fallback);}catch(_){fallback();}
+    const fallback=()=>{ta.focus();ta.select();msg.textContent=t('mdSelected');};
+    try{navigator.clipboard.writeText(ta.value).then(()=>{msg.textContent=t('mdCopied');},fallback);}catch(_){fallback();}
   }
 });
 document.addEventListener('change',e=>{
@@ -635,6 +659,6 @@ document.addEventListener('input',e=>{
 });
 
 setVitals();render();
-window.__ref={D,st,aggregate,projectsOf,masterModel,render,eraOf};
+window.__ref={D,st,aggregate,projectsOf,masterModel,render,eraOf,t};
 })();
 </script>

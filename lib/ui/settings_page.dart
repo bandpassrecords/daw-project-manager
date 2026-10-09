@@ -556,7 +556,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
       final template =
           await rootBundle.loadString('assets/reference/index.template.html');
-      final page = buildReferencePage(projects, cache, template: template);
+      final strings =
+          await rootBundle.loadString('assets/reference/strings.json');
+      if (!mounted) return;
+      final page = buildReferencePage(
+        projects,
+        cache,
+        template: template,
+        stringsJson: strings,
+        languageCode: Localizations.localeOf(context).languageCode,
+      );
       if (page.projects == 0) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

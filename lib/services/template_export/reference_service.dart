@@ -208,17 +208,25 @@ class ReferencePage {
   final int projects;
 }
 
-/// The page for [projects] from what [cache] holds, using [template].
+/// The page for [projects] from what [cache] holds, using [template], with
+/// its text from [stringsJson] (the shipped dictionary) in [languageCode].
 ReferencePage buildReferencePage(
   List<MusicProject> projects,
   ReferenceCache cache, {
   required String template,
+  required String stringsJson,
+  String languageCode = 'en',
   DateTime? now,
 }) {
   final corpus = referenceCorpus(projects, cache);
   final data = buildReferenceData(corpus, generated: now ?? DateTime.now());
+  final strings = jsonDecode(stringsJson) as Map<String, Object?>;
   return ReferencePage(
-    html: renderReferenceHtml(template, data),
+    html: renderReferenceHtml(
+      template,
+      data,
+      i18n: referenceStrings(strings, languageCode),
+    ),
     projects: corpus.length,
   );
 }

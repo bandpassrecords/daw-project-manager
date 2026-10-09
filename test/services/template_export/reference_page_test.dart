@@ -12,6 +12,10 @@ import 'package:daw_project_manager/services/template_export/template_patterns.d
 
 import '../../helpers/test_factories.dart';
 
+Map<String, Object?> _dictionary() => jsonDecode(
+        File(p.join('assets', 'reference', 'strings.json')).readAsStringSync())
+    as Map<String, Object?>;
+
 CubaseTrackType _type(String name) =>
     CubaseTrackType.values.byName(name);
 
@@ -323,6 +327,38 @@ void main() {
       expect(jsonDecode(inner), data);
     });
 
+    test('the text goes in where its placeholder is, escaped like the data',
+        () {
+      final html = renderReferenceHtml(
+        '<i>__I18N__</i><d>__DATA__</d>',
+        data,
+        i18n: {
+          'lang': 'en',
+          's': {'k': '<b>bold</b>'},
+        },
+      );
+      expect(html, contains(r'\u' '003cb>bold'));
+      expect(html, isNot(contains('<b>bold')));
+      expect(html, isNot(contains('__I18N__')));
+    });
+
+    test('data that looks like a placeholder is left alone', () {
+      final html = renderReferenceHtml(
+        '<i>__I18N__</i><d>__DATA__</d>',
+        {'P': ['__I18N__ and __DATA__']},
+        i18n: {'lang': 'en', 's': <String, Object?>{}},
+      );
+      expect(html, contains('__I18N__ and __DATA__'));
+    });
+
+    test('a template without the text placeholder still renders', () {
+      expect(
+        renderReferenceHtml('<d>__DATA__</d>', data,
+            i18n: {'lang': 'en', 's': <String, Object?>{}}),
+        startsWith('<d>{'),
+      );
+    });
+
     test('a template without the placeholder is an error, not a blank page',
         () {
       expect(() => renderReferenceHtml('<p>nothing</p>', data),
@@ -335,15 +371,25 @@ void main() {
         File(p.join('assets', 'reference', 'index.template.html'))
             .readAsStringSync();
 
-    test('has the one placeholder inside the data script', () {
+    test('has one placeholder for the data and one for the text', () {
       expect('__DATA__'.allMatches(template), hasLength(1));
+      expect('__I18N__'.allMatches(template), hasLength(1));
       expect(template,
           contains('<script type="application/json" id="data">__DATA__</script>'));
+      expect(template,
+          contains('<script type="application/json" id="i18n">__I18N__</script>'));
     });
 
-    test('is declared as an asset', () {
-      expect(File('pubspec.yaml').readAsStringSync(),
-          contains('assets/reference/index.template.html'));
+    test('is declared as an asset, with its text', () {
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      expect(pubspec, contains('assets/reference/index.template.html'));
+      expect(pubspec, contains('assets/reference/strings.json'));
+    });
+
+    test('carries no wording of its own: every word is in the dictionary', () {
+      // An accented letter would be Portuguese, French… left in the page.
+      // (× and ÷ sit in that range but are signs, not letters.)
+      expect(RegExp('[À-ÖØ-öø-ÿ]').hasMatch(template), isFalse);
     });
 
     test('names no particular library in its notes', () {
@@ -355,11 +401,135 @@ void main() {
     test('the page built from the fixture is complete and parseable', () {
       final data = buildReferenceData(_fixtureCorpus(),
           generated: DateTime.utc(2026, 10, 9));
-      final html = renderReferenceHtml(template, data);
-      const open = '<script type="application/json" id="data">';
-      final from = html.indexOf(open) + open.length;
-      final to = html.indexOf('</script>', from);
-      expect(jsonDecode(html.substring(from, to)), jsonDecode(jsonEncode(data)));
+      final html = renderReferenceHtml(template, data,
+          i18n: referenceStrings(_dictionary(), 'pt'));
+      String embedded(String id) {
+        final open = '<script type="application/json" id="$id">';
+        final from = html.indexOf(open) + open.length;
+        return html.substring(from, html.indexOf('</script>', from));
+      }
+
+      expect(jsonDecode(embedded('data')), jsonDecode(jsonEncode(data)));
+      expect((jsonDecode(embedded('i18n')) as Map)['lang'], 'pt');
+    });
+  });
+
+  group('the dictionary', () {
+    final dictionary = _dictionary();
+    final english = dictionary['en'] as Map<String, Object?>;
+    final template =
+        File(p.join('assets', 'reference', 'index.template.html'))
+            .readAsStringSync();
+
+    Set<String> placeholders(Object? value) {
+      final forms = value is Map ? value.values : [value];
+      return {
+        for (final form in forms)
+          for (final m in RegExp(r'\{(\w+)\}').allMatches(form as String))
+            m.group(1)!,
+      };
+    }
+
+    test('has every language the app has', () {
+      final arbs = Directory(p.join('lib', 'l10n'))
+          .listSync()
+          .map((f) => p.basenameWithoutExtension(f.path))
+          .where((n) => n.startsWith('app_'))
+          .map((n) => n.substring(4))
+          .toSet();
+      expect(dictionary.keys.toSet(), arbs);
+    });
+
+    for (final language in _dictionary().keys.where((k) => k != 'en')) {
+      test('$language has exactly the keys English has, with the same blanks',
+          () {
+        final own = dictionary[language] as Map<String, Object?>;
+        expect(own.keys.toSet(), english.keys.toSet());
+        for (final key in english.keys) {
+          expect(placeholders(own[key]), placeholders(english[key]),
+              reason: '$language / $key');
+        }
+      });
+    }
+
+    test('no text is empty, and a plural always has "other"', () {
+      for (final MapEntry(key: language, value: entries) in dictionary.entries) {
+        for (final MapEntry(key: key, value: value)
+            in (entries as Map<String, Object?>).entries) {
+          if (value is Map) {
+            expect(value['other'], isA<String>(), reason: '$language / $key');
+            expect(
+                value.keys.toSet().difference({'one', 'few', 'many', 'other'}),
+                isEmpty,
+                reason: '$language / $key');
+          }
+          final forms = value is Map ? value.values : [value];
+          for (final form in forms) {
+            expect((form as String).trim(), isNotEmpty,
+                reason: '$language / $key');
+          }
+        }
+      }
+    });
+
+    test('every key the page asks for exists', () {
+      final asked = {
+        for (final m in RegExp(r"\bt\('([^']+)'").allMatches(template))
+          m.group(1)!,
+        for (final m
+            in RegExp(r"'((?:group|role)\.[A-Za-z]+)'").allMatches(template))
+          m.group(1)!,
+      };
+      expect(asked, isNotEmpty);
+      // The ones put together in code are checked in the next test.
+      asked.removeAll({'tier.', 'genName', 'genDesc'});
+      expect(asked.difference(english.keys.toSet()), isEmpty);
+    });
+
+    test('every key is used by the page, so none is left behind', () {
+      // These are put together in code: 'tier.' + tier, 'genName' + number.
+      const built = {
+        'tier.core', 'tier.common', 'tier.rare', //
+        'genName0', 'genName1', 'genName2', 'genName3',
+        'genDesc0', 'genDesc1', 'genDesc2', 'genDesc3',
+      };
+      expect(template, contains("'tier.'"));
+      expect(template, contains("'genName'"));
+      expect(template, contains("'genDesc'"));
+      final unused = [
+        for (final key in english.keys)
+          if (!built.contains(key) && !template.contains("'$key'")) key,
+      ];
+      expect(unused, isEmpty);
+    });
+  });
+
+  group('referenceStrings', () {
+    final dictionary = <String, Object?>{
+      'en': {'a': 'Apple', 'b': 'Bread'},
+      'pt': {'a': 'Maçã'},
+    };
+
+    test('gives the language its own text', () {
+      final s = referenceStrings(dictionary, 'pt');
+      expect(s['lang'], 'pt');
+      expect((s['s'] as Map)['a'], 'Maçã');
+    });
+
+    test('what a language lacks shows in English, never as a key', () {
+      expect(((referenceStrings(dictionary, 'pt')['s']) as Map)['b'], 'Bread');
+    });
+
+    test('a language the page does not have is English', () {
+      final s = referenceStrings(dictionary, 'xx');
+      expect(s['lang'], 'en');
+      expect((s['s'] as Map)['a'], 'Apple');
+    });
+
+    test('with no dictionary at all there is still a usable structure', () {
+      final s = referenceStrings(const {}, 'pt');
+      expect(s['lang'], 'en');
+      expect(s['s'], isEmpty);
     });
   });
 
@@ -537,12 +707,19 @@ void main() {
       final page = buildReferencePage(
         [cpr('a'), cpr('b'), cpr('never')],
         cache,
-        template: '<script type="application/json" id="data">__DATA__</script>',
+        template: '<i>__I18N__</i><script>__DATA__</script>',
+        stringsJson: jsonEncode({
+          'en': {'title': 'Insert reference'},
+          'pt': {'title': 'Referência de inserts'},
+        }),
+        languageCode: 'pt',
         now: DateTime.utc(2026, 10, 9),
       );
       expect(page.projects, 2);
       expect(page.html, contains('"generated":"2026-10-09"'));
       expect(page.html, contains('"n":2'));
+      expect(page.html, contains('"lang":"pt"'));
+      expect(page.html, contains('Referência de inserts'));
     });
   });
 }
