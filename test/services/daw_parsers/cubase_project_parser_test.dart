@@ -69,6 +69,54 @@ class _Archive {
     end();
   }
 
+  void key(String k) {
+    _u32(k.length + 1);
+    raw([...ascii.encode(k), 0]);
+  }
+
+  void intValue(int v) {
+    _u16(1);
+    raw((ByteData(8)..setInt64(0, v)).buffer.asUint8List());
+  }
+
+  void stringValue(String s) {
+    _u16(8);
+    string(s);
+  }
+
+  /// A mixer channel as Cubase writes it inside a track: the bus it owns
+  /// (what other channels' outputs name), its insert slots, and its output.
+  /// [inserts] maps a slot to (plug-in, bypassed); other slots are empty.
+  void channel({
+    required int ownBus,
+    required int outBus,
+    String ownName = 'Audio 1',
+    Map<int, (String, bool)> inserts = const {},
+  }) {
+    key('VST Multitrack');
+    key('OwnInputBus');
+    key('Name');
+    stringValue(ownName);
+    key('Bus UID');
+    intValue(ownBus);
+    key('InsertFolder');
+    for (var slot = 0; slot < 16; slot++) {
+      final insert = inserts[slot];
+      key('State');
+      intValue(insert != null && insert.$2 ? 0 : 1);
+      key('SlotType');
+      intValue(-1);
+      if (insert != null) {
+        key('Plugin Name');
+        stringValue(insert.$1);
+      }
+    }
+    key('hasAudioStrips');
+    key('OutputBusValue');
+    key('Value');
+    intValue(outBus);
+  }
+
   void plugin(String name, {String? original}) {
     _u32(12);
     raw([...ascii.encode('Plugin Name'), 0]);
@@ -127,12 +175,22 @@ Uint8List _project() {
   a.begin('MTrackList');
   // Cubase's hidden output folder: its device track is an output, not a group.
   a.track('MFolderTrack', 'Input/Output Channels', () {
-    a.track('MDeviceTrackEvent', 'Stereo Out');
+    a.track('MDeviceTrackEvent', 'Stereo Out', () {
+      a.channel(ownBus: 1, outBus: 0, ownName: 'Stereo Out');
+    });
   });
-  a.track('MAudioTrackEvent', 'Vocals');
-  a.track('MAudioTrackEvent', 'Guitar');
+  a.track('MAudioTrackEvent', 'Vocals', () {
+    a.channel(ownBus: 10, outBus: 1, inserts: {
+      0: ('Pro-Q 3', false),
+      2: ('LFOTool_x64', true),
+    });
+  });
+  a.track('MAudioTrackEvent', 'Guitar', () {
+    a.channel(ownBus: 11, outBus: 20);
+  });
   a.track('MFolderTrack', 'Synths', () {
     a.track('MInstrumentTrackEvent', 'Serum 01', () {
+      a.channel(ownBus: 12, outBus: 20);
       a.plugin('Bass Serum', original: 'Serum');
       a.midiPart('Bassline', 1920, [
         (-960, 30, 90, 120), // trimmed away before the part start
@@ -153,6 +211,7 @@ Uint8List _project() {
     a.plugin('Kick sample', original: 'Sampler Track');
   });
   a.track('MDeviceTrackEvent', 'Drum Group', () {
+    a.channel(ownBus: 20, outBus: 1);
     a.plugin('Standard Panner');
     a.plugin('Pro-Q 3');
     a.plugin('LFOTool_x64');
@@ -197,6 +256,60 @@ void main() {
     test('counts distinct MIDI clips', () {
       expect(parser.readStats().midiClipCount, 1);
       expect(parser.readStats(countMidiClips: false).midiClipCount, isNull);
+    });
+  });
+
+  group('readTracks', () {
+    test('lists tracks in project order, each with the folder holding it', () {
+      final tracks = parser.readTracks();
+      expect(
+        [for (final t in tracks) (t.name, t.type, t.parent)],
+        [
+          ('Vocals', CubaseTrackType.audio, null),
+          ('Guitar', CubaseTrackType.audio, null),
+          ('Synths', CubaseTrackType.folder, null),
+          ('Serum 01', CubaseTrackType.instrument, 'Synths'),
+          ('MIDI 01', CubaseTrackType.midi, 'Synths'),
+          ('Kick sample', CubaseTrackType.sampler, null),
+          ('Drum Group', CubaseTrackType.group, null),
+        ],
+      );
+      expect([for (final t in tracks) t.index], [0, 1, 2, 3, 4, 5, 6]);
+    });
+
+    test('a track\'s output is the channel that owns the bus it points at', () {
+      final out = {for (final t in parser.readTracks()) t.name: t.output};
+      expect(out['Vocals'], 'Stereo Out', reason: 'an output device');
+      expect(out['Guitar'], 'Drum Group');
+      expect(out['Serum 01'], 'Drum Group');
+      expect(out['Drum Group'], 'Stereo Out');
+      expect(out['MIDI 01'], isNull, reason: 'no channel, nothing to say');
+    });
+
+    test('reads inserts by slot, empty slots skipped, with bypass', () {
+      final vocals =
+          parser.readTracks().firstWhere((t) => t.name == 'Vocals');
+      expect(
+        [for (final i in vocals.inserts) (i.slot, i.plugin, i.bypassed)],
+        [(0, 'Pro-Q 3', false), (2, 'LFOTool_x64', true)],
+      );
+    });
+
+    test('a folder has no channel; the one inside it is not its own', () {
+      final synths =
+          parser.readTracks().firstWhere((t) => t.name == 'Synths');
+      expect(synths.output, isNull);
+      expect(synths.inserts, isEmpty);
+    });
+
+    test('leaves out the hidden output folder and its outputs', () {
+      final names = parser.readTracks().map((t) => t.name);
+      expect(names, isNot(contains('Input/Output Channels')));
+      expect(names, isNot(contains('Stereo Out')));
+    });
+
+    test('agrees with readStats on how many tracks there are', () {
+      expect(parser.readTracks(), hasLength(parser.readStats().totalTracks));
     });
   });
 

@@ -6906,4 +6906,132 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get midiCollapseAll => 'Collapse all';
+
+  @override
+  String get templateExportTitle => 'Export Cubase template data';
+
+  @override
+  String get templateExportSubtitle =>
+      'Reads the track layout of your Cubase projects and writes template.md, template-spec.md, patterns.json and corpus.json, for Claude to build a template from';
+
+  @override
+  String get templateExportAnonymize => 'Hide project names in corpus.json';
+
+  @override
+  String get templateExportButton => 'Export';
+
+  @override
+  String get templateExportDialogTitle =>
+      'Choose a folder for the template export';
+
+  @override
+  String templateExportDone(int analysed, int skipped) {
+    return 'Exported $analysed projects ($skipped could not be read)';
+  }
+
+  @override
+  String get templateExportNothing => 'No readable Cubase projects found';
+
+  @override
+  String get melodicExportTitle => 'Export melodic MIDI catalog';
+
+  @override
+  String get melodicExportSubtitle =>
+      'Saves the leads, arps and melodies of your projects as .mid files, a folder per project, with a catalog (CSV, JSON, Markdown) of tempo, key, range and more. Drums and short fragments are left out.';
+
+  @override
+  String get melodicExportIncludeChords => 'Include chords and pads';
+
+  @override
+  String get melodicExportIncludeBass => 'Include basslines';
+
+  @override
+  String get melodicExportDialogTitle => 'Choose a folder for the MIDI export';
+
+  @override
+  String melodicExportDone(int clips, int projects) {
+    return 'Exported $clips clips from $projects projects';
+  }
+
+  @override
+  String melodicExportDoneUnread(int clips, int projects, int unread) {
+    return 'Exported $clips clips from $projects projects. $unread projects have no MIDI read yet: scan them in full first.';
+  }
+
+  @override
+  String get melodicExportNothing =>
+      'No melodic MIDI found. Projects need a full metadata scan first.';
+
+  @override
+  String get melodicReadConfirmTitle => 'Read MIDI first?';
+
+  @override
+  String melodicReadConfirmBody(int count, String size) {
+    return '$count projects ($size) have no MIDI read yet. Reading opens each project file; files on a cloud drive are downloaded first.';
+  }
+
+  @override
+  String get melodicReadAndExport => 'Read and export';
+
+  @override
+  String get melodicExportReadOnly => 'Export what\'s read';
+
+  @override
+  String get melodicReadingTitle => 'Reading MIDI';
+
+  @override
+  String melodicReadingProgress(int done, int total, String name) {
+    return '$done of $total: $name';
+  }
+
+  @override
+  String get melodicReadStop => 'Stop and export what\'s read';
+
+  @override
+  String get referenceTitle => 'Insert reference page';
+
+  @override
+  String get referenceSubtitle =>
+      'Builds a web page from your Cubase projects: the plug-in chains per track role, the master chain, and every insert you have used. Opens in your browser.';
+
+  @override
+  String get referenceButton => 'Generate';
+
+  @override
+  String get referenceDialogTitle => 'Choose a folder for the page';
+
+  @override
+  String get referenceReadTitle => 'Read Cubase projects?';
+
+  @override
+  String referenceReadBody(int count, String size) {
+    return '$count Cubase projects ($size) are new or changed since the last page. Reading opens each file; files on a cloud drive are downloaded first.';
+  }
+
+  @override
+  String get referenceReadAndGenerate => 'Read and generate';
+
+  @override
+  String get referenceUseRead => 'Use what\'s read';
+
+  @override
+  String get referenceReadingTitle => 'Reading Cubase projects';
+
+  @override
+  String get referenceReadStop => 'Stop and generate with what\'s read';
+
+  @override
+  String referenceDone(int count) {
+    return 'Page generated from $count projects';
+  }
+
+  @override
+  String get referenceNothing => 'No readable Cubase projects found';
+
+  @override
+  String get experimentalTabLabel => 'Experimental';
+
+  @override
+  String get experimentalSectionIntro =>
+      'New tools that work but are still being tried out. They may change or be removed in a later version.';
 }

@@ -11602,6 +11602,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Collapse all'**
   String get midiCollapseAll;
+
+  /// Settings card title: exports Cubase track layouts for building a template
+  ///
+  /// In en, this message translates to:
+  /// **'Export Cubase template data'**
+  String get templateExportTitle;
+
+  /// Settings card subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Reads the track layout of your Cubase projects and writes template.md, template-spec.md, patterns.json and corpus.json, for Claude to build a template from'**
+  String get templateExportSubtitle;
+
+  /// Checkbox: keep project names out of corpus.json
+  ///
+  /// In en, this message translates to:
+  /// **'Hide project names in corpus.json'**
+  String get templateExportAnonymize;
+
+  /// Export button
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get templateExportButton;
+
+  /// Folder picker title
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a folder for the template export'**
+  String get templateExportDialogTitle;
+
+  /// Snackbar after the template export
+  ///
+  /// In en, this message translates to:
+  /// **'Exported {analysed} projects ({skipped} could not be read)'**
+  String templateExportDone(int analysed, int skipped);
+
+  /// Snackbar when no Cubase project could be read
+  ///
+  /// In en, this message translates to:
+  /// **'No readable Cubase projects found'**
+  String get templateExportNothing;
+
+  /// Settings card title: exports melodic MIDI clips with a catalog
+  ///
+  /// In en, this message translates to:
+  /// **'Export melodic MIDI catalog'**
+  String get melodicExportTitle;
+
+  /// Settings card subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Saves the leads, arps and melodies of your projects as .mid files, a folder per project, with a catalog (CSV, JSON, Markdown) of tempo, key, range and more. Drums and short fragments are left out.'**
+  String get melodicExportSubtitle;
+
+  /// Checkbox: also export chord and pad clips
+  ///
+  /// In en, this message translates to:
+  /// **'Include chords and pads'**
+  String get melodicExportIncludeChords;
+
+  /// Checkbox: also export bassline clips
+  ///
+  /// In en, this message translates to:
+  /// **'Include basslines'**
+  String get melodicExportIncludeBass;
+
+  /// Folder picker title
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a folder for the MIDI export'**
+  String get melodicExportDialogTitle;
+
+  /// Snackbar after the melodic MIDI export
+  ///
+  /// In en, this message translates to:
+  /// **'Exported {clips} clips from {projects} projects'**
+  String melodicExportDone(int clips, int projects);
+
+  /// Snackbar when some projects have no MIDI read yet
+  ///
+  /// In en, this message translates to:
+  /// **'Exported {clips} clips from {projects} projects. {unread} projects have no MIDI read yet: scan them in full first.'**
+  String melodicExportDoneUnread(int clips, int projects, int unread);
+
+  /// Snackbar when no melodic clip was found
+  ///
+  /// In en, this message translates to:
+  /// **'No melodic MIDI found. Projects need a full metadata scan first.'**
+  String get melodicExportNothing;
+
+  /// Dialog title: read MIDI of unread projects before the export
+  ///
+  /// In en, this message translates to:
+  /// **'Read MIDI first?'**
+  String get melodicReadConfirmTitle;
+
+  /// Dialog body: how many projects have no MIDI read and their size
+  ///
+  /// In en, this message translates to:
+  /// **'{count} projects ({size}) have no MIDI read yet. Reading opens each project file; files on a cloud drive are downloaded first.'**
+  String melodicReadConfirmBody(int count, String size);
+
+  /// Dialog button: read the missing projects, then export
+  ///
+  /// In en, this message translates to:
+  /// **'Read and export'**
+  String get melodicReadAndExport;
+
+  /// Dialog button: export only what is already read
+  ///
+  /// In en, this message translates to:
+  /// **'Export what\'s read'**
+  String get melodicExportReadOnly;
+
+  /// Progress dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Reading MIDI'**
+  String get melodicReadingTitle;
+
+  /// Progress line: position and project file
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total}: {name}'**
+  String melodicReadingProgress(int done, int total, String name);
+
+  /// Progress dialog button: stop reading and export what is read
+  ///
+  /// In en, this message translates to:
+  /// **'Stop and export what\'s read'**
+  String get melodicReadStop;
+
+  /// Settings card title: the insert reference page
+  ///
+  /// In en, this message translates to:
+  /// **'Insert reference page'**
+  String get referenceTitle;
+
+  /// Settings card subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Builds a web page from your Cubase projects: the plug-in chains per track role, the master chain, and every insert you have used. Opens in your browser.'**
+  String get referenceSubtitle;
+
+  /// Generate button
+  ///
+  /// In en, this message translates to:
+  /// **'Generate'**
+  String get referenceButton;
+
+  /// Folder picker title
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a folder for the page'**
+  String get referenceDialogTitle;
+
+  /// Dialog title: read Cubase projects before generating the page
+  ///
+  /// In en, this message translates to:
+  /// **'Read Cubase projects?'**
+  String get referenceReadTitle;
+
+  /// Dialog body: how many projects need reading and their size
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Cubase projects ({size}) are new or changed since the last page. Reading opens each file; files on a cloud drive are downloaded first.'**
+  String referenceReadBody(int count, String size);
+
+  /// Dialog button: read, then generate
+  ///
+  /// In en, this message translates to:
+  /// **'Read and generate'**
+  String get referenceReadAndGenerate;
+
+  /// Dialog button: generate from what is already read
+  ///
+  /// In en, this message translates to:
+  /// **'Use what\'s read'**
+  String get referenceUseRead;
+
+  /// Progress dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Reading Cubase projects'**
+  String get referenceReadingTitle;
+
+  /// Progress dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Stop and generate with what\'s read'**
+  String get referenceReadStop;
+
+  /// Snackbar after the page is generated
+  ///
+  /// In en, this message translates to:
+  /// **'Page generated from {count} projects'**
+  String referenceDone(int count);
+
+  /// Snackbar when no project could be read
+  ///
+  /// In en, this message translates to:
+  /// **'No readable Cubase projects found'**
+  String get referenceNothing;
+
+  /// Settings nav label for features still being tried out
+  ///
+  /// In en, this message translates to:
+  /// **'Experimental'**
+  String get experimentalTabLabel;
+
+  /// Intro line of the experimental settings section
+  ///
+  /// In en, this message translates to:
+  /// **'New tools that work but are still being tried out. They may change or be removed in a later version.'**
+  String get experimentalSectionIntro;
 }
 
 class _AppLocalizationsDelegate

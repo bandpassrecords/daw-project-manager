@@ -130,6 +130,88 @@ class CubaseProjectParser {
     );
   }
 
+  /// Every track in project order, with the folder it sits in.
+  ///
+  /// Cubase's hidden "Input/Output Channels" folder and the output devices in
+  /// it are left out, as in [readStats]. Routing, inserts and colours are not
+  /// read: the format keeps those as references by id, which are not decoded.
+  List<CubaseTrack> readTracks() {
+    final tracks = <CubaseTrack>[];
+    final busNames = _busOwnerNames();
+    for (final index in _indices) {
+      final found = <(_Instance, String, CubaseTrackType)>[];
+      for (final (cls, type) in _trackTypes) {
+        for (final i in index.instancesOf(cls)) {
+          final name = _trackName(i);
+          if (name != null) found.add((i, name, type));
+        }
+      }
+      found.sort((a, b) => a.$1.start.compareTo(b.$1.start));
+
+      final folders = [
+        for (final t in found)
+          if (t.$3 == CubaseTrackType.folder) t.$1,
+      ];
+      final devices = [
+        for (final t in found)
+          if (t.$3 == CubaseTrackType.group) t.$1,
+      ];
+      _Instance? ioFolder;
+      for (final f in folders) {
+        if (devices.any((d) => f.contains(d.start))) {
+          ioFolder = f;
+          break;
+        }
+      }
+
+      // A channel's own input bus is what other channels' outputs name, so
+      // a track's output is the track that owns the bus it points at.
+      final channels = <_Instance, _Channel>{};
+      final byBus = <int, String>{...busNames};
+      for (final (instance, name, type) in found) {
+        // A folder has no channel of its own; the first one inside it
+        // belongs to a track within.
+        if (type == CubaseTrackType.folder) continue;
+        final channel = _readChannel(instance);
+        if (channel == null) continue;
+        channels[instance] = channel;
+        if (channel.ownBus != null) byBus[channel.ownBus!] = name;
+      }
+
+      for (final (instance, name, type) in found) {
+        if (identical(instance, ioFolder)) continue;
+        if (ioFolder != null && ioFolder.contains(instance.start)) continue;
+        final channel = channels[instance];
+        final parent = _innermost(folders, instance.start);
+        String? parentName;
+        if (parent != null && !identical(parent, ioFolder)) {
+          parentName = [
+            for (final t in found)
+              if (identical(t.$1, parent)) t.$2,
+          ].firstOrNull;
+        }
+        tracks.add(CubaseTrack(
+          index: tracks.length,
+          name: name,
+          type: type,
+          parent: parentName,
+          output: channel?.outBus == null ? null : byBus[channel!.outBus],
+          inserts: channel?.inserts ?? const [],
+        ));
+      }
+    }
+    return tracks;
+  }
+
+  static const _trackTypes = [
+    (_audio, CubaseTrackType.audio),
+    (_midi, CubaseTrackType.midi),
+    (_instrument, CubaseTrackType.instrument),
+    (_sampler, CubaseTrackType.sampler),
+    (_device, CubaseTrackType.group),
+    (_folder, CubaseTrackType.folder),
+  ];
+
   /// Raw plug-in names, one per inserted instance, internals removed.
   List<String> readPluginNames() {
     final key = _keyBytes('Plugin Name');
@@ -264,6 +346,125 @@ class CubaseProjectParser {
     return notes;
   }
 
+  // --- mixer channel ---------------------------------------------------
+
+  static final _channelKey = _keyBytes('VST Multitrack');
+  static final _insertFolderKey = _keyBytes('InsertFolder');
+  static final _slotTypeKey = _keyBytes('SlotType');
+  static final _slotStateKey = _keyBytes('State');
+  static final _pluginNameKey = _keyBytes('Plugin Name');
+  static final _ownInputBusKey = _keyBytes('OwnInputBus');
+  static final _busUidKey = _keyBytes('Bus UID');
+  static final _outputBusKey = _keyBytes('OutputBusValue');
+  static final _valueKey = _keyBytes('Value');
+  static final _nameKey = _keyBytes('Name');
+  // What follows the insert slots: the strip, then the send slots.
+  static final _afterInsertKeys = [
+    _keyBytes('hasAudioStrips'),
+    _keyBytes('StripFolder'),
+    _keyBytes('SendFolder'),
+  ];
+
+  /// A track's mixer channel, which sits inside the track's own object:
+  /// its insert slots, and the buses it takes sound from and sends it to.
+  /// Null when the track holds no channel.
+  _Channel? _readChannel(_Instance track) {
+    final start = _indexOfIn(_channelKey, track.body, track.end);
+    if (start < 0) return null;
+    final end = track.end;
+
+    final ownAt = _indexOfIn(_ownInputBusKey, start, end);
+    final ownBus =
+        ownAt < 0 ? null : _intAfterKey(_busUidKey, ownAt, end)?.value;
+    final outAt = _indexOfIn(_outputBusKey, start, end);
+    final outBus = outAt < 0
+        ? null
+        : _intAfterKey(_valueKey, outAt + _outputBusKey.length,
+                outAt + _outputBusKey.length + 80)
+            ?.value;
+
+    final inserts = <CubaseInsert>[];
+    final folder = _indexOfIn(_insertFolderKey, start, end);
+    if (folder >= 0) {
+      var folderEnd = end;
+      for (final key in _afterInsertKeys) {
+        final at = _indexOfIn(key, folder, end);
+        if (at >= 0 && at < folderEnd) folderEnd = at;
+      }
+      var slot = -1;
+      bool? bypassed;
+      var at = folder;
+      while (true) {
+        final nextSlot = _indexOfIn(_slotTypeKey, at, folderEnd);
+        final nextPlugin = _indexOfIn(_pluginNameKey, at, folderEnd);
+        if (nextPlugin < 0) break;
+        if (nextSlot >= 0 && nextSlot < nextPlugin) {
+          slot++;
+          // A slot's State, written just before its SlotType, is 1 while the
+          // plug-in is on and 0 once it is bypassed.
+          final state =
+              _intAfterKey(_slotStateKey, nextSlot - 30, nextSlot)?.value;
+          bypassed = state == null ? null : state == 0;
+          at = nextSlot + _slotTypeKey.length;
+          continue;
+        }
+        final after = nextPlugin + _pluginNameKey.length;
+        at = after;
+        if (slot < 0 || !_has(after, 6) || _data.getUint16(after) != 8) continue;
+        final name = _readString(after + 2)?.text;
+        if (name != null && name.isNotEmpty) {
+          inserts.add(CubaseInsert(slot: slot, plugin: name, bypassed: bypassed));
+        }
+      }
+    }
+    return _Channel(ownBus: ownBus, outBus: outBus, inserts: inserts);
+  }
+
+  /// Bus UID → bus name for every channel's own input bus. Output devices
+  /// ("Stereo Out") are only named here; tracks are named by their track.
+  Map<int, String> _busOwnerNames() {
+    final names = <int, String>{};
+    var from = 0;
+    while (true) {
+      final at = _indexOf(_ownInputBusKey, from);
+      if (at < 0) break;
+      from = at + _ownInputBusKey.length;
+      final limit = from + 300;
+      final uid = _intAfterKey(_busUidKey, from, limit)?.value;
+      final nameAt = _indexOfIn(_nameKey, from, limit);
+      if (uid == null || nameAt < 0) continue;
+      final value = nameAt + _nameKey.length;
+      if (!_has(value, 6) || _data.getUint16(value) != 8) continue;
+      final name = _readString(value + 2)?.text;
+      if (name != null) names[uid] = name;
+    }
+    return names;
+  }
+
+  /// The integer stored under [key] when it appears in `[from, to)`.
+  ({int value, int end})? _intAfterKey(List<int> key, int from, int to) {
+    final at = _indexOfIn(key, from, to);
+    if (at < 0) return null;
+    final value = at + key.length;
+    // Type 0x0001 = integer, stored as 8 bytes.
+    if (!_has(value, 10) || _data.getUint16(value) != 1) return null;
+    return (value: _data.getInt64(value + 2), end: value + 10);
+  }
+
+  int _indexOfIn(List<int> pattern, int from, int to) {
+    final first = pattern[0];
+    final last = (to < bytes.length ? to : bytes.length) - pattern.length;
+    outer:
+    for (var i = from; i <= last; i++) {
+      if (bytes[i] != first) continue;
+      for (var j = 1; j < pattern.length; j++) {
+        if (bytes[i + j] != pattern[j]) continue outer;
+      }
+      return i;
+    }
+    return -1;
+  }
+
   // --- archive helpers -----------------------------------------------------
 
   /// Built once per parser: indexing walks the whole file twice.
@@ -393,6 +594,56 @@ class CubaseProjectParser {
     }
     return -1;
   }
+}
+
+/// What a Cubase track is, in the words the template export uses.
+/// [group] covers every device track that is not an output: group and FX
+/// channels are not told apart.
+enum CubaseTrackType { audio, instrument, midi, sampler, group, folder }
+
+/// One track as [CubaseProjectParser.readTracks] finds it.
+class CubaseTrack {
+  const CubaseTrack({
+    required this.index,
+    required this.name,
+    required this.type,
+    this.parent,
+    this.output,
+    this.inserts = const [],
+  });
+
+  final int index;
+  final String name;
+  final CubaseTrackType type;
+
+  /// Name of the folder holding the track, or null at the top level.
+  final String? parent;
+
+  /// Where the channel's output goes: the name of the group or bus channel,
+  /// or of an output such as "Stereo Out". Null when it could not be read.
+  final String? output;
+
+  /// Plug-ins in the channel's insert slots, in slot order.
+  final List<CubaseInsert> inserts;
+}
+
+/// One plug-in in an insert slot, counted from 0 as Cubase lists them.
+class CubaseInsert {
+  const CubaseInsert({required this.slot, required this.plugin, this.bypassed});
+  final int slot;
+  final String plugin;
+
+  /// Whether the slot was bypassed when saved; null when not read.
+  final bool? bypassed;
+}
+
+/// What a track's mixer channel says: the bus it owns for others to send to,
+/// the bus its output goes to, and its insert plug-ins.
+class _Channel {
+  const _Channel({this.ownBus, this.outBus, this.inserts = const []});
+  final int? ownBus;
+  final int? outBus;
+  final List<CubaseInsert> inserts;
 }
 
 /// One object in an archive: its body spans `[body, end)`. [start] is where

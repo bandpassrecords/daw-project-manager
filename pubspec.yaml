@@ -172,6 +172,12 @@ flutter:
     # GitHub release API so "What's New" works offline and inside Flatpak,
     # whose manifest deliberately drops --share=network.
     - assets/changelog/changelog.json
+    # The insert reference page the app generates from the Cubase projects
+    # it has read (Settings > Project folders). One HTML file with a single
+    # placeholder for the data; no network needed to build it.
+    - assets/reference/index.template.html
+    # What that page says, in each of the app's languages.
+    - assets/reference/strings.json
     # resources/tools/ffmpeg.exe is deliberately NOT listed here. Flutter's
     # asset list has no per-platform filter, so declaring it shipped a 97 MB
     # Windows binary inside the Android APK, the macOS .app and the Linux

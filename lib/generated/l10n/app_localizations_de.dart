@@ -6957,4 +6957,133 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get midiCollapseAll => 'Alle zuklappen';
+
+  @override
+  String get templateExportTitle => 'Cubase-Vorlagendaten exportieren';
+
+  @override
+  String get templateExportSubtitle =>
+      'Liest die Spurstruktur deiner Cubase-Projekte und erstellt template.md, template-spec.md, patterns.json und corpus.json, damit Claude daraus eine Vorlage baut';
+
+  @override
+  String get templateExportAnonymize =>
+      'Projektnamen in corpus.json ausblenden';
+
+  @override
+  String get templateExportButton => 'Exportieren';
+
+  @override
+  String get templateExportDialogTitle =>
+      'Ordner für den Vorlagen-Export wählen';
+
+  @override
+  String templateExportDone(int analysed, int skipped) {
+    return '$analysed Projekte exportiert ($skipped nicht lesbar)';
+  }
+
+  @override
+  String get templateExportNothing => 'Keine lesbaren Cubase-Projekte gefunden';
+
+  @override
+  String get melodicExportTitle => 'Melodischen MIDI-Katalog exportieren';
+
+  @override
+  String get melodicExportSubtitle =>
+      'Speichert die Leads, Arps und Melodien deiner Projekte als .mid-Dateien, ein Ordner pro Projekt, mit einem Katalog (CSV, JSON, Markdown) zu Tempo, Tonart, Umfang und mehr. Drums und kurze Fragmente bleiben außen vor.';
+
+  @override
+  String get melodicExportIncludeChords => 'Akkorde und Pads einbeziehen';
+
+  @override
+  String get melodicExportIncludeBass => 'Basslinien einbeziehen';
+
+  @override
+  String get melodicExportDialogTitle => 'Ordner für den MIDI-Export wählen';
+
+  @override
+  String melodicExportDone(int clips, int projects) {
+    return '$clips Clips aus $projects Projekten exportiert';
+  }
+
+  @override
+  String melodicExportDoneUnread(int clips, int projects, int unread) {
+    return '$clips Clips aus $projects Projekten exportiert. Bei $unread Projekten wurde noch kein MIDI gelesen: erst vollständig scannen.';
+  }
+
+  @override
+  String get melodicExportNothing =>
+      'Kein melodisches MIDI gefunden. Die Projekte brauchen zuerst einen vollständigen Metadaten-Scan.';
+
+  @override
+  String get melodicReadConfirmTitle => 'MIDI zuerst lesen?';
+
+  @override
+  String melodicReadConfirmBody(int count, String size) {
+    return 'Bei $count Projekten ($size) wurde noch kein MIDI gelesen. Das Lesen öffnet jede Projektdatei; Dateien in einer Cloud werden zuerst heruntergeladen.';
+  }
+
+  @override
+  String get melodicReadAndExport => 'Lesen und exportieren';
+
+  @override
+  String get melodicExportReadOnly => 'Bereits Gelesenes exportieren';
+
+  @override
+  String get melodicReadingTitle => 'MIDI wird gelesen';
+
+  @override
+  String melodicReadingProgress(int done, int total, String name) {
+    return '$done von $total: $name';
+  }
+
+  @override
+  String get melodicReadStop => 'Anhalten und Gelesenes exportieren';
+
+  @override
+  String get referenceTitle => 'Insert-Referenzseite';
+
+  @override
+  String get referenceSubtitle =>
+      'Erstellt eine Webseite aus deinen Cubase-Projekten: die Plugin-Ketten pro Spurrolle, die Master-Kette und alle Inserts, die du genutzt hast. Öffnet sich im Browser.';
+
+  @override
+  String get referenceButton => 'Erstellen';
+
+  @override
+  String get referenceDialogTitle => 'Ordner für die Seite wählen';
+
+  @override
+  String get referenceReadTitle => 'Cubase-Projekte lesen?';
+
+  @override
+  String referenceReadBody(int count, String size) {
+    return '$count Cubase-Projekte ($size) sind neu oder haben sich seit der letzten Seite geändert. Das Lesen öffnet jede Datei; Dateien in einer Cloud werden zuerst heruntergeladen.';
+  }
+
+  @override
+  String get referenceReadAndGenerate => 'Lesen und erstellen';
+
+  @override
+  String get referenceUseRead => 'Bereits Gelesenes verwenden';
+
+  @override
+  String get referenceReadingTitle => 'Cubase-Projekte werden gelesen';
+
+  @override
+  String get referenceReadStop => 'Anhalten und mit Gelesenem erstellen';
+
+  @override
+  String referenceDone(int count) {
+    return 'Seite aus $count Projekten erstellt';
+  }
+
+  @override
+  String get referenceNothing => 'Keine lesbaren Cubase-Projekte gefunden';
+
+  @override
+  String get experimentalTabLabel => 'Experimentell';
+
+  @override
+  String get experimentalSectionIntro =>
+      'Neue Werkzeuge, die funktionieren, aber noch erprobt werden. Sie können sich in einer späteren Version ändern oder entfallen.';
 }

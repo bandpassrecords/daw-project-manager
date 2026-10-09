@@ -6838,5 +6838,208 @@
   "midiCollapseAll": "Collapse all",
   "@midiCollapseAll": {
     "description": "Button: close every collection, folder or group in a MIDI list"
+  },
+  "templateExportTitle": "Export Cubase template data",
+  "@templateExportTitle": {
+    "description": "Settings card title: exports Cubase track layouts for building a template"
+  },
+  "templateExportSubtitle": "Reads the track layout of your Cubase projects and writes template.md, template-spec.md, patterns.json and corpus.json, for Claude to build a template from",
+  "@templateExportSubtitle": {
+    "description": "Settings card subtitle"
+  },
+  "templateExportAnonymize": "Hide project names in corpus.json",
+  "@templateExportAnonymize": {
+    "description": "Checkbox: keep project names out of corpus.json"
+  },
+  "templateExportButton": "Export",
+  "@templateExportButton": {
+    "description": "Export button"
+  },
+  "templateExportDialogTitle": "Choose a folder for the template export",
+  "@templateExportDialogTitle": {
+    "description": "Folder picker title"
+  },
+  "templateExportDone": "Exported {analysed} projects ({skipped} could not be read)",
+  "@templateExportDone": {
+    "description": "Snackbar after the template export",
+    "placeholders": {
+      "analysed": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "templateExportNothing": "No readable Cubase projects found",
+  "@templateExportNothing": {
+    "description": "Snackbar when no Cubase project could be read"
+  },
+  "melodicExportTitle": "Export melodic MIDI catalog",
+  "@melodicExportTitle": {
+    "description": "Settings card title: exports melodic MIDI clips with a catalog"
+  },
+  "melodicExportSubtitle": "Saves the leads, arps and melodies of your projects as .mid files, a folder per project, with a catalog (CSV, JSON, Markdown) of tempo, key, range and more. Drums and short fragments are left out.",
+  "@melodicExportSubtitle": {
+    "description": "Settings card subtitle"
+  },
+  "melodicExportIncludeChords": "Include chords and pads",
+  "@melodicExportIncludeChords": {
+    "description": "Checkbox: also export chord and pad clips"
+  },
+  "melodicExportIncludeBass": "Include basslines",
+  "@melodicExportIncludeBass": {
+    "description": "Checkbox: also export bassline clips"
+  },
+  "melodicExportDialogTitle": "Choose a folder for the MIDI export",
+  "@melodicExportDialogTitle": {
+    "description": "Folder picker title"
+  },
+  "melodicExportDone": "Exported {clips} clips from {projects} projects",
+  "@melodicExportDone": {
+    "description": "Snackbar after the melodic MIDI export",
+    "placeholders": {
+      "clips": {
+        "type": "int"
+      },
+      "projects": {
+        "type": "int"
+      }
+    }
+  },
+  "melodicExportDoneUnread": "Exported {clips} clips from {projects} projects. {unread} projects have no MIDI read yet: scan them in full first.",
+  "@melodicExportDoneUnread": {
+    "description": "Snackbar when some projects have no MIDI read yet",
+    "placeholders": {
+      "clips": {
+        "type": "int"
+      },
+      "projects": {
+        "type": "int"
+      },
+      "unread": {
+        "type": "int"
+      }
+    }
+  },
+  "melodicExportNothing": "No melodic MIDI found. Projects need a full metadata scan first.",
+  "@melodicExportNothing": {
+    "description": "Snackbar when no melodic clip was found"
+  },
+  "melodicReadConfirmTitle": "Read MIDI first?",
+  "@melodicReadConfirmTitle": {
+    "description": "Dialog title: read MIDI of unread projects before the export"
+  },
+  "melodicReadConfirmBody": "{count} projects ({size}) have no MIDI read yet. Reading opens each project file; files on a cloud drive are downloaded first.",
+  "@melodicReadConfirmBody": {
+    "description": "Dialog body: how many projects have no MIDI read and their size",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "melodicReadAndExport": "Read and export",
+  "@melodicReadAndExport": {
+    "description": "Dialog button: read the missing projects, then export"
+  },
+  "melodicExportReadOnly": "Export what's read",
+  "@melodicExportReadOnly": {
+    "description": "Dialog button: export only what is already read"
+  },
+  "melodicReadingTitle": "Reading MIDI",
+  "@melodicReadingTitle": {
+    "description": "Progress dialog title"
+  },
+  "melodicReadingProgress": "{done} of {total}: {name}",
+  "@melodicReadingProgress": {
+    "description": "Progress line: position and project file",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "melodicReadStop": "Stop and export what's read",
+  "@melodicReadStop": {
+    "description": "Progress dialog button: stop reading and export what is read"
+  },
+  "referenceTitle": "Insert reference page",
+  "@referenceTitle": {
+    "description": "Settings card title: the insert reference page"
+  },
+  "referenceSubtitle": "Builds a web page from your Cubase projects: the plug-in chains per track role, the master chain, and every insert you have used. Opens in your browser.",
+  "@referenceSubtitle": {
+    "description": "Settings card subtitle"
+  },
+  "referenceButton": "Generate",
+  "@referenceButton": {
+    "description": "Generate button"
+  },
+  "referenceDialogTitle": "Choose a folder for the page",
+  "@referenceDialogTitle": {
+    "description": "Folder picker title"
+  },
+  "referenceReadTitle": "Read Cubase projects?",
+  "@referenceReadTitle": {
+    "description": "Dialog title: read Cubase projects before generating the page"
+  },
+  "referenceReadBody": "{count} Cubase projects ({size}) are new or changed since the last page. Reading opens each file; files on a cloud drive are downloaded first.",
+  "@referenceReadBody": {
+    "description": "Dialog body: how many projects need reading and their size",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "referenceReadAndGenerate": "Read and generate",
+  "@referenceReadAndGenerate": {
+    "description": "Dialog button: read, then generate"
+  },
+  "referenceUseRead": "Use what's read",
+  "@referenceUseRead": {
+    "description": "Dialog button: generate from what is already read"
+  },
+  "referenceReadingTitle": "Reading Cubase projects",
+  "@referenceReadingTitle": {
+    "description": "Progress dialog title"
+  },
+  "referenceReadStop": "Stop and generate with what's read",
+  "@referenceReadStop": {
+    "description": "Progress dialog button"
+  },
+  "referenceDone": "Page generated from {count} projects",
+  "@referenceDone": {
+    "description": "Snackbar after the page is generated",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "referenceNothing": "No readable Cubase projects found",
+  "@referenceNothing": {
+    "description": "Snackbar when no project could be read"
+  },
+  "experimentalTabLabel": "Experimental",
+  "@experimentalTabLabel": {
+    "description": "Settings nav label for features still being tried out"
+  },
+  "experimentalSectionIntro": "New tools that work but are still being tried out. They may change or be removed in a later version.",
+  "@experimentalSectionIntro": {
+    "description": "Intro line of the experimental settings section"
   }
 }

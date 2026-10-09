@@ -6943,4 +6943,132 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get midiCollapseAll => 'Свернуть все';
+
+  @override
+  String get templateExportTitle => 'Экспорт данных для шаблона Cubase';
+
+  @override
+  String get templateExportSubtitle =>
+      'Считывает структуру дорожек ваших проектов Cubase и создаёт template.md, template-spec.md, patterns.json и corpus.json, чтобы Claude собрал шаблон';
+
+  @override
+  String get templateExportAnonymize =>
+      'Скрыть названия проектов в corpus.json';
+
+  @override
+  String get templateExportButton => 'Экспорт';
+
+  @override
+  String get templateExportDialogTitle => 'Выберите папку для экспорта шаблона';
+
+  @override
+  String templateExportDone(int analysed, int skipped) {
+    return 'Экспортировано проектов: $analysed (не удалось прочитать: $skipped)';
+  }
+
+  @override
+  String get templateExportNothing => 'Читаемые проекты Cubase не найдены';
+
+  @override
+  String get melodicExportTitle => 'Экспорт каталога мелодических MIDI';
+
+  @override
+  String get melodicExportSubtitle =>
+      'Сохраняет лиды, арпеджио и мелодии ваших проектов как файлы .mid, по папке на проект, с каталогом (CSV, JSON, Markdown) темпа, тональности, диапазона и другого. Ударные и короткие фрагменты исключаются.';
+
+  @override
+  String get melodicExportIncludeChords => 'Включить аккорды и пэды';
+
+  @override
+  String get melodicExportIncludeBass => 'Включить басовые партии';
+
+  @override
+  String get melodicExportDialogTitle => 'Выберите папку для экспорта MIDI';
+
+  @override
+  String melodicExportDone(int clips, int projects) {
+    return 'Экспортировано клипов: $clips, проектов: $projects';
+  }
+
+  @override
+  String melodicExportDoneUnread(int clips, int projects, int unread) {
+    return 'Экспортировано клипов: $clips, проектов: $projects. У проектов без прочитанного MIDI ($unread) сначала выполните полное сканирование.';
+  }
+
+  @override
+  String get melodicExportNothing =>
+      'Мелодические MIDI не найдены. Сначала нужно полное сканирование метаданных проектов.';
+
+  @override
+  String get melodicReadConfirmTitle => 'Сначала прочитать MIDI?';
+
+  @override
+  String melodicReadConfirmBody(int count, String size) {
+    return 'У проектов ($count, $size) MIDI ещё не прочитан. Чтение открывает каждый файл проекта; файлы в облаке сначала скачиваются.';
+  }
+
+  @override
+  String get melodicReadAndExport => 'Прочитать и экспортировать';
+
+  @override
+  String get melodicExportReadOnly => 'Экспортировать уже прочитанное';
+
+  @override
+  String get melodicReadingTitle => 'Чтение MIDI';
+
+  @override
+  String melodicReadingProgress(int done, int total, String name) {
+    return '$done из $total: $name';
+  }
+
+  @override
+  String get melodicReadStop => 'Остановить и экспортировать прочитанное';
+
+  @override
+  String get referenceTitle => 'Страница справки по инсертам';
+
+  @override
+  String get referenceSubtitle =>
+      'Создаёт веб-страницу из ваших проектов Cubase: цепочки плагинов по ролям дорожек, цепочку мастера и все использованные инсерты. Открывается в браузере.';
+
+  @override
+  String get referenceButton => 'Создать';
+
+  @override
+  String get referenceDialogTitle => 'Выберите папку для страницы';
+
+  @override
+  String get referenceReadTitle => 'Прочитать проекты Cubase?';
+
+  @override
+  String referenceReadBody(int count, String size) {
+    return 'Проектов Cubase: $count ($size) — новые или изменились с прошлой страницы. Чтение открывает каждый файл; файлы в облаке сначала скачиваются.';
+  }
+
+  @override
+  String get referenceReadAndGenerate => 'Прочитать и создать';
+
+  @override
+  String get referenceUseRead => 'Использовать уже прочитанное';
+
+  @override
+  String get referenceReadingTitle => 'Чтение проектов Cubase';
+
+  @override
+  String get referenceReadStop => 'Остановить и создать по прочитанному';
+
+  @override
+  String referenceDone(int count) {
+    return 'Страница создана по проектам: $count';
+  }
+
+  @override
+  String get referenceNothing => 'Читаемые проекты Cubase не найдены';
+
+  @override
+  String get experimentalTabLabel => 'Экспериментальное';
+
+  @override
+  String get experimentalSectionIntro =>
+      'Новые инструменты, которые работают, но ещё проходят проверку. В будущих версиях они могут измениться или исчезнуть.';
 }
