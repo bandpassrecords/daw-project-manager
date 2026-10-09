@@ -124,6 +124,7 @@
   "metadataExtractionIntro": "La Scansione Approfondita può leggere automaticamente alcuni di questi campi direttamente da un file di progetto — il resto deve essere inserito manualmente. Questa tabella mostra cosa è automatico oggi per ogni DAW supportata.",
   "metadataFieldKey": "Tonalità",
   "metadataFieldVersion": "Versione DAW",
+  "metadataFieldMidiEvents": "Controller e pitch bend MIDI",
   "metadataExtractionManualNote": "Qualsiasi campo senza supporto automatico può comunque essere inserito manualmente nel Dettaglio Progetto. In particolare per BPM e Tonalità, anche l'inserimento di un file bpm.txt o key.txt accanto al progetto viene rilevato alla scansione successiva.",
   "metadataExtractedSuccessfully": "Metadati estratti con successo",
   "failedToExtractMetadata": "Estrazione metadati fallita: {error}",

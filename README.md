@@ -70,16 +70,16 @@ Not yet supported: Harrison Mixbus and SAWStudio/Pyramix/Zynewave Podium (no rel
 
 Deep Scan reads BPM, musical key, DAW version, and (Reaper only) project notes and timeline markers directly from certain project files. For the DAWs marked below it also reads what is *inside* the project: how many tracks of each kind (audio, MIDI, instrument, sampler, groups/FX, folders) and which plug-ins it loads, shown on the project's detail page and searchable from the dashboard (type a plug-in name to find every song that uses it). Everything else needs the field entered manually, or picked up from an optional `bpm.txt`/`key.txt` file dropped next to the project. See **Settings → Metadata Extraction** in the app for the full breakdown by DAW.
 
-| Automatic extraction | BPM | Key | Version | Notes | Markers | Tracks | Plug-ins | MIDI clips |
-|---|---|---|---|---|---|---|---|---|
-| Ableton Live | ✓ | ✓ | ✓ | | | ✓ | ✓ | ✓ |
-| Bitwig Studio | ✓ | ✓ | ✓ | | | | | |
-| Cubase / Nuendo | ✓ | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
-| FL Studio | ✓ | | ✓ | | | ✓ | ✓ | ✓ |
-| Logic Pro *(macOS)* | ✓ | ✓ | ✓ | | | | | |
-| MAGDA | ✓ | ✓ | ✓ | | | | | |
-| Reaper | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Studio One | ✓ | | ✓ | | | ✓ | | |
+| Automatic extraction | BPM | Key | Version | Notes | Markers | Tracks | Plug-ins | MIDI clips | MIDI events |
+|---|---|---|---|---|---|---|---|---|---|
+| Ableton Live | ✓ | ✓ | ✓ | | | ✓ | ✓ | ✓ | ✓ |
+| Bitwig Studio | ✓ | ✓ | ✓ | | | | | |  |
+| Cubase / Nuendo | ✓ | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |  |
+| FL Studio | ✓ | | ✓ | | | ✓ | ✓ | ✓ |  |
+| Logic Pro *(macOS)* | ✓ | ✓ | ✓ | | | | | |  |
+| MAGDA | ✓ | ✓ | ✓ | | | | | |  |
+| Reaper | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Studio One | ✓ | | ✓ | | | ✓ | | |  |
 
 **MIDI clips** *(desktop)* — the project's MIDI clips/parts/patterns, read from the project file whenever its metadata is extracted and kept with the project, so they sync to your other devices and phone; listed under the track they sit on, since a clip's own name is often just a DAW default. Each one can be previewed through a simple built-in synth (at the project tempo, or any tempo you set; saved files carry the same tempo; on a seamless loop if you like), opened in a piano roll that zooms around the mouse, with a playback line (click or drag along the bar ruler to jump), the project's scale highlighted (or any scale you pick), and a lane underneath for velocity, pitch bend, controllers (mod wheel, sustain, filter cutoff…), aftertouch or program changes — where notes can also be edited the way Cubase's key editor does it (select, range, eraser and pencil tools, duplicate with Ctrl/Cmd+D, quantize with Q, clips that grow as you draw past their end, a tempo and time signature of their own, a Cubase-style loop region on the ruler, the view scrolling as you drag past its edges, double-click to add or delete, box-select, ↑/↓ to transpose by a semitone or Shift for an octave, drag either edge to resize, Alt-drag to copy, Ctrl to ignore the grid, velocities drawn across many notes at once, finely drawn pitch bend and controller curves, undo), with every shortcut on one cheat sheet (press ?), notes outside the scale shown in orange, a playable keyboard, a full screen mode, notes heard as you edit them if you like, and the instrument switchable from the editor and saved as a new clip in a collection, played with an instrument guessed from the track or clip name (lead, bass, pad, keys, drums… or picked by hand), saved as a standard `.mid` file — controllers, pitch bend and the project's key included (the key is in the file name too) — shared with friends, or dragged straight into another DAW or a folder; **Export all** writes every clip at once. REAPER items that reference an external `.mid` file are read from that file, and the project page warns when a referenced file can't be found. The dashboard can show only projects that contain MIDI.
 

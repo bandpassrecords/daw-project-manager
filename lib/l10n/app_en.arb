@@ -127,6 +127,7 @@
   "metadataExtractionIntro": "Deep Scan can automatically read some of these fields straight from a project file — the rest have to be entered by hand. This table shows what's automatic for each supported DAW today.",
   "metadataFieldKey": "Key",
   "metadataFieldVersion": "DAW Version",
+  "metadataFieldMidiEvents": "MIDI controllers & bend",
   "metadataExtractionManualNote": "Any field without automatic support can still be entered manually in Project Detail. For BPM and Key specifically, dropping a bpm.txt or key.txt file next to the project is also picked up on the next scan.",
   "metadataExtractedSuccessfully": "Metadata extracted successfully",
   "failedToExtractMetadata": "Failed to extract metadata: {error}",

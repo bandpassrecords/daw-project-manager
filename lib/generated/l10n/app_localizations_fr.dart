@@ -292,6 +292,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get metadataFieldVersion => 'Version du DAW';
 
   @override
+  String get metadataFieldMidiEvents => 'Contrôleurs et pitch bend MIDI';
+
+  @override
   String get metadataExtractionManualNote =>
       'Tout champ sans prise en charge automatique peut toujours être saisi manuellement dans le Détail du Projet. Pour le BPM et la Tonalité en particulier, déposer un fichier bpm.txt ou key.txt à côté du projet est également détecté lors du prochain scan.';
 

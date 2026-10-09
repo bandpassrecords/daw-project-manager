@@ -124,6 +124,7 @@
   "metadataExtractionIntro": "A Varredura Profunda pode ler automaticamente alguns desses campos diretamente do arquivo do projeto — o restante precisa ser inserido manualmente. Esta tabela mostra o que é automático hoje para cada DAW suportada.",
   "metadataFieldKey": "Tom",
   "metadataFieldVersion": "Versão do DAW",
+  "metadataFieldMidiEvents": "Controladores e pitch bend MIDI",
   "metadataExtractionManualNote": "Qualquer campo sem suporte automático ainda pode ser inserido manualmente no Detalhe do Projeto. Para BPM e Tom especificamente, colocar um arquivo bpm.txt ou key.txt ao lado do projeto também é detectado na próxima varredura.",
   "metadataExtractedSuccessfully": "Metadados extraídos com sucesso",
   "failedToExtractMetadata": "Falha ao extrair metadados: {error}",

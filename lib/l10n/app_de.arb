@@ -124,6 +124,7 @@
   "metadataExtractionIntro": "Der Tiefenscan kann einige dieser Felder automatisch direkt aus einer Projektdatei auslesen — der Rest muss manuell eingegeben werden. Diese Tabelle zeigt, was heute für jede unterstützte DAW automatisch funktioniert.",
   "metadataFieldKey": "Tonart",
   "metadataFieldVersion": "DAW-Version",
+  "metadataFieldMidiEvents": "MIDI-Controller & Pitch Bend",
   "metadataExtractionManualNote": "Jedes Feld ohne automatische Unterstützung kann weiterhin manuell in den Projektdetails eingegeben werden. Speziell für BPM und Tonart wird auch eine bpm.txt- oder key.txt-Datei neben dem Projekt beim nächsten Scan erkannt.",
   "metadataExtractedSuccessfully": "Metadaten erfolgreich extrahiert",
   "failedToExtractMetadata": "Metadatenextraktion fehlgeschlagen: {error}",

@@ -289,6 +289,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get metadataFieldVersion => 'Versão do DAW';
 
   @override
+  String get metadataFieldMidiEvents => 'Controladores e pitch bend MIDI';
+
+  @override
   String get metadataExtractionManualNote =>
       'Qualquer campo sem suporte automático ainda pode ser inserido manualmente no Detalhe do Projeto. Para BPM e Tom especificamente, colocar um arquivo bpm.txt ou key.txt ao lado do projeto também é detectado na próxima varredura.';
 
