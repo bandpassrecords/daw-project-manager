@@ -3681,6 +3681,42 @@ final releaseTracksMaximizedProvider =
       ReleaseTracksMaximizedNotifier.new,
     );
 
+/// Whether the release page shows its tracklist as the table rather than the
+/// list. Remembered across releases and restarts, like the maximized panel:
+/// whichever someone last chose is what they see on the next release they
+/// open. Safe to keep as the resting state — sorting the table never rewrites
+/// the running order; the list is one click away to drag it. Device-local.
+class ReleaseTracksAsTableNotifier extends Notifier<bool> {
+  static const boxKey = 'releaseTracksAsTable';
+
+  @override
+  bool build() {
+    try {
+      return Hive.box<String>('settings').get(boxKey) == 'true';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> set(bool value) async {
+    if (value == state) return;
+    state = value;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      await box.put(boxKey, value.toString());
+    } catch (e) {
+      debugPrint('[ReleaseTracksAsTable] failed to save: $e');
+    }
+  }
+}
+
+final releaseTracksAsTableProvider =
+    NotifierProvider<ReleaseTracksAsTableNotifier, bool>(
+      ReleaseTracksAsTableNotifier.new,
+    );
+
 // ─── Dashboard view mode ──────────────────────────────────────────────────────
 
 /// Whether the desktop dashboard draws the projects table or the card grid.

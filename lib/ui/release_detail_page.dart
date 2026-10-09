@@ -64,14 +64,6 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
   bool _isDraggingFiles = false;
   Timer? _autoSaveTimer;
 
-  /// Table view for the tracklist instead of the ordered list.
-  ///
-  /// Per-page and not persisted on purpose: the list is the one that can be
-  /// dragged into running order, so it stays the default every time the page
-  /// opens. The table is for reading — sorting it never rewrites the
-  /// tracklist, which is exactly why it isn't the resting state.
-  bool _tracksAsTable = false;
-
   /// Guards the one-shot duration fill below against a rebuild re-running it.
   bool _durationFillStarted = false;
 
@@ -1017,6 +1009,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
     // it latches after the first non-empty list (see _scheduleDurationFill).
     _scheduleDurationFill(releaseProjects);
     final maximized = ref.watch(releaseTracksMaximizedProvider);
+    final tracksAsTable = ref.watch(releaseTracksAsTableProvider);
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1046,14 +1039,16 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                         tooltip: l10n.tracksViewTable,
                       ),
                     ],
-                    selected: {_tracksAsTable},
+                    selected: {tracksAsTable},
                     showSelectedIcon: false,
                     style: const ButtonStyle(
                       visualDensity: VisualDensity.compact,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     onSelectionChanged: (selection) =>
-                        setState(() => _tracksAsTable = selection.first),
+                        ref
+                            .read(releaseTracksAsTableProvider.notifier)
+                            .set(selection.first),
                   ),
                   const SizedBox(width: 12),
                 ],
@@ -1078,7 +1073,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
           ),
           const Divider(),
           Expanded(
-            child: _tracksAsTable && releaseProjects.isNotEmpty
+            child: tracksAsTable && releaseProjects.isNotEmpty
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: _buildTracksTable(context, release, releaseProjects),
