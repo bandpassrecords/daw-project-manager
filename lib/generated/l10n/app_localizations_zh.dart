@@ -6660,4 +6660,82 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midiCollapseAll => '全部折叠';
+
+  @override
+  String get templateExportTitle => '导出 Cubase 模板数据';
+
+  @override
+  String get templateExportSubtitle =>
+      '读取你的 Cubase 项目的轨道结构，并生成 template.md, template-spec.md、patterns.json 和 corpus.json，供 Claude 构建模板';
+
+  @override
+  String get templateExportAnonymize => '在 corpus.json 中隐藏项目名称';
+
+  @override
+  String get templateExportButton => '导出';
+
+  @override
+  String get templateExportDialogTitle => '选择模板导出文件夹';
+
+  @override
+  String templateExportDone(int analysed, int skipped) {
+    return '已导出 $analysed 个项目（$skipped 个无法读取）';
+  }
+
+  @override
+  String get templateExportNothing => '未找到可读取的 Cubase 项目';
+
+  @override
+  String get melodicExportTitle => '导出旋律 MIDI 目录';
+
+  @override
+  String get melodicExportSubtitle =>
+      '将项目中的主音、琶音和旋律保存为 .mid 文件，每个项目一个文件夹，并附带速度、调性、音域等信息的目录（CSV、JSON、Markdown）。鼓和过短的片段会被排除。';
+
+  @override
+  String get melodicExportIncludeChords => '包含和弦与音色铺底';
+
+  @override
+  String get melodicExportIncludeBass => '包含贝斯线';
+
+  @override
+  String get melodicExportDialogTitle => '选择 MIDI 导出文件夹';
+
+  @override
+  String melodicExportDone(int clips, int projects) {
+    return '已从 $projects 个项目导出 $clips 个片段';
+  }
+
+  @override
+  String melodicExportDoneUnread(int clips, int projects, int unread) {
+    return '已从 $projects 个项目导出 $clips 个片段。有 $unread 个项目尚未读取 MIDI：请先完整扫描。';
+  }
+
+  @override
+  String get melodicExportNothing => '未找到旋律 MIDI。项目需要先进行完整的元数据扫描。';
+
+  @override
+  String get melodicReadConfirmTitle => '先读取 MIDI 吗？';
+
+  @override
+  String melodicReadConfirmBody(int count, String size) {
+    return '有 $count 个项目（$size）尚未读取 MIDI。读取会打开每个项目文件；云盘上的文件会先被下载。';
+  }
+
+  @override
+  String get melodicReadAndExport => '读取并导出';
+
+  @override
+  String get melodicExportReadOnly => '导出已读取的内容';
+
+  @override
+  String get melodicReadingTitle => '正在读取 MIDI';
+
+  @override
+  String melodicReadingProgress(int done, int total, String name) {
+    return '$done / $total：$name';
+  }
+
+  @override
+  String get melodicReadStop => '停止并导出已读取的内容';
 }

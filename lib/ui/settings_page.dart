@@ -29,6 +29,10 @@ import '../services/mixdown_detector_service.dart';
 import '../services/project_parts_csv_export_service.dart';
 import '../services/project_parts_xlsx_export_service.dart';
 import '../services/project_text_export_service.dart';
+import '../services/midi/melodic_midi_export.dart';
+import '../services/midi/melodic_midi_reading.dart';
+import '../models/midi_clip_naming.dart' show MidiClipRole;
+import '../services/template_export/template_export_service.dart';
 import '../services/scan_import_service.dart';
 import '../services/theme_file_service.dart';
 import '../services/update_check_service.dart';
@@ -49,6 +53,9 @@ import 'widgets/columns_and_fields_settings.dart';
 import '../models/custom_field.dart';
 import 'theme_labels.dart';
 import 'widgets/parts_export_card.dart';
+import 'widgets/melodic_export_card.dart';
+import 'widgets/midi_read_dialogs.dart';
+import 'widgets/template_export_card.dart';
 import 'widgets/theme_preview_card.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/section_nav_rail.dart';
@@ -121,6 +128,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }();
 
   bool _busy = false;
+  bool _anonymizeTemplateExport = false;
+  bool _melodicIncludeChords = false;
+  bool _melodicIncludeBass = false;
   bool _checkingUpdate = false;
   late final TextEditingController _newMixdownFolderCtrl;
   final Map<String, TextEditingController> _mixdownFolderByDawCtrls = {};
@@ -490,6 +500,113 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           SnackBar(content: Text(l10n.failedToExportProjectInfo(e.toString()))),
         );
       }
+    }
+  }
+
+  /// The leads, arps and melodies of every project as `.mid` files, a folder
+  /// per project, with a catalog beside them. Uses the clips stored by each
+  /// project's last full read, so it never opens a project file.
+  Future<void> _exportMelodicMidi() async {
+    if (_busy) return;
+    final l10n = AppLocalizations.of(context)!;
+    final repo = await ref.read(repositoryProvider.future);
+    final projects = repo.getAllProjects();
+    try {
+      final dir = await FilePicker.getDirectoryPath(
+        dialogTitle: l10n.melodicExportDialogTitle,
+      );
+      if (dir == null) return; // user cancelled
+      setState(() => _busy = true);
+      var stored = await repo.midiClips.getAll();
+
+      // Projects never read for MIDI: reading opens each file (and downloads
+      // it from a cloud drive), so only on request.
+      final unread = projectsNeedingMidiRead(projects, stored.keys.toSet());
+      if (unread.isNotEmpty && mounted) {
+        final choice = await askMidiRead(
+          context,
+          count: unread.length,
+          bytes: unread.fold<int>(0, (sum, x) => sum + x.fileSizeBytes),
+        );
+        if (choice == MidiReadChoice.cancel || !mounted) return;
+        if (choice == MidiReadChoice.readThenExport) {
+          await showDialog<MidiReadOutcome>(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => MidiReadDialog(
+              projects: unread,
+              read: (project) => repo.extractFullMetadataForProject(project.id),
+            ),
+          );
+          stored = await repo.midiClips.getAll();
+        }
+      }
+      final today = DateTime.now().toIso8601String().substring(0, 10);
+      final result = await exportMelodicClips(
+        stored,
+        repo.getAllProjects(),
+        directory: Directory(p.join(dir, 'Melodic MIDI $today')),
+        options: MelodicExportOptions(roles: {
+          MidiClipRole.melody,
+          MidiClipRole.lead,
+          MidiClipRole.arp,
+          if (_melodicIncludeChords) ...{MidiClipRole.chords, MidiClipRole.pad},
+          if (_melodicIncludeBass) MidiClipRole.bass,
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(result.clips == 0
+            ? l10n.melodicExportNothing
+            : result.projectsWithoutMidi == 0
+                ? l10n.melodicExportDone(result.clips, result.projects)
+                : l10n.melodicExportDoneUnread(
+                    result.clips, result.projects, result.projectsWithoutMidi)),
+      ));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.failedToExportProjectInfo(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Writes what the Cubase projects have in common (track roles, folders,
+  /// buses) as the files Claude builds a Cubase template from.
+  Future<void> _exportTemplateData() async {
+    if (_busy) return;
+    final l10n = AppLocalizations.of(context)!;
+    final repo = await ref.read(repositoryProvider.future);
+    final projects = repo.getAllProjects();
+    try {
+      final dir = await FilePicker.getDirectoryPath(
+        dialogTitle: l10n.templateExportDialogTitle,
+      );
+      if (dir == null) return; // user cancelled
+      setState(() => _busy = true);
+      final result = await TemplateExportService.export(
+        projects,
+        directory: Directory(dir),
+        anonymize: _anonymizeTemplateExport,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(result.projectsAnalysed == 0
+            ? l10n.templateExportNothing
+            : l10n.templateExportDone(
+                result.projectsAnalysed, result.projectsSkipped)),
+      ));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.failedToExportProjectInfo(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -1190,6 +1307,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.projectFolders, Icons.description_outlined, l10n.exportAllProjectsInfo, l10n.exportAllProjectsInfoSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.table_view_outlined, l10n.exportAllPartsCsv, l10n.exportAllPartsCsvSubtitle),
         _SearchEntry(SettingsSection.projectFolders, Icons.grid_on, l10n.exportAllPartsXlsx, l10n.exportAllPartsXlsxSubtitle),
+        _SearchEntry(SettingsSection.projectFolders, Icons.account_tree_outlined, l10n.templateExportTitle, l10n.templateExportSubtitle),
+        _SearchEntry(SettingsSection.projectFolders, Icons.piano_outlined, l10n.melodicExportTitle, l10n.melodicExportSubtitle),
         if (MobileUtils.isDesktop()) ...[
           _SearchEntry(SettingsSection.dawLaunchCommands, Icons.terminal_outlined, l10n.dawLaunchCommandsTabLabel, l10n.dawLaunchCommandsSectionDescription),
         ],
@@ -2087,6 +2206,28 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           busy: _busy,
           onExport: ({required bool asXlsx}) =>
               _exportAllParts(asXlsx: asXlsx),
+        ),
+
+        const SizedBox(height: 12),
+
+        TemplateExportCard(
+          busy: _busy,
+          anonymize: _anonymizeTemplateExport,
+          onAnonymizeChanged: (v) =>
+              setState(() => _anonymizeTemplateExport = v),
+          onExport: _exportTemplateData,
+        ),
+
+        const SizedBox(height: 12),
+
+        MelodicExportCard(
+          busy: _busy,
+          includeChords: _melodicIncludeChords,
+          includeBass: _melodicIncludeBass,
+          onIncludeChordsChanged: (v) =>
+              setState(() => _melodicIncludeChords = v),
+          onIncludeBassChanged: (v) => setState(() => _melodicIncludeBass = v),
+          onExport: _exportMelodicMidi,
         ),
       ],
     );

@@ -6735,4 +6735,83 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get midiCollapseAll => 'すべて折りたたむ';
+
+  @override
+  String get templateExportTitle => 'Cubaseテンプレート用データを書き出す';
+
+  @override
+  String get templateExportSubtitle =>
+      'Cubaseプロジェクトのトラック構成を読み取り、Claudeがテンプレートを作るためのtemplate.md, template-spec.md、patterns.json、corpus.jsonを生成します';
+
+  @override
+  String get templateExportAnonymize => 'corpus.jsonでプロジェクト名を隠す';
+
+  @override
+  String get templateExportButton => '書き出す';
+
+  @override
+  String get templateExportDialogTitle => 'テンプレート書き出し先のフォルダを選択';
+
+  @override
+  String templateExportDone(int analysed, int skipped) {
+    return '$analysed件のプロジェクトを書き出しました（$skipped件は読み取れませんでした）';
+  }
+
+  @override
+  String get templateExportNothing => '読み取れるCubaseプロジェクトが見つかりません';
+
+  @override
+  String get melodicExportTitle => 'メロディMIDIカタログを書き出す';
+
+  @override
+  String get melodicExportSubtitle =>
+      'プロジェクトのリード、アルペジオ、メロディを、プロジェクトごとのフォルダに.midファイルとして保存し、テンポ、キー、音域などのカタログ（CSV、JSON、Markdown）を付けます。ドラムと短い断片は除外されます。';
+
+  @override
+  String get melodicExportIncludeChords => 'コードとパッドを含める';
+
+  @override
+  String get melodicExportIncludeBass => 'ベースラインを含める';
+
+  @override
+  String get melodicExportDialogTitle => 'MIDI書き出し先のフォルダを選択';
+
+  @override
+  String melodicExportDone(int clips, int projects) {
+    return '$projects件のプロジェクトから$clips個のクリップを書き出しました';
+  }
+
+  @override
+  String melodicExportDoneUnread(int clips, int projects, int unread) {
+    return '$projects件のプロジェクトから$clips個のクリップを書き出しました。$unread件のプロジェクトはMIDIが未読み込みです。先にフルスキャンしてください。';
+  }
+
+  @override
+  String get melodicExportNothing =>
+      'メロディMIDIが見つかりません。先にプロジェクトのメタデータをフルスキャンしてください。';
+
+  @override
+  String get melodicReadConfirmTitle => '先にMIDIを読み込みますか？';
+
+  @override
+  String melodicReadConfirmBody(int count, String size) {
+    return '$count件のプロジェクト（$size）はMIDIが未読み込みです。読み込みは各プロジェクトファイルを開きます。クラウド上のファイルは先にダウンロードされます。';
+  }
+
+  @override
+  String get melodicReadAndExport => '読み込んで書き出す';
+
+  @override
+  String get melodicExportReadOnly => '読み込み済みのものを書き出す';
+
+  @override
+  String get melodicReadingTitle => 'MIDIを読み込み中';
+
+  @override
+  String melodicReadingProgress(int done, int total, String name) {
+    return '$done / $total: $name';
+  }
+
+  @override
+  String get melodicReadStop => '停止して読み込み済みを書き出す';
 }

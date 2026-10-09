@@ -6989,4 +6989,86 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get midiCollapseAll => 'Tout réduire';
+
+  @override
+  String get templateExportTitle => 'Exporter les données du modèle Cubase';
+
+  @override
+  String get templateExportSubtitle =>
+      'Lit la structure des pistes de vos projets Cubase et génère template.md, template-spec.md, patterns.json et corpus.json pour que Claude construise un modèle';
+
+  @override
+  String get templateExportAnonymize =>
+      'Masquer les noms de projets dans corpus.json';
+
+  @override
+  String get templateExportButton => 'Exporter';
+
+  @override
+  String get templateExportDialogTitle =>
+      'Choisissez un dossier pour l\'export du modèle';
+
+  @override
+  String templateExportDone(int analysed, int skipped) {
+    return '$analysed projets exportés ($skipped illisibles)';
+  }
+
+  @override
+  String get templateExportNothing => 'Aucun projet Cubase lisible trouvé';
+
+  @override
+  String get melodicExportTitle => 'Exporter le catalogue MIDI mélodique';
+
+  @override
+  String get melodicExportSubtitle =>
+      'Enregistre les leads, arps et mélodies de vos projets en fichiers .mid, un dossier par projet, avec un catalogue (CSV, JSON, Markdown) du tempo, de la tonalité, de l\'étendue et plus. Batteries et fragments courts sont exclus.';
+
+  @override
+  String get melodicExportIncludeChords => 'Inclure accords et pads';
+
+  @override
+  String get melodicExportIncludeBass => 'Inclure les lignes de basse';
+
+  @override
+  String get melodicExportDialogTitle =>
+      'Choisissez un dossier pour l\'export MIDI';
+
+  @override
+  String melodicExportDone(int clips, int projects) {
+    return '$clips clips exportés depuis $projects projets';
+  }
+
+  @override
+  String melodicExportDoneUnread(int clips, int projects, int unread) {
+    return '$clips clips exportés depuis $projects projets. $unread projets n\'ont pas encore leur MIDI lu : analysez-les d\'abord en entier.';
+  }
+
+  @override
+  String get melodicExportNothing =>
+      'Aucun MIDI mélodique trouvé. Les projets doivent d\'abord subir une analyse complète des métadonnées.';
+
+  @override
+  String get melodicReadConfirmTitle => 'Lire le MIDI d\'abord ?';
+
+  @override
+  String melodicReadConfirmBody(int count, String size) {
+    return '$count projets ($size) n\'ont pas encore leur MIDI lu. La lecture ouvre chaque fichier de projet ; les fichiers sur un cloud sont d\'abord téléchargés.';
+  }
+
+  @override
+  String get melodicReadAndExport => 'Lire et exporter';
+
+  @override
+  String get melodicExportReadOnly => 'Exporter ce qui est déjà lu';
+
+  @override
+  String get melodicReadingTitle => 'Lecture du MIDI';
+
+  @override
+  String melodicReadingProgress(int done, int total, String name) {
+    return '$done sur $total : $name';
+  }
+
+  @override
+  String get melodicReadStop => 'Arrêter et exporter ce qui est lu';
 }
