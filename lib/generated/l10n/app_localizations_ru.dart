@@ -291,6 +291,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get metadataFieldVersion => 'Версия DAW';
 
   @override
+  String get metadataFieldMidiEvents => 'MIDI-контроллеры и питчбенд';
+
+  @override
   String get metadataExtractionManualNote =>
       'Любое поле без автоматической поддержки можно ввести вручную в деталях проекта. Специально для BPM и тональности: файл bpm.txt или key.txt, помещённый рядом с проектом, также будет обнаружен при следующем сканировании.';
 

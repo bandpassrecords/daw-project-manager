@@ -288,6 +288,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get metadataFieldVersion => 'DAW Version';
 
   @override
+  String get metadataFieldMidiEvents => 'MIDI controllers & bend';
+
+  @override
   String get metadataExtractionManualNote =>
       'Any field without automatic support can still be entered manually in Project Detail. For BPM and Key specifically, dropping a bpm.txt or key.txt file next to the project is also picked up on the next scan.';
 

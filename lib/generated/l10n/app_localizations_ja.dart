@@ -284,6 +284,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get metadataFieldVersion => 'DAWバージョン';
 
   @override
+  String get metadataFieldMidiEvents => 'MIDIコントローラー/ピッチベンド';
+
+  @override
   String get metadataExtractionManualNote =>
       '自動対応していない項目は、プロジェクト詳細で手動入力できます。特にBPMとキーについては、プロジェクトの隣にbpm.txtまたはkey.txtファイルを置くと、次回のスキャンで読み込まれます。';
 

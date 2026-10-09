@@ -124,6 +124,7 @@
   "metadataExtractionIntro": "深度扫描可以自动从项目文件中直接读取部分字段 — 其余字段需要手动输入。此表显示了每个受支持的DAW目前自动支持哪些字段。",
   "metadataFieldKey": "调性",
   "metadataFieldVersion": "DAW版本",
+  "metadataFieldMidiEvents": "MIDI控制器和弯音",
   "metadataExtractionManualNote": "没有自动支持的字段仍可以在项目详情中手动输入。特别是对于BPM和调性，在项目旁放置bpm.txt或key.txt文件，也会在下次扫描时被读取。",
   "metadataExtractedSuccessfully": "元数据提取成功",
   "failedToExtractMetadata": "元数据提取失败: {error}",

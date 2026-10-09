@@ -280,6 +280,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get metadataFieldVersion => 'DAW版本';
 
   @override
+  String get metadataFieldMidiEvents => 'MIDI控制器和弯音';
+
+  @override
   String get metadataExtractionManualNote =>
       '没有自动支持的字段仍可以在项目详情中手动输入。特别是对于BPM和调性，在项目旁放置bpm.txt或key.txt文件，也会在下次扫描时被读取。';
 

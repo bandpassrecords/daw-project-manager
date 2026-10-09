@@ -32,6 +32,10 @@ class _DawExtractionInfo {
   /// MIDI clips you can preview, save and drag out (`MidiClipService`).
   final bool midiClips;
 
+  /// Controllers, pitch bend, aftertouch and program changes inside those
+  /// clips (`MidiClip.events`). Cubase and FL Studio don't yet.
+  final bool midiEvents;
+
   const _DawExtractionInfo(
     this.name, {
     required this.bpm,
@@ -42,11 +46,12 @@ class _DawExtractionInfo {
     this.tracks = false,
     this.plugins = false,
     this.midiClips = false,
+    this.midiEvents = false,
   });
 }
 
 const _dawExtractionInfo = [
-  _DawExtractionInfo('Ableton Live', bpm: true, key: true, version: true, notes: false, tracks: true, plugins: true, midiClips: true),
+  _DawExtractionInfo('Ableton Live', bpm: true, key: true, version: true, notes: false, tracks: true, plugins: true, midiClips: true, midiEvents: true),
   _DawExtractionInfo('ACID Pro', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Adobe Audition', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Ardour', bpm: false, key: false, version: false, notes: false),
@@ -65,7 +70,7 @@ const _dawExtractionInfo = [
   _DawExtractionInfo('Nuendo', bpm: true, key: true, version: true, notes: true, tracks: true, plugins: true, midiClips: true),
   _DawExtractionInfo('Pro Tools', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Qtractor', bpm: false, key: false, version: false, notes: false),
-  _DawExtractionInfo('Reaper', bpm: true, key: true, version: true, notes: true, markers: true, tracks: true, plugins: true, midiClips: true),
+  _DawExtractionInfo('Reaper', bpm: true, key: true, version: true, notes: true, markers: true, tracks: true, plugins: true, midiClips: true, midiEvents: true),
   _DawExtractionInfo('Reason', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Renoise', bpm: false, key: false, version: false, notes: false),
   _DawExtractionInfo('Rosegarden', bpm: false, key: false, version: false, notes: false),
@@ -157,6 +162,7 @@ class MetadataExtractionInfoPage extends StatelessWidget {
                                 DataColumn(label: Text(l10n.projectStatsTracks)),
                                 DataColumn(label: Text(l10n.projectStatsPlugins)),
                                 DataColumn(label: Text(l10n.midiClipsTitle)),
+                                DataColumn(label: Text(l10n.metadataFieldMidiEvents)),
                               ],
                               rows: [
                                 for (final daw in _dawExtractionInfo)
@@ -171,6 +177,7 @@ class MetadataExtractionInfoPage extends StatelessWidget {
                                       DataCell(statusIcon(daw.tracks)),
                                       DataCell(statusIcon(daw.plugins)),
                                       DataCell(statusIcon(daw.midiClips)),
+                                      DataCell(statusIcon(daw.midiEvents)),
                                     ],
                                   ),
                               ],

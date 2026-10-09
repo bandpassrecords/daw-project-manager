@@ -628,6 +628,12 @@ abstract class AppLocalizations {
   /// **'DAW Version'**
   String get metadataFieldVersion;
 
+  /// No description provided for @metadataFieldMidiEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI controllers & bend'**
+  String get metadataFieldMidiEvents;
+
   /// No description provided for @metadataExtractionManualNote.
   ///
   /// In en, this message translates to:
