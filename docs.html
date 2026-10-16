@@ -3,1943 +3,618 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DAW Project Manager Documentation — Complete guide to installation, scanning, project management, releases, keyboard shortcuts, and more.">
-    <title>Documentation — DAW Project Manager</title>
+    <meta name="description" content="DAW Project Manager user guide — install, scan your projects, and everything you can do with them.">
+    <title>User guide — DAW Project Manager</title>
     <link rel="icon" type="image/png" sizes="32x32" href="app_icon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="app_icon.png">
     <link rel="apple-touch-icon" href="app_icon.png">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ── Docs-specific layout ── */
-        .docs-hero {
-            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
-            padding: 3.5rem 0 2.5rem;
+        /* ── User guide layout. Colours and type come from styles.css. ── */
+        .guide-hero {
+            padding: 3rem 0 2rem;
             border-bottom: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
+            background: radial-gradient(circle at 20% 0%, rgba(74, 158, 255, 0.10), transparent 60%), var(--bg-darker);
         }
-        .docs-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 30% 50%, rgba(74, 158, 255, 0.06) 0%, transparent 65%);
-            pointer-events: none;
+        .guide-hero h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: .5rem; }
+        .guide-hero p { color: var(--text-secondary); font-size: 1.1rem; max-width: 620px; }
+        .guide-search {
+            margin-top: 1.5rem;
+            width: min(520px, 100%);
+            padding: .8rem 1rem .8rem 2.6rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238A8D90' viewBox='0 0 16 16'%3E%3Cpath d='M11.7 10.3a6.5 6.5 0 1 0-1.4 1.4l3.6 3.6 1.4-1.4-3.6-3.6zM6.5 11a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z'/%3E%3C/svg%3E") no-repeat .9rem center;
+            color: var(--text-primary);
+            font: inherit;
         }
-        .docs-hero-inner {
-            position: relative;
-            z-index: 1;
-        }
-        .docs-hero h1 {
-            font-size: 2.75rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .docs-hero p {
-            font-size: 1.15rem;
-            color: var(--text-secondary);
-            max-width: 640px;
-            line-height: 1.8;
-        }
+        .guide-search:focus { outline: 2px solid var(--accent); border-color: transparent; }
 
-        /* ── Two-column wrapper ── */
-        .docs-wrapper {
-            display: flex;
-            align-items: flex-start;
-            max-width: 1200px;
+        .guide {
+            display: grid;
+            grid-template-columns: 240px minmax(0, 1fr);
+            gap: 3rem;
+            max-width: 1240px;
             margin: 0 auto;
-            padding: 0 20px;
-            gap: 2.5rem;
+            padding: 0 20px 4rem;
         }
-
-        /* ── Sidebar ── */
-        .docs-sidebar {
-            width: 260px;
-            flex-shrink: 0;
+        .guide-nav {
             position: sticky;
             top: 72px;
-            max-height: calc(100vh - 90px);
+            align-self: start;
+            max-height: calc(100vh - 88px);
             overflow-y: auto;
-            padding: 1.75rem 0 2rem;
+            padding: 2rem 0;
             scrollbar-width: thin;
-            scrollbar-color: var(--border-color) transparent;
         }
-        .docs-sidebar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .docs-sidebar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .docs-sidebar::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        .sidebar-section-title {
-            font-size: 0.7rem;
-            font-weight: 700;
+        .guide-nav h4 {
+            font-size: .72rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: .08em;
             color: var(--text-muted);
-            padding: 1.1rem 0 0.4rem 0;
-            margin-top: 0.25rem;
+            margin: 1.4rem 0 .4rem;
         }
-        .sidebar-section-title:first-child {
-            padding-top: 0;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-        }
-        .sidebar-nav li a {
+        .guide-nav h4:first-child { margin-top: 0; }
+        .guide-nav a {
             display: block;
-            padding: 0.3rem 0;
-            font-size: 0.875rem;
+            padding: .32rem .75rem;
+            margin-left: -.75rem;
+            border-radius: 8px;
             color: var(--text-secondary);
             text-decoration: none;
-            transition: color 0.2s ease;
-            line-height: 1.5;
+            font-size: .92rem;
         }
-        .sidebar-nav li a:hover {
-            color: var(--text-primary);
-        }
-        .sidebar-nav li a.active {
-            color: var(--accent);
-            font-weight: 600;
-        }
+        .guide-nav a:hover { color: var(--text-primary); background: var(--bg-card); }
+        .guide-nav a.active { color: var(--accent); background: rgba(74, 158, 255, .10); }
+        .guide-nav-toggle { display: none; }
 
-        .sidebar-nav li.sub-item a {
-            padding-left: 0.85rem;
-            font-size: 0.83rem;
-            color: var(--text-muted);
-        }
-        .sidebar-nav li.sub-item a:hover {
-            color: var(--text-secondary);
-        }
-        .sidebar-nav li.sub-item a.active {
-            color: var(--accent);
-        }
+        .guide-main { padding-top: 2rem; min-width: 0; }
+        .doc { padding: 2.2rem 0; border-bottom: 1px solid var(--border-color); scroll-margin-top: 80px; }
+        .doc:last-child { border-bottom: 0; }
+        .doc h2 { font-size: 1.6rem; margin-bottom: .4rem; }
+        .doc h3 { font-size: 1.1rem; margin: 1.6rem 0 .4rem; }
+        .doc .lead { color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 1.2rem; max-width: 760px; }
+        .doc ul { margin: .6rem 0 0 1.2rem; color: var(--text-secondary); max-width: 760px; }
+        .doc li { margin: .35rem 0; }
+        .doc li b, .doc p b { color: var(--text-primary); }
+        .doc p { color: var(--text-secondary); max-width: 760px; }
+        .doc .anchor { display: block; position: relative; top: -80px; }
 
-        /* ── Main content ── */
-        .docs-content {
-            flex: 1;
-            min-width: 0;
-            padding: 2.5rem 0 5rem;
-        }
-
-        /* ── Section dividers ── */
-        .docs-section {
-            margin-bottom: 4rem;
-        }
-        .docs-section + .docs-section {
-            border-top: 1px solid var(--border-color);
-            padding-top: 3.5rem;
-        }
-
-        .docs-section h2 {
-            font-size: 1.85rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-        .docs-section h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 2rem 0 0.75rem;
-            scroll-margin-top: 90px;
-        }
-        .docs-section h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin: 1.5rem 0 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            font-size: 0.8rem;
-        }
-        .docs-section p {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            margin-bottom: 1rem;
-        }
-        .docs-section ul,
-        .docs-section ol {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            padding-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        .docs-section li {
-            margin-bottom: 0.35rem;
-        }
-        .docs-section li strong {
-            color: var(--text-primary);
-        }
-
-        /* Anchor scroll offset */
-        .docs-section h2,
-        .docs-section h3 {
-            scroll-margin-top: 90px;
-        }
-
-        /* ── Callout boxes ── */
-        .callout {
-            border-left: 3px solid;
-            border-radius: 0 8px 8px 0;
-            padding: 1rem 1.25rem;
-            margin: 1.25rem 0;
-            font-size: 0.9rem;
-            line-height: 1.7;
-        }
-        .callout-info {
-            border-color: var(--accent);
-            background: rgba(74, 158, 255, 0.07);
-            color: var(--text-secondary);
-        }
-        .callout-info strong {
-            color: var(--accent);
-        }
-        .callout-warning {
-            border-color: #F5A623;
-            background: rgba(245, 166, 35, 0.07);
-            color: var(--text-secondary);
-        }
-        .callout-warning strong {
-            color: #F5A623;
-        }
-        .callout p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* ── Code blocks ── */
-        .code-block {
-            background: var(--bg-darker);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.1rem 1.25rem;
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            font-size: 0.85rem;
-            color: #A8DAFF;
-            overflow-x: auto;
-            margin: 1rem 0;
-            white-space: pre;
-            line-height: 1.6;
-        }
-
-        /* ── Tables ── */
-        .docs-table-wrap {
-            overflow-x: auto;
-            margin: 1.25rem 0;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-        .docs-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-        .docs-table thead {
-            background: var(--bg-card);
-        }
-        .docs-table th {
-            text-align: left;
-            padding: 0.75rem 1rem;
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .docs-table td {
-            padding: 0.7rem 1rem;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: top;
-        }
-        .docs-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-        .docs-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.025);
-        }
-        .docs-table td:first-child {
-            color: var(--text-primary);
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        /* ── Phase badges ── */
-        .phase-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.6rem;
-            margin: 1rem 0;
-        }
-        .phase-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.3rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border: 1px solid;
-        }
-        .chip-idea       { background: rgba(138, 141, 144, 0.15); color: #B0B3B8; border-color: rgba(138, 141, 144, 0.3); }
-        .chip-arranging  { background: rgba(74, 158, 255, 0.15); color: #4A9EFF; border-color: rgba(74, 158, 255, 0.35); }
-        .chip-mixing     { background: rgba(130, 80, 255, 0.15); color: #A07AFF; border-color: rgba(130, 80, 255, 0.35); }
-        .chip-mastering  { background: rgba(255, 153, 51, 0.15); color: #FF9933; border-color: rgba(255, 153, 51, 0.35); }
-        .chip-finished   { background: rgba(52, 199, 89, 0.15);  color: #34C759; border-color: rgba(52, 199, 89, 0.35); }
-
-        /* ── Numbered steps ── */
-        .steps {
-            list-style: none;
-            padding: 0;
-            counter-reset: steps;
-            margin: 1rem 0;
-        }
-        .steps li {
-            counter-increment: steps;
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
-        }
-        .steps li::before {
-            content: counter(steps);
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: #fff;
-            font-size: 0.8rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 0.1rem;
-        }
-        .steps li strong {
-            color: var(--text-primary);
-        }
-
-        /* ── ASCII mockup ── */
-        .ascii-mockup {
-            background: #0a0c0e;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 0;
-            margin: 1.5rem 0;
+        .shot {
+            margin: 1.2rem 0;
+            border-radius: 14px;
             overflow: hidden;
-        }
-        .ascii-mockup-titlebar {
-            background: var(--bg-card);
-            padding: 0.5rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .titlebar-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        .dot-red   { background: #FF5F57; }
-        .dot-yellow { background: #FEBC2E; }
-        .dot-green  { background: #28C840; }
-        .ascii-mockup-title {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            margin-left: 0.5rem;
-            font-family: 'SFMono-Regular', Consolas, monospace;
-        }
-        .ascii-mockup pre {
-            padding: 1.1rem 1.25rem;
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            font-size: 0.78rem;
-            color: #8ecfff;
-            line-height: 1.55;
-            overflow-x: auto;
-            margin: 0;
-        }
-        .ascii-mockup pre .dim { color: #4a5060; }
-        .ascii-mockup pre .bright { color: #e0eeff; }
-        .ascii-mockup pre .accent { color: #4A9EFF; }
-        .ascii-mockup pre .green { color: #34C759; }
-        .ascii-mockup pre .orange { color: #FF9933; }
-        .ascii-mockup pre .purple { color: #A07AFF; }
-        .ascii-mockup pre .muted { color: #5a6070; }
-
-        /* ── Back to top button ── */
-        #back-to-top {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 42px;
-            height: 42px;
-            background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 50%;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease, background 0.2s ease;
-            z-index: 900;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+            background: var(--bg-darker);
         }
-        #back-to-top.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        #back-to-top:hover {
-            background: var(--border-color);
-            color: var(--text-primary);
-        }
-
-        /* ── Mobile sidebar collapse ── */
-        .mobile-toc-toggle {
-            display: none;
-        }
-        @media (max-width: 768px) {
-            .docs-wrapper {
-                flex-direction: column;
-                gap: 0;
-                padding: 0 16px;
-            }
-            .docs-sidebar {
-                width: 100%;
-                position: static;
-                max-height: none;
-                border-bottom: 1px solid var(--border-color);
-                padding: 1rem 0;
-                overflow: hidden;
-            }
-            .docs-sidebar.mobile-open {
-                overflow: visible;
-            }
-            .mobile-toc-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                width: 100%;
-                background: var(--bg-card);
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                padding: 0.65rem 1rem;
-                color: var(--text-secondary);
-                font-size: 0.9rem;
-                font-weight: 500;
-                cursor: pointer;
-                margin-bottom: 0.5rem;
-            }
-            .mobile-toc-toggle svg {
-                transition: transform 0.25s;
-            }
-            .mobile-toc-toggle.open svg {
-                transform: rotate(180deg);
-            }
-            .sidebar-inner {
-                display: none;
-            }
-            .sidebar-inner.open {
-                display: block;
-            }
-            .docs-content {
-                padding: 2rem 0 4rem;
-            }
-            .docs-hero h1 {
-                font-size: 2rem;
-            }
-        }
-
-        /* Active nav link */
-        .nav-links a.nav-active {
-            color: var(--accent) !important;
-        }
-
-        /* ── Section copy-link buttons ── */
-        .docs-section h2,
-        .docs-section h3 {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .section-link-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            width: 26px;
-            height: 26px;
-            padding: 0;
-            border: none;
-            background: transparent;
+        .shot img { display: block; width: 100%; height: auto; }
+        .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .shots .shot { margin: .6rem 0; }
+        .shots figcaption, .shot figcaption {
+            padding: .55rem .9rem;
+            font-size: .85rem;
             color: var(--text-muted);
-            cursor: pointer;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .tip {
+            margin-top: 1rem;
+            padding: .8rem 1rem;
+            border-left: 3px solid var(--accent);
+            border-radius: 0 10px 10px 0;
+            background: rgba(74, 158, 255, .07);
+            color: var(--text-secondary);
+            max-width: 760px;
+        }
+        .tip.warn { border-color: #E2A23B; background: rgba(226, 162, 59, .08); }
+
+        .platforms { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .platform {
+            padding: 1.1rem 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            background: var(--bg-card);
+        }
+        .platform img { height: 28px; margin-bottom: .6rem; }
+        .platform h3 { margin: 0 0 .4rem; font-size: 1rem; }
+        .platform p { font-size: .9rem; }
+
+        kbd {
+            display: inline-block;
+            min-width: 1.6em;
+            padding: .1em .45em;
+            border: 1px solid var(--border-color);
+            border-bottom-width: 2px;
+            border-radius: 6px;
+            background: var(--bg-card);
+            font: 600 .82rem/1.4 Inter, sans-serif;
+            color: var(--text-primary);
+            text-align: center;
+        }
+        .keys { width: 100%; max-width: 760px; border-collapse: collapse; margin-top: .6rem; }
+        .keys td { padding: .45rem .2rem; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+        .keys td:first-child { width: 42%; white-space: nowrap; }
+
+        .daw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .8rem; margin-top: 1rem; }
+        .daw {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .45rem;
+            padding: 1rem .6rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-card);
+            text-align: center;
+        }
+        .daw img { height: 36px; }
+        .daw b { font-size: .9rem; }
+        .daw small { color: var(--text-muted); font-size: .74rem; line-height: 1.4; }
+        .daw.deep { border-color: rgba(74, 158, 255, .45); }
+        .daw.deep small { color: var(--accent); }
+
+        .guide-main a { color: var(--accent); text-decoration: none; }
+        .guide-main a:hover { text-decoration: underline; }
+        .doc code {
+            padding: .1em .35em;
             border-radius: 5px;
-            opacity: 0;
-            transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+            background: var(--bg-card);
+            font-size: .88em;
         }
-        .docs-section h2:hover .section-link-btn,
-        .docs-section h3:hover .section-link-btn,
-        .section-link-btn:focus-visible {
-            opacity: 1;
-        }
-        .section-link-btn:hover {
-            color: var(--accent);
-            background: rgba(74, 158, 255, 0.12);
-        }
-        .section-link-btn.copied {
-            color: #34C759;
-            opacity: 1;
-        }
-        @media (max-width: 768px) {
-            /* No hover on touch — keep the button always visible instead of unreachable */
-            .section-link-btn {
-                opacity: 0.55;
+
+        .no-match { display: none; color: var(--text-muted); padding: 2rem 0; }
+        .hidden-by-search { display: none !important; }
+
+        @media (max-width: 900px) {
+            .guide { grid-template-columns: 1fr; gap: 0; }
+            .guide-nav { position: static; max-height: none; padding: 1rem 0 0; display: none; }
+            .guide-nav.open { display: block; }
+            .guide-nav-toggle {
+                display: block;
+                margin-top: 1rem;
+                padding: .6rem 1rem;
+                border-radius: 10px;
+                border: 1px solid var(--border-color);
+                background: var(--bg-card);
+                color: var(--text-primary);
+                font: inherit;
             }
+            .shots { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
             <div class="nav-content">
-                <a href="index.html" class="logo" style="text-decoration:none;">
+                <a class="logo" href="index.html" style="text-decoration:none;color:inherit">
                     <img src="app_icon.png" alt="DAW Project Manager" class="logo-image">
                     <span>DAW Project Manager</span>
                 </a>
                 <div class="nav-links">
                     <a href="index.html#features">Features</a>
                     <a href="index.html#daws">DAWs</a>
-                    <a href="docs.html" class="nav-active">Docs</a>
                     <a href="index.html#download">Download</a>
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=QHVVZ3LAF39BL" target="_blank" rel="noopener noreferrer" class="donate-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                        Donate
-                    </a>
-                    <a href="https://github.com/bandpassrecords/daw-project-manager" target="_blank" rel="noopener noreferrer" class="github-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        GitHub
-                    </a>
+                    <a href="docs.html" style="color:var(--accent)">Docs</a>
+                    <a href="https://github.com/bandpassrecords/daw-project-manager" target="_blank" rel="noopener noreferrer" class="github-link">GitHub</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Docs Hero Strip -->
-    <div class="docs-hero">
-        <div class="container docs-hero-inner">
-            <h1>Documentation</h1>
-            <p>Everything you need to get your library organised, your workflow streamlined, and your releases out the door. Start at <a href="#installation" style="color:var(--accent); text-decoration:none;">Getting Started</a> or jump to any section using the sidebar.</p>
+    <header class="guide-hero">
+        <div class="container">
+            <h1>User guide</h1>
+            <p>Everything the app does, one screen at a time.</p>
+            <input id="guide-search" class="guide-search" type="search" placeholder="Search the guide…" autocomplete="off">
+            <button class="guide-nav-toggle" id="guide-nav-toggle" aria-expanded="false">Contents</button>
         </div>
-    </div>
+    </header>
 
-    <!-- Two-column docs layout -->
-    <div class="docs-wrapper">
-
-        <!-- ── Sidebar ── -->
-        <aside class="docs-sidebar" id="docs-sidebar">
-            <!-- Mobile toggle -->
-            <button class="mobile-toc-toggle" id="toc-toggle" aria-expanded="false" aria-controls="sidebar-inner">
-                <span>On this page</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-
-            <div class="sidebar-inner" id="sidebar-inner">
-                <p class="sidebar-section-title">Getting Started</p>
-                <ul class="sidebar-nav">
-                    <li><a href="#installation">Installation</a></li>
-                    <li><a href="#first-launch">First Launch</a></li>
-                    <li class="sub-item"><a href="#session-mode">Session Mode</a></li>
-                    <li><a href="#adding-folders">Adding Folders</a></li>
-                    <li><a href="#scanning">Scanning</a></li>
-                </ul>
-
-                <p class="sidebar-section-title">Dashboard</p>
-                <ul class="sidebar-nav">
-                    <li><a href="#dashboard-overview">Overview</a></li>
-                    <li><a href="#searching-filtering">Search &amp; Filters</a></li>
-                    <li><a href="#project-table-columns">Table Columns</a></li>
-                    <li><a href="#row-actions">Row Actions</a></li>
-                    <li><a href="#bulk-actions">Bulk Actions</a></li>
-                </ul>
-
-                <p class="sidebar-section-title">Project Details</p>
-                <ul class="sidebar-nav">
-                    <li><a href="#project-metadata">Metadata</a></li>
-                    <li><a href="#production-phases">Production Phases</a></li>
-                    <li><a href="#todos">Todos</a></li>
-                    <li><a href="#preview-songs">Preview Songs</a></li>
-                    <li><a href="#project-timeline">Timeline</a></li>
-                </ul>
-
-                <p class="sidebar-section-title">Releases</p>
-                <ul class="sidebar-nav">
-                    <li><a href="#creating-releases">Creating Releases</a></li>
-                    <li><a href="#release-files">Release Files</a></li>
-                </ul>
-
-                <p class="sidebar-section-title">More Features</p>
-                <ul class="sidebar-nav">
-                    <li><a href="#midi-clips">MIDI Clips</a></li>
-                    <li><a href="#task-queue">Task Queue</a></li>
-                    <li><a href="#music-player">Music Player</a></li>
-                    <li><a href="#playlists">Playlists</a></li>
-                    <li><a href="#templates">Templates</a></li>
-                    <li><a href="#statistics">Statistics</a></li>
-                    <li><a href="#profiles">Profiles</a></li>
-                    <li><a href="#sharing">Sharing</a></li>
-                    <li><a href="#background-mode">Background &amp; Tray Mode</a></li>
-                </ul>
-
-                <p class="sidebar-section-title">Google Drive Sync</p>
-                <ul class="sidebar-nav">
-                    <li><a href="#drive-setup">Setup</a></li>
-                    <li><a href="#drive-upload">Upload</a></li>
-                    <li><a href="#drive-download">Download</a></li>
-                </ul>
-
-                <p class="sidebar-section-title">Reference</p>
-                <ul class="sidebar-nav">
-                    <li><a href="#settings">Settings</a></li>
-                    <li class="sub-item"><a href="#daw-launch-commands">DAW Launch Commands</a></li>
-                    <li class="sub-item"><a href="#mixdown-folders">Mixdown Folders</a></li>
-                    <li class="sub-item"><a href="#about">About</a></li>
-                    <li><a href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
-                    <li><a href="#supported-daws">Supported DAWs</a></li>
-                    <li><a href="#metadata-extraction">Metadata Extraction</a></li>
-                </ul>
-            </div>
+    <div class="guide">
+        <aside class="guide-nav" id="guide-nav">
+            <h4>Start</h4>
+            <a href="#installation">Install</a>
+            <a href="#first-launch">First launch</a>
+            <a href="#adding-folders">Project folders</a>
+            <a href="#scanning">Scanning</a>
+            <h4>Your library</h4>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#searching-filtering">Search &amp; filters</a>
+            <a href="#bulk-actions">Many at once</a>
+            <a href="#project-details">A project's page</a>
+            <a href="#production-phases">Phases</a>
+            <a href="#version-stacks">Versions</a>
+            <h4>Work</h4>
+            <a href="#task-queue">Tasks</a>
+            <a href="#releases">Releases</a>
+            <a href="#templates">Templates</a>
+            <a href="#statistics">Statistics</a>
+            <h4>Music</h4>
+            <a href="#midi-clips">MIDI clips</a>
+            <a href="#music-player">Music player</a>
+            <a href="#sharing">Sharing</a>
+            <a href="#sample-pack">Sample pack</a>
+            <h4>Keep it safe</h4>
+            <a href="#google-drive-sync">Google Drive</a>
+            <a href="#local-backup">Local backup</a>
+            <a href="#archive">Archive</a>
+            <a href="#recently-deleted">Recently deleted</a>
+            <a href="#profiles">Profiles</a>
+            <h4>Make it yours</h4>
+            <a href="#settings">Settings</a>
+            <a href="#background-mode">Tray mode</a>
+            <h4>Reference</h4>
+            <a href="#keyboard-shortcuts">Shortcuts</a>
+            <a href="#supported-daws">Supported DAWs</a>
         </aside>
 
-        <!-- ── Main content ── -->
-        <main class="docs-content">
+        <main class="guide-main" id="guide-main">
+            <span id="getting-started" class="anchor"></span>
 
-            <!-- ================================================================
-                 GETTING STARTED
-            ================================================================ -->
-            <div class="docs-section" id="getting-started">
-                <h2>Getting Started</h2>
-                <p>DAW Project Manager is a free, open-source desktop and mobile app for organising your music production projects. It scans your drives for DAW project files, extracts metadata automatically, and gives you a single view across your entire library.</p>
-
-                <!-- Installation -->
-                <h3 id="installation">Installation</h3>
-
-                <h4>macOS</h4>
-                <ol class="steps">
-                    <li><strong>Download the DMG</strong> from the <a href="https://github.com/bandpassrecords/daw-project-manager/releases" style="color:var(--accent);">Releases page</a> on GitHub.</li>
-                    <li><strong>Open the DMG</strong> and drag <em>DAW Project Manager.app</em> into your Applications folder.</li>
-                    <li><strong>First launch:</strong> macOS may show a Gatekeeper warning because the app is not distributed through the Mac App Store. Open System Settings → Privacy &amp; Security and click <em>Open Anyway</em>.</li>
-                    <li>The app opens and the <a href="#first-launch">onboarding wizard</a> appears.</li>
-                </ol>
-
-                <h4>Windows</h4>
-                <ol class="steps">
-                    <li><strong>Download from the Microsoft Store</strong> — search for "DAW Project Manager" or use the direct link on the website.</li>
-                    <li>Click <em>Install</em>. The app is signed and installs without warnings.</li>
-                    <li>Launch from the Start menu. The onboarding wizard appears on first run.</li>
-                </ol>
-
-                <div class="callout callout-info">
-                    <strong>Without the Store:</strong> every release also has a Windows installer, <code style="font-family:monospace;">DAW_Project_Manager_Installer_*.exe</code>, on the <a href="https://github.com/bandpassrecords/daw-project-manager/releases" style="color:var(--accent);">Releases page</a>. It isn't code-signed yet, so Windows may show <em>Windows protected your PC</em> — click <em>More info</em>, then <em>Run anyway</em>. To update, download and run the newer installer: it upgrades the existing installation and keeps your library. Install one or the other, not both.
+            <section class="doc" id="installation">
+                <h2>Install</h2>
+                <p class="lead">Free and open source. Pick your platform from the <a href="https://github.com/bandpassrecords/daw-project-manager/releases/latest">latest release</a>.</p>
+                <div class="platforms">
+                    <div class="platform">
+                        <img src="resources/os/Windows_logo_-_2012.svg" alt="">
+                        <h3>Windows</h3>
+                        <p>Microsoft Store, or the installer <b>.exe</b>. Not yet code-signed: <i>More info → Run anyway</i>. Installing a newer one upgrades in place.</p>
+                    </div>
+                    <div class="platform">
+                        <img src="resources/os/MacOS_logo_(2017).svg" alt="">
+                        <h3>macOS</h3>
+                        <p>Open the <b>.dmg</b>, drag the app to Applications. If macOS warns: <i>System Settings → Privacy &amp; Security → Open Anyway</i>.</p>
+                    </div>
+                    <div class="platform">
+                        <img src="resources/os/Linux_logo.svg" alt="">
+                        <h3>Linux</h3>
+                        <p><b>AppImage</b> (<code>chmod +x</code>, then run — updates itself), <b>Flatpak</b> or <b>.tar.gz</b>. The Flatpak has no Google Drive sync: use <a href="#local-backup">local backup</a>.</p>
+                    </div>
+                    <div class="platform">
+                        <img src="resources/os/android-head.png" alt="">
+                        <h3>Android</h3>
+                        <p>In closed testing on Google Play. Adds playlists and deadline notifications.</p>
+                    </div>
                 </div>
+            </section>
 
-                <h4>Linux</h4>
-                <ol class="steps">
-                    <li><strong>Download the AppImage</strong> from the <a href="https://github.com/bandpassrecords/daw-project-manager/releases" style="color:var(--accent);">Releases page</a> on GitHub.</li>
-                    <li><strong>Make it executable</strong> — <code style="font-family:monospace;">chmod +x DAW_Project_Manager_Linux_*.AppImage</code> — then double-click or run it directly. No installer, no root access needed.</li>
-                    <li>A <code style="font-family:monospace;">.flatpak</code> bundle is also attached to every release for sideloading (Flathub submission pending); see the <a href="https://github.com/bandpassrecords/daw-project-manager/tree/main/flatpak" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">flatpak/</a> folder in the repo for how to build or install it.</li>
-                    <li>The app opens and the <a href="#first-launch">onboarding wizard</a> appears.</li>
-                </ol>
+            <section class="doc" id="first-launch">
+                <h2>First launch</h2>
+                <p class="lead">A short wizard sets language, theme, which tabs show, your first project folder (or a restore from Google Drive) and whether the app starts with your computer. All of it can be changed later in Settings.</p>
+                <span id="session-mode" class="anchor"></span>
+                <div class="tip"><b>Session Mode</b> asks before starting, switching or ending a work session, so the timer always means what you think. Off by default; Settings → Work Sessions.</div>
+            </section>
 
-                <div class="callout callout-info">
-                    <strong>Note:</strong> <a href="#google-drive-sync">Google Drive sync</a> works on the AppImage and tarball builds, the same as on Windows/macOS. It's only unavailable inside the <strong>Flatpak</strong> build specifically, since Flathub's sandboxed build pipeline has no way to safely inject the required OAuth client secret. A local backup/restore option is available instead under <strong>Settings</strong> for Flatpak users.
-                </div>
-                <div class="callout callout-info">
-                    <strong>Tip:</strong> The AppImage build can update itself in place — go to <strong>Settings → About → Check for Updates</strong>. This isn't available for the Flatpak build or the plain tarball; update those manually from the <a href="https://github.com/bandpassrecords/daw-project-manager/releases" style="color:var(--accent);">Releases page</a>.
-                </div>
-
-                <h4>Android</h4>
-                <ol class="steps">
-                    <li>Search <strong>DAW Project Manager</strong> on the Google Play Store.</li>
-                    <li>Install and open. Grant storage permissions when prompted so the app can scan your device folders.</li>
-                    <li>On Android, playlists and deadline notifications are also available.</li>
-                </ol>
-
-                <div class="callout callout-info">
-                    <strong>Tip:</strong> macOS is the primary platform and receives features first. Windows, Linux, and Android are fully supported. iOS support is in progress.
-                </div>
-
-                <!-- First Launch -->
-                <h3 id="first-launch">First Launch</h3>
-                <p>The first time you open the app, an onboarding wizard walks you through initial setup. It won't appear again once completed. The steps are:</p>
-                <ol class="steps">
-                    <li><strong>Welcome</strong> — a quick overview of what the app does.</li>
-                    <li><strong>Language</strong> — pick from the app's <a href="#settings">9 supported languages</a>.</li>
-                    <li><strong>Theme</strong> — choose Classic Dark or Neon Dark.</li>
-                    <li><strong>Tabs</strong> — choose which navigation tabs are visible (Projects is always on).</li>
-                    <li><strong>Folders</strong> <span class="badge-inline">Desktop</span> — add your first scan root(s), or choose to restore from a <a href="#google-drive-sync">Google Drive backup</a> instead if you're setting up on a new machine.</li>
-                    <li><strong>Updates</strong> — configure automatic update checks.</li>
-                    <li><strong>Suggestions</strong> — opt in or out of sharing anonymous feedback/suggestions.</li>
-                    <li><strong>Session Mode</strong> — see below.</li>
-                    <li><strong>Phases</strong> — a first look at the default <a href="#production-phases">production phases</a>, which you can customize later.</li>
-                    <li><strong>Startup</strong> <span class="badge-inline">Desktop</span> — optionally launch the app automatically when you log in.</li>
-                    <li><strong>Done</strong> — you land on the Dashboard.</li>
-                </ol>
-                <p>Every step you set here can be changed later — none of it is permanent. Add more scan folders any time from Settings.</p>
-
-                <h4 id="session-mode">Session Mode</h4>
-                <p>Session Mode is an opt-in guardrail around your work timer. When it's on, starting, switching, or ending a work session on a project requires an explicit confirmation, and the app shows elapsed time for the current session. It's aimed at producers who want to be deliberate about context-switching between projects rather than losing track of where their time went. Toggle it any time from Settings — it isn't limited to the onboarding wizard.</p>
-
-                <!-- Adding Folders -->
-                <h3 id="adding-folders">Adding Folders</h3>
-                <p>Scan roots are the top-level folders the app watches for DAW project files. You can add as many as you want — local drives, external hard drives, network volumes, cloud-synced folders.</p>
-                <ol class="steps">
-                    <li>Open <strong>Settings</strong> from the navigation bar.</li>
-                    <li>Under <em>Scan Roots</em>, click <strong>Add Folder</strong>.</li>
-                    <li>Browse to the parent folder that contains your DAW projects (e.g. <code style="color:var(--accent);">~/Music/Projects</code>) and confirm.</li>
-                    <li>The app immediately starts a scan of the new root.</li>
-                </ol>
-
-                <div class="callout callout-info">
-                    <strong>Tip:</strong> Add your root music folder rather than individual project folders. The scanner recurses into subdirectories automatically, so a single root like <code style="font-family:monospace;">~/Music</code> will catch everything underneath it.
-                </div>
-                <div class="callout callout-warning">
-                    <strong>Note:</strong> Ignored Paths let you exclude specific subfolders (e.g. template or sample folders) from the scan. Add them under Settings → Ignored Paths.
-                </div>
-
-                <h4>Scan Mode: Flat vs. Smart Folder</h4>
-                <p>Each scan root has its own scan mode, set from Settings: <strong>Flat</strong> treats every project file the scanner finds as its own project, however deep it's nested. <strong>Smart Folder</strong> is for a root organised as one subfolder per song (each containing that song's project file plus its samples, renders, and stems) — the app treats each subfolder as a single project unit instead of scanning arbitrarily deep, which keeps close-together files from a shared sample pool from being misread as separate projects.</p>
-
-                <!-- Scanning -->
-                <h3 id="scanning">Scanning</h3>
-                <p>The app uses a two-phase scan to keep things fast even on large libraries.</p>
-
-                <h4>Phase 1 — Fast Detection</h4>
-                <p>Immediately on launch (or when you add a new folder), the app walks your scan roots and finds any file whose extension matches a supported DAW. For each project it records:</p>
+            <section class="doc" id="adding-folders">
+                <h2>Project folders</h2>
+                <p class="lead">Point the app at the folders your projects live in — it finds every project inside, however deep. Settings → Project Folders → <b>Add Folder</b>.</p>
+                <figure class="shot"><img src="resources/screenshots/settings/settings-project-folders.png" alt="Settings, Project Folders: folders, excluded folders, recently deleted" loading="lazy"></figure>
                 <ul>
-                    <li>File path and name</li>
-                    <li>File size</li>
-                    <li>Last-modified and created timestamps</li>
-                    <li>DAW type (from extension)</li>
+                    <li>Add the top folder (<code>~/Music</code>), not each song's.</li>
+                    <li><b>Excluded folders</b> are skipped — templates, sample libraries.</li>
+                    <li>Each folder has a scan mode: <b>Flat</b> (every project file is a project), <b>Smart Folder</b> (one subfolder per song) or <b>Version Stack</b> (one subfolder per song, its files stacked as <a href="#version-stacks">versions</a>).</li>
+                    <li>Edit any profile's folders from here — the profile picker at the top.</li>
                 </ul>
-                <p>This phase is nearly instant — even 10,000 projects scan in a couple of seconds.</p>
+            </section>
 
-                <h4>Phase 2 — Deep Metadata Extraction</h4>
-                <p>On demand (or automatically when you open a project), the app reads the project file's binary content to extract:</p>
+            <section class="doc" id="scanning">
+                <h2>Scanning</h2>
+                <p class="lead">Two steps, so a big library shows up in seconds.</p>
                 <ul>
-                    <li>BPM</li>
-                    <li>Musical key</li>
-                    <li>DAW version that saved the file</li>
-                    <li>Project notes and markers (where supported)</li>
-                    <li>What's inside the project — tracks by kind, plug-ins, and MIDI clips (where supported; see <a href="#midi-clips">MIDI Clips</a>)</li>
+                    <li><b>Scan</b> finds the project files — on launch, and whenever you press <kbd>Ctrl</kbd> <kbd>R</kbd>.</li>
+                    <li><b>Deep Scan</b> reads inside them: tempo, key, DAW version, tracks, plug-ins, MIDI. Run it from the side rail, or <b>Extract</b> on one project. It isn't automatic: on a cloud drive, reading means downloading.</li>
                 </ul>
-                <p>Deep scanning happens in the background and doesn't block the UI.</p>
+                <div class="tip">What each DAW gives up is in <a href="#metadata-extraction">Supported DAWs</a>. A value read wrong can always be typed over.</div>
+            </section>
 
-                <h4>Rescanning</h4>
-                <p>Press <kbd>Cmd</kbd>+<kbd>R</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>R</kbd> (Windows) to trigger a rescan of all roots. New files are added, moved/deleted files are removed. On macOS the app also watches the filesystem in real time — files you add while the app is open appear automatically.</p>
-            </div>
-
-            <!-- ================================================================
-                 DASHBOARD
-            ================================================================ -->
-            <div class="docs-section" id="dashboard">
+            <section class="doc" id="dashboard">
+                <span id="dashboard-overview" class="anchor"></span>
+                <span id="project-table-columns" class="anchor"></span>
+                <span id="row-actions" class="anchor"></span>
                 <h2>Dashboard</h2>
-                <p>The Dashboard is your library's command centre. Every project across all your scan roots appears here in a sortable, searchable table.</p>
-
-                <div class="ascii-mockup">
-                    <div class="ascii-mockup-titlebar">
-                        <span class="titlebar-dot dot-red"></span>
-                        <span class="titlebar-dot dot-yellow"></span>
-                        <span class="titlebar-dot dot-green"></span>
-                        <span class="ascii-mockup-title">DAW Project Manager — Dashboard</span>
-                    </div>
-                    <pre>
-<span class="dim">┌─────────────────────────────────────────────────────────────────────────────┐</span>
-<span class="dim">│</span> <span class="accent">Projects</span>  Releases  Task Queue  Statistics  Settings               <span class="muted">[ Jess ]</span> <span class="dim">│</span>
-<span class="dim">├─────────────────────────────────────────────────────────────────────────────┤</span>
-<span class="dim">│</span>  <span class="bright">🔍 Search projects…</span>   <span class="muted">Phase ▾</span>  <span class="muted">DAW ▾</span>  <span class="muted">Deadline ▾</span>  <span class="muted">Hide finished</span>  <span class="muted">⟳ Rescan</span>  <span class="dim">│</span>
-<span class="dim">├──┬──────────────────────────┬──────────┬─────────────┬──────┬──────┬───────┤</span>
-<span class="dim">│</span><span class="muted"> ☐</span><span class="dim">│</span> <span class="muted">Name ↑</span>                   <span class="dim">│</span> <span class="muted">DAW</span>      <span class="dim">│</span> <span class="muted">Phase</span>       <span class="dim">│</span> <span class="muted">BPM</span>  <span class="dim">│</span> <span class="muted">Key</span>  <span class="dim">│</span> <span class="muted">Todos</span> <span class="dim">│</span>
-<span class="dim">├──┼──────────────────────────┼──────────┼─────────────┼──────┼──────┼───────┤</span>
-<span class="dim">│</span><span class="muted"> ☐</span><span class="dim">│</span> <span class="bright">Midnight Groove</span>          <span class="dim">│</span> Ableton  <span class="dim">│</span> <span class="purple">Mixing</span>      <span class="dim">│</span>  128 <span class="dim">│</span> Am   <span class="dim">│</span>   3 ✓ <span class="dim">│</span>
-<span class="dim">│</span><span class="muted"> ☐</span><span class="dim">│</span> <span class="bright">Solar Drift</span>              <span class="dim">│</span> FL Studi <span class="dim">│</span> <span class="orange">Mastering</span>   <span class="dim">│</span>  140 <span class="dim">│</span> F#m  <span class="dim">│</span>   1 ✓ <span class="dim">│</span>
-<span class="dim">│</span><span class="muted"> ☑</span><span class="dim">│</span> <span class="bright">Cold Signal</span>              <span class="dim">│</span> Ableton  <span class="dim">│</span> <span class="accent">Arranging</span>   <span class="dim">│</span>   96 <span class="dim">│</span> Cm   <span class="dim">│</span>   5 ✓ <span class="dim">│</span>
-<span class="dim">│</span><span class="muted"> ☐</span><span class="dim">│</span> <span class="bright">Neon Rain</span>                <span class="dim">│</span> Logic P  <span class="dim">│</span> <span class="muted">Idea</span>         <span class="dim">│</span>   -- <span class="dim">│</span> --   <span class="dim">│</span>   0 ✓ <span class="dim">│</span>
-<span class="dim">│</span><span class="muted"> ☐</span><span class="dim">│</span> <span class="bright">Pulse Wave 002</span>           <span class="dim">│</span> Bitwig   <span class="dim">│</span> <span class="green">Finished</span>    <span class="dim">│</span>  124 <span class="dim">│</span> Gm   <span class="dim">│</span>   0 ✓ <span class="dim">│</span>
-<span class="dim">└──┴──────────────────────────┴──────────┴─────────────┴──────┴──────┴───────┘</span>
-  <span class="muted">127 projects  •  3 selected  •  Cmd+R to rescan</span>
-</pre>
+                <p class="lead">Every project you have, as a table or as cards — the same list either way.</p>
+                <div class="shots">
+                    <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-overview.png" alt="Projects as a table" loading="lazy"><figcaption>Table: sort by any column, choose and order the columns.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-cards.png" alt="Projects as cards" loading="lazy"><figcaption>Cards: cover art, colour or icon per project.</figcaption></figure>
                 </div>
-
-                <!-- Dashboard overview -->
-                <h3 id="dashboard-overview">Overview</h3>
-                <p>The Dashboard is the default view when you open the app. It shows all detected projects in a table powered by TrinaGrid, which supports thousands of rows without slowing down. Column headers are clickable to sort by any field. Your column order, visibility, and sort preference persist across sessions.</p>
-
-                <!-- Search & Filters -->
-                <h3 id="searching-filtering">Search &amp; Filters</h3>
-                <p>The search bar at the top of the Dashboard uses <strong>fuzzy matching</strong> — you don't have to type the exact project name. Type a few scattered characters and the app finds the closest matches. Press <kbd>Cmd</kbd>+<kbd>F</kbd> from anywhere to focus the search bar instantly.</p>
-
-                <p>Four filter controls sit alongside the search bar:</p>
                 <ul>
-                    <li><strong>Phase</strong> — Show only projects in a specific production phase (Idea, Arranging, Mixing, Mastering, Finished).</li>
-                    <li><strong>DAW</strong> — Show only projects from a specific DAW application.</li>
-                    <li><strong>Deadline</strong> — Filter by upcoming deadline (e.g. due this week, overdue).</li>
-                    <li><strong>Hide Finished</strong> — Toggle to hide projects marked as Finished, keeping the view focused on active work.</li>
+                    <li>Row buttons: play the mixdown, open in the DAW, open the project's page, open its folder, hide it.</li>
+                    <li>Right-click a project for everything else: move, archive, stack, delete…</li>
+                    <li>Change the phase straight from its cell.</li>
+                    <li>Pin projects to the bar at the top to pick up where you left off.</li>
                 </ul>
-                <p>Filters stack — you can combine Phase + DAW + search at the same time. All filters update the table instantly.</p>
+            </section>
 
-                <!-- Table columns -->
-                <h3 id="project-table-columns">Table Columns</h3>
-                <p>Every column is sortable. Click a header once to sort ascending, again to sort descending. You can show, hide, and reorder columns from <strong>View → Customize Tabs</strong>.</p>
+            <section class="doc" id="searching-filtering">
+                <h2>Search &amp; filters</h2>
+                <p class="lead"><kbd>Ctrl</kbd> <kbd>F</kbd> and type — names, notes, DAWs, plug-ins. Filters stack on top: phase, DAW, deadline, hide finished, only projects with MIDI.</p>
+                <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-filters-search.png" alt="Searching the dashboard" loading="lazy"></figure>
+            </section>
 
-                <div class="docs-table-wrap">
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>Column</th>
-                                <th>Description</th>
-                                <th>Source</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Name</td>
-                                <td>Display name (editable) or raw file name if no custom name is set.</td>
-                                <td>Editable</td>
-                            </tr>
-                            <tr>
-                                <td>DAW</td>
-                                <td>DAW application detected from file extension.</td>
-                                <td>Auto-detected</td>
-                            </tr>
-                            <tr>
-                                <td>Phase</td>
-                                <td>Current production phase. Editable inline via dropdown.</td>
-                                <td>Editable</td>
-                            </tr>
-                            <tr>
-                                <td>BPM</td>
-                                <td>Tempo extracted from the project file during deep scan.</td>
-                                <td>Auto-detected / Editable</td>
-                            </tr>
-                            <tr>
-                                <td>Key</td>
-                                <td>Musical key extracted during deep scan (e.g. C#m, F major).</td>
-                                <td>Auto-detected / Editable</td>
-                            </tr>
-                            <tr>
-                                <td>Last Modified</td>
-                                <td>File system last-modified timestamp.</td>
-                                <td>File system</td>
-                            </tr>
-                            <tr>
-                                <td>File Size</td>
-                                <td>Size of the project file on disk.</td>
-                                <td>File system</td>
-                            </tr>
-                            <tr>
-                                <td>Todo Count</td>
-                                <td>Number of open (undone) todo items attached to this project.</td>
-                                <td>Calculated</td>
-                            </tr>
-                            <tr>
-                                <td>Deadline</td>
-                                <td>Optional deadline date set in project details.</td>
-                                <td>Editable</td>
-                            </tr>
-                            <tr>
-                                <td>DAW Version</td>
-                                <td>Version of the DAW that last saved the file.</td>
-                                <td>Deep scan</td>
-                            </tr>
-                            <tr>
-                                <td>Created</td>
-                                <td>File creation date from the file system.</td>
-                                <td>File system</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <section class="doc" id="bulk-actions">
+                <h2>Many at once</h2>
+                <p class="lead">Tick a few projects and a bar appears: hide, read their metadata, change their phase, make a release of them, stack them as versions, archive them.</p>
+                <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-bulk-actions.png" alt="Several projects selected, with the bulk actions bar" loading="lazy"></figure>
+            </section>
 
-                <!-- Row actions -->
-                <h3 id="row-actions">Row Actions</h3>
-                <p>Select a row by clicking it, then use these actions (available via keyboard or the row context area):</p>
+            <section class="doc" id="project-details">
+                <span id="project-metadata" class="anchor"></span>
+                <span id="preview-songs" class="anchor"></span>
+                <span id="todos" class="anchor"></span>
+                <span id="project-timeline" class="anchor"></span>
+                <h2>A project's page</h2>
+                <p class="lead">Double-click a project. Everything you edit saves as you type.</p>
+                <figure class="shot"><img src="resources/screenshots/project-detail/project-detail-metadata.png" alt="A project's page" loading="lazy"></figure>
                 <ul>
-                    <li><strong>View Details</strong> (<kbd>Enter</kbd> or <kbd>D</kbd>) — Open the full Project Detail page for editing metadata, todos, and preview songs.</li>
-                    <li><strong>Open in DAW</strong> (<kbd>O</kbd>) — Launch the project file directly in its associated DAW application. Desktop only.</li>
-                    <li><strong>Open Folder</strong> (<kbd>F</kbd>) — Reveal the project's parent folder in Finder/Explorer. Desktop only.</li>
-                    <li><strong>Play Preview</strong> (<kbd>P</kbd>) — Play or pause the project's preview song directly in the app.</li>
-                    <li><strong>Change Phase</strong> — Click the Phase cell to open an inline dropdown and change the production phase without leaving the table.</li>
+                    <li><b>Details</b> — name, tempo, key (with its Camelot code), phase, deadline, notes, your own <a href="#settings">custom fields</a>.</li>
+                    <li><b>Preview song</b> — the latest mixdown, found on its own in your export folders (Settings → Mixdown Folders) or picked by hand.</li>
+                    <li><b>To-dos</b>, attached files and links, cover art and colour, tags.</li>
+                    <li><b>Inside the project</b> — tracks, plug-ins and MIDI clips, after a deep scan.</li>
+                    <li><b>Timeline</b> — every phase change, so you can see how long a song sat in mixing.</li>
                 </ul>
-                <p>Navigate between rows with <kbd>↑</kbd> and <kbd>↓</kbd>. Press <kbd>Cmd</kbd>+<kbd>T</kbd> to focus the table from anywhere in the app.</p>
+                <figure class="shot"><img src="resources/screenshots/project-detail/preview-player-playback.gif" alt="Playing a project's preview song" loading="lazy"></figure>
+            </section>
 
-                <!-- Bulk actions -->
-                <h3 id="bulk-actions">Bulk Actions</h3>
-                <p>The leftmost column is a checkbox column. Select multiple rows and a bulk-action toolbar appears at the bottom of the screen, letting you change the production phase for all selected projects at once. Useful when you want to mark a batch of tracks as "Finished" or move a group to "Mixing".</p>
-            </div>
+            <section class="doc" id="production-phases">
+                <h2>Phases</h2>
+                <p class="lead">Where each song stands — Idea, Arranging, Mixing, Mastering, Finished out of the box. Rename them, add your own, colour and reorder them in Settings → Phases.</p>
+                <figure class="shot"><img src="resources/screenshots/settings/settings-phases-customize.png" alt="Customising phases" loading="lazy"></figure>
+            </section>
 
-            <!-- ================================================================
-                 PROJECT DETAILS
-            ================================================================ -->
-            <div class="docs-section" id="project-details">
-                <h2>Project Details</h2>
-                <p>Double-click a project row (or press <kbd>Enter</kbd>) to open the Project Detail page. This is where you manage everything about a single project.</p>
-
-                <div class="ascii-mockup">
-                    <div class="ascii-mockup-titlebar">
-                        <span class="titlebar-dot dot-red"></span>
-                        <span class="titlebar-dot dot-yellow"></span>
-                        <span class="titlebar-dot dot-green"></span>
-                        <span class="ascii-mockup-title">Project Detail — Midnight Groove</span>
-                    </div>
-                    <pre>
-<span class="dim">┌─────────────────────────────────────────────────────────────────────────────┐</span>
-<span class="dim">│</span> <span class="muted">← Back</span>   <span class="bright">Midnight Groove</span>                        <span class="accent">[Open in DAW]</span>  <span class="muted">[Open Folder]</span> <span class="dim">│</span>
-<span class="dim">├──────────────────────────────────────┬──────────────────────────────────────┤</span>
-<span class="dim">│</span> <span class="muted">Display Name</span>  <span class="bright">Midnight Groove</span>        <span class="dim">│</span> <span class="muted">Phase</span>        <span class="purple">⬤ Mixing</span>             <span class="dim">│</span>
-<span class="dim">│</span> <span class="muted">BPM</span>           <span class="bright">128</span>                    <span class="dim">│</span> <span class="muted">Deadline</span>     <span class="bright">2026-06-15</span>           <span class="dim">│</span>
-<span class="dim">│</span> <span class="muted">Key</span>           <span class="bright">Am</span>                     <span class="dim">│</span> <span class="muted">Notes</span>        <span class="muted">needs sidechain fix…</span> <span class="dim">│</span>
-<span class="dim">│</span> <span class="muted">DAW</span>           <span class="bright">Ableton Live 11.3</span>     <span class="dim">│</span>                                      <span class="dim">│</span>
-<span class="dim">├──────────────────────────────────────┴──────────────────────────────────────┤</span>
-<span class="dim">│</span> <span class="muted">TODOS</span>                                         <span class="accent">[+ Add todo]</span> <span class="muted">[Import template]</span> <span class="dim">│</span>
-<span class="dim">│</span>  <span class="green">☑</span> Fix kick drum bus                                                        <span class="dim">│</span>
-<span class="dim">│</span>  <span class="muted">☐</span> Sidechain the bassline to the kick                                       <span class="dim">│</span>
-<span class="dim">│</span>  <span class="muted">☐</span> Send stems to mastering engineer                                         <span class="dim">│</span>
-<span class="dim">├─────────────────────────────────────────────────────────────────────────────┤</span>
-<span class="dim">│</span> <span class="muted">PREVIEW SONG</span>    <span class="bright">midnight_groove_mix2.wav</span>                                  <span class="dim">│</span>
-<span class="dim">│</span>  <span class="accent">▶ 0:47</span> <span class="dim">───────────────────────────●──────────────</span> <span class="muted">3:24</span>                  <span class="dim">│</span>
-<span class="dim">├─────────────────────────────────────────────────────────────────────────────┤</span>
-<span class="dim">│</span> <span class="muted">FILE INFO</span>   /Music/Projects/House/Midnight Groove.als   12.4 MB   2026-04-11 <span class="dim">│</span>
-<span class="dim">└─────────────────────────────────────────────────────────────────────────────┘</span>
-</pre>
-                </div>
-
-                <!-- Metadata -->
-                <h3 id="project-metadata">Metadata</h3>
-                <p>The top section of the Project Detail page shows all metadata fields. Fields with a pencil icon are editable — tap or click to edit inline. Changes save automatically.</p>
-
-                <div class="docs-table-wrap">
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>Field</th>
-                                <th>Description</th>
-                                <th>Editable</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Display Name</td>
-                                <td>A custom name for the project, separate from the actual file name. Displayed everywhere in the app.</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>BPM</td>
-                                <td>Beats per minute. Auto-extracted by deep scan; you can also set it manually.</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>Key</td>
-                                <td>Musical key (e.g. C#m, F major). Auto-extracted where possible; fully editable.</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>Phase</td>
-                                <td>Production phase. Changes are recorded in the timeline.</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>Notes</td>
-                                <td>Free-form text notes. Great for mixing notes, collab info, reference links.</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>Deadline</td>
-                                <td>Optional date picker. Shows a warning badge in the table when overdue.</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>File Path</td>
-                                <td>The full path to the project file on disk.</td>
-                                <td>No (read-only)</td>
-                            </tr>
-                            <tr>
-                                <td>File Size</td>
-                                <td>Current size of the project file.</td>
-                                <td>No (read-only)</td>
-                            </tr>
-                            <tr>
-                                <td>DAW Version</td>
-                                <td>Version string read from the project file header during deep scan.</td>
-                                <td>No (read-only)</td>
-                            </tr>
-                            <tr>
-                                <td>Last Modified</td>
-                                <td>Timestamp from the file system.</td>
-                                <td>No (read-only)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Production phases -->
-                <h3 id="production-phases">Production Phases</h3>
-                <p>Every project has a <strong>phase</strong> that represents where it sits in your creative workflow. Out of the box, the progression is:</p>
-
-                <div class="phase-chips">
-                    <span class="phase-chip chip-idea">Idea</span>
-                    <span class="phase-chip chip-arranging">Arranging</span>
-                    <span class="phase-chip chip-mixing">Mixing</span>
-                    <span class="phase-chip chip-mastering">Mastering</span>
-                    <span class="phase-chip chip-finished">Finished</span>
-                </div>
-
-                <p>You can change a project's phase in three places:</p>
+            <section class="doc" id="version-stacks">
+                <h2>Versions</h2>
+                <p class="lead">Song.flp, Song_2.flp, Song_3.flp: one song. Stack them and the library shows it once, with one set of notes, to-dos and work time.</p>
                 <ul>
-                    <li>The <strong>Phase dropdown</strong> in the Project Detail page</li>
-                    <li>The <strong>inline dropdown</strong> in the Dashboard table (click the Phase cell)</li>
-                    <li><strong>Bulk change</strong> — select multiple projects and use the bulk action toolbar</li>
+                    <li>Select the versions → <b>Stack as Versions</b>, or set a folder's scan mode to <b>Version Stack</b> and every song folder stacks itself.</li>
+                    <li>Unstacking gives each version back exactly what it had.</li>
                 </ul>
-                <p>Every phase change is recorded in the project's <a href="#project-timeline">Timeline</a> with a timestamp, so you can see how long a project spent in each stage.</p>
+            </section>
 
-                <h4>Customizing Phases</h4>
-                <p>The default five phases are just a starting point. Open <strong>Settings → Phases</strong> to:</p>
-                <ul>
-                    <li><strong>Rename, add, or delete</strong> phases to match your own workflow.</li>
-                    <li><strong>Reorder</strong> them by dragging — the order shown here is entirely up to you.</li>
-                    <li><strong>Assign a color</strong> to each phase from a palette, used throughout the Dashboard and charts.</li>
-                    <li><strong>Mark one or more phases as "finished" states</strong> — these are what <em>Hide Finished</em> filters out on the Dashboard.</li>
-                </ul>
-                <p>Deleting a phase that's still in use warns you how many projects reference it before you confirm. A <strong>Reset to Defaults</strong> button restores the original five phases at any time.</p>
+            <section class="doc" id="task-queue">
+                <h2>Tasks</h2>
+                <p class="lead">Every open to-do across every project, busiest first. Tick them off here, or jump to the project.</p>
+                <figure class="shot"><img src="resources/screenshots/task-queue/task-queue-overview.png" alt="The task queue" loading="lazy"></figure>
+            </section>
 
-                <!-- Todos -->
-                <h3 id="todos">Todos</h3>
-                <p>Each project has its own to-do list — perfect for tracking mixing notes, stems to send, references to check, or any checklist you need to complete before moving on.</p>
-                <ul>
-                    <li><strong>Add a todo:</strong> Click <em>+ Add Todo</em> and type the item text. Press Enter to save.</li>
-                    <li><strong>Check off:</strong> Click the checkbox next to any item. Completed todos are struck through.</li>
-                    <li><strong>Edit / Delete:</strong> Hover over a todo to reveal edit and delete buttons.</li>
-                    <li><strong>Import from template:</strong> Click <em>Import Template</em> to apply a pre-built todo list. Create templates in Settings for repeatable workflows (e.g. "Mixing checklist", "Release checklist").</li>
-                </ul>
-
-                <div class="callout callout-info">
-                    <strong>Tip:</strong> Open todos across all your projects are visible in the <a href="#task-queue" style="color:var(--accent);">Task Queue</a> tab — you can check things off there without opening each project individually.
-                </div>
-
-                <!-- Preview songs -->
-                <h3 id="preview-songs">Preview Songs</h3>
-                <p>Each project can have a <strong>preview song</strong> — an audio file (WAV, MP3, or AIFF) representing the latest mixdown you want to reference. The preview player appears in the Project Detail page and lets you listen without switching apps.</p>
-
-                <h4>Setting a Preview Song (Desktop)</h4>
-                <ol class="steps">
-                    <li>In Project Detail, find the <em>Preview Song</em> section and click <strong>Pick File</strong>.</li>
-                    <li>Browse to your mixdown file and confirm. The player appears immediately.</li>
-                </ol>
-
-                <h4>Auto-Detection</h4>
-                <p>If your DAW exports to a subfolder named something like <code style="color:var(--accent); font-family:monospace;">Mixdown</code>, <code style="color:var(--accent); font-family:monospace;">Bounces</code>, or <code style="color:var(--accent); font-family:monospace;">Exports</code>, the app scans for the newest <code style="font-family:monospace;">.wav</code>, <code style="font-family:monospace;">.mp3</code>, or <code style="font-family:monospace;">.aiff</code> in that folder and automatically sets it as the preview. The scan skips the file if it is already up to date (checked by modification timestamp), avoiding unnecessary re-downloads. The folder names it checks are configurable — both globally and per DAW — under <a href="#mixdown-folders">Settings → Mixdown Folders</a>.</p>
-
-                <h4>Preview Player Controls</h4>
-                <ul>
-                    <li><kbd>Space</kbd> — Play / Pause (when player is focused)</li>
-                    <li><kbd>←</kbd> / <kbd>→</kbd> — Seek backward / forward 5 seconds</li>
-                    <li><kbd>Ctrl</kbd>+<kbd>←</kbd> / <kbd>Ctrl</kbd>+<kbd>→</kbd> — Seek backward / forward 30 seconds</li>
-                    <li>Click the seek bar to jump to any position</li>
-                </ul>
-
-                <div class="callout callout-info">
-                    <strong>Tip:</strong> You can also press <kbd>P</kbd> when a row is selected in the Dashboard table to play/pause the preview song without opening Project Detail.
-                </div>
-
-                <!-- Timeline -->
-                <h3 id="project-timeline">Timeline</h3>
-                <p>Every project has a <strong>Timeline</strong> tab in Project Detail that shows a chronological log of phase changes. Each entry includes:</p>
-                <ul>
-                    <li>The phase the project moved <em>into</em></li>
-                    <li>The date and time the change was made</li>
-                </ul>
-                <p>The timeline lets you see how long a track spent in each stage — useful for understanding your own workflow patterns over time.</p>
-            </div>
-
-            <!-- ================================================================
-                 RELEASES
-            ================================================================ -->
-            <div class="docs-section" id="releases">
+            <section class="doc" id="releases">
+                <span id="creating-releases" class="anchor"></span>
+                <span id="release-files" class="anchor"></span>
                 <h2>Releases</h2>
-                <p>Releases let you group one or more projects into a named catalogue entry — an EP, an album, a single, or any collection that makes sense to you. Each release can have artwork, a description, a release date, and attached files.</p>
-
-                <!-- Creating releases -->
-                <h3 id="creating-releases">Creating Releases</h3>
-                <ol class="steps">
-                    <li>Navigate to the <strong>Releases</strong> tab in the navigation bar.</li>
-                    <li>Click <strong>New Release</strong>.</li>
-                    <li>Enter a <strong>title</strong> (required), optional <strong>description</strong>, and optional <strong>release date</strong>.</li>
-                    <li>Add <strong>artwork</strong> — tap the artwork placeholder and pick an image file from disk.</li>
-                    <li>Under <em>Projects</em>, click <strong>Add Projects</strong> and select one or more projects from your library to associate with this release.</li>
-                    <li>Save. The release appears in the Releases table.</li>
-                </ol>
-
-                <p>Release fields at a glance:</p>
-                <ul>
-                    <li><strong>Title</strong> — Name of the release (e.g. "Meridian EP").</li>
-                    <li><strong>Description</strong> — Free text: credits, liner notes, distribution notes.</li>
-                    <li><strong>Artwork</strong> — A cover image stored locally (and synced to Drive if you use backup).</li>
-                    <li><strong>Release Date</strong> — The planned or actual release date.</li>
-                    <li><strong>Projects</strong> — The project(s) that make up this release.</li>
-                </ul>
-
-                <!-- Release files -->
-                <h3 id="release-files">Release Files</h3>
-                <p>Beyond project links, you can attach arbitrary files to a release — stems, final master WAVs, distribution ZIPs, artwork source files, notes PDFs.</p>
-                <ul>
-                    <li>In the Release Detail page, scroll to <strong>Files</strong> and click <strong>Add File</strong>.</li>
-                    <li>Browse and select any file from your file system.</li>
-                    <li>Files are listed with their name and size. Tap a file to preview (if supported) or reveal in Finder/Explorer.</li>
-                    <li>The <strong>Download All as ZIP</strong> button packages every attached file into a single archive — handy for sending to a distributor or backing up an entire release package.</li>
-                </ul>
-
-                <div class="callout callout-warning">
-                    <strong>Note:</strong> The app stores references to file paths, not copies of the files themselves (except for artwork and preview songs, which are stored in the app database). If you move a release file, you will need to re-add it.
+                <p class="lead">An EP, an album, a single: its tracks, artwork, date, to-dos and files in one place.</p>
+                <div class="shots">
+                    <figure class="shot"><img src="resources/screenshots/releases/releases-list.png" alt="The releases list" loading="lazy"><figcaption><b>Create New Release</b>, then pick its tracks.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/releases/release-detail.png" alt="A release's page" loading="lazy"><figcaption>Masters and documents attached; <b>Save release files ZIP</b> for the distributor.</figcaption></figure>
                 </div>
-            </div>
+            </section>
 
-            <!-- ================================================================
-                 MIDI CLIPS
-            ================================================================ -->
-            <div class="docs-section" id="midi-clips">
-                <h2>MIDI Clips</h2>
-                <p>For Ableton Live, Cubase, Nuendo, FL Studio and Reaper, a deep scan also reads every MIDI clip in the project. The riffs, chord progressions and drum patterns buried in old projects become something you can browse, play, edit and reuse without opening the DAW.</p>
-
-                <h3>Reading a Project's Clips</h3>
-                <ul>
-                    <li>Clips are read by <strong>Extract Metadata</strong> on a project, or by a <strong>Deep Scan</strong> of the library. A regular scan never reads them, because a project on a cloud drive would have to be downloaded first.</li>
-                    <li>A clip holds only what actually plays: material trimmed off a part's edges is dropped, loops are unrolled, and a clip that only repeats a shorter whole-bar pattern is shrunk to that pattern.</li>
-                    <li>Clips are unique by what they play, not by name, so the same pattern used ten times in a project shows up once. A transposed or re-voiced copy counts as a different clip.</li>
-                    <li>Controllers, pitch bend and aftertouch come along with the notes (Reaper and Ableton Live).</li>
-                    <li>Reaper MIDI items that point to a separate <code class="daw-ext">.mid</code> file are read from that file. If it can't be found, the project page says which ones are missing.</li>
-                    <li>The project's <strong>MIDI clips</strong> section lists them, and the Dashboard's <strong>Only projects with MIDI</strong> filter narrows the list to projects that have any.</li>
-                </ul>
-
-                <h3>The MIDI Tab</h3>
-                <p>The <strong>MIDI</strong> tab gathers the clips of every project in the profile into one searchable list. Arrange it by project, or by tempo to find everything at 140 BPM. Each clip plays through a built-in preview synth, with an instrument guessed from the track it came from (lead, bass, pad, pluck, keys, organ, strings, brass, bell or drum kit), which you can change per clip.</p>
-
-                <h3>Collections</h3>
-                <ul>
-                    <li>A <strong>collection</strong> is your own set of clips, like a sample pack in the making. It holds <em>copies</em>, so it keeps working after the source project is edited or deleted.</li>
-                    <li>Organise a collection into nested folders, and drag clips and folders around. Drag a clip from <strong>All clips</strong> onto a collection to copy it in.</li>
-                    <li>Collections name their files from a template you set up (role, tempo, key, bar count and so on, e.g. <code>Bass - 140BPM - Am - 4 bars</code>), and can rename many clips to that scheme at once.</li>
-                    <li><strong>Import MIDI files</strong> brings <code class="daw-ext">.mid</code> files from anywhere into a collection, one clip per track.</li>
-                    <li>Export a collection as <code class="daw-ext">.mid</code> files with its folder structure kept, or <strong>Share as ZIP</strong>. Every exported file carries the clip's tempo, time signature and key.</li>
-                </ul>
-
-                <h3>Piano Roll</h3>
-                <p>Click a clip's thumbnail to open it in the piano roll. Play it, loop a region, change the tempo and time signature, and see notes outside the project's scale highlighted. The editor works like a DAW's key editor: select, range, eraser and pencil tools, box selection, quantize, duplicate, transpose, and velocity, controller and pitch bend lanes you can draw in. <strong>New clip</strong> in a collection starts from a blank bar.</p>
-                <p>Editing never changes the project: the result is saved as a <strong>new clip</strong> in a collection. Press <kbd>?</kbd> or <kbd>F1</kbd> in the piano roll to see every shortcut and gesture.</p>
-
-                <div class="callout callout-info">
-                    <strong>Sync &amp; backup:</strong> Clips and collections are included in Google Drive sync and in local backup, so they come back on a new machine, even one without the project folders.
-                </div>
-            </div>
-
-            <!-- ================================================================
-                 TASK QUEUE
-            ================================================================ -->
-            <div class="docs-section" id="task-queue">
-                <h2>Task Queue</h2>
-                <p>The Task Queue is a unified view of every open to-do item across <em>all</em> your projects. Instead of opening each project to check what's pending, you can see — and act on — everything from one screen.</p>
-
-                <h3>How It Works</h3>
-                <ul>
-                    <li>Projects are grouped by <strong>pending todo count</strong>, highest first — the busiest projects float to the top.</li>
-                    <li>Within each group, individual todos are listed with a checkbox.</li>
-                    <li>Check off a todo directly from the Task Queue. The change syncs back to the project immediately.</li>
-                    <li>A <strong>search bar</strong> lets you filter todos by keyword across all projects.</li>
-                    <li>Projects with no open todos are hidden (only active work is shown).</li>
-                </ul>
-
-                <div class="callout callout-info">
-                    <strong>Tip:</strong> Use the Task Queue at the start of a session to get a bird's-eye view of what needs to happen today. It's the fastest way to check off completed mixing notes, follow-ups, or delivery tasks without hopping between projects.
-                </div>
-
-                <h3>Adding Todos from the Task Queue</h3>
-                <p>You can also open a project's todo list directly from the Task Queue by tapping its name — this takes you to the Project Detail page with the todos section pre-expanded. Add or edit todos there and navigate back with <kbd>Cmd</kbd>+<kbd>←</kbd> (macOS) or <kbd>Alt</kbd>+<kbd>←</kbd> (Windows/Linux).</p>
-            </div>
-
-            <!-- ================================================================
-                 MUSIC PLAYER
-            ================================================================ -->
-            <div class="docs-section" id="music-player">
-                <h2>Music Player</h2>
-                <p>Beyond the single-track <a href="#preview-songs">preview player</a> inside each project, the app has a dedicated Music Player for browsing and listening across your whole library at once. The experience differs by platform.</p>
-
-                <h3>Desktop</h3>
-                <p>The desktop Music Player is a three-pane view: your track list, the selected project's details, and a drag-and-drop queue. It supports shuffle and repeat, and includes a <strong>Camelot-wheel key-compatible auto-queue</strong> — build a queue of tracks that are harmonically compatible with the one currently playing, using the <a href="#project-metadata">key</a> metadata already extracted from your projects. You can add a todo at the exact playback timestamp without leaving the player.</p>
-
-                <h3>Mobile</h3>
-                <p>On Android and iOS, the Music Player is a swipeable "Now Playing" screen covering every project in your library that has a preview song. It includes a mono-mix toggle (useful for checking mixes in mono), the same add-todo-at-timestamp shortcut, and quick access to <a href="#sharing">sharing</a> and ZIP export for the current track.</p>
-
-                <div class="callout callout-info">
-                    <strong>Note:</strong> The Music Player and the per-project preview player both use the same underlying audio engine, but the Music Player queues across your whole library while the preview player stays scoped to one project.
-                </div>
-            </div>
-
-            <!-- ================================================================
-                 PLAYLISTS
-            ================================================================ -->
-            <div class="docs-section" id="playlists">
-                <h2>Playlists <span class="badge-inline">Mobile</span></h2>
-                <p>Playlists are an Android and iOS feature that lets you create ordered sequences of preview songs from your library. Perfect for reviewing your work while travelling, commuting, or away from your studio machine.</p>
-
-                <h3>Creating a Playlist</h3>
-                <ol class="steps">
-                    <li>Open the <strong>Playlists</strong> tab on the mobile app.</li>
-                    <li>Tap <strong>New Playlist</strong> and give it a name (e.g. "Summer 2026 Review").</li>
-                    <li>Tap <strong>Add Songs</strong> and select preview songs from your project library.</li>
-                    <li>Drag to reorder. Tap the play button to start playback from any position in the list.</li>
-                </ol>
-
-                <h3>Playback</h3>
-                <p>The playlist player plays songs in sequence and loops when it reaches the end. Use the standard transport controls to skip forward, go back, or scrub within a track. All preview songs must be available locally on the device — sync them from Google Drive first if needed.</p>
-
-                <div class="callout callout-info">
-                    <strong>Tip:</strong> Upload preview songs from your Mac via Google Drive Backup, then download them to your Android phone. Now you have your latest mixdowns available in a playlist for review on the go.
-                </div>
-            </div>
-
-            <!-- ================================================================
-                 TEMPLATES
-            ================================================================ -->
-            <div class="docs-section" id="templates">
+            <section class="doc" id="templates">
                 <h2>Templates</h2>
-                <p>There are two kinds of templates, covering two different needs: starting a new project, and checking off recurring work.</p>
+                <p class="lead">Start a new song from a template — DAW, tempo, key and starter files ready — or add a ready-made checklist to a project's to-dos.</p>
+                <div class="shots">
+                    <figure class="shot"><img src="resources/screenshots/templates/project-templates-list.png" alt="Project templates" loading="lazy"><figcaption>Side rail → Project Templates.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/templates/project-template-create-from.png" alt="Creating a project from a template" loading="lazy"><figcaption><b>Use</b> opens a new project filled in from it.</figcaption></figure>
+                </div>
+            </section>
 
-                <h3>Project Templates</h3>
-                <p>Open <strong>Settings → Project Templates</strong> to register any existing project folder as a template — its BPM, key, DAW type, and starter files are captured. You can also point the app at a "template roots" parent folder and it will scan for candidate template folders automatically. Templates can be searched and filtered by DAW or key.</p>
-                <p>To use one, click <strong>Use</strong> on a template — this opens the Create Project dialog pre-filled from the template, so your new project starts with the right metadata and starter files instead of a blank slate.</p>
-
-                <h3>Todo Templates</h3>
-                <p>Covered under <a href="#todos">Todos</a> and <a href="#settings">Settings</a> — reusable checklists (e.g. "Mixing Checklist", "Pre-Release Checklist") you can import into any project's todo list.</p>
-            </div>
-
-            <!-- ================================================================
-                 STATISTICS
-            ================================================================ -->
-            <div class="docs-section" id="statistics">
+            <section class="doc" id="statistics">
                 <h2>Statistics</h2>
-                <p>The Statistics tab gives you a visual summary of your entire library — useful for understanding your creative output over time and spotting bottlenecks in your workflow.</p>
+                <p class="lead">Where your songs are, where they get stuck, how much you finish.</p>
+                <figure class="shot"><img src="resources/screenshots/statistics/statistics-global-overview.png" alt="Statistics" loading="lazy"></figure>
+            </section>
 
-                <h3>Available Charts and Metrics</h3>
+            <section class="doc" id="midi-clips">
+                <h2>MIDI clips</h2>
+                <p class="lead">The riffs, chords and drum patterns in every project — Ableton Live, Cubase, Nuendo, FL Studio, Reaper — without opening the DAW.</p>
+                <figure class="shot"><img src="resources/screenshots/midi/midi-library.png" alt="The MIDI tab: every clip of every project" loading="lazy"></figure>
                 <ul>
-                    <li><strong>Production Phase Distribution</strong> — A breakdown of how many projects are in each phase. If you see a pile-up in Mixing, you know where your workflow is stalling.</li>
-                    <li><strong>DAW Breakdown</strong> — Which DAWs you use most across your library.</li>
-                    <li><strong>Projects Over Time</strong> — An activity chart showing when projects were created or last modified. See your most and least productive periods.</li>
-                    <li><strong>Totals</strong> — Quick counts: total projects, total releases, total open todos, total completed todos.</li>
+                    <li>A deep scan reads them; each clip once, however often a project uses it.</li>
+                    <li>Play any clip through the built-in synth, at any tempo, with an instrument guessed from its track.</li>
+                    <li>Drag a clip into your DAW or a folder as a <code>.mid</code> — tempo and key included.</li>
                 </ul>
+                <h3>Collections</h3>
+                <p>Your own sets of clips, in folders — copies, so they keep working whatever happens to the projects. Import <code>.mid</code> files from anywhere, name files by a scheme, export or share the whole set.</p>
+                <figure class="shot"><img src="resources/screenshots/midi/midi-collection.png" alt="A MIDI collection with folders" loading="lazy"></figure>
+                <h3>Piano roll</h3>
+                <p>Click a clip's thumbnail. Edit like a DAW's key editor — select, range, eraser and pencil tools, quantize, duplicate, transpose, velocity and controller lanes — and save the result as a new clip. <kbd>?</kbd> lists every shortcut.</p>
+                <figure class="shot"><img src="resources/screenshots/midi/midi-piano-roll.png" alt="The piano roll" loading="lazy"></figure>
+            </section>
 
-                <p>All charts update automatically as your library changes. Statistics are scoped to the <a href="#profiles">current profile</a>, so switching profiles shows you that profile's data.</p>
-            </div>
+            <section class="doc" id="music-player">
+                <span id="playlists" class="anchor"></span>
+                <h2>Music player</h2>
+                <p class="lead">All your mixdowns in one player. The key wheel suggests what mixes into the song playing; add a to-do at the exact second you hear something.</p>
+                <figure class="shot"><img src="resources/screenshots/music-player/music-player-desktop.png" alt="The music player with its key wheel" loading="lazy"></figure>
+                <div class="tip">On Android: a Now Playing screen, a mono check, and <b>playlists</b> of mixdowns to review on the go.</div>
+            </section>
 
-            <!-- ================================================================
-                 PROFILES
-            ================================================================ -->
-            <div class="docs-section" id="profiles">
-                <h2>Profiles</h2>
-                <p>Profiles let you run completely separate library environments inside the same installation. Each profile has its own scan roots, projects, releases, todos, playlists, and settings. Switching profiles is instant.</p>
-
-                <h3>Use Cases</h3>
-                <ul>
-                    <li><strong>Multiple artist aliases</strong> — Keep your personal projects separate from your alias or side project.</li>
-                    <li><strong>Client work isolation</strong> — One profile per client, or one for client work and one for original material.</li>
-                    <li><strong>Studio sharing</strong> — Multiple producers sharing one machine, each with their own profile.</li>
-                    <li><strong>Context switching</strong> — A "focus" profile with only active in-progress projects, and a full library profile.</li>
-                </ul>
-
-                <h3>Managing Profiles</h3>
-                <ol class="steps">
-                    <li>Click your <strong>profile avatar</strong> or name in the top-right corner of the app to open the Profile Manager.</li>
-                    <li>The Profile Manager lists all existing profiles. Click a profile to switch to it immediately.</li>
-                    <li>Click <strong>New Profile</strong>, enter a name, and optionally set a profile photo.</li>
-                    <li>To rename or delete a profile, long-press (mobile) or right-click (desktop) it in the list.</li>
-                </ol>
-
-                <div class="callout callout-warning">
-                    <strong>Warning:</strong> Deleting a profile is permanent and removes all associated projects, releases, todos, and settings for that profile. Use <em>Settings → Delete All Data</em> only if you want to wipe everything including every profile.
-                </div>
-            </div>
-
-            <!-- ================================================================
-                 GOOGLE DRIVE SYNC
-            ================================================================ -->
-            <div class="docs-section" id="google-drive-sync">
-                <h2>Google Drive Sync</h2>
-                <p>Google Drive Backup lets you back up your entire project database — metadata, preview songs, release artwork, and profile photos — to your Google Drive. You can then restore it on another machine or the same machine after a reinstall.</p>
-
-                <div class="callout callout-info">
-                    <strong>Important:</strong> The app backs up <em>metadata and media files</em> (preview songs, artwork). It does <em>not</em> upload your raw DAW project files — those stay on your local drive. Think of it as a metadata snapshot, not a full backup solution for your audio files.
-                </div>
-
-                <!-- Drive setup -->
-                <h3 id="drive-setup">Setup</h3>
-                <ol class="steps">
-                    <li>Open <strong>Settings → Google Drive Backup</strong>.</li>
-                    <li>Click <strong>Sign in with Google</strong>. A browser window opens to complete OAuth authentication.</li>
-                    <li>Grant the app access to your Google Drive files (it creates a dedicated app folder — it cannot access the rest of your Drive).</li>
-                    <li>Once authenticated, your account name appears in Settings. You are ready to upload or download.</li>
-                </ol>
-
-                <!-- Drive upload -->
-                <h3 id="drive-upload">Upload (Backup)</h3>
-                <p>Uploading creates a snapshot of your current profile and stores it in your Google Drive.</p>
-                <ol class="steps">
-                    <li>In Settings, tap <strong>Upload Backup</strong>.</li>
-                    <li>A progress dialog appears, showing the current stage: collecting data → uploading project database → uploading preview songs → uploading artwork → done.</li>
-                    <li>Each file is compared by a content hash before uploading. Files that haven't changed are skipped, so subsequent backups are fast.</li>
-                    <li>When complete, the dialog shows a timestamp of the backup.</li>
-                </ol>
-
-                <h4>What Gets Uploaded</h4>
-                <ul>
-                    <li>Full project metadata (all fields, todos, phases, timeline)</li>
-                    <li>Releases (metadata and attached artwork)</li>
-                    <li>Preview song audio files</li>
-                    <li>Profile photos</li>
-                </ul>
-
-                <h4>Auto-Backup</h4>
-                <p>Instead of uploading manually, set an interval from the same settings page: <strong>every 30 minutes</strong>, <strong>hourly</strong>, <strong>every 6 hours</strong>, or <strong>daily</strong>. The page shows when the next backup is due. Auto-backup keeps running even when the app is <a href="#background-mode">minimized to the tray</a>, so it doesn't require the main window to stay open.</p>
-
-                <!-- Drive download -->
-                <h3 id="drive-download">Download (Restore)</h3>
-                <p>Downloading replaces the current profile's database with the contents of the Drive backup.</p>
-                <ol class="steps">
-                    <li>Sign in to the same Google account on the new (or reinstalled) device.</li>
-                    <li>In Settings, tap <strong>Download Backup</strong>.</li>
-                    <li>A progress dialog shows the restore stages: fetching metadata → writing database → downloading preview songs → downloading artwork.</li>
-                    <li>Once complete, your projects appear in the Dashboard. Because scan roots are local paths, you may need to re-add your scan folders if the file system paths differ on the new machine.</li>
-                </ol>
-
-                <div class="callout callout-warning">
-                    <strong>Warning:</strong> Downloading a backup overwrites your current local database for the active profile. Back up first if you have local changes you want to keep.
-                </div>
-            </div>
-
-            <!-- ================================================================
-                 SHARING
-            ================================================================ -->
-            <div class="docs-section" id="sharing">
+            <section class="doc" id="sharing">
                 <h2>Sharing</h2>
-                <p>Share a preview song straight to the OS share sheet — Messages, WhatsApp, Slack, email, whatever's installed — from the <a href="#preview-songs">Project Detail page</a> or the <a href="#music-player">Music Player</a>.</p>
-                <p>Some apps reject raw <code style="font-family:monospace;">.wav</code>, <code style="font-family:monospace;">.aiff</code>, or <code style="font-family:monospace;">.flac</code> attachments. When you share one of these formats, the app automatically transcodes it first:</p>
-                <ul>
-                    <li><strong>macOS</strong> — converts to AAC (<code style="font-family:monospace;">.m4a</code>) using the built-in <code style="font-family:monospace;">afconvert</code> tool.</li>
-                    <li><strong>Windows</strong> — converts to MP3 using a bundled copy of ffmpeg, so nothing extra needs to be installed.</li>
-                </ul>
-                <p>A progress dialog shows while conversion runs. If conversion fails for any reason, the app falls back to sharing the original file. There's also a separate <strong>Share as ZIP</strong> action that packages the original file without any conversion.</p>
-            </div>
+                <p class="lead">Send a mixdown to Messages, WhatsApp, email… from its project or the player. WAV and AIFF are converted first where an app won't take them (AAC on macOS, MP3 on Windows); <b>Share as ZIP</b> sends the original.</p>
+            </section>
 
-            <!-- ================================================================
-                 BACKGROUND & TRAY MODE
-            ================================================================ -->
-            <div class="docs-section" id="background-mode">
-                <h2>Background &amp; Tray Mode <span class="badge-inline">Desktop</span></h2>
-                <p>On Windows and macOS, closing the app window doesn't have to quit it. With <strong>close to tray</strong> enabled, closing the window hides it instead — the app keeps running in the background, so scheduled <a href="#drive-upload">auto-backups</a> and active work sessions keep going.</p>
+            <section class="doc" id="sample-pack">
+                <h2>Sample pack</h2>
+                <p class="lead">Every sample your projects use, copied into one folder sorted by kind — kicks, snares, loops — with a report of which songs use what. Settings → Experimental → <b>Sample pack from your projects</b>.</p>
                 <ul>
-                    <li>On <strong>Windows</strong>, a system tray icon appears.</li>
-                    <li>On <strong>macOS</strong>, a menu-bar icon appears.</li>
+                    <li>Each file once, however many projects copied it. Your own recordings and bounces stay out unless you ask.</li>
+                    <li>Run it again later: only what's new is added.</li>
                 </ul>
-                <p>Right-click (or click, on macOS) the icon to open a menu with:</p>
-                <ul>
-                    <li>The time of your last Google Drive backup</li>
-                    <li><strong>Backup Now</strong> — trigger an upload immediately</li>
-                    <li>Pause / resume the active work session</li>
-                    <li><strong>Show Window</strong> — bring the app back to the foreground</li>
-                    <li><strong>Quit</strong> — actually exit the app</li>
-                </ul>
-                <p>The first time the window is hidden, a one-time notification explains that the app is still running in the background so it doesn't come as a surprise.</p>
-                <div class="callout callout-info">
-                    <strong>Tip:</strong> If close-to-tray is turned off, closing the window shows a normal quit-confirmation dialog instead. You can toggle this behavior from Settings.
-                </div>
-            </div>
+            </section>
 
-            <!-- ================================================================
-                 SETTINGS
-            ================================================================ -->
-            <div class="docs-section" id="settings">
+            <section class="doc" id="google-drive-sync">
+                <span id="drive-setup" class="anchor"></span>
+                <span id="drive-upload" class="anchor"></span>
+                <span id="drive-download" class="anchor"></span>
+                <h2>Google Drive</h2>
+                <p class="lead">Your library on every machine: details, to-dos, releases, MIDI, mixdowns and artwork. Your project files themselves stay where they are.</p>
+                <figure class="shot"><img src="resources/screenshots/google-drive-sync/drive-setup-signin.png" alt="Google Drive sync" loading="lazy"></figure>
+                <ul>
+                    <li>Side rail → <b>Google Drive</b> → sign in. The app only sees its own folder in your Drive.</li>
+                    <li><b>Sync</b> merges both ways: what you did on each machine is kept, deletions included.</li>
+                    <li>Sync on start, or every 30 minutes to daily — even from the tray.</li>
+                    <li>Every sync keeps the previous backup, to go back to.</li>
+                </ul>
+            </section>
+
+            <section class="doc" id="local-backup">
+                <h2>Local backup</h2>
+                <p class="lead">One file with your whole library — the way to back up without Google Drive, and the only one in the Flatpak. Settings → Backup → <b>Export Backup</b> / <b>Import Backup</b>.</p>
+                <figure class="shot"><img src="resources/screenshots/settings/settings-backup.png" alt="Settings, Backup" loading="lazy"></figure>
+            </section>
+
+            <section class="doc" id="archive">
+                <h2>Archive</h2>
+                <p class="lead">A finished song out of the way: its folder zipped somewhere else — and, if you choose, the originals deleted, only once the zip has been checked file by file. It stays in the library — <b>Show archived</b> — with everything you wrote about it, and restores where it came from.</p>
+                <p>Right-click → <b>Archive…</b></p>
+            </section>
+
+            <section class="doc" id="recently-deleted">
+                <h2>Recently deleted</h2>
+                <p class="lead">Deleting a project from the library keeps it for 30 days — notes, to-dos, work time, MIDI — under Settings → Project Folders. Its files on disk are never touched.</p>
+            </section>
+
+            <section class="doc" id="profiles">
+                <h2>Profiles</h2>
+                <p class="lead">One per artist name — solo, alias, collaboration — each with its own folders, projects and releases. Click your profile at the top of the side rail.</p>
+                <figure class="shot"><img src="resources/screenshots/profiles/profile-manager.png" alt="The profile manager" loading="lazy"></figure>
+                <ul>
+                    <li><b>Move to profile…</b> (right-click a project) hands a song to another profile — all its versions, details and MIDI, files moved or left in place.</li>
+                </ul>
+            </section>
+
+            <section class="doc" id="settings">
+                <span id="daw-launch-commands" class="anchor"></span>
+                <span id="mixdown-folders" class="anchor"></span>
+                <span id="about" class="anchor"></span>
                 <h2>Settings</h2>
-                <p>Settings are accessible from the navigation bar. All settings are stored per-profile unless noted.</p>
-
-                <h3>Scan Roots</h3>
-                <p>Add, remove, and manage the folders the app scans for DAW project files. Click <strong>Add Folder</strong> to browse to a directory. Click the trash icon next to a root to stop scanning that location (existing projects from that root remain in the database until you run a rescan).</p>
-
-                <h3>Ignored Paths</h3>
-                <p>Add specific subfolders to exclude from scanning. Useful for template folders, sample libraries, or any directory that contains DAW-adjacent files you do not want tracked as projects.</p>
-                <div class="code-block">/Users/you/Music/Projects/_Templates
-/Users/you/Music/Samples</div>
-
-                <h3 id="daw-launch-commands">DAW Launch Commands <span class="badge-inline">Linux</span></h3>
-                <p>Linux has no reliable file-type association for most DAWs, so <em>Open in DAW</em> needs to be told exactly which program to run for each one you use. The first time it can't figure that out on its own, or any time from Settings, configure the binary to launch once per DAW — the app uses it for every project of that type from then on.</p>
-
-                <h3 id="mixdown-folders">Mixdown Folders</h3>
-                <p>Controls which folder the app looks in for a project's exported/bounced audio when <a href="#preview-songs">auto-detecting a preview song</a>. Expand a DAW to see the folder names it already checks by default (e.g. <code style="font-family:monospace;">Mixdown</code>, <code style="font-family:monospace;">Bounces</code>, <code style="font-family:monospace;">Exports</code>), and add your own on top — both globally and per DAW, if a particular one uses a different export folder name in your setup.</p>
-
-                <h3>Language</h3>
-                <p>DAW Project Manager is fully localised in 9 languages. Change the language at any time — no restart required.</p>
+                <p class="lead">One page, a menu on the left, and a search box at the top.</p>
+                <div class="shots">
+                    <figure class="shot"><img src="resources/screenshots/settings/settings-appearance.png" alt="Settings, Appearance" loading="lazy"><figcaption><b>Appearance</b> — themes, including your own.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/settings/settings-columns-fields.png" alt="Settings, Columns and fields" loading="lazy"><figcaption><b>Columns &amp; fields</b> — your own fields, and which columns each table shows.</figcaption></figure>
+                </div>
                 <ul>
-                    <li>English, Portuguese, Spanish, French, Italian, German, Russian, Japanese, Chinese</li>
+                    <li><b>DAW Locations</b> — which program opens which DAW's projects (needed on Linux).</li>
+                    <li><b>Mixdown Folders</b> — where to look for a project's exported mix.</li>
+                    <li><b>Work Sessions</b> — Session Mode and reminders.</li>
+                    <li><b>About</b> — version, check for updates, report an issue, the diagnostic log.</li>
                 </ul>
+            </section>
 
-                <h3>Theme</h3>
-                <p>Choose between two dark themes:</p>
-                <ul>
-                    <li><strong>Classic Dark</strong> — Neutral dark grey palette (default).</li>
-                    <li><strong>Neon Dark</strong> — Higher-contrast with bolder accent colours.</li>
-                </ul>
+            <section class="doc" id="background-mode">
+                <h2>Tray mode</h2>
+                <p class="lead">Close the window and the app keeps running in the tray (menu bar on macOS) — syncs and work sessions go on. The tray menu shows the last sync, syncs now, pauses the session, quits.</p>
+            </section>
 
-                <h3>Customize Tabs</h3>
-                <p>Choose which tabs appear in the main navigation bar. The <strong>Projects</strong> tab is always visible. All other tabs (Releases, Task Queue, Playlists, Statistics) can be toggled on or off. Drag tabs to reorder them.</p>
+            <section class="doc" id="keyboard-shortcuts">
+                <h2>Shortcuts</h2>
+                <p class="lead"><kbd>Cmd</kbd> on macOS where it says <kbd>Ctrl</kbd>. The full list is in the app: Settings → Keyboard Shortcuts.</p>
+                <table class="keys">
+                    <tr><td><kbd>Ctrl</kbd> <kbd>F</kbd></td><td>Search</td></tr>
+                    <tr><td><kbd>Ctrl</kbd> <kbd>R</kbd></td><td>Rescan</td></tr>
+                    <tr><td><kbd>Ctrl</kbd> <kbd>T</kbd></td><td>Go to the projects table</td></tr>
+                    <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Move between projects</td></tr>
+                    <tr><td><kbd>Enter</kbd> or <kbd>D</kbd></td><td>Open the project's page</td></tr>
+                    <tr><td><kbd>P</kbd></td><td>Play / pause its mixdown</td></tr>
+                    <tr><td><kbd>O</kbd></td><td>Open in its DAW</td></tr>
+                    <tr><td><kbd>F</kbd></td><td>Open its folder</td></tr>
+                    <tr><td><kbd>Alt</kbd> <kbd>←</kbd></td><td>Back (<kbd>Cmd</kbd> <kbd>←</kbd> on macOS)</td></tr>
+                    <tr><td><kbd>Space</kbd>, <kbd>←</kbd> <kbd>→</kbd></td><td>In a player: play / pause, seek 5 s (with <kbd>Ctrl</kbd>: 30 s)</td></tr>
+                </table>
+            </section>
 
-                <h3>TODO Templates</h3>
-                <p>Create reusable to-do lists that can be imported into any project. Example templates: "Mixing Checklist", "Pre-Release Checklist", "Collab Workflow". Each template is a list of text items. Apply a template in Project Detail by clicking <em>Import Template</em>.</p>
-
-                <h3>Project Templates</h3>
-                <p>Register existing projects as reusable starting points for new ones. See <a href="#templates">Templates</a> for details.</p>
-
-                <h3>Phases</h3>
-                <p>Rename, add, remove, reorder, and color your production phases. See <a href="#production-phases">Production Phases</a> for details.</p>
-
-                <h3>Notification Preferences (Android)</h3>
-                <p>On Android, the app can send local notifications for approaching deadlines. Configure how many days in advance you want to be reminded. Requires notification permission to be granted.</p>
-
-                <h3>Work Session Reminders</h3>
-                <p>Requires <a href="#session-mode"><strong>Session Mode</strong></a> to be turned on. While it's on and a work session is active, the app can send a periodic reminder so you don't lose track of time — choose an interval of 15, 30, 45, 60, 90, or 120 minutes, or set a custom value. A <strong>Test Notification</strong> button lets you confirm your OS notification permissions are working before you rely on it.</p>
-
-                <h3 id="about">About</h3>
-                <p>Shows the installed app version, plus:</p>
-                <ul>
-                    <li><strong>License</strong> — view the app's open-source license in-app.</li>
-                    <li><strong>Report an Issue</strong> — opens a structured GitHub issue template pre-filled for bug reports.</li>
-                    <li><strong>Check for Updates</strong> — manually checks for a newer release. On the Linux AppImage build specifically, this can download and apply the update in place; other platforms link out to the download.</li>
-                    <li><strong>Share Diagnostic Log</strong> — opens the folder containing the app's diagnostic log file, for attaching to a bug report.</li>
-                </ul>
-
-                <h3>Clear Library</h3>
-                <p>Removes all projects from the current profile's database. Scan roots and settings are preserved. Running a rescan after clearing will re-populate projects from disk.</p>
-
-                <h3>Delete All Data</h3>
-                <p>Wipes everything — all profiles, all projects, all releases, all settings. Two confirmation dialogs are shown before any data is deleted. This action cannot be undone.</p>
-            </div>
-
-            <!-- ================================================================
-                 KEYBOARD SHORTCUTS
-            ================================================================ -->
-            <div class="docs-section" id="keyboard-shortcuts">
-                <h2>Keyboard Shortcuts</h2>
-                <p>DAW Project Manager is designed for keyboard-first use. On macOS, shortcuts use <kbd>Cmd</kbd>. On Windows, use <kbd>Ctrl</kbd> in place of <kbd>Cmd</kbd>. On macOS, press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>/</kbd> inside the app to open the in-app keyboard shortcut cheatsheet; on Windows/Linux, click the keyboard icon in the toolbar, or open it from Settings → Keyboard Shortcuts.</p>
-
-                <h3>Global Shortcuts</h3>
-                <div class="docs-table-wrap">
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>Shortcut</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><kbd>Cmd</kbd>+<kbd>F</kbd></td>
-                                <td>Focus the search bar</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>Cmd</kbd>+<kbd>R</kbd></td>
-                                <td>Rescan all project folders</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>Cmd</kbd>+<kbd>T</kbd></td>
-                                <td>Focus the projects table</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>P</kbd></td>
-                                <td>Play / pause preview song (when a project row is selected)</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>O</kbd></td>
-                                <td>Open project in DAW (when a row is selected)</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>Enter</kbd> or <kbd>D</kbd></td>
-                                <td>View project details (when a row is selected)</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>F</kbd></td>
-                                <td>Open project folder in Finder/Explorer (desktop, when a row is selected)</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>Cmd</kbd>+<kbd>←</kbd> (macOS) or <kbd>Alt</kbd>+<kbd>←</kbd> (Windows/Linux)</td>
-                                <td>Go back to previous screen</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>/</kbd> (macOS only)</td>
-                                <td>Open keyboard shortcuts cheatsheet — on Windows/Linux, use the keyboard icon in the toolbar instead</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3>Projects Table (when table is focused)</h3>
-                <div class="docs-table-wrap">
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>Shortcut</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><kbd>↑</kbd> / <kbd>↓</kbd></td>
-                                <td>Navigate rows up and down</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>Enter</kbd></td>
-                                <td>Open project details for the selected row</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3>Releases Table (when table is focused)</h3>
-                <div class="docs-table-wrap">
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>Shortcut</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><kbd>Enter</kbd></td>
-                                <td>View release details for the selected row</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3>Preview Player (when player is open)</h3>
-                <div class="docs-table-wrap">
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>Shortcut</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><kbd>Space</kbd></td>
-                                <td>Play / pause</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>←</kbd> / <kbd>→</kbd></td>
-                                <td>Seek backward / forward 5 seconds</td>
-                            </tr>
-                            <tr>
-                                <td><kbd>Ctrl</kbd>+<kbd>←</kbd> / <kbd>Ctrl</kbd>+<kbd>→</kbd></td>
-                                <td>Seek backward / forward 30 seconds</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ================================================================
-                 SUPPORTED DAWS
-            ================================================================ -->
-            <div class="docs-section" id="supported-daws">
+            <section class="doc" id="supported-daws">
+                <span id="metadata-extraction" class="anchor"></span>
                 <h2>Supported DAWs</h2>
-                <p>DAW Project Manager detects project files by extension. The following 14 DAWs get full treatment — deep metadata extraction is available for eight of them (see <a href="#metadata-extraction">Metadata Extraction</a> below); the rest are detected and scanned the same way, just with BPM/key entered manually.</p>
-
-                <div class="docs-table-wrap">
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>DAW</th>
-                                <th>Extension</th>
-                                <th>Notes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Ableton Live</td>
-                                <td><code class="daw-ext">.als</code>, <code class="daw-ext">.alp</code></td>
-                                <td>BPM, key, version, tracks, plug-ins and MIDI clips extracted during deep scan.</td>
-                            </tr>
-                            <tr>
-                                <td>Bitwig Studio</td>
-                                <td><code class="daw-ext">.bwproject</code></td>
-                                <td>BPM, key (Bitwig 6+), and version extracted during deep scan.</td>
-                            </tr>
-                            <tr>
-                                <td>Cakewalk / Sonar</td>
-                                <td><code class="daw-ext">.cwp</code>, <code class="daw-ext">.wrk</code>, <code class="daw-ext">.bun</code></td>
-                                <td>Project, legacy, and bundle formats all detected. No automatic extraction yet.</td>
-                            </tr>
-                            <tr>
-                                <td>Cubase</td>
-                                <td><code class="daw-ext">.cpr</code></td>
-                                <td>BPM, key, version, project notes (from the Notepad panel), tracks, plug-ins and MIDI clips extracted during deep scan.</td>
-                            </tr>
-                            <tr>
-                                <td>FL Studio</td>
-                                <td><code class="daw-ext">.flp</code></td>
-                                <td>BPM, version, tracks, plug-ins and MIDI clips extracted during deep scan. Key is not.</td>
-                            </tr>
-                            <tr>
-                                <td>Logic Pro</td>
-                                <td><code class="daw-ext">.logicx</code></td>
-                                <td>Directory bundle (macOS only). BPM, key, and version extracted during deep scan when running on macOS.</td>
-                            </tr>
-                            <tr>
-                                <td>MAGDA</td>
-                                <td><code class="daw-ext">.mgd</code></td>
-                                <td>BPM, key, and version extracted during deep scan.</td>
-                            </tr>
-                            <tr>
-                                <td>Maschine</td>
-                                <td><code class="daw-ext">.maschine</code>, <code class="daw-ext">.maschine2</code></td>
-                                <td>Project file detected. No automatic extraction yet.</td>
-                            </tr>
-                            <tr>
-                                <td>Nuendo</td>
-                                <td><code class="daw-ext">.npr</code></td>
-                                <td>BPM, key, version, project notes (from the Notepad panel), tracks, plug-ins and MIDI clips extracted during deep scan.</td>
-                            </tr>
-                            <tr>
-                                <td>Pro Tools</td>
-                                <td><code class="daw-ext">.ptx</code>, <code class="daw-ext">.pts</code></td>
-                                <td>Project and session files detected. No automatic extraction yet.</td>
-                            </tr>
-                            <tr>
-                                <td>Reaper</td>
-                                <td><code class="daw-ext">.rpp</code></td>
-                                <td>BPM, key, version, project notes, markers, tracks, plug-ins and MIDI clips extracted during deep scan — including MIDI items that point to a separate <code class="daw-ext">.mid</code> file. Plain-text format.</td>
-                            </tr>
-                            <tr>
-                                <td>Studio One</td>
-                                <td><code class="daw-ext">.song</code></td>
-                                <td>BPM, version and tracks extracted during deep scan. Key, plug-ins and MIDI clips are not read yet.</td>
-                            </tr>
-                            <tr>
-                                <td>Tracktion Waveform</td>
-                                <td><code class="daw-ext">.tracktionedit</code>, <code class="daw-ext">.tracktion</code></td>
-                                <td>Both edit and project file formats detected. No automatic extraction yet.</td>
-                            </tr>
-                            <tr>
-                                <td>Universal Audio LUNA</td>
-                                <td><code class="daw-ext">.luna</code></td>
-                                <td>Package bundle; project file detected. No automatic extraction yet.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <p class="lead">Every one is found and listed. The highlighted ones are also read inside — anything else, type in once.</p>
+                <div class="daw-grid">
+                    <div class="daw deep"><img src="resources/daw/logos/ableton-live.png" alt=""><b>Ableton Live</b><small>tempo · key · version · tracks · plug-ins · MIDI</small></div>
+                    <div class="daw deep"><img src="resources/daw/logos/cubase.png" alt=""><b>Cubase</b><small>tempo · key · version · notes · tracks · plug-ins · MIDI</small></div>
+                    <div class="daw deep"><img src="resources/daw/logos/nuendo.png" alt=""><b>Nuendo</b><small>tempo · key · version · notes · tracks · plug-ins · MIDI</small></div>
+                    <div class="daw deep"><img src="resources/daw/logos/fl-studio.png" alt=""><b>FL Studio</b><small>tempo · version · tracks · plug-ins · MIDI</small></div>
+                    <div class="daw deep"><img src="resources/daw/logos/reaper.png" alt=""><b>Reaper</b><small>tempo · key · version · notes · markers · tracks · plug-ins · MIDI</small></div>
+                    <div class="daw deep"><img src="resources/daw/logos/studio-one.png" alt=""><b>Studio One</b><small>tempo · version · tracks</small></div>
+                    <div class="daw deep"><img src="resources/daw/logos/bitwig-studio.png" alt=""><b>Bitwig Studio</b><small>tempo · key · version</small></div>
+                    <div class="daw deep"><img src="resources/daw/logos/logic-pro.png" alt=""><b>Logic Pro</b><small>tempo · key · version (on macOS)</small></div>
+                    <div class="daw deep"><img src="resources/daw/logos/magda.png" alt=""><b>MAGDA</b><small>tempo · key · version</small></div>
+                    <div class="daw"><img src="resources/daw/logos/pro-tools.png" alt=""><b>Pro Tools</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/luna.png" alt=""><b>LUNA</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/cakewalk.png" alt=""><b>Cakewalk / Sonar</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/tracktion-waveform.png" alt=""><b>Waveform</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/maschine.png" alt=""><b>Maschine</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/garageband.png" alt=""><b>GarageBand</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/reason.png" alt=""><b>Reason</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/ardour.png" alt=""><b>Ardour</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/renoise.png" alt=""><b>Renoise</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/mixcraft.png" alt=""><b>Mixcraft</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/acid-pro.png" alt=""><b>ACID Pro</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/samplitude-sequoia.png" alt=""><b>Samplitude</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/digital-performer.png" alt=""><b>Digital Performer</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/adobe-audition.png" alt=""><b>Audition</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/audacity.png" alt=""><b>Audacity</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/lmms.png" alt=""><b>LMMS</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/qtractor.png" alt=""><b>Qtractor</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/rosegarden.png" alt=""><b>Rosegarden</b><small>listed</small></div>
+                    <div class="daw"><img src="resources/daw/logos/zrythm.png" alt=""><b>Zrythm</b><small>listed</small></div>
                 </div>
+                <div class="tip">Missing yours? <a href="https://github.com/bandpassrecords/daw-project-manager/issues">Open an issue</a> with the DAW and its project file's extension.</div>
+            </section>
 
-                <h3>Additional DAWs</h3>
-                <p>These are detected and scanned exactly like the DAWs above — they just don't have automatic metadata extraction yet, same as Maschine or Pro Tools.</p>
-
-                <div class="docs-table-wrap">
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>DAW</th>
-                                <th>Extension</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>ACID Pro</td><td><code class="daw-ext">.acd</code></td></tr>
-                            <tr><td>Adobe Audition</td><td><code class="daw-ext">.sesx</code></td></tr>
-                            <tr><td>Ardour</td><td><code class="daw-ext">.ardour</code></td></tr>
-                            <tr><td>Audacity</td><td><code class="daw-ext">.aup3</code></td></tr>
-                            <tr><td>Digital Performer</td><td><code class="daw-ext">.dpproj</code></td></tr>
-                            <tr><td>GarageBand</td><td><code class="daw-ext">.band</code></td></tr>
-                            <tr><td>LMMS</td><td><code class="daw-ext">.mmp</code>, <code class="daw-ext">.mmpz</code></td></tr>
-                            <tr><td>Mixcraft</td><td><code class="daw-ext">.mx8</code>, <code class="daw-ext">.mx9</code>, <code class="daw-ext">.mx10</code></td></tr>
-                            <tr><td>Qtractor</td><td><code class="daw-ext">.qtr</code></td></tr>
-                            <tr><td>Reason</td><td><code class="daw-ext">.reason</code>, <code class="daw-ext">.rns</code></td></tr>
-                            <tr><td>Renoise</td><td><code class="daw-ext">.xrns</code></td></tr>
-                            <tr><td>Rosegarden</td><td><code class="daw-ext">.rg</code></td></tr>
-                            <tr><td>Samplitude / Sequoia</td><td><code class="daw-ext">.vip</code></td></tr>
-                            <tr><td>Zrythm</td><td><code class="daw-ext">.zpj</code></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="callout callout-info">
-                    <strong>Don't see your DAW?</strong> Open an issue on <a href="https://github.com/bandpassrecords/daw-project-manager/issues" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">GitHub</a> with the DAW name and file extension. New DAW support is added regularly based on requests. Not currently supported: Harrison Mixbus, SAWStudio, Pyramix, and Zynewave Podium (no reliably documented file extension), plus browser-only tools like BandLab, Soundtrap, and Audiotool (no local project file to scan).
-                </div>
-
-                <h3>Logic Pro Note (macOS)</h3>
-                <p>Logic Pro project packages end in <code class="daw-ext">.logicx</code> and are actually directories (bundles) on macOS — same for Universal Audio LUNA (<code class="daw-ext">.luna</code>) and GarageBand (<code class="daw-ext">.band</code>). The app detects all three correctly and treats each bundle as a single project entry.</p>
-                <p>Deep Scan reads <strong>BPM, musical key, and the Logic Pro version</strong> the project was last saved from straight out of the bundle's property lists. This runs on macOS only — it uses a system tool that ships with macOS — so a <code class="daw-ext">.logicx</code> project synced onto a Windows or Linux machine is still detected and scanned, just with those fields left for manual entry.</p>
-
-                <h3>BPM and Key Override</h3>
-                <p>If deep scan cannot extract BPM or key from a particular file, or if the extracted value is wrong, you can always override it manually in the Project Detail page. Manual values are stored in the app database and take precedence over future deep scans.</p>
-            </div>
-
-            <!-- ================================================================
-                 METADATA EXTRACTION
-            ================================================================ -->
-            <div class="docs-section" id="metadata-extraction">
-                <h2>Metadata Extraction</h2>
-                <p>Deep Scan can read some fields straight from a project file — the rest have to be entered by hand, or picked up from an optional <code style="font-family:monospace;">bpm.txt</code>/<code style="font-family:monospace;">key.txt</code> file dropped next to the project on the next scan. The same reference table is available in the app itself, under <strong>Settings → Metadata Extraction</strong>.</p>
-
-                <div class="docs-table-wrap">
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>DAW</th>
-                                <th>BPM</th>
-                                <th>Key</th>
-                                <th>DAW Version</th>
-                                <th>Project Notes</th>
-                                <th>Markers</th>
-                                <th>Tracks</th>
-                                <th>Plug-ins</th>
-                                <th>MIDI Clips</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Ableton Live</td><td>✓</td><td>✓</td><td>✓</td><td></td><td></td><td>✓</td><td>✓</td><td>✓</td></tr>
-                            <tr><td>Bitwig Studio</td><td>✓</td><td>✓</td><td>✓</td><td></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td>Cubase / Nuendo</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td></td><td>✓</td><td>✓</td><td>✓</td></tr>
-                            <tr><td>FL Studio</td><td>✓</td><td></td><td>✓</td><td></td><td></td><td>✓</td><td>✓</td><td>✓</td></tr>
-                            <tr><td>Logic Pro *</td><td>✓</td><td>✓</td><td>✓</td><td></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td>MAGDA</td><td>✓</td><td>✓</td><td>✓</td><td></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td>Reaper</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                            <tr><td>Studio One</td><td>✓</td><td></td><td>✓</td><td></td><td></td><td>✓</td><td></td><td></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <p>* Logic Pro extraction runs on macOS only — see <a href="#supported-daws">Logic Pro Note</a> above.</p>
-                <p><strong>Tracks</strong> are counted by kind — audio, MIDI, instrument, sampler, groups &amp; FX, folders — and <strong>Plug-ins</strong> lists every plug-in the project loads. Both show on the project's detail page. For <strong>MIDI Clips</strong>, see <a href="#midi-clips">MIDI Clips</a>.</p>
-                <p>All other supported DAWs — including the 14 <a href="#supported-daws">additional DAWs</a> above — are detected and scanned but rely on manual entry today.</p>
-            </div>
-
+            <p class="no-match" id="no-match">Nothing in the guide matches — try another word.</p>
         </main>
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>DAW Project Manager</h4>
-                    <p>Free, open source project manager for music producers. Built with Flutter.</p>
-                </div>
-
-                <div class="footer-section">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="https://github.com/bandpassrecords/daw-project-manager">GitHub</a></li>
-                        <li><a href="https://github.com/bandpassrecords/daw-project-manager/issues">Report an Issue</a></li>
-                        <li><a href="https://github.com/bandpassrecords/daw-project-manager/releases">All Releases</a></li>
-                        <li><a href="https://www.paypal.com/donate/?hosted_button_id=QHVVZ3LAF39BL" target="_blank" rel="noopener noreferrer">Donate</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h4>Built With</h4>
-                    <ul>
-                        <li><a href="https://flutter.dev" target="_blank" rel="noopener noreferrer">Flutter</a></li>
-                        <li><a href="https://riverpod.dev" target="_blank" rel="noopener noreferrer">Riverpod</a></li>
-                        <li><a href="https://pub.dev/packages/hive_ce" target="_blank" rel="noopener noreferrer">Hive CE</a></li>
-                        <li><a href="https://pub.dev/packages/trina_grid" target="_blank" rel="noopener noreferrer">TrinaGrid</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2026 DAW Project Manager by BandPass Records. Open source software.</p>
+            <div class="footer-bottom" style="text-align:center;padding:2rem 0;color:var(--text-muted)">
+                <p>DAW Project Manager · free and open source · <a href="https://github.com/bandpassrecords/daw-project-manager">GitHub</a> · <a href="https://github.com/bandpassrecords/daw-project-manager/issues">Report an issue</a> · <a href="https://www.paypal.com/donate/?hosted_button_id=QHVVZ3LAF39BL">Donate</a></p>
+                <p style="margin-top:.4rem">© 2026 BandPass Records</p>
             </div>
         </div>
     </footer>
 
-    <!-- Back to top button -->
-    <button id="back-to-top" aria-label="Back to top" title="Back to top">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="18 15 12 9 6 15"/>
-        </svg>
-    </button>
-
     <script>
-        // ── Back to top button ──
-        const backToTop = document.getElementById('back-to-top');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 400) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
-            }
-        }, { passive: true });
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // ── Mobile TOC toggle ──
-        const tocToggle = document.getElementById('toc-toggle');
-        const sidebarInner = document.getElementById('sidebar-inner');
-        if (tocToggle && sidebarInner) {
-            tocToggle.addEventListener('click', () => {
-                const isOpen = sidebarInner.classList.toggle('open');
-                tocToggle.classList.toggle('open', isOpen);
-                tocToggle.setAttribute('aria-expanded', String(isOpen));
-            });
-        }
-
-        // ── Active section highlight via IntersectionObserver ──
-        const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
-
-        // Build a map from id to sidebar link
-        const linkMap = {};
-        sidebarLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && href.startsWith('#')) {
-                linkMap[href.slice(1)] = link;
-            }
-        });
-
-        // All headings with IDs that match a sidebar anchor
-        const headingIds = Object.keys(linkMap);
-        const headings = headingIds
-            .map(id => document.getElementById(id))
-            .filter(Boolean);
-
-        let currentActive = null;
-
-        const setActive = (id) => {
-            if (currentActive === id) return;
-            currentActive = id;
-            sidebarLinks.forEach(link => link.classList.remove('active'));
-            if (id && linkMap[id]) {
-                linkMap[id].classList.add('active');
-            }
-        };
-
-        // Use a single observer for all headings
-        const observerOptions = {
-            rootMargin: '-80px 0px -60% 0px',
-            threshold: 0
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            // Find the topmost visible heading
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    setActive(entry.target.id);
-                }
-            });
-        }, observerOptions);
-
-        headings.forEach(h => observer.observe(h));
-
-        // Fallback: on scroll, find whichever heading is just above the viewport midpoint
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (ticking) return;
-            ticking = true;
-            requestAnimationFrame(() => {
-                ticking = false;
-                const scrollY = window.scrollY + 100;
-                let best = null;
-                headings.forEach(h => {
-                    if (h.getBoundingClientRect().top + window.scrollY <= scrollY) {
-                        best = h.id;
-                    }
-                });
-                if (best) setActive(best);
-            });
-        }, { passive: true });
-
-        // ── Section copy-link buttons ──
-        // Every h2/h3 inside a docs-section gets a small link icon (visible
-        // on hover, or always-on for touch) that copies a deep link to that
-        // section's #anchor to the clipboard.
         (function () {
-            const slugify = (text) => text
-                .toLowerCase()
-                .trim()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/\s+/g, '-');
+            const nav = document.getElementById('guide-nav');
+            const links = [...nav.querySelectorAll('a')];
+            const sections = [...document.querySelectorAll('.doc')];
 
-            const sectionHeadings = document.querySelectorAll('.docs-section h2, .docs-section h3');
-            const usedIds = new Set();
-
-            sectionHeadings.forEach(heading => {
-                if (!heading.id) {
-                    const base = slugify(heading.textContent) || 'section';
-                    let candidate = base;
-                    let n = 1;
-                    while (document.getElementById(candidate) || usedIds.has(candidate)) {
-                        candidate = `${base}-${n++}`;
-                    }
-                    heading.id = candidate;
+            // The contents link for the section on screen.
+            const byId = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+            const spy = new IntersectionObserver(entries => {
+                for (const e of entries) {
+                    if (!e.isIntersecting) continue;
+                    links.forEach(a => a.classList.remove('active'));
+                    byId.get(e.target.id)?.classList.add('active');
                 }
-                usedIds.add(heading.id);
+            }, { rootMargin: '-30% 0px -60% 0px' });
+            sections.forEach(s => spy.observe(s));
 
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'section-link-btn';
-                btn.setAttribute('aria-label', 'Copy link to this section');
-                btn.title = 'Copy link to this section';
-                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
-
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const url = `${location.origin}${location.pathname}#${heading.id}`;
-                    const done = () => {
-                        btn.classList.add('copied');
-                        btn.setAttribute('aria-label', 'Copied!');
-                        setTimeout(() => {
-                            btn.classList.remove('copied');
-                            btn.setAttribute('aria-label', 'Copy link to this section');
-                        }, 1500);
-                    };
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(url).then(done).catch(() => {
-                            history.replaceState(null, '', `#${heading.id}`);
-                        });
-                    } else {
-                        history.replaceState(null, '', `#${heading.id}`);
-                        done();
-                    }
-                });
-
-                heading.appendChild(btn);
+            // Search: sections whose words don't match are hidden, with their links.
+            const search = document.getElementById('guide-search');
+            const noMatch = document.getElementById('no-match');
+            search.addEventListener('input', () => {
+                const q = search.value.trim().toLowerCase();
+                let shown = 0;
+                for (const s of sections) {
+                    const hit = !q || s.textContent.toLowerCase().includes(q);
+                    s.classList.toggle('hidden-by-search', !hit);
+                    byId.get(s.id)?.classList.toggle('hidden-by-search', !hit);
+                    if (hit) shown++;
+                }
+                noMatch.style.display = shown ? 'none' : 'block';
             });
+
+            // Phones: the contents behind a button.
+            const toggle = document.getElementById('guide-nav-toggle');
+            toggle.addEventListener('click', () => {
+                const open = nav.classList.toggle('open');
+                toggle.setAttribute('aria-expanded', String(open));
+            });
+            links.forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
         })();
     </script>
 </body>
