@@ -281,6 +281,7 @@
             <a href="#releases">Releases</a>
             <a href="#templates">Templates</a>
             <a href="#statistics">Statistics</a>
+            <a href="#work-sessions">Work sessions</a>
             <h4>Music</h4>
             <a href="#midi-clips">MIDI clips</a>
             <a href="#music-player">Music player</a>
@@ -339,9 +340,8 @@
             <section class="doc" id="first-launch">
                 <h2>First launch</h2>
                 <p class="lead">A short wizard sets language, theme, which tabs show, your first project folder (or a restore from Google Drive) and whether the app starts with your computer. All of it can be changed later in Settings.</p>
-                <figure class="shot shot-narrow"><img src="resources/screenshots/onboarding/onboarding-welcome.png" alt="The setup wizard's first page" loading="lazy" width="840" height="378"></figure>
-                <span id="session-mode" class="anchor"></span>
-                <div class="tip"><b>Session Mode</b> asks before starting, switching or ending a work session, so the timer always means what you think. Off by default; Settings → Work Sessions.</div>
+                <figure class="shot shot-narrow"><img src="resources/screenshots/onboarding/onboarding-welcome.png" alt="The setup wizard's first page" loading="lazy" width="840" height="394"></figure>
+                <div class="tip">The wizard also offers <a href="#work-sessions">Session Mode</a>, to track the time you spend on each song.</div>
             </section>
 
             <section class="doc" id="adding-folders">
@@ -459,6 +459,28 @@
                 <figure class="shot"><img src="resources/screenshots/statistics/statistics-global-overview.png" alt="Statistics" loading="lazy" width="1920" height="1080"></figure>
             </section>
 
+            <section class="doc" id="work-sessions">
+                <span id="session-mode" class="anchor"></span>
+                <h2>Work sessions</h2>
+                <p class="lead">How long has this song taken? In Session Mode you start a session on a project, and the time you work on it adds up: per session, and in total.</p>
+                <ol>
+                    <li><b>Switch it on</b> — Settings → Work Sessions → <b>Session mode</b>. Off by default; in Normal Mode, launching a project just opens it in its DAW.</li>
+                    <li><b>Start a session</b> — the bookmark button on a project's row (or <kbd>S</kbd>), then <b>Start Session</b>. The app asks before starting, switching or ending one, so the timer always means what you think.</li>
+                    <li><b>Work</b> — the session bar at the top shows the song, its total so far and this session's time, with pause and stop. Its buttons open the project in its DAW or its page.</li>
+                </ol>
+                <div class="shots">
+                    <figure class="shot"><img src="resources/screenshots/work-sessions/settings-session-mode.png" alt="Settings, Work Sessions, with Session mode selected" loading="lazy" width="1920" height="1080"><figcaption>Settings → Work Sessions.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/work-sessions/session-start.png" alt="Starting a session on Distant Shore" loading="lazy" width="1920" height="1080"><figcaption>Starting a session from the project's row.</figcaption></figure>
+                </div>
+                <figure class="shot"><img src="resources/screenshots/work-sessions/session-running.png" alt="A session running, with the session bar in the toolbar" loading="lazy" width="1920" height="1080"><figcaption>A session running: its project is marked in the list.</figcaption></figure>
+                <figure class="shot shot-narrow"><img src="resources/screenshots/work-sessions/session-bar.png" alt="The session bar: Distant Shore, 8h 0m in total, 11 seconds this session, pause and stop" loading="lazy" width="589" height="73"><figcaption>The song, its tempo and key, <b>8h 0m</b> in total, <b>11s</b> this session.</figcaption></figure>
+                <figure class="shot"><img src="resources/screenshots/work-sessions/session-project-time.png" alt="The project page with time worked and the running session" loading="lazy" width="1920" height="1080"><figcaption>The project's page: time worked so far, the running session, and <b>End session</b>.</figcaption></figure>
+                <ul>
+                    <li>A <a href="#version-stacks">version stack</a> adds up the time of all its versions.</li>
+                    <li><b>Reminders</b> (Settings → Work Sessions) notify you at the interval you choose while a session runs, so one isn't left running by mistake.</li>
+                </ul>
+            </section>
+
             <section class="doc" id="midi-clips">
                 <h2>MIDI clips</h2>
                 <p class="lead">The riffs, chords and drum patterns in every project — Ableton Live, Cubase, Nuendo, FL Studio, Reaper — without opening the DAW.</p>
@@ -504,9 +526,9 @@
                 <span id="drive-download" class="anchor"></span>
                 <h2>Google Drive</h2>
                 <p class="lead">Your library on every machine: details, to-dos, releases, MIDI, mixdowns and artwork. Your project files themselves stay where they are.</p>
-                <figure class="shot"><img src="resources/screenshots/google-drive-sync/drive-setup-signin.png" alt="Google Drive sync" loading="lazy" width="1920" height="1080"></figure>
+                <figure class="shot"><img src="resources/screenshots/google-drive-sync/drive-sync.png" alt="Google Drive sync and automatic sync, before signing in" loading="lazy" width="1654" height="476"></figure>
                 <ul>
-                    <li>Side rail → <b>Google Drive</b> → sign in. The app only sees its own folder in your Drive.</li>
+                    <li>Side rail → <b>Google Drive</b> → <b>Sign in to Google Drive</b>. The app only sees its own folder in your Drive.</li>
                     <li><b>Sync</b> merges both ways: what you did on each machine is kept, deletions included.</li>
                     <li>Sync on start, or every 30 minutes to daily — even from the tray.</li>
                     <li>Every sync keeps the previous backup, to go back to.</li>
@@ -552,7 +574,7 @@
                 <ul>
                     <li><b>DAW Locations</b> — which program opens which DAW's projects (needed on Linux).</li>
                     <li><b>Mixdown Folders</b> — where to look for a project's exported mix.</li>
-                    <li><b>Work Sessions</b> — Session Mode and reminders.</li>
+                    <li><b>Work Sessions</b> — <a href="#work-sessions">Session Mode</a> and reminders.</li>
                     <li><b>About</b> — version, check for updates, report an issue, the diagnostic log.</li>
                 </ul>
             </section>
