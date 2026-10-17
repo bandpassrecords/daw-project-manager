@@ -165,6 +165,53 @@
             font-size: .88em;
         }
 
+        .matrix-wrap { overflow-x: auto; margin-top: 1rem; border: 1px solid var(--border-color); border-radius: 14px; }
+        .matrix { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 720px; }
+        .matrix th, .matrix td { padding: .6rem .7rem; border-bottom: 1px solid var(--border-color); text-align: center; }
+        .matrix thead th { color: var(--text-muted); font-weight: 600; font-size: .78rem; background: var(--bg-card); }
+        .matrix tbody th { text-align: left; font-weight: 600; white-space: nowrap; }
+        .matrix tbody th img { height: 20px; vertical-align: middle; margin-right: .55rem; }
+        .matrix tbody th small { color: var(--text-muted); font-weight: 400; }
+        .matrix tbody tr:last-child th, .matrix tbody tr:last-child td { border-bottom: 0; }
+        .matrix td.yes { color: var(--accent); font-weight: 700; }
+        .matrix tbody tr:hover { background: rgba(255, 255, 255, .02); }
+
+        .shot img { cursor: zoom-in; }
+        .shot-narrow { max-width: 620px; }
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 3vh 3vw;
+            background: rgba(5, 6, 8, .88);
+            backdrop-filter: blur(4px);
+            cursor: zoom-out;
+        }
+        .lightbox.open { display: flex; }
+        .lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            width: 2.6rem;
+            height: 2.6rem;
+            border: 0;
+            border-radius: 50%;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+        body.lightbox-open { overflow: hidden; }
+
         .no-match { display: none; color: var(--text-muted); padding: 2rem 0; }
         .hidden-by-search { display: none !important; }
 
@@ -217,6 +264,7 @@
     <div class="guide">
         <aside class="guide-nav" id="guide-nav">
             <h4>Start</h4>
+            <a href="#overview">Overview</a>
             <a href="#installation">Install</a>
             <a href="#first-launch">First launch</a>
             <a href="#adding-folders">Project folders</a>
@@ -250,10 +298,16 @@
             <h4>Reference</h4>
             <a href="#keyboard-shortcuts">Shortcuts</a>
             <a href="#supported-daws">Supported DAWs</a>
+            <a href="#metadata-extraction">What's read</a>
         </aside>
 
         <main class="guide-main" id="guide-main">
-            <span id="getting-started" class="anchor"></span>
+            <section class="doc" id="overview">
+                <span id="getting-started" class="anchor"></span>
+                <h2>Every project, in one place</h2>
+                <p class="lead">DAW Project Manager finds the music projects on your drives — whatever DAW made them — and keeps them in one library: what's inside each one (tempo, key, plug-ins, MIDI), where it stands, what's left to do, and the mixdown to listen to. Free and open source, on Windows, macOS, Linux and Android.</p>
+                <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-overview.png" alt="The dashboard: projects from several DAWs with their phase, tempo, key and deadline" width="1920" height="1080"></figure>
+            </section>
 
             <section class="doc" id="installation">
                 <h2>Install</h2>
@@ -285,6 +339,7 @@
             <section class="doc" id="first-launch">
                 <h2>First launch</h2>
                 <p class="lead">A short wizard sets language, theme, which tabs show, your first project folder (or a restore from Google Drive) and whether the app starts with your computer. All of it can be changed later in Settings.</p>
+                <figure class="shot shot-narrow"><img src="resources/screenshots/onboarding/onboarding-welcome.png" alt="The setup wizard's first page" loading="lazy" width="840" height="378"></figure>
                 <span id="session-mode" class="anchor"></span>
                 <div class="tip"><b>Session Mode</b> asks before starting, switching or ending a work session, so the timer always means what you think. Off by default; Settings → Work Sessions.</div>
             </section>
@@ -292,7 +347,7 @@
             <section class="doc" id="adding-folders">
                 <h2>Project folders</h2>
                 <p class="lead">Point the app at the folders your projects live in — it finds every project inside, however deep. Settings → Project Folders → <b>Add Folder</b>.</p>
-                <figure class="shot"><img src="resources/screenshots/settings/settings-project-folders.png" alt="Settings, Project Folders: folders, excluded folders, recently deleted" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/settings/settings-project-folders.png" alt="Settings, Project Folders: folders, excluded folders, recently deleted" loading="lazy" width="1920" height="1080"></figure>
                 <ul>
                     <li>Add the top folder (<code>~/Music</code>), not each song's.</li>
                     <li><b>Excluded folders</b> are skipped — templates, sample libraries.</li>
@@ -308,7 +363,7 @@
                     <li><b>Scan</b> finds the project files — on launch, and whenever you press <kbd>Ctrl</kbd> <kbd>R</kbd>.</li>
                     <li><b>Deep Scan</b> reads inside them: tempo, key, DAW version, tracks, plug-ins, MIDI. Run it from the side rail, or <b>Extract</b> on one project. It isn't automatic: on a cloud drive, reading means downloading.</li>
                 </ul>
-                <div class="tip">What each DAW gives up is in <a href="#metadata-extraction">Supported DAWs</a>. A value read wrong can always be typed over.</div>
+                <div class="tip">What each DAW gives up: <a href="#metadata-extraction">What's read from each DAW</a>. A value read wrong can always be typed over.</div>
             </section>
 
             <section class="doc" id="dashboard">
@@ -316,11 +371,8 @@
                 <span id="project-table-columns" class="anchor"></span>
                 <span id="row-actions" class="anchor"></span>
                 <h2>Dashboard</h2>
-                <p class="lead">Every project you have, as a table or as cards — the same list either way.</p>
-                <div class="shots">
-                    <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-overview.png" alt="Projects as a table" loading="lazy"><figcaption>Table: sort by any column, choose and order the columns.</figcaption></figure>
-                    <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-cards.png" alt="Projects as cards" loading="lazy"><figcaption>Cards: cover art, colour or icon per project.</figcaption></figure>
-                </div>
+                <p class="lead">Every project you have, as a table (as in the <a href="#overview">overview</a>) or as cards — the same list either way. Sort by any column; choose and order the columns.</p>
+                <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-cards.png" alt="Projects as cards" loading="lazy" width="1920" height="1080"><figcaption>Cards: cover art, colour or icon per project.</figcaption></figure>
                 <ul>
                     <li>Row buttons: play the mixdown, open in the DAW, open the project's page, open its folder, hide it.</li>
                     <li>Right-click a project for everything else: move, archive, stack, delete…</li>
@@ -331,14 +383,15 @@
 
             <section class="doc" id="searching-filtering">
                 <h2>Search &amp; filters</h2>
-                <p class="lead"><kbd>Ctrl</kbd> <kbd>F</kbd> and type — names, notes, DAWs, plug-ins. Filters stack on top: phase, DAW, deadline, hide finished, only projects with MIDI.</p>
-                <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-filters-search.png" alt="Searching the dashboard" loading="lazy"></figure>
+                <p class="lead"><kbd>Ctrl</kbd> <kbd>F</kbd> and type. Search looks at a project's <b>name</b>, your <b>notes</b> and the DAW's, its <b>markers</b>, <b>plug-ins</b>, instrumentation, <b>tags</b> and <b>custom fields</b> — and forgives typos.</p>
+                <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-filters-search.png" alt="Searching the dashboard for night" loading="lazy" width="1920" height="1080"><figcaption>"night" finds <i>Midnight Dreams</i> by its name and <i>Slow Burn</i> by its notes.</figcaption></figure>
+                <p>The DAW, the phase and the deadline aren't searched — they have filters of their own, beside the search, and filters stack: <b>All DAWs</b>, <b>All Phases</b>, <b>Show Deadline</b>, <b>Hide Finished</b>, only projects with MIDI.</p>
             </section>
 
             <section class="doc" id="bulk-actions">
                 <h2>Many at once</h2>
                 <p class="lead">Tick a few projects and a bar appears: hide, read their metadata, change their phase, make a release of them, stack them as versions, archive them.</p>
-                <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-bulk-actions.png" alt="Several projects selected, with the bulk actions bar" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/dashboard/dashboard-bulk-actions.png" alt="Several projects selected, with the bulk actions bar" loading="lazy" width="1920" height="1080"></figure>
             </section>
 
             <section class="doc" id="project-details">
@@ -348,7 +401,7 @@
                 <span id="project-timeline" class="anchor"></span>
                 <h2>A project's page</h2>
                 <p class="lead">Double-click a project. Everything you edit saves as you type.</p>
-                <figure class="shot"><img src="resources/screenshots/project-detail/project-detail-metadata.png" alt="A project's page" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/project-detail/project-detail-metadata.png" alt="A project's page" loading="lazy" width="1920" height="1080"></figure>
                 <ul>
                     <li><b>Details</b> — name, tempo, key (with its Camelot code), phase, deadline, notes, your own <a href="#settings">custom fields</a>.</li>
                     <li><b>Preview song</b> — the latest mixdown, found on its own in your export folders (Settings → Mixdown Folders) or picked by hand.</li>
@@ -356,13 +409,13 @@
                     <li><b>Inside the project</b> — tracks, plug-ins and MIDI clips, after a deep scan.</li>
                     <li><b>Timeline</b> — every phase change, so you can see how long a song sat in mixing.</li>
                 </ul>
-                <figure class="shot"><img src="resources/screenshots/project-detail/preview-player-playback.gif" alt="Playing a project's preview song" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/project-detail/preview-player-playback.gif" alt="Playing a project's preview song" loading="lazy" width="960" height="540"></figure>
             </section>
 
             <section class="doc" id="production-phases">
                 <h2>Phases</h2>
                 <p class="lead">Where each song stands — Idea, Arranging, Mixing, Mastering, Finished out of the box. Rename them, add your own, colour and reorder them in Settings → Phases.</p>
-                <figure class="shot"><img src="resources/screenshots/settings/settings-phases-customize.png" alt="Customising phases" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/settings/settings-phases-customize.png" alt="Customising phases" loading="lazy" width="1920" height="1080"></figure>
             </section>
 
             <section class="doc" id="version-stacks">
@@ -377,7 +430,7 @@
             <section class="doc" id="task-queue">
                 <h2>Tasks</h2>
                 <p class="lead">Every open to-do across every project, busiest first. Tick them off here, or jump to the project.</p>
-                <figure class="shot"><img src="resources/screenshots/task-queue/task-queue-overview.png" alt="The task queue" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/task-queue/task-queue-overview.png" alt="The task queue" loading="lazy" width="1920" height="1080"></figure>
             </section>
 
             <section class="doc" id="releases">
@@ -386,8 +439,8 @@
                 <h2>Releases</h2>
                 <p class="lead">An EP, an album, a single: its tracks, artwork, date, to-dos and files in one place.</p>
                 <div class="shots">
-                    <figure class="shot"><img src="resources/screenshots/releases/releases-list.png" alt="The releases list" loading="lazy"><figcaption><b>Create New Release</b>, then pick its tracks.</figcaption></figure>
-                    <figure class="shot"><img src="resources/screenshots/releases/release-detail.png" alt="A release's page" loading="lazy"><figcaption>Masters and documents attached; <b>Save release files ZIP</b> for the distributor.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/releases/releases-list.png" alt="The releases list" loading="lazy" width="1920" height="1080"><figcaption><b>Create New Release</b>, then pick its tracks.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/releases/release-detail.png" alt="A release's page" loading="lazy" width="1920" height="1080"><figcaption>Masters and documents attached; <b>Save release files ZIP</b> for the distributor.</figcaption></figure>
                 </div>
             </section>
 
@@ -395,21 +448,21 @@
                 <h2>Templates</h2>
                 <p class="lead">Start a new song from a template — DAW, tempo, key and starter files ready — or add a ready-made checklist to a project's to-dos.</p>
                 <div class="shots">
-                    <figure class="shot"><img src="resources/screenshots/templates/project-templates-list.png" alt="Project templates" loading="lazy"><figcaption>Side rail → Project Templates.</figcaption></figure>
-                    <figure class="shot"><img src="resources/screenshots/templates/project-template-create-from.png" alt="Creating a project from a template" loading="lazy"><figcaption><b>Use</b> opens a new project filled in from it.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/templates/project-templates-list.png" alt="Project templates" loading="lazy" width="1920" height="1080"><figcaption>Side rail → Project Templates.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/templates/project-template-create-from.png" alt="Creating a project from a template" loading="lazy" width="1920" height="1080"><figcaption><b>Use</b> opens a new project filled in from it.</figcaption></figure>
                 </div>
             </section>
 
             <section class="doc" id="statistics">
                 <h2>Statistics</h2>
                 <p class="lead">Where your songs are, where they get stuck, how much you finish.</p>
-                <figure class="shot"><img src="resources/screenshots/statistics/statistics-global-overview.png" alt="Statistics" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/statistics/statistics-global-overview.png" alt="Statistics" loading="lazy" width="1920" height="1080"></figure>
             </section>
 
             <section class="doc" id="midi-clips">
                 <h2>MIDI clips</h2>
                 <p class="lead">The riffs, chords and drum patterns in every project — Ableton Live, Cubase, Nuendo, FL Studio, Reaper — without opening the DAW.</p>
-                <figure class="shot"><img src="resources/screenshots/midi/midi-library.png" alt="The MIDI tab: every clip of every project" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/midi/midi-library.png" alt="The MIDI tab: every clip of every project" loading="lazy" width="1920" height="1080"></figure>
                 <ul>
                     <li>A deep scan reads them; each clip once, however often a project uses it.</li>
                     <li>Play any clip through the built-in synth, at any tempo, with an instrument guessed from its track.</li>
@@ -417,17 +470,17 @@
                 </ul>
                 <h3>Collections</h3>
                 <p>Your own sets of clips, in folders — copies, so they keep working whatever happens to the projects. Import <code>.mid</code> files from anywhere, name files by a scheme, export or share the whole set.</p>
-                <figure class="shot"><img src="resources/screenshots/midi/midi-collection.png" alt="A MIDI collection with folders" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/midi/midi-collection.png" alt="A MIDI collection with folders" loading="lazy" width="1920" height="1080"></figure>
                 <h3>Piano roll</h3>
                 <p>Click a clip's thumbnail. Edit like a DAW's key editor — select, range, eraser and pencil tools, quantize, duplicate, transpose, velocity and controller lanes — and save the result as a new clip. <kbd>?</kbd> lists every shortcut.</p>
-                <figure class="shot"><img src="resources/screenshots/midi/midi-piano-roll.png" alt="The piano roll" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/midi/midi-piano-roll.png" alt="The piano roll" loading="lazy" width="1920" height="1080"></figure>
             </section>
 
             <section class="doc" id="music-player">
                 <span id="playlists" class="anchor"></span>
                 <h2>Music player</h2>
                 <p class="lead">All your mixdowns in one player. The key wheel suggests what mixes into the song playing; add a to-do at the exact second you hear something.</p>
-                <figure class="shot"><img src="resources/screenshots/music-player/music-player-desktop.png" alt="The music player with its key wheel" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/music-player/music-player-desktop.png" alt="The music player with its key wheel" loading="lazy" width="1920" height="1080"></figure>
                 <div class="tip">On Android: a Now Playing screen, a mono check, and <b>playlists</b> of mixdowns to review on the go.</div>
             </section>
 
@@ -451,7 +504,7 @@
                 <span id="drive-download" class="anchor"></span>
                 <h2>Google Drive</h2>
                 <p class="lead">Your library on every machine: details, to-dos, releases, MIDI, mixdowns and artwork. Your project files themselves stay where they are.</p>
-                <figure class="shot"><img src="resources/screenshots/google-drive-sync/drive-setup-signin.png" alt="Google Drive sync" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/google-drive-sync/drive-setup-signin.png" alt="Google Drive sync" loading="lazy" width="1920" height="1080"></figure>
                 <ul>
                     <li>Side rail → <b>Google Drive</b> → sign in. The app only sees its own folder in your Drive.</li>
                     <li><b>Sync</b> merges both ways: what you did on each machine is kept, deletions included.</li>
@@ -463,7 +516,7 @@
             <section class="doc" id="local-backup">
                 <h2>Local backup</h2>
                 <p class="lead">One file with your whole library — the way to back up without Google Drive, and the only one in the Flatpak. Settings → Backup → <b>Export Backup</b> / <b>Import Backup</b>.</p>
-                <figure class="shot"><img src="resources/screenshots/settings/settings-backup.png" alt="Settings, Backup" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/settings/settings-backup.png" alt="Settings, Backup" loading="lazy" width="1920" height="1080"></figure>
             </section>
 
             <section class="doc" id="archive">
@@ -480,7 +533,7 @@
             <section class="doc" id="profiles">
                 <h2>Profiles</h2>
                 <p class="lead">One per artist name — solo, alias, collaboration — each with its own folders, projects and releases. Click your profile at the top of the side rail.</p>
-                <figure class="shot"><img src="resources/screenshots/profiles/profile-manager.png" alt="The profile manager" loading="lazy"></figure>
+                <figure class="shot"><img src="resources/screenshots/profiles/profile-manager.png" alt="The profile manager" loading="lazy" width="1920" height="1080"></figure>
                 <ul>
                     <li><b>Move to profile…</b> (right-click a project) hands a song to another profile — all its versions, details and MIDI, files moved or left in place.</li>
                 </ul>
@@ -493,8 +546,8 @@
                 <h2>Settings</h2>
                 <p class="lead">One page, a menu on the left, and a search box at the top.</p>
                 <div class="shots">
-                    <figure class="shot"><img src="resources/screenshots/settings/settings-appearance.png" alt="Settings, Appearance" loading="lazy"><figcaption><b>Appearance</b> — themes, including your own.</figcaption></figure>
-                    <figure class="shot"><img src="resources/screenshots/settings/settings-columns-fields.png" alt="Settings, Columns and fields" loading="lazy"><figcaption><b>Columns &amp; fields</b> — your own fields, and which columns each table shows.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/settings/settings-appearance.png" alt="Settings, Appearance" loading="lazy" width="1920" height="1080"><figcaption><b>Appearance</b> — themes, including your own.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/settings/settings-columns-fields.png" alt="Settings, Columns and fields" loading="lazy" width="1920" height="1080"><figcaption><b>Columns &amp; fields</b> — your own fields, and which columns each table shows.</figcaption></figure>
                 </div>
                 <ul>
                     <li><b>DAW Locations</b> — which program opens which DAW's projects (needed on Linux).</li>
@@ -527,7 +580,6 @@
             </section>
 
             <section class="doc" id="supported-daws">
-                <span id="metadata-extraction" class="anchor"></span>
                 <h2>Supported DAWs</h2>
                 <p class="lead">Every one is found and listed. The highlighted ones are also read inside — anything else, type in once.</p>
                 <div class="daw-grid">
@@ -563,8 +615,41 @@
                 <div class="tip">Missing yours? <a href="https://github.com/bandpassrecords/daw-project-manager/issues">Open an issue</a> with the DAW and its project file's extension.</div>
             </section>
 
+            <section class="doc" id="metadata-extraction">
+                <h2>What's read from each DAW</h2>
+                <p class="lead">A <a href="#scanning">deep scan</a> reads these straight from the project file. The same table is in the app: Settings → General → Metadata Extraction.</p>
+                <div class="matrix-wrap">
+                    <table class="matrix">
+                        <thead><tr><th></th><th>Tempo</th><th>Key</th><th>Version</th><th>Notes</th><th>Markers</th><th>Tracks</th><th>Plug-ins</th><th>MIDI clips</th><th>MIDI events</th></tr></thead>
+                        <tbody>
+                        <tr><th><img src="resources/daw/logos/ableton-live.png" alt="">Ableton Live</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                        <tr><th><img src="resources/daw/logos/cubase.png" alt="">Cubase</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td></td></tr>
+                        <tr><th><img src="resources/daw/logos/nuendo.png" alt="">Nuendo</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td></td></tr>
+                        <tr><th><img src="resources/daw/logos/fl-studio.png" alt="">FL Studio</th><td class="yes">✓</td><td></td><td class="yes">✓</td><td></td><td></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td></td></tr>
+                        <tr><th><img src="resources/daw/logos/reaper.png" alt="">Reaper</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                        <tr><th><img src="resources/daw/logos/studio-one.png" alt="">Studio One</th><td class="yes">✓</td><td></td><td class="yes">✓</td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td></tr>
+                        <tr><th><img src="resources/daw/logos/bitwig-studio.png" alt="">Bitwig Studio</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                        <tr><th><img src="resources/daw/logos/logic-pro.png" alt="">Logic Pro <small>(on macOS)</small></th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                        <tr><th><img src="resources/daw/logos/magda.png" alt="">MAGDA</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ul>
+                    <li><b>Tracks</b> are counted by kind — audio, MIDI, instrument, sampler, groups, folders. <b>Plug-ins</b> lists every one the project loads; search the dashboard for one to find every song that uses it.</li>
+                    <li><b>MIDI events</b> are controllers, pitch bend and aftertouch, read with the notes.</li>
+                    <li>Cubase reads back to SX 3; FL Studio back to FL 7; Ableton Live back to Live 8.</li>
+                    <li>Every other DAW is listed and scanned; its tempo and key are yours to type in — or put a <code>bpm.txt</code> / <code>key.txt</code> next to the project.</li>
+                    <li>A value read wrong? Type over it on the project's page: what you type wins over later scans.</li>
+                </ul>
+            </section>
+
             <p class="no-match" id="no-match">Nothing in the guide matches — try another word.</p>
         </main>
+    </div>
+
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Screenshot, enlarged">
+        <button class="lightbox-close" id="lightbox-close" aria-label="Close">×</button>
+        <img id="lightbox-img" alt="">
     </div>
 
     <footer class="footer">
@@ -615,6 +700,30 @@
                 toggle.setAttribute('aria-expanded', String(open));
             });
             links.forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
+
+            // A screenshot, clicked, opens full size; Esc, a click or × closes it.
+            const box = document.getElementById('lightbox');
+            const boxImg = document.getElementById('lightbox-img');
+            const open = img => {
+                boxImg.src = img.currentSrc || img.src;
+                boxImg.alt = img.alt;
+                box.classList.add('open');
+                document.body.classList.add('lightbox-open');
+            };
+            const close = () => {
+                box.classList.remove('open');
+                document.body.classList.remove('lightbox-open');
+            };
+            document.querySelectorAll('.shot img').forEach(img => img.addEventListener('click', () => open(img)));
+            box.addEventListener('click', close);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+
+            // Opened on #a-section: land there again once the pictures are in,
+            // in case anything still moved while they loaded.
+            window.addEventListener('load', () => {
+                const target = location.hash && document.getElementById(location.hash.slice(1));
+                if (target) target.scrollIntoView();
+            });
         })();
     </script>
 </body>
