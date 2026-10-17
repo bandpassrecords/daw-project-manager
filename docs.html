@@ -341,6 +341,8 @@
                 <h2>First launch</h2>
                 <p class="lead">A short wizard sets language, theme, which tabs show, your first project folder (or a restore from Google Drive) and whether the app starts with your computer. All of it can be changed later in Settings.</p>
                 <figure class="shot shot-narrow"><img src="resources/screenshots/onboarding/onboarding-welcome.png" alt="The setup wizard's first page" loading="lazy" width="840" height="394"></figure>
+                <p>One step picks how a <a href="#project-details">project's page</a> is laid out, with a preview of each: <b>Sections</b>, one part of the page at a time from a rail on the left, or <b>Classic</b>, everything in one long scroll.</p>
+                <figure class="shot shot-narrow"><img src="resources/screenshots/onboarding/onboarding-detail-layout.png" alt="The wizard step choosing between the Classic and Sections layouts for a project's page" loading="lazy" width="880" height="568"></figure>
                 <div class="tip">The wizard also offers <a href="#work-sessions">Session Mode</a>, to track the time you spend on each song.</div>
             </section>
 
@@ -400,8 +402,12 @@
                 <span id="todos" class="anchor"></span>
                 <span id="project-timeline" class="anchor"></span>
                 <h2>A project's page</h2>
-                <p class="lead">Double-click a project. Everything you edit saves as you type.</p>
-                <figure class="shot"><img src="resources/screenshots/project-detail/project-detail-metadata.png" alt="A project's page" loading="lazy" width="1920" height="1080"></figure>
+                <span id="detail-layout" class="anchor"></span>
+                <p class="lead">Double-click a project. Everything you edit saves as you type. The rail on the left shows one section at a time; the two buttons at the top left switch to <b>Classic</b>, the whole page in one scroll.</p>
+                <div class="shots">
+                    <figure class="shot"><img src="resources/screenshots/project-detail/project-detail-metadata.png" alt="A project's page, its Project Details section open" loading="lazy" width="1920" height="1080"><figcaption><b>Project Details</b> — tempo, key, phase, deadline.</figcaption></figure>
+                    <figure class="shot"><img src="resources/screenshots/project-detail/project-detail-todos.png" alt="A project's page, its TODO List section open" loading="lazy" width="1920" height="1080"><figcaption><b>TODO List</b> — what's left on this song.</figcaption></figure>
+                </div>
                 <ul>
                     <li><b>Details</b> — name, tempo, key (with its Camelot code), phase, deadline, notes, your own <a href="#settings">custom fields</a>.</li>
                     <li><b>Preview song</b> — the latest mixdown, found on its own in your export folders (Settings → Mixdown Folders) or picked by hand.</li>
@@ -475,6 +481,10 @@
                 <figure class="shot"><img src="resources/screenshots/work-sessions/session-running.png" alt="A session running, with the session bar in the toolbar" loading="lazy" width="1920" height="1080"><figcaption>A session running: its project is marked in the list.</figcaption></figure>
                 <figure class="shot shot-narrow"><img src="resources/screenshots/work-sessions/session-bar.png" alt="The session bar: Distant Shore, 8h 0m in total, 11 seconds this session, pause and stop" loading="lazy" width="589" height="73"><figcaption>The song, its tempo and key, <b>8h 0m</b> in total, <b>11s</b> this session.</figcaption></figure>
                 <figure class="shot"><img src="resources/screenshots/work-sessions/session-project-time.png" alt="The project page with time worked and the running session" loading="lazy" width="1920" height="1080"><figcaption>The project's page: time worked so far, the running session, and <b>End session</b>.</figcaption></figure>
+                <span id="session-history" class="anchor"></span>
+                <h3>Every session, on record</h3>
+                <p>A project's <b>Session History</b> lists each session — the day, when it started and ended, the phase the song was in, how long — and adds them up, then by phase: how long the song spent in arranging, in mixing. A session timed wrong can be edited or removed.</p>
+                <figure class="shot"><img src="resources/screenshots/work-sessions/session-history.png" alt="A project's Session History: six sessions with their dates, times, phases and lengths, then work by phase" loading="lazy" width="1920" height="1080"><figcaption>Six sessions, <b>8h 0m</b> in all — and how that time splits across Idea, Arranging, Mixing and Mastering.</figcaption></figure>
                 <ul>
                     <li>A <a href="#version-stacks">version stack</a> adds up the time of all its versions.</li>
                     <li><b>Reminders</b> (Settings → Work Sessions) notify you at the interval you choose while a session runs, so one isn't left running by mistake.</li>
