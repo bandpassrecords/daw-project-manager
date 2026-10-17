@@ -27,11 +27,11 @@
                     <a href="#daws">DAWs</a>
                     <a href="#download">Download</a>
                     <a href="docs.html">Docs</a>
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=QHVVZ3LAF39BL" target="_blank" rel="noopener noreferrer" class="donate-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=QHVVZ3LAF39BL" target="_blank" rel="noopener noreferrer" class="support-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                         </svg>
-                        Donate
+                        Support
                     </a>
                     <a href="https://github.com/bandpassrecords/daw-project-manager" target="_blank" rel="noopener noreferrer" class="github-link">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -333,6 +333,11 @@
                 <h3 class="metadata-extraction-title">Metadata Extraction Support</h3>
                 <p class="metadata-extraction-subtitle">These DAWs get BPM, key and version read straight from the project file — and, where supported, project notes, the tracks and plug-ins the project uses, and its MIDI clips. The list keeps growing.</p>
 
+                <label class="metadata-filter">
+                    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="search" id="metadata-filter" placeholder="Find your DAW…" aria-label="Find your DAW in the table" autocomplete="off">
+                </label>
+
                 <div class="metadata-table-wrap">
                     <table class="metadata-table">
                         <thead>
@@ -440,6 +445,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <p class="metadata-empty" id="metadata-empty" hidden>No DAW here matches “<span></span>” — it may still be in the <a href="#daws">full list of supported DAWs</a>, which are all found and scanned.</p>
                 </div>
                 <p class="metadata-table-footnote">* Key detection requires Bitwig Studio 6 or later.<br>† Logic Pro extraction runs on macOS only — a <code class="daw-ext">.logicx</code> project opened on Windows or Linux is still detected, just without BPM, key or version.</p>
             </div>
@@ -548,7 +554,7 @@
                         <li><a href="https://github.com/bandpassrecords/daw-project-manager">GitHub</a></li>
                         <li><a href="https://github.com/bandpassrecords/daw-project-manager/issues">Report an Issue</a></li>
                         <li><a href="https://github.com/bandpassrecords/daw-project-manager/releases">All Releases</a></li>
-                        <li><a href="https://www.paypal.com/donate/?hosted_button_id=QHVVZ3LAF39BL" target="_blank" rel="noopener noreferrer">Donate</a></li>
+                        <li><a href="https://www.paypal.com/donate/?hosted_button_id=QHVVZ3LAF39BL" target="_blank" rel="noopener noreferrer">Support</a></li>
                     </ul>
                 </div>
 

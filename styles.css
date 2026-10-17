@@ -100,22 +100,26 @@ body {
     background: var(--primary-light);
 }
 
-.donate-link {
-    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
-    padding: 0.5rem 1rem;
+/* Support: quiet next to GitHub — an outline on the card grey, the heart muted. */
+.support-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: calc(0.5rem - 1px) 1rem;
     border-radius: 6px;
     color: var(--text-primary) !important;
     font-weight: 600;
 }
 
-.donate-link:hover {
-    background: linear-gradient(135deg, #ff5a8d 0%, #ff7fa0 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+.support-link:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-light);
 }
 
-.donate-link svg {
-    fill: var(--text-primary);
+.support-link svg {
+    fill: var(--text-muted);
 }
 
 /* Hero Section */
@@ -567,6 +571,56 @@ img.app-screenshot {
     font-size: 0.95rem;
     max-width: 560px;
     margin: 0 auto 2rem;
+}
+
+/* Find your DAW: filters the table's rows as you type. */
+.metadata-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 320px;
+    margin: 0 auto 1rem;
+    padding: 0 0.85rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: text;
+}
+
+.metadata-filter:focus-within {
+    border-color: var(--primary-light);
+}
+
+.metadata-filter svg {
+    flex: none;
+    fill: var(--text-muted);
+}
+
+.metadata-filter input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.6rem 0;
+    background: none;
+    border: 0;
+    outline: none;
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.95rem;
+}
+
+.metadata-filter input::placeholder {
+    color: var(--text-muted);
+}
+
+.metadata-empty {
+    padding: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.metadata-empty a {
+    color: var(--accent);
 }
 
 .metadata-table-wrap {

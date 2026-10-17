@@ -173,3 +173,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
+// Metadata Extraction Support: typing narrows the table to your DAW.
+// Case, spaces and punctuation are ignored, so "fl", "flstudio" and
+// "FL Studio" all find the same row.
+(() => {
+    const input = document.getElementById('metadata-filter');
+    const table = document.querySelector('.metadata-table');
+    const empty = document.getElementById('metadata-empty');
+    if (!input || !table || !empty) return;
+    const fold = text => text.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const rows = [...table.tBodies[0].rows].map(row => ({
+        row,
+        name: fold(row.querySelector('.metadata-daw')?.textContent ?? ''),
+    }));
+    input.addEventListener('input', () => {
+        const query = fold(input.value);
+        let shown = 0;
+        for (const { row, name } of rows) {
+            const match = name.includes(query);
+            row.hidden = !match;
+            if (match) shown++;
+        }
+        table.hidden = shown === 0;
+        empty.hidden = shown !== 0;
+        empty.querySelector('span').textContent = input.value.trim();
+    });
+})();
