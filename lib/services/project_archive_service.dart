@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 
 import '../models/music_project.dart';
@@ -478,8 +479,9 @@ String? originalRestoreFolderFor(MusicProject project) {
 /// The two cases the UI's Undo covers are the same code path here. Archiving
 /// without deleting the originals leaves them in place, so undo is just "throw
 /// the zip away"; archiving *with* the delete needs the extraction first. The
-/// zip is only removed once the project file is confirmed back on disk, so a
-/// failed undo leaves the archive intact and the project still archived.
+/// zip is only removed once every file in it is confirmed back on disk
+/// ([extractArchiveChecked]), so a failed undo leaves the archive intact, the
+/// project still archived, and nothing half-extracted behind.
 Future<MusicProject> undoArchive(
   MusicProject project, {
   bool deleteArchiveFile = true,
@@ -498,7 +500,9 @@ Future<MusicProject> undoArchive(
       throw ProjectArchiveException(ArchiveError.sourceMissing, archivePath);
     }
 
-    await extractFileToDisk(archivePath, folder);
+    // Every file is checked before the zip goes: deleting it with a file
+    // that failed to come back would lose that file for good.
+    await extractArchiveChecked(archivePath, folder, includeAttachments: false);
 
     if (!_entityExists(project.filePath)) {
       throw ProjectArchiveException(
@@ -542,7 +546,7 @@ Future<MusicProject> restoreProject(
     );
   }
 
-  await extractFileToDisk(archivePath, destFolder);
+  await extractArchiveChecked(archivePath, destFolder, includeAttachments: true);
 
   return repathRestoredAttachments(
     project.copyWith(
@@ -608,6 +612,77 @@ Future<({int bytes, int files})> archiveSizeOf(
   final file = File(source);
   if (!file.existsSync()) return (bytes: 0, files: 0);
   return (bytes: await file.length(), files: 1);
+}
+
+/// Called just before each entry is written by [extractArchiveChecked]; a test
+/// throws from it to stand in for a write that fails, as a full disk does.
+@visibleForTesting
+void Function(String entryName)? debugBeforeArchiveEntryWrite;
+
+/// Extracts the zip at [archivePath] into [folder] and returns the paths it
+/// wrote. A file already there is never written over. Gathered attachments
+/// (`_attachments/`) are left out unless [includeAttachments]: undo puts a
+/// project back in its original parent folder, and an attachment's original
+/// is never deleted by archiving, so extracting them there only dropped an
+/// `_attachments` folder into the user's library.
+///
+/// The archive package's `extractFileToDisk` swallows a failed write and
+/// carries on, which let undo delete the zip with files missing from disk.
+/// Here a failed write, or a written file whose size isn't the entry's,
+/// removes everything this call wrote — so a retry starts from where this one
+/// did — and throws [ArchiveError.verificationFailed] naming the entry.
+Future<List<String>> extractArchiveChecked(
+  String archivePath,
+  String folder, {
+  required bool includeAttachments,
+}) async {
+  final root = p.normalize(folder);
+  final written = <String>[];
+  String? failedEntry;
+
+  final input = InputFileStream(archivePath);
+  try {
+    final archive = ZipDecoder().decodeStream(input);
+    for (final entry in archive.files) {
+      if (!entry.isFile || entry.isSymbolicLink) continue;
+      final parts = p.url.split(entry.name).where((s) => s.isNotEmpty).toList();
+      if (parts.isEmpty) continue;
+      if (!includeAttachments && parts.first == kArchiveAttachmentsDir) continue;
+      final target = p.normalize(p.joinAll([root, ...parts]));
+      // An entry that climbs out of the folder is no file of this project's.
+      if (!p.isWithin(root, target)) continue;
+      if (_entityExists(target)) continue;
+
+      try {
+        await Directory(p.dirname(target)).create(recursive: true);
+        written.add(target);
+        debugBeforeArchiveEntryWrite?.call(entry.name);
+        final output = OutputFileStream(target);
+        try {
+          entry.writeContent(output);
+        } finally {
+          await output.close();
+        }
+        if (await File(target).length() != entry.size) {
+          failedEntry = entry.name;
+          break;
+        }
+      } catch (_) {
+        failedEntry = entry.name;
+        break;
+      }
+    }
+  } finally {
+    await input.close();
+  }
+
+  if (failedEntry != null) {
+    for (final path in written.reversed) {
+      await _deleteIfExists(path);
+    }
+    throw ProjectArchiveException(ArchiveError.verificationFailed, failedEntry);
+  }
+  return written;
 }
 
 bool _entityExists(String path) =>

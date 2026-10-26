@@ -4,6 +4,7 @@ import 'package:archive/archive_io.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
+import 'package:daw_project_manager/models/project_attachment.dart';
 import 'package:daw_project_manager/models/scan_root.dart';
 import 'package:daw_project_manager/services/project_archive_service.dart';
 
@@ -535,6 +536,47 @@ void main() {
       expect(restored.fileName, 'Midnight.als');
     });
 
+    test('a file that fails to come back fails the restore and leaves nothing behind',
+        () async {
+      final source = Directory(p.join(tempDir.path, 'Midnight'));
+      await Directory(p.join(source.path, 'Samples')).create(recursive: true);
+      await File(p.join(source.path, 'Midnight.als')).writeAsString('als');
+      await File(p.join(source.path, 'Samples', 'kick.wav')).writeAsString('kick');
+      final archived = (await archiveProject(
+        TestFactories.makeProject(
+          filePath: p.join(source.path, 'Midnight.als'),
+          customDisplayName: 'Midnight',
+        ),
+        archiveDir.path,
+        scope: ArchiveScope.containingFolder,
+        deleteOriginals: true,
+      )).project;
+
+      // A full disk: the archive package swallowed the error and the restore
+      // reported success with the sample missing.
+      debugBeforeArchiveEntryWrite = (name) {
+        if (name.endsWith('kick.wav')) throw const FileSystemException('disk full');
+      };
+      addTearDown(() => debugBeforeArchiveEntryWrite = null);
+
+      await expectLater(
+        restoreProject(archived, restoreDir.path),
+        throwsA(isA<ProjectArchiveException>()
+            .having((e) => e.reason, 'reason', ArchiveError.verificationFailed)),
+      );
+      // Nothing half-restored, so trying again isn't refused as occupied.
+      expect(File(p.join(restoreDir.path, 'Midnight', 'Midnight.als')).existsSync(), isFalse);
+      expect(File(archived.archivePath!).existsSync(), isTrue);
+
+      debugBeforeArchiveEntryWrite = null;
+      final restored = await restoreProject(archived, restoreDir.path);
+      expect(
+        await File(p.join(restoreDir.path, 'Midnight', 'Samples', 'kick.wav')).readAsString(),
+        'kick',
+      );
+      expect(restored.isArchived, isFalse);
+    });
+
     test('refuses a project that was never archived', () async {
       await expectLater(
         restoreProject(TestFactories.makeProject(), restoreDir.path),
@@ -776,6 +818,100 @@ void main() {
         ),
       );
       expect(archived.isArchived, isTrue);
+    });
+
+    test('keeps the zip when a file fails to come back', () async {
+      // Undo checked only the project file and then deleted the zip; a sample
+      // that failed to write (a full disk — swallowed by the archive package)
+      // was lost for good.
+      final archived = (await archiveProject(
+        TestFactories.makeProject(
+          filePath: projectFile.path,
+          customDisplayName: 'Midnight',
+        ),
+        archiveDir.path,
+        scope: ArchiveScope.containingFolder,
+        deleteOriginals: true,
+      )).project;
+      debugBeforeArchiveEntryWrite = (name) {
+        if (name.endsWith('kick.wav')) throw const FileSystemException('disk full');
+      };
+      addTearDown(() => debugBeforeArchiveEntryWrite = null);
+
+      await expectLater(
+        undoArchive(archived),
+        throwsA(isA<ProjectArchiveException>()
+            .having((e) => e.reason, 'reason', ArchiveError.verificationFailed)),
+      );
+      expect(File(archived.archivePath!).existsSync(), isTrue);
+      // What did come back is taken away again: with the project file on disk
+      // a second undo would have taken the originals as kept and dropped the
+      // zip.
+      expect(projectFile.existsSync(), isFalse);
+
+      debugBeforeArchiveEntryWrite = null;
+      final reverted = await undoArchive(archived);
+      expect(reverted.isArchived, isFalse);
+      expect(await projectFile.readAsString(), 'project data');
+      expect(
+        await File(p.join(projectFolder.path, 'Samples', 'kick.wav')).readAsString(),
+        'kick audio',
+      );
+      expect(File(archived.archivePath!).existsSync(), isFalse);
+    });
+
+    test('leaves gathered attachments out of the library folder', () async {
+      // Archiving never deletes an attachment's original, so undo has
+      // nothing to bring back for it — extracting `_attachments` into the
+      // project's parent folder only littered the user's library.
+      final downloads = Directory(p.join(tempDir.path, 'Downloads'));
+      await downloads.create();
+      final notes = File(p.join(downloads.path, 'notes.pdf'));
+      await notes.writeAsString('notes');
+      final archived = (await archiveProject(
+        TestFactories.makeProject(
+          filePath: projectFile.path,
+          customDisplayName: 'Midnight',
+          attachments: [
+            ProjectAttachment(
+              id: 'a1',
+              kind: ProjectAttachmentKind.file,
+              target: notes.path,
+              addedAt: DateTime(2026, 1, 1),
+            ),
+          ],
+        ),
+        archiveDir.path,
+        scope: ArchiveScope.containingFolder,
+        deleteOriginals: true,
+      )).project;
+
+      await undoArchive(archived);
+
+      expect(projectFile.existsSync(), isTrue);
+      expect(Directory(p.join(library.path, kArchiveAttachmentsDir)).existsSync(), isFalse);
+      expect(await notes.readAsString(), 'notes');
+    });
+
+    test('never writes over a file that is already there', () async {
+      final archived = (await archiveProject(
+        TestFactories.makeProject(
+          filePath: projectFile.path,
+          customDisplayName: 'Midnight',
+        ),
+        archiveDir.path,
+        scope: ArchiveScope.containingFolder,
+        deleteOriginals: true,
+      )).project;
+      // A new bounce saved into the folder since, under an archived name.
+      final kick = File(p.join(projectFolder.path, 'Samples', 'kick.wav'));
+      await kick.create(recursive: true);
+      await kick.writeAsString('newer kick');
+
+      await undoArchive(archived);
+
+      expect(await kick.readAsString(), 'newer kick');
+      expect(await projectFile.readAsString(), 'project data');
     });
   });
 
