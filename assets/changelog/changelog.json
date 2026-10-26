@@ -30,7 +30,8 @@
           "On Windows, a new installer keeps the app up to date by itself; copies from the previous installer keep updating as before.",
           "Launch at login now works on the Microsoft Store build, macOS, Linux and Flatpak, and repairs itself after an update.",
           "Searching notes and the changelog matches words where they start, without fuzzy surprises.",
-          "The macOS app now runs on Apple silicon only; Intel Macs can keep using version 2.9."
+          "The macOS app now runs on Apple silicon only; Intel Macs can keep using version 2.9.",
+          "Settings > DAW plugin no longer says the plugin's captures become the preview song: each one is the project's latest capture."
         ],
         "pt": [
           "Um plugin para a DAW: coloque o DAW Project Manager no bus master da sua DAW para ver e marcar as tarefas do projeto, editar as notas e guardar cada passagem de reprodução como a última captura do projeto, pronta para tocar aqui.",
@@ -44,7 +45,8 @@
           "No Windows, um novo instalador mantém o app atualizado sozinho; cópias do instalador anterior continuam se atualizando como antes.",
           "Iniciar com o sistema agora funciona na versão da Microsoft Store, no macOS, no Linux e no Flatpak, e se corrige sozinho depois de uma atualização.",
           "A busca nas notas e no changelog encontra palavras pelo começo, sem resultados aproximados inesperados.",
-          "O app para macOS agora roda só em Apple silicon; Macs com Intel podem continuar na versão 2.9."
+          "O app para macOS agora roda só em Apple silicon; Macs com Intel podem continuar na versão 2.9.",
+          "Configurações > Plugin para a DAW não diz mais que as capturas do plugin viram a música de prévia: cada uma é a última captura do projeto."
         ],
         "es": [
           "Un plugin para la DAW: pon DAW Project Manager en el bus máster de tu DAW para ver y marcar las tareas del proyecto, editar sus notas y guardar cada pasada de reproducción como la última captura del proyecto, lista para escucharla aquí.",
@@ -58,7 +60,8 @@
           "En Windows, un nuevo instalador mantiene la app actualizada por sí sola; las copias del instalador anterior siguen actualizándose como antes.",
           "Iniciar con el sistema ahora funciona en la versión de Microsoft Store, macOS, Linux y Flatpak, y se repara solo después de una actualización.",
           "Buscar en las notas y en el registro de cambios encuentra las palabras por su comienzo, sin coincidencias aproximadas inesperadas.",
-          "La app para macOS ahora funciona solo en Apple silicon; los Mac con Intel pueden seguir con la versión 2.9."
+          "La app para macOS ahora funciona solo en Apple silicon; los Mac con Intel pueden seguir con la versión 2.9.",
+          "Configuración > Plugin para la DAW ya no dice que las capturas del plugin se convierten en la canción de vista previa: cada una es la última captura del proyecto."
         ],
         "fr": [
           "Un plugin pour la DAW : placez DAW Project Manager sur le bus master de votre DAW pour voir et cocher les tâches du projet, modifier ses notes et garder chaque lecture comme dernière capture du projet, prête à écouter ici.",
@@ -72,7 +75,8 @@
           "Sous Windows, un nouveau programme d'installation tient l'app à jour tout seul ; les copies de l'ancien programme continuent de se mettre à jour comme avant.",
           "Le lancement à l'ouverture de session fonctionne désormais avec la version Microsoft Store, macOS, Linux et Flatpak, et se répare tout seul après une mise à jour.",
           "La recherche dans les notes et le journal des modifications trouve les mots par leur début, sans résultats approximatifs inattendus.",
-          "L'app macOS fonctionne désormais uniquement sur Apple silicon ; les Mac Intel peuvent garder la version 2.9."
+          "L'app macOS fonctionne désormais uniquement sur Apple silicon ; les Mac Intel peuvent garder la version 2.9.",
+          "Paramètres > Plugin pour la DAW ne dit plus que les captures du plugin deviennent la chanson d'aperçu : chacune est la dernière capture du projet."
         ],
         "de": [
           "Ein DAW-Plugin: Leg DAW Project Manager auf den Master-Bus deiner DAW, um die Aufgaben des Projekts zu sehen und abzuhaken, seine Notizen zu bearbeiten und jeden Wiedergabedurchlauf als letzte Aufnahme des Projekts zu behalten, bereit zum Anhören hier.",
@@ -86,7 +90,8 @@
           "Unter Windows hält ein neues Installationsprogramm die App selbst aktuell; Kopien aus dem bisherigen Installationsprogramm werden weiter wie gewohnt aktualisiert.",
           "Beim Anmelden starten funktioniert jetzt mit der Microsoft-Store-Version, macOS, Linux und Flatpak und repariert sich nach einem Update selbst.",
           "Die Suche in Notizen und im Änderungsprotokoll findet Wörter an ihrem Anfang, ohne unscharfe Überraschungen.",
-          "Die macOS-App läuft jetzt nur noch auf Apple Silicon; Intel-Macs können bei Version 2.9 bleiben."
+          "Die macOS-App läuft jetzt nur noch auf Apple Silicon; Intel-Macs können bei Version 2.9 bleiben.",
+          "Einstellungen > DAW-Plugin sagt nicht mehr, dass die Aufnahmen des Plugins zum Vorschau-Song werden: Jede ist die letzte Aufnahme des Projekts."
         ],
         "it": [
           "Un plugin per la DAW: metti DAW Project Manager sul bus master della tua DAW per vedere e spuntare le attività del progetto, modificarne le note e tenere ogni passaggio di riproduzione come ultima cattura del progetto, pronta da ascoltare qui.",
@@ -100,7 +105,8 @@
           "Su Windows, un nuovo programma di installazione mantiene l'app aggiornata da solo; le copie del programma precedente continuano ad aggiornarsi come prima.",
           "L'avvio all'accesso ora funziona con la versione del Microsoft Store, macOS, Linux e Flatpak, e si ripara da solo dopo un aggiornamento.",
           "La ricerca nelle note e nel registro delle modifiche trova le parole dal loro inizio, senza corrispondenze approssimative inattese.",
-          "L'app per macOS ora funziona solo su Apple silicon; i Mac Intel possono restare alla versione 2.9."
+          "L'app per macOS ora funziona solo su Apple silicon; i Mac Intel possono restare alla versione 2.9.",
+          "Impostazioni > Plugin per la DAW non dice più che le catture del plugin diventano il brano di anteprima: ognuna è l'ultima cattura del progetto."
         ],
         "ja": [
           "DAW プラグイン：DAW のマスターバスに DAW Project Manager を挿すと、プロジェクトのタスクの確認とチェック、ノートの編集ができ、再生のたびにプロジェクトの最新のキャプチャとして保存され、このアプリですぐ再生できます。",
@@ -114,7 +120,8 @@
           "Windows では、新しいインストーラーがアプリを自動で最新に保ちます。以前のインストーラーで入れたコピーはこれまでどおり更新されます。",
           "ログイン時の起動が Microsoft Store 版、macOS、Linux、Flatpak で機能するようになり、アップデート後も自動で修復されます。",
           "ノートと変更履歴の検索は、単語の先頭で一致するようになり、あいまいな一致はなくなりました。",
-          "macOS アプリは Apple シリコン専用になりました。Intel Mac ではバージョン 2.9 を引き続きお使いいただけます。"
+          "macOS アプリは Apple シリコン専用になりました。Intel Mac ではバージョン 2.9 を引き続きお使いいただけます。",
+          "設定 > DAW プラグインの説明を修正しました。プラグインのキャプチャはプレビュー曲にはならず、それぞれがプロジェクトの最新のキャプチャになります。"
         ],
         "zh": [
           "DAW 插件：把 DAW Project Manager 放在 DAW 的主总线上，即可查看并勾选项目的待办事项、编辑项目备注，并把每次播放保存为项目的最新捕获，随时在这里播放。",
@@ -128,7 +135,8 @@
           "在 Windows 上，新的安装程序会自动保持应用为最新版本；之前安装程序安装的副本仍会照常更新。",
           "开机启动现在可在 Microsoft Store 版本、macOS、Linux 和 Flatpak 上正常工作，并会在更新后自动修复。",
           "在备注和更新日志中搜索时，会从单词开头匹配，不再出现意外的模糊匹配。",
-          "macOS 应用现在仅支持 Apple 芯片；Intel Mac 可以继续使用 2.9 版本。"
+          "macOS 应用现在仅支持 Apple 芯片；Intel Mac 可以继续使用 2.9 版本。",
+          "设置 > DAW 插件 不再说插件的捕获会成为预览歌曲：每次捕获都是项目的最新捕获。"
         ],
         "ru": [
           "Плагин для DAW: поставьте DAW Project Manager на мастер-шину вашей DAW, чтобы видеть и отмечать задачи проекта, редактировать его заметки и сохранять каждое воспроизведение как последний захват проекта, готовый к прослушиванию здесь.",
@@ -142,7 +150,8 @@
           "В Windows новый установщик сам поддерживает приложение в актуальном состоянии; копии из прежнего установщика обновляются как раньше.",
           "Запуск при входе в систему теперь работает в версии из Microsoft Store, на macOS, Linux и во Flatpak и сам восстанавливается после обновления.",
           "Поиск в заметках и журнале изменений находит слова по их началу, без неожиданных нечётких совпадений.",
-          "Приложение для macOS теперь работает только на Apple silicon; на Mac с Intel можно остаться на версии 2.9."
+          "Приложение для macOS теперь работает только на Apple silicon; на Mac с Intel можно остаться на версии 2.9.",
+          "Настройки > Плагин для DAW больше не говорят, что захваты плагина становятся песней для предпрослушивания: каждый из них — последний захват проекта."
         ]
       }
     },

@@ -73,6 +73,7 @@
           <li>Launch at login now works on the Microsoft Store build, macOS, Linux and Flatpak, and repairs itself after an update.</li>
           <li>Searching notes and the changelog matches words where they start, without fuzzy surprises.</li>
           <li>The macOS app now runs on Apple silicon only; Intel Macs can keep using version 2.9.</li>
+          <li>Settings &gt; DAW plugin no longer says the plugin's captures become the preview song: each one is the project's latest capture.</li>
         </ul>
       </description>
       <url>https://github.com/bandpassrecords/daw-project-manager/releases/tag/v3.0.0</url>
