@@ -215,7 +215,13 @@ void main() {
           project(
             'a',
             'Alpha',
-            deadline: DateTime.now().subtract(const Duration(days: 2)),
+            // Two calendar days, not 48 hours: the evening after the clocks
+            // go back, 48 hours ago is just after midnight the day before
+            // yesterday's — one day late.
+            deadline: () {
+              final now = DateTime.now();
+              return DateTime(now.year, now.month, now.day - 2, 12);
+            }(),
           ),
         ]),
       );
