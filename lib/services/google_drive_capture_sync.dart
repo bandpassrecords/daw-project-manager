@@ -122,7 +122,9 @@ extension _CaptureSync on GoogleDriveSyncService {
       if (!captureNeedsDownload(local: local, localFileExists: localExists, remote: entry)) continue;
 
       // The name alone, never a path a backup could steer elsewhere.
-      final target = path.join(pluginDir, projectId, path.basename(entry.name));
+      final projectDir = safeFileIn(pluginDir, projectId);
+      final target = projectDir == null ? null : safeFileIn(projectDir, path.basename(entry.name));
+      if (target == null) continue;
       try {
         await _downloadCaptureFile(entry, target);
       } catch (e) {

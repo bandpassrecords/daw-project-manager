@@ -7,6 +7,7 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:daw_project_manager/services/backup_service.dart';
+import 'package:daw_project_manager/utils/app_paths.dart';
 
 import '../helpers/test_factories.dart';
 
@@ -38,10 +39,18 @@ void main() {
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('cover_art_backup_');
     sourceDir = await Directory.systemTemp.createTemp('cover_art_source_');
-    PathProviderPlatform.instance = _FakePathProvider(tempDir.path);
+    // Two levels down, so even an escape of two levels the code under test
+    // fails to stop still lands in the temp folder, never on the machine.
+    final appData = Directory(p.join(tempDir.path, 'a', 'b'));
+    await appData.create(recursive: true);
+    PathProviderPlatform.instance = _FakePathProvider(appData.path);
+    // Windows reads %LOCALAPPDATA%, not the path provider: without this the
+    // test wrote into the developer's real app data folder.
+    debugLocalAppDataOverride = appData.path;
   });
 
   tearDown(() async {
+    debugLocalAppDataOverride = null;
     if (await tempDir.exists()) await tempDir.delete(recursive: true);
     if (await sourceDir.exists()) await sourceDir.delete(recursive: true);
   });
@@ -132,5 +141,64 @@ void main() {
     // resolve, and the avatar falls back to the accent colour if it does not.
     final restored = await BackupService.projectFromJsonWithCoverArt(json);
     expect(restored.thumbnailPath, p.join(sourceDir.path, 'not-there.png'));
+  });
+
+  // A backup is a file anyone could have written. Its ids and file names go
+  // into the names of the images it carries, so a crafted one once wrote its
+  // own bytes wherever `..\..\Startup\x_cover.bat` led.
+  group('a crafted backup cannot write outside the managed folders', () {
+    for (final id in [r'..\..\x', '../../x']) {
+      test('a project id "$id" writes no cover anywhere', () async {
+        final coverDir = await getProjectCoverArtPath();
+        final restored = await BackupService.projectFromJsonWithCoverArt({
+          ...BackupService.projectToJson(TestFactories.makeProject(id: id)),
+          'coverArtData': base64Encode(pngBytes),
+          'coverArtFileName': 'evil.bat',
+        });
+
+        expect(restored.thumbnailPath, isNull);
+        for (final ext in ['.bat', '.jpg']) {
+          expect(File(p.normalize(p.join(coverDir, '../../x_cover$ext'))).existsSync(), isFalse);
+        }
+      });
+
+      test('a release id "$id" writes no artwork anywhere', () async {
+        final artworkDir = await getReleaseArtworkPath();
+        final release = await BackupService.releaseFromJsonForTest({
+          'id': id,
+          'title': 'EP',
+          'artworkData': base64Encode(pngBytes),
+          'artworkFileName': 'evil.bat',
+        });
+
+        expect(release.artworkImagePath, isNull);
+        for (final ext in ['.bat', '.jpg']) {
+          expect(File(p.normalize(p.join(artworkDir, '../../x_artwork$ext'))).existsSync(), isFalse);
+        }
+      });
+    }
+
+    test('a file name that is more than a name keeps only a safe extension', () async {
+      final restored = await BackupService.projectFromJsonWithCoverArt({
+        ...BackupService.projectToJson(TestFactories.makeProject(id: 'p1')),
+        'coverArtData': base64Encode(pngBytes),
+        'coverArtFileName': 'x.png:stream',
+      });
+
+      expect(p.basename(restored.thumbnailPath!), 'p1_cover.jpg');
+      expect(await File(restored.thumbnailPath!).readAsBytes(), pngBytes);
+    });
+
+    test('a safe release id still restores its artwork', () async {
+      final release = await BackupService.releaseFromJsonForTest({
+        'id': 'r1',
+        'title': 'EP',
+        'artworkData': base64Encode(pngBytes),
+        'artworkFileName': 'front.png',
+      });
+
+      expect(p.basename(release.artworkImagePath!), 'r1_artwork.png');
+      expect(await File(release.artworkImagePath!).readAsBytes(), pngBytes);
+    });
   });
 }

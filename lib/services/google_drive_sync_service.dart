@@ -51,6 +51,7 @@ import '../utils/app_paths.dart'
 import '../config/oauth_config.dart' show desktopClientSecret, desktopClientId, androidWebClientId;
 import 'plugin_bridge/plugin_protocol.dart' show dpmPluginCaptureFileInUse, dpmPluginPreviewFolderName;
 import 'plugin_capture_sync.dart';
+import '../utils/safe_file_name.dart';
 import '../utils/sync_time.dart';
 
 part 'google_drive_capture_sync.dart';
@@ -2154,8 +2155,9 @@ class GoogleDriveSyncService {
         await coverArtDir.create(recursive: true);
       }
 
-      final ext = fileExtension ?? '.jpg';
-      final localFilePath = path.join(coverArtPath, '${projectId}_cover$ext');
+      final ext = safeExtension(fileExtension, fallback: '.jpg');
+      final localFilePath = safeFileIn(coverArtPath, '${projectId}_cover$ext');
+      if (localFilePath == null) return null;
 
       final existingFile = File(localFilePath);
       if (await existingFile.exists() && expectedHash != null) {
@@ -2234,8 +2236,9 @@ class GoogleDriveSyncService {
     try {
       // Get local preview songs directory
       final previewSongsDir = await getPreviewSongsPath();
-      final ext = fileExtension ?? '.mp3';
-      final localFilePath = path.join(previewSongsDir, '${projectId}_preview$ext');
+      final ext = safeExtension(fileExtension, fallback: '.mp3');
+      final localFilePath = safeFileIn(previewSongsDir, '${projectId}_preview$ext');
+      if (localFilePath == null) return null;
       
       // Check if file already exists and hash matches
       final existingFile = File(localFilePath);
@@ -2347,8 +2350,9 @@ class GoogleDriveSyncService {
         await profilePhotosDir.create(recursive: true);
       }
       
-      final ext = fileExtension ?? '.jpg';
-      final localFilePath = path.join(profilePhotosDir.path, '${profileId}_photo$ext');
+      final ext = safeExtension(fileExtension, fallback: '.jpg');
+      final localFilePath = safeFileIn(profilePhotosDir.path, '${profileId}_photo$ext');
+      if (localFilePath == null) return null;
       
       // Check if file already exists and hash matches
       final existingFile = File(localFilePath);
@@ -2456,8 +2460,9 @@ class GoogleDriveSyncService {
         await releaseArtworkDir.create(recursive: true);
       }
       
-      final ext = fileExtension ?? '.jpg';
-      final localFilePath = path.join(releaseArtworkPath, '${releaseId}_artwork$ext');
+      final ext = safeExtension(fileExtension, fallback: '.jpg');
+      final localFilePath = safeFileIn(releaseArtworkPath, '${releaseId}_artwork$ext');
+      if (localFilePath == null) return null;
       
       // Check if file already exists and hash matches
       final existingFile = File(localFilePath);

@@ -27,6 +27,7 @@ import '../repository/project_repository.dart';
 import '../repository/midi_clip_store.dart';
 import '../models/midi_collection.dart';
 import '../repository/profile_repository.dart';
+import '../utils/safe_file_name.dart';
 import 'custom_theme_merge.dart';
 import '../utils/app_paths.dart';
 import '../utils/save_file_dialog.dart';
@@ -447,8 +448,9 @@ class BackupService {
             final photosDir = p.join(await getLocalAppDataPath(), 'profile_photos');
             final dir = Directory(photosDir);
             if (!await dir.exists()) await dir.create(recursive: true);
-            final ext = p.extension(photoFileName);
-            final destPath = p.join(photosDir, '${targetProfileId}_photo$ext');
+            final ext = safeExtension(p.extension(photoFileName), fallback: '.jpg');
+            final destPath = safeFileIn(photosDir, '${targetProfileId}_photo$ext');
+            if (destPath == null) throw StateError('unsafe profile photo name');
             await File(destPath).writeAsBytes(base64Decode(photoBase64));
             final currentProfile = profileRepo.getProfileById(targetProfileId);
             if (currentProfile != null) {
@@ -972,6 +974,10 @@ class BackupService {
   ) =>
       _projectFromJsonWithCoverArt(json);
 
+  @visibleForTesting
+  static Future<Release> releaseFromJsonForTest(Map<String, dynamic> json) =>
+      _releaseFromJson(json);
+
   /// [_projectToJson] plus the cover art's bytes (#110).
   ///
   /// The image travels base64 inside the JSON, the way release artwork and
@@ -1017,8 +1023,11 @@ class BackupService {
       final coverDirPath = await getProjectCoverArtPath();
       final dir = Directory(coverDirPath);
       if (!await dir.exists()) await dir.create(recursive: true);
-      final destName = '${project.id}_cover${p.extension(coverFileName)}';
-      final destPath = p.join(coverDirPath, destName);
+      // The id and the name are the backup's own text: a crafted one must
+      // not steer the write out of the cover-art folder.
+      final ext = safeExtension(p.extension(coverFileName), fallback: '.jpg');
+      final destPath = safeFileIn(coverDirPath, '${project.id}_cover$ext');
+      if (destPath == null) return project.copyWith(clearThumbnailPath: true);
       await File(destPath).writeAsBytes(base64Decode(coverBase64));
       return project.copyWith(thumbnailPath: destPath);
     } catch (_) {
@@ -1333,11 +1342,16 @@ class BackupService {
         final dir = Directory(artworkDir);
         if (!await dir.exists()) await dir.create(recursive: true);
         final releaseId = json['id'] as String? ?? '';
-        final ext = p.extension(artworkFileName);
-        final destFileName = releaseId.isNotEmpty ? '${releaseId}_artwork$ext' : artworkFileName;
-        final destPath = p.join(artworkDir, destFileName);
-        await File(destPath).writeAsBytes(base64Decode(artworkBase64));
-        artworkImagePath = destPath;
+        final ext = safeExtension(p.extension(artworkFileName), fallback: '.jpg');
+        // The id and the name are the backup's own text: a crafted one must
+        // not steer the write out of the artwork folder.
+        final destPath = safeFileIn(artworkDir, '${releaseId}_artwork$ext');
+        if (destPath == null) {
+          artworkImagePath = null;
+        } else {
+          await File(destPath).writeAsBytes(base64Decode(artworkBase64));
+          artworkImagePath = destPath;
+        }
       } catch (_) {}
     }
     return Release(
