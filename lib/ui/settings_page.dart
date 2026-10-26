@@ -411,6 +411,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         invalidBackupFormatMessage: AppLocalizations.of(context)!.invalidBackupFileFormat,
         profileNameRequiredMessage: AppLocalizations.of(context)!.profileNameRequiredForNewProfile,
         currentProfileRequiredMessage: AppLocalizations.of(context)!.currentProfileRequired,
+        confirmLaunchCommands: _confirmImportLaunchCommands,
       );
 
       if (importResult.cancelled) {
@@ -444,6 +445,51 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         );
       }
     }
+  }
+
+  /// Asks before a backup adds programs for "Launch in DAW": a backup someone
+  /// else made could otherwise choose what that button runs. Shows each
+  /// program in full, since the path is what the user has to judge.
+  Future<bool> _confirmImportLaunchCommands(Map<String, List<String>> commands) async {
+    if (!mounted) return false;
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).cardColor,
+        title: Text(l10n.importLaunchCommandsTitle),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.importLaunchCommandsMessage),
+              const SizedBox(height: 12),
+              for (final MapEntry(key: daw, value: paths) in commands.entries) ...[
+                Text(daw, style: const TextStyle(fontWeight: FontWeight.bold)),
+                for (final path in paths)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, top: 2),
+                    child: SelectableText(path, style: const TextStyle(fontFamily: 'monospace')),
+                  ),
+                const SizedBox(height: 8),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.importLaunchCommandsSkip),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.importLaunchCommandsImport),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
   }
 
   // ---------------------------------------------------------------------

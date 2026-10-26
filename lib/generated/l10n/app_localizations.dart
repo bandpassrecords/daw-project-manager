@@ -2618,6 +2618,30 @@ abstract class AppLocalizations {
   /// **'Current profile is required for merge or replace mode'**
   String get currentProfileRequired;
 
+  /// No description provided for @importLaunchCommandsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import programs for \"Launch in DAW\"?'**
+  String get importLaunchCommandsTitle;
+
+  /// No description provided for @importLaunchCommandsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup names programs that \"Launch in DAW\" would run on this computer. Import them only if you made the backup yourself.'**
+  String get importLaunchCommandsMessage;
+
+  /// No description provided for @importLaunchCommandsSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t import'**
+  String get importLaunchCommandsSkip;
+
+  /// No description provided for @importLaunchCommandsImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import them'**
+  String get importLaunchCommandsImport;
+
   /// No description provided for @previewSong.
   ///
   /// In en, this message translates to:

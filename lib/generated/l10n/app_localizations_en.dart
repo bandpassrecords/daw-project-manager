@@ -1527,6 +1527,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Current profile is required for merge or replace mode';
 
   @override
+  String get importLaunchCommandsTitle =>
+      'Import programs for \"Launch in DAW\"?';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      'This backup names programs that \"Launch in DAW\" would run on this computer. Import them only if you made the backup yourself.';
+
+  @override
+  String get importLaunchCommandsSkip => 'Don\'t import';
+
+  @override
+  String get importLaunchCommandsImport => 'Import them';
+
+  @override
   String get previewSong => 'Preview Song';
 
   @override

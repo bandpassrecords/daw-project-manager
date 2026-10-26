@@ -1532,6 +1532,20 @@ class AppLocalizationsRu extends AppLocalizations {
       'Текущий профиль обязателен для режима объединения или замены';
 
   @override
+  String get importLaunchCommandsTitle =>
+      'Импортировать программы для «Запустить в DAW»?';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      'В этой резервной копии указаны программы, которые «Запустить в DAW» будет запускать на этом компьютере. Импортируйте их, только если вы сами создали эту резервную копию.';
+
+  @override
+  String get importLaunchCommandsSkip => 'Не импортировать';
+
+  @override
+  String get importLaunchCommandsImport => 'Импортировать';
+
+  @override
   String get previewSong => 'Превью Трека';
 
   @override

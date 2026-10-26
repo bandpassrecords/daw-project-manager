@@ -1539,6 +1539,20 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le profil actuel est requis pour le mode fusionner ou remplacer';
 
   @override
+  String get importLaunchCommandsTitle =>
+      'Importer les programmes de « Lancer dans le DAW » ?';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      'Cette sauvegarde désigne des programmes que « Lancer dans le DAW » exécuterait sur cet ordinateur. Ne les importez que si vous avez créé la sauvegarde vous-même.';
+
+  @override
+  String get importLaunchCommandsSkip => 'Ne pas importer';
+
+  @override
+  String get importLaunchCommandsImport => 'Les importer';
+
+  @override
   String get previewSong => 'Chanson d\'Aperçu';
 
   @override

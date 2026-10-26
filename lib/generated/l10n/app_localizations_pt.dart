@@ -1533,6 +1533,20 @@ class AppLocalizationsPt extends AppLocalizations {
       'O perfil atual é obrigatório para o modo mesclar ou substituir';
 
   @override
+  String get importLaunchCommandsTitle =>
+      'Importar programas para \"Lançar no DAW\"?';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      'Este backup indica programas que \"Lançar no DAW\" executaria neste computador. Importe-os somente se você mesmo criou o backup.';
+
+  @override
+  String get importLaunchCommandsSkip => 'Não importar';
+
+  @override
+  String get importLaunchCommandsImport => 'Importar';
+
+  @override
   String get previewSong => 'Música de Prévia';
 
   @override

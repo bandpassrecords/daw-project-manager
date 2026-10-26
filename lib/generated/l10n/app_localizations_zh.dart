@@ -1497,6 +1497,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get currentProfileRequired => '合并或替换模式需要当前配置文件';
 
   @override
+  String get importLaunchCommandsTitle => '导入\"在DAW中启动\"的程序？';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      '此备份指定了\"在DAW中启动\"将在这台电脑上运行的程序。仅当备份是你自己创建的时才导入。';
+
+  @override
+  String get importLaunchCommandsSkip => '不导入';
+
+  @override
+  String get importLaunchCommandsImport => '导入';
+
+  @override
   String get previewSong => '预览歌曲';
 
   @override

@@ -154,6 +154,7 @@ class BackupService {
     String? invalidBackupFormatMessage,
     String? profileNameRequiredMessage,
     String? currentProfileRequiredMessage,
+    Future<bool> Function(Map<String, List<String>> commands)? confirmLaunchCommands,
   }) async {
     try {
       // Pick backup file
@@ -179,6 +180,7 @@ class BackupService {
         invalidBackupFormatMessage: invalidBackupFormatMessage,
         profileNameRequiredMessage: profileNameRequiredMessage,
         currentProfileRequiredMessage: currentProfileRequiredMessage,
+        confirmLaunchCommands: confirmLaunchCommands,
       );
     } catch (e) {
       throw Exception('Failed to import backup: $e');
@@ -197,6 +199,7 @@ class BackupService {
     String? invalidBackupFormatMessage,
     String? profileNameRequiredMessage,
     String? currentProfileRequiredMessage,
+    Future<bool> Function(Map<String, List<String>> commands)? confirmLaunchCommands,
   }) async {
     try {
       final backupData = jsonDecode(jsonString) as Map<String, dynamic>;
@@ -329,9 +332,21 @@ class BackupService {
               ) ??
           const <String, List<String>>{};
 
-      final importedDawLaunchCommands = _normalizeDawLaunchCommands(
-        (backupData['dawLaunchCommands'] as Map?) ?? const {},
+      // Programs "Launch in DAW" runs. A backup is a file anyone could have
+      // written, so a path this device doesn't already have is imported only
+      // when the user says so — asked before anything is written. With no
+      // one to ask, they are left out.
+      var importedDawLaunchCommands = newDawLaunchCommands(
+        await _readDawLaunchCommands(),
+        _normalizeDawLaunchCommands(
+          (backupData['dawLaunchCommands'] as Map?) ?? const {},
+        ),
       );
+      if (importedDawLaunchCommands.isNotEmpty &&
+          (confirmLaunchCommands == null ||
+              !await confirmLaunchCommands(importedDawLaunchCommands))) {
+        importedDawLaunchCommands = const {};
+      }
 
       // Absent in a pre-1.3 backup, which is fine — the user simply had no
       // custom themes to restore.
@@ -646,6 +661,25 @@ class BackupService {
     } catch (_) {
       return const {};
     }
+  }
+
+  /// The launch paths in [imported] that [existing] doesn't have yet, by DAW
+  /// — what importing a backup would add, and so what the user is asked
+  /// about. A path this device already has is no news.
+  static Map<String, List<String>> newDawLaunchCommands(
+    Map<String, List<String>> existing,
+    Map<String, List<String>> imported,
+  ) {
+    final out = <String, List<String>>{};
+    imported.forEach((daw, paths) {
+      final known = existing[daw] ?? const <String>[];
+      final fresh = [
+        for (final path in paths)
+          if (!known.contains(path)) path,
+      ];
+      if (fresh.isNotEmpty) out[daw] = fresh;
+    });
+    return out;
   }
 
   /// Coerces either JSON shape — `{daw: "path"}` (legacy) or

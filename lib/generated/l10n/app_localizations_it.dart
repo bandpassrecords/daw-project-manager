@@ -1534,6 +1534,20 @@ class AppLocalizationsIt extends AppLocalizations {
       'Il profilo corrente è obbligatorio per la modalità unisci o sostituisci';
 
   @override
+  String get importLaunchCommandsTitle =>
+      'Importare i programmi per \"Avvia nel DAW\"?';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      'Questo backup indica programmi che \"Avvia nel DAW\" eseguirebbe su questo computer. Importali solo se hai creato tu il backup.';
+
+  @override
+  String get importLaunchCommandsSkip => 'Non importare';
+
+  @override
+  String get importLaunchCommandsImport => 'Importali';
+
+  @override
   String get previewSong => 'Brano di Anteprima';
 
   @override

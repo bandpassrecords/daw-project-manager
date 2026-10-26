@@ -1506,6 +1506,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get currentProfileRequired => 'マージまたは置き換えモードには現在のプロフィールが必要です';
 
   @override
+  String get importLaunchCommandsTitle => '「DAWで起動」のプログラムをインポートしますか？';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      'このバックアップには、このコンピューターで「DAWで起動」が実行するプログラムが含まれています。自分で作成したバックアップの場合にのみインポートしてください。';
+
+  @override
+  String get importLaunchCommandsSkip => 'インポートしない';
+
+  @override
+  String get importLaunchCommandsImport => 'インポートする';
+
+  @override
   String get previewSong => 'プレビュー曲';
 
   @override

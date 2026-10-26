@@ -1535,6 +1535,20 @@ class AppLocalizationsEs extends AppLocalizations {
       'El perfil actual es obligatorio para el modo combinar o reemplazar';
 
   @override
+  String get importLaunchCommandsTitle =>
+      '¿Importar programas para \"Lanzar en DAW\"?';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      'Este respaldo indica programas que \"Lanzar en DAW\" ejecutaría en este equipo. Impórtalos solo si creaste el respaldo tú mismo.';
+
+  @override
+  String get importLaunchCommandsSkip => 'No importar';
+
+  @override
+  String get importLaunchCommandsImport => 'Importarlos';
+
+  @override
   String get previewSong => 'Canción de Vista Previa';
 
   @override

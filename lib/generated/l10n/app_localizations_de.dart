@@ -1536,6 +1536,20 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das aktuelle Profil ist für den Modus Zusammenführen oder Ersetzen erforderlich';
 
   @override
+  String get importLaunchCommandsTitle =>
+      'Programme für „Im DAW starten\" importieren?';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      'Diese Sicherung nennt Programme, die „Im DAW starten\" auf diesem Computer ausführen würde. Importiere sie nur, wenn du die Sicherung selbst erstellt hast.';
+
+  @override
+  String get importLaunchCommandsSkip => 'Nicht importieren';
+
+  @override
+  String get importLaunchCommandsImport => 'Importieren';
+
+  @override
   String get previewSong => 'Vorschau-Song';
 
   @override
