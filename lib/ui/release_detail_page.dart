@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 import 'package:desktop_drop/desktop_drop.dart';
 
 import 'package:file_picker/file_picker.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
-import 'package:archive/archive.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/release.dart';
 import '../services/app_audio_focus.dart';
@@ -37,6 +37,7 @@ import 'session_actions.dart';
 import 'widgets/resizable_text_field.dart';
 import 'widgets/todo_list_widget.dart';
 import '../services/track_duration_probe_service.dart';
+import '../services/zip_export_service.dart';
 import '../utils/text_input_focus.dart';
 import '../utils/player_shortcuts.dart';
 import '../utils/track_duration.dart';
@@ -351,53 +352,17 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
 
     try {
       final zipFile = File(savePath);
-      if (!await zipFile.parent.exists()) {
-        await zipFile.parent.create(recursive: true);
-      }
-      if (await zipFile.exists()) {
-        await zipFile.delete();
-      }
+      // Audio first, by its display name (which may carry track numbers),
+      // then everything else. Streamed on an isolate of its own: a release
+      // of WAVs read into memory at once froze the app.
+      final entries = [
+        for (final f in release.files.where((f) => f.fileType == 'audio'))
+          ZipExportEntry.file(f.fileName, f.filePath),
+        for (final f in release.files.where((f) => f.fileType != 'audio'))
+          ZipExportEntry.file(f.fileName, f.filePath),
+      ];
+      await Isolate.run(() => writeZipExport(savePath, entries));
 
-      final archive = Archive();
-      
-      // Separate audio files from other files
-      final audioFiles = release.files.where((f) => f.fileType == 'audio').toList();
-      final otherFiles = release.files.where((f) => f.fileType != 'audio').toList();
-      
-      // Add audio files using their display names
-      for (final releaseFile in audioFiles) {
-        final file = File(releaseFile.filePath);
-        if (await file.exists()) {
-          final fileData = await file.readAsBytes();
-          // Use the display fileName (which may include track numbers if user added them)
-          archive.addFile(
-            ArchiveFile(
-              releaseFile.fileName,
-              fileData.length,
-              fileData,
-            ),
-          );
-        }
-      }
-      
-      // Add other files without track numbers
-      for (final releaseFile in otherFiles) {
-        final file = File(releaseFile.filePath);
-        if (await file.exists()) {
-          final fileData = await file.readAsBytes();
-          archive.addFile(
-            ArchiveFile(
-              releaseFile.fileName,
-              fileData.length,
-              fileData,
-            ),
-          );
-        }
-      }
-
-      final zipData = ZipEncoder().encode(archive);
-      await zipFile.writeAsBytes(zipData);
-    
       // Close loading dialog
       if (mounted) {
         Navigator.of(context).pop();
