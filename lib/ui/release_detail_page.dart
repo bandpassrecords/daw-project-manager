@@ -272,7 +272,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
       await repo.updateRelease(release.copyWith(files: [...release.files, ...newFiles]));
       if (mounted) {
         ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.addedFilesToRelease(newFiles.length, newFiles.length == 1 ? '' : 's'))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.addedFilesToRelease(newFiles.length))),
         );
       }
     }
@@ -1294,7 +1294,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
       await repo.updateRelease(updatedRelease);
       if (mounted) {
         ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length, selectedIds.length == 1 ? '' : 's'))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length))),
         );
       }
     }
@@ -1566,7 +1566,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                               await repo.updateRelease(updatedRelease);
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showAppSnackBar(
-                                  SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length, selectedIds.length == 1 ? '' : 's'))),
+                                  SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length))),
                                 );
                               }
                             }

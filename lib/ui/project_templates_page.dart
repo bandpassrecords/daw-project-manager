@@ -164,13 +164,12 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
 
   Future<void> _deleteSelectedTemplates(List<ProjectTemplate> selected) async {
     final l10n = AppLocalizations.of(context)!;
-    final plural = selected.length == 1 ? '' : 's';
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.deleteSelectedTemplates),
         content: Text(
-          l10n.deleteSelectedTemplatesConfirm(selected.length, plural),
+          l10n.deleteSelectedTemplatesConfirm(selected.length),
         ),
         actions: [
           TextButton(
@@ -194,7 +193,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
     _clearTemplateSelection();
     if (mounted) {
       ScaffoldMessenger.of(context).showAppSnackBar(
-        SnackBar(content: Text(l10n.templatesDeleted(selected.length, plural))),
+        SnackBar(content: Text(l10n.templatesDeleted(selected.length))),
       );
     }
   }
@@ -1365,7 +1364,6 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
     AppLocalizations l10n,
     List<ProjectTemplate> selected,
   ) {
-    final plural = selected.length == 1 ? '' : 's';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: Theme.of(context).cardColor,
@@ -1373,7 +1371,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            l10n.templatesSelected(selected.length, plural),
+            l10n.templatesSelected(selected.length),
             style: TextStyle(
               color: Theme.of(context).textTheme.bodyMedium?.color,
             ),

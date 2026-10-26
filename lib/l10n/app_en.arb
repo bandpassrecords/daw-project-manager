@@ -287,25 +287,19 @@
       }
     }
   },
-  "projectsHidden": "{count} project{plural} hidden.",
+  "projectsHidden": "{count, plural, one{{count} project hidden.} other{{count} projects hidden.}}",
   "@projectsHidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "projectsUnhidden": "{count} project{plural} unhidden.",
+  "projectsUnhidden": "{count, plural, one{{count} project unhidden.} other{{count} projects unhidden.}}",
   "@projectsUnhidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -327,37 +321,28 @@
   },
   "deleteMissingProjects": "Delete Missing",
   "deleteMissingProjectsTitle": "Delete missing projects?",
-  "deleteMissingProjectsConfirm": "{count} project{plural} whose file could not be found on this machine will move to Recently deleted (Settings > Project folders), where you can restore them with their notes, deadlines and session history for 30 days.",
+  "deleteMissingProjectsConfirm": "{count, plural, one{{count} project whose file could not be found on this machine will move to Recently deleted (Settings > Project folders), where you can restore it with its notes, deadlines and session history for 30 days.} other{{count} projects whose files could not be found on this machine will move to Recently deleted (Settings > Project folders), where you can restore them with their notes, deadlines and session history for 30 days.}}",
   "@deleteMissingProjectsConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteMissingProjectsConfirmButton": "Delete",
-  "missingProjectsDeleted": "{count} missing project{plural} deleted.",
+  "missingProjectsDeleted": "{count, plural, one{{count} missing project deleted.} other{{count} missing projects deleted.}}",
   "@missingProjectsDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "deleteMissingProjectsAlsoDeleteReleaseTracked": "Also delete {count} project{plural} that are part of a release (removes them from that release too)",
+  "deleteMissingProjectsAlsoDeleteReleaseTracked": "{count, plural, one{Also delete {count} project that is part of a release (removes it from that release too)} other{Also delete {count} projects that are part of a release (removes them from that release too)}}",
   "@deleteMissingProjectsAlsoDeleteReleaseTracked": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -400,14 +385,11 @@
   "enterReleaseTitle": "Enter Release Title",
   "releaseTitle": "Release Title",
   "enterReleaseTitleHint": "Enter release title",
-  "metadataExtractedForProjects": "Extracted metadata for {count} project{plural}. {failures}",
+  "metadataExtractedForProjects": "{count, plural, one{Extracted metadata for {count} project.} other{Extracted metadata for {count} projects.}} {failures}",
   "@metadataExtractedForProjects": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "failures": {
         "type": "String"
@@ -455,7 +437,7 @@
       }
     }
   },
-  "scanComplete": "{type} complete: {count} project{plural} added/updated.",
+  "scanComplete": "{count, plural, one{{type} complete: {count} project added/updated.} other{{type} complete: {count} projects added/updated.}}",
   "@scanComplete": {
     "placeholders": {
       "type": {
@@ -463,21 +445,15 @@
       },
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "scanCancelled": "Scan cancelled.",
-  "scanFailuresSnackbar": "{count} project{plural} failed to load.",
+  "scanFailuresSnackbar": "{count, plural, one{{count} project failed to load.} other{{count} projects failed to load.}}",
   "@scanFailuresSnackbar": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -487,14 +463,11 @@
   "@scanFailuresDialogTitle": {},
   "scanFailuresDialogIntro": "These files could not be read during the scan (they may have been deleted, moved, or locked by another program):",
   "@scanFailuresDialogIntro": {},
-  "projectsSelected": "{count} project{plural} selected",
+  "projectsSelected": "{count, plural, one{{count} project selected} other{{count} projects selected}}",
   "@projectsSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -534,17 +507,14 @@
       }
     }
   },
-  "releasesSelected": "{count} release{plural} selected",
+  "releasesSelected": "{count, plural, one{{count} release selected} other{{count} releases selected}}",
   "deleteSelectedReleases": "Delete Selected",
-  "deleteSelectedReleasesConfirm": "Are you sure you want to delete {count} release{plural}?",
-  "releasesDeleted": "{count} release{plural} deleted",
+  "deleteSelectedReleasesConfirm": "{count, plural, one{Are you sure you want to delete {count} release?} other{Are you sure you want to delete {count} releases?}}",
+  "releasesDeleted": "{count, plural, one{{count} release deleted} other{{count} releases deleted}}",
   "@releasesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -552,9 +522,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -562,9 +529,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -598,14 +562,11 @@
   },
   "addTracks": "Add Tracks",
   "allProjectsAlreadyInRelease": "All projects are already in this release.",
-  "addedTracksToRelease": "Added {count} track{plural} to release.",
+  "addedTracksToRelease": "{count, plural, one{Added {count} track to release.} other{Added {count} tracks to release.}}",
   "@addedTracksToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -618,14 +579,11 @@
     }
   },
   "addFiles": "Add Files",
-  "addedFilesToRelease": "Added {count} file{plural} to release.",
+  "addedFilesToRelease": "{count, plural, one{Added {count} file to release.} other{Added {count} files to release.}}",
   "@addedFilesToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -878,37 +836,28 @@
       }
     }
   },
-  "templatesSelected": "{count} template{plural} selected",
+  "templatesSelected": "{count, plural, one{{count} template selected} other{{count} templates selected}}",
   "@templatesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteSelectedTemplates": "Delete Selected",
-  "deleteSelectedTemplatesConfirm": "Are you sure you want to delete {count} template{plural}?",
+  "deleteSelectedTemplatesConfirm": "{count, plural, one{Are you sure you want to delete {count} template?} other{Are you sure you want to delete {count} templates?}}",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "templatesDeleted": "{count} template{plural} deleted",
+  "templatesDeleted": "{count, plural, one{{count} template deleted} other{{count} templates deleted}}",
   "@templatesDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -1004,36 +953,27 @@
   "projectPhaseFinished": "Finished",
   "changeStatus": "Change Phase",
   "selectNewStatus": "Select new phase:",
-  "statusChangedForProjects": "Phase changed to \"{status}\" for {count} project{plural}",
+  "statusChangedForProjects": "{count, plural, one{Phase changed to \"{status}\" for {count} project} other{Phase changed to \"{status}\" for {count} projects}}",
   "@statusChangedForProjects": {
     "description": "Success message when status is changed for multiple projects",
     "placeholders": {
       "count": {
         "type": "int"
       },
-      "plural": {
-        "type": "String"
-      },
       "status": {
         "type": "String"
       }
     }
   },
-  "statusChangedForProjectsWithErrors": "Phase changed to \"{status}\" for {successCount} project{successPlural}, {failCount} failed{failPlural}",
+  "statusChangedForProjectsWithErrors": "Phase changed to \"{status}\" for {successCount, plural, one{{successCount} project} other{{successCount} projects}}, {failCount} failed",
   "@statusChangedForProjectsWithErrors": {
     "description": "Message when status change partially fails",
     "placeholders": {
       "successCount": {
         "type": "int"
       },
-      "successPlural": {
-        "type": "String"
-      },
       "failCount": {
         "type": "int"
-      },
-      "failPlural": {
-        "type": "String"
       },
       "status": {
         "type": "String"
@@ -1437,87 +1377,60 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "Object"
       }
     }
   },
-  "ageYearsMonths": "{years} year{yearPlural}, {months} month{monthPlural}",
+  "ageYearsMonths": "{years, plural, one{{years} year} other{{years} years}}, {months, plural, one{{months} month} other{{months} months}}",
   "@ageYearsMonths": {
     "placeholders": {
       "years": {
         "type": "int"
       },
-      "yearPlural": {
-        "type": "String"
-      },
       "months": {
         "type": "int"
-      },
-      "monthPlural": {
-        "type": "String"
       }
     }
   },
-  "ageYears": "{years} year{plural}",
+  "ageYears": "{years, plural, one{{years} year} other{{years} years}}",
   "@ageYears": {
     "placeholders": {
       "years": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "ageMonthsDays": "{months} month{monthPlural}, {days} day{dayPlural}",
+  "ageMonthsDays": "{months, plural, one{{months} month} other{{months} months}}, {days, plural, one{{days} day} other{{days} days}}",
   "@ageMonthsDays": {
     "placeholders": {
       "months": {
         "type": "int"
       },
-      "monthPlural": {
-        "type": "String"
-      },
       "days": {
         "type": "int"
-      },
-      "dayPlural": {
-        "type": "String"
       }
     }
   },
-  "ageMonths": "{months} month{plural}",
+  "ageMonths": "{months, plural, one{{months} month} other{{months} months}}",
   "@ageMonths": {
     "placeholders": {
       "months": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "ageDays": "{days} day{plural}",
+  "ageDays": "{days, plural, one{{days} day} other{{days} days}}",
   "@ageDays": {
     "placeholders": {
       "days": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "ageHours": "{hours} hour{plural}",
+  "ageHours": "{hours, plural, one{{hours} hour} other{{hours} hours}}",
   "@ageHours": {
     "placeholders": {
       "hours": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -2571,27 +2484,21 @@
   "@additionalAssets": {
     "description": "Section header for additional assets"
   },
-  "downloadNFiles": "Download {count} file{plural}",
+  "downloadNFiles": "{count, plural, one{Download {count} file} other{Download {count} files}}",
   "@downloadNFiles": {
     "description": "Button label to download N files",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "nFilesSavedTo": "{count} file{plural} saved to {filename}",
+  "nFilesSavedTo": "{count, plural, one{{count} file saved to {filename}} other{{count} files saved to {filename}}}",
   "@nFilesSavedTo": {
     "description": "Success message when N files are saved",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "filename": {
         "type": "String"
@@ -4969,14 +4876,11 @@
       }
     }
   },
-  "attachmentExportSkippedMissing": "{count} missing file{plural} skipped",
+  "attachmentExportSkippedMissing": "{count, plural, one{{count} missing file skipped} other{{count} missing files skipped}}",
   "@attachmentExportSkippedMissing": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },

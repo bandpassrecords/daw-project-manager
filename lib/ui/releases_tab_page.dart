@@ -39,14 +39,13 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
   /// whole batch rather than the per-release prompt the row action uses.
   Future<void> _deleteSelectedReleases(List<Release> selected) async {
     final l10n = AppLocalizations.of(context)!;
-    final plural = selected.length == 1 ? '' : 's';
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: Theme.of(dialogContext).cardColor,
         title: Text(l10n.deleteSelectedReleases),
         content: Text(
-          l10n.deleteSelectedReleasesConfirm(selected.length, plural),
+          l10n.deleteSelectedReleasesConfirm(selected.length),
         ),
         actions: [
           TextButton(
@@ -75,7 +74,7 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
     ref.read(selectedReleasesProvider.notifier).clear();
     if (mounted) {
       ScaffoldMessenger.of(context).showAppSnackBar(
-        SnackBar(content: Text(l10n.releasesDeleted(selected.length, plural))),
+        SnackBar(content: Text(l10n.releasesDeleted(selected.length))),
       );
     }
   }
@@ -83,7 +82,6 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
   /// The bar that appears under the table while releases are selected — count,
   /// clear, and the bulk delete. Same shape as the templates table's.
   Widget _buildSelectionBar(AppLocalizations l10n, List<Release> selected) {
-    final plural = selected.length == 1 ? '' : 's';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: Theme.of(context).cardColor,
@@ -91,7 +89,7 @@ class _ReleasesTabPageState extends ConsumerState<ReleasesTabPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            l10n.releasesSelected(selected.length, plural),
+            l10n.releasesSelected(selected.length),
             style: TextStyle(
               color: Theme.of(context).textTheme.bodyMedium?.color,
             ),
@@ -1034,7 +1032,7 @@ class _TrackSelectionDialogState extends State<_TrackSelectionDialog> {
         child: Column(
           children: [
             Text(
-              AppLocalizations.of(context)!.selectTracksToInclude(_selectedIds.length, _selectedIds.length == 1 ? '' : 's'),
+              AppLocalizations.of(context)!.selectTracksToInclude(_selectedIds.length),
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodyMedium?.color,
               ),

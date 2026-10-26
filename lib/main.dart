@@ -178,7 +178,6 @@ Future<void> _triggerProjectScan() async {
           : l10n.scanComplete(
               l10n.rescan,
               foundCount,
-              foundCount == 1 ? '' : 's',
             );
       ScaffoldMessenger.of(ctx).showAppSnackBar(SnackBar(content: Text(msg)));
     });

@@ -985,7 +985,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     final msg = found == 0
         ? l10n.noProjectsFoundInRoots
-        : l10n.scanComplete(l10n.rescan, found, found == 1 ? '' : 's');
+        : l10n.scanComplete(l10n.rescan, found);
     ScaffoldMessenger.of(context).showAppSnackBar(SnackBar(content: Text(msg)));
   }
 

@@ -284,25 +284,19 @@
       }
     }
   },
-  "projectsHidden": "{count}个项目{plural}已隐藏。",
+  "projectsHidden": "{count}个项目已隐藏。",
   "@projectsHidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "projectsUnhidden": "{count}个项目{plural}已显示。",
+  "projectsUnhidden": "{count}个项目已显示。",
   "@projectsUnhidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -324,37 +318,28 @@
   },
   "deleteMissingProjects": "删除缺失项目",
   "deleteMissingProjectsTitle": "删除缺失的项目？",
-  "deleteMissingProjectsConfirm": "在此设备上找不到文件的{count}个项目{plural}将移到“最近删除”（设置 > 项目文件夹），30 天内可连同备注、截止日期和会话历史一起恢复。",
+  "deleteMissingProjectsConfirm": "在此设备上找不到文件的{count}个项目将移到“最近删除”（设置 > 项目文件夹），30 天内可连同备注、截止日期和会话历史一起恢复。",
   "@deleteMissingProjectsConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteMissingProjectsConfirmButton": "删除",
-  "missingProjectsDeleted": "已删除{count}个缺失的项目{plural}。",
+  "missingProjectsDeleted": "已删除{count}个缺失的项目。",
   "@missingProjectsDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "deleteMissingProjectsAlsoDeleteReleaseTracked": "同时删除属于发行版的{count}个项目{plural}（也会将它们从该发行版中移除）",
+  "deleteMissingProjectsAlsoDeleteReleaseTracked": "同时删除属于发行版的{count}个项目（也会将它们从该发行版中移除）",
   "@deleteMissingProjectsAlsoDeleteReleaseTracked": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -397,14 +382,11 @@
   "enterReleaseTitle": "输入发布标题",
   "releaseTitle": "发布标题",
   "enterReleaseTitleHint": "输入发布标题",
-  "metadataExtractedForProjects": "已为{count}个项目{plural}提取元数据。{failures}",
+  "metadataExtractedForProjects": "已为{count}个项目提取元数据。{failures}",
   "@metadataExtractedForProjects": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "failures": {
         "type": "String"
@@ -452,7 +434,7 @@
       }
     }
   },
-  "scanComplete": "{type}完成: {count}个项目{plural}已添加/更新。",
+  "scanComplete": "{type}完成: {count}个项目已添加/更新。",
   "@scanComplete": {
     "placeholders": {
       "type": {
@@ -460,21 +442,15 @@
       },
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "scanCancelled": "扫描已取消。",
-  "scanFailuresSnackbar": "{count}个项目{plural}加载失败。",
+  "scanFailuresSnackbar": "{count}个项目加载失败。",
   "@scanFailuresSnackbar": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -484,14 +460,11 @@
   "@scanFailuresDialogTitle": {},
   "scanFailuresDialogIntro": "扫描过程中无法读取以下文件（可能已被删除、移动或被其他程序锁定）：",
   "@scanFailuresDialogIntro": {},
-  "projectsSelected": "{count}个项目{plural}已选择",
+  "projectsSelected": "{count}个项目已选择",
   "@projectsSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -531,17 +504,14 @@
       }
     }
   },
-  "releasesSelected": "已选择{count}个发布{plural}",
+  "releasesSelected": "已选择{count}个发布",
   "deleteSelectedReleases": "删除所选",
-  "deleteSelectedReleasesConfirm": "确定要删除{count}个发布{plural}吗?",
-  "releasesDeleted": "已删除{count}个发布{plural}",
+  "deleteSelectedReleasesConfirm": "确定要删除{count}个发布吗?",
+  "releasesDeleted": "已删除{count}个发布",
   "@releasesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -549,9 +519,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -559,9 +526,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -595,14 +559,11 @@
   },
   "addTracks": "添加曲目",
   "allProjectsAlreadyInRelease": "所有项目已在此发布中。",
-  "addedTracksToRelease": "已向发布添加{count}首曲目{plural}。",
+  "addedTracksToRelease": "已向发布添加{count}首曲目。",
   "@addedTracksToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -615,14 +576,11 @@
     }
   },
   "addFiles": "添加文件",
-  "addedFilesToRelease": "已向发布添加{count}个文件{plural}。",
+  "addedFilesToRelease": "已向发布添加{count}个文件。",
   "@addedFilesToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -841,37 +799,28 @@
       }
     }
   },
-  "templatesSelected": "已选择{count}个模板{plural}",
+  "templatesSelected": "已选择{count}个模板",
   "@templatesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteSelectedTemplates": "删除所选",
-  "deleteSelectedTemplatesConfirm": "确定要删除{count}个模板{plural}吗?",
+  "deleteSelectedTemplatesConfirm": "确定要删除{count}个模板吗?",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "templatesDeleted": "已删除{count}个模板{plural}",
+  "templatesDeleted": "已删除{count}个模板",
   "@templatesDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -953,36 +902,27 @@
   "projectPhaseFinished": "完成",
   "changeStatus": "更改阶段",
   "selectNewStatus": "选择新阶段:",
-  "statusChangedForProjects": "{count} 个项目{plural}的阶段已更改为「{status}」",
+  "statusChangedForProjects": "{count} 个项目的阶段已更改为「{status}」",
   "@statusChangedForProjects": {
     "description": "多个项目状态更改成功时的消息",
     "placeholders": {
       "count": {
         "type": "int"
       },
-      "plural": {
-        "type": "String"
-      },
       "status": {
         "type": "String"
       }
     }
   },
-  "statusChangedForProjectsWithErrors": "{successCount} 个项目{successPlural}的阶段已更改为「{status}」，{failCount} 个失败{failPlural}",
+  "statusChangedForProjectsWithErrors": "{successCount} 个项目的阶段已更改为「{status}」，{failCount} 个失败",
   "@statusChangedForProjectsWithErrors": {
     "description": "状态更改部分失败时的消息",
     "placeholders": {
       "successCount": {
         "type": "int"
       },
-      "successPlural": {
-        "type": "String"
-      },
       "failCount": {
         "type": "int"
-      },
-      "failPlural": {
-        "type": "String"
       },
       "status": {
         "type": "String"
@@ -1747,27 +1687,21 @@
   "@additionalAssets": {
     "description": "Section header for additional assets"
   },
-  "downloadNFiles": "下载 {count} 个文件{plural}",
+  "downloadNFiles": "下载 {count} 个文件",
   "@downloadNFiles": {
     "description": "Button label to download N files",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "nFilesSavedTo": "{count} 个文件{plural}已保存至 {filename}",
+  "nFilesSavedTo": "{count} 个文件已保存至 {filename}",
   "@nFilesSavedTo": {
     "description": "Success message when N files are saved",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "filename": {
         "type": "String"
@@ -3524,14 +3458,11 @@
       }
     }
   },
-  "attachmentExportSkippedMissing": "已跳过 {count} 个丢失的文件{plural}",
+  "attachmentExportSkippedMissing": "已跳过 {count} 个丢失的文件",
   "@attachmentExportSkippedMissing": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },

@@ -511,13 +511,25 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String projectsHidden(int count, String plural) {
-    return '$count project$plural hidden.';
+  String projectsHidden(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects hidden.',
+      one: '$count project hidden.',
+    );
+    return '$_temp0';
   }
 
   @override
-  String projectsUnhidden(int count, String plural) {
-    return '$count project$plural unhidden.';
+  String projectsUnhidden(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects unhidden.',
+      one: '$count project unhidden.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -537,24 +549,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteMissingProjectsTitle => 'Delete missing projects?';
 
   @override
-  String deleteMissingProjectsConfirm(int count, String plural) {
-    return '$count project$plural whose file could not be found on this machine will move to Recently deleted (Settings > Project folders), where you can restore them with their notes, deadlines and session history for 30 days.';
+  String deleteMissingProjectsConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count projects whose files could not be found on this machine will move to Recently deleted (Settings > Project folders), where you can restore them with their notes, deadlines and session history for 30 days.',
+      one:
+          '$count project whose file could not be found on this machine will move to Recently deleted (Settings > Project folders), where you can restore it with its notes, deadlines and session history for 30 days.',
+    );
+    return '$_temp0';
   }
 
   @override
   String get deleteMissingProjectsConfirmButton => 'Delete';
 
   @override
-  String missingProjectsDeleted(int count, String plural) {
-    return '$count missing project$plural deleted.';
+  String missingProjectsDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count missing projects deleted.',
+      one: '$count missing project deleted.',
+    );
+    return '$_temp0';
   }
 
   @override
-  String deleteMissingProjectsAlsoDeleteReleaseTracked(
-    int count,
-    String plural,
-  ) {
-    return 'Also delete $count project$plural that are part of a release (removes them from that release too)';
+  String deleteMissingProjectsAlsoDeleteReleaseTracked(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Also delete $count projects that are part of a release (removes them from that release too)',
+      one:
+          'Also delete $count project that is part of a release (removes it from that release too)',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -597,16 +628,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterReleaseTitleHint => 'Enter release title';
 
   @override
-  String metadataExtractedForProjects(
-    int count,
-    String plural,
-    String failures,
-  ) {
-    return 'Extracted metadata for $count project$plural. $failures';
+  String metadataExtractedForProjects(int count, String failures) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Extracted metadata for $count projects.',
+      one: 'Extracted metadata for $count project.',
+    );
+    return '$_temp0 $failures';
   }
 
   @override
-  String extractionFailures(int count, Object plural) {
+  String extractionFailures(int count) {
     return '$count failed.';
   }
 
@@ -634,16 +667,28 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String scanComplete(String type, int count, String plural) {
-    return '$type complete: $count project$plural added/updated.';
+  String scanComplete(String type, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$type complete: $count projects added/updated.',
+      one: '$type complete: $count project added/updated.',
+    );
+    return '$_temp0';
   }
 
   @override
   String get scanCancelled => 'Scan cancelled.';
 
   @override
-  String scanFailuresSnackbar(int count, String plural) {
-    return '$count project$plural failed to load.';
+  String scanFailuresSnackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects failed to load.',
+      one: '$count project failed to load.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -657,8 +702,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'These files could not be read during the scan (they may have been deleted, moved, or locked by another program):';
 
   @override
-  String projectsSelected(int count, String plural) {
-    return '$count project$plural selected';
+  String projectsSelected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects selected',
+      one: '$count project selected',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -696,21 +747,39 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String releasesSelected(int count, String plural) {
-    return '$count release$plural selected';
+  String releasesSelected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count releases selected',
+      one: '$count release selected',
+    );
+    return '$_temp0';
   }
 
   @override
   String get deleteSelectedReleases => 'Delete Selected';
 
   @override
-  String deleteSelectedReleasesConfirm(int count, String plural) {
-    return 'Are you sure you want to delete $count release$plural?';
+  String deleteSelectedReleasesConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Are you sure you want to delete $count releases?',
+      one: 'Are you sure you want to delete $count release?',
+    );
+    return '$_temp0';
   }
 
   @override
-  String releasesDeleted(int count, String plural) {
-    return '$count release$plural deleted';
+  String releasesDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count releases deleted',
+      one: '$count release deleted',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -749,8 +818,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'All projects are already in this release.';
 
   @override
-  String addedTracksToRelease(int count, String plural) {
-    return 'Added $count track$plural to release.';
+  String addedTracksToRelease(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Added $count tracks to release.',
+      one: 'Added $count track to release.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -762,8 +837,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addFiles => 'Add Files';
 
   @override
-  String addedFilesToRelease(int count, String plural) {
-    return 'Added $count file$plural to release.';
+  String addedFilesToRelease(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Added $count files to release.',
+      one: 'Added $count file to release.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -884,7 +965,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get description => 'Description';
 
   @override
-  String selectTracksToInclude(int count, Object plural) {
+  String selectTracksToInclude(int count) {
     return 'Select tracks to include in the release ($count selected)';
   }
 
@@ -1094,21 +1175,39 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String templatesSelected(int count, String plural) {
-    return '$count template$plural selected';
+  String templatesSelected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count templates selected',
+      one: '$count template selected',
+    );
+    return '$_temp0';
   }
 
   @override
   String get deleteSelectedTemplates => 'Delete Selected';
 
   @override
-  String deleteSelectedTemplatesConfirm(int count, String plural) {
-    return 'Are you sure you want to delete $count template$plural?';
+  String deleteSelectedTemplatesConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Are you sure you want to delete $count templates?',
+      one: 'Are you sure you want to delete $count template?',
+    );
+    return '$_temp0';
   }
 
   @override
-  String templatesDeleted(int count, String plural) {
-    return '$count template$plural deleted';
+  String templatesDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count templates deleted',
+      one: '$count template deleted',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1237,19 +1336,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectNewStatus => 'Select new phase:';
 
   @override
-  String statusChangedForProjects(int count, String plural, String status) {
-    return 'Phase changed to \"$status\" for $count project$plural';
+  String statusChangedForProjects(int count, String status) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Phase changed to \"$status\" for $count projects',
+      one: 'Phase changed to \"$status\" for $count project',
+    );
+    return '$_temp0';
   }
 
   @override
   String statusChangedForProjectsWithErrors(
     int successCount,
-    String successPlural,
     int failCount,
-    String failPlural,
     String status,
   ) {
-    return 'Phase changed to \"$status\" for $successCount project$successPlural, $failCount failed$failPlural';
+    String _temp0 = intl.Intl.pluralLogic(
+      successCount,
+      locale: localeName,
+      other: '$successCount projects',
+      one: '$successCount project',
+    );
+    return 'Phase changed to \"$status\" for $_temp0, $failCount failed';
   }
 
   @override
@@ -1654,7 +1763,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String dateYearsAgo(int count, Object plural) {
+  String dateYearsAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -1665,43 +1774,81 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String ageYearsMonths(
-    int years,
-    String yearPlural,
-    int months,
-    String monthPlural,
-  ) {
-    return '$years year$yearPlural, $months month$monthPlural';
+  String ageYearsMonths(int years, int months) {
+    String _temp0 = intl.Intl.pluralLogic(
+      years,
+      locale: localeName,
+      other: '$years years',
+      one: '$years year',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months months',
+      one: '$months month',
+    );
+    return '$_temp0, $_temp1';
   }
 
   @override
-  String ageYears(int years, String plural) {
-    return '$years year$plural';
+  String ageYears(int years) {
+    String _temp0 = intl.Intl.pluralLogic(
+      years,
+      locale: localeName,
+      other: '$years years',
+      one: '$years year',
+    );
+    return '$_temp0';
   }
 
   @override
-  String ageMonthsDays(
-    int months,
-    String monthPlural,
-    int days,
-    String dayPlural,
-  ) {
-    return '$months month$monthPlural, $days day$dayPlural';
+  String ageMonthsDays(int months, int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months months',
+      one: '$months month',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '$days day',
+    );
+    return '$_temp0, $_temp1';
   }
 
   @override
-  String ageMonths(int months, String plural) {
-    return '$months month$plural';
+  String ageMonths(int months) {
+    String _temp0 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months months',
+      one: '$months month',
+    );
+    return '$_temp0';
   }
 
   @override
-  String ageDays(int days, String plural) {
-    return '$days day$plural';
+  String ageDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '$days day',
+    );
+    return '$_temp0';
   }
 
   @override
-  String ageHours(int hours, String plural) {
-    return '$hours hour$plural';
+  String ageHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours hours',
+      one: '$hours hour',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2577,13 +2724,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get additionalAssets => 'Additional Assets';
 
   @override
-  String downloadNFiles(int count, String plural) {
-    return 'Download $count file$plural';
+  String downloadNFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Download $count files',
+      one: 'Download $count file',
+    );
+    return '$_temp0';
   }
 
   @override
-  String nFilesSavedTo(int count, String plural, String filename) {
-    return '$count file$plural saved to $filename';
+  String nFilesSavedTo(int count, String filename) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count files saved to $filename',
+      one: '$count file saved to $filename',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5248,8 +5407,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String attachmentExportSkippedMissing(int count, String plural) {
-    return '$count missing file$plural skipped';
+  String attachmentExportSkippedMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count missing files skipped',
+      one: '$count missing file skipped',
+    );
+    return '$_temp0';
   }
 
   @override

@@ -422,7 +422,6 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
           SnackBar(
             content: Text(l10n.attachmentExportSkippedMissing(
               plan.missingFiles.length,
-              plan.missingFiles.length == 1 ? '' : 's',
             )),
           ),
         );

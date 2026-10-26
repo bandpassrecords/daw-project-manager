@@ -42,18 +42,18 @@ class ProjectDetailHeader extends StatelessWidget {
 
     if (years > 0) {
       if (months > 0) {
-        return l10n.ageYearsMonths(years, years > 1 ? 's' : '', months, months > 1 ? 's' : '');
+        return l10n.ageYearsMonths(years, months);
       }
-      return l10n.ageYears(years, years > 1 ? 's' : '');
+      return l10n.ageYears(years);
     } else if (months > 0) {
       if (days > 0) {
-        return l10n.ageMonthsDays(months, months > 1 ? 's' : '', days, days > 1 ? 's' : '');
+        return l10n.ageMonthsDays(months, days);
       }
-      return l10n.ageMonths(months, months > 1 ? 's' : '');
+      return l10n.ageMonths(months);
     } else if (days > 0) {
-      return l10n.ageDays(days, days > 1 ? 's' : '');
+      return l10n.ageDays(days);
     } else if (duration.inHours > 0) {
-      return l10n.ageHours(duration.inHours, duration.inHours > 1 ? 's' : '');
+      return l10n.ageHours(duration.inHours);
     } else {
       return l10n.ageJustNow;
     }
@@ -67,18 +67,18 @@ class ProjectDetailHeader extends StatelessWidget {
 
     if (years > 0) {
       if (months > 0) {
-        return l10n.ageYearsMonths(years, years > 1 ? 's' : '', months, months > 1 ? 's' : '');
+        return l10n.ageYearsMonths(years, months);
       }
-      return l10n.ageYears(years, years > 1 ? 's' : '');
+      return l10n.ageYears(years);
     } else if (months > 0) {
       if (days > 0) {
-        return l10n.ageMonthsDays(months, months > 1 ? 's' : '', days, days > 1 ? 's' : '');
+        return l10n.ageMonthsDays(months, days);
       }
-      return l10n.ageMonths(months, months > 1 ? 's' : '');
+      return l10n.ageMonths(months);
     } else if (days > 0) {
-      return l10n.ageDays(days, days > 1 ? 's' : '');
+      return l10n.ageDays(days);
     } else if (duration.inHours > 0) {
-      return l10n.ageHours(duration.inHours, duration.inHours > 1 ? 's' : '');
+      return l10n.ageHours(duration.inHours);
     } else {
       return l10n.ageLessThanHour;
     }
@@ -107,7 +107,7 @@ class ProjectDetailHeader extends StatelessWidget {
     if (diff.inDays < 7) return l10n.dateDaysAgo(diff.inDays);
     if (diff.inDays < 30) return l10n.dateWeeksAgo(diff.inDays ~/ 7);
     if (diff.inDays < 365) return l10n.dateMonthsAgo(diff.inDays ~/ 30);
-    return l10n.dateYearsAgo(diff.inDays ~/ 365, '');
+    return l10n.dateYearsAgo(diff.inDays ~/ 365);
   }
 
   Color _phaseColor(String status) {

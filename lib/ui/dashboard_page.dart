@@ -1120,7 +1120,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             ? AppLocalizations.of(context)!.noProjectsFoundInRoots
             : AppLocalizations.of(
                 context,
-              )!.scanComplete(scanType, foundCount, foundCount == 1 ? '' : 's');
+              )!.scanComplete(scanType, foundCount);
         ScaffoldMessenger.of(
           context,
         ).showAppSnackBar(SnackBar(content: Text(msg)));
@@ -1136,7 +1136,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               content: Text(
                 l10n.scanFailuresSnackbar(
                   allFailures.length,
-                  allFailures.length == 1 ? '' : 's',
                 ),
               ),
               action: SnackBarAction(
@@ -1384,7 +1383,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             content: Text(
               l10n.projectsHidden(
                 selectedProjectIds.length,
-                selectedProjectIds.length == 1 ? '' : 's',
               ),
             ),
             action: allowUndo
@@ -1478,7 +1476,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             content: Text(
               l10n.projectsUnhidden(
                 selectedProjectIds.length,
-                selectedProjectIds.length == 1 ? '' : 's',
               ),
             ),
             action: allowUndo
@@ -1549,7 +1546,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) {
           final idsToDelete = alsoDeleteReleaseTracked ? missingIds : freeIds;
-          final plural = idsToDelete.length == 1 ? '' : 's';
           return AlertDialog(
             title: Text(l10n.deleteMissingProjectsTitle),
             content: Column(
@@ -1557,7 +1553,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.deleteMissingProjectsConfirm(idsToDelete.length, plural),
+                  l10n.deleteMissingProjectsConfirm(idsToDelete.length),
                 ),
                 if (releaseTrackedIds.isNotEmpty) ...[
                   const SizedBox(height: 12),
@@ -1569,7 +1565,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     title: Text(
                       l10n.deleteMissingProjectsAlsoDeleteReleaseTracked(
                         releaseTrackedIds.length,
-                        releaseTrackedIds.length == 1 ? '' : 's',
                       ),
                     ),
                     controlAffinity: ListTileControlAffinity.leading,
@@ -1620,11 +1615,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       ref.invalidate(allProjectsStreamProvider);
       ref.invalidate(recentlyDeletedProvider);
       if (mounted) {
-        final plural = idsToDelete.length == 1 ? '' : 's';
         ScaffoldMessenger.of(context).showAppSnackBar(
           SnackBar(
             content: Text(
-              l10n.missingProjectsDeleted(idsToDelete.length, plural),
+              l10n.missingProjectsDeleted(idsToDelete.length),
             ),
           ),
         );
@@ -4852,7 +4846,6 @@ class _PlutoProjectsTableWithSelectionState
               content: Text(
                 AppLocalizations.of(context)!.statusChangedForProjects(
                   successCount,
-                  successCount == 1 ? '' : 's',
                   statusText,
                 ),
               ),
@@ -4866,9 +4859,7 @@ class _PlutoProjectsTableWithSelectionState
                   context,
                 )!.statusChangedForProjectsWithErrors(
                   successCount,
-                  successCount == 1 ? '' : 's',
                   failCount,
-                  failCount == 1 ? '' : 's',
                   statusText,
                 ),
               ),
@@ -5523,7 +5514,6 @@ class _PlutoProjectsTableWithSelectionState
                 Text(
                   AppLocalizations.of(context)!.projectsSelected(
                     _selectedProjectIds.length,
-                    _selectedProjectIds.length == 1 ? '' : 's',
                   ),
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -5695,15 +5685,11 @@ class _PlutoProjectsTableWithSelectionState
                                       ref.invalidate(allProjectsStreamProvider);
 
                                       if (mounted) {
-                                        final plural = successCount == 1
-                                            ? ''
-                                            : 's';
                                         final failures = failCount > 0
                                             ? AppLocalizations.of(
                                                 context,
                                               )!.extractionFailures(
                                                 failCount,
-                                                failCount == 1 ? '' : 's',
                                               )
                                             : '';
                                         final message =
@@ -5711,7 +5697,6 @@ class _PlutoProjectsTableWithSelectionState
                                               context,
                                             )!.metadataExtractedForProjects(
                                               successCount,
-                                              plural,
                                               failures,
                                             );
                                         ScaffoldMessenger.of(
@@ -11579,7 +11564,6 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                 Text(
                   l10n.projectsSelected(
                     _selectedProjectIds.length,
-                    _selectedProjectIds.length == 1 ? '' : 's',
                   ),
                 ),
                 const SizedBox(width: 8),

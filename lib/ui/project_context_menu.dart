@@ -263,7 +263,7 @@ Future<void> showProjectContextMenu({
           await repo.extractFullMetadataForProject(project.id);
           ref.invalidate(allProjectsStreamProvider);
           if (context.mounted) {
-            final msg = l10n.metadataExtractedForProjects(1, '', '');
+            final msg = l10n.metadataExtractedForProjects(1, '');
             ScaffoldMessenger.of(
               context,
             ).showAppSnackBar(SnackBar(content: Text(msg)));

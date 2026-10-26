@@ -506,13 +506,13 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String projectsHidden(int count, String plural) {
-    return '$countプロジェクト$pluralを非表示にしました。';
+  String projectsHidden(int count) {
+    return '$countプロジェクトを非表示にしました。';
   }
 
   @override
-  String projectsUnhidden(int count, String plural) {
-    return '$countプロジェクト$pluralを表示しました。';
+  String projectsUnhidden(int count) {
+    return '$countプロジェクトを表示しました。';
   }
 
   @override
@@ -532,24 +532,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get deleteMissingProjectsTitle => '見つからないプロジェクトを削除しますか？';
 
   @override
-  String deleteMissingProjectsConfirm(int count, String plural) {
-    return 'このマシンでファイルが見つからなかった$count件のプロジェクト$pluralは「最近削除した項目」（設定 > プロジェクトフォルダ）に移動し、30日間はメモ、締切、セッション履歴ごと復元できます。';
+  String deleteMissingProjectsConfirm(int count) {
+    return 'このマシンでファイルが見つからなかった$count件のプロジェクトは「最近削除した項目」（設定 > プロジェクトフォルダ）に移動し、30日間はメモ、締切、セッション履歴ごと復元できます。';
   }
 
   @override
   String get deleteMissingProjectsConfirmButton => '削除';
 
   @override
-  String missingProjectsDeleted(int count, String plural) {
-    return '見つからないプロジェクト$pluralを$count件削除しました。';
+  String missingProjectsDeleted(int count) {
+    return '見つからないプロジェクトを$count件削除しました。';
   }
 
   @override
-  String deleteMissingProjectsAlsoDeleteReleaseTracked(
-    int count,
-    String plural,
-  ) {
-    return 'リリースの一部である$count件のプロジェクト$pluralも削除する（そのリリースからも削除されます）';
+  String deleteMissingProjectsAlsoDeleteReleaseTracked(int count) {
+    return 'リリースの一部である$count件のプロジェクトも削除する（そのリリースからも削除されます）';
   }
 
   @override
@@ -591,17 +588,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get enterReleaseTitleHint => 'リリースタイトルを入力';
 
   @override
-  String metadataExtractedForProjects(
-    int count,
-    String plural,
-    String failures,
-  ) {
-    return '$countプロジェクト$pluralのメタデータを抽出しました。$failures';
+  String metadataExtractedForProjects(int count, String failures) {
+    return '$countプロジェクトのメタデータを抽出しました。$failures';
   }
 
   @override
-  String extractionFailures(int count, Object plural) {
-    return '$count失敗しました。';
+  String extractionFailures(int count) {
+    return '$count件失敗しました。';
   }
 
   @override
@@ -628,16 +621,16 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String scanComplete(String type, int count, String plural) {
-    return '$type完了: $countプロジェクト$pluralを追加/更新しました。';
+  String scanComplete(String type, int count) {
+    return '$type完了: $countプロジェクトを追加/更新しました。';
   }
 
   @override
   String get scanCancelled => 'スキャンをキャンセルしました。';
 
   @override
-  String scanFailuresSnackbar(int count, String plural) {
-    return '$count件のプロジェクト$pluralを読み込めませんでした。';
+  String scanFailuresSnackbar(int count) {
+    return '$count件のプロジェクトを読み込めませんでした。';
   }
 
   @override
@@ -651,8 +644,8 @@ class AppLocalizationsJa extends AppLocalizations {
       'スキャン中にこれらのファイルを読み取れませんでした（削除、移動、または他のプログラムによってロックされている可能性があります）：';
 
   @override
-  String projectsSelected(int count, String plural) {
-    return '$countプロジェクト$pluralを選択しました';
+  String projectsSelected(int count) {
+    return '$countプロジェクトを選択しました';
   }
 
   @override
@@ -688,21 +681,21 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String releasesSelected(int count, String plural) {
-    return '$count件のリリース$pluralを選択しました';
+  String releasesSelected(int count) {
+    return '$count件のリリースを選択しました';
   }
 
   @override
   String get deleteSelectedReleases => '選択項目を削除';
 
   @override
-  String deleteSelectedReleasesConfirm(int count, String plural) {
-    return '$count件のリリース$pluralを削除してもよろしいですか?';
+  String deleteSelectedReleasesConfirm(int count) {
+    return '$count件のリリースを削除してもよろしいですか?';
   }
 
   @override
-  String releasesDeleted(int count, String plural) {
-    return '$count件のリリース$pluralを削除しました';
+  String releasesDeleted(int count) {
+    return '$count件のリリースを削除しました';
   }
 
   @override
@@ -739,8 +732,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get allProjectsAlreadyInRelease => 'すべてのプロジェクトがすでにこのリリースに含まれています。';
 
   @override
-  String addedTracksToRelease(int count, String plural) {
-    return 'リリースに$countトラック$pluralを追加しました。';
+  String addedTracksToRelease(int count) {
+    return 'リリースに$countトラックを追加しました。';
   }
 
   @override
@@ -752,8 +745,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get addFiles => 'ファイルを追加';
 
   @override
-  String addedFilesToRelease(int count, String plural) {
-    return 'リリースに$countファイル$pluralを追加しました。';
+  String addedFilesToRelease(int count) {
+    return 'リリースに$countファイルを追加しました。';
   }
 
   @override
@@ -874,7 +867,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get description => '説明';
 
   @override
-  String selectTracksToInclude(int count, Object plural) {
+  String selectTracksToInclude(int count) {
     return 'リリースに含めるトラックを選択（$count選択済み）';
   }
 
@@ -1078,21 +1071,21 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String templatesSelected(int count, String plural) {
-    return '$count件のテンプレート$pluralを選択しました';
+  String templatesSelected(int count) {
+    return '$count件のテンプレートを選択しました';
   }
 
   @override
   String get deleteSelectedTemplates => '選択項目を削除';
 
   @override
-  String deleteSelectedTemplatesConfirm(int count, String plural) {
-    return '$count件のテンプレート$pluralを削除してもよろしいですか?';
+  String deleteSelectedTemplatesConfirm(int count) {
+    return '$count件のテンプレートを削除してもよろしいですか?';
   }
 
   @override
-  String templatesDeleted(int count, String plural) {
-    return '$count件のテンプレート$pluralを削除しました';
+  String templatesDeleted(int count) {
+    return '$count件のテンプレートを削除しました';
   }
 
   @override
@@ -1220,19 +1213,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get selectNewStatus => '新しいフェーズを選択:';
 
   @override
-  String statusChangedForProjects(int count, String plural, String status) {
-    return '$count プロジェクト$pluralのフェーズを「$status」に変更しました';
+  String statusChangedForProjects(int count, String status) {
+    return '$count プロジェクトのフェーズを「$status」に変更しました';
   }
 
   @override
   String statusChangedForProjectsWithErrors(
     int successCount,
-    String successPlural,
     int failCount,
-    String failPlural,
     String status,
   ) {
-    return '$successCount プロジェクト$successPluralのフェーズを「$status」に変更しましたが、$failCount が失敗$failPluralしました';
+    return '$successCount プロジェクトのフェーズを「$status」に変更しましたが、$failCount 件が失敗しました';
   }
 
   @override
@@ -1628,7 +1619,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String dateYearsAgo(int count, Object plural) {
+  String dateYearsAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -1638,42 +1629,32 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String ageYearsMonths(
-    int years,
-    String yearPlural,
-    int months,
-    String monthPlural,
-  ) {
+  String ageYearsMonths(int years, int months) {
     return '$years年$monthsヶ月';
   }
 
   @override
-  String ageYears(int years, String plural) {
+  String ageYears(int years) {
     return '$years年';
   }
 
   @override
-  String ageMonthsDays(
-    int months,
-    String monthPlural,
-    int days,
-    String dayPlural,
-  ) {
+  String ageMonthsDays(int months, int days) {
     return '$monthsヶ月$days日';
   }
 
   @override
-  String ageMonths(int months, String plural) {
+  String ageMonths(int months) {
     return '$monthsヶ月';
   }
 
   @override
-  String ageDays(int days, String plural) {
+  String ageDays(int days) {
     return '$days日';
   }
 
   @override
-  String ageHours(int hours, String plural) {
+  String ageHours(int hours) {
     return '$hours時間';
   }
 
@@ -2524,13 +2505,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get additionalAssets => '追加アセット';
 
   @override
-  String downloadNFiles(int count, String plural) {
-    return '$count個のファイル$pluralをダウンロード';
+  String downloadNFiles(int count) {
+    return '$count個のファイルをダウンロード';
   }
 
   @override
-  String nFilesSavedTo(int count, String plural, String filename) {
-    return '$count個のファイル$pluralを $filename に保存しました';
+  String nFilesSavedTo(int count, String filename) {
+    return '$count個のファイルを $filename に保存しました';
   }
 
   @override
@@ -5123,8 +5104,8 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String attachmentExportSkippedMissing(int count, String plural) {
-    return '見つからないファイル $count 件をスキップしました$plural';
+  String attachmentExportSkippedMissing(int count) {
+    return '見つからないファイル $count 件をスキップしました';
   }
 
   @override

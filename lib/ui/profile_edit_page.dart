@@ -634,7 +634,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
                 onPressed: selectedFiles.isEmpty
                     ? null
                     : () => Navigator.pop(context, selectedFiles),
-                child: Text(AppLocalizations.of(context)!.downloadNFiles(selectedFiles.length, selectedFiles.length == 1 ? '' : 's')),
+                child: Text(AppLocalizations.of(context)!.downloadNFiles(selectedFiles.length)),
               ),
             ],
           );
@@ -691,7 +691,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.nFilesSavedTo(selectedFiles.length, selectedFiles.length == 1 ? '' : 's', path.basename(savePath)))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.nFilesSavedTo(selectedFiles.length, path.basename(savePath)))),
         );
       }
     } catch (e) {
