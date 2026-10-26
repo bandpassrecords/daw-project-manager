@@ -2127,6 +2127,61 @@ class GoogleDriveSyncService {
     }
   }
 
+  /// Downloads the Drive file [driveFileId] to [localFilePath], whole or not
+  /// at all: written to a `.part` beside it, checked against [expectedHash]
+  /// when there is one, and only then put in place of whatever was there. A
+  /// file already matching the hash isn't downloaded again.
+  ///
+  /// Returns the path, or null when the download failed or arrived unlike
+  /// its hash. The file already there, if any, is left as it was and the next
+  /// sync tries again — before, a mismatch was only logged and the file kept,
+  /// and an interrupted download left a truncated file at the final path.
+  Future<String?> _downloadVerified(String driveFileId, String localFilePath, String? expectedHash) async {
+    final file = File(localFilePath);
+    if (expectedHash != null && await file.exists()) {
+      try {
+        if (await _calculateFileHash(localFilePath) == expectedHash) return localFilePath;
+      } catch (_) {
+        // Unreadable: download it again.
+      }
+    }
+
+    final partial = File('$localFilePath.part');
+    try {
+      await file.parent.create(recursive: true);
+      // A fresh Media handle on every attempt, so a retry never reuses a
+      // half-read stream; openWrite starts the .part over each time.
+      await _withRetry(() async {
+        final media = (await _driveApi!.files.get(
+          driveFileId,
+          downloadOptions: drive.DownloadOptions.fullMedia,
+        )) as drive.Media;
+        final sink = partial.openWrite();
+        try {
+          await for (final chunk in media.stream) {
+            sink.add(chunk);
+          }
+        } finally {
+          await sink.close();
+        }
+      });
+      if (expectedHash != null && await _calculateFileHash(partial.path) != expectedHash) {
+        if (kDebugMode) print('Download of $driveFileId does not match its hash; keeping what was there');
+        await partial.delete();
+        return null;
+      }
+      if (await file.exists()) await file.delete();
+      await partial.rename(localFilePath);
+      return localFilePath;
+    } catch (e) {
+      if (kDebugMode) print('Download of $driveFileId failed: $e');
+      try {
+        if (await partial.exists()) await partial.delete();
+      } catch (_) {}
+      return null;
+    }
+  }
+
   /// Download a project's cover art from Google Drive to local storage (#110).
   ///
   /// Returns the local file path, or null if the download failed. Unlike a
@@ -2158,57 +2213,7 @@ class GoogleDriveSyncService {
       final ext = safeExtension(fileExtension, fallback: '.jpg');
       final localFilePath = safeFileIn(coverArtPath, '${projectId}_cover$ext');
       if (localFilePath == null) return null;
-
-      final existingFile = File(localFilePath);
-      if (await existingFile.exists() && expectedHash != null) {
-        try {
-          final existingHash = await _calculateFileHash(localFilePath);
-          if (existingHash == expectedHash) {
-            if (kDebugMode) {
-              print('Project cover art already downloaded with matching hash, skipping download');
-            }
-            return localFilePath;
-          }
-          await existingFile.delete();
-        } catch (e) {
-          if (kDebugMode) print('Error checking existing project cover art hash: $e, will re-download');
-          if (await existingFile.exists()) {
-            await existingFile.delete();
-          }
-        }
-      }
-
-      final file = File(localFilePath);
-      await _withRetry(() async {
-        final media = (await _driveApi!.files.get(
-          driveFileId,
-          downloadOptions: drive.DownloadOptions.fullMedia,
-        )) as drive.Media;
-
-        if (await file.exists()) await file.delete();
-
-        final sink = file.openWrite();
-        try {
-          await for (final chunk in media.stream) {
-            sink.add(chunk);
-          }
-        } catch (e) {
-          await sink.close();
-          if (await file.exists()) await file.delete();
-          rethrow;
-        }
-        await sink.close();
-      });
-
-      if (expectedHash != null) {
-        final downloadedHash = await _calculateFileHash(localFilePath);
-        if (downloadedHash != expectedHash && kDebugMode) {
-          print('WARNING: Downloaded project cover art hash mismatch! Expected: $expectedHash, Got: $downloadedHash');
-        }
-      }
-
-      if (kDebugMode) print('Downloaded project cover art to: $localFilePath');
-      return localFilePath;
+      return await _downloadVerified(driveFileId, localFilePath, expectedHash);
     } catch (e) {
       if (kDebugMode) print('Error downloading project cover art: $e');
       return null;
@@ -2239,85 +2244,7 @@ class GoogleDriveSyncService {
       final ext = safeExtension(fileExtension, fallback: '.mp3');
       final localFilePath = safeFileIn(previewSongsDir, '${projectId}_preview$ext');
       if (localFilePath == null) return null;
-      
-      // Check if file already exists and hash matches
-      final existingFile = File(localFilePath);
-      if (await existingFile.exists() && expectedHash != null) {
-        try {
-          final existingHash = await _calculateFileHash(localFilePath);
-          if (existingHash == expectedHash) {
-            if (kDebugMode) {
-              print('Preview song already downloaded with matching hash, skipping download');
-            }
-            return localFilePath;
-          } else {
-            if (kDebugMode) {
-              print('Preview song hash mismatch (local: $existingHash, expected: $expectedHash), re-downloading...');
-            }
-            // Delete old file
-            await existingFile.delete();
-          }
-        } catch (e) {
-          if (kDebugMode) print('Error checking existing file hash: $e, will re-download');
-          // If hash check fails, delete and re-download
-          if (await existingFile.exists()) {
-            await existingFile.delete();
-          }
-        }
-      }
-      
-      if (kDebugMode) {
-        print('Downloading preview song from Drive: $driveFileId');
-      }
-      
-      // Download file using Drive API, retrying the full download (including
-      // stream consumption) so transient network errors mid-stream are retried.
-      final file = File(localFilePath);
-      await _withRetry(() async {
-        // Get a fresh Media handle on every attempt so the stream is not reused.
-        final media = (await _driveApi!.files.get(
-          driveFileId,
-          downloadOptions: drive.DownloadOptions.fullMedia,
-        )) as drive.Media;
-
-        // Delete any partial file left by a previous failed attempt.
-        if (await file.exists()) await file.delete();
-
-        final sink = file.openWrite();
-        try {
-          await for (final chunk in media.stream) {
-            sink.add(chunk);
-          }
-        } catch (e) {
-          // Always close the sink and remove the partial file before rethrowing
-          // so we never leak file handles or leave corrupt data on disk.
-          await sink.close();
-          if (await file.exists()) await file.delete();
-          rethrow;
-        }
-        await sink.close();
-      });
-
-      // Verify hash if expected hash was provided
-      if (expectedHash != null) {
-        final downloadedHash = await _calculateFileHash(localFilePath);
-        if (downloadedHash != expectedHash) {
-          if (kDebugMode) {
-            print('WARNING: Downloaded file hash mismatch! Expected: $expectedHash, Got: $downloadedHash');
-          }
-          // Still return the file, but log the warning
-        } else {
-          if (kDebugMode) {
-            print('Downloaded file hash verified: $downloadedHash');
-          }
-        }
-      }
-
-      if (kDebugMode) {
-        print('Downloaded preview song to: $localFilePath');
-      }
-
-      return localFilePath;
+      return await _downloadVerified(driveFileId, localFilePath, expectedHash);
     } catch (e) {
       if (kDebugMode) print('Error downloading preview song: $e');
       return null;
@@ -2353,81 +2280,7 @@ class GoogleDriveSyncService {
       final ext = safeExtension(fileExtension, fallback: '.jpg');
       final localFilePath = safeFileIn(profilePhotosDir.path, '${profileId}_photo$ext');
       if (localFilePath == null) return null;
-      
-      // Check if file already exists and hash matches
-      final existingFile = File(localFilePath);
-      if (await existingFile.exists() && expectedHash != null) {
-        try {
-          final existingHash = await _calculateFileHash(localFilePath);
-          if (existingHash == expectedHash) {
-            if (kDebugMode) {
-              print('Profile photo already downloaded with matching hash, skipping download');
-            }
-            return localFilePath;
-          } else {
-            if (kDebugMode) {
-              print('Profile photo hash mismatch (local: $existingHash, expected: $expectedHash), re-downloading...');
-            }
-            // Delete old file
-            await existingFile.delete();
-          }
-        } catch (e) {
-          if (kDebugMode) print('Error checking existing profile photo hash: $e, will re-download');
-          // If hash check fails, delete and re-download
-          if (await existingFile.exists()) {
-            await existingFile.delete();
-          }
-        }
-      }
-      
-      if (kDebugMode) {
-        print('Downloading profile photo from Drive: $driveFileId');
-      }
-      
-      // Download file using Drive API, retrying the full download (including
-      // stream consumption) so transient network errors mid-stream are retried.
-      final file = File(localFilePath);
-      await _withRetry(() async {
-        final media = (await _driveApi!.files.get(
-          driveFileId,
-          downloadOptions: drive.DownloadOptions.fullMedia,
-        )) as drive.Media;
-
-        if (await file.exists()) await file.delete();
-
-        final sink = file.openWrite();
-        try {
-          await for (final chunk in media.stream) {
-            sink.add(chunk);
-          }
-        } catch (e) {
-          await sink.close();
-          if (await file.exists()) await file.delete();
-          rethrow;
-        }
-        await sink.close();
-      });
-
-      // Verify hash if expected hash was provided
-      if (expectedHash != null) {
-        final downloadedHash = await _calculateFileHash(localFilePath);
-        if (downloadedHash != expectedHash) {
-          if (kDebugMode) {
-            print('WARNING: Downloaded profile photo hash mismatch! Expected: $expectedHash, Got: $downloadedHash');
-          }
-          // Still return the file, but log the warning
-        } else {
-          if (kDebugMode) {
-            print('Downloaded profile photo hash verified: $downloadedHash');
-          }
-        }
-      }
-
-      if (kDebugMode) {
-        print('Downloaded profile photo to: $localFilePath');
-      }
-
-      return localFilePath;
+      return await _downloadVerified(driveFileId, localFilePath, expectedHash);
     } catch (e) {
       if (kDebugMode) print('Error downloading profile photo: $e');
       return null;
@@ -2463,81 +2316,7 @@ class GoogleDriveSyncService {
       final ext = safeExtension(fileExtension, fallback: '.jpg');
       final localFilePath = safeFileIn(releaseArtworkPath, '${releaseId}_artwork$ext');
       if (localFilePath == null) return null;
-      
-      // Check if file already exists and hash matches
-      final existingFile = File(localFilePath);
-      if (await existingFile.exists() && expectedHash != null) {
-        try {
-          final existingHash = await _calculateFileHash(localFilePath);
-          if (existingHash == expectedHash) {
-            if (kDebugMode) {
-              print('Release artwork already downloaded with matching hash, skipping download');
-            }
-            return localFilePath;
-          } else {
-            if (kDebugMode) {
-              print('Release artwork hash mismatch (local: $existingHash, expected: $expectedHash), re-downloading...');
-            }
-            // Delete old file
-            await existingFile.delete();
-          }
-        } catch (e) {
-          if (kDebugMode) print('Error checking existing release artwork hash: $e, will re-download');
-          // If hash check fails, delete and re-download
-          if (await existingFile.exists()) {
-            await existingFile.delete();
-          }
-        }
-      }
-      
-      if (kDebugMode) {
-        print('Downloading release artwork from Drive: $driveFileId');
-      }
-      
-      // Download file using Drive API, retrying the full download (including
-      // stream consumption) so transient network errors mid-stream are retried.
-      final file = File(localFilePath);
-      await _withRetry(() async {
-        final media = (await _driveApi!.files.get(
-          driveFileId,
-          downloadOptions: drive.DownloadOptions.fullMedia,
-        )) as drive.Media;
-
-        if (await file.exists()) await file.delete();
-
-        final sink = file.openWrite();
-        try {
-          await for (final chunk in media.stream) {
-            sink.add(chunk);
-          }
-        } catch (e) {
-          await sink.close();
-          if (await file.exists()) await file.delete();
-          rethrow;
-        }
-        await sink.close();
-      });
-
-      // Verify hash if expected hash was provided
-      if (expectedHash != null) {
-        final downloadedHash = await _calculateFileHash(localFilePath);
-        if (downloadedHash != expectedHash) {
-          if (kDebugMode) {
-            print('WARNING: Downloaded release artwork hash mismatch! Expected: $expectedHash, Got: $downloadedHash');
-          }
-          // Still return the file, but log the warning
-        } else {
-          if (kDebugMode) {
-            print('Downloaded release artwork hash verified: $downloadedHash');
-          }
-        }
-      }
-
-      if (kDebugMode) {
-        print('Downloaded release artwork to: $localFilePath');
-      }
-
-      return localFilePath;
+      return await _downloadVerified(driveFileId, localFilePath, expectedHash);
     } catch (e) {
       if (kDebugMode) print('Error downloading release artwork: $e');
       return null;

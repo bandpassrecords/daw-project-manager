@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:daw_project_manager/services/google_drive_sync_service.dart';
 import 'package:daw_project_manager/utils/app_paths.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -112,6 +113,86 @@ void main() {
       expect(writtenOutside(), isEmpty);
     });
   }
+
+  // A download used to be written straight to the final path and kept even
+  // when it didn't match the hash the uploader recorded: an interrupted one
+  // left a truncated file, a corrupt one stayed.
+  group('a download is whole and checked, or the old file stays', () {
+    String md5Of(List<int> bytes) => md5.convert(bytes).toString();
+
+    Future<File> existingCover() async {
+      final file = File(p.join(await getProjectCoverArtPath(), 'p1_cover.jpg'));
+      await file.create(recursive: true);
+      await file.writeAsBytes([9, 9]);
+      return file;
+    }
+
+    test('one unlike its hash is refused', () async {
+      final old = await existingCover();
+
+      final result = await service.downloadProjectCoverArtFile(
+        driveFileId: driveFileId,
+        projectId: 'p1',
+        expectedHash: md5Of([4, 5, 6]),
+        fileExtension: '.jpg',
+      );
+
+      expect(result, isNull);
+      expect(await old.readAsBytes(), [9, 9]);
+      expect(File('${old.path}.part').existsSync(), isFalse);
+    });
+
+    test('one matching its hash replaces the old file', () async {
+      final old = await existingCover();
+
+      final result = await service.downloadProjectCoverArtFile(
+        driveFileId: driveFileId,
+        projectId: 'p1',
+        expectedHash: md5Of([1, 2, 3]),
+        fileExtension: '.jpg',
+      );
+
+      expect(result, old.path);
+      expect(await old.readAsBytes(), [1, 2, 3]);
+      expect(File('${old.path}.part').existsSync(), isFalse);
+    });
+
+    test('a failed download leaves the old file and no partial one', () async {
+      final old = await existingCover();
+      fakeDrive.failWithStatus = 403;
+
+      final result = await service.downloadProjectCoverArtFile(
+        driveFileId: driveFileId,
+        projectId: 'p1',
+        expectedHash: md5Of([1, 2, 3]),
+        fileExtension: '.jpg',
+      );
+
+      expect(result, isNull);
+      expect(await old.readAsBytes(), [9, 9]);
+      expect(File('${old.path}.part').existsSync(), isFalse);
+    });
+
+    test('preview songs, photos and release artwork are checked the same way', () async {
+      final wrong = md5Of([4, 5, 6]);
+      expect(
+        await service.downloadPreviewSongFile(
+            driveFileId: driveFileId, projectId: 'p1', expectedHash: wrong, fileExtension: '.wav'),
+        isNull,
+      );
+      expect(
+        await service.downloadProfilePhotoFile(
+            driveFileId: driveFileId, profileId: 'p1', expectedHash: wrong, fileExtension: '.jpg'),
+        isNull,
+      );
+      expect(
+        await service.downloadReleaseArtworkFile(
+            driveFileId: driveFileId, releaseId: 'r1', expectedHash: wrong, fileExtension: '.jpg'),
+        isNull,
+      );
+      expect(writtenOutside(), isEmpty);
+    });
+  });
 
   test('an extension that is more than an extension falls back', () async {
     final cover = await service.downloadProjectCoverArtFile(
