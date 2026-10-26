@@ -124,6 +124,41 @@ void main() {
   });
 
   group('outbox', () {
+    // A run id names the instance's heartbeat file, and a goodbye deletes
+    // it: "../../x" once deleted x.json wherever that led.
+    for (final runId in ['../../victim', r'..\..\victim']) {
+      test('a goodbye with the run id "$runId" deletes nothing outside instances/', () async {
+        final victim = File(p.join(tmp.path, 'victim.json'));
+        await victim.writeAsString('{}');
+
+        await drop('session.goodbye', {}, runId: runId);
+        await bridge.tick();
+
+        expect(victim.existsSync(), isTrue);
+      });
+
+      test('a heartbeat with the run id "$runId" is no instance', () async {
+        final victim = File(p.join(tmp.path, 'victim.json'));
+        await victim.writeAsString('{}');
+        final heartbeat = File(p.join(bridgeDir, 'instances', 'hb.json'));
+        await heartbeat.parent.create(recursive: true);
+        await heartbeat.writeAsString(jsonEncode({
+          'schema': 1,
+          'runId': runId,
+          'lastSeen': clock.toIso8601String(),
+          'project': {'id': 'p1', 'profileId': 'solo'},
+        }));
+
+        await bridge.tick();
+        expect(bridge.presentProjects, isEmpty);
+        // Long enough to go stale, which used to delete "its" file.
+        clock = clock.add(const Duration(hours: 1));
+        await bridge.tick();
+
+        expect(victim.existsSync(), isTrue);
+      });
+    }
+
     test('a new to-do lands on the right profile\'s project, and the message is deleted', () async {
       final file = await drop('todo.add', {'todoId': 't9', 'text': 'Automate the filter'});
       expect(await bridge.processOutbox(), 1);

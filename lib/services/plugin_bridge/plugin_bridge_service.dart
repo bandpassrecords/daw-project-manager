@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import '../../models/music_project.dart';
 import '../../models/plugin_capture.dart';
 import '../../utils/app_paths.dart';
+import '../../utils/safe_file_name.dart';
 import 'plugin_protocol.dart';
 
 /// Where the app reads projects from and saves them to, for the bridge. An
@@ -373,8 +374,9 @@ class DpmPluginBridgeService {
       }
     }
     try {
-      final file = File(p.join(instancesDir, '$runId.json'));
-      if (await file.exists()) await file.delete();
+      // The run id came from a message: it names a file in instances/ only.
+      final path = safeFileIn(instancesDir, '$runId.json');
+      if (path != null && await File(path).exists()) await File(path).delete();
     } catch (_) {}
   }
 
