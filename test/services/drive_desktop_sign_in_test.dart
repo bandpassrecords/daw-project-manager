@@ -119,6 +119,51 @@ void main() {
     expect(await signIn, isNull);
   });
 
+  // Any web page can send the browser to the loopback port. A code or an
+  // error that doesn't carry this sign-in's state is not Google's answer:
+  // ending the wait on it let any page cancel a sign-in.
+  for (final forged in [
+    {'code': 'attacker-code', 'state': 'guessed'},
+    {'error': 'access_denied', 'state': 'guessed'},
+    {'code': 'attacker-code'},
+  ]) {
+    test('a callback with the wrong state ($forged) is turned away and the wait goes on',
+        () async {
+      final service = GoogleDriveSyncService();
+      final signIn = service.signInDesktopWithLoopback(openBrowser: (_) async => true);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      await redirectBack(forged);
+
+      expect(service.isWaitingForBrowser, isTrue);
+      service.cancelDesktopSignIn();
+      expect(await signIn, isNull);
+    });
+  }
+
+  // Randomness itself can't be asserted; that it comes from Random.secure
+  // rather than the clock is read in _generateState.
+  test('each sign-in has a state of its own', () async {
+    Future<String> stateOfOneSignIn() async {
+      final opened = Completer<Uri>();
+      final service = GoogleDriveSyncService();
+      final signIn = service.signInDesktopWithLoopback(openBrowser: (url) async {
+        opened.complete(url);
+        return true;
+      });
+      final state = (await opened.future).queryParameters['state']!;
+      service.cancelDesktopSignIn();
+      await signIn;
+      return state;
+    }
+
+    final first = await stateOfOneSignIn();
+    final second = await stateOfOneSignIn();
+    expect(first, isNot(second));
+    // 32 bytes, base64url without padding.
+    expect(first.length, 43);
+  });
+
   test('a stray request (a favicon) does not end the wait', () async {
     final service = GoogleDriveSyncService();
     final signIn = service.signInDesktopWithLoopback(

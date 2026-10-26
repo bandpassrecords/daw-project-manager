@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:daw_project_manager/utils/mobile_utils.dart';
 import 'package:flutter/foundation.dart';
@@ -913,23 +914,27 @@ class GoogleDriveSyncService {
       server.listen((request) async {
         if (codeCompleter.isCompleted) return;
         final uri = request.uri;
+        final isCallback = uri.queryParameters.containsKey('code') ||
+            uri.queryParameters.containsKey('error');
+        if (isCallback && uri.queryParameters['state'] != state) {
+          // Not Google's answer to this sign-in: any web page can send the
+          // browser here. It is answered and ignored — ending the wait on it
+          // let any page cancel a sign-in, and taking its code would sign
+          // the app into someone else's Drive.
+          if (kDebugMode) print('State mismatch in OAuth callback');
+          request.response
+            ..statusCode = 400
+            ..headers.contentType = ContentType.html
+            ..write(_loopbackResponsePage(
+              heading: pageTexts.errorHeading,
+              message: pageTexts.errorMessage,
+              isError: true,
+            ));
+          await request.response.close();
+          return;
+        }
         if (uri.queryParameters.containsKey('code')) {
           final code = uri.queryParameters['code'];
-          final returnedState = uri.queryParameters['state'];
-          if (returnedState != state) {
-            if (kDebugMode) print('State mismatch in OAuth callback');
-            request.response
-              ..statusCode = 400
-              ..headers.contentType = ContentType.html
-              ..write(_loopbackResponsePage(
-                heading: pageTexts.errorHeading,
-                message: pageTexts.errorMessage,
-                isError: true,
-              ));
-            await request.response.close();
-            if (!codeCompleter.isCompleted) codeCompleter.complete(null);
-            return;
-          }
           request.response
             ..statusCode = 200
             ..headers.contentType = ContentType.html
@@ -1071,8 +1076,11 @@ class GoogleDriveSyncService {
 </html>''';
   }
 
+  /// The OAuth `state`: 32 random bytes. It was a hash of the clock and the
+  /// (public) client id, which a page racing the sign-in could guess.
   static String _generateState() {
-    final bytes = sha256.convert(utf8.encode('${DateTime.now().microsecondsSinceEpoch}-$_desktopClientId')).bytes;
+    final random = Random.secure();
+    final bytes = List<int>.generate(32, (_) => random.nextInt(256));
     return base64Url.encode(bytes).replaceAll('=', '');
   }
 
