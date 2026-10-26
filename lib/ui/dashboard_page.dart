@@ -6893,7 +6893,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       row.cells['key']?.value = updated.musicalKey ?? '';
       row.cells['tags']?.value = updated.tags.join(', ');
       row.cells['lastModified']?.value = updated.lastModifiedAt;
-      row.cells['deadline']?.value = updated.deadlineStatus ?? '';
+      row.cells['deadline']?.value = deadlineSortValue(updated);
       for (final f in _tableCustomFields) {
         row.cells[customFieldColumnField(f.id)]?.value =
             customFieldValue(updated, f);

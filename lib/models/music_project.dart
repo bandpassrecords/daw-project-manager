@@ -555,32 +555,6 @@ class MusicProject {
     return DateTime.now().difference(startDate);
   }
 
-  /// Returns a human-readable project age string
-  String get projectAgeFormatted {
-    final age = projectAge;
-    final years = age.inDays ~/ 365;
-    final months = (age.inDays % 365) ~/ 30;
-    final days = age.inDays % 30;
-    
-    if (years > 0) {
-      if (months > 0) {
-        return '$years year${years > 1 ? 's' : ''}, $months month${months > 1 ? 's' : ''}';
-      }
-      return '$years year${years > 1 ? 's' : ''}';
-    } else if (months > 0) {
-      if (days > 0) {
-        return '$months month${months > 1 ? 's' : ''}, $days day${days > 1 ? 's' : ''}';
-      }
-      return '$months month${months > 1 ? 's' : ''}';
-    } else if (days > 0) {
-      return '$days day${days > 1 ? 's' : ''}';
-    } else if (age.inHours > 0) {
-      return '${age.inHours} hour${age.inHours > 1 ? 's' : ''}';
-    } else {
-      return 'Just now';
-    }
-  }
-
   /// Returns the number of days remaining until the deadline
   /// Returns null if no deadline is set
   /// Positive: days remaining, Negative: days overdue, Zero: due today
@@ -637,31 +611,6 @@ class MusicProject {
     return compatible;
   }
 
-  /// Returns a human-readable deadline status string
-  String? get deadlineStatus {
-    final days = daysUntilDeadline;
-    if (days == null) return null;
-
-    if (days < 0) {
-      final overdueDays = days.abs();
-      if (overdueDays == 1) return '1 day overdue';
-      return '$overdueDays days overdue';
-    } else if (days == 0) {
-      return 'Due today';
-    } else if (days == 1) {
-      return '1 day left';
-    } else if (days <= 7) {
-      return '$days days left';
-    } else if (days <= 30) {
-      final weeks = days ~/ 7;
-      return '$weeks week${weeks > 1 ? 's' : ''} left';
-    } else {
-      final months = days ~/ 30;
-      if (months == 1) return '1 month left';
-      return '$months months left';
-    }
-  }
-
   /// Returns the time it took to complete the project (from creation to finished status).
   /// [finishedPhase] is the phase name that counts as "done" (defaults to 'Finished').
   Duration? timeToCompletion([Set<String>? finishedPhases]) {
@@ -671,34 +620,6 @@ class MusicProject {
     }
     final startDate = fileCreatedAt ?? createdAt;
     return statusChangedAt!.difference(startDate);
-  }
-
-  /// Returns a human-readable time to completion string
-  String? timeToCompletionFormatted([Set<String>? finishedPhases]) {
-    final duration = timeToCompletion(finishedPhases);
-    if (duration == null) return null;
-    
-    final years = duration.inDays ~/ 365;
-    final months = (duration.inDays % 365) ~/ 30;
-    final days = duration.inDays % 30;
-    
-    if (years > 0) {
-      if (months > 0) {
-        return '$years year${years > 1 ? 's' : ''}, $months month${months > 1 ? 's' : ''}';
-      }
-      return '$years year${years > 1 ? 's' : ''}';
-    } else if (months > 0) {
-      if (days > 0) {
-        return '$months month${months > 1 ? 's' : ''}, $days day${days > 1 ? 's' : ''}';
-      }
-      return '$months month${months > 1 ? 's' : ''}';
-    } else if (days > 0) {
-      return '$days day${days > 1 ? 's' : ''}';
-    } else if (duration.inHours > 0) {
-      return '${duration.inHours} hour${duration.inHours > 1 ? 's' : ''}';
-    } else {
-      return 'Less than an hour';
-    }
   }
 
   MusicProject copyWith({

@@ -1,5 +1,6 @@
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
+import '../utils/deadline_text.dart';
 import '../utils/part_status_display.dart';
 
 /// Formats [MusicProject] data as human-readable plain text, so a record of a
@@ -67,12 +68,10 @@ class ProjectTextExportService {
       ..writeln(l10n.projectExportAddedToLibraryLabel(_formatDate(project.createdAt)))
       ..writeln(l10n.projectExportLastModifiedLabel(_formatDate(project.lastModifiedAt)));
     if (project.deadline != null) {
-      final status = project.deadlineStatus;
-      buffer.writeln(
-        status != null
-            ? l10n.projectExportDeadlineWithStatusLabel(_formatDate(project.deadline!), status)
-            : l10n.projectExportDeadlineLabel(_formatDate(project.deadline!)),
-      );
+      buffer.writeln(l10n.projectExportDeadlineWithStatusLabel(
+        _formatDate(project.deadline!),
+        deadlineText(l10n, project.daysUntilDeadline ?? 0),
+      ));
     }
     if (project.totalWorkSeconds > 0) {
       buffer.writeln(l10n.projectExportTotalTimeWorkedLabel(_formatDuration(project.totalWorkSeconds)));

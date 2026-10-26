@@ -28,6 +28,24 @@ void main() {
     }
   });
 
+  test('no English plural ending is built in the code', () {
+    // File names are English on purpose (they are read in a DAW's browser,
+    // like the MIDI exports' names): the only place an "s" may be added.
+    const allowed = {'lib/services/midi/melodic_midi_export.dart'};
+    final suffix = RegExp(r"\?\s*'s'\s*:\s*''|\?\s*''\s*:\s*'s'");
+    final offenders = <String>[];
+    for (final file in Directory('lib').listSync(recursive: true).whereType<File>()) {
+      final path = file.path.replaceAll(r'\', '/');
+      if (!path.endsWith('.dart') || path.startsWith('lib/generated/') || allowed.contains(path)) continue;
+      final lines = file.readAsLinesSync();
+      for (var i = 0; i < lines.length; i++) {
+        if (suffix.hasMatch(lines[i])) offenders.add('$path:${i + 1}: ${lines[i].trim()}');
+      }
+    }
+    expect(offenders, isEmpty,
+        reason: 'word counts with an ICU plural in the ARB files, never an English "s"');
+  });
+
   group('counts read right', () {
     AppLocalizations l(String locale) => lookupAppLocalizations(Locale(locale));
 

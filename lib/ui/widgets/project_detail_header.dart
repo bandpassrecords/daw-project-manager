@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
+import '../../utils/deadline_text.dart';
 import '../../utils/project_visuals.dart';
 import 'project_cover_avatar.dart';
 
@@ -35,54 +36,11 @@ class ProjectDetailHeader extends StatelessWidget {
     this.onEditAppearance,
   });
 
-  String _formatAge(AppLocalizations l10n, Duration duration) {
-    final years = duration.inDays ~/ 365;
-    final months = (duration.inDays % 365) ~/ 30;
-    final days = duration.inDays % 30;
+  String _formatAge(AppLocalizations l10n, Duration duration) =>
+      ageText(l10n, duration, underAnHour: l10n.ageJustNow);
 
-    if (years > 0) {
-      if (months > 0) {
-        return l10n.ageYearsMonths(years, months);
-      }
-      return l10n.ageYears(years);
-    } else if (months > 0) {
-      if (days > 0) {
-        return l10n.ageMonthsDays(months, days);
-      }
-      return l10n.ageMonths(months);
-    } else if (days > 0) {
-      return l10n.ageDays(days);
-    } else if (duration.inHours > 0) {
-      return l10n.ageHours(duration.inHours);
-    } else {
-      return l10n.ageJustNow;
-    }
-  }
-
-  String? _formatCompletion(AppLocalizations l10n, Duration? duration) {
-    if (duration == null) return null;
-    final years = duration.inDays ~/ 365;
-    final months = (duration.inDays % 365) ~/ 30;
-    final days = duration.inDays % 30;
-
-    if (years > 0) {
-      if (months > 0) {
-        return l10n.ageYearsMonths(years, months);
-      }
-      return l10n.ageYears(years);
-    } else if (months > 0) {
-      if (days > 0) {
-        return l10n.ageMonthsDays(months, days);
-      }
-      return l10n.ageMonths(months);
-    } else if (days > 0) {
-      return l10n.ageDays(days);
-    } else if (duration.inHours > 0) {
-      return l10n.ageHours(duration.inHours);
-    } else {
-      return l10n.ageLessThanHour;
-    }
-  }
+  String? _formatCompletion(AppLocalizations l10n, Duration? duration) =>
+      duration == null ? null : ageText(l10n, duration, underAnHour: l10n.ageLessThanHour);
 
   String _formatTotalWork(int seconds) {
     final h = seconds ~/ 3600;

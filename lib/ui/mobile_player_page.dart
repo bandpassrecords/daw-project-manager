@@ -11,6 +11,7 @@ import '../models/todo_item.dart';
 import '../providers/providers.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../services/audio_analysis_service.dart';
+import '../utils/deadline_text.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/playback_seek.dart';
 import '../utils/project_visuals.dart';
@@ -876,7 +877,11 @@ class _TrackCard extends StatelessWidget {
                 Icon(Icons.calendar_today_outlined, size: 13, color: cs.onSurface.withValues(alpha: 0.4)),
                 const SizedBox(width: 6),
                 Text(
-                  project.projectAgeFormatted,
+                  ageText(
+                    AppLocalizations.of(context)!,
+                    project.projectAge,
+                    underAnHour: AppLocalizations.of(context)!.ageJustNow,
+                  ),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: cs.onSurface.withValues(alpha: 0.45),
                   ),
