@@ -2,6 +2,7 @@ import 'dart:io';
 import '../services/app_audio_focus.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/search_utils.dart';
+import '../utils/playback_todo_utils.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -895,13 +896,6 @@ class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
     });
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$minutes:$seconds';
-  }
-
   @override
   void dispose() {
     _audioPlayer.dispose();
@@ -1250,8 +1244,8 @@ class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(_formatDuration(_position)),
-                    Text(_formatDuration(_duration)),
+                    Text(formatPlaybackTimestamp(_position)),
+                    Text(formatPlaybackTimestamp(_duration)),
                   ],
                 ),
                 const SizedBox(height: 16),

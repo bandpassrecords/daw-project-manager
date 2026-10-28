@@ -41,6 +41,7 @@ import '../services/zip_export_service.dart';
 import '../utils/text_input_focus.dart';
 import '../utils/player_shortcuts.dart';
 import '../utils/track_duration.dart';
+import '../utils/playback_todo_utils.dart';
 import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/release_track_details.dart';
 import 'widgets/scroll_more_hint.dart';
@@ -2410,13 +2411,6 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     });
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$minutes:$seconds';
-  }
-
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
@@ -2569,11 +2563,11 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            _formatDuration(_position),
+                            formatPlaybackTimestamp(_position),
                             style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                           ),
                           Text(
-                            _formatDuration(_duration),
+                            formatPlaybackTimestamp(_duration),
                             style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                           ),
                         ],

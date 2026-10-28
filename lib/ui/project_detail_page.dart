@@ -36,6 +36,7 @@ import '../utils/file_launcher.dart';
 import '../utils/save_file_dialog.dart';
 import '../utils/playback_seek.dart';
 import '../utils/route_observer.dart';
+import '../utils/playback_todo_utils.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'marker_navigation.dart';
 import 'session_actions.dart';
@@ -3435,14 +3436,6 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     }
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = duration.inHours;
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return hours > 0 ? '${twoDigits(hours)}:$minutes:$seconds' : '$minutes:$seconds';
-  }
-
   bool _isValidAudioFile(String filePath) {
     final ext = p.extension(filePath).toLowerCase();
     return MixdownDetectorService.audioExtensions.contains(ext);
@@ -3820,14 +3813,14 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    _formatDuration(_position),
+                                    formatPlaybackTimestamp(_position),
                                     style: TextStyle(
                                       color: Theme.of(context).textTheme.bodySmall?.color,
                                       fontSize: 12,
                                     ),
                                   ),
                                   Text(
-                                    _formatDuration(_duration),
+                                    formatPlaybackTimestamp(_duration),
                                     style: TextStyle(
                                       color: Theme.of(context).textTheme.bodySmall?.color,
                                       fontSize: 12,

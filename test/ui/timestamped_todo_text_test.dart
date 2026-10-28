@@ -26,12 +26,13 @@ void main() {
       );
     });
 
-    test('minutes past 60 wrap within the mm:ss field', () {
-      // 61 minutes => minutes.remainder(60) == 1
+    // Regression: the phone player's clock left the hours out, so a note at
+    // 1:01:09 was stamped [01:09] — a minute into the song.
+    test('past an hour the stamp keeps the hours', () {
       expect(
         buildTimestampedTodoText(
             const Duration(minutes: 61, seconds: 9), 'note'),
-        '[01:09] note',
+        '[01:01:09] note',
       );
     });
   });

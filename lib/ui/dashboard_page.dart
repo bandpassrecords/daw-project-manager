@@ -9207,16 +9207,6 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
     await _audioPlayer.seek(clamped);
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = duration.inHours;
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return hours > 0
-        ? '${twoDigits(hours)}:$minutes:$seconds'
-        : '$minutes:$seconds';
-  }
-
   static final _uuidPreviewRe = RegExp(
     r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}_preview\.',
     caseSensitive: false,
@@ -9329,7 +9319,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    _formatDuration(_position),
+                    formatPlaybackTimestamp(_position),
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 14,
@@ -9337,7 +9327,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                     ),
                   ),
                   Text(
-                    _formatDuration(_duration),
+                    formatPlaybackTimestamp(_duration),
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 14,
@@ -9481,14 +9471,14 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _formatDuration(_position),
+                        formatPlaybackTimestamp(_position),
                         style: TextStyle(
                           color: Theme.of(context).textTheme.bodySmall?.color,
                           fontSize: 12,
                         ),
                       ),
                       Text(
-                        _formatDuration(_duration),
+                        formatPlaybackTimestamp(_duration),
                         style: TextStyle(
                           color: Theme.of(context).textTheme.bodySmall?.color,
                           fontSize: 12,
@@ -10403,14 +10393,6 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     _positionNotifier.set(clamped);
   }
 
-  String _fmt(Duration d) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    final h = d.inHours;
-    final m = two(d.inMinutes.remainder(60));
-    final s = two(d.inSeconds.remainder(60));
-    return h > 0 ? '${two(h)}:$m:$s' : '$m:$s';
-  }
-
   Future<void> _addTodoAtTimestamp() async {
     final l10n = AppLocalizations.of(context)!;
     final position = _position;
@@ -10741,13 +10723,19 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                           ),
                         ),
                       ),
-                      // Time display (fixed-width to prevent jitter)
-                      SizedBox(
-                        width: 92,
+                      // Time display. Tabular figures keep its width still
+                      // as the digits change; it is never wrapped, so an hour-
+                      // long file's readout widens instead of breaking in two.
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(minWidth: 92),
                         child: Text(
-                          '${_fmt(_position)} / ${_fmt(_duration)}',
-                          style: theme.textTheme.bodySmall,
+                          formatPlaybackProgress(_position, _duration),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
                           textAlign: TextAlign.right,
+                          maxLines: 1,
+                          softWrap: false,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -10851,7 +10839,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                         iconSize: 18,
                         padding: iconPad,
                         constraints: iconConstraints,
-                        tooltip: l10n.addTodoAtTimestamp(_fmt(_position)),
+                        tooltip: l10n.addTodoAtTimestamp(formatPlaybackTimestamp(_position)),
                         onPressed: _addTodoAtTimestamp,
                       ),
                       // Open Folder

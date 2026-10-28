@@ -16,6 +16,7 @@ import '../utils/mobile_utils.dart';
 import '../utils/playback_seek.dart';
 import '../utils/project_visuals.dart';
 import '../utils/project_freshness.dart';
+import '../utils/playback_todo_utils.dart';
 import 'preview_share.dart';
 import 'project_detail_page.dart';
 import 'widgets/conversion_progress_dialog.dart';
@@ -155,7 +156,7 @@ class _MobilePlayerPageState extends ConsumerState<MobilePlayerPage> {
                   Icon(Icons.access_time_rounded,
                       size: 16, color: theme.colorScheme.primary),
                   const SizedBox(width: 6),
-                  Text(formatDuration(position),
+                  Text(formatPlaybackTimestamp(position),
                       style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w600)),
@@ -966,12 +967,6 @@ class _InfoChip extends StatelessWidget {
   }
 }
 
-String formatDuration(Duration d) {
-  final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-  final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-  return '$m:$s';
-}
-
 /// Whether a preview-song [path] is a real local file the waveform extractor
 /// can be pointed at — i.e. set, and not a `drive://` reference for a file
 /// that hasn't been downloaded to this device yet.
@@ -983,7 +978,7 @@ bool isAnalyzablePreviewPath(String? path) =>
 /// playback position as `[m:ss] ` so the entry records exactly where in the
 /// track it was created.
 String buildTimestampedTodoText(Duration position, String text) {
-  return '[${formatDuration(position)}] ${text.trim()}';
+  return '[${formatPlaybackTimestamp(position)}] ${text.trim()}';
 }
 
 // ── Progress bar ─────────────────────────────────────────────────────────────
@@ -1064,9 +1059,9 @@ class _ProgressBarState extends ConsumerState<_ProgressBar> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(formatDuration(state.position),
+              Text(formatPlaybackTimestamp(state.position),
                   style: Theme.of(context).textTheme.bodySmall),
-              Text(formatDuration(state.duration),
+              Text(formatPlaybackTimestamp(state.duration),
                   style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
