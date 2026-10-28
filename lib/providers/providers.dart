@@ -3551,9 +3551,9 @@ final queueNavigationProvider =
 /// Survives widget rebuilds and navigation so peaks are never re-extracted for
 /// the same file within a single app session.
 class WaveformCacheNotifier extends Notifier<Map<String, WaveformPeaks>> {
-  /// Source-file mtime (µs since epoch) recorded when each entry was cached.
-  /// Used to detect files that have been overwritten with new content.
-  final Map<String, int> _mtimes = {};
+  /// Source-file stamp recorded when each entry was cached. Used to detect
+  /// files that have been overwritten with new content.
+  final Map<String, WaveformSourceStamp> _stamps = {};
 
   @override
   Map<String, WaveformPeaks> build() => {};
@@ -3562,7 +3562,7 @@ class WaveformCacheNotifier extends Notifier<Map<String, WaveformPeaks>> {
 
   void put(String path, WaveformPeaks peaks) {
     try {
-      _mtimes[path] = File(path).statSync().modified.microsecondsSinceEpoch;
+      _stamps[path] = WaveformDiskCache.sourceStamp(path);
     } catch (_) {}
     state = {...state, path: peaks};
     WaveformDiskCache.save(path, peaks); // fire-and-forget
@@ -3583,10 +3583,7 @@ class WaveformCacheNotifier extends Notifier<Map<String, WaveformPeaks>> {
       // Cheap stat to detect files overwritten with new content at the same path.
       bool stale = false;
       try {
-        final currentMtime = File(
-          path,
-        ).statSync().modified.microsecondsSinceEpoch;
-        stale = currentMtime != _mtimes[path];
+        stale = WaveformDiskCache.sourceStamp(path) != _stamps[path];
       } catch (_) {
         return mem; // File inaccessible — return cached data as-is.
       }
@@ -3594,13 +3591,13 @@ class WaveformCacheNotifier extends Notifier<Map<String, WaveformPeaks>> {
       // Evict stale entry and fall through to re-extract.
       onStale?.call();
       state = Map.of(state)..remove(path);
-      _mtimes.remove(path);
+      _stamps.remove(path);
     }
 
     final disk = await WaveformDiskCache.load(path);
     if (disk != null) {
       try {
-        _mtimes[path] = File(path).statSync().modified.microsecondsSinceEpoch;
+        _stamps[path] = WaveformDiskCache.sourceStamp(path);
       } catch (_) {}
       state = {...state, path: disk};
       return disk;

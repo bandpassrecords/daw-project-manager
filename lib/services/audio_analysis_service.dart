@@ -464,83 +464,114 @@ class WaveformPeaks {
       channelRms[channel].length == frameCount;
 }
 
-/// Reduce [samples] to [frames] min/max/RMS triples.
+/// One lane's min/max/RMS per frame, filled a sample at a time.
+class _EnvelopeBins {
+  final List<double> mins;
+  final List<double> maxs;
+  final List<double> rms;
+  double _lo = 0, _hi = 0, _sumSq = 0;
+  int _count = 0;
+
+  _EnvelopeBins(int frames)
+      : mins = List<double>.filled(frames, 0.0),
+        maxs = List<double>.filled(frames, 0.0),
+        rms = List<double>.filled(frames, 0.0);
+
+  void add(double s) {
+    if (s < _lo) _lo = s;
+    if (s > _hi) _hi = s;
+    _sumSq += s * s;
+    _count++;
+  }
+
+  /// Writes what was added since the last close into frame [f].
+  void close(int f) {
+    mins[f] = _lo;
+    maxs[f] = _hi;
+    rms[f] = _count > 0 ? sqrt(_sumSq / _count) : 0.0;
+    _lo = _hi = _sumSq = 0;
+    _count = 0;
+  }
+}
+
+/// Sample frames read from the file per chunk.
+const int _peaksChunkFrames = 65536;
+
+/// Reduces a WAV to [targetFrames] min/max/RMS triples — the mono mixdown and
+/// up to [maxWaveformLanes] channels — reading it a chunk at a time.
+///
+/// Memory stays the same whatever the file's length. Reading the whole file
+/// and turning every sample into a double took about twenty times the file's
+/// size, and a 60-minute bounce got the app killed on a phone.
 ///
 /// Bin boundaries are proportional (`f * n ~/ frames`) rather than a truncated
 /// fixed bin width, so every sample lands in exactly one bin — a fixed width
 /// leaves up to `frames` samples of the file's tail covered by nothing, which
 /// both hides a final transient and drifts the drawn position away from the
 /// playhead.
-(List<double>, List<double>, List<double>) _binEnvelope(
-  List<double> samples,
-  int frames,
-) {
-  final n = samples.length;
-  final mins = List<double>.filled(frames, 0.0);
-  final maxs = List<double>.filled(frames, 0.0);
-  final rms = List<double>.filled(frames, 0.0);
-  for (int f = 0; f < frames; f++) {
-    final start = f * n ~/ frames;
-    final end = max(start + 1, (f + 1) * n ~/ frames);
-    double lo = 0, hi = 0, sumSq = 0;
-    int count = 0;
-    for (int i = start; i < end && i < n; i++) {
-      final s = samples[i];
-      if (s < lo) lo = s;
-      if (s > hi) hi = s;
-      sumSq += s * s;
-      count++;
-    }
-    mins[f] = lo;
-    maxs[f] = hi;
-    rms[f] = count > 0 ? sqrt(sumSq / count) : 0.0;
-  }
-  return (mins, maxs, rms);
-}
-
 WaveformPeaks? _extractPeaksIsolate(String wavPath, int targetFrames) {
-  final bytes = File(wavPath).readAsBytesSync();
-  final info = _parseWavInfo(bytes);
-  if (info == null) return null;
+  final raf = File(wavPath).openSync();
+  try {
+    final info = _readWavInfo(raf);
+    if (info == null) return null;
 
-  final channels = _extractSamples(bytes, info);
-  final numSamples = channels[0].length;
-  if (numSamples == 0) return null;
+    final channels = info.numChannels;
+    final bytesPerSample = info.bitDepth ~/ 8;
+    final bytesPerFrame = bytesPerSample * channels;
+    final numSamples = info.dataSize ~/ bytesPerFrame;
+    if (numSamples == 0) return null;
 
-  // Mix to mono
-  final mono = channels.length == 1
-      ? channels[0]
-      : List<double>.generate(numSamples, (i) {
-          double sum = 0;
-          for (final ch in channels) { sum += ch[i]; }
-          return sum / channels.length;
-        });
+    final frames = targetFrames.clamp(1, numSamples);
+    final mono = _EnvelopeBins(frames);
+    final lanes = List.generate(
+        channels > 1 ? min(channels, maxWaveformLanes) : 0,
+        (_) => _EnvelopeBins(frames));
 
-  final frames = targetFrames.clamp(1, numSamples);
-  final (minValues, maxValues, rmsValues) = _binEnvelope(mono, frames);
+    final buf = Uint8List(_peaksChunkFrames * bytesPerFrame);
+    final bd = ByteData.sublistView(buf);
+    raf.setPositionSync(info.dataOffset);
 
-  final channelMin = <List<double>>[];
-  final channelMax = <List<double>>[];
-  final channelRms = <List<double>>[];
-  if (channels.length > 1) {
-    for (int ch = 0; ch < min(channels.length, maxWaveformLanes); ch++) {
-      final (lo, hi, r) = _binEnvelope(channels[ch], frames);
-      channelMin.add(lo);
-      channelMax.add(hi);
-      channelRms.add(r);
+    int f = 0;
+    int binEnd = max(1, numSamples ~/ frames);
+    int i = 0;
+    while (i < numSamples) {
+      final want = min(_peaksChunkFrames, numSamples - i) * bytesPerFrame;
+      final got = raf.readIntoSync(buf, 0, want) ~/ bytesPerFrame;
+      if (got == 0) break;
+
+      for (int k = 0; k < got; k++, i++) {
+        if (i == binEnd) {
+          mono.close(f);
+          for (final lane in lanes) { lane.close(f); }
+          f++;
+          binEnd = max(i + 1, (f + 1) * numSamples ~/ frames);
+        }
+        double sum = 0;
+        for (int ch = 0; ch < channels; ch++) {
+          final s = _sampleAt(bd, k * bytesPerFrame + ch * bytesPerSample,
+              info.audioFormat, info.bitDepth);
+          if (ch < lanes.length) lanes[ch].add(s);
+          sum += s;
+        }
+        mono.add(sum / channels);
+      }
     }
-  }
+    mono.close(f);
+    for (final lane in lanes) { lane.close(f); }
 
-  return WaveformPeaks(
-    minValues: minValues,
-    maxValues: maxValues,
-    rmsValues: rmsValues,
-    channelMin: channelMin,
-    channelMax: channelMax,
-    channelRms: channelRms,
-    sampleRate: info.sampleRate,
-    durationSeconds: numSamples / info.sampleRate,
-  );
+    return WaveformPeaks(
+      minValues: mono.mins,
+      maxValues: mono.maxs,
+      rmsValues: mono.rms,
+      channelMin: [for (final lane in lanes) lane.mins],
+      channelMax: [for (final lane in lanes) lane.maxs],
+      channelRms: [for (final lane in lanes) lane.rms],
+      sampleRate: info.sampleRate,
+      durationSeconds: numSamples / info.sampleRate,
+    );
+  } finally {
+    raf.closeSync();
+  }
 }
 
 // ─── Pure-Dart MP3 peak extractor ────────────────────────────────────────────
@@ -1163,15 +1194,18 @@ class _StreamBiquad {
 }
 
 /// Decode one sample from [buf] at byte [off] to a −1…+1 double.
-double _decodeSample(Uint8List buf, int off, int audioFormat, int bitDepth) {
-  final bd = ByteData.sublistView(buf);
+double _decodeSample(Uint8List buf, int off, int audioFormat, int bitDepth) =>
+    _sampleAt(ByteData.sublistView(buf), off, audioFormat, bitDepth);
+
+/// [_decodeSample] over a view made once per buffer — making one per sample
+/// costs an allocation each, which adds up over an hour of audio.
+double _sampleAt(ByteData bd, int off, int audioFormat, int bitDepth) {
   if (audioFormat == 3 && bitDepth == 32) {
     return bd.getFloat32(off, Endian.little).toDouble();
   } else if (bitDepth == 16) {
     return bd.getInt16(off, Endian.little) / 32768.0;
   } else if (bitDepth == 24) {
-    int v = buf[off] | (buf[off + 1] << 8) | (buf[off + 2] << 16);
-    if (v >= 0x800000) v -= 0x1000000;
+    final v = bd.getUint16(off, Endian.little) | (bd.getInt8(off + 2) << 16);
     return v / 8388608.0;
   } else {
     return bd.getInt32(off, Endian.little) / 2147483648.0;
@@ -1316,7 +1350,7 @@ _WavInfo? _parseWavInfo(Uint8List bytes) {
   if (bytes[8] != 0x57 || bytes[9] != 0x41 || bytes[10] != 0x56 || bytes[11] != 0x45) return null;
 
   int offset = 12;
-  int? audioFormat, numChannels, sampleRate, bitDepth, dataOffset, dataSize;
+  ByteData? fmt;
 
   while (offset + 8 <= bytes.length) {
     final chunkId = String.fromCharCodes(bytes.sublist(offset, offset + 4));
@@ -1325,28 +1359,75 @@ _WavInfo? _parseWavInfo(Uint8List bytes) {
 
     if (chunkId == 'fmt ') {
       if (chunkSize < 16) return null;
-      audioFormat = bd.getUint16(offset, Endian.little);
-      numChannels = bd.getUint16(offset + 2, Endian.little);
-      sampleRate = bd.getUint32(offset + 4, Endian.little);
-      bitDepth = bd.getUint16(offset + 14, Endian.little);
-      // WAVE_FORMAT_EXTENSIBLE: read the actual subformat GUID bytes 0-1
-      if (audioFormat == 0xFFFE && chunkSize >= 40) {
-        audioFormat = bd.getUint16(offset + 24, Endian.little);
-      }
+      fmt = ByteData.sublistView(
+          bytes, offset, min(offset + chunkSize, bytes.length));
     } else if (chunkId == 'data') {
-      dataOffset = offset;
-      dataSize = min(chunkSize, bytes.length - offset);
-      break;
+      if (fmt == null) return null;
+      return _wavInfoOf(fmt,
+          dataOffset: offset, dataSize: min(chunkSize, bytes.length - offset));
     }
 
     // Advance to next chunk (word-aligned)
     offset += chunkSize + (chunkSize & 1);
   }
+  return null;
+}
 
-  if (audioFormat == null || numChannels == null || sampleRate == null ||
-      bitDepth == null || dataOffset == null || dataSize == null) {
+/// [_parseWavInfo] for a file left on disk: reads the chunk headers and the
+/// `fmt ` chunk, seeking past everything else, so neither the samples nor a
+/// large metadata chunk before them is read.
+_WavInfo? _readWavInfo(RandomAccessFile raf) {
+  final fileSize = raf.lengthSync();
+  raf.setPositionSync(0);
+  final riff = raf.readSync(12);
+  if (riff.length < 12) return null;
+  if (String.fromCharCodes(riff, 0, 4) != 'RIFF' ||
+      String.fromCharCodes(riff, 8, 12) != 'WAVE') {
     return null;
   }
+
+  int offset = 12;
+  ByteData? fmt;
+  while (offset + 8 <= fileSize) {
+    raf.setPositionSync(offset);
+    final header = raf.readSync(8);
+    if (header.length < 8) return null;
+    final chunkId = String.fromCharCodes(header, 0, 4);
+    final chunkSize =
+        ByteData.sublistView(header).getUint32(4, Endian.little);
+    offset += 8;
+
+    if (chunkId == 'fmt ') {
+      if (chunkSize < 16) return null;
+      fmt = ByteData.sublistView(raf.readSync(min(chunkSize, 64)));
+    } else if (chunkId == 'data') {
+      if (fmt == null) return null;
+      return _wavInfoOf(fmt,
+          dataOffset: offset, dataSize: min(chunkSize, fileSize - offset));
+    }
+
+    offset += chunkSize + (chunkSize & 1);
+  }
+  return null;
+}
+
+/// The [_WavInfo] for a `fmt ` chunk's body, or null for a format the
+/// readers don't decode.
+_WavInfo? _wavInfoOf(
+  ByteData fmt, {
+  required int dataOffset,
+  required int dataSize,
+}) {
+  if (fmt.lengthInBytes < 16) return null;
+  var audioFormat = fmt.getUint16(0, Endian.little);
+  final numChannels = fmt.getUint16(2, Endian.little);
+  final sampleRate = fmt.getUint32(4, Endian.little);
+  final bitDepth = fmt.getUint16(14, Endian.little);
+  // WAVE_FORMAT_EXTENSIBLE: read the actual subformat GUID bytes 0-1
+  if (audioFormat == 0xFFFE && fmt.lengthInBytes >= 26) {
+    audioFormat = fmt.getUint16(24, Endian.little);
+  }
+
   if (audioFormat != 1 && audioFormat != 3) { return null; } // only PCM & float
   if (bitDepth != 16 && bitDepth != 24 && bitDepth != 32) { return null; }
   if (numChannels < 1 || numChannels > 8) { return null; }

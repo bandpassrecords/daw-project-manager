@@ -7,17 +7,26 @@ import 'package:path_provider/path_provider.dart';
 
 import 'audio_analysis_service.dart';
 
+/// What tells a source file is still the one a waveform was drawn from: its
+/// modification time and size, both from one `stat`. Never a hash of its
+/// contents — that reads the whole file, costing about what drawing it again
+/// does, and on a cloud drive downloads it. The size catches a copy or sync
+/// that carried the old modification time over to new audio.
+typedef WaveformSourceStamp = ({int mtime, int size});
+
 /// Persistent on-disk cache for [WaveformPeaks].
 ///
 /// Each entry is a small binary file (~96 KB for 4 096 stereo frames) stored
 /// under `<app-support>/waveform_cache/`. The file embeds the source file's
-/// modification timestamp so stale entries are automatically ignored when the
-/// audio file changes.
+/// [WaveformSourceStamp] — modification time and size — so stale entries are
+/// automatically ignored when the audio file changes, a re-bounce to the same
+/// name included.
 ///
 /// Binary layout (little-endian):
 ///   4  uint32  magic = 0x57464B50 ('WFPK')
-///   4  uint32  version = 2
+///   4  uint32  version = 3
 ///   8  int64   source file mtime (microseconds since epoch)
+///   8  int64   source file size (bytes)
 ///   4  int32   sampleRate
 ///   8  float64 durationSeconds
 ///   4  int32   frameCount
@@ -32,13 +41,20 @@ import 'audio_analysis_service.dart';
 ///  F*4 float32 channelMax[c][F]
 ///  F*4 float32 channelRms[c][F]
 ///
-/// The version bump from 1 discards every v1 entry on read (they have none of
-/// the per-channel lanes, the RMS bodies, or the higher frame count), so they
-/// are re-extracted once and re-saved in the new shape.
+/// A version bump discards every older entry on read, so they are
+/// re-extracted once and re-saved in the new shape. v1 had none of the
+/// per-channel lanes, the RMS bodies, or the higher frame count; v2 had no
+/// source size.
 class WaveformDiskCache {
   static const _magic = 0x57464B50;
-  static const _version = 2;
-  static const _headerBytes = 40;
+  static const _version = 3;
+  static const _headerBytes = 48;
+
+  /// The [WaveformSourceStamp] of the file at [filePath] now.
+  static WaveformSourceStamp sourceStamp(String filePath) {
+    final stat = File(filePath).statSync();
+    return (mtime: stat.modified.microsecondsSinceEpoch, size: stat.size);
+  }
 
   static Future<String> _entryPath(String filePath) async {
     final dir = await getApplicationSupportDirectory();
@@ -70,6 +86,7 @@ class WaveformDiskCache {
       off += 4;
 
       final cachedMtime = buf.getInt64(off, Endian.little); off += 8;
+      final cachedSize = buf.getInt64(off, Endian.little); off += 8;
       final sampleRate = buf.getInt32(off, Endian.little); off += 4;
       final duration = buf.getFloat64(off, Endian.little); off += 8;
       final frameCount = buf.getInt32(off, Endian.little); off += 4;
@@ -83,9 +100,9 @@ class WaveformDiskCache {
       off += pathLen;
 
       // Invalidate if source file was modified since caching.
-      final currentMtime =
-          File(filePath).statSync().modified.microsecondsSinceEpoch;
-      if (cachedMtime != currentMtime) return null;
+      if (sourceStamp(filePath) != (mtime: cachedMtime, size: cachedSize)) {
+        return null;
+      }
 
       // min/max/rms for the mono mixdown, then the same three per channel lane.
       final arrays = 3 + channelCount * 3;
@@ -127,8 +144,7 @@ class WaveformDiskCache {
 
   static Future<void> save(String filePath, WaveformPeaks peaks) async {
     try {
-      final mtime =
-          File(filePath).statSync().modified.microsecondsSinceEpoch;
+      final stamp = sourceStamp(filePath);
       final pathBytes = utf8.encode(filePath);
       final frameCount = peaks.frameCount;
 
@@ -155,12 +171,13 @@ class WaveformDiskCache {
       final header = ByteData(_headerBytes);
       header.setUint32(0, _magic, Endian.little);
       header.setUint32(4, _version, Endian.little);
-      header.setInt64(8, mtime, Endian.little);
-      header.setInt32(16, peaks.sampleRate, Endian.little);
-      header.setFloat64(20, peaks.durationSeconds, Endian.little);
-      header.setInt32(28, frameCount, Endian.little);
-      header.setInt32(32, channelCount, Endian.little);
-      header.setInt32(36, pathBytes.length, Endian.little);
+      header.setInt64(8, stamp.mtime, Endian.little);
+      header.setInt64(16, stamp.size, Endian.little);
+      header.setInt32(24, peaks.sampleRate, Endian.little);
+      header.setFloat64(28, peaks.durationSeconds, Endian.little);
+      header.setInt32(36, frameCount, Endian.little);
+      header.setInt32(40, channelCount, Endian.little);
+      header.setInt32(44, pathBytes.length, Endian.little);
 
       Uint8List encodeArray(List<double> values) {
         final data = ByteData(frameCount * 4);
