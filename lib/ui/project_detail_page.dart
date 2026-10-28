@@ -37,6 +37,7 @@ import '../utils/save_file_dialog.dart';
 import '../utils/playback_seek.dart';
 import '../utils/route_observer.dart';
 import '../utils/playback_todo_utils.dart';
+import 'widgets/player_readout.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'marker_navigation.dart';
 import 'session_actions.dart';
@@ -55,6 +56,7 @@ import '../services/metadata_sidecar_service.dart';
 import '../services/mixdown_detector_service.dart';
 import '../services/project_text_export_service.dart';
 import '../services/scanner_service.dart';
+import '../services/track_duration_probe_service.dart';
 import 'dialogs/attachment_edit_dialog.dart';
 import 'dialogs/save_as_template_dialog.dart';
 import 'dialogs/stack_version_picker_dialog.dart';
@@ -2435,8 +2437,14 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
   bool _isGeneratingMono = false;
   String? _monoFilePath;
 
-  // File metadata (populated for any format)
+  // File metadata (populated for any format). Loading until the read of it
+  // comes back, found or not: until then its line holds a placeholder.
   AudioFileInfo? _fileInfo;
+  bool _fileInfoLoading = true;
+
+  // The length is read when the page opens, not when it's played: until it
+  // is known the total holds a placeholder instead of 00:00.
+  bool _probingDuration = false;
 
   // Waveform peaks for display
   WaveformPeaks? _peaks;
@@ -2579,6 +2587,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
         _isGeneratingMono = false;
         _monoFilePath = null;
         _fileInfo = null;
+        _fileInfoLoading = true;
         _peaks = null;
         _autoDetectedPath = null;
       });
@@ -2597,10 +2606,33 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     if (!_hasAudioFile()) return;
     final path = _effectivePreviewPath!;
 
-    // File metadata — works for any format
-    AudioAnalysisService.getFileInfo(path).then((info) {
-      if (mounted && info != null) setState(() => _fileInfo = info);
-    });
+    // File metadata — works for any format; a file read before shows at once
+    _fileInfo = AudioAnalysisService.knownFileInfo(path);
+    _fileInfoLoading = _fileInfo == null;
+    if (_fileInfoLoading) {
+      AudioAnalysisService.getFileInfo(path).then((info) {
+        if (!mounted || _effectivePreviewPath != path) return;
+        setState(() {
+          _fileInfo = info;
+          _fileInfoLoading = false;
+        });
+      });
+    }
+
+    // The length, read up front as a release's tracks do. Never clobbers one
+    // the player has reported since: the probe can land after play.
+    if (_duration == Duration.zero) {
+      _probingDuration = true;
+      TrackDurationProbeService.probe(path).then((measured) {
+        if (!mounted || _effectivePreviewPath != path) return;
+        setState(() {
+          _probingDuration = false;
+          if (measured != null && _duration == Duration.zero) {
+            _duration = measured;
+          }
+        });
+      });
+    }
 
     // Waveform peaks — memory → disk → extraction
     ref.read(waveformCacheProvider.notifier).getOrExtract(
@@ -3709,6 +3741,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                       _FileInfoRow(
                         path: _effectivePreviewPath!,
                         fileInfo: _fileInfo,
+                        loading: _fileInfoLoading,
                       ),
                       const SizedBox(height: 10),
                       // Audio player controls with keyboard shortcuts
@@ -3822,8 +3855,12 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                       fontSize: 12,
                                     ),
                                   ),
-                                  Text(
-                                    formatPlaybackTimestamp(_duration),
+                                  PlayerReadout(
+                                    text: _duration == Duration.zero && _probingDuration
+                                        ? null
+                                        : formatPlaybackTimestamp(_duration),
+                                    templates: [formatPlaybackTimestamp(_duration)],
+                                    loadingLabel: AppLocalizations.of(context)!.loading,
                                     style: TextStyle(
                                       color: Theme.of(context).textTheme.bodySmall?.color,
                                       fontSize: 12,
@@ -4031,7 +4068,15 @@ class _FileInfoRow extends StatelessWidget {
   final String path;
   final AudioFileInfo? fileInfo;
 
-  const _FileInfoRow({required this.path, required this.fileInfo});
+  /// Still being read: a placeholder holds the line's place, so it doesn't
+  /// read "WAV" and then grow into the whole line a moment later.
+  final bool loading;
+
+  const _FileInfoRow({
+    required this.path,
+    required this.fileInfo,
+    required this.loading,
+  });
 
   String get _formatLabel {
     final ext = path.toLowerCase().split('.').last;
@@ -4065,8 +4110,15 @@ class _FileInfoRow extends StatelessWidget {
     }
     parts.add(_formatLabel);
 
-    return Text(
-      parts.join(' · '),
+    return PlayerReadout(
+      text: loading ? null : parts.join(' · '),
+      templates: const [
+        '44.1 kHz · 24-bit · Stereo · AIFF',
+        '44.1 kHz · 320 kbps · Stereo · M4A',
+        '192 kHz · 32-bit · Stereo · FLAC',
+      ],
+      loadingLabel: AppLocalizations.of(context)!.loading,
+      alignment: AlignmentDirectional.centerStart,
       style: TextStyle(fontSize: 11, color: dim),
     );
   }

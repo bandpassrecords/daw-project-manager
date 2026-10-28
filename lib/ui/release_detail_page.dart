@@ -47,6 +47,7 @@ import 'widgets/release_track_details.dart';
 import 'widgets/scroll_more_hint.dart';
 import 'widgets/release_total_length_footer.dart';
 import 'widgets/release_tracks_table.dart';
+import 'widgets/player_readout.dart';
 import 'widgets/waveform_widget.dart';
 import 'app_snack_bar.dart';
 import 'widgets/semantics_safe.dart';
@@ -2089,6 +2090,10 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
   bool _isGeneratingMono = false;
   String? _monoFilePath;
   AudioFileInfo? _fileInfo;
+
+  /// The up-front read of the length is still out: the total holds a
+  /// placeholder, not 00:00, until it lands.
+  bool _probingDuration = true;
   WaveformPeaks? _peaks;
 
   void _attachListeners(AudioPlayer player, int gen) {
@@ -2248,11 +2253,15 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     // the file is played: the player only reports a duration once it has
     // loaded a source, and this row is worth reading without starting it.
     TrackDurationProbeService.probe(filePath).then((measured) {
-      if (!mounted || measured == null) return;
-      // Never clobber a duration the player has since reported for real —
-      // the probe can land after playback has started.
-      if (_duration > Duration.zero) return;
-      setState(() => _duration = measured);
+      if (!mounted) return;
+      setState(() {
+        _probingDuration = false;
+        // Never clobber a duration the player has since reported for real —
+        // the probe can land after playback has started.
+        if (measured != null && _duration == Duration.zero) {
+          _duration = measured;
+        }
+      });
     });
     ref.read(waveformCacheProvider.notifier).getOrExtract(
       filePath,
@@ -2567,8 +2576,12 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                             formatPlaybackTimestamp(_position),
                             style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                           ),
-                          Text(
-                            formatPlaybackTimestamp(_duration),
+                          PlayerReadout(
+                            text: _duration == Duration.zero && _probingDuration
+                                ? null
+                                : formatPlaybackTimestamp(_duration),
+                            templates: [formatPlaybackTimestamp(_duration)],
+                            loadingLabel: AppLocalizations.of(context)!.loading,
                             style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                           ),
                         ],

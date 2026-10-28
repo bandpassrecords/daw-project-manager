@@ -45,6 +45,7 @@ import '../utils/daw_logo.dart';
 import '../utils/deep_scan.dart';
 import '../utils/grid_current_cell_parking.dart';
 import '../utils/library_projects.dart';
+import '../utils/empty_projects_view.dart';
 import '../utils/mobile_utils.dart';
 import '../services/player_volume_store.dart';
 import '../utils/text_input_focus.dart';
@@ -8880,6 +8881,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
   bool _isGeneratingMono = false;
   String? _monoFilePath;
   AudioFileInfo? _fileInfo;
+  bool _fileInfoLoading = true;
   String? _autoDetectedPath;
 
   String? get _effectivePreviewPath =>
@@ -8992,9 +8994,17 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
   void _startBackgroundPrep() {
     if (!_hasAudioFile()) return;
     final filePath = _effectivePreviewPath!;
-    AudioAnalysisService.getFileInfo(filePath).then((info) {
-      if (mounted && info != null) setState(() => _fileInfo = info);
-    });
+    _fileInfo = AudioAnalysisService.knownFileInfo(filePath);
+    _fileInfoLoading = _fileInfo == null;
+    if (_fileInfoLoading) {
+      AudioAnalysisService.getFileInfo(filePath).then((info) {
+        if (!mounted) return;
+        setState(() {
+          _fileInfo = info;
+          _fileInfoLoading = false;
+        });
+      });
+    }
     if (_supportsMonoMix()) _prepareMonoFile(filePath);
   }
 
@@ -9600,8 +9610,15 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                   );
                 }
                 parts.add(formatLabel);
-                return Text(
-                  parts.join(' · '),
+                return PlayerReadout(
+                  text: _fileInfoLoading ? null : parts.join(' · '),
+                  templates: const [
+                    '44.1 kHz · 24-bit · Stereo · AIFF',
+                    '44.1 kHz · 320 kbps · Stereo · M4A',
+                    '192 kHz · 32-bit · Stereo · FLAC',
+                  ],
+                  loadingLabel: AppLocalizations.of(context)!.loading,
+                  alignment: AlignmentDirectional.centerStart,
                   style: TextStyle(fontSize: 11, color: dim),
                 );
               },
@@ -11146,8 +11163,15 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
 
     if (widget.projects.isEmpty) {
       final allProjectsAsync = ref.watch(allProjectsStreamProvider);
-      final totalProjects = allProjectsAsync.value?.length ?? 0;
-      final hasProjectsButFiltered = totalProjects > 0;
+      final view = emptyProjectsView(
+        // An error is an answer too: never spin forever over one.
+        libraryLoaded: allProjectsAsync.hasValue || allProjectsAsync.hasError,
+        totalProjects: allProjectsAsync.value?.length ?? 0,
+      );
+      if (view == EmptyProjectsView.loading) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final hasProjectsButFiltered = view == EmptyProjectsView.filteredOut;
 
       return Center(
         child: Padding(
