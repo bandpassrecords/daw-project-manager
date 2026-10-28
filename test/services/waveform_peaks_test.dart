@@ -509,6 +509,41 @@ void main() {
     });
   });
 
+  // The player bar asks for a file's details on every play; remembered, a
+  // replay shows them at once instead of a placeholder first.
+  group('AudioAnalysisService.knownFileInfo', () {
+    test('is null until the file has been read', () async {
+      final wav = await writeWav(
+          p.join(tempDir.path, 'unread.wav'), [buzz(800, 0.5)]);
+      expect(AudioAnalysisService.knownFileInfo(wav.path), isNull);
+    });
+
+    test('remembers what getFileInfo read', () async {
+      final wav = await writeWav(p.join(tempDir.path, 'read.wav'),
+          [buzz(800, 0.5), buzz(800, 0.5)],
+          sampleRate: 44100, bitDepth: 24);
+      await AudioAnalysisService.getFileInfo(wav.path);
+
+      final info = AudioAnalysisService.knownFileInfo(wav.path);
+      expect(info, isNotNull);
+      expect(info!.sampleRate, 44100);
+      expect(info.bitDepth, 24);
+      expect(info.channels, 2);
+    });
+
+    test('forgets it once the file changes', () async {
+      final path = p.join(tempDir.path, 'rebounced.wav');
+      await writeWav(path, [buzz(800, 0.5)]);
+      final mtime = File(path).lastModifiedSync();
+      await AudioAnalysisService.getFileInfo(path);
+
+      // Same modification time, different size: still a different file.
+      await writeWav(path, [buzz(1600, 0.5)], sampleRate: 48000);
+      File(path).setLastModifiedSync(mtime);
+      expect(AudioAnalysisService.knownFileInfo(path), isNull);
+    });
+  });
+
   group('waveformCacheProvider', () {
     late Directory supportDir;
 

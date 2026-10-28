@@ -65,10 +65,39 @@ class AudioAnalysisService {
   /// Returns null if the format is unrecognised or the file cannot be read.
   static Future<AudioFileInfo?> getFileInfo(String filePath) async {
     try {
-      return await Isolate.run(() => _readFileInfo(filePath));
+      final info = await Isolate.run(() => _readFileInfo(filePath));
+      if (info != null) {
+        final stat = File(filePath).statSync();
+        _fileInfoSeen[filePath] = (
+          mtime: stat.modified.microsecondsSinceEpoch,
+          size: stat.size,
+          info: info,
+        );
+      }
+      return info;
     } catch (_) {
       return null;
     }
+  }
+
+  static final Map<String, ({int mtime, int size, AudioFileInfo info})>
+      _fileInfoSeen = {};
+
+  /// What [getFileInfo] last read for [filePath], while the file has the same
+  /// modification time and size — so a player opened on it again shows its
+  /// details at once instead of after another read. Null when it hasn't been
+  /// read this session, or has changed since.
+  static AudioFileInfo? knownFileInfo(String filePath) {
+    final seen = _fileInfoSeen[filePath];
+    if (seen == null) return null;
+    try {
+      final stat = File(filePath).statSync();
+      if (stat.modified.microsecondsSinceEpoch == seen.mtime &&
+          stat.size == seen.size) {
+        return seen.info;
+      }
+    } catch (_) {}
+    return null;
   }
 
   /// Analyse a WAV file. Returns null for non-WAV or unsupported formats.

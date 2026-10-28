@@ -114,6 +114,7 @@ import '../services/google_drive_sync_service.dart' show GoogleDriveSyncService;
 import '../utils/playback_todo_utils.dart';
 import '../utils/custom_fields.dart';
 import 'widgets/custom_field_column.dart';
+import 'widgets/player_readout.dart';
 import '../models/custom_field.dart';
 import 'package:uuid/uuid.dart';
 import 'app_snack_bar.dart';
@@ -9326,8 +9327,12 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    formatPlaybackTimestamp(_duration),
+                  PlayerReadout(
+                    text: _duration > Duration.zero
+                        ? formatPlaybackTimestamp(_duration)
+                        : null,
+                    templates: [formatPlaybackTimestamp(_duration)],
+                    loadingLabel: AppLocalizations.of(context)!.loading,
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 14,
@@ -9477,8 +9482,12 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                           fontSize: 12,
                         ),
                       ),
-                      Text(
-                        formatPlaybackTimestamp(_duration),
+                      PlayerReadout(
+                        text: _duration > Duration.zero
+                            ? formatPlaybackTimestamp(_duration)
+                            : null,
+                        templates: [formatPlaybackTimestamp(_duration)],
+                        loadingLabel: AppLocalizations.of(context)!.loading,
                         style: TextStyle(
                           color: Theme.of(context).textTheme.bodySmall?.color,
                           fontSize: 12,
@@ -10046,6 +10055,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   bool _isGeneratingMono = false;
   String? _monoFilePath;
   AudioFileInfo? _fileInfo;
+  bool _fileInfoLoading = true;
   WaveformPeaks? _peaks;
   double _barHeight = 200.0;
   final FocusNode _focusNode = FocusNode();
@@ -10281,10 +10291,20 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
           setState(() => _peaks = peaks);
         });
 
-    // File info
-    AudioAnalysisService.getFileInfo(filePath).then((info) {
-      if (mounted && info != null) setState(() => _fileInfo = info);
-    });
+    // File info — at once when this file's was read before, else read now
+    // while its slot holds a placeholder.
+    _fileInfo = AudioAnalysisService.knownFileInfo(filePath);
+    _fileInfoLoading = _fileInfo == null;
+    if (_fileInfoLoading) {
+      AudioAnalysisService.getFileInfo(filePath).then((info) {
+        // A switch to another track since must not get this one's details.
+        if (!mounted || widget.request.resolvedPath != filePath) return;
+        setState(() {
+          _fileInfo = info;
+          _fileInfoLoading = false;
+        });
+      });
+    }
 
     // Pre-generate mono in background
     if (_supportsMonoMix()) _prepareMonoFile(filePath);
@@ -10723,19 +10743,17 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                           ),
                         ),
                       ),
-                      // Time display. Tabular figures keep its width still
-                      // as the digits change; it is never wrapped, so an hour-
-                      // long file's readout widens instead of breaking in two.
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(minWidth: 92),
-                        child: Text(
-                          formatPlaybackProgress(_position, _duration),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontFeatures: const [FontFeature.tabularFigures()],
-                          ),
-                          textAlign: TextAlign.right,
-                          maxLines: 1,
-                          softWrap: false,
+                      // Time display: one width whatever the file's length
+                      // (tabular figures, room for hours), and a placeholder
+                      // until the length is known rather than 00:00 / 00:00.
+                      PlayerReadout(
+                        text: _duration > Duration.zero
+                            ? formatPlaybackProgress(_position, _duration)
+                            : null,
+                        templates: const ['00:00:00 / 00:00:00'],
+                        loadingLabel: l10n.loading,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -10777,9 +10795,17 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                           ),
                         ),
                       const SizedBox(width: 8),
-                      // File info
-                      Text(
-                        infoParts.join(' · '),
+                      // File info, in a slot as wide as the longest it can
+                      // read, so its arrival doesn't move the track name.
+                      PlayerReadout(
+                        text: _fileInfoLoading ? null : infoParts.join(' · '),
+                        templates: const [
+                          '44.1kHz · 24-bit · Stereo · AIFF',
+                          '44.1kHz · 320kbps · Stereo · M4A',
+                          '192kHz · 32-bit · Stereo · FLAC',
+                        ],
+                        loadingLabel: l10n.loading,
+                        alignment: AlignmentDirectional.centerStart,
                         style: TextStyle(
                           fontSize: 11,
                           color: cs.onSurface.withValues(alpha: 0.5),
