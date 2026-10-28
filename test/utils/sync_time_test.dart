@@ -28,6 +28,17 @@ void main() {
       expect(DateTime.parse(syncInstant(instant)).isAtSameMomentAs(instant), isTrue);
     });
 
+    test('writes to the millisecond, as Hive keeps it', () {
+      // In memory a row changed this session has microseconds; read back
+      // from Hive it doesn't. Written as they are, the same row made two
+      // different backups, and an unchanged library was uploaded every launch.
+      final fresh = DateTime.utc(2026, 10, 25, 2, 30, 15, 123, 456);
+      final fromHive = DateTime.fromMillisecondsSinceEpoch(fresh.millisecondsSinceEpoch, isUtc: true);
+
+      expect(syncInstant(fresh), syncInstant(fromHive));
+      expect(syncInstant(fresh), '2026-10-25T02:30:15.123Z');
+    });
+
     test('reads back the same moment, in local time', () {
       final read = parseSyncInstant(syncInstant(instant));
       expect(read, instant);

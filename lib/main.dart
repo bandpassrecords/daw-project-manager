@@ -339,7 +339,15 @@ Future<void> _runAutoSync(
       return;
     }
 
-    await status.syncNow(quiet: true);
+    await status.syncNow(
+      quiet: true,
+      mergeOnlyIfNewer: interval.syncsOnlyForLaunch(
+        lastSync: lastSync,
+        now: DateTime.now(),
+        syncOnStartup: syncOnStartup,
+        atLaunch: atLaunch,
+      ),
+    );
     if (kDebugMode) print('Auto-sync completed successfully');
   } catch (e) {
     // Recorded by syncDatabase and shown on the dashboard's cloud button.

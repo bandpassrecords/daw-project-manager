@@ -126,10 +126,11 @@ void main() {
         profileRepo: profileRepo,
       );
 
-      // The merge's read, and the upload's read of the old media hashes.
+      // The merge's read: the upload compares against that same copy (its
+      // media hashes, and whether anything changed) instead of reading again.
       final reads =
           fakeDrive.log.where((l) => l == 'GET /drive/v3/files/$backupId');
-      expect(reads.length, 2);
+      expect(reads.length, 1);
     });
 
     test('records a failure and clears it on the next success', () async {
@@ -247,11 +248,133 @@ void main() {
     });
   });
 
+  group('nothing new, nothing written', () {
+    test('a sync with nothing changed leaves Drive and its history alone', () async {
+      // Every launch and timer tick used to write the whole backup again,
+      // each write pushing one of the earlier backups out of `history`.
+      final service = await signedIn();
+      await projectRepo.projectsBox.put('a', TestFactories.makeProject(id: 'a', notes: 'n'));
+      await service.syncDatabase(projectRepo: projectRepo, profileRepo: profileRepo);
+      final written = fakeDrive.named('database_backup.json')!.modifiedTime;
+      fakeDrive.log.clear();
+
+      await service.syncDatabase(projectRepo: projectRepo, profileRepo: profileRepo);
+
+      expect(fakeDrive.log.where((l) => !l.startsWith('GET')), isEmpty,
+          reason: 'nothing at all is written');
+      expect(fakeDrive.log, hasLength(2), reason: 'finding the backup, and reading it once');
+      expect(fakeDrive.named('database_backup.json')!.modifiedTime, written);
+      expect(await service.listSnapshots(), isEmpty);
+      expect(await service.getLastSyncedAt(), isNotNull);
+      final status = await service.getBackupInfo();
+      expect(status['isNewer'], isFalse, reason: 'Drive holds nothing unseen');
+    });
+
+    test('a change made here is still written', () async {
+      final service = await signedIn();
+      await projectRepo.projectsBox.put('a', TestFactories.makeProject(id: 'a', notes: 'n'));
+      await service.syncDatabase(projectRepo: projectRepo, profileRepo: profileRepo);
+      final written = fakeDrive.named('database_backup.json')!.modifiedTime;
+
+      await projectRepo.projectsBox.put('a', TestFactories.makeProject(id: 'a', notes: 'changed'));
+      await service.syncDatabase(projectRepo: projectRepo, profileRepo: profileRepo);
+
+      expect(fakeDrive.named('database_backup.json')!.modifiedTime, isNot(written));
+      expect((backupOnDrive()['projects'] as List).single['notes'], 'changed');
+      expect(await service.listSnapshots(), hasLength(1), reason: 'the replaced one is kept');
+    });
+
+    test('asks Drive about its preview songs once, however many there are', () async {
+      // Each song was looked up by name: a request per song per sync.
+      final service = await signedIn();
+      Future<void> song(String id) async {
+        final file = File('${tempDir.path}/$id.wav')..writeAsBytesSync([id.codeUnitAt(0)]);
+        await projectRepo.projectsBox.put(id, TestFactories.makeProject(id: id, previewSongPath: file.path));
+      }
+
+      Future<int> listingsOfASync() async {
+        fakeDrive.log.clear();
+        await service.syncDatabase(projectRepo: projectRepo, profileRepo: profileRepo, downloadPreviewSongs: false);
+        return fakeDrive.log.where((l) => l == 'GET /drive/v3/files').length;
+      }
+
+      await song('a');
+      await listingsOfASync();
+      final withOne = await listingsOfASync();
+      await song('b');
+      await song('c');
+      await listingsOfASync();
+      final withThree = await listingsOfASync();
+
+      expect(withThree, withOne);
+    });
+  });
+
+  group('the sync when the app starts', () {
+    test('doesn\'t merge a Drive copy this device already has', () async {
+      final service = await signedIn();
+      await projectRepo.projectsBox.put('a', TestFactories.makeProject(id: 'a', notes: 'mine'));
+      await service.syncDatabase(projectRepo: projectRepo, profileRepo: profileRepo);
+      // Drive's copy says otherwise, but it is the one this device wrote:
+      // its time on Drive is the one this device last saw.
+      final backup = fakeDrive.named('database_backup.json')!;
+      final data = backupOnDrive();
+      (data['projects'] as List).single['notes'] = 'not merged';
+      backup.content = utf8.encode(jsonEncode(data));
+
+      await service.syncDatabase(
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        mergeOnlyIfNewer: true,
+      );
+
+      expect(projectRepo.projectsBox.get('a')!.notes, 'mine');
+    });
+
+    test('merges what another device wrote since', () async {
+      final service = await signedIn();
+      await projectRepo.projectsBox.put('a', TestFactories.makeProject(id: 'a', notes: 'mine'));
+      await service.syncDatabase(projectRepo: projectRepo, profileRepo: profileRepo);
+      seedBackupFromAnotherDevice(service, projects: [
+        service.serializeProjectForTest(TestFactories.makeProject(
+          id: 'a',
+          notes: 'from the phone',
+          updatedAt: DateTime.now().add(const Duration(hours: 1)),
+        )),
+      ]);
+
+      await service.syncDatabase(
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        mergeOnlyIfNewer: true,
+      );
+
+      expect(projectRepo.projectsBox.get('a')!.notes, 'from the phone');
+    });
+
+    test('still uploads what this device has that Drive lacks', () async {
+      final service = await signedIn();
+      await service.syncDatabase(projectRepo: projectRepo, profileRepo: profileRepo);
+      await projectRepo.projectsBox.put('late', TestFactories.makeProject(id: 'late'));
+
+      await service.syncDatabase(
+        projectRepo: projectRepo,
+        profileRepo: profileRepo,
+        mergeOnlyIfNewer: true,
+      );
+
+      expect(projectIdsOnDrive(), contains('late'));
+    });
+  });
+
   group('earlier backups', () {
     test('every overwrite keeps the backup it replaces, newest first', () async {
       final service = await signedIn();
       final times = <DateTime>[];
       for (var i = 0; i < 3; i++) {
+        // Something new each time: an unchanged backup isn't written at all.
+        await projectRepo.projectsBox
+            .put('p', TestFactories.makeProject(id: 'p', notes: 'take $i'));
         await service.uploadDatabase(
           projectRepo: projectRepo,
           profileRepo: profileRepo,
@@ -269,6 +392,8 @@ void main() {
         () async {
       final service = await signedIn();
       for (var i = 0; i < GoogleDriveSyncService.snapshotsKept + 3; i++) {
+        await projectRepo.projectsBox
+            .put('p', TestFactories.makeProject(id: 'p', notes: 'take $i'));
         await service.uploadDatabase(
           projectRepo: projectRepo,
           profileRepo: profileRepo,

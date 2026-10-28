@@ -1416,10 +1416,12 @@ class DriveSyncStatusNotifier extends Notifier<DriveSyncStatus> {
   }
 
   /// Merge what Drive has, then upload — what Sync now, the tray and the
-  /// automatic timer ([quiet]) all do.
+  /// automatic timer ([quiet]) all do. The sync when the app starts passes
+  /// [mergeOnlyIfNewer] (see `GoogleDriveSyncService.syncDatabase`).
   Future<SyncResult> syncNow({
     bool downloadPreviewSongs = true,
     bool quiet = false,
+    bool mergeOnlyIfNewer = false,
   }) async {
     final profileRepo = await ref.read(profileRepositoryProvider.future);
     final projectRepo = await ref.read(repositoryProvider.future);
@@ -1431,6 +1433,7 @@ class DriveSyncStatusNotifier extends Notifier<DriveSyncStatus> {
         uploadAutoDetectedSongs:
             settings.get(UploadAutoPreviewSongsNotifier.storageKey) == 'true',
         downloadPreviewSongs: downloadPreviewSongs,
+        mergeOnlyIfNewer: mergeOnlyIfNewer,
       );
     });
   }
