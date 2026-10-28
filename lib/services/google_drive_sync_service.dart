@@ -52,6 +52,7 @@ import '../utils/app_paths.dart'
 import '../config/oauth_config.dart' show desktopClientSecret, desktopClientId, androidWebClientId;
 import 'plugin_bridge/plugin_protocol.dart' show dpmPluginCaptureFileInUse, dpmPluginPreviewFolderName;
 import 'plugin_capture_sync.dart';
+import 'preview_song_sync.dart';
 import '../utils/safe_file_name.dart';
 import '../utils/sync_time.dart';
 
@@ -2231,6 +2232,74 @@ class GoogleDriveSyncService {
   /// Download preview song file from Google Drive to local storage
   /// Returns the local file path, or null if download failed
   /// Uses hash comparison to avoid unnecessary downloads
+  /// Every file in Drive's preview songs folder, read page by page.
+  Future<List<PreviewSongOnDrive>> _listPreviewSongsOnDrive() async {
+    final folderId = await _ensurePreviewSongsFolder();
+    final found = <PreviewSongOnDrive>[];
+    String? pageToken;
+    do {
+      final page = await _driveApi!.files.list(
+        q: "parents in '$folderId' and trashed=false",
+        spaces: 'drive',
+        pageSize: 1000,
+        pageToken: pageToken,
+        $fields: 'nextPageToken, files(id, name, modifiedTime)',
+      );
+      for (final f in page.files ?? const <drive.File>[]) {
+        if (f.id == null || f.name == null) continue;
+        found.add(PreviewSongOnDrive(fileId: f.id!, name: f.name!, modifiedTime: f.modifiedTime));
+      }
+      pageToken = page.nextPageToken;
+    } while (pageToken != null);
+    return found;
+  }
+
+  /// Fills in, for each of [projects] that still has a preview song but no
+  /// entry in [files] yet, what [carriedPreviewSongEntry] keeps for it.
+  /// Drive's folder is read only when there is such a project, and once.
+  Future<void> _carryPreviewSongEntries({
+    required List<MusicProject> projects,
+    required Map<String, PreviewSongEntry> previous,
+    required bool includeAutoDetected,
+    required Map<String, String> files,
+    required Map<String, String> hashes,
+    required Map<String, String> names,
+  }) async {
+    final unlisted = [
+      for (final project in projects)
+        if (!files.containsKey(project.id) &&
+            previewSongWanted(project, includeAutoDetected: includeAutoDetected))
+          project,
+    ];
+    if (unlisted.isEmpty) return;
+    Map<String, PreviewSongOnDrive>? onDrive;
+    try {
+      onDrive = previewSongsByProject(await _listPreviewSongsOnDrive());
+    } catch (e) {
+      // Unread, entries are kept as the previous backup had them.
+      if (kDebugMode) print('Could not list the preview songs on Drive: $e');
+    }
+    for (final project in unlisted) {
+      final entry = carriedPreviewSongEntry(
+        project: project,
+        includeAutoDetected: includeAutoDetected,
+        previous: previous[project.id],
+        onDrive: onDrive,
+      );
+      if (entry == null) continue;
+      files[project.id] = entry.fileId;
+      if (entry.hash != null) {
+        hashes[project.id] = entry.hash!;
+      } else {
+        hashes.remove(project.id);
+      }
+      if (entry.fileName != null) names.putIfAbsent(project.id, () => entry.fileName!);
+      if (kDebugMode) {
+        print('  Kept the preview song on Drive for project ${project.id}: no file for it here');
+      }
+    }
+  }
+
   Future<String?> downloadPreviewSongFile({
     required String driveFileId,
     required String projectId,
@@ -2531,9 +2600,13 @@ class GoogleDriveSyncService {
       // The DAW plugin's captures the previous backup holds (their own track,
       // google_drive_capture_sync.dart).
       Map<String, CaptureEntry> existingCaptures = const {};
+      // The preview songs it lists, for the ones this device has no file for
+      // (preview_song_sync.dart).
+      Map<String, PreviewSongEntry> existingPreviewSongs = const {};
       try {
         final existingBackup = await downloadDatabase();
         existingCaptures = captureEntriesFrom(existingBackup['pluginCaptures']);
+        existingPreviewSongs = previewSongEntriesFrom(existingBackup);
         if (existingBackup['previewSongHashes'] != null) {
           existingHashes = Map<String, String>.from(existingBackup['previewSongHashes'] as Map);
           if (kDebugMode) {
@@ -3081,7 +3154,20 @@ class GoogleDriveSyncService {
           _lastUploadWarnings.add('Preview song error (${project.displayName}): $e');
         }
       }
-      
+
+      // A preview song this device found no file for, or failed to upload,
+      // keeps what Drive has for it. Rebuilt from this device's files alone,
+      // the backup let go of every song whose copy was gone here — and on a
+      // phone, of all of them.
+      await _carryPreviewSongEntries(
+        projects: [for (final (_, project) in allProjects) project],
+        previous: existingPreviewSongs,
+        includeAutoDetected: uploadAutoDetectedSongs,
+        files: previewSongFileMap,
+        hashes: previewSongHashes,
+        names: previewSongFileNames,
+      );
+
       // Now upload all profile photos that need uploading
       if (kDebugMode) {
         print('Found ${profilePhotosToUpload.length} profile photos that need upload');
