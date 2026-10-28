@@ -55,6 +55,7 @@ import '../utils/phase_colors.dart';
 import 'dashboard_page.dart' show appVersion;
 import 'dialogs/daw_launch_command_dialog.dart';
 import 'google_drive_sync_page.dart' show GoogleDriveSyncSection;
+import 'missing_preview_songs_section.dart';
 import 'recently_deleted_actions.dart' show RecentlyDeletedSection;
 import 'widgets/folders_profile_picker.dart';
 import 'metadata_extraction_info_page.dart';
@@ -1702,6 +1703,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         ],
         _SearchEntry(SettingsSection.mixdownFolders, Icons.audio_file_outlined, l10n.mixdownFoldersTabLabel, l10n.mixdownFoldersSectionDescription),
         _SearchEntry(SettingsSection.mixdownFolders, Icons.folder_open, l10n.previewMixdownFolderTitle, l10n.previewMixdownFolderSubtitle),
+        _SearchEntry(SettingsSection.mixdownFolders, Icons.music_off_outlined, l10n.missingPreviewSongsTitle, l10n.missingPreviewSongsSubtitle),
         for (final dawKey in MixdownDetectorService.dawFolders.keys)
           _SearchEntry(SettingsSection.mixdownFolders, Icons.piano_outlined, dawKey, MixdownDetectorService.dawFolders[dawKey]!.join(', ')),
         _SearchEntry(SettingsSection.phases, Icons.timeline_outlined, l10n.phases, l10n.phasesDescription),
@@ -2688,6 +2690,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l10n.mixdownFoldersSectionDescription, style: Theme.of(context).textTheme.bodySmall),
+        const SizedBox(height: 12),
+
+        const MissingPreviewSongsSection(),
         const SizedBox(height: 12),
 
         // Global custom mixdown folders — checked first, for every DAW.

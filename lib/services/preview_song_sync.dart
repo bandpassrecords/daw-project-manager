@@ -152,6 +152,10 @@ final _uuidPreviewName = RegExp(
   caseSensitive: false,
 );
 
+/// Whether [fileName] is one of this app's own `<id>_preview.<ext>` copies,
+/// which says nothing about what the song was called.
+bool isAppPreviewCopyName(String fileName) => _uuidPreviewName.hasMatch(fileName);
+
 /// The song's own file name from its stored path, unless that is one of this
 /// app's `<id>_preview.<ext>` copies.
 String? _realName(MusicProject project) {
@@ -160,7 +164,24 @@ String? _realName(MusicProject project) {
     // Windows rules split on both separators: a path synced from a Windows
     // desktop is read on a phone or a Mac too.
     final name = p.windows.basename(path);
-    if (!_uuidPreviewName.hasMatch(name)) return name;
+    if (!isAppPreviewCopyName(name)) return name;
   }
   return null;
+}
+
+/// Every preview song Drive has, by project: the backup's entries whose file
+/// is still there, then — for projects it no longer lists — the newest file
+/// named after the project.
+Map<String, PreviewSongEntry> previewSongsAvailable({
+  required Map<String, PreviewSongEntry> listed,
+  required Map<String, PreviewSongOnDrive> onDrive,
+}) {
+  final ids = onDrive.values.map((f) => f.fileId).toSet();
+  return {
+    for (final e in listed.entries)
+      if (ids.contains(e.value.fileId)) e.key: e.value,
+    for (final e in onDrive.entries)
+      if (!listed.containsKey(e.key) || !ids.contains(listed[e.key]!.fileId))
+        e.key: PreviewSongEntry(fileId: e.value.fileId, fileName: e.value.name),
+  };
 }

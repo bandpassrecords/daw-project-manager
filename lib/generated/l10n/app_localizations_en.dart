@@ -8405,4 +8405,106 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get legacyInstallRemoveFailed =>
       'The old copy\'s uninstaller couldn\'t be started.';
+
+  @override
+  String get missingPreviewSongsTitle => 'Missing preview songs';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      'Preview songs of the current profile that this computer can\'t find. Check them, then download, find or remove each one — nothing changes until you choose.';
+
+  @override
+  String get missingPreviewSongsCheck => 'Check';
+
+  @override
+  String get missingPreviewSongsChecking => 'Checking…';
+
+  @override
+  String get missingPreviewSongsNone =>
+      'Every preview song is where it should be.';
+
+  @override
+  String get missingPreviewSongsSignInHint =>
+      'Sign in to Google Drive to look for them there too.';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return 'On Google Drive ($count)';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription =>
+      'A backup has these songs. Downloading puts a copy on this computer.';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return 'From another computer ($count)';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      'Their paths belong to another computer, where they may play fine. Pick a file here to play them on this computer too.';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return 'Folder not there ($count)';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      'Their folder isn\'t there either: a drive that isn\'t connected, or a folder moved or deleted. Connect the drive and check again before removing anything.';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return 'File gone ($count)';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription =>
+      'The folder is there, but the file isn\'t.';
+
+  @override
+  String get missingPreviewDownload => 'Download';
+
+  @override
+  String get missingPreviewDownloadAll => 'Download all';
+
+  @override
+  String get missingPreviewFindAll => 'Find all';
+
+  @override
+  String get missingPreviewRemoveAll => 'Remove all';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Remove $count preview songs?',
+      one: 'Remove $count preview song?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      'They are removed on this computer only, and no file is deleted. If another device still has one of these songs, the next sync brings it back here.';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return 'Downloaded $done of $total.';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return 'Found a mixdown for $found of $total.';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return 'Couldn\'t download the song for $name.';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => 'Auto-detected';
 }

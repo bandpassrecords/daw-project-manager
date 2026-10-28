@@ -8469,4 +8469,106 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get legacyInstallRemoveFailed =>
       'Não foi possível iniciar o desinstalador da cópia antiga.';
+
+  @override
+  String get missingPreviewSongsTitle => 'Músicas de prévia ausentes';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      'Músicas de prévia do perfil atual que este computador não encontra. Revise-as e depois baixe, procure ou remova cada uma — nada muda até você escolher.';
+
+  @override
+  String get missingPreviewSongsCheck => 'Verificar';
+
+  @override
+  String get missingPreviewSongsChecking => 'Verificando…';
+
+  @override
+  String get missingPreviewSongsNone =>
+      'Todas as músicas de prévia estão onde deveriam.';
+
+  @override
+  String get missingPreviewSongsSignInHint =>
+      'Entre no Google Drive para procurá-las lá também.';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return 'No Google Drive ($count)';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription =>
+      'Um backup tem essas músicas. Ao baixar, uma cópia fica neste computador.';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return 'De outro computador ($count)';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      'Os caminhos delas são de outro computador, onde talvez toquem normalmente. Escolha um arquivo aqui para tocá-las neste computador também.';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return 'Pasta não encontrada ($count)';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      'A pasta delas também não está lá: uma unidade desconectada, ou uma pasta movida ou excluída. Conecte a unidade e verifique de novo antes de remover qualquer coisa.';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return 'Arquivo não encontrado ($count)';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription =>
+      'A pasta está lá, mas o arquivo não.';
+
+  @override
+  String get missingPreviewDownload => 'Baixar';
+
+  @override
+  String get missingPreviewDownloadAll => 'Baixar todas';
+
+  @override
+  String get missingPreviewFindAll => 'Procurar todas';
+
+  @override
+  String get missingPreviewRemoveAll => 'Remover todas';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Remover $count músicas de prévia?',
+      one: 'Remover $count música de prévia?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      'Elas são removidas só neste computador, e nenhum arquivo é excluído. Se outro dispositivo ainda tiver alguma dessas músicas, a próxima sincronização a traz de volta para cá.';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return '$done de $total baixadas.';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return 'Mixdown encontrado para $found de $total.';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return 'Não foi possível baixar a música de $name.';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => 'Detectada automaticamente';
 }

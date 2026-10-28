@@ -2300,6 +2300,32 @@ class GoogleDriveSyncService {
     }
   }
 
+  /// The preview songs Drive has, by project id (see [previewSongsAvailable]),
+  /// for Settings' review of missing preview songs. A backup that can't be
+  /// read still leaves the files in Drive's folder to go by.
+  Future<Map<String, PreviewSongEntry>> previewSongsOnDrive() async {
+    var listed = const <String, PreviewSongEntry>{};
+    try {
+      listed = previewSongEntriesFrom(await downloadDatabase());
+    } catch (e) {
+      if (kDebugMode) print('No backup to read preview songs from: $e');
+    }
+    return previewSongsAvailable(
+      listed: listed,
+      onDrive: previewSongsByProject(await _listPreviewSongsOnDrive()),
+    );
+  }
+
+  /// Downloads [entry], the song Drive has for [projectId], into this app's
+  /// preview songs folder. The local path, or null when it couldn't.
+  Future<String?> downloadPreviewSong(String projectId, PreviewSongEntry entry) =>
+      downloadPreviewSongFile(
+        driveFileId: entry.fileId,
+        projectId: projectId,
+        expectedHash: entry.hash,
+        fileExtension: entry.fileName == null ? null : path.extension(entry.fileName!),
+      );
+
   Future<String?> downloadPreviewSongFile({
     required String driveFileId,
     required String projectId,

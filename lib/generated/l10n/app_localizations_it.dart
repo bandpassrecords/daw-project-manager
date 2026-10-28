@@ -8485,4 +8485,106 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get legacyInstallRemoveFailed =>
       'Impossibile avviare il programma di disinstallazione della vecchia copia.';
+
+  @override
+  String get missingPreviewSongsTitle => 'Brani di anteprima mancanti';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      'I brani di anteprima del profilo attuale che questo computer non trova. Controllali, poi scarica, cerca o rimuovi ciascuno: non cambia nulla finché non scegli.';
+
+  @override
+  String get missingPreviewSongsCheck => 'Controlla';
+
+  @override
+  String get missingPreviewSongsChecking => 'Controllo in corso…';
+
+  @override
+  String get missingPreviewSongsNone =>
+      'Tutti i brani di anteprima sono al loro posto.';
+
+  @override
+  String get missingPreviewSongsSignInHint =>
+      'Accedi a Google Drive per cercarli anche lì.';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return 'Su Google Drive ($count)';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription =>
+      'Un backup contiene questi brani. Scaricandoli ne metti una copia su questo computer.';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return 'Da un altro computer ($count)';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      'I loro percorsi appartengono a un altro computer, dove forse si riproducono senza problemi. Scegli un file qui per riprodurli anche su questo computer.';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return 'Cartella non trovata ($count)';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      'Manca anche la loro cartella: un\'unità non collegata, oppure una cartella spostata o eliminata. Collega l\'unità e controlla di nuovo prima di rimuovere qualcosa.';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return 'File non trovato ($count)';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription =>
+      'La cartella c\'è, ma il file no.';
+
+  @override
+  String get missingPreviewDownload => 'Scarica';
+
+  @override
+  String get missingPreviewDownloadAll => 'Scarica tutti';
+
+  @override
+  String get missingPreviewFindAll => 'Cerca tutti';
+
+  @override
+  String get missingPreviewRemoveAll => 'Rimuovi tutti';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Rimuovere $count brani di anteprima?',
+      one: 'Rimuovere $count brano di anteprima?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      'Vengono rimossi solo su questo computer e nessun file viene eliminato. Se un altro dispositivo ha ancora uno di questi brani, la prossima sincronizzazione lo riporta qui.';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return 'Scaricati $done su $total.';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return 'Trovato un mixdown per $found su $total.';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return 'Impossibile scaricare il brano di $name.';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => 'Rilevato automaticamente';
 }

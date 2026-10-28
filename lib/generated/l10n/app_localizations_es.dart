@@ -8503,4 +8503,106 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get legacyInstallRemoveFailed =>
       'No se pudo iniciar el desinstalador de la copia antigua.';
+
+  @override
+  String get missingPreviewSongsTitle => 'Canciones de vista previa que faltan';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      'Canciones de vista previa del perfil actual que este equipo no encuentra. Revísalas y luego descarga, busca o quita cada una: nada cambia hasta que elijas.';
+
+  @override
+  String get missingPreviewSongsCheck => 'Revisar';
+
+  @override
+  String get missingPreviewSongsChecking => 'Revisando…';
+
+  @override
+  String get missingPreviewSongsNone =>
+      'Todas las canciones de vista previa están donde deben.';
+
+  @override
+  String get missingPreviewSongsSignInHint =>
+      'Inicia sesión en Google Drive para buscarlas también allí.';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return 'En Google Drive ($count)';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription =>
+      'Una copia de seguridad tiene estas canciones. Al descargarlas se guarda una copia en este equipo.';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return 'De otro equipo ($count)';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      'Sus rutas son de otro equipo, donde quizá se reproducen bien. Elige un archivo aquí para reproducirlas también en este equipo.';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return 'Carpeta no encontrada ($count)';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      'Su carpeta tampoco está: una unidad sin conectar o una carpeta movida o eliminada. Conecta la unidad y vuelve a revisar antes de quitar nada.';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return 'Archivo no encontrado ($count)';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription =>
+      'La carpeta está, pero el archivo no.';
+
+  @override
+  String get missingPreviewDownload => 'Descargar';
+
+  @override
+  String get missingPreviewDownloadAll => 'Descargar todas';
+
+  @override
+  String get missingPreviewFindAll => 'Buscar todas';
+
+  @override
+  String get missingPreviewRemoveAll => 'Quitar todas';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '¿Quitar $count canciones de vista previa?',
+      one: '¿Quitar $count canción de vista previa?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      'Solo se quitan en este equipo y no se elimina ningún archivo. Si otro dispositivo todavía tiene alguna de estas canciones, la próxima sincronización la vuelve a traer aquí.';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return 'Descargadas $done de $total.';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return 'Se encontró una mezcla para $found de $total.';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return 'No se pudo descargar la canción de $name.';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => 'Detectada automáticamente';
 }

@@ -7993,4 +7993,102 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get legacyInstallRemoveFailed => '古いコピーのアンインストーラーを起動できませんでした。';
+
+  @override
+  String get missingPreviewSongsTitle => '見つからないプレビュー曲';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      '現在のプロファイルで、このコンピューターが見つけられないプレビュー曲です。確認してから、それぞれダウンロード・検索・削除を選んでください。選ぶまで何も変わりません。';
+
+  @override
+  String get missingPreviewSongsCheck => '確認';
+
+  @override
+  String get missingPreviewSongsChecking => '確認中…';
+
+  @override
+  String get missingPreviewSongsNone => 'すべてのプレビュー曲が所定の場所にあります。';
+
+  @override
+  String get missingPreviewSongsSignInHint => 'Google ドライブにログインすると、そこでも探せます。';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return 'Google ドライブ上 ($count)';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription =>
+      'バックアップにこれらの曲があります。ダウンロードすると、このコンピューターにコピーが保存されます。';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return '別のコンピューターから ($count)';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      'パスは別のコンピューターのもので、そちらでは問題なく再生できるかもしれません。このコンピューターでも再生するには、ここでファイルを選んでください。';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return 'フォルダーがありません ($count)';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      'フォルダーも見つかりません。ドライブが接続されていないか、フォルダーが移動または削除されています。何かを削除する前に、ドライブを接続してもう一度確認してください。';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return 'ファイルがありません ($count)';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription => 'フォルダーはありますが、ファイルがありません。';
+
+  @override
+  String get missingPreviewDownload => 'ダウンロード';
+
+  @override
+  String get missingPreviewDownloadAll => 'すべてダウンロード';
+
+  @override
+  String get missingPreviewFindAll => 'すべて検索';
+
+  @override
+  String get missingPreviewRemoveAll => 'すべて削除';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'プレビュー曲を$count件削除しますか？',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      'このコンピューター上でのみ削除され、ファイルは削除されません。別のデバイスにまだこれらの曲がある場合は、次回の同期でここに戻ります。';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return '$total件中$done件をダウンロードしました。';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return '$total件中$found件のミックスダウンが見つかりました。';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return '$nameの曲をダウンロードできませんでした。';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => '自動検出';
 }

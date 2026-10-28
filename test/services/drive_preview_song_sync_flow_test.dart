@@ -178,6 +178,33 @@ void main() {
     expect(listedSongs(), isEmpty);
   });
 
+  test('the review finds what Drive has and downloads it', () async {
+    // Settings > Missing preview songs: a listed song and one no backup
+    // lists any more, both downloadable.
+    final service = await signedIn();
+    final listed = songOnDrive('a_preview.wav', [1, 1]);
+    final unlisted = songOnDrive('b_preview.flac', [2, 2]);
+    await projectRepo.projectsBox.put('a', TestFactories.makeProject(id: 'a', previewSongPath: '/gone/a.wav'));
+    await projectRepo.projectsBox.put('b', TestFactories.makeProject(id: 'b', previewSongPath: '/gone/b.flac'));
+    backupListing(service, {'a': listed.id});
+
+    final onDrive = await service.previewSongsOnDrive();
+    expect({for (final e in onDrive.entries) e.key: e.value.fileId}, {'a': listed.id, 'b': unlisted.id});
+
+    final path = await service.downloadPreviewSong('b', onDrive['b']!);
+    expect(p.basename(path!), 'b_preview.flac', reason: 'the extension comes from Drive');
+    expect(await File(path).readAsBytes(), [2, 2]);
+  });
+
+  test('the review still finds the songs in Drive\'s folder with no backup', () async {
+    final service = await signedIn();
+    final song = songOnDrive('a_preview.wav', [1]);
+
+    final onDrive = await service.previewSongsOnDrive();
+
+    expect(onDrive['a']!.fileId, song.id);
+  });
+
   test('a song with its file here is uploaded as before', () async {
     final service = await signedIn();
     final file = File(p.join(tempDir.path, 'Mix.wav'))..writeAsBytesSync([9, 9]);

@@ -7900,4 +7900,101 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get legacyInstallRemoveFailed => '无法启动旧副本的卸载程序。';
+
+  @override
+  String get missingPreviewSongsTitle => '缺失的预览歌曲';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      '当前配置文件中此电脑找不到的预览歌曲。先检查，再逐个下载、查找或移除——在你选择之前不会有任何改动。';
+
+  @override
+  String get missingPreviewSongsCheck => '检查';
+
+  @override
+  String get missingPreviewSongsChecking => '正在检查…';
+
+  @override
+  String get missingPreviewSongsNone => '所有预览歌曲都在应在的位置。';
+
+  @override
+  String get missingPreviewSongsSignInHint => '登录 Google Drive，也可在那里查找。';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return '在 Google Drive 上（$count）';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription => '备份中有这些歌曲。下载后会在此电脑上保存一份副本。';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return '来自另一台电脑（$count）';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      '它们的路径属于另一台电脑，在那里可能可以正常播放。在此选择一个文件，即可在这台电脑上播放。';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return '文件夹不存在（$count）';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      '它们的文件夹也不在：可能是驱动器未连接，或文件夹已移动或删除。移除任何内容前，请先连接驱动器并重新检查。';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return '文件不存在（$count）';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription => '文件夹还在，但文件不在了。';
+
+  @override
+  String get missingPreviewDownload => '下载';
+
+  @override
+  String get missingPreviewDownloadAll => '全部下载';
+
+  @override
+  String get missingPreviewFindAll => '全部查找';
+
+  @override
+  String get missingPreviewRemoveAll => '全部移除';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '移除 $count 首预览歌曲？',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      '只会在此电脑上移除，不会删除任何文件。如果其他设备仍有其中某首歌曲，下次同步会把它带回这里。';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return '已下载 $done/$total。';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return '已为 $found/$total 找到缩混。';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return '无法下载 $name 的歌曲。';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => '自动检测';
 }

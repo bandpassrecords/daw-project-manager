@@ -58,6 +58,39 @@ void main() {
     });
   });
 
+  group('previewSongsAvailable', () {
+    test('listed songs still on Drive, then the ones no backup lists', () {
+      final available = previewSongsAvailable(
+        listed: const {
+          'a': PreviewSongEntry(fileId: 'file-a', hash: 'h', fileName: 'A.wav'),
+          'gone': PreviewSongEntry(fileId: 'deleted'),
+        },
+        onDrive: const {
+          'a': PreviewSongOnDrive(fileId: 'file-a', name: 'a_preview.wav'),
+          'b': PreviewSongOnDrive(fileId: 'file-b', name: 'b_preview.mp3'),
+        },
+      );
+
+      expect(available.keys, {'a', 'b'});
+      expect(available['a']!.hash, 'h', reason: 'the listed entry, with its hash');
+      expect(available['b']!.fileName, 'b_preview.mp3', reason: 'its name gives the extension');
+    });
+
+    test('a listed entry whose file is gone gives way to the file there', () {
+      final available = previewSongsAvailable(
+        listed: const {'a': PreviewSongEntry(fileId: 'deleted')},
+        onDrive: const {'a': PreviewSongOnDrive(fileId: 'file-a', name: 'a_preview.wav')},
+      );
+
+      expect(available['a']!.fileId, 'file-a');
+    });
+  });
+
+  test('isAppPreviewCopyName tells the app\'s own copies from real names', () {
+    expect(isAppPreviewCopyName('013021c9-6661-4fc5-93a3-f36e042de644_preview.wav'), isTrue);
+    expect(isAppPreviewCopyName('Song (final).wav'), isFalse);
+  });
+
   group('previewSongWanted', () {
     test('a manual preview is always wanted', () {
       final project = TestFactories.makeProject(previewSongPath: '/gone.wav');

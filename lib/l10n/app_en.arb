@@ -8067,5 +8067,91 @@
   "legacyInstallRemoveFailed": "The old copy's uninstaller couldn't be started.",
   "@legacyInstallRemoveFailed": {
     "description": "Snackbar when the previous installation's uninstaller could not be started"
-  }
+  },
+  "missingPreviewSongsTitle": "Missing preview songs",
+  "missingPreviewSongsSubtitle": "Preview songs of the current profile that this computer can't find. Check them, then download, find or remove each one — nothing changes until you choose.",
+  "missingPreviewSongsCheck": "Check",
+  "missingPreviewSongsChecking": "Checking…",
+  "missingPreviewSongsNone": "Every preview song is where it should be.",
+  "missingPreviewSongsSignInHint": "Sign in to Google Drive to look for them there too.",
+  "missingPreviewOnDriveTitle": "On Google Drive ({count})",
+  "@missingPreviewOnDriveTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "missingPreviewOnDriveDescription": "A backup has these songs. Downloading puts a copy on this computer.",
+  "missingPreviewOtherComputerTitle": "From another computer ({count})",
+  "@missingPreviewOtherComputerTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "missingPreviewOtherComputerDescription": "Their paths belong to another computer, where they may play fine. Pick a file here to play them on this computer too.",
+  "missingPreviewFolderMissingTitle": "Folder not there ({count})",
+  "@missingPreviewFolderMissingTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "missingPreviewFolderMissingDescription": "Their folder isn't there either: a drive that isn't connected, or a folder moved or deleted. Connect the drive and check again before removing anything.",
+  "missingPreviewFileMissingTitle": "File gone ({count})",
+  "@missingPreviewFileMissingTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "missingPreviewFileMissingDescription": "The folder is there, but the file isn't.",
+  "missingPreviewDownload": "Download",
+  "missingPreviewDownloadAll": "Download all",
+  "missingPreviewFindAll": "Find all",
+  "missingPreviewRemoveAll": "Remove all",
+  "missingPreviewRemoveAllTitle": "{count, plural, one{Remove {count} preview song?} other{Remove {count} preview songs?}}",
+  "@missingPreviewRemoveAllTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "missingPreviewRemoveBody": "They are removed on this computer only, and no file is deleted. If another device still has one of these songs, the next sync brings it back here.",
+  "missingPreviewDownloadedResult": "Downloaded {done} of {total}.",
+  "@missingPreviewDownloadedResult": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "missingPreviewFoundResult": "Found a mixdown for {found} of {total}.",
+  "@missingPreviewFoundResult": {
+    "placeholders": {
+      "found": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "missingPreviewDownloadFailed": "Couldn't download the song for {name}.",
+  "@missingPreviewDownloadFailed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "missingPreviewAutoDetected": "Auto-detected"
 }

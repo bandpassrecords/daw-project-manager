@@ -8464,4 +8464,106 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get legacyInstallRemoveFailed =>
       'Das Deinstallationsprogramm der alten Kopie konnte nicht gestartet werden.';
+
+  @override
+  String get missingPreviewSongsTitle => 'Fehlende Vorschau-Songs';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      'Vorschau-Songs des aktuellen Profils, die dieser Computer nicht findet. Prüfe sie und lade dann jeden herunter, suche ihn oder entferne ihn – ohne deine Wahl ändert sich nichts.';
+
+  @override
+  String get missingPreviewSongsCheck => 'Prüfen';
+
+  @override
+  String get missingPreviewSongsChecking => 'Wird geprüft …';
+
+  @override
+  String get missingPreviewSongsNone =>
+      'Alle Vorschau-Songs sind da, wo sie sein sollen.';
+
+  @override
+  String get missingPreviewSongsSignInHint =>
+      'Melde dich bei Google Drive an, um sie auch dort zu suchen.';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return 'Auf Google Drive ($count)';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription =>
+      'Ein Backup enthält diese Songs. Beim Herunterladen kommt eine Kopie auf diesen Computer.';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return 'Von einem anderen Computer ($count)';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      'Ihre Pfade gehören zu einem anderen Computer, wo sie vielleicht problemlos laufen. Wähle hier eine Datei, um sie auch auf diesem Computer abzuspielen.';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return 'Ordner fehlt ($count)';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      'Auch ihr Ordner ist nicht da: ein nicht verbundenes Laufwerk oder ein verschobener oder gelöschter Ordner. Verbinde das Laufwerk und prüfe erneut, bevor du etwas entfernst.';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return 'Datei fehlt ($count)';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription =>
+      'Der Ordner ist da, die Datei aber nicht.';
+
+  @override
+  String get missingPreviewDownload => 'Herunterladen';
+
+  @override
+  String get missingPreviewDownloadAll => 'Alle herunterladen';
+
+  @override
+  String get missingPreviewFindAll => 'Alle suchen';
+
+  @override
+  String get missingPreviewRemoveAll => 'Alle entfernen';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Vorschau-Songs entfernen?',
+      one: '$count Vorschau-Song entfernen?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      'Sie werden nur auf diesem Computer entfernt, und keine Datei wird gelöscht. Hat ein anderes Gerät einen dieser Songs noch, bringt ihn die nächste Synchronisierung hierher zurück.';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return '$done von $total heruntergeladen.';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return 'Für $found von $total einen Mixdown gefunden.';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return 'Der Song für $name konnte nicht heruntergeladen werden.';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => 'Automatisch erkannt';
 }

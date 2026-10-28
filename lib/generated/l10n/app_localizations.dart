@@ -13453,6 +13453,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The old copy\'s uninstaller couldn\'t be started.'**
   String get legacyInstallRemoveFailed;
+
+  /// No description provided for @missingPreviewSongsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing preview songs'**
+  String get missingPreviewSongsTitle;
+
+  /// No description provided for @missingPreviewSongsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview songs of the current profile that this computer can\'t find. Check them, then download, find or remove each one — nothing changes until you choose.'**
+  String get missingPreviewSongsSubtitle;
+
+  /// No description provided for @missingPreviewSongsCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get missingPreviewSongsCheck;
+
+  /// No description provided for @missingPreviewSongsChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking…'**
+  String get missingPreviewSongsChecking;
+
+  /// No description provided for @missingPreviewSongsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Every preview song is where it should be.'**
+  String get missingPreviewSongsNone;
+
+  /// No description provided for @missingPreviewSongsSignInHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to Google Drive to look for them there too.'**
+  String get missingPreviewSongsSignInHint;
+
+  /// No description provided for @missingPreviewOnDriveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On Google Drive ({count})'**
+  String missingPreviewOnDriveTitle(int count);
+
+  /// No description provided for @missingPreviewOnDriveDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A backup has these songs. Downloading puts a copy on this computer.'**
+  String get missingPreviewOnDriveDescription;
+
+  /// No description provided for @missingPreviewOtherComputerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'From another computer ({count})'**
+  String missingPreviewOtherComputerTitle(int count);
+
+  /// No description provided for @missingPreviewOtherComputerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Their paths belong to another computer, where they may play fine. Pick a file here to play them on this computer too.'**
+  String get missingPreviewOtherComputerDescription;
+
+  /// No description provided for @missingPreviewFolderMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder not there ({count})'**
+  String missingPreviewFolderMissingTitle(int count);
+
+  /// No description provided for @missingPreviewFolderMissingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Their folder isn\'t there either: a drive that isn\'t connected, or a folder moved or deleted. Connect the drive and check again before removing anything.'**
+  String get missingPreviewFolderMissingDescription;
+
+  /// No description provided for @missingPreviewFileMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'File gone ({count})'**
+  String missingPreviewFileMissingTitle(int count);
+
+  /// No description provided for @missingPreviewFileMissingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The folder is there, but the file isn\'t.'**
+  String get missingPreviewFileMissingDescription;
+
+  /// No description provided for @missingPreviewDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get missingPreviewDownload;
+
+  /// No description provided for @missingPreviewDownloadAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Download all'**
+  String get missingPreviewDownloadAll;
+
+  /// No description provided for @missingPreviewFindAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Find all'**
+  String get missingPreviewFindAll;
+
+  /// No description provided for @missingPreviewRemoveAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all'**
+  String get missingPreviewRemoveAll;
+
+  /// No description provided for @missingPreviewRemoveAllTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Remove {count} preview song?} other{Remove {count} preview songs?}}'**
+  String missingPreviewRemoveAllTitle(int count);
+
+  /// No description provided for @missingPreviewRemoveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'They are removed on this computer only, and no file is deleted. If another device still has one of these songs, the next sync brings it back here.'**
+  String get missingPreviewRemoveBody;
+
+  /// No description provided for @missingPreviewDownloadedResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded {done} of {total}.'**
+  String missingPreviewDownloadedResult(int done, int total);
+
+  /// No description provided for @missingPreviewFoundResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Found a mixdown for {found} of {total}.'**
+  String missingPreviewFoundResult(int found, int total);
+
+  /// No description provided for @missingPreviewDownloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t download the song for {name}.'**
+  String missingPreviewDownloadFailed(String name);
+
+  /// No description provided for @missingPreviewAutoDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-detected'**
+  String get missingPreviewAutoDetected;
 }
 
 class _AppLocalizationsDelegate

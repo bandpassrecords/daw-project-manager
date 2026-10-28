@@ -8503,4 +8503,106 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get legacyInstallRemoveFailed =>
       'Impossible de lancer le programme de désinstallation de l’ancienne copie.';
+
+  @override
+  String get missingPreviewSongsTitle => 'Chansons d\'aperçu manquantes';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      'Les chansons d\'aperçu du profil actuel que cet ordinateur ne trouve pas. Vérifiez-les, puis téléchargez, recherchez ou retirez chacune : rien ne change tant que vous n\'avez pas choisi.';
+
+  @override
+  String get missingPreviewSongsCheck => 'Vérifier';
+
+  @override
+  String get missingPreviewSongsChecking => 'Vérification…';
+
+  @override
+  String get missingPreviewSongsNone =>
+      'Toutes les chansons d\'aperçu sont à leur place.';
+
+  @override
+  String get missingPreviewSongsSignInHint =>
+      'Connectez-vous à Google Drive pour les y chercher aussi.';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return 'Sur Google Drive ($count)';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription =>
+      'Une sauvegarde contient ces chansons. Les télécharger en place une copie sur cet ordinateur.';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return 'D\'un autre ordinateur ($count)';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      'Leurs chemins appartiennent à un autre ordinateur, où elles se lisent peut-être très bien. Choisissez un fichier ici pour les lire aussi sur cet ordinateur.';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return 'Dossier introuvable ($count)';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      'Leur dossier n\'est pas là non plus : un disque non connecté, ou un dossier déplacé ou supprimé. Connectez le disque et vérifiez à nouveau avant de retirer quoi que ce soit.';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return 'Fichier introuvable ($count)';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription =>
+      'Le dossier est là, mais pas le fichier.';
+
+  @override
+  String get missingPreviewDownload => 'Télécharger';
+
+  @override
+  String get missingPreviewDownloadAll => 'Tout télécharger';
+
+  @override
+  String get missingPreviewFindAll => 'Tout rechercher';
+
+  @override
+  String get missingPreviewRemoveAll => 'Tout retirer';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Retirer $count chansons d\'aperçu ?',
+      one: 'Retirer $count chanson d\'aperçu ?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      'Elles ne sont retirées que sur cet ordinateur, et aucun fichier n\'est supprimé. Si un autre appareil a encore l\'une de ces chansons, la prochaine synchronisation la ramène ici.';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return '$done sur $total téléchargées.';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return 'Mixdown trouvé pour $found sur $total.';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return 'Impossible de télécharger la chanson de $name.';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => 'Détectée automatiquement';
 }

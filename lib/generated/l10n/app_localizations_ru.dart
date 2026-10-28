@@ -8431,4 +8431,107 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get legacyInstallRemoveFailed =>
       'Не удалось запустить деинсталлятор старой копии.';
+
+  @override
+  String get missingPreviewSongsTitle => 'Недостающие превью треков';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      'Превью треков текущего профиля, которые этот компьютер не находит. Проверьте их, затем скачайте, найдите или удалите каждое — ничего не изменится, пока вы не выберете.';
+
+  @override
+  String get missingPreviewSongsCheck => 'Проверить';
+
+  @override
+  String get missingPreviewSongsChecking => 'Проверка…';
+
+  @override
+  String get missingPreviewSongsNone => 'Все превью треков на своих местах.';
+
+  @override
+  String get missingPreviewSongsSignInHint =>
+      'Войдите в Google Drive, чтобы искать их и там.';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return 'На Google Drive ($count)';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription =>
+      'Эти треки есть в резервной копии. При скачивании копия сохранится на этом компьютере.';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return 'С другого компьютера ($count)';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      'Их пути относятся к другому компьютеру, где они, возможно, нормально воспроизводятся. Выберите файл здесь, чтобы воспроизводить их и на этом компьютере.';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return 'Папка не найдена ($count)';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      'Их папки тоже нет: диск не подключён, или папка перемещена или удалена. Подключите диск и проверьте снова, прежде чем что-то удалять.';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return 'Файл не найден ($count)';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription =>
+      'Папка на месте, а файла нет.';
+
+  @override
+  String get missingPreviewDownload => 'Скачать';
+
+  @override
+  String get missingPreviewDownloadAll => 'Скачать все';
+
+  @override
+  String get missingPreviewFindAll => 'Найти все';
+
+  @override
+  String get missingPreviewRemoveAll => 'Удалить все';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Удалить $count превью трека?',
+      many: 'Удалить $count превью треков?',
+      few: 'Удалить $count превью треков?',
+      one: 'Удалить $count превью трека?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      'Они удаляются только на этом компьютере, файлы не удаляются. Если на другом устройстве ещё есть какой-то из этих треков, следующая синхронизация вернёт его сюда.';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return 'Скачано $done из $total.';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return 'Сведённый файл найден для $found из $total.';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return 'Не удалось скачать трек для $name.';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => 'Найдено автоматически';
 }
