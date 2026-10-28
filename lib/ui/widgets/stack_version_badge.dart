@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import 'on_art_marker.dart';
+import 'semantics_safe.dart';
 
 /// The "N versions" capsule after a version stack's name in the projects
 /// grid, so a stacked song is distinguishable from an ordinary project at a
@@ -31,7 +32,7 @@ class StackVersionBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
-    return Tooltip(
+    return StandaloneTooltip(
       message: tooltip,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),

@@ -6,6 +6,7 @@ import '../../models/music_project.dart';
 import '../../utils/daw_logo.dart';
 import '../../utils/project_accent_color.dart';
 import '../../utils/project_visuals.dart';
+import 'semantics_safe.dart';
 
 /// The dashboard's card/gallery view: the same projects the table shows, drawn
 /// cover-first (#111).
@@ -347,7 +348,7 @@ class _ProjectCardState extends State<_ProjectCard> {
         Positioned(
           top: 2,
           left: 2,
-          child: Tooltip(
+          child: StandaloneTooltip(
             message: widget.labels.selectTooltip,
             child: Container(
               decoration: BoxDecoration(
@@ -378,7 +379,7 @@ class _ProjectCardState extends State<_ProjectCard> {
               if (widget.project.isArchived)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: Tooltip(
+                  child: StandaloneTooltip(
                     message: widget.fileExists
                         ? widget.labels.archivedWithLocalCopyTooltip
                         : widget.labels.archivedAwayTooltip,
@@ -402,7 +403,7 @@ class _ProjectCardState extends State<_ProjectCard> {
               if (!widget.fileExists && widget.project.isMissingFileCandidate)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: Tooltip(
+                  child: StandaloneTooltip(
                     message: widget.labels.missingFileTooltip,
                     child: Container(
                       padding: const EdgeInsets.all(3),
@@ -748,7 +749,7 @@ class _ProjectCardState extends State<_ProjectCard> {
   }
 
   Widget _badge(ThemeData theme, String text, {required String tooltip}) {
-    return Tooltip(
+    return StandaloneTooltip(
       message: tooltip,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),

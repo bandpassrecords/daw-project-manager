@@ -12,6 +12,7 @@ import '../../utils/musical_scale.dart';
 import '../../utils/time_signature.dart';
 import 'midi_clip_edit_controller.dart';
 import 'midi_tool_icons.dart';
+import 'semantics_safe.dart';
 
 // --- pure helpers ------------------------------------------------------------
 
@@ -1750,11 +1751,13 @@ class _MidiPianoRollState extends State<MidiPianoRoll>
             height: 140,
             child: RotatedBox(
               quarterTurns: 3,
-              child: Slider(
-                value: _rowHeight,
-                min: 6,
-                max: 28,
-                onChanged: _setRowHeight,
+              child: SliderOverlay(
+                child: Slider(
+                  value: _rowHeight,
+                  min: 6,
+                  max: 28,
+                  onChanged: _setRowHeight,
+                ),
               ),
             ),
           ),

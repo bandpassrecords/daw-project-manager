@@ -4,6 +4,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../providers/theme_provider.dart';
 import '../../utils/theme_derivations.dart';
 import '../theme_labels.dart';
+import 'semantics_safe.dart';
 
 class ThemeSwitcher extends ConsumerWidget {
   const ThemeSwitcher({super.key});
@@ -24,7 +25,7 @@ class ThemeSwitcher extends ConsumerWidget {
 
     void cycle() => ref.read(selectedThemeIdProvider.notifier).cycle();
 
-    return Tooltip(
+    return StandaloneTooltip(
       message: tooltip,
       child: Row(
         mainAxisSize: MainAxisSize.min,

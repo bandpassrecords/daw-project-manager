@@ -119,6 +119,7 @@ import '../models/custom_field.dart';
 import 'package:uuid/uuid.dart';
 import 'app_snack_bar.dart';
 import 'dialogs/root_overlap_dialog.dart';
+import 'widgets/semantics_safe.dart';
 
 /// App version embedded at build-time (CI passes `--dart-define=APP_VERSION=x.y.z`).
 /// For PR/local builds, we fall back to a dummy version.
@@ -7728,7 +7729,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                 ),
               ],
               if (isNotesMatch)
-                Tooltip(
+                StandaloneTooltip(
                   message: AppLocalizations.of(context)!.matchedInDescription,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 6),
@@ -7740,7 +7741,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   ),
                 ),
               if (isProjectNotesMatch)
-                Tooltip(
+                StandaloneTooltip(
                   message: AppLocalizations.of(
                     context,
                   )!.matchedInProjectNotes,
@@ -7759,7 +7760,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
               // distinguishes the two archived states, since one is still
               // openable in the DAW and the other is not.
               if (project.isArchived && !MobileUtils.isMobile())
-                Tooltip(
+                StandaloneTooltip(
                   message: fileExists
                       ? AppLocalizations.of(context)!.archivedWithLocalCopy
                       : AppLocalizations.of(context)!.archivedAwayTooltip,
@@ -7781,7 +7782,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
               if (!fileExists &&
                   project.isMissingFileCandidate &&
                   !MobileUtils.isMobile())
-                Tooltip(
+                StandaloneTooltip(
                   message: AppLocalizations.of(
                     context,
                   )!.sourceFileNotFoundOnThisMachine,
@@ -9301,17 +9302,19 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                 ).colorScheme.primary.withValues(alpha: 0.12),
                 trackHeight: 4.0,
               ),
-              child: Slider(
-                value: _duration.inMilliseconds > 0
-                    ? _position.inMilliseconds.toDouble()
-                    : 0.0,
-                max: _duration.inMilliseconds > 0
-                    ? _duration.inMilliseconds.toDouble()
-                    : 100.0,
-                onChanged: (value) async {
-                  final position = Duration(milliseconds: value.toInt());
-                  await _audioPlayer.seek(position);
-                },
+              child: SliderOverlay(
+                child: Slider(
+                  value: _duration.inMilliseconds > 0
+                      ? _position.inMilliseconds.toDouble()
+                      : 0.0,
+                  max: _duration.inMilliseconds > 0
+                      ? _duration.inMilliseconds.toDouble()
+                      : 100.0,
+                  onChanged: (value) async {
+                    final position = Duration(milliseconds: value.toInt());
+                    await _audioPlayer.seek(position);
+                  },
+                ),
               ),
             ),
             Padding(
@@ -9356,15 +9359,17 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
               color: Theme.of(context).textTheme.bodySmall?.color,
             ),
             Expanded(
-              child: Slider(
-                value: _volume,
-                min: 0.0,
-                max: 1.0,
-                onChanged: _setVolume,
+              child: SliderOverlay(
+                child: Slider(
+                  value: _volume,
+                  min: 0.0,
+                  max: 1.0,
+                  onChanged: _setVolume,
+                ),
               ),
             ),
             const SizedBox(width: 8),
-            Tooltip(
+            StandaloneTooltip(
               message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -9459,17 +9464,19 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                       ).colorScheme.primary.withValues(alpha: 0.12),
                       trackHeight: 3.0,
                     ),
-                    child: Slider(
-                      value: _duration.inMilliseconds > 0
-                          ? _position.inMilliseconds.toDouble()
-                          : 0.0,
-                      max: _duration.inMilliseconds > 0
-                          ? _duration.inMilliseconds.toDouble()
-                          : 100.0,
-                      onChanged: (value) async {
-                        final position = Duration(milliseconds: value.toInt());
-                        await _audioPlayer.seek(position);
-                      },
+                    child: SliderOverlay(
+                      child: Slider(
+                        value: _duration.inMilliseconds > 0
+                            ? _position.inMilliseconds.toDouble()
+                            : 0.0,
+                        max: _duration.inMilliseconds > 0
+                            ? _duration.inMilliseconds.toDouble()
+                            : 100.0,
+                        onChanged: (value) async {
+                          final position = Duration(milliseconds: value.toInt());
+                          await _audioPlayer.seek(position);
+                        },
+                      ),
                     ),
                   ),
                   Row(
@@ -9509,11 +9516,13 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
             ),
             SizedBox(
               width: 120,
-              child: Slider(
-                value: _volume,
-                min: 0.0,
-                max: 1.0,
-                onChanged: _setVolume,
+              child: SliderOverlay(
+                child: Slider(
+                  value: _volume,
+                  min: 0.0,
+                  max: 1.0,
+                  onChanged: _setVolume,
+                ),
               ),
             ),
           ],
@@ -9521,7 +9530,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
         const SizedBox(height: 4),
         Row(
           children: [
-            Tooltip(
+            StandaloneTooltip(
               message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -10694,11 +10703,13 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                       ),
                       SizedBox(
                         width: 135,
-                        child: Slider(
-                          value: _volume,
-                          min: 0,
-                          max: 1,
-                          onChanged: _setVolume,
+                        child: SliderOverlay(
+                          child: Slider(
+                            value: _volume,
+                            min: 0,
+                            max: 1,
+                            onChanged: _setVolume,
+                          ),
                         ),
                       ),
                       // Centered track name + filename
@@ -10759,7 +10770,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                       const SizedBox(width: 8),
                       // Mono toggle
                       if (_supportsMonoMix())
-                        Tooltip(
+                        StandaloneTooltip(
                           message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -11333,7 +11344,7 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                           ),
                         ],
                         if (isNotesMatch)
-                          Tooltip(
+                          StandaloneTooltip(
                             message: AppLocalizations.of(
                               context,
                             )!.matchedInDescription,
@@ -11347,7 +11358,7 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                             ),
                           ),
                         if (isProjectNotesMatch)
-                          Tooltip(
+                          StandaloneTooltip(
                             message: AppLocalizations.of(
                               context,
                             )!.matchedInProjectNotes,
@@ -12425,7 +12436,7 @@ class _ActiveProjectChipState extends ConsumerState<_ActiveProjectChip>
             mainAxisSize: MainAxisSize.min,
             children: [
               // Line 1 — project name (tooltip shows full name when truncated)
-              Tooltip(
+              StandaloneTooltip(
                 message: project.displayName,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 400),
@@ -12673,7 +12684,7 @@ class _PauseSessionButtonState extends State<_PauseSessionButton> {
         ? Icons.play_arrow_rounded
         : Icons.pause_rounded;
 
-    return Tooltip(
+    return StandaloneTooltip(
       message: widget.isPaused ? l10n.resume : l10n.pause,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
@@ -12727,7 +12738,7 @@ class _StopSessionButtonState extends State<_StopSessionButton> {
     const red = Color(0xFFEF5350);
     final color = _hovered ? red : Colors.white54;
 
-    return Tooltip(
+    return StandaloneTooltip(
       message: l10n.stop,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,

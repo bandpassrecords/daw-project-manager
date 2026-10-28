@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../generated/l10n/app_localizations.dart';
+import 'semantics_safe.dart';
 
 /// Makes a height-capped scrolling area *look* scrollable.
 ///
@@ -96,7 +97,7 @@ class _ScrollMoreHintState extends State<ScrollMoreHint> {
                       ),
                     ),
                     alignment: Alignment.bottomCenter,
-                    child: Tooltip(
+                    child: StandaloneTooltip(
                       message: AppLocalizations.of(context)!.scrollForMore,
                       child: Icon(
                         Icons.keyboard_arrow_down,

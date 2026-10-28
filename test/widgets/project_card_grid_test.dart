@@ -5,12 +5,14 @@ import 'package:daw_project_manager/models/music_project.dart';
 import 'package:daw_project_manager/models/plugin_capture.dart';
 import 'package:daw_project_manager/ui/widgets/project_card_grid.dart';
 
+import '../helpers/semantics_orphans.dart';
 import '../helpers/test_factories.dart';
 
 /// #111 — the dashboard's card view. Like `ProjectVersionsSection` it takes
 /// plain values and callbacks instead of a `Ref`, so all of this runs without
 /// opening Hive or a localisation delegate.
 void main() {
+  final binding = SemanticsOrphanBinding.ensureInitialized();
   final labels = ProjectCardLabels(
     emptyMessage: 'No results for current filter',
     selectTooltip: 'Select project',
@@ -536,5 +538,22 @@ void main() {
       expect(kCardCoverFadeStart, greaterThanOrEqualTo(0.5),
           reason: 'the artwork should still read as the card picture');
     });
+  });
+
+  // Windows' accessibility bridge rejects a semantics node no node holds,
+  // and a card puts several tooltips side by side (flutter/flutter#182444).
+  testWidgets('no tooltip on a card leaves Windows a node it would reject',
+      (tester) async {
+    binding.resetSemanticsRecord();
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(wrap([
+      project('a', 'Alpha',
+          bpm: 120, musicalKey: 'Am', deadline: DateTime(2030), previewSongPath: '/a.wav'),
+      project('b', 'Beta', bpm: 90, previewSongPath: '/b.wav'),
+    ]));
+
+    final hovered = await expectNoOrphanSemanticsWhileHovering(tester);
+    expect(hovered, greaterThan(4));
+    handle.dispose();
   });
 }

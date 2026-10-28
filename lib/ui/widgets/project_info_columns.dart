@@ -9,6 +9,7 @@ import '../../utils/project_summary_text.dart';
 import '../../utils/deadline_text.dart';
 import '../../utils/track_duration.dart';
 import 'release_track_parts_chip.dart';
+import 'semantics_safe.dart';
 
 /// Columns about a project that the projects table and a release's
 /// tracklist both offer: one definition each, so the two tables show the
@@ -100,7 +101,7 @@ TrinaColumn projectNotesColumn({
         // table.
         final full =
             project == null ? text : (projectNoteFullText(project) ?? text);
-        return Tooltip(
+        return StandaloneTooltip(
           message: full,
           waitDuration: const Duration(milliseconds: 400),
           child: Text(text, overflow: TextOverflow.ellipsis, style: textStyle),

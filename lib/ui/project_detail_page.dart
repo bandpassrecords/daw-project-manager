@@ -77,6 +77,7 @@ import 'widgets/todo_list_widget.dart';
 import 'widgets/waveform_widget.dart';
 import 'project_statistics_page.dart';
 import 'app_snack_bar.dart';
+import 'widgets/semantics_safe.dart';
 
 /// The project with [projectId], or null when it is not in [projects].
 ///
@@ -3795,11 +3796,13 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                                 Flexible(
                                   child: SizedBox(
                                     width: 120,
-                                    child: Slider(
-                                      value: _volume,
-                                      min: 0.0,
-                                      max: 1.0,
-                                      onChanged: _setVolume,
+                                    child: SliderOverlay(
+                                      child: Slider(
+                                        value: _volume,
+                                        min: 0.0,
+                                        max: 1.0,
+                                        onChanged: _setVolume,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -3849,7 +3852,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            Tooltip(
+                            StandaloneTooltip(
                               message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -4700,7 +4703,7 @@ class _SongLengthInfo extends StatelessWidget {
       fromPreview: l10n.songLengthFromPreview,
       howItWorks: l10n.songLengthHowItWorks,
     );
-    return Tooltip(
+    return StandaloneTooltip(
       message: message,
       waitDuration: const Duration(milliseconds: 300),
       child: Icon(

@@ -92,6 +92,7 @@ import 'midi_collection_naming.dart' show midiNamingLabelsOf;
 import 'widgets/sample_pack_card.dart';
 import 'dialogs/root_overlap_dialog.dart';
 import 'dialogs/relocate_folder_dialog.dart';
+import 'widgets/semantics_safe.dart';
 
 /// A Flatpak document-portal path, e.g.
 /// `/run/user/1000/doc/98127/projects` — the portal never exposes the real
@@ -4588,7 +4589,7 @@ class _DawLaunchCommandGroup extends StatelessWidget {
                 child: Row(
                   children: [
                     if (!FileLauncher.targetExists(path)) ...[
-                      Tooltip(
+                      StandaloneTooltip(
                         message: missingTooltip,
                         child: Icon(
                           Icons.warning_amber_rounded,

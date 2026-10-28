@@ -35,6 +35,7 @@ import 'template_detail_page.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/filter_dropdown.dart';
 import 'app_snack_bar.dart';
+import 'widgets/semantics_safe.dart';
 
 /// Same comparator shape as the main dashboard table's
 /// `compareLastModifiedCellValues` — cell values are raw `DateTime?`s (not
@@ -457,7 +458,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                         final root = roots[index];
                         return ListTile(
                           leading: const Icon(Icons.folder_outlined),
-                          title: Tooltip(
+                          title: StandaloneTooltip(
                             message: root.path,
                             child: Text(
                               root.path,
@@ -697,7 +698,7 @@ class _ProjectTemplatesPageState extends ConsumerState<ProjectTemplatesPage> {
                 child: Text(template.name, overflow: TextOverflow.ellipsis),
               ),
               if (!sourceExists)
-                Tooltip(
+                StandaloneTooltip(
                   message: AppLocalizations.of(context)!.templateSourceMissing,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 4),

@@ -28,6 +28,7 @@ import 'midi_tempo_control.dart';
 import 'midi_loop_toggle.dart';
 import 'midi_volume_control.dart';
 import '../app_snack_bar.dart';
+import 'semantics_safe.dart';
 
 /// A project's MIDI clips: the ones stored by the last extraction (see
 /// `MidiClipStore`), previewed through the built-in synth, saved, shared or
@@ -429,7 +430,7 @@ class _MidiClipsSectionState extends ConsumerState<MidiClipsSection> {
         if (stored != null && stored.missingFiles.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: Tooltip(
+            child: StandaloneTooltip(
               message: stored.missingFiles.join('\n'),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

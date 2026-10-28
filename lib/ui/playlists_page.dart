@@ -12,6 +12,7 @@ import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'app_snack_bar.dart';
+import 'widgets/semantics_safe.dart';
 
 /// Playlists page - Android only
 /// Allows creating playlists with preview songs and playing them in sequence
@@ -1230,16 +1231,18 @@ class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
             child: Column(
               children: [
                 // Progress bar
-                Slider(
-                  value: _duration.inMilliseconds > 0
-                      ? _position.inMilliseconds / _duration.inMilliseconds
-                      : 0.0,
-                  onChanged: (value) async {
-                    final newPosition = Duration(
-                      milliseconds: (value * _duration.inMilliseconds).round(),
-                    );
-                    await _audioPlayer.seek(newPosition);
-                  },
+                SliderOverlay(
+                  child: Slider(
+                    value: _duration.inMilliseconds > 0
+                        ? _position.inMilliseconds / _duration.inMilliseconds
+                        : 0.0,
+                    onChanged: (value) async {
+                      final newPosition = Duration(
+                        milliseconds: (value * _duration.inMilliseconds).round(),
+                      );
+                      await _audioPlayer.seek(newPosition);
+                    },
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

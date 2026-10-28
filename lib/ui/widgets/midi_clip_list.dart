@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../models/midi_clip.dart';
 import '../../services/midi/synth_voice.dart';
+import 'semantics_safe.dart';
 
 /// Localized strings for [MidiClipList], resolved by the page.
 class MidiClipListLabels {
@@ -390,7 +391,7 @@ class _MidiClipListState extends State<MidiClipList> {
             handle(
               context,
               index,
-              Tooltip(
+              StandaloneTooltip(
                 message: labels.dragTooltip,
                 child: MouseRegion(
                   cursor: SystemMouseCursors.grab,

@@ -49,6 +49,7 @@ import 'widgets/release_total_length_footer.dart';
 import 'widgets/release_tracks_table.dart';
 import 'widgets/waveform_widget.dart';
 import 'app_snack_bar.dart';
+import 'widgets/semantics_safe.dart';
 
 class ReleaseDetailPage extends ConsumerStatefulWidget {
   final String releaseId;
@@ -2020,7 +2021,7 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (!fileExists)
-                    Tooltip(
+                    StandaloneTooltip(
                       message: AppLocalizations.of(context)!.fileNotFound,
                       child: const Icon(Icons.warning, color: Colors.red, size: 20),
                     ),
@@ -2584,11 +2585,13 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                 ),
                 SizedBox(
                   width: 80,
-                  child: Slider(
-                    value: _volume,
-                    min: 0.0,
-                    max: 1.0,
-                    onChanged: _setVolume,
+                  child: SliderOverlay(
+                    child: Slider(
+                      value: _volume,
+                      min: 0.0,
+                      max: 1.0,
+                      onChanged: _setVolume,
+                    ),
                   ),
                 ),
               ],
@@ -2597,7 +2600,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  Tooltip(
+                  StandaloneTooltip(
                     message:
                         '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
                     child: Row(

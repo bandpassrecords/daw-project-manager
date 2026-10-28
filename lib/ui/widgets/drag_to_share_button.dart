@@ -8,6 +8,7 @@ import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/audio_analysis_service.dart';
+import 'semantics_safe.dart';
 
 /// Resolves the path that should actually be dragged for [sourcePath]:
 /// the source itself when it's already messaging-app compatible, otherwise
@@ -96,7 +97,7 @@ class _DragToShareButtonState extends State<DragToShareButton> {
         return item;
       },
       child: DraggableWidget(
-        child: Tooltip(
+        child: StandaloneTooltip(
           message: _converting ? l10n.convertingAudioForSharing : l10n.dragToShareTooltip,
           child: Chip(
             avatar: _converting

@@ -23,6 +23,7 @@ import 'recently_deleted_actions.dart';
 import 'session_actions.dart';
 import 'app_snack_bar.dart';
 import 'widgets/anchored_menu.dart';
+import 'widgets/semantics_safe.dart';
 
 /// The right-click menu on a project, and the three navigation actions it
 /// shares with the rest of the dashboard.
@@ -376,7 +377,7 @@ List<Widget> projectMenuChildren({
         onPressed: enabled ? () => choose(value) : null,
         child: whyNot == null || enabled
             ? Text(label)
-            : Tooltip(message: whyNot, child: Text(label)),
+            : StandaloneTooltip(message: whyNot, child: Text(label)),
       );
 
   Widget submenu(String key, IconData icon, String label, List<Widget> items) =>

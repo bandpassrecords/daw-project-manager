@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart';
+import 'semantics_safe.dart';
 
 /// An HSL hue/saturation wheel: hue around the circumference, saturation
 /// from the centre outward. Lightness is a separate control — see
@@ -195,9 +196,11 @@ class ColorLightnessSlider extends StatelessWidget {
             thumbColor: color.toColor(),
             overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
           ),
-          child: Slider(
-            value: color.lightness,
-            onChanged: (v) => onChanged(color.withLightness(v)),
+          child: SliderOverlay(
+            child: Slider(
+              value: color.lightness,
+              onChanged: (v) => onChanged(color.withLightness(v)),
+            ),
           ),
         ),
       ],

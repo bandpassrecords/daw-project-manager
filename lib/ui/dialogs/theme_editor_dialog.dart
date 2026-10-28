@@ -7,6 +7,7 @@ import '../../utils/color_contrast.dart';
 import '../../utils/phase_colors.dart';
 import '../widgets/theme_preview_card.dart';
 import 'color_picker_dialog.dart';
+import '../widgets/semantics_safe.dart';
 
 /// Neutral backgrounds worth starting from. The phase palette is all
 /// saturated mid-tones — fine for an accent, useless for a window
@@ -319,12 +320,14 @@ class _RadiusSlider extends StatelessWidget {
             ),
           ],
         ),
-        Slider(
-          value: value.clamp(0, 24),
-          min: 0,
-          max: 24,
-          divisions: 24,
-          onChanged: onChanged,
+        SliderOverlay(
+          child: Slider(
+            value: value.clamp(0, 24),
+            min: 0,
+            max: 24,
+            divisions: 24,
+            onChanged: onChanged,
+          ),
         ),
       ],
     );

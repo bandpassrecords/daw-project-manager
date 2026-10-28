@@ -6,6 +6,7 @@ import '../../models/music_project.dart';
 import '../../utils/deadline_text.dart';
 import '../../utils/project_visuals.dart';
 import 'project_cover_avatar.dart';
+import 'semantics_safe.dart';
 
 /// Compact header for the project detail page: the project's cover tile on the
 /// left, then title + phase chip on top and a single muted meta line below
@@ -132,7 +133,7 @@ class ProjectDetailHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Tooltip(
+                      child: StandaloneTooltip(
                         message: project.filePath,
                         waitDuration: const Duration(milliseconds: 500),
                         child: Text(
@@ -163,7 +164,7 @@ class ProjectDetailHeader extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 6),
-                Tooltip(
+                StandaloneTooltip(
                   message: detailLines.join('\n'),
                   waitDuration: const Duration(milliseconds: 500),
                   child: Text.rich(
