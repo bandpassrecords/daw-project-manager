@@ -10083,10 +10083,9 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   AudioFileInfo? _fileInfo;
   bool _fileInfoLoading = true;
   WaveformPeaks? _peaks;
-  double _barHeight = 200.0;
+  // The saved height from the first frame — see PlayerBarHeightStore.
+  double _barHeight = PlayerBarHeightStore.current;
   final FocusNode _focusNode = FocusNode();
-
-  static const _kBarHeightKey = 'player_bar_height';
 
   String get _activePath => _isMono && _monoFilePath != null
       ? _monoFilePath!
@@ -10141,19 +10140,6 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     }.contains(ext);
   }
 
-  Future<void> _loadBarHeight() async {
-    final box = await Hive.openBox<String>('app_settings');
-    final saved = box.get(_kBarHeightKey);
-    if (saved != null && mounted) {
-      setState(() => _barHeight = double.tryParse(saved) ?? 200.0);
-    }
-  }
-
-  Future<void> _saveBarHeight() async {
-    final box = await Hive.openBox<String>('app_settings');
-    await box.put(_kBarHeightKey, _barHeight.toString());
-  }
-
   bool _handleKeyboard(KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) return false;
     // Never steal keys from text inputs.
@@ -10198,7 +10184,6 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     _isPlayingNotifier = ref.read(desktopIsPlayingProvider.notifier);
     _positionNotifier = ref.read(desktopPlayerPositionProvider.notifier);
     _durationNotifier = ref.read(desktopPlayerDurationProvider.notifier);
-    _loadBarHeight();
     HardwareKeyboard.instance.addHandler(_handleKeyboard);
     _player = AudioPlayer();
     _player.onPlayerStateChanged.listen((s) {
@@ -10614,7 +10599,8 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                         );
                       });
                     },
-                    onVerticalDragEnd: (_) => _saveBarHeight(),
+                    onVerticalDragEnd: (_) =>
+                        unawaited(PlayerBarHeightStore.save(_barHeight)),
                     child: SizedBox(
                       height: 8,
                       child: Center(

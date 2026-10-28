@@ -93,4 +93,63 @@ void main() {
       expect(box.get(PlayerVolumeStore.key), '0.6');
     });
   });
+
+  group('parseBarHeight', () {
+    test('reads a stored height', () {
+      expect(parseBarHeight('312.5'), 312.5);
+    });
+
+    test('absent, garbage or impossible reads as the default', () {
+      for (final stored in [null, '', 'tall', 'NaN', 'Infinity', '0', '-40']) {
+        expect(parseBarHeight(stored), PlayerBarHeightStore.defaultHeight,
+            reason: '$stored');
+      }
+    });
+  });
+
+  group('PlayerBarHeightStore', () {
+    late Directory tempDir;
+
+    setUp(() async {
+      tempDir = await HiveTestHelper.setUp();
+      PlayerBarHeightStore.cachedForTest = PlayerBarHeightStore.defaultHeight;
+    });
+
+    tearDown(() async {
+      await HiveTestHelper.tearDown(tempDir);
+    });
+
+    test('a saved height is there synchronously after a reload', () async {
+      // The bug this fixes: the bar read the height when it opened, drew a
+      // frame at the default and then jumped to the saved height. The bar
+      // starts from `current`, which the load at startup has already set.
+      await PlayerBarHeightStore.save(340);
+      PlayerBarHeightStore.cachedForTest = PlayerBarHeightStore.defaultHeight;
+
+      await PlayerBarHeightStore.load();
+      expect(PlayerBarHeightStore.current, 340);
+    });
+
+    test('saving updates the synchronous value immediately', () async {
+      // A bar opened later in the same session starts at the new height.
+      await PlayerBarHeightStore.save(150);
+
+      expect(PlayerBarHeightStore.current, 150);
+    });
+
+    test('keeps the key older builds wrote, in the device-local box', () async {
+      // Heights saved before the cache existed are still read.
+      final box = await Hive.openBox<String>(PlayerVolumeStore.boxName);
+      await box.put('player_bar_height', '275.0');
+
+      expect(await PlayerBarHeightStore.load(), 275.0);
+    });
+
+    test('loading with nothing stored gives the default', () async {
+      expect(
+        await PlayerBarHeightStore.load(),
+        PlayerBarHeightStore.defaultHeight,
+      );
+    });
+  });
 }

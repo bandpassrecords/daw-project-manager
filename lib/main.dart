@@ -896,6 +896,7 @@ Future<void> _main(List<String> args) async {
   // Read the remembered playback volume before any player can be built, so
   // the first one opens at the user's level rather than at full volume.
   await PlayerVolumeStore.load();
+  await PlayerBarHeightStore.load();
   await MidiPreviewVolumeStore.load();
   await MidiPreviewLoopStore.load();
   await MidiAcousticFeedbackStore.load();

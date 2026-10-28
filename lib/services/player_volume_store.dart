@@ -136,6 +136,60 @@ class MidiPreviewLoopStore {
   }
 }
 
+/// The height the dashboard's player bar was last dragged to, remembered
+/// across launches.
+///
+/// Cached for the same reason as [PlayerVolumeStore]: read from the box when
+/// the bar opened, it drew a frame at [defaultHeight] and then jumped to the
+/// saved height — the bar looked as if it resized itself every time a song
+/// was opened. Loaded at startup, the bar's first frame is already right.
+///
+/// Device-local: a layout preference, in neither Drive sync nor backup.
+class PlayerBarHeightStore {
+  const PlayerBarHeightStore._();
+
+  static const String key = 'player_bar_height';
+  static const double defaultHeight = 200.0;
+  static double _cached = defaultHeight;
+
+  /// The last known height, available synchronously. Correct from the first
+  /// [load] of the session onwards. The bar still clamps it to the window.
+  static double get current => _cached;
+
+  @visibleForTesting
+  static set cachedForTest(double value) => _cached = value;
+
+  static Future<double> load() async {
+    try {
+      final box = await Hive.openBox<String>(PlayerVolumeStore.boxName);
+      _cached = parseBarHeight(box.get(key));
+    } catch (e) {
+      debugPrint('[PlayerBarHeight] failed to load: $e');
+    }
+    return _cached;
+  }
+
+  static Future<void> save(double height) async {
+    _cached = height;
+    try {
+      final box = await Hive.openBox<String>(PlayerVolumeStore.boxName);
+      await box.put(key, height.toString());
+    } catch (e) {
+      debugPrint('[PlayerBarHeight] failed to save: $e');
+    }
+  }
+}
+
+/// Reads a stored player bar height. Anything absent, unparseable or not a
+/// positive finite number reads as [PlayerBarHeightStore.defaultHeight].
+double parseBarHeight(String? stored) {
+  final parsed = stored == null ? null : double.tryParse(stored);
+  if (parsed == null || !parsed.isFinite || parsed <= 0) {
+    return PlayerBarHeightStore.defaultHeight;
+  }
+  return parsed;
+}
+
 /// [volume] held inside 0…1.
 double clampVolume(double volume) => volume.clamp(0.0, 1.0);
 
