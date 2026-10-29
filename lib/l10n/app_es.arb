@@ -4551,5 +4551,16 @@
   "sampleRateColumn": "Frecuencia de muestreo",
   "inspectorCloudTitle": "¿Descargar este proyecto?",
   "inspectorCloudBody": "Este proyecto está en la nube, no en este ordenador. Leerlo descarga el archivo completo ({size}).",
-  "inspectorCloudRead": "Descargar y leer"
+  "inspectorCloudRead": "Descargar y leer",
+  "inspectorTabAudioIo": "E/S de audio",
+  "inspectorAudioDriver": "Controlador de audio",
+  "inspectorUnnamedDriver": "Sin nombre en el proyecto",
+  "inspectorSavedOn": "Guardado en {platform}",
+  "inspectorInputBuses": "Buses de entrada",
+  "inspectorOutputBuses": "Buses de salida",
+  "inspectorInterfaceInputs": "Entradas de la interfaz",
+  "inspectorInterfaceOutputs": "Salidas de la interfaz",
+  "inspectorMidiInputs": "Entradas MIDI",
+  "inspectorMidiOutputs": "Salidas MIDI",
+  "inspectorNone": "Ninguno"
 }

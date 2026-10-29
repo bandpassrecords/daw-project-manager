@@ -4575,5 +4575,16 @@
   "sampleRateColumn": "Taxa de amostragem",
   "inspectorCloudTitle": "Baixar este projeto?",
   "inspectorCloudBody": "Este projeto está na nuvem, não neste computador. Ler o projeto baixa o arquivo inteiro ({size}).",
-  "inspectorCloudRead": "Baixar e ler"
+  "inspectorCloudRead": "Baixar e ler",
+  "inspectorTabAudioIo": "E/S de áudio",
+  "inspectorAudioDriver": "Driver de áudio",
+  "inspectorUnnamedDriver": "Sem nome no projeto",
+  "inspectorSavedOn": "Salvo no {platform}",
+  "inspectorInputBuses": "Barramentos de entrada",
+  "inspectorOutputBuses": "Barramentos de saída",
+  "inspectorInterfaceInputs": "Entradas da interface",
+  "inspectorInterfaceOutputs": "Saídas da interface",
+  "inspectorMidiInputs": "Entradas MIDI",
+  "inspectorMidiOutputs": "Saídas MIDI",
+  "inspectorNone": "Nenhum"
 }

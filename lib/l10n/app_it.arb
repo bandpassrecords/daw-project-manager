@@ -4551,5 +4551,16 @@
   "sampleRateColumn": "Frequenza di campionamento",
   "inspectorCloudTitle": "Scaricare questo progetto?",
   "inspectorCloudBody": "Questo progetto è nel cloud, non su questo computer. Leggerlo scarica l’intero file ({size}).",
-  "inspectorCloudRead": "Scarica e leggi"
+  "inspectorCloudRead": "Scarica e leggi",
+  "inspectorTabAudioIo": "I/O audio",
+  "inspectorAudioDriver": "Driver audio",
+  "inspectorUnnamedDriver": "Senza nome nel progetto",
+  "inspectorSavedOn": "Salvato su {platform}",
+  "inspectorInputBuses": "Bus di ingresso",
+  "inspectorOutputBuses": "Bus di uscita",
+  "inspectorInterfaceInputs": "Ingressi dell’interfaccia",
+  "inspectorInterfaceOutputs": "Uscite dell’interfaccia",
+  "inspectorMidiInputs": "Ingressi MIDI",
+  "inspectorMidiOutputs": "Uscite MIDI",
+  "inspectorNone": "Nessuno"
 }

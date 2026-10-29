@@ -74,6 +74,13 @@ const _cubase = ProjectAnatomy(
     ),
   ],
   media: [],
+  audioIo: AnatomyAudioIo(
+    driver: 'Studio USB ASIO Driver',
+    platform: 'Windows',
+    inputBuses: [AnatomyBus(name: 'Stereo In', ports: ['Input 1', 'Input 2'])],
+    outputBuses: [AnatomyBus(name: 'Stereo Out')],
+    midiInputs: ['Studio 24c MIDI In'],
+  ),
 );
 
 void main() {
@@ -187,6 +194,19 @@ void main() {
     final kickY = tester.getTopLeft(find.text('Kick.wav')).dy;
     final snareY = tester.getTopLeft(find.text('Snare.wav')).dy;
     expect(snareY, lessThan(kickY));
+  });
+
+  testWidgets('audio I/O: the driver, where it was saved, buses and ports',
+      (tester) async {
+    await pump(tester, _cubase, section: InspectorSection.audioIo);
+    expect(find.text('Studio USB ASIO Driver', findRichText: true),
+        findsOneWidget);
+    expect(find.text('Saved on Windows'), findsOneWidget);
+    expect(find.text('Stereo In'), findsOneWidget);
+    expect(find.widgetWithText(Chip, 'Input 2'), findsOneWidget);
+    expect(find.widgetWithText(Chip, 'Studio 24c MIDI In'), findsOneWidget);
+    expect(find.text('None'), findsWidgets,
+        reason: 'no MIDI outputs, and Stereo Out with no ports');
   });
 
   testWidgets('a DAW whose channels are not read says so', (tester) async {

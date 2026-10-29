@@ -8964,4 +8964,39 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get inspectorCloudRead => 'Baixar e ler';
+
+  @override
+  String get inspectorTabAudioIo => 'E/S de áudio';
+
+  @override
+  String get inspectorAudioDriver => 'Driver de áudio';
+
+  @override
+  String get inspectorUnnamedDriver => 'Sem nome no projeto';
+
+  @override
+  String inspectorSavedOn(String platform) {
+    return 'Salvo no $platform';
+  }
+
+  @override
+  String get inspectorInputBuses => 'Barramentos de entrada';
+
+  @override
+  String get inspectorOutputBuses => 'Barramentos de saída';
+
+  @override
+  String get inspectorInterfaceInputs => 'Entradas da interface';
+
+  @override
+  String get inspectorInterfaceOutputs => 'Saídas da interface';
+
+  @override
+  String get inspectorMidiInputs => 'Entradas MIDI';
+
+  @override
+  String get inspectorMidiOutputs => 'Saídas MIDI';
+
+  @override
+  String get inspectorNone => 'Nenhum';
 }

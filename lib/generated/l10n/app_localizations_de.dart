@@ -8959,4 +8959,39 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get inspectorCloudRead => 'Herunterladen und lesen';
+
+  @override
+  String get inspectorTabAudioIo => 'Audio-E/A';
+
+  @override
+  String get inspectorAudioDriver => 'Audiotreiber';
+
+  @override
+  String get inspectorUnnamedDriver => 'Im Projekt nicht benannt';
+
+  @override
+  String inspectorSavedOn(String platform) {
+    return 'Gespeichert unter $platform';
+  }
+
+  @override
+  String get inspectorInputBuses => 'Eingangsbusse';
+
+  @override
+  String get inspectorOutputBuses => 'Ausgangsbusse';
+
+  @override
+  String get inspectorInterfaceInputs => 'Interface-Eingänge';
+
+  @override
+  String get inspectorInterfaceOutputs => 'Interface-Ausgänge';
+
+  @override
+  String get inspectorMidiInputs => 'MIDI-Eingänge';
+
+  @override
+  String get inspectorMidiOutputs => 'MIDI-Ausgänge';
+
+  @override
+  String get inspectorNone => 'Keine';
 }

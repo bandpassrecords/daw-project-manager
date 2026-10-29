@@ -8424,4 +8424,39 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get inspectorCloudRead => 'ダウンロードして読み込む';
+
+  @override
+  String get inspectorTabAudioIo => 'オーディオI/O';
+
+  @override
+  String get inspectorAudioDriver => 'オーディオドライバー';
+
+  @override
+  String get inspectorUnnamedDriver => 'プロジェクトに名前がありません';
+
+  @override
+  String inspectorSavedOn(String platform) {
+    return '$platform で保存';
+  }
+
+  @override
+  String get inspectorInputBuses => '入力バス';
+
+  @override
+  String get inspectorOutputBuses => '出力バス';
+
+  @override
+  String get inspectorInterfaceInputs => 'インターフェースの入力';
+
+  @override
+  String get inspectorInterfaceOutputs => 'インターフェースの出力';
+
+  @override
+  String get inspectorMidiInputs => 'MIDI入力';
+
+  @override
+  String get inspectorMidiOutputs => 'MIDI出力';
+
+  @override
+  String get inspectorNone => 'なし';
 }

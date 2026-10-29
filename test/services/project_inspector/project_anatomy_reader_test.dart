@@ -86,6 +86,16 @@ void main() {
       expect(byName['Compressor']!.stock, isTrue);
     });
 
+    test('the studio it was saved in', () {
+      final io = anatomy.audioIo!;
+      expect(io.driver, 'Studio USB ASIO Driver');
+      expect(io.platform, 'Windows');
+      expect(io.inputBuses.single.name, 'Stereo In');
+      expect(io.inputBuses.single.ports, ['Input 1', 'Input 2']);
+      expect(io.outputBuses.single.name, 'Stereo Out');
+      expect(io.midiInputs, contains('Studio 24c MIDI In'));
+    });
+
     test('the audio files it references are listed', () {
       expect(anatomy.media, isNotNull);
       expect(anatomy.media, isNotEmpty);

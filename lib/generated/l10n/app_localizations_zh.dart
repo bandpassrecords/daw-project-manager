@@ -8330,4 +8330,39 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get inspectorCloudRead => '下载并读取';
+
+  @override
+  String get inspectorTabAudioIo => '音频 I/O';
+
+  @override
+  String get inspectorAudioDriver => '音频驱动';
+
+  @override
+  String get inspectorUnnamedDriver => '项目中未命名';
+
+  @override
+  String inspectorSavedOn(String platform) {
+    return '在 $platform 上保存';
+  }
+
+  @override
+  String get inspectorInputBuses => '输入总线';
+
+  @override
+  String get inspectorOutputBuses => '输出总线';
+
+  @override
+  String get inspectorInterfaceInputs => '接口输入';
+
+  @override
+  String get inspectorInterfaceOutputs => '接口输出';
+
+  @override
+  String get inspectorMidiInputs => 'MIDI 输入';
+
+  @override
+  String get inspectorMidiOutputs => 'MIDI 输出';
+
+  @override
+  String get inspectorNone => '无';
 }

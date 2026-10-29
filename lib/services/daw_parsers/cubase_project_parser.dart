@@ -228,6 +228,106 @@ class CubaseProjectParser {
     );
   }
 
+  static final _portDescriptorsKey = _keyBytes('PortDescriptors');
+  static final _connectionsKey = _keyBytes('Connections');
+
+  /// The studio the project was saved in: the audio driver, the interface
+  /// ports and MIDI ports it used, and which ports each input and output
+  /// bus connects to.
+  ///
+  /// Ports are named `direction|driver|port` ("I|Studio USB ASIO
+  /// Driver|Input 1", "O|Windows MIDI|…"): the project's PortDescriptors
+  /// list every one ("system" ports are the interface's and MIDI's; the
+  /// "virtual" and "side" ones are instruments' own inputs and are left
+  /// out), and each input or output channel lists its bus's ports under
+  /// "Connections" — an input channel names its bus as its OutputBus, an
+  /// output channel as its OwnInputBus, just before. Measured on 140
+  /// projects from Cubase 4 to 13.
+  CubaseAudioConnections readAudioConnections() {
+    final ports = <CubasePort>[];
+    final at = _indexOf(_portDescriptorsKey, 0);
+    final descriptors = at < 0 ? null : _decoder.attributeAt(at)?.value;
+    if (descriptors is List<CubaseAttributes>) {
+      for (final d in descriptors) {
+        if (d.string('Subtype') != 'system') continue;
+        final port = CubasePort.parse(d.string('ID') ?? '',
+            midi: d.string('Type') == 'midi');
+        if (port != null) ports.add(port);
+      }
+    }
+
+    final inputs = <CubaseBus>[], outputs = <CubaseBus>[];
+    var from = 0;
+    while (true) {
+      final c = _indexOf(_connectionsKey, from);
+      if (c < 0) break;
+      from = c + _connectionsKey.length;
+      final read = _decoder.attributeAt(c);
+      final connections = read?.value;
+      if (read == null || connections is! List<String>) continue;
+      final connected = [
+        for (final id in connections) ?CubasePort.parse(id, midi: false),
+      ];
+      final isInput = connections.any((id) => id.startsWith('I|'));
+      final isOutput = connections.any((id) => id.startsWith('O|'));
+      String? name;
+      if (isInput || (!isOutput && connections.isNotEmpty)) {
+        // The attributes after it: InputBusValue, OutputBusValue, OutputBus.
+        var offset = read.end;
+        for (var i = 0; i < 4 && name == null; i++) {
+          final next = _decoder.attributeAt(offset);
+          if (next == null) break;
+          if (next.key == 'OutputBus' && next.value is CubaseAttributes) {
+            name = (next.value as CubaseAttributes).string('Name');
+          }
+          offset = next.end;
+        }
+        if (name != null) inputs.add(CubaseBus(name: name, ports: connected));
+      } else if (isOutput) {
+        final own = _lastIndexOf(_ownInputBusKey, c);
+        if (own >= 0 && c - own < 4096) {
+          final bus = _decoder.attributeAt(own)?.value;
+          if (bus is CubaseAttributes) name = bus.string('Name');
+        }
+        if (name != null) outputs.add(CubaseBus(name: name, ports: connected));
+      }
+    }
+
+    final drivers = <String, int>{};
+    for (final p in ports) {
+      if (!p.midi && p.driver != null) {
+        drivers[p.driver!] = (drivers[p.driver!] ?? 0) + 1;
+      }
+    }
+    final driver = drivers.isEmpty
+        ? null
+        : (drivers.entries.toList()..sort((a, b) => b.value - a.value))
+            .first
+            .key;
+    return CubaseAudioConnections(
+      driver: driver,
+      platform: _platformOf(ports),
+      ports: ports,
+      inputBuses: inputs,
+      outputBuses: outputs,
+    );
+  }
+
+  /// Which OS the project was saved on, from the drivers its ports name:
+  /// ASIO and Windows' MIDI APIs, or Core Audio and Core MIDI.
+  static String? _platformOf(List<CubasePort> ports) {
+    final names = [for (final p in ports) p.driver?.toLowerCase() ?? ''];
+    bool any(List<String> marks) =>
+        names.any((n) => marks.any((m) => n.contains(m)));
+    if (any(['asio', 'windows midi', 'directmusic', 'winrt', 'mme'])) {
+      return 'Windows';
+    }
+    if (any(['core audio', 'coreaudio', 'core midi', 'coremidi'])) {
+      return 'macOS';
+    }
+    return null;
+  }
+
   /// Where 0 dB sits on the fader's scale: 1,251 of 3,672 channels measured
   /// sat exactly here, the default for a new channel.
   static const double unityVolume = 25856;
@@ -1190,6 +1290,72 @@ class CubaseRackInstrument {
   /// The instrument plug-in, when its slot can be read.
   final String? plugin;
   final double? volume;
+}
+
+/// One port of the audio interface or a MIDI device, as a project names it.
+class CubasePort {
+  const CubasePort({
+    required this.input,
+    required this.name,
+    this.driver,
+    this.midi = false,
+  });
+
+  /// Reads "I|driver|port"; null for anything else (an unconnected slot is
+  /// an empty string). A driver Cubase names only by its id is null.
+  static CubasePort? parse(String id, {required bool midi}) {
+    final first = id.indexOf('|');
+    if (first < 0) return null;
+    final second = id.indexOf('|', first + 1);
+    if (second < 0) return null;
+    final direction = id.substring(0, first);
+    if (direction != 'I' && direction != 'O') return null;
+    final driver = id.substring(first + 1, second);
+    final name = id.substring(second + 1);
+    if (name.isEmpty) return null;
+    return CubasePort(
+      input: direction == 'I',
+      name: name,
+      driver: _idOnly.hasMatch(driver) ? null : driver,
+      midi: midi,
+    );
+  }
+
+  static final _idOnly = RegExp(r'^[0-9A-F]{32}(-\d+)?$');
+
+  final bool input;
+  final String name;
+  final String? driver;
+  final bool midi;
+}
+
+/// An input or output bus and the interface ports it connects to.
+class CubaseBus {
+  const CubaseBus({required this.name, this.ports = const []});
+  final String name;
+  final List<CubasePort> ports;
+}
+
+/// What [CubaseProjectParser.readAudioConnections] finds.
+class CubaseAudioConnections {
+  const CubaseAudioConnections({
+    this.driver,
+    this.platform,
+    this.ports = const [],
+    this.inputBuses = const [],
+    this.outputBuses = const [],
+  });
+
+  /// The audio driver most of the interface's ports go through.
+  final String? driver;
+
+  /// "Windows" or "macOS", from the drivers; null when they don't say.
+  final String? platform;
+
+  /// The interface's and MIDI devices' ports the project knows.
+  final List<CubasePort> ports;
+  final List<CubaseBus> inputBuses;
+  final List<CubaseBus> outputBuses;
 }
 
 /// The project's own settings, as the project's media attributes record

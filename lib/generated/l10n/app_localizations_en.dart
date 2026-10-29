@@ -8899,4 +8899,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inspectorCloudRead => 'Download and read';
+
+  @override
+  String get inspectorTabAudioIo => 'Audio I/O';
+
+  @override
+  String get inspectorAudioDriver => 'Audio driver';
+
+  @override
+  String get inspectorUnnamedDriver => 'Not named in the project';
+
+  @override
+  String inspectorSavedOn(String platform) {
+    return 'Saved on $platform';
+  }
+
+  @override
+  String get inspectorInputBuses => 'Input buses';
+
+  @override
+  String get inspectorOutputBuses => 'Output buses';
+
+  @override
+  String get inspectorInterfaceInputs => 'Interface inputs';
+
+  @override
+  String get inspectorInterfaceOutputs => 'Interface outputs';
+
+  @override
+  String get inspectorMidiInputs => 'MIDI inputs';
+
+  @override
+  String get inspectorMidiOutputs => 'MIDI outputs';
+
+  @override
+  String get inspectorNone => 'None';
 }

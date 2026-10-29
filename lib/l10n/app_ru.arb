@@ -4551,5 +4551,16 @@
   "sampleRateColumn": "Частота дискретизации",
   "inspectorCloudTitle": "Скачать этот проект?",
   "inspectorCloudBody": "Этот проект находится в облаке, а не на этом компьютере. При чтении будет скачан весь файл ({size}).",
-  "inspectorCloudRead": "Скачать и прочитать"
+  "inspectorCloudRead": "Скачать и прочитать",
+  "inspectorTabAudioIo": "Аудио I/O",
+  "inspectorAudioDriver": "Аудиодрайвер",
+  "inspectorUnnamedDriver": "Не назван в проекте",
+  "inspectorSavedOn": "Сохранено в {platform}",
+  "inspectorInputBuses": "Входные шины",
+  "inspectorOutputBuses": "Выходные шины",
+  "inspectorInterfaceInputs": "Входы интерфейса",
+  "inspectorInterfaceOutputs": "Выходы интерфейса",
+  "inspectorMidiInputs": "MIDI-входы",
+  "inspectorMidiOutputs": "MIDI-выходы",
+  "inspectorNone": "Нет"
 }

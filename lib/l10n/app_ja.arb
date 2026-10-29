@@ -4551,5 +4551,16 @@
   "sampleRateColumn": "サンプルレート",
   "inspectorCloudTitle": "このプロジェクトをダウンロードしますか？",
   "inspectorCloudBody": "このプロジェクトはクラウド上にあり、このコンピューターにはありません。読み込むとファイル全体（{size}）がダウンロードされます。",
-  "inspectorCloudRead": "ダウンロードして読み込む"
+  "inspectorCloudRead": "ダウンロードして読み込む",
+  "inspectorTabAudioIo": "オーディオI/O",
+  "inspectorAudioDriver": "オーディオドライバー",
+  "inspectorUnnamedDriver": "プロジェクトに名前がありません",
+  "inspectorSavedOn": "{platform} で保存",
+  "inspectorInputBuses": "入力バス",
+  "inspectorOutputBuses": "出力バス",
+  "inspectorInterfaceInputs": "インターフェースの入力",
+  "inspectorInterfaceOutputs": "インターフェースの出力",
+  "inspectorMidiInputs": "MIDI入力",
+  "inspectorMidiOutputs": "MIDI出力",
+  "inspectorNone": "なし"
 }

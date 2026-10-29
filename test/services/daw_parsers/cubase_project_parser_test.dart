@@ -105,6 +105,11 @@ class _Archive {
         f64(d);
       case final String text:
         stringValue(text);
+      case final _Strings list:
+        _u16(2);
+        _u16(4);
+        _u32(list.items.length);
+        list.items.forEach(string);
       case final _Obj o:
         _u16(2);
         _u16(0x14);
@@ -437,6 +442,31 @@ Uint8List _project() {
   a.begin('PVSTInstrumentRack');
   a.rackSlot('HALion Sonic', ['HSSE Main']);
   a.end();
+  // The studio: ports as PortDescriptors names them, then an input and an
+  // output channel naming their bus's ports, as Cubase 13 writes them.
+  a.begin('PVSTConnections');
+  a.attr('PortDescriptors', <Map<String, Object>>[
+    {'ID': 'I|Windows MIDI|Studio 24c MIDI In', 'Type': 'midi', 'Subtype': 'system'},
+    {'ID': 'I|Studio USB ASIO Driver|Input 1', 'Type': 'audio', 'Subtype': 'system', 'Role': 'left'},
+    {'ID': 'I|Studio USB ASIO Driver|Input 2', 'Type': 'audio', 'Subtype': 'system', 'Role': 'right'},
+    {'ID': 'O|Studio USB ASIO Driver|Main Out Left', 'Type': 'audio', 'Subtype': 'system', 'Role': 'left'},
+    {'ID': 'O|Studio USB ASIO Driver|Main Out Right', 'Type': 'audio', 'Subtype': 'system', 'Role': 'right'},
+    // An instrument's own MIDI input: not the studio's.
+    {'ID': 'O|5B6D6402C5F74C35B3BE88ADF7FC7D27-1|Input 1', 'Type': 'midi', 'Subtype': 'side', 'UserName': 'HALion'},
+  ]);
+  a.attr('Connections', const _Strings([
+    'I|Studio USB ASIO Driver|Input 1',
+    'I|Studio USB ASIO Driver|Input 2',
+  ]));
+  a.attr('InputBusValue', {'Value': 0});
+  a.attr('OutputBusValue', {'Value': 0});
+  a.attr('OutputBus', {'Name': 'Stereo In', 'Bus UID': 50, 'Bus Type': 12});
+  a.attr('OwnInputBus', {'Name': 'Stereo Out', 'Bus UID': 1, 'Bus Type': 18});
+  a.attr('Connections', const _Strings([
+    'O|Studio USB ASIO Driver|Main Out Left',
+    'O|Studio USB ASIO Driver|Main Out Right',
+  ]));
+  a.end();
   a.begin('StMedia::PAttributes');
   a.mediaAttribute('AudioSampleRate', 'Float', 48000.0);
   a.mediaAttribute('AudioSampleSize', 'Long', 24);
@@ -447,6 +477,12 @@ Uint8List _project() {
   );
   a.end();
   return a.toCpr();
+}
+
+/// A string list in an attribute tree ("Connections").
+class _Strings {
+  const _Strings(this.items);
+  final List<String> items;
 }
 
 /// An object in an attribute tree: its class and attributes.
@@ -628,6 +664,65 @@ void main() {
 
     test('agrees with readStats on how many tracks there are', () {
       expect(parser.readTracks(), hasLength(parser.readStats().totalTracks));
+    });
+  });
+
+  group('readAudioConnections', () {
+    test("driver, platform, the studio's ports and each bus's", () {
+      final io = parser.readAudioConnections();
+      expect(io.driver, 'Studio USB ASIO Driver');
+      expect(io.platform, 'Windows');
+      expect(
+        [for (final p in io.ports) (p.input, p.midi, p.name)],
+        [
+          (true, true, 'Studio 24c MIDI In'),
+          (true, false, 'Input 1'),
+          (true, false, 'Input 2'),
+          (false, false, 'Main Out Left'),
+          (false, false, 'Main Out Right'),
+        ],
+        reason: "an instrument's own MIDI input is not the studio's",
+      );
+      expect([for (final b in io.inputBuses) (b.name, b.ports.length)],
+          [('Stereo In', 2)]);
+      expect(io.outputBuses.single.name, 'Stereo Out');
+      expect([for (final p in io.outputBuses.single.ports) p.name],
+          ['Main Out Left', 'Main Out Right']);
+    });
+
+    test('a project without them says nothing', () {
+      final a = _Archive()..begin('MTrackList');
+      a.end();
+      final io = CubaseProjectParser(a.toCpr()).readAudioConnections();
+      expect(io.driver, isNull);
+      expect(io.platform, isNull);
+      expect(io.ports, isEmpty);
+    });
+
+    test('CubasePort.parse reads direction, driver and name', () {
+      final p =
+          CubasePort.parse('O|ASIO Fireface USB|Analog 3 (1)', midi: false)!;
+      expect((p.input, p.driver, p.name),
+          (false, 'ASIO Fireface USB', 'Analog 3 (1)'));
+      expect(CubasePort.parse('', midi: false), isNull, reason: 'unconnected');
+      expect(CubasePort.parse('X|a|b', midi: false), isNull);
+      expect(
+          CubasePort.parse('O|017481B5316F40C4AB7B730E5AD9715E|Fireface UFX 1',
+                  midi: false)!
+              .driver,
+          isNull,
+          reason: 'a driver named only by its id');
+      expect(CubasePort.parse('I|Windows MIDI|A|B', midi: true)!.name, 'A|B');
+    });
+
+    test('Core Audio says macOS', () {
+      final a = _Archive()..begin('X');
+      a.attr('PortDescriptors', <Map<String, Object>>[
+        {'ID': 'I|Core Audio|Built-in Input 1', 'Type': 'audio', 'Subtype': 'system'},
+      ]);
+      a.end();
+      expect(CubaseProjectParser(a.toCpr()).readAudioConnections().platform,
+          'macOS');
     });
   });
 

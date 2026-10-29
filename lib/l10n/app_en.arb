@@ -8669,5 +8669,54 @@
   "inspectorCloudRead": "Download and read",
   "@inspectorCloudRead": {
     "description": "Button that downloads and reads a cloud-only project"
+  },
+  "inspectorTabAudioIo": "Audio I/O",
+  "@inspectorTabAudioIo": {
+    "description": "Inspector section with the audio interface and buses"
+  },
+  "inspectorAudioDriver": "Audio driver",
+  "@inspectorAudioDriver": {
+    "description": "Label: the audio driver the project used"
+  },
+  "inspectorUnnamedDriver": "Not named in the project",
+  "@inspectorUnnamedDriver": {
+    "description": "The project names its driver only by an id"
+  },
+  "inspectorSavedOn": "Saved on {platform}",
+  "@inspectorSavedOn": {
+    "description": "Which operating system the project was saved on",
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorInputBuses": "Input buses",
+  "@inspectorInputBuses": {
+    "description": "Label: input buses and their ports"
+  },
+  "inspectorOutputBuses": "Output buses",
+  "@inspectorOutputBuses": {
+    "description": "Label: output buses and their ports"
+  },
+  "inspectorInterfaceInputs": "Interface inputs",
+  "@inspectorInterfaceInputs": {
+    "description": "Label: the audio interface inputs the project knows"
+  },
+  "inspectorInterfaceOutputs": "Interface outputs",
+  "@inspectorInterfaceOutputs": {
+    "description": "Label: the audio interface outputs the project knows"
+  },
+  "inspectorMidiInputs": "MIDI inputs",
+  "@inspectorMidiInputs": {
+    "description": "Label: MIDI input ports"
+  },
+  "inspectorMidiOutputs": "MIDI outputs",
+  "@inspectorMidiOutputs": {
+    "description": "Label: MIDI output ports"
+  },
+  "inspectorNone": "None",
+  "@inspectorNone": {
+    "description": "Shown when a list of ports or buses is empty"
   }
 }

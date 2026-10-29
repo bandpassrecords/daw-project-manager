@@ -14161,6 +14161,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Download and read'**
   String get inspectorCloudRead;
+
+  /// Inspector section with the audio interface and buses
+  ///
+  /// In en, this message translates to:
+  /// **'Audio I/O'**
+  String get inspectorTabAudioIo;
+
+  /// Label: the audio driver the project used
+  ///
+  /// In en, this message translates to:
+  /// **'Audio driver'**
+  String get inspectorAudioDriver;
+
+  /// The project names its driver only by an id
+  ///
+  /// In en, this message translates to:
+  /// **'Not named in the project'**
+  String get inspectorUnnamedDriver;
+
+  /// Which operating system the project was saved on
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on {platform}'**
+  String inspectorSavedOn(String platform);
+
+  /// Label: input buses and their ports
+  ///
+  /// In en, this message translates to:
+  /// **'Input buses'**
+  String get inspectorInputBuses;
+
+  /// Label: output buses and their ports
+  ///
+  /// In en, this message translates to:
+  /// **'Output buses'**
+  String get inspectorOutputBuses;
+
+  /// Label: the audio interface inputs the project knows
+  ///
+  /// In en, this message translates to:
+  /// **'Interface inputs'**
+  String get inspectorInterfaceInputs;
+
+  /// Label: the audio interface outputs the project knows
+  ///
+  /// In en, this message translates to:
+  /// **'Interface outputs'**
+  String get inspectorInterfaceOutputs;
+
+  /// Label: MIDI input ports
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI inputs'**
+  String get inspectorMidiInputs;
+
+  /// Label: MIDI output ports
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI outputs'**
+  String get inspectorMidiOutputs;
+
+  /// Shown when a list of ports or buses is empty
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get inspectorNone;
 }
 
 class _AppLocalizationsDelegate

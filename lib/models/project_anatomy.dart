@@ -21,6 +21,7 @@ class ProjectAnatomy {
     this.plugins = const [],
     this.pluginInstancesKnown = false,
     this.media,
+    this.audioIo,
   });
 
   final String filePath;
@@ -50,6 +51,42 @@ class ProjectAnatomy {
 
   /// The audio files the project references; null when not read.
   final List<SampleReference>? media;
+
+  /// The studio it was saved in; null when not read.
+  final AnatomyAudioIo? audioIo;
+}
+
+/// The audio interface, buses and MIDI ports a project was saved with.
+class AnatomyAudioIo {
+  const AnatomyAudioIo({
+    this.driver,
+    this.platform,
+    this.inputBuses = const [],
+    this.outputBuses = const [],
+    this.interfaceInputs = const [],
+    this.interfaceOutputs = const [],
+    this.midiInputs = const [],
+    this.midiOutputs = const [],
+  });
+
+  /// The audio driver ("Studio USB ASIO Driver"); null when unnamed.
+  final String? driver;
+
+  /// "Windows" or "macOS"; null when the project doesn't say.
+  final String? platform;
+  final List<AnatomyBus> inputBuses;
+  final List<AnatomyBus> outputBuses;
+  final List<String> interfaceInputs;
+  final List<String> interfaceOutputs;
+  final List<String> midiInputs;
+  final List<String> midiOutputs;
+}
+
+/// An input or output bus and the interface ports it connects to.
+class AnatomyBus {
+  const AnatomyBus({required this.name, this.ports = const []});
+  final String name;
+  final List<String> ports;
 }
 
 enum AnatomyChannelKind { audio, instrument, midi, sampler, group, fx, folder }

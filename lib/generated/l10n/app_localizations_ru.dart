@@ -8943,4 +8943,39 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inspectorCloudRead => 'Скачать и прочитать';
+
+  @override
+  String get inspectorTabAudioIo => 'Аудио I/O';
+
+  @override
+  String get inspectorAudioDriver => 'Аудиодрайвер';
+
+  @override
+  String get inspectorUnnamedDriver => 'Не назван в проекте';
+
+  @override
+  String inspectorSavedOn(String platform) {
+    return 'Сохранено в $platform';
+  }
+
+  @override
+  String get inspectorInputBuses => 'Входные шины';
+
+  @override
+  String get inspectorOutputBuses => 'Выходные шины';
+
+  @override
+  String get inspectorInterfaceInputs => 'Входы интерфейса';
+
+  @override
+  String get inspectorInterfaceOutputs => 'Выходы интерфейса';
+
+  @override
+  String get inspectorMidiInputs => 'MIDI-входы';
+
+  @override
+  String get inspectorMidiOutputs => 'MIDI-выходы';
+
+  @override
+  String get inspectorNone => 'Нет';
 }

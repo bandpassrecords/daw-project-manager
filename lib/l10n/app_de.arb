@@ -4551,5 +4551,16 @@
   "sampleRateColumn": "Abtastrate",
   "inspectorCloudTitle": "Dieses Projekt herunterladen?",
   "inspectorCloudBody": "Dieses Projekt liegt in der Cloud, nicht auf diesem Computer. Beim Lesen wird die ganze Datei heruntergeladen ({size}).",
-  "inspectorCloudRead": "Herunterladen und lesen"
+  "inspectorCloudRead": "Herunterladen und lesen",
+  "inspectorTabAudioIo": "Audio-E/A",
+  "inspectorAudioDriver": "Audiotreiber",
+  "inspectorUnnamedDriver": "Im Projekt nicht benannt",
+  "inspectorSavedOn": "Gespeichert unter {platform}",
+  "inspectorInputBuses": "Eingangsbusse",
+  "inspectorOutputBuses": "Ausgangsbusse",
+  "inspectorInterfaceInputs": "Interface-Eingänge",
+  "inspectorInterfaceOutputs": "Interface-Ausgänge",
+  "inspectorMidiInputs": "MIDI-Eingänge",
+  "inspectorMidiOutputs": "MIDI-Ausgänge",
+  "inspectorNone": "Keine"
 }

@@ -138,6 +138,26 @@ ProjectAnatomy cubaseAnatomy({
     plugins: _cubasePlugins(channels, rack),
     pluginInstancesKnown: true,
     media: parser.readSampleReferences(),
+    audioIo: _audioIo(parser.readAudioConnections()),
+  );
+}
+
+AnatomyAudioIo _audioIo(CubaseAudioConnections io) {
+  List<String> names(bool input, bool midi) => [
+        for (final p in io.ports)
+          if (p.input == input && p.midi == midi) p.name,
+      ];
+  AnatomyBus bus(CubaseBus b) =>
+      AnatomyBus(name: b.name, ports: [for (final p in b.ports) p.name]);
+  return AnatomyAudioIo(
+    driver: io.driver,
+    platform: io.platform,
+    inputBuses: [for (final b in io.inputBuses) bus(b)],
+    outputBuses: [for (final b in io.outputBuses) bus(b)],
+    interfaceInputs: names(true, false),
+    interfaceOutputs: names(false, false),
+    midiInputs: names(true, true),
+    midiOutputs: names(false, true),
   );
 }
 

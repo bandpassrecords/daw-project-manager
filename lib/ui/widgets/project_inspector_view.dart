@@ -9,7 +9,7 @@ import '../dialogs/archive_project_dialog.dart' show formatByteSize;
 import 'semantics_safe.dart';
 
 /// The Project Inspector's sections.
-enum InspectorSection { tracks, plugins, routing, media, statistics }
+enum InspectorSection { tracks, plugins, routing, audioIo, media, statistics }
 
 /// What the Inspector shows about one project: its header facts, then a
 /// section at a time. Plain values in, callbacks out — no Riverpod, no
@@ -100,6 +100,11 @@ class _ProjectInspectorViewState extends State<ProjectInspectorView> {
                   label: Text(l10n.inspectorTabRouting),
                 ),
                 ButtonSegment(
+                  value: InspectorSection.audioIo,
+                  icon: const Icon(Icons.settings_input_component),
+                  label: Text(l10n.inspectorTabAudioIo),
+                ),
+                ButtonSegment(
                   value: InspectorSection.media,
                   icon: const Icon(Icons.audio_file),
                   label: Text(l10n.inspectorTabMedia),
@@ -149,6 +154,9 @@ class _ProjectInspectorViewState extends State<ProjectInspectorView> {
               onSelect: (i) => setState(() => _selected = i),
               onView: (v) => setState(() => _byDestination = v),
             ),
+      InspectorSection.audioIo => a.audioIo == null
+          ? _Note(l10n.inspectorNotAvailable(daw))
+          : _AudioIoSection(io: a.audioIo!),
       InspectorSection.media => a.media == null
           ? _Note(l10n.inspectorNotAvailable(daw))
           : _MediaSection(
@@ -1102,6 +1110,107 @@ class _Destinations extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+// --- audio I/O --------------------------------------------------------------
+
+class _AudioIoSection extends StatelessWidget {
+  const _AudioIoSection({required this.io});
+  final AnatomyAudioIo io;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    Widget chips(List<String> names) => names.isEmpty
+        ? Text(l10n.inspectorNone, style: theme.textTheme.bodySmall)
+        : Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              for (final n in names)
+                Chip(label: Text(n), visualDensity: VisualDensity.compact),
+            ],
+          );
+    Widget buses(List<AnatomyBus> list) => list.isEmpty
+        ? Text(l10n.inspectorNone, style: theme.textTheme.bodySmall)
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final b in list)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 200,
+                        child: Text(b.name, overflow: TextOverflow.ellipsis),
+                      ),
+                      Expanded(child: chips(b.ports)),
+                    ],
+                  ),
+                ),
+            ],
+          );
+    Widget card(String title, Widget body) => SizedBox(
+          width: 520,
+          child: Card(
+            margin: EdgeInsets.zero,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Label(title),
+                  const SizedBox(height: 4),
+                  body,
+                ],
+              ),
+            ),
+          ),
+        );
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _Tile(
+                icon: Icons.settings_input_component,
+                value: io.driver ?? '—',
+                caption: io.driver == null
+                    ? l10n.inspectorUnnamedDriver
+                    : l10n.inspectorAudioDriver,
+              ),
+              if (io.platform != null)
+                _Tile(
+                  icon: Icons.computer,
+                  value: io.platform!,
+                  caption: l10n.inspectorSavedOn(io.platform!),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              card(l10n.inspectorInputBuses, buses(io.inputBuses)),
+              card(l10n.inspectorOutputBuses, buses(io.outputBuses)),
+              card(l10n.inspectorInterfaceInputs, chips(io.interfaceInputs)),
+              card(l10n.inspectorInterfaceOutputs, chips(io.interfaceOutputs)),
+              card(l10n.inspectorMidiInputs, chips(io.midiInputs)),
+              card(l10n.inspectorMidiOutputs, chips(io.midiOutputs)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
