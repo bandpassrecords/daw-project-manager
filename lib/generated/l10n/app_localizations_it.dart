@@ -9017,4 +9017,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get inspectorPan => 'Panorama';
+
+  @override
+  String get inspectorMuted => 'Muto';
 }

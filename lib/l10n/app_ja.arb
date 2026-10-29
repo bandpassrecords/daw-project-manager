@@ -4563,5 +4563,6 @@
   "inspectorMidiInputs": "MIDI入力",
   "inspectorMidiOutputs": "MIDI出力",
   "inspectorNone": "なし",
-  "inspectorPan": "パン"
+  "inspectorPan": "パン",
+  "inspectorMuted": "ミュート"
 }

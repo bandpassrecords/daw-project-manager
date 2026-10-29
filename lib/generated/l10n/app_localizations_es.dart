@@ -9036,4 +9036,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get inspectorPan => 'Panorama';
+
+  @override
+  String get inspectorMuted => 'Silenciado';
 }

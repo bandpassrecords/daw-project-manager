@@ -14233,6 +14233,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pan'**
   String get inspectorPan;
+
+  /// A track that was muted when the project was saved
+  ///
+  /// In en, this message translates to:
+  /// **'Muted'**
+  String get inspectorMuted;
 }
 
 class _AppLocalizationsDelegate

@@ -442,7 +442,7 @@
         "vox130TTE96004bam6-A 15 [audio] | -> ASIO Multimedia Driver Stereo Out | -2.0 dB C | inserts 0:UltraPitch 6-Voice",
         "Audio 15 [audio] | -> ASIO Multimedia Driver Stereo Out | -1.9 dB C | inserts 0:Sonalksis TBK Stereo",
         "SNARE14 16 [audio] | -> ASIO Multimedia Driver Stereo Out | -8.5 dB C | inserts 0:Sonalksis TBK Stereo",
-        "Audio 17 [audio] | -> ASIO Multimedia Driver Stereo Out | -10.4 dB C | inserts 0:Ambience",
+        "Audio 17 [audio] | -> ASIO Multimedia Driver Stereo Out | -10.4 dB C mute | inserts 0:Ambience",
         "Albino [midi] | -> - | - -",
         "TOM47 18 [audio] | -> ASIO Multimedia Driver Stereo Out | -6.7 dB C",
         "reverse [audio] | -> ASIO Multimedia Driver Stereo Out | 0.0 dB C | inserts 0:Ambience",

@@ -9035,4 +9035,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inspectorPan => 'Panoramique';
+
+  @override
+  String get inspectorMuted => 'Coupé';
 }

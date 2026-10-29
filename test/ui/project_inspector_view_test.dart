@@ -17,6 +17,7 @@ const _kick = AnatomyChannel(
   volumeDb: 0,
   faderPosition: 0.79,
   pan: -0.3,
+  muted: true,
   inserts: [AnatomyInsert(slot: 0, plugin: 'Pro-Q 3', preset: 'Kick Shape')],
   sends: [
     AnatomySend(destination: 'Bass', sideChainOf: 'Compressor'),
@@ -190,6 +191,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('1. Pro-Q 3 — Kick Shape'), findsOneWidget);
     expect(find.text('L30'), findsOneWidget);
+    expect(find.text('Muted'), findsOneWidget);
     expect(find.textContaining('Side-chain into Compressor'), findsOneWidget);
     // Kick → Drum Bus → Stereo Out.
     expect(find.widgetWithText(Chip, 'Stereo Out'), findsOneWidget);

@@ -101,6 +101,7 @@ class AnatomyChannel {
     this.volumeDb,
     this.faderPosition,
     this.pan,
+    this.muted,
     this.soloed,
     this.eqBandsOn,
     this.instrument,
@@ -129,6 +130,7 @@ class AnatomyChannel {
 
   /// The panner, -1 (left) to 1 (right), 0 the centre.
   final double? pan;
+  final bool? muted;
   final bool? soloed;
   final int? eqBandsOn;
 

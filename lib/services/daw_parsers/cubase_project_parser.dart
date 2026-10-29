@@ -162,6 +162,9 @@ class CubaseProjectParser {
           volume: channel?.volume,
           pan: channel?.pan,
           inputGain: channel?.inputGain,
+          flags: _has(t.instance.body, 2)
+              ? _data.getUint16(t.instance.body)
+              : null,
           phaseInverted: channel?.phaseInverted,
           soloed: channel?.soloed,
           eqBandsOn: channel?.eqBandsOn,
@@ -335,7 +338,7 @@ class CubaseProjectParser {
   /// sat exactly here, the default for a new channel.
   static const double unityVolume = 25856;
 
-  /// The top of the fader's scale, +6 dB.
+  /// The top of the stored scale; the fader tops out at +6.02 dB.
   static const double maxVolume = 32767;
 
   /// The fader in dB.
@@ -346,15 +349,18 @@ class CubaseProjectParser {
   /// `test-01_db_level.cpr` has channels set to exactly 0 and −2 dB — every
   /// one within 0.03 dB. A power law, tried first, was 0.2 dB out near 0 dB.
   /// Below −14 dB the curve carries on with the slope it has there, down to
-  /// −∞; above 0 dB it rises to +6 dB at [maxVolume]. Neither stretch has
-  /// been checked against a reading yet.
+  /// −∞. Above 0 dB it is a power law of its own to the top of the fader,
+  /// +6.02 dB (twice the gain), which test-01_db_level.cpr's ANA2 x64
+  /// 01_db_6 stores as 32766.04. The stretch below −14 dB has not been
+  /// checked against a reading yet.
   static double? volumeDb(double? volume) {
     if (volume == null) return null;
     if (volume <= 0) return double.negativeInfinity;
-    if (volume >= maxVolume) return 6;
+    if (volume >= _topVolume) return _topDb;
     if (volume > unityVolume) {
-      return 6 * math.log(volume / unityVolume) /
-          math.log(maxVolume / unityVolume);
+      return _topDb *
+          math.log(volume / unityVolume) /
+          math.log(_topVolume / unityVolume);
     }
     if (volume >= _fittedFloor) {
       final d = (volume - unityVolume) / maxVolume;
@@ -362,6 +368,10 @@ class CubaseProjectParser {
     }
     return _floorDb + _floorSlope * math.log(volume / _fittedFloor);
   }
+
+  /// The top of the fader as Cubase stores it, and what it shows there.
+  static const _topVolume = 32766.044921875;
+  static const _topDb = 6.0206;
 
   static const _linear = 19.489919;
   static const _quadratic = -30.836339;
@@ -1268,6 +1278,7 @@ class CubaseTrack {
     this.volume,
     this.pan,
     this.inputGain,
+    this.flags,
     this.phaseInverted,
     this.soloed,
     this.eqBandsOn,
@@ -1303,6 +1314,15 @@ class CubaseTrack {
   /// The pre-section's input gain on the same 0–32767 scale, 0 dB in the
   /// middle (16383.5).
   final double? inputGain;
+
+  /// The first two bytes of the track object's body: flags, of which bit
+  /// 0 is mute ([muted]).
+  final int? flags;
+
+  /// Muted when saved: bit 0 of [flags] — RTW_Kick_12 in the test
+  /// collection's test-01_db_level.cpr, muted in Cubase 13, against the
+  /// same track unmuted in test-01.cpr.
+  bool? get muted => flags == null ? null : flags! & 1 != 0;
 
   final bool? phaseInverted;
   final bool? soloed;

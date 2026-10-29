@@ -532,6 +532,16 @@ class _ChannelRow extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                if (c.muted == true)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Text(
+                      l10n.inspectorMuted,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                  ),
                 if (c.soloed == true)
                   Padding(
                     padding: const EdgeInsets.only(right: 8),

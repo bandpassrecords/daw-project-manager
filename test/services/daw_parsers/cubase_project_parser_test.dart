@@ -870,13 +870,13 @@ void main() {
     expect(CubaseProjectParser.volumeDb(null), isNull);
     expect(CubaseProjectParser.volumeDb(0), double.negativeInfinity);
     expect(CubaseProjectParser.volumeDb(25856), 0);
-    expect(CubaseProjectParser.volumeDb(32767), 6);
+    expect(CubaseProjectParser.volumeDb(32767), closeTo(6.02, 0.001));
     // Below the faders read, it keeps falling, without a jump at the join.
     final atFloor = CubaseProjectParser.volumeDb(11770.669921875)!;
     expect(CubaseProjectParser.volumeDb(11770.6)!, closeTo(atFloor, 0.01));
     expect(CubaseProjectParser.volumeDb(5000)!, lessThan(-20));
     expect(CubaseProjectParser.volumeDb(1)!, lessThan(-100));
-    // Above 0 dB it keeps rising to +6.
+    // Above 0 dB it keeps rising to +6.02.
     final above = CubaseProjectParser.volumeDb(29000)!;
     expect(above, greaterThan(0));
     expect(above, lessThan(6));
@@ -912,6 +912,19 @@ void main() {
       final db = faders('test-01_db_level.cpr');
       expect(db['ANA2 x64 01_db_0'], 0);
       expect(db['ANA2 x64 01_db_-2'], closeTo(-2, 0.05));
+      expect(db['ANA2 x64 01_db_6'], closeTo(6.02, 0.01),
+          reason: 'the fader at the top');
+    });
+
+    test('a muted track: bit 0 of the track flags', () {
+      bool? muted(String file) => CubaseProjectParser(
+              File(p.join(dir, file)).readAsBytesSync())
+          .readTracks()
+          .firstWhere((t) => t.name == 'RTW_Kick_12')
+          .muted;
+      // The same track, muted in Cubase 13 for test-01_db_level.cpr.
+      expect(muted('test-01.cpr'), isFalse);
+      expect(muted('test-01_db_level.cpr'), isTrue);
     });
   });
 

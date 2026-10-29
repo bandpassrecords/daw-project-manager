@@ -91,7 +91,8 @@ Map<String, Object?> inspectorSummary(ProjectAnatomy a) {
           if (c.folder != null) 'in ${c.folder}',
           if (c.kind != AnatomyChannelKind.folder) ...[
             '-> ${c.output ?? '-'}',
-            '${db(c.volumeDb)} ${pan(c.pan)}${c.soloed == true ? ' solo' : ''}',
+            '${db(c.volumeDb)} ${pan(c.pan)}${c.muted == true ? ' mute' : ''}'
+                '${c.soloed == true ? ' solo' : ''}',
             if (c.instrument != null)
               'instrument ${c.instrument}'
                   '${c.instrumentPreset == null ? '' : ' (${c.instrumentPreset})'}',

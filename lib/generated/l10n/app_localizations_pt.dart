@@ -9002,4 +9002,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get inspectorPan => 'Pan';
+
+  @override
+  String get inspectorMuted => 'Mudo';
 }

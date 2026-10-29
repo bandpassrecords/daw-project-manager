@@ -4563,5 +4563,6 @@
   "inspectorMidiInputs": "Entradas MIDI",
   "inspectorMidiOutputs": "Salidas MIDI",
   "inspectorNone": "Ninguno",
-  "inspectorPan": "Panorama"
+  "inspectorPan": "Panorama",
+  "inspectorMuted": "Silenciado"
 }

@@ -4563,5 +4563,6 @@
   "inspectorMidiInputs": "MIDI-входы",
   "inspectorMidiOutputs": "MIDI-выходы",
   "inspectorNone": "Нет",
-  "inspectorPan": "Панорама"
+  "inspectorPan": "Панорама",
+  "inspectorMuted": "Заглушен"
 }
