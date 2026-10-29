@@ -217,6 +217,46 @@
         "file": "C�pia de mj bd.WAV",
         "use": "audio"
       }
-    ]
+    ],
+    "inspector": {
+      "savedWith": "3.1.1",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": null,
+      "channels": [
+        "Kick [audio] | -> - | - -",
+        "Audio 13 [audio] | -> - | - -",
+        "Bass Principal [midi] | -> - | - -",
+        "snare [audio] | -> - | - -",
+        "hat [audio] | -> - | - -",
+        "Prato [audio] | -> - | - -",
+        "Crash [audio] | -> - | - -",
+        "vox hit [audio] | -> - | - -",
+        "reverse [audio] | -> - | - -",
+        "aplausos [audio] | -> - | - -",
+        "drum break [audio] | -> - | - -",
+        "subida [audio] | -> - | - -",
+        "voice [audio] | -> - | - -",
+        "snare up [audio] | -> - | - -",
+        "vanguard [midi] | -> - | - -",
+        "HIHAT575(OPEN) 14 [audio] | -> - | - -",
+        "ohhTTE42011openhihat 15 [audio] | -> - | - -"
+      ],
+      "plugins": [
+        "CronoX | - | third-party",
+        "RoomWorks | - | stock",
+        "Sonalksis TBK Stereo | - | third-party",
+        "UltraPitch 6-Voice | - | third-party",
+        "Vanguard | - | third-party"
+      ],
+      "audioIo": {
+        "driver": null,
+        "platform": null,
+        "inputBuses": [],
+        "outputBuses": [],
+        "midiInputs": [],
+        "midiOutputs": []
+      }
+    }
   }
 }

@@ -117,6 +117,19 @@ void main() {
     });
   });
 
+  test('Cubase SX 3: channels not decodable, plug-ins by name', () {
+    final path = p.join('test', 'fixtures', 'projects', 'cubase',
+        'Another Dance (Cubase SX 3)', 'Another Dance.cpr');
+    final anatomy =
+        cubaseAnatomy(filePath: path, bytes: File(path).readAsBytesSync());
+    expect(anatomy.pluginInstancesKnown, isFalse);
+    expect(anatomy.plugins, isNotEmpty,
+        reason: 'the stats know them; the Inspector must too');
+    expect(anatomy.plugins.every((pl) => pl.instances == null), isTrue);
+    expect(anatomy.plugins.firstWhere((pl) => pl.name == 'RoomWorks').stock,
+        isTrue, reason: 'stock is known by name');
+  });
+
   test('another DAW: header and plug-in names, channels not read yet',
       () async {
     final rpp = Directory(p.join('test', 'fixtures', 'projects', 'reaper'))

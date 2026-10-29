@@ -27,6 +27,37 @@
       "bitDepth": 24
     },
     "midiClips": [],
-    "sampleReferences": []
+    "sampleReferences": [],
+    "inspector": {
+      "savedWith": "11.0.41",
+      "sampleRate": 44100,
+      "bitDepth": 24,
+      "timeSignature": "4/4",
+      "channels": [],
+      "plugins": [
+        "Black Box Analog Design HG-2 | - | third-party",
+        "bx_digital V3 | - | third-party",
+        "elysia museq master | - | third-party",
+        "Invisible Limiter | - | third-party",
+        "reastream-standalone | - | third-party",
+        "VBC FG-MU | - | third-party",
+        "VBC FG-Red | - | third-party",
+        "Vertigo VSM-3 | - | third-party"
+      ],
+      "audioIo": {
+        "driver": "Studio USB ASIO Driver",
+        "platform": "Windows",
+        "inputBuses": [
+          "Mic In <- "
+        ],
+        "outputBuses": [
+          "Stereo Out -> Main Out Left, Main Out Right"
+        ],
+        "midiInputs": [
+          "3- Studio 24c MIDI In"
+        ],
+        "midiOutputs": []
+      }
+    }
   }
 }

@@ -129,6 +129,9 @@ ProjectAnatomy cubaseAnatomy({
       ),
   ];
 
+  // Cubase SX and some 4/5 projects keep no channel the decoder reads:
+  // their plug-ins are known by name only, as the project stats know them.
+  final channelsDecoded = channels.any((c) => c.faderPosition != null);
   return ProjectAnatomy(
     filePath: filePath,
     fileSize: bytes.length,
@@ -140,12 +143,17 @@ ProjectAnatomy cubaseAnatomy({
     sampleRate: setup.sampleRate,
     bitDepth: setup.bitDepth,
     channels: channels,
-    plugins: _cubasePlugins(channels, rack, {
+    plugins: !channelsDecoded
+        ? [
+            for (final name in normalizePluginNames(parser.readPluginNames()))
+              AnatomyPlugin(name: name, stock: isCubaseStockPlugin(name)),
+          ]
+        : _cubasePlugins(channels, rack, {
       for (final t in tracks)
         for (final i in t.inserts)
           if (i.vendor != null) cleanPluginName(i.plugin).toLowerCase(): i.vendor!,
     }),
-    pluginInstancesKnown: true,
+    pluginInstancesKnown: channelsDecoded,
     media: parser.readSampleReferences(),
     audioIo: _audioIo(parser.readAudioConnections()),
   );
