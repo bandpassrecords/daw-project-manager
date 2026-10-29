@@ -790,6 +790,7 @@ class CubaseProjectParser {
   late final List<CubaseRackInstrument> _rack = () {
     final rack = <CubaseRackInstrument>[];
     var from = 0;
+    var slot = -1;
     while (true) {
       final at = _indexOf(_rackOutputsKey, from);
       if (at < 0) break;
@@ -800,6 +801,7 @@ class CubaseProjectParser {
         _ => null,
       };
       if (outputs == null) continue;
+      slot++;
       // The slot's plug-in comes just before: "Plugin isA", then "Plugin".
       String? plugin;
       final isA = _lastIndexOf(_pluginIsAKey, at);
@@ -819,6 +821,7 @@ class CubaseProjectParser {
         final name = channel.folder('Name')?.string('String');
         if (name == null) continue;
         rack.add(CubaseRackInstrument(
+          slot: slot,
           channel: name,
           plugin: plugin,
           volume: channel.valueOf('Volume'),
@@ -1132,9 +1135,18 @@ class CubaseSend {
   final bool preFader;
 }
 
-/// An instrument in the VST Instruments rack, by the output channel it adds.
+/// An output channel of an instrument in the VST Instruments rack. An
+/// instrument with several outputs gives several, with the same [slot].
 class CubaseRackInstrument {
-  const CubaseRackInstrument({required this.channel, this.plugin, this.volume});
+  const CubaseRackInstrument({
+    required this.slot,
+    required this.channel,
+    this.plugin,
+    this.volume,
+  });
+
+  /// Which rack slot, counted from 0 in the order the project stores them.
+  final int slot;
   final String channel;
 
   /// The instrument plug-in, when its slot can be read.

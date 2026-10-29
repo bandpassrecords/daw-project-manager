@@ -13615,6 +13615,528 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Of these, {count} may still play on another computer.'**
   String missingPreviewRemoveIncludesOtherComputer(int count);
+
+  /// Dashboard tab that shows what is inside a project file
+  ///
+  /// In en, this message translates to:
+  /// **'Inspector'**
+  String get inspectorTab;
+
+  /// Search box hint on the Inspector tab
+  ///
+  /// In en, this message translates to:
+  /// **'Search tracks and plug-ins'**
+  String get inspectorSearchHint;
+
+  /// Inspector tab heading when no project is open
+  ///
+  /// In en, this message translates to:
+  /// **'See inside a project without opening the DAW'**
+  String get inspectorEmptyTitle;
+
+  /// Inspector tab text when no project is open
+  ///
+  /// In en, this message translates to:
+  /// **'Drop a project file here, open one, or choose Inspect in a project\'s menu. The project is only read, never changed.'**
+  String get inspectorEmptyBody;
+
+  /// Button that picks a project file to inspect
+  ///
+  /// In en, this message translates to:
+  /// **'Open project…'**
+  String get inspectorOpenProject;
+
+  /// Title of the file dialog that picks a project to inspect
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a project to inspect'**
+  String get inspectorChooseProjectTitle;
+
+  /// Shown while a project is being read
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the project…'**
+  String get inspectorReading;
+
+  /// Shown when a project could not be read
+  ///
+  /// In en, this message translates to:
+  /// **'This project could not be read.'**
+  String get inspectorReadFailed;
+
+  /// Shown when a dropped file is not a project the app knows
+  ///
+  /// In en, this message translates to:
+  /// **'The Inspector can\'t read {extension} files.'**
+  String inspectorUnsupported(String extension);
+
+  /// Button that reads the inspected project again
+  ///
+  /// In en, this message translates to:
+  /// **'Read again'**
+  String get inspectorReload;
+
+  /// Button that closes the inspected project
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get inspectorClose;
+
+  /// Which DAW version saved the project
+  ///
+  /// In en, this message translates to:
+  /// **'Saved with {daw} {version}'**
+  String inspectorSavedWith(String daw, String version);
+
+  /// Caption of the tempo tile
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo'**
+  String get inspectorTileTempo;
+
+  /// Caption of the time signature tile
+  ///
+  /// In en, this message translates to:
+  /// **'Time signature'**
+  String get inspectorTileTimeSignature;
+
+  /// Caption of the sample rate tile
+  ///
+  /// In en, this message translates to:
+  /// **'Sample rate'**
+  String get inspectorTileSampleRate;
+
+  /// Bit depth of the record format, e.g. 24-bit
+  ///
+  /// In en, this message translates to:
+  /// **'{bits}-bit'**
+  String inspectorBitDepth(int bits);
+
+  /// Tile caption when the project does not store this value
+  ///
+  /// In en, this message translates to:
+  /// **'Not in this project'**
+  String get inspectorNotInFile;
+
+  /// Unit after the number of tracks on a tile
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{track} other{tracks}}'**
+  String inspectorTileTracks(int count);
+
+  /// Unit after the number of effect plug-ins on a tile
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{effect} other{effects}}'**
+  String inspectorTileEffects(int count);
+
+  /// Unit after the number of instruments on a tile
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{instrument} other{instruments}}'**
+  String inspectorTileInstruments(int count);
+
+  /// Effects split into stock and third-party
+  ///
+  /// In en, this message translates to:
+  /// **'{stock} stock · {thirdParty} third-party'**
+  String inspectorEffectsBreakdown(int stock, int thirdParty);
+
+  /// Filter chip that shows every channel
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get inspectorFilterAll;
+
+  /// Channel kind: audio track
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get inspectorKindAudio;
+
+  /// Channel kind: instrument track
+  ///
+  /// In en, this message translates to:
+  /// **'Instrument'**
+  String get inspectorKindInstrument;
+
+  /// Channel kind: MIDI track
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI'**
+  String get inspectorKindMidi;
+
+  /// Channel kind: sampler track
+  ///
+  /// In en, this message translates to:
+  /// **'Sampler'**
+  String get inspectorKindSampler;
+
+  /// Channel kind: group channel
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get inspectorKindGroup;
+
+  /// Channel kind: FX channel
+  ///
+  /// In en, this message translates to:
+  /// **'FX'**
+  String get inspectorKindFx;
+
+  /// Channel kind: folder track
+  ///
+  /// In en, this message translates to:
+  /// **'Folder'**
+  String get inspectorKindFolder;
+
+  /// Inspector section with every channel
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks'**
+  String get inspectorTabTracks;
+
+  /// Inspector section with every plug-in
+  ///
+  /// In en, this message translates to:
+  /// **'Plug-ins'**
+  String get inspectorTabPlugins;
+
+  /// Inspector section with the signal flow
+  ///
+  /// In en, this message translates to:
+  /// **'Routing'**
+  String get inspectorTabRouting;
+
+  /// Inspector section with the audio files a project uses
+  ///
+  /// In en, this message translates to:
+  /// **'Audio files'**
+  String get inspectorTabMedia;
+
+  /// Inspector section with numbers about the project
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get inspectorTabStatistics;
+
+  /// Shown in a section this DAW cannot fill yet
+  ///
+  /// In en, this message translates to:
+  /// **'Not read for {daw} projects yet.'**
+  String inspectorNotAvailable(String daw);
+
+  /// Label: where a channel goes
+  ///
+  /// In en, this message translates to:
+  /// **'Output'**
+  String get inspectorOutput;
+
+  /// Label: insert plug-ins of a channel
+  ///
+  /// In en, this message translates to:
+  /// **'Inserts'**
+  String get inspectorInserts;
+
+  /// Label: sends of a channel
+  ///
+  /// In en, this message translates to:
+  /// **'Sends'**
+  String get inspectorSends;
+
+  /// Label: the instrument of an instrument track
+  ///
+  /// In en, this message translates to:
+  /// **'Instrument'**
+  String get inspectorInstrument;
+
+  /// Label: the channel fader
+  ///
+  /// In en, this message translates to:
+  /// **'Fader'**
+  String get inspectorFader;
+
+  /// Shown when a channel has no insert plug-ins
+  ///
+  /// In en, this message translates to:
+  /// **'No inserts'**
+  String get inspectorNoInserts;
+
+  /// Shown when a channel has no sends
+  ///
+  /// In en, this message translates to:
+  /// **'No sends'**
+  String get inspectorNoSends;
+
+  /// A channel whose output goes nowhere
+  ///
+  /// In en, this message translates to:
+  /// **'Not connected'**
+  String get inspectorNotConnected;
+
+  /// An insert that was switched off when saved
+  ///
+  /// In en, this message translates to:
+  /// **'off'**
+  String get inspectorDeactivated;
+
+  /// A channel that was soloed when saved
+  ///
+  /// In en, this message translates to:
+  /// **'Solo'**
+  String get inspectorSoloed;
+
+  /// A send taken before the fader
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-fader'**
+  String get inspectorPreFader;
+
+  /// A send that was switched off when saved
+  ///
+  /// In en, this message translates to:
+  /// **'Switched off'**
+  String get inspectorSendSwitchedOff;
+
+  /// A send that feeds a plug-in side-chain
+  ///
+  /// In en, this message translates to:
+  /// **'Side-chain into {plugin}'**
+  String inspectorSideChainInto(String plugin);
+
+  /// How many bands of the channel EQ are on
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{EQ off} one{EQ: 1 band on} other{EQ: {count} bands on}}'**
+  String inspectorEqBandsOn(int count);
+
+  /// Tooltip on a fader whose dB value is not known
+  ///
+  /// In en, this message translates to:
+  /// **'Where the fader sits; its value in dB isn\'t read yet'**
+  String get inspectorFaderPositionOnly;
+
+  /// Shown before a channel is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Select a channel to see its routing and plug-ins.'**
+  String get inspectorSelectChannel;
+
+  /// Plug-ins that come with the DAW
+  ///
+  /// In en, this message translates to:
+  /// **'Stock effects'**
+  String get inspectorGroupStock;
+
+  /// Plug-ins from other makers
+  ///
+  /// In en, this message translates to:
+  /// **'Third-party effects'**
+  String get inspectorGroupThirdParty;
+
+  /// Instrument plug-ins
+  ///
+  /// In en, this message translates to:
+  /// **'Instruments'**
+  String get inspectorGroupInstruments;
+
+  /// How many plug-ins and how many times they are loaded
+  ///
+  /// In en, this message translates to:
+  /// **'{unique} unique · {instances} instances'**
+  String inspectorPluginSummary(int unique, int instances);
+
+  /// Plug-ins tab note when only names are read
+  ///
+  /// In en, this message translates to:
+  /// **'Which channels use each plug-in isn\'t read for {daw} projects yet.'**
+  String inspectorPluginsNamesOnly(String daw);
+
+  /// Routing view following one channel
+  ///
+  /// In en, this message translates to:
+  /// **'Signal flow'**
+  String get inspectorSignalFlow;
+
+  /// Routing view listing what feeds each bus
+  ///
+  /// In en, this message translates to:
+  /// **'By destination'**
+  String get inspectorByDestination;
+
+  /// Channels feeding the selected one
+  ///
+  /// In en, this message translates to:
+  /// **'Feeds in'**
+  String get inspectorFeedsIn;
+
+  /// Where the selected channel goes
+  ///
+  /// In en, this message translates to:
+  /// **'Goes to'**
+  String get inspectorGoesTo;
+
+  /// The chain of outputs from a channel to the final output
+  ///
+  /// In en, this message translates to:
+  /// **'Signal path'**
+  String get inspectorSignalPath;
+
+  /// A channel reaching another through a send
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get inspectorViaSend;
+
+  /// A channel reaching a plug-in side-chain
+  ///
+  /// In en, this message translates to:
+  /// **'Side-chain'**
+  String get inspectorViaSideChain;
+
+  /// Shown when no channel feeds the selected one
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing feeds this channel.'**
+  String get inspectorNothingFeeds;
+
+  /// Hint: channels whose output is not connected
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 channel goes nowhere} other{{count} channels go nowhere}}'**
+  String inspectorHintNowhere(int count);
+
+  /// Hint: tracks sent straight to an output in a project with buses
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 track goes straight to an output} other{{count} tracks go straight to an output}}'**
+  String inspectorHintSkipBuses(int count);
+
+  /// How many channels feed a destination
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 source} other{{count} sources}}'**
+  String inspectorSourcesCount(int count);
+
+  /// Audio file found where the project says
+  ///
+  /// In en, this message translates to:
+  /// **'Found'**
+  String get inspectorMediaFound;
+
+  /// Audio file found under another path in the project folder
+  ///
+  /// In en, this message translates to:
+  /// **'Found in the project folder'**
+  String get inspectorMediaElsewhere;
+
+  /// Audio file not found on this computer
+  ///
+  /// In en, this message translates to:
+  /// **'Missing'**
+  String get inspectorMediaMissing;
+
+  /// How many audio files are missing
+  ///
+  /// In en, this message translates to:
+  /// **'{missing} of {total} missing'**
+  String inspectorMediaSummary(int missing, int total);
+
+  /// Every audio file was found
+  ///
+  /// In en, this message translates to:
+  /// **'All {total} found'**
+  String inspectorMediaAllFound(int total);
+
+  /// Shown while audio files are being looked for
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for the files…'**
+  String get inspectorMediaChecking;
+
+  /// Shown when a project uses no audio files
+  ///
+  /// In en, this message translates to:
+  /// **'This project uses no audio files.'**
+  String get inspectorMediaNone;
+
+  /// Where the project says an audio file is
+  ///
+  /// In en, this message translates to:
+  /// **'Project says: {path}'**
+  String inspectorMediaStoredAt(String path);
+
+  /// Where an audio file was found
+  ///
+  /// In en, this message translates to:
+  /// **'Found at: {path}'**
+  String inspectorMediaFoundAt(String path);
+
+  /// Statistics card: tracks by kind
+  ///
+  /// In en, this message translates to:
+  /// **'Track types'**
+  String get inspectorStatTrackTypes;
+
+  /// Statistics card: plug-in instances by kind
+  ///
+  /// In en, this message translates to:
+  /// **'Plug-in instances'**
+  String get inspectorStatPluginInstances;
+
+  /// Plug-ins whose kind is not known
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get inspectorStatUnknown;
+
+  /// Statistics card: plug-ins loaded most often
+  ///
+  /// In en, this message translates to:
+  /// **'Most used plug-ins'**
+  String get inspectorStatMostUsed;
+
+  /// Statistics card: insert chains that repeat across channels
+  ///
+  /// In en, this message translates to:
+  /// **'Usual chains'**
+  String get inspectorStatUsualChains;
+
+  /// Shown when no insert chain repeats
+  ///
+  /// In en, this message translates to:
+  /// **'No chain of plug-ins repeats across channels.'**
+  String get inspectorStatNoChains;
+
+  /// Statistics card: how many inserts channels have
+  ///
+  /// In en, this message translates to:
+  /// **'Inserts per channel'**
+  String get inspectorStatInsertsPerChannel;
+
+  /// Statistics card: buses with the most sources
+  ///
+  /// In en, this message translates to:
+  /// **'Busiest destinations'**
+  String get inspectorStatBusiest;
+
+  /// Number of inserts
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 insert} other{{count} inserts}}'**
+  String inspectorInsertsCount(int count);
+
+  /// Number of channels
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 channel} other{{count} channels}}'**
+  String inspectorChannelsCount(int count);
+
+  /// Project menu entry that opens the project in the Inspector tab
+  ///
+  /// In en, this message translates to:
+  /// **'Inspect'**
+  String get projectMenuInspect;
 }
 
 class _AppLocalizationsDelegate

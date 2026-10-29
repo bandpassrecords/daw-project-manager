@@ -149,6 +149,9 @@ Future<void> showProjectContextMenu({
         project,
         pluginDetected: ref.read(dpmPluginDetectedProvider),
       ),
+      inspectOffered: !project.isVirtual &&
+          ref.read(visibleTabsProvider).contains(AppTab.inspector) &&
+          File(project.filePath).existsSync(),
     ),
   );
 
@@ -171,6 +174,12 @@ Future<void> showProjectContextMenu({
         break;
       case 'openFolder':
         await openProjectFolder(context, project);
+        break;
+      case 'inspect':
+        // Read it fresh: the file may have changed since it was last open.
+        ref.invalidate(projectAnatomyProvider(project.filePath));
+        ref.read(inspectorFileProvider.notifier).open(project.filePath);
+        ref.read(inspectorShowRequestProvider.notifier).request();
         break;
       case 'playCapture':
         await playProjectCapture(context, ref, project);
@@ -362,6 +371,7 @@ List<Widget> projectMenuChildren({
   required bool driveRestoreOffered,
   required bool previewShareable,
   bool captureOffered = false,
+  bool inspectOffered = false,
 }) {
   Widget item(
     String value,
@@ -433,6 +443,9 @@ List<Widget> projectMenuChildren({
         : item('launch', Icons.open_in_new, l10n.tooltipLaunchInDaw),
     item('view', Icons.assignment, l10n.tooltipViewDetails),
     item('openFolder', Icons.folder_open, l10n.openFolder),
+    // The Inspector tab (#196): desktop-only, and a stack has no file.
+    if (inspectOffered)
+      item('inspect', Icons.manage_search, l10n.projectMenuInspect),
     // The DAW plugin's latest capture (offersLatestCapture): the same rule as
     // the dot on the play button.
     if (captureOffered)

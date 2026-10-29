@@ -8602,4 +8602,367 @@ class AppLocalizationsIt extends AppLocalizations {
   String missingPreviewRemoveIncludesOtherComputer(int count) {
     return 'Di questi, $count forse si riproducono ancora su un altro computer.';
   }
+
+  @override
+  String get inspectorTab => 'Ispettore';
+
+  @override
+  String get inspectorSearchHint => 'Cerca tracce e plug-in';
+
+  @override
+  String get inspectorEmptyTitle =>
+      'Guarda dentro un progetto senza aprire la DAW';
+
+  @override
+  String get inspectorEmptyBody =>
+      'Trascina qui un file di progetto, aprine uno o scegli Ispeziona nel menu di un progetto. Il progetto viene solo letto, mai modificato.';
+
+  @override
+  String get inspectorOpenProject => 'Apri progetto…';
+
+  @override
+  String get inspectorChooseProjectTitle => 'Scegli un progetto da ispezionare';
+
+  @override
+  String get inspectorReading => 'Lettura del progetto…';
+
+  @override
+  String get inspectorReadFailed => 'Impossibile leggere questo progetto.';
+
+  @override
+  String inspectorUnsupported(String extension) {
+    return 'L\'Ispettore non può leggere i file $extension.';
+  }
+
+  @override
+  String get inspectorReload => 'Rileggi';
+
+  @override
+  String get inspectorClose => 'Chiudi';
+
+  @override
+  String inspectorSavedWith(String daw, String version) {
+    return 'Salvato con $daw $version';
+  }
+
+  @override
+  String get inspectorTileTempo => 'Tempo';
+
+  @override
+  String get inspectorTileTimeSignature => 'Tempo in chiave';
+
+  @override
+  String get inspectorTileSampleRate => 'Frequenza di campionamento';
+
+  @override
+  String inspectorBitDepth(int bits) {
+    return '$bits bit';
+  }
+
+  @override
+  String get inspectorNotInFile => 'Non presente nel progetto';
+
+  @override
+  String inspectorTileTracks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tracce',
+      one: 'traccia',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileEffects(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'effetti',
+      one: 'effetto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileInstruments(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'strumenti',
+      one: 'strumento',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorEffectsBreakdown(int stock, int thirdParty) {
+    return '$stock inclusi · $thirdParty di terze parti';
+  }
+
+  @override
+  String get inspectorFilterAll => 'Tutte';
+
+  @override
+  String get inspectorKindAudio => 'Audio';
+
+  @override
+  String get inspectorKindInstrument => 'Strumento';
+
+  @override
+  String get inspectorKindMidi => 'MIDI';
+
+  @override
+  String get inspectorKindSampler => 'Sampler';
+
+  @override
+  String get inspectorKindGroup => 'Gruppo';
+
+  @override
+  String get inspectorKindFx => 'FX';
+
+  @override
+  String get inspectorKindFolder => 'Cartella';
+
+  @override
+  String get inspectorTabTracks => 'Tracce';
+
+  @override
+  String get inspectorTabPlugins => 'Plug-in';
+
+  @override
+  String get inspectorTabRouting => 'Instradamento';
+
+  @override
+  String get inspectorTabMedia => 'File audio';
+
+  @override
+  String get inspectorTabStatistics => 'Statistiche';
+
+  @override
+  String inspectorNotAvailable(String daw) {
+    return 'Non ancora letto per i progetti $daw.';
+  }
+
+  @override
+  String get inspectorOutput => 'Uscita';
+
+  @override
+  String get inspectorInserts => 'Insert';
+
+  @override
+  String get inspectorSends => 'Mandate';
+
+  @override
+  String get inspectorInstrument => 'Strumento';
+
+  @override
+  String get inspectorFader => 'Fader';
+
+  @override
+  String get inspectorNoInserts => 'Nessun insert';
+
+  @override
+  String get inspectorNoSends => 'Nessuna mandata';
+
+  @override
+  String get inspectorNotConnected => 'Non collegata';
+
+  @override
+  String get inspectorDeactivated => 'spento';
+
+  @override
+  String get inspectorSoloed => 'Solo';
+
+  @override
+  String get inspectorPreFader => 'Pre-fader';
+
+  @override
+  String get inspectorSendSwitchedOff => 'Spenta';
+
+  @override
+  String inspectorSideChainInto(String plugin) {
+    return 'Sidechain in $plugin';
+  }
+
+  @override
+  String inspectorEqBandsOn(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'EQ: $count bande attive',
+      one: 'EQ: 1 banda attiva',
+      zero: 'EQ spento',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorFaderPositionOnly =>
+      'Posizione del fader; il valore in dB non viene ancora letto';
+
+  @override
+  String get inspectorSelectChannel =>
+      'Seleziona un canale per vederne instradamento e plug-in.';
+
+  @override
+  String get inspectorGroupStock => 'Effetti inclusi';
+
+  @override
+  String get inspectorGroupThirdParty => 'Effetti di terze parti';
+
+  @override
+  String get inspectorGroupInstruments => 'Strumenti';
+
+  @override
+  String inspectorPluginSummary(int unique, int instances) {
+    return '$unique diversi · $instances istanze';
+  }
+
+  @override
+  String inspectorPluginsNamesOnly(String daw) {
+    return 'Quali canali usano ogni plug-in non viene ancora letto per i progetti $daw.';
+  }
+
+  @override
+  String get inspectorSignalFlow => 'Flusso del segnale';
+
+  @override
+  String get inspectorByDestination => 'Per destinazione';
+
+  @override
+  String get inspectorFeedsIn => 'Riceve da';
+
+  @override
+  String get inspectorGoesTo => 'Va a';
+
+  @override
+  String get inspectorSignalPath => 'Percorso del segnale';
+
+  @override
+  String get inspectorViaSend => 'Mandata';
+
+  @override
+  String get inspectorViaSideChain => 'Sidechain';
+
+  @override
+  String get inspectorNothingFeeds => 'Nessun canale arriva qui.';
+
+  @override
+  String inspectorHintNowhere(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count canali non vanno da nessuna parte',
+      one: '1 canale non va da nessuna parte',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorHintSkipBuses(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tracce vanno direttamente a un’uscita',
+      one: '1 traccia va direttamente a un’uscita',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorSourcesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sorgenti',
+      one: '1 sorgente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorMediaFound => 'Trovato';
+
+  @override
+  String get inspectorMediaElsewhere => 'Trovato nella cartella del progetto';
+
+  @override
+  String get inspectorMediaMissing => 'Mancante';
+
+  @override
+  String inspectorMediaSummary(int missing, int total) {
+    return '$missing su $total mancanti';
+  }
+
+  @override
+  String inspectorMediaAllFound(int total) {
+    return 'Trovati tutti i $total';
+  }
+
+  @override
+  String get inspectorMediaChecking => 'Ricerca dei file…';
+
+  @override
+  String get inspectorMediaNone => 'Questo progetto non usa file audio.';
+
+  @override
+  String inspectorMediaStoredAt(String path) {
+    return 'Secondo il progetto: $path';
+  }
+
+  @override
+  String inspectorMediaFoundAt(String path) {
+    return 'Trovato in: $path';
+  }
+
+  @override
+  String get inspectorStatTrackTypes => 'Tipi di traccia';
+
+  @override
+  String get inspectorStatPluginInstances => 'Istanze dei plug-in';
+
+  @override
+  String get inspectorStatUnknown => 'Sconosciuto';
+
+  @override
+  String get inspectorStatMostUsed => 'Plug-in più usati';
+
+  @override
+  String get inspectorStatUsualChains => 'Catene abituali';
+
+  @override
+  String get inspectorStatNoChains =>
+      'Nessuna catena di plug-in si ripete tra i canali.';
+
+  @override
+  String get inspectorStatInsertsPerChannel => 'Insert per canale';
+
+  @override
+  String get inspectorStatBusiest => 'Destinazioni più affollate';
+
+  @override
+  String inspectorInsertsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count insert',
+      one: '1 insert',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorChannelsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count canali',
+      one: '1 canale',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get projectMenuInspect => 'Ispeziona';
 }

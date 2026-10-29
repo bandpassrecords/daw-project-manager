@@ -8106,4 +8106,308 @@ class AppLocalizationsJa extends AppLocalizations {
   String missingPreviewRemoveIncludesOtherComputer(int count) {
     return 'このうち$count件は、別のコンピューターではまだ再生できるかもしれません。';
   }
+
+  @override
+  String get inspectorTab => 'インスペクター';
+
+  @override
+  String get inspectorSearchHint => 'トラックとプラグインを検索';
+
+  @override
+  String get inspectorEmptyTitle => 'DAWを開かずにプロジェクトの中身を確認';
+
+  @override
+  String get inspectorEmptyBody =>
+      'プロジェクトファイルをここにドロップするか、開くか、プロジェクトのメニューで「調べる」を選びます。プロジェクトは読み取るだけで、変更されません。';
+
+  @override
+  String get inspectorOpenProject => 'プロジェクトを開く…';
+
+  @override
+  String get inspectorChooseProjectTitle => '調べるプロジェクトを選択';
+
+  @override
+  String get inspectorReading => 'プロジェクトを読み込み中…';
+
+  @override
+  String get inspectorReadFailed => 'このプロジェクトを読み込めませんでした。';
+
+  @override
+  String inspectorUnsupported(String extension) {
+    return 'インスペクターは$extensionファイルを読み込めません。';
+  }
+
+  @override
+  String get inspectorReload => '再読み込み';
+
+  @override
+  String get inspectorClose => '閉じる';
+
+  @override
+  String inspectorSavedWith(String daw, String version) {
+    return '$daw $version で保存';
+  }
+
+  @override
+  String get inspectorTileTempo => 'テンポ';
+
+  @override
+  String get inspectorTileTimeSignature => '拍子';
+
+  @override
+  String get inspectorTileSampleRate => 'サンプルレート';
+
+  @override
+  String inspectorBitDepth(int bits) {
+    return '$bitsビット';
+  }
+
+  @override
+  String get inspectorNotInFile => 'このプロジェクトにはありません';
+
+  @override
+  String inspectorTileTracks(int count) {
+    return 'トラック';
+  }
+
+  @override
+  String inspectorTileEffects(int count) {
+    return 'エフェクト';
+  }
+
+  @override
+  String inspectorTileInstruments(int count) {
+    return 'インストゥルメント';
+  }
+
+  @override
+  String inspectorEffectsBreakdown(int stock, int thirdParty) {
+    return '付属 $stock · サードパーティ $thirdParty';
+  }
+
+  @override
+  String get inspectorFilterAll => 'すべて';
+
+  @override
+  String get inspectorKindAudio => 'オーディオ';
+
+  @override
+  String get inspectorKindInstrument => 'インストゥルメント';
+
+  @override
+  String get inspectorKindMidi => 'MIDI';
+
+  @override
+  String get inspectorKindSampler => 'サンプラー';
+
+  @override
+  String get inspectorKindGroup => 'グループ';
+
+  @override
+  String get inspectorKindFx => 'FX';
+
+  @override
+  String get inspectorKindFolder => 'フォルダー';
+
+  @override
+  String get inspectorTabTracks => 'トラック';
+
+  @override
+  String get inspectorTabPlugins => 'プラグイン';
+
+  @override
+  String get inspectorTabRouting => 'ルーティング';
+
+  @override
+  String get inspectorTabMedia => 'オーディオファイル';
+
+  @override
+  String get inspectorTabStatistics => '統計';
+
+  @override
+  String inspectorNotAvailable(String daw) {
+    return '$daw のプロジェクトではまだ読み取れません。';
+  }
+
+  @override
+  String get inspectorOutput => '出力';
+
+  @override
+  String get inspectorInserts => 'インサート';
+
+  @override
+  String get inspectorSends => 'センド';
+
+  @override
+  String get inspectorInstrument => 'インストゥルメント';
+
+  @override
+  String get inspectorFader => 'フェーダー';
+
+  @override
+  String get inspectorNoInserts => 'インサートなし';
+
+  @override
+  String get inspectorNoSends => 'センドなし';
+
+  @override
+  String get inspectorNotConnected => '未接続';
+
+  @override
+  String get inspectorDeactivated => 'オフ';
+
+  @override
+  String get inspectorSoloed => 'ソロ';
+
+  @override
+  String get inspectorPreFader => 'プリフェーダー';
+
+  @override
+  String get inspectorSendSwitchedOff => 'オフ';
+
+  @override
+  String inspectorSideChainInto(String plugin) {
+    return '$plugin のサイドチェイン';
+  }
+
+  @override
+  String inspectorEqBandsOn(int count) {
+    return 'EQ: $count バンドがオン';
+  }
+
+  @override
+  String get inspectorFaderPositionOnly => 'フェーダーの位置（dB値はまだ読み取れません）';
+
+  @override
+  String get inspectorSelectChannel => 'チャンネルを選ぶと、ルーティングとプラグインが表示されます。';
+
+  @override
+  String get inspectorGroupStock => '付属エフェクト';
+
+  @override
+  String get inspectorGroupThirdParty => 'サードパーティのエフェクト';
+
+  @override
+  String get inspectorGroupInstruments => 'インストゥルメント';
+
+  @override
+  String inspectorPluginSummary(int unique, int instances) {
+    return '$unique 種類 · $instances インスタンス';
+  }
+
+  @override
+  String inspectorPluginsNamesOnly(String daw) {
+    return '$daw のプロジェクトでは、各プラグインを使うチャンネルはまだ読み取れません。';
+  }
+
+  @override
+  String get inspectorSignalFlow => '信号の流れ';
+
+  @override
+  String get inspectorByDestination => '送り先ごと';
+
+  @override
+  String get inspectorFeedsIn => '入力元';
+
+  @override
+  String get inspectorGoesTo => '送り先';
+
+  @override
+  String get inspectorSignalPath => '信号経路';
+
+  @override
+  String get inspectorViaSend => 'センド';
+
+  @override
+  String get inspectorViaSideChain => 'サイドチェイン';
+
+  @override
+  String get inspectorNothingFeeds => 'このチャンネルへの入力はありません。';
+
+  @override
+  String inspectorHintNowhere(int count) {
+    return '出力先のないチャンネル：$count';
+  }
+
+  @override
+  String inspectorHintSkipBuses(int count) {
+    return '出力へ直接送られるトラック：$count';
+  }
+
+  @override
+  String inspectorSourcesCount(int count) {
+    return '入力元 $count';
+  }
+
+  @override
+  String get inspectorMediaFound => '見つかりました';
+
+  @override
+  String get inspectorMediaElsewhere => 'プロジェクトフォルダーで見つかりました';
+
+  @override
+  String get inspectorMediaMissing => '見つかりません';
+
+  @override
+  String inspectorMediaSummary(int missing, int total) {
+    return '$total 件中 $missing 件が見つかりません';
+  }
+
+  @override
+  String inspectorMediaAllFound(int total) {
+    return '$total 件すべて見つかりました';
+  }
+
+  @override
+  String get inspectorMediaChecking => 'ファイルを探しています…';
+
+  @override
+  String get inspectorMediaNone => 'このプロジェクトはオーディオファイルを使っていません。';
+
+  @override
+  String inspectorMediaStoredAt(String path) {
+    return 'プロジェクト上の場所: $path';
+  }
+
+  @override
+  String inspectorMediaFoundAt(String path) {
+    return '見つかった場所: $path';
+  }
+
+  @override
+  String get inspectorStatTrackTypes => 'トラックの種類';
+
+  @override
+  String get inspectorStatPluginInstances => 'プラグインのインスタンス';
+
+  @override
+  String get inspectorStatUnknown => '不明';
+
+  @override
+  String get inspectorStatMostUsed => 'よく使われるプラグイン';
+
+  @override
+  String get inspectorStatUsualChains => 'よく使うチェーン';
+
+  @override
+  String get inspectorStatNoChains => '複数のチャンネルで繰り返されるプラグインチェーンはありません。';
+
+  @override
+  String get inspectorStatInsertsPerChannel => 'チャンネルごとのインサート数';
+
+  @override
+  String get inspectorStatBusiest => '入力の多い送り先';
+
+  @override
+  String inspectorInsertsCount(int count) {
+    return 'インサート $count';
+  }
+
+  @override
+  String inspectorChannelsCount(int count) {
+    return 'チャンネル $count';
+  }
+
+  @override
+  String get projectMenuInspect => '調べる';
 }
