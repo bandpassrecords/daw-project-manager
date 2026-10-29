@@ -16,7 +16,7 @@ const _kick = AnatomyChannel(
   output: 'Drum Bus',
   volumeDb: 0,
   faderPosition: 0.79,
-  inserts: [AnatomyInsert(slot: 0, plugin: 'Pro-Q 3')],
+  inserts: [AnatomyInsert(slot: 0, plugin: 'Pro-Q 3', preset: 'Kick Shape')],
   sends: [
     AnatomySend(destination: 'Bass', sideChainOf: 'Compressor'),
   ],
@@ -57,6 +57,8 @@ const _cubase = ProjectAnatomy(
       stock: false,
       instances: 1,
       channels: ['Kick'],
+      vendor: 'FabFilter',
+      format: 'VST3',
     ),
     AnatomyPlugin(
       name: 'Compressor',
@@ -140,7 +142,7 @@ void main() {
         findsOneWidget);
     await tester.tap(find.text('Kick').first);
     await tester.pumpAndSettle();
-    expect(find.text('1. Pro-Q 3'), findsOneWidget);
+    expect(find.text('1. Pro-Q 3 — Kick Shape'), findsOneWidget);
     expect(find.textContaining('Side-chain into Compressor'), findsOneWidget);
     // Kick → Drum Bus → Stereo Out.
     expect(find.widgetWithText(Chip, 'Stereo Out'), findsOneWidget);
@@ -167,6 +169,7 @@ void main() {
     expect(find.text('Stock effects (1)'), findsOneWidget);
     expect(find.text('Third-party effects (1)'), findsOneWidget);
     expect(find.text('3 unique · 3 instances'), findsOneWidget);
+    expect(find.text('FabFilter · VST3'), findsOneWidget);
   });
 
   testWidgets('routing by destination lists what feeds each bus',

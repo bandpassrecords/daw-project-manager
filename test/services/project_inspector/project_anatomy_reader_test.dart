@@ -66,7 +66,7 @@ void main() {
       final bassline =
           anatomy.channels!.firstWhere((c) => c.name == 'Bassline');
       expect(bassline.inserts.map((i) => i.plugin), contains('LFOTool'));
-      expect(bassline.instrument, isNotNull);
+      expect(bassline.instrument, 'Diva', reason: 'the track is named Bassline');
     });
 
     test('plug-ins: instruments from tracks and the rack, effects by origin',
@@ -84,6 +84,20 @@ void main() {
       expect(ott.channels.toSet(), hasLength(ott.channels.length),
           reason: 'each channel once');
       expect(byName['Compressor']!.stock, isTrue);
+      expect(byName['Sylenth1']!.role, AnatomyPluginRole.instrument);
+      expect(byName['Sylenth1']!.instances, 6);
+      expect(byName.keys, isNot(contains('Bassline')),
+          reason: "a track's label is not a plug-in");
+    });
+
+    test('formats from class ids; makers where the project names them', () {
+      final byName = {for (final pl in anatomy.plugins) pl.name: pl};
+      expect(byName['OTT']!.format, 'VST2');
+      expect(byName['Pro-Q 3']!.format, 'VST3');
+      expect(byName['LFOTool']!.vendor, 'Xfer Records');
+      expect(byName['Volcano 2']!.vendor, 'FabFilter');
+      expect(byName['PingPongDelay']!.vendor, 'Steinberg Media Technologies');
+      expect(byName['PingPongDelay']!.stock, isTrue);
     });
 
     test('the studio it was saved in', () {

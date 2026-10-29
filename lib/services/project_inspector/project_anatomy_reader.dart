@@ -100,6 +100,8 @@ ProjectAnatomy cubaseAnatomy({
         soloed: t.soloed,
         eqBandsOn: t.eqBandsOn,
         instrument: t.instrument == null ? null : cleanPluginName(t.instrument!),
+        instrumentId: t.instrumentId,
+        instrumentPreset: t.instrumentPreset,
         inserts: [
           for (final i in t.inserts)
             AnatomyInsert(
@@ -107,6 +109,8 @@ ProjectAnatomy cubaseAnatomy({
               plugin: cleanPluginName(i.plugin),
               pluginId: i.pluginId,
               deactivated: i.deactivated,
+              format: i.format,
+              preset: i.preset,
             ),
         ],
         sends: [
@@ -135,7 +139,11 @@ ProjectAnatomy cubaseAnatomy({
     sampleRate: setup.sampleRate,
     bitDepth: setup.bitDepth,
     channels: channels,
-    plugins: _cubasePlugins(channels, rack),
+    plugins: _cubasePlugins(channels, rack, {
+      for (final t in tracks)
+        for (final i in t.inserts)
+          if (i.vendor != null) cleanPluginName(i.plugin).toLowerCase(): i.vendor!,
+    }),
     pluginInstancesKnown: true,
     media: parser.readSampleReferences(),
     audioIo: _audioIo(parser.readAudioConnections()),
@@ -163,17 +171,23 @@ AnatomyAudioIo _audioIo(CubaseAudioConnections io) {
 
 /// Every plug-in by name, with its instances and channels: inserts are
 /// effects; instrument tracks' instruments and the rack's are instruments.
+/// [vendors] maps a lower-case name to the maker one of its instances
+/// named: the maker of every instance. Steinberg's own count as stock even
+/// where the name list doesn't know them.
 List<AnatomyPlugin> _cubasePlugins(
   List<AnatomyChannel> channels,
   List<CubaseRackInstrument> rack,
+  Map<String, String> vendors,
 ) {
   final found = <String, _Tally>{};
   _Tally tally(String name, AnatomyPluginRole role, String? id) =>
-      found.putIfAbsent(name.toLowerCase(), () => _Tally(name, role, id));
+      found.putIfAbsent(name.toLowerCase(), () => _Tally(name, role, id))
+        ..format ??= _formatOf(id);
 
   for (final c in channels) {
     if (c.instrument case final instrument?) {
-      tally(instrument, AnatomyPluginRole.instrument, null).add(c.name);
+      tally(instrument, AnatomyPluginRole.instrument, c.instrumentId)
+          .add(c.name);
     }
     for (final i in c.inserts) {
       tally(i.plugin, AnatomyPluginRole.effect, i.pluginId).add(c.name);
@@ -194,20 +208,28 @@ List<AnatomyPlugin> _cubasePlugins(
       AnatomyPlugin(
         name: t.name,
         role: t.role,
-        stock: isCubaseStockPlugin(t.name),
+        stock: isCubaseStockPlugin(t.name) ||
+            (vendors[t.name.toLowerCase()]?.startsWith('Steinberg') ?? false),
         instances: t.instances,
         channels: List.unmodifiable(t.channels),
         pluginId: t.id,
+        vendor: vendors[t.name.toLowerCase()],
+        format: t.format,
       ),
   ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   return plugins;
 }
+
+String? _formatOf(String? id) => id == null
+    ? null
+    : (id.toUpperCase().startsWith('565354') ? 'VST2' : 'VST3');
 
 class _Tally {
   _Tally(this.name, this.role, this.id);
   final String name;
   final AnatomyPluginRole role;
   final String? id;
+  String? format;
   int instances = 0;
   final List<String> channels = [];
 

@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/models/sample_reference.dart';
+import 'package:daw_project_manager/services/daw_parsers/cubase_attributes.dart';
 import 'package:daw_project_manager/services/daw_parsers/cubase_project_parser.dart';
 
 /// Writes a Steinberg object archive the way Cubase does: the first object
@@ -162,6 +163,7 @@ class _Archive {
     bool soloed = false,
     int eqBandsOn = 0,
     String? instrument,
+    String? instrumentLabel,
   }) {
     tree('VST Multitrack', {
       'RuntimeID': 1,
@@ -197,7 +199,14 @@ class _Archive {
       if (instrument != null)
         'Synth Slot': {
           'Plugin isA': 'VstCtrlInstrument',
-          'Plugin': {'Plugin Name': instrument},
+          // A renamed instrument keeps the user's label as its name and the
+          // plug-in's own as the original.
+          'Plugin': {
+            'Plugin UID': {'GUID': '565354$instrument'},
+            'Plugin Name': instrumentLabel ?? instrument,
+            if (instrumentLabel != null) 'Original Plugin Name': instrument,
+            'Bay Program': 'Init Saw',
+          },
           'State': 1,
         },
       'EQ': {
@@ -409,7 +418,13 @@ Uint8List _project() {
   });
   a.track('MFolderTrack', 'Synths', () {
     a.track('MInstrumentTrackEvent', 'Serum 01', () {
-      a.channel(ownBus: 12, outBus: 20, type: 4, instrument: 'Serum');
+      a.channel(
+        ownBus: 12,
+        outBus: 20,
+        type: 4,
+        instrument: 'Serum',
+        instrumentLabel: 'Bass Serum',
+      );
       a.plugin('Bass Serum', original: 'Serum');
       a.midiPart('Bassline', 1920, [
         (-960, 30, 90, 120), // trimmed away before the part start
@@ -629,10 +644,89 @@ void main() {
       expect(guitar.sends, isEmpty, reason: 'unrouted slots are left out');
     });
 
-    test('an instrument track names its instrument', () {
+    test('an instrument track names its instrument, not its label', () {
       final serum =
           parser.readTracks().firstWhere((t) => t.name == 'Serum 01');
-      expect(serum.instrument, 'Serum');
+      expect(serum.instrument, 'Serum', reason: 'renamed "Bass Serum"');
+      expect(serum.instrumentPreset, 'Init Saw');
+      expect(serum.instrumentId, startsWith('565354'));
+    });
+
+    test("a sampler track's own engine is no instrument", () {
+      final a = _Archive()..begin('MTrackList');
+      a.track('MSamplerTrackEvent', 'Kick', () {
+        a.channel(
+            ownBus: 5, outBus: 0, type: 20, instrument: 'Sampler Track');
+      });
+      a.end();
+      final kick = CubaseProjectParser(a.toCpr()).readTracks().single;
+      expect(kick.instrument, isNull);
+    });
+
+    group('pluginIdentity', () {
+      CubaseAttributes plugin(Map<String, Object?> fields) =>
+          CubaseAttributes([for (final e in fields.entries) (e.key, e.value)]);
+
+      test('a class id starting "VST" is a wrapped VST 2', () {
+        expect(
+            CubaseProjectParser.pluginIdentity(plugin({
+              'Plugin UID': CubaseAttributes(
+                  [('GUID', '565354454E4453656E646C6573732073')]),
+            })).format,
+            'VST2');
+        expect(
+            CubaseProjectParser.pluginIdentity(plugin({
+              'Plugin UID':
+                  CubaseAttributes([('GUID', '297BA567D83144E1AE921DEF07B41156')]),
+            })).format,
+            'VST3');
+        expect(CubaseProjectParser.pluginIdentity(plugin({})).format, isNull);
+      });
+
+      test("the maker from the MediaBay defaults, after the plug-in's name",
+          () {
+        final id = CubaseProjectParser.pluginIdentity(plugin({
+          'Plugin Name': 'Volcano 2',
+          'MediaBay Config V2': CubaseAttributes([
+            ('defaultsId', 'LoadVSTEffectInternalState_FabFilterVolcano 2'),
+          ]),
+        }));
+        expect(id.vendor, 'FabFilter');
+        // A renamed plug-in is matched by its own name.
+        final renamed = CubaseProjectParser.pluginIdentity(plugin({
+          'Plugin Name': 'Big Comp',
+          'Original Plugin Name': 'Compressor',
+          'MediaBay Config V2': CubaseAttributes([
+            ('defaultsId',
+                'LoadVSTEffectInternalState_Steinberg Media TechnologiesCompressor'),
+          ]),
+        }));
+        expect(renamed.vendor, 'Steinberg Media Technologies');
+        // Anything that doesn't end in the name says no maker.
+        expect(
+            CubaseProjectParser.pluginIdentity(plugin({
+              'Plugin Name': 'X',
+              'MediaBay Config V2':
+                  CubaseAttributes([('defaultsId', 'something else')]),
+            })).vendor,
+            isNull);
+      });
+
+      test('the preset, unless it is "Default"', () {
+        expect(
+            CubaseProjectParser.pluginIdentity(
+                    plugin({'Bay Program': 'AM Kick Drum 2'}))
+                .preset,
+            'AM Kick Drum 2');
+        expect(
+            CubaseProjectParser.pluginIdentity(plugin({'Bay Program': 'Default'}))
+                .preset,
+            isNull);
+        expect(
+            CubaseProjectParser.pluginIdentity(plugin({'Bay Program': ''}))
+                .preset,
+            isNull);
+      });
     });
 
     test('the VST Instruments rack is not tracks; its outputs are listed', () {

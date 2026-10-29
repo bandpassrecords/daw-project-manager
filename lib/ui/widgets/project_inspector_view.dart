@@ -626,7 +626,9 @@ class _ChannelDetail extends StatelessWidget {
         if (c.instrument != null) ...[
           const SizedBox(height: 12),
           _Label(l10n.inspectorInstrument),
-          Text(c.instrument!),
+          Text(c.instrumentPreset == null
+              ? c.instrument!
+              : '${c.instrument!} — ${c.instrumentPreset}'),
         ],
         if (c.eqBandsOn != null) ...[
           const SizedBox(height: 12),
@@ -642,6 +644,7 @@ class _ChannelDetail extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 2),
               child: Text(
                 '${i.slot + 1}. ${i.plugin}'
+                '${i.preset == null ? '' : ' — ${i.preset}'}'
                 '${i.deactivated == true ? ' (${l10n.inspectorDeactivated})' : ''}',
                 style: i.deactivated == true
                     ? TextStyle(color: theme.disabledColor)
@@ -813,6 +816,12 @@ class _PluginCard extends StatelessWidget {
                     Text('×${pl.instances}', style: theme.textTheme.labelMedium),
                 ],
               ),
+              if (pl.vendor != null || pl.format != null)
+                Text(
+                  [?pl.vendor, ?pl.format].join(' · '),
+                  style: theme.textTheme.labelSmall
+                      ?.copyWith(color: theme.colorScheme.primary),
+                ),
               if (pl.channels.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 Text(

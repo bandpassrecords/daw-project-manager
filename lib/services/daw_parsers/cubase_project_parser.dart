@@ -165,6 +165,8 @@ class CubaseProjectParser {
           soloed: channel?.soloed,
           eqBandsOn: channel?.eqBandsOn,
           instrument: channel?.instrument,
+          instrumentId: channel?.instrumentId,
+          instrumentPreset: channel?.instrumentPreset,
           sends: [
             for (final s in channel?.sends ?? const <_Send>[]) send(s),
           ],
@@ -851,11 +853,15 @@ class CubaseProjectParser {
       final plugin = slots[slot].folder('Plugin');
       final name = plugin?.string('Plugin Name');
       if (plugin == null || name == null || name.isEmpty) continue;
+      final identity = pluginIdentity(plugin);
       inserts.add(_Insert(
         CubaseInsert(
           slot: slot,
           plugin: name,
-          pluginId: plugin.folder('Plugin UID')?.string('GUID'),
+          pluginId: identity.id,
+          format: identity.format,
+          vendor: identity.vendor,
+          preset: identity.preset,
           deactivated: switch (plugin.integer('Active')) {
             null => null,
             final a => a == 0,
@@ -887,6 +893,7 @@ class CubaseProjectParser {
     }
 
     final bands = tree.folder('EQ')?.list('Band') ?? const [];
+    final instrument = _instrumentOf(tree.folder('Synth Slot'));
     return _Channel(
       kind: _channelKind(tree.integer('Type')),
       ownBus: tree.folder('OwnInputBus')?.integer('Bus UID'),
@@ -903,7 +910,66 @@ class CubaseProjectParser {
       eqBandsOn: bands.isEmpty
           ? null
           : bands.where((b) => b.integer('Enable') == 1).length,
-      instrument: _firstPluginName(tree.folder('Synth Slot')),
+      instrument: instrument?.name,
+      instrumentId: instrument?.id,
+      instrumentPreset: instrument?.preset,
+    );
+  }
+
+  /// An instrument track's instrument, from its "Synth Slot": the plug-in's
+  /// own name where the track renamed it ("Bassline" is a Serum), and
+  /// nothing for the sampler track's built-in engine.
+  static ({String name, String? id, String? preset})? _instrumentOf(
+      CubaseAttributes? slot) {
+    final plugin = slot?.folder('Plugin');
+    final name = plugin == null
+        ? _firstPluginName(slot)
+        : (plugin.string('Original Plugin Name') ??
+            plugin.string('Plugin Name'));
+    if (name == null || name.isEmpty || _internalPlugins.contains(name.trim())) {
+      return null;
+    }
+    final identity = plugin == null ? null : pluginIdentity(plugin);
+    return (name: name, id: identity?.id, preset: identity?.preset);
+  }
+
+  /// What a slot's "Plugin" folder says about the plug-in beyond its name.
+  ///
+  /// * Its class id; one starting "565354" ("VST" in ASCII) is a VST 2
+  ///   plug-in Cubase wraps — 36% of 27,000 instances measured — the rest
+  ///   VST 3.
+  /// * The preset loaded ("Bay Program"), left out when it is "Default".
+  /// * Its maker, where Cubase kept the plug-in's MediaBay defaults:
+  ///   "LoadVSTEffectInternalState_" + maker + plug-in name ("FabFilter" +
+  ///   "Volcano 2"). Only some instances carry it (5% measured), so a maker
+  ///   found on one is the maker of all ([CubaseProjectParser] leaves that
+  ///   to whoever gathers the plug-ins).
+  static ({String? id, String? format, String? vendor, String? preset})
+      pluginIdentity(CubaseAttributes plugin) {
+    final id = plugin.folder('Plugin UID')?.string('GUID');
+    final name =
+        plugin.string('Original Plugin Name') ?? plugin.string('Plugin Name');
+    String? vendor;
+    final defaults = (plugin.folder('MediaBay Config V2') ??
+            plugin.folder('MediaBay Config'))
+        ?.string('defaultsId');
+    if (defaults != null && name != null) {
+      final cut = defaults.indexOf('State_');
+      final rest = cut < 0 ? '' : defaults.substring(cut + 6);
+      if (rest.length > name.length && rest.endsWith(name)) {
+        vendor = rest.substring(0, rest.length - name.length).trim();
+      }
+    }
+    final preset = plugin.string('Bay Program')?.trim();
+    return (
+      id: id,
+      format: id == null
+          ? null
+          : (id.toUpperCase().startsWith('565354') ? 'VST2' : 'VST3'),
+      vendor: vendor == null || vendor.isEmpty ? null : vendor,
+      preset: preset == null || preset.isEmpty || preset == 'Default'
+          ? null
+          : preset,
     );
   }
 
@@ -942,6 +1008,7 @@ class CubaseProjectParser {
       slot++;
       // The slot's plug-in comes just before: "Plugin isA", then "Plugin".
       String? plugin;
+      String? preset;
       final isA = _lastIndexOf(_pluginIsAKey, at);
       if (isA >= 0) {
         final kind = _decoder.attributeAt(isA, limit: at);
@@ -949,7 +1016,9 @@ class CubaseProjectParser {
             ? null
             : _decoder.attributeAt(kind.end, limit: at);
         if (folder?.key == 'Plugin' && folder?.value is CubaseAttributes) {
-          plugin = (folder!.value as CubaseAttributes).string('Plugin Name');
+          final attrs = folder!.value as CubaseAttributes;
+          plugin = attrs.string('Plugin Name');
+          preset = pluginIdentity(attrs).preset;
         }
       }
       for (final item in outputs) {
@@ -962,6 +1031,7 @@ class CubaseProjectParser {
           slot: slot,
           channel: name,
           plugin: plugin,
+          preset: preset,
           volume: channel.valueOf('Volume'),
         ));
       }
@@ -1183,6 +1253,8 @@ class CubaseTrack {
     this.soloed,
     this.eqBandsOn,
     this.instrument,
+    this.instrumentId,
+    this.instrumentPreset,
     this.sends = const [],
   });
 
@@ -1219,6 +1291,12 @@ class CubaseTrack {
   /// An instrument track's own instrument plug-in.
   final String? instrument;
 
+  /// Its instrument's class id.
+  final String? instrumentId;
+
+  /// The preset its instrument had loaded, other than "Default".
+  final String? instrumentPreset;
+
   /// Routed send slots; empty slots are left out.
   final List<CubaseSend> sends;
 }
@@ -1231,9 +1309,21 @@ class CubaseInsert {
     this.bypassed,
     this.pluginId,
     this.deactivated,
+    this.format,
+    this.vendor,
+    this.preset,
   });
   final int slot;
   final String plugin;
+
+  /// "VST2" or "VST3", from the class id.
+  final String? format;
+
+  /// Its maker, where this instance's MediaBay defaults name one.
+  final String? vendor;
+
+  /// The preset loaded, other than "Default".
+  final String? preset;
 
   /// Whether the slot was bypassed when saved. Cubase keeps bypass with the
   /// plug-in's automation state, which isn't read: null from the reader.
@@ -1280,6 +1370,7 @@ class CubaseRackInstrument {
     required this.slot,
     required this.channel,
     this.plugin,
+    this.preset,
     this.volume,
   });
 
@@ -1289,6 +1380,9 @@ class CubaseRackInstrument {
 
   /// The instrument plug-in, when its slot can be read.
   final String? plugin;
+
+  /// The preset it had loaded ("Rhodes Classic"), where readable.
+  final String? preset;
   final double? volume;
 }
 
@@ -1386,6 +1480,8 @@ class _Channel {
     this.soloed,
     this.eqBandsOn,
     this.instrument,
+    this.instrumentId,
+    this.instrumentPreset,
   });
   final _ChannelKind? kind;
   final int? ownBus;
@@ -1398,6 +1494,8 @@ class _Channel {
   final bool? soloed;
   final int? eqBandsOn;
   final String? instrument;
+  final String? instrumentId;
+  final String? instrumentPreset;
 }
 
 /// An insert and the side-chain buses its plug-in offers.

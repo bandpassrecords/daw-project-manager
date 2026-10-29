@@ -103,6 +103,8 @@ class AnatomyChannel {
     this.soloed,
     this.eqBandsOn,
     this.instrument,
+    this.instrumentId,
+    this.instrumentPreset,
     this.inserts = const [],
     this.sends = const [],
   });
@@ -128,6 +130,12 @@ class AnatomyChannel {
 
   /// An instrument track's instrument.
   final String? instrument;
+
+  /// Its instrument's class id.
+  final String? instrumentId;
+
+  /// The preset its instrument had loaded.
+  final String? instrumentPreset;
   final List<AnatomyInsert> inserts;
   final List<AnatomySend> sends;
 
@@ -142,10 +150,18 @@ class AnatomyInsert {
     required this.plugin,
     this.pluginId,
     this.deactivated,
+    this.format,
+    this.preset,
   });
   final int slot;
   final String plugin;
   final String? pluginId;
+
+  /// "VST2", "VST3"…; null when not known.
+  final String? format;
+
+  /// The preset loaded in this slot.
+  final String? preset;
 
   /// Switched off in its slot when saved.
   final bool? deactivated;
@@ -183,6 +199,8 @@ class AnatomyPlugin {
     this.instances,
     this.channels = const [],
     this.pluginId,
+    this.vendor,
+    this.format,
   });
 
   final String name;
@@ -199,4 +217,10 @@ class AnatomyPlugin {
   /// The channels it is on, in project order, each once.
   final List<String> channels;
   final String? pluginId;
+
+  /// Its maker, where the project names one.
+  final String? vendor;
+
+  /// "VST2", "VST3"…; null when not known.
+  final String? format;
 }
