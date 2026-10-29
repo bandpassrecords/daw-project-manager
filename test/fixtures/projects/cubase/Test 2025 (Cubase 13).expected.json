@@ -10,8 +10,8 @@
       "midi": 49,
       "instrument": 16,
       "sampler": 1,
-      "bus": 6,
-      "folder": 4,
+      "bus": 2,
+      "folder": 1,
       "plugins": [
         "ANA2",
         "Compressor",
@@ -675,8 +675,8 @@
       "midi": 49,
       "instrument": 16,
       "sampler": 1,
-      "bus": 6,
-      "folder": 4,
+      "bus": 2,
+      "folder": 1,
       "plugins": [
         "ANA2",
         "Black Box Analog Design HG-2",
@@ -1354,8 +1354,8 @@
       "midi": 0,
       "instrument": 10,
       "sampler": 1,
-      "bus": 3,
-      "folder": 2,
+      "bus": 1,
+      "folder": 0,
       "plugins": [
         "ANA2",
         "Diva",

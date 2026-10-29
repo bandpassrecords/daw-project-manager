@@ -11,7 +11,7 @@
       "instrument": 1,
       "sampler": 0,
       "bus": 0,
-      "folder": 1,
+      "folder": 0,
       "plugins": [
         "Battery2VST",
         "Chorus",
@@ -325,7 +325,7 @@
       "instrument": 1,
       "sampler": 0,
       "bus": 0,
-      "folder": 1,
+      "folder": 0,
       "plugins": [
         "Battery2VST",
         "Chorus",
@@ -639,7 +639,7 @@
       "instrument": 1,
       "sampler": 0,
       "bus": 0,
-      "folder": 6,
+      "folder": 5,
       "plugins": [
         "Battery2VST",
         "Chorus",
@@ -980,7 +980,7 @@
       "instrument": 1,
       "sampler": 0,
       "bus": 0,
-      "folder": 6,
+      "folder": 5,
       "plugins": [
         "Battery2VST",
         "Chorus",
@@ -1322,7 +1322,7 @@
       "instrument": 1,
       "sampler": 0,
       "bus": 0,
-      "folder": 6,
+      "folder": 5,
       "plugins": [
         "Battery2VST",
         "Chorus",
@@ -1664,7 +1664,7 @@
       "instrument": 3,
       "sampler": 0,
       "bus": 0,
-      "folder": 6,
+      "folder": 5,
       "plugins": [
         "Battery2VST",
         "BitCrusher",
@@ -2453,7 +2453,7 @@
       "instrument": 1,
       "sampler": 0,
       "bus": 0,
-      "folder": 1,
+      "folder": 0,
       "plugins": [
         "Battery2VST",
         "Chorus",

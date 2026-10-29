@@ -85,37 +85,174 @@ class _Archive {
     string(s);
   }
 
-  /// A mixer channel as Cubase writes it inside a track: the bus it owns
-  /// (what other channels' outputs name), its insert slots, and its output.
-  /// [inserts] maps a slot to (plug-in, bypassed); other slots are empty.
+  // --- attribute trees (see CubaseAttributeDecoder) ----------------------
+
+  /// One attribute: its key, then its value — an `int` (i64), a `double`
+  /// (f64), a `String`, a `Map` (folder), a `List<Map>` (list) or an [_Obj].
+  void attr(String k, Object v) {
+    key(k);
+    value(v);
+  }
+
+  void value(Object v) {
+    switch (v) {
+      case final int i:
+        intValue(i);
+      case final double d:
+        _u16(4);
+        f64(d);
+      case final String text:
+        stringValue(text);
+      case final _Obj o:
+        _u16(2);
+        _u16(0x14);
+        string(o.cls);
+        zeros(8);
+        _u32(o.attrs.length);
+        o.attrs.forEach(attr);
+      case final Map<String, Object> folder:
+        _u16(2);
+        _u16(6);
+        _u32(folder.length);
+        folder.forEach(attr);
+      case final List<Map<String, Object>> items:
+        _u16(2);
+        _u16(5);
+        _u32(items.length);
+        for (final item in items) {
+          _u32(item.length);
+          item.forEach(attr);
+        }
+      default:
+        throw ArgumentError(v);
+    }
+  }
+
+  /// A tree's root as Cubase writes one: key, eight bytes, count, attributes.
+  void tree(String rootKey, Map<String, Object> attrs) {
+    key(rootKey);
+    raw([0, 0, 0, 4, 0xFF, 0xFE, 0xA4, 0xC8]);
+    _u32(attrs.length);
+    attrs.forEach(attr);
+  }
+
+  /// A mixer channel as Cubase writes it inside a track — the layout of a
+  /// real Cubase 13 channel, trimmed. [type] is the channel's kind (1 audio,
+  /// 2 group, 4 instrument track, 6 FX). [inserts] maps a slot to (plug-in,
+  /// deactivated); other slots are empty, as Cubase writes them: a plug-in
+  /// slot is its plug-in, *then* its State and SlotType. [sends] are (slot,
+  /// bus, level, on, pre-fader); [sideChains] gives a slot's plug-in a
+  /// side-chain input bus.
   void channel({
     required int ownBus,
     required int outBus,
     String ownName = 'Audio 1',
+    int type = 1,
     Map<int, (String, bool)> inserts = const {},
+    Map<int, int> sideChains = const {},
+    List<(int, int, double, bool, bool)> sends = const [],
+    double volume = 25856,
+    bool soloed = false,
+    int eqBandsOn = 0,
+    String? instrument,
   }) {
-    key('VST Multitrack');
-    key('OwnInputBus');
-    key('Name');
-    stringValue(ownName);
-    key('Bus UID');
-    intValue(ownBus);
-    key('InsertFolder');
-    for (var slot = 0; slot < 16; slot++) {
-      final insert = inserts[slot];
-      key('State');
-      intValue(insert != null && insert.$2 ? 0 : 1);
-      key('SlotType');
-      intValue(-1);
-      if (insert != null) {
-        key('Plugin Name');
-        stringValue(insert.$1);
-      }
-    }
-    key('hasAudioStrips');
-    key('OutputBusValue');
-    key('Value');
-    intValue(outBus);
+    tree('VST Multitrack', {
+      'RuntimeID': 1,
+      'Name': {'String': ownName},
+      'Type': type,
+      'InputGain': {'Value': 16383.5},
+      'InputPhase': 0,
+      'Volume': {'Value': volume, 'AnchorValue': 0.0},
+      'InsertFolder': {
+        'RuntimeID': 2,
+        'Bypass': 0,
+        'Slot': <Map<String, Object>>[
+          for (var slot = 0; slot < 16; slot++)
+            if (inserts[slot] case (final name, final off))
+              {
+                'RuntimeID': 3,
+                'Plugin isA': 'VstCtrlInternalEffect',
+                'Plugin': {
+                  'Plugin UID': {'GUID': 'ID-$name'},
+                  'Plugin Name': name,
+                  'Active': off ? 0 : 1,
+                  if (sideChains[slot] case final bus?)
+                    'Sidechain Bus Id 0': bus,
+                },
+                'WasEnableBeforeFreeze': 0,
+                'State': 1,
+                'SlotType': -1,
+              }
+            else
+              {'RuntimeID': 4, 'State': 0, 'SlotType': -1},
+        ],
+      },
+      if (instrument != null)
+        'Synth Slot': {
+          'Plugin isA': 'VstCtrlInstrument',
+          'Plugin': {'Plugin Name': instrument},
+          'State': 1,
+        },
+      'EQ': {
+        'Bypass': 0,
+        'Band': <Map<String, Object>>[
+          for (var i = 0; i < 4; i++)
+            {'Enable': i < eqBandsOn ? 1 : 0, 'Gain': 0.0, 'Freq': 100.0},
+        ],
+      },
+      'SendFolder': {
+        'Slot': <Map<String, Object>>[
+          for (var slot = 0; slot < 8; slot++)
+            switch ([for (final s in sends) if (s.$1 == slot) s]) {
+              [(_, final bus, final level, final on, final pre)] => {
+                  if (on) 'On': 1,
+                  if (pre) 'Pre': 1,
+                  'Volume': {'Value': level},
+                  'Output': {'Value': bus},
+                },
+              _ => {
+                  'Volume': {'Value': 25856.0},
+                  'Output': {'Value': 0},
+                  'OldOn': 0,
+                },
+            },
+        ],
+      },
+      if (soloed) 'SoloFlag': 1,
+      'OwnInputBus': {'Name': ownName, 'Bus UID': ownBus, 'Bus Type': 13},
+      'OutputBusValue': {'Value': outBus},
+      'IDString': 'Audio',
+    });
+  }
+
+  /// A slot of the VST Instruments rack: its plug-in, then its outputs —
+  /// channels of type 3, which the arrangement shows as device tracks.
+  void rackSlot(String plugin, List<String> outputs) {
+    attr('Plugin isA', 'VstCtrlInstrument');
+    attr('Plugin', {'Plugin Name': plugin});
+    attr('Output Channels', <Map<String, Object>>[
+      for (final (i, name) in outputs.indexed)
+        {
+          'Output Index': i,
+          'Output Channel': {
+            'Name': {'String': name},
+            'Type': 3,
+            'Volume': {'Value': 25856.0},
+          },
+        },
+    ]);
+  }
+
+  /// One of the project's media attributes: its ID, then Type, Flags and
+  /// the value under a key naming its type ("Float", "Long", "Object").
+  void mediaAttribute(String id, String valueKey, Object v) {
+    key('ID');
+    // Written with no BOM, unlike most Cubase 13 strings.
+    _u16(8);
+    key(id);
+    attr('Type', 4);
+    attr('Flags', 2);
+    attr(valueKey, v);
   }
 
   void plugin(String name, {String? original}) {
@@ -222,6 +359,15 @@ class _Archive {
 Uint8List _project() {
   final a = _Archive();
   a.begin('MTrackList');
+  // The VST Instruments rack, as Cubase 13 shows it: a folder per
+  // instrument, device tracks for its outputs, no channel inside them. It
+  // comes first, and must not be taken for the I/O folder.
+  a.track('MFolderTrack', 'VST Instruments', () {
+    a.track('MFolderTrack', 'HALion Sonic', () {
+      a.track('MDeviceTrackEvent', 'HALion Sonic');
+      a.track('MDeviceTrackEvent', 'HSSE Main');
+    });
+  });
   // Cubase's hidden output folder: its device track is an output, not a group.
   a.track('MFolderTrack', 'Input/Output Channels', () {
     a.track('MDeviceTrackEvent', 'Stereo Out', () {
@@ -229,17 +375,34 @@ Uint8List _project() {
     });
   });
   a.track('MAudioTrackEvent', 'Vocals', () {
-    a.channel(ownBus: 10, outBus: 1, inserts: {
-      0: ('Pro-Q 3', false),
-      2: ('LFOTool_x64', true),
-    });
+    a.channel(
+      ownBus: 10,
+      outBus: 1,
+      inserts: {
+        0: ('Pro-Q 3', false),
+        2: ('LFOTool_x64', true),
+      },
+      sends: [
+        (0, 30, 15000, true, false), // to the reverb
+        (1, 40, 25856, true, true), // into Guitar's compressor side-chain
+        (3, 30, 12000, false, false), // routed but switched off
+      ],
+    );
   });
   a.track('MAudioTrackEvent', 'Guitar', () {
-    a.channel(ownBus: 11, outBus: 20);
+    a.channel(
+      ownBus: 11,
+      outBus: 20,
+      inserts: {0: ('Compressor', false)},
+      sideChains: {0: 40},
+      volume: 20000,
+      soloed: true,
+      eqBandsOn: 2,
+    );
   });
   a.track('MFolderTrack', 'Synths', () {
     a.track('MInstrumentTrackEvent', 'Serum 01', () {
-      a.channel(ownBus: 12, outBus: 20);
+      a.channel(ownBus: 12, outBus: 20, type: 4, instrument: 'Serum');
       a.plugin('Bass Serum', original: 'Serum');
       a.midiPart('Bassline', 1920, [
         (-960, 30, 90, 120), // trimmed away before the part start
@@ -260,13 +423,35 @@ Uint8List _project() {
     a.plugin('Kick sample', original: 'Sampler Track');
   });
   a.track('MDeviceTrackEvent', 'Drum Group', () {
-    a.channel(ownBus: 20, outBus: 1);
+    a.channel(ownBus: 20, outBus: 1, type: 2, ownName: 'Drum Group');
     a.plugin('Standard Panner');
     a.plugin('Pro-Q 3');
     a.plugin('LFOTool_x64');
   });
+  a.track('MDeviceTrackEvent', 'Reverb', () {
+    a.channel(ownBus: 30, outBus: 1, type: 6, ownName: 'Reverb');
+  });
+  a.end();
+  a.begin('PVSTInstrumentRack');
+  a.rackSlot('HALion Sonic', ['HSSE Main']);
+  a.end();
+  a.begin('StMedia::PAttributes');
+  a.mediaAttribute('AudioSampleRate', 'Float', 48000.0);
+  a.mediaAttribute('AudioSampleSize', 'Long', 24);
+  a.mediaAttribute(
+    'MusicalSignature',
+    'Object',
+    const _Obj('CmRational', {'Numerator': 3, 'Denominator': 4}),
+  );
   a.end();
   return a.toCpr();
+}
+
+/// An object in an attribute tree: its class and attributes.
+class _Obj {
+  const _Obj(this.cls, this.attrs);
+  final String cls;
+  final Map<String, Object> attrs;
 }
 
 void main() {
@@ -294,12 +479,14 @@ void main() {
     test('the output folder and its outputs are not counted as user tracks',
         () {
       final stats = parser.readStats();
-      expect(stats.folderTracks, 1, reason: 'only "Synths"');
-      expect(stats.busTracks, 1, reason: 'only "Drum Group", not Stereo Out');
+      expect(stats.folderTracks, 1, reason: 'only "Synths", not the rack');
+      expect(stats.busTracks, 2,
+          reason: '"Drum Group" and "Reverb"; not Stereo Out or HSSE Main');
     });
 
     test('lists real plug-ins, by their original name when renamed', () {
-      expect(parser.readStats().plugins, ['LFOTool', 'Pro-Q 3', 'Serum']);
+      expect(parser.readStats().plugins,
+          ['Compressor', 'HALion Sonic', 'LFOTool', 'Pro-Q 3', 'Serum']);
     });
 
     test('counts distinct MIDI clips', () {
@@ -321,9 +508,10 @@ void main() {
           ('MIDI 01', CubaseTrackType.midi, 'Synths'),
           ('Kick sample', CubaseTrackType.sampler, null),
           ('Drum Group', CubaseTrackType.group, null),
+          ('Reverb', CubaseTrackType.fx, null),
         ],
       );
-      expect([for (final t in tracks) t.index], [0, 1, 2, 3, 4, 5, 6]);
+      expect([for (final t in tracks) t.index], [0, 1, 2, 3, 4, 5, 6, 7]);
     });
 
     test('a track\'s output is the channel that owns the bus it points at', () {
@@ -335,12 +523,86 @@ void main() {
       expect(out['MIDI 01'], isNull, reason: 'no channel, nothing to say');
     });
 
-    test('reads inserts by slot, empty slots skipped, with bypass', () {
+    test('reads inserts by slot, empty slots skipped, deactivated ones marked',
+        () {
+      // Cubase writes a slot's State and SlotType after its plug-in: read the
+      // other way round, slot 0's plug-in was dropped and every plug-in got
+      // the slot before's state. Bypass isn't stored readably: null.
       final vocals =
           parser.readTracks().firstWhere((t) => t.name == 'Vocals');
       expect(
-        [for (final i in vocals.inserts) (i.slot, i.plugin, i.bypassed)],
-        [(0, 'Pro-Q 3', false), (2, 'LFOTool_x64', true)],
+        [
+          for (final i in vocals.inserts)
+            (i.slot, i.plugin, i.pluginId, i.deactivated, i.bypassed),
+        ],
+        [
+          (0, 'Pro-Q 3', 'ID-Pro-Q 3', false, null),
+          (2, 'LFOTool_x64', 'ID-LFOTool_x64', true, null),
+        ],
+      );
+    });
+
+    test("a plug-in alone in slot 0 is read", () {
+      // Main Lead Group in a real Cubase 13 project had only slot 0 filled,
+      // and was read with no inserts at all.
+      final guitar =
+          parser.readTracks().firstWhere((t) => t.name == 'Guitar');
+      expect([for (final i in guitar.inserts) i.plugin], ['Compressor']);
+    });
+
+    test('device tracks are groups or FX channels by their channel', () {
+      final types = {for (final t in parser.readTracks()) t.name: t.type};
+      expect(types['Drum Group'], CubaseTrackType.group);
+      expect(types['Reverb'], CubaseTrackType.fx);
+    });
+
+    test('the fader, solo and EQ as the channel stores them', () {
+      final byName = {for (final t in parser.readTracks()) t.name: t};
+      expect(byName['Guitar']!.volume, 20000);
+      expect(byName['Guitar']!.soloed, isTrue);
+      expect(byName['Guitar']!.eqBandsOn, 2);
+      expect(byName['Vocals']!.volume, CubaseProjectParser.unityVolume);
+      expect(byName['Vocals']!.soloed, isFalse);
+      expect(byName['Vocals']!.phaseInverted, isFalse);
+      expect(byName['MIDI 01']!.volume, isNull, reason: 'no channel');
+    });
+
+    test('sends: destination, level, on and pre-fader; side-chains named', () {
+      final vocals =
+          parser.readTracks().firstWhere((t) => t.name == 'Vocals');
+      expect(
+        [
+          for (final s in vocals.sends)
+            (s.slot, s.destination, s.sideChainOf, s.level, s.on, s.preFader),
+        ],
+        [
+          (0, 'Reverb', null, 15000, true, false),
+          (1, 'Guitar', 'Compressor', 25856, true, true),
+          (3, 'Reverb', null, 12000, false, false),
+        ],
+      );
+      final guitar =
+          parser.readTracks().firstWhere((t) => t.name == 'Guitar');
+      expect(guitar.sends, isEmpty, reason: 'unrouted slots are left out');
+    });
+
+    test('an instrument track names its instrument', () {
+      final serum =
+          parser.readTracks().firstWhere((t) => t.name == 'Serum 01');
+      expect(serum.instrument, 'Serum');
+    });
+
+    test('the VST Instruments rack is not tracks; its outputs are listed', () {
+      final names = parser.readTracks().map((t) => t.name);
+      expect(names, isNot(contains('VST Instruments')));
+      expect(names, isNot(contains('HALion Sonic')));
+      expect(names, isNot(contains('HSSE Main')));
+      expect(
+        [
+          for (final r in parser.readRackInstruments())
+            (r.channel, r.plugin, r.volume),
+        ],
+        [('HSSE Main', 'HALion Sonic', 25856)],
       );
     });
 
@@ -360,6 +622,35 @@ void main() {
     test('agrees with readStats on how many tracks there are', () {
       expect(parser.readTracks(), hasLength(parser.readStats().totalTracks));
     });
+  });
+
+  group('readProjectSetup', () {
+    test('sample rate, bit depth and time signature from media attributes',
+        () {
+      final setup = parser.readProjectSetup();
+      expect(setup.sampleRate, 48000);
+      expect(setup.bitDepth, 24);
+      expect(setup.timeSignature, (3, 4));
+    });
+
+    test('a project without them says nothing', () {
+      final a = _Archive()..begin('MTrackList');
+      a.end();
+      final setup = CubaseProjectParser(a.toCpr()).readProjectSetup();
+      expect(setup.sampleRate, isNull);
+      expect(setup.bitDepth, isNull);
+      expect(setup.timeSignature, isNull);
+    });
+  });
+
+  test('volumeDb gives only the points of the fader scale that are known',
+      () {
+    expect(CubaseProjectParser.volumeDb(null), isNull);
+    expect(CubaseProjectParser.volumeDb(0), double.negativeInfinity);
+    expect(CubaseProjectParser.volumeDb(25856), 0);
+    expect(CubaseProjectParser.volumeDb(32767), 6);
+    expect(CubaseProjectParser.volumeDb(20000), isNull,
+        reason: 'not measured: no guess');
   });
 
   group('readMidiClips', () {

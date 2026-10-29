@@ -11,7 +11,7 @@
       "instrument": 0,
       "sampler": 0,
       "bus": 0,
-      "folder": 1,
+      "folder": 0,
       "plugins": [
         "Vanguard"
       ],

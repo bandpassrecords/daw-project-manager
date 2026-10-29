@@ -23,11 +23,16 @@ class ReferenceCache {
   final File file;
   final Map<String, _Entry> _entries;
 
+  /// Bumped when what the reader finds changes, so tracks read before are
+  /// read again. 2: inserts in slot 0 were dropped, and bypass flags came
+  /// from the slot before; FX channels told apart from groups.
+  static const version = 2;
+
   static Future<ReferenceCache> load(File file) async {
     try {
       if (!await file.exists()) return ReferenceCache(file);
       final raw = jsonDecode(await file.readAsString());
-      if (raw is! Map || raw['version'] != 1) return ReferenceCache(file);
+      if (raw is! Map || raw['version'] != version) return ReferenceCache(file);
       final entries = <String, _Entry>{};
       for (final MapEntry(key: id, value: value)
           in (raw['projects'] as Map).entries) {
@@ -69,7 +74,7 @@ class ReferenceCache {
   Future<void> save() async {
     await file.parent.create(recursive: true);
     await file.writeAsString(jsonEncode({
-      'version': 1,
+      'version': version,
       'projects': {
         for (final e in _entries.entries) e.key: e.value.toJson(),
       },
