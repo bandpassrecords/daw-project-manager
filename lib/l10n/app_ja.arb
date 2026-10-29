@@ -4457,5 +4457,8 @@
   "missingPreviewDownloadedResult": "{total}件中{done}件をダウンロードしました。",
   "missingPreviewFoundResult": "{total}件中{found}件のミックスダウンが見つかりました。",
   "missingPreviewDownloadFailed": "{name}の曲をダウンロードできませんでした。",
-  "missingPreviewAutoDetected": "自動検出"
+  "missingPreviewAutoDetected": "自動検出",
+  "missingPreviewRemoveEverything": "見つからないものをすべて削除 ({count})",
+  "missingPreviewRemoveIncludesDrive": "このうち{count}件は、まだ Google ドライブからダウンロードできます。",
+  "missingPreviewRemoveIncludesOtherComputer": "このうち{count}件は、別のコンピューターではまだ再生できるかもしれません。"
 }

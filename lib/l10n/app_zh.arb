@@ -4457,5 +4457,8 @@
   "missingPreviewDownloadedResult": "已下载 {done}/{total}。",
   "missingPreviewFoundResult": "已为 {found}/{total} 找到缩混。",
   "missingPreviewDownloadFailed": "无法下载 {name} 的歌曲。",
-  "missingPreviewAutoDetected": "自动检测"
+  "missingPreviewAutoDetected": "自动检测",
+  "missingPreviewRemoveEverything": "移除所有未找到的（{count}）",
+  "missingPreviewRemoveIncludesDrive": "其中 {count} 首仍可从 Google Drive 下载。",
+  "missingPreviewRemoveIncludesOtherComputer": "其中 {count} 首在另一台电脑上可能仍可播放。"
 }

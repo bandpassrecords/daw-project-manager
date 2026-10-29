@@ -182,10 +182,16 @@ class _MissingPreviewSongsSectionState extends ConsumerState<MissingPreviewSongs
 
   Future<void> _remove(List<MissingPreviewSong> songs, {required bool all}) async {
     final l10n = AppLocalizations.of(context)!;
+    final elsewhere = stillPlayableElsewhere(songs);
     final ok = await showDriveConfirmDialog(
       context,
       title: all ? l10n.missingPreviewRemoveAllTitle(songs.length) : l10n.removePreviewSong,
-      body: l10n.missingPreviewRemoveBody,
+      body: [
+        l10n.missingPreviewRemoveBody,
+        if (all && elsewhere.onDrive > 0) l10n.missingPreviewRemoveIncludesDrive(elsewhere.onDrive),
+        if (all && elsewhere.otherComputer > 0)
+          l10n.missingPreviewRemoveIncludesOtherComputer(elsewhere.otherComputer),
+      ].join('\n\n'),
       confirmLabel: all ? l10n.missingPreviewRemoveAll : l10n.removePreviewSong,
       destructive: true,
     );

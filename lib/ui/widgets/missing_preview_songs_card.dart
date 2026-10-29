@@ -91,10 +91,24 @@ class MissingPreviewSongsCard extends StatelessWidget {
                     style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
                   ),
                 )
-              else
+              else ...[
                 for (final kind in MissingPreviewKind.values)
                   if (items.any((i) => i.kind == kind))
                     _group(context, l10n, kind, [for (final i in items) if (i.kind == kind) i]),
+                const SizedBox(height: 12),
+                // Every group at once; the caller's confirmation says how
+                // many of them Drive or another computer still has.
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: TextButton.icon(
+                    key: const ValueKey('missing-preview-remove-everything'),
+                    style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
+                    onPressed: busy ? null : () => onRemove(items, all: true),
+                    icon: const Icon(Icons.delete_sweep_outlined),
+                    label: Text(l10n.missingPreviewRemoveEverything(items.length)),
+                  ),
+                ),
+              ],
             ],
           ],
         ),

@@ -8153,5 +8153,29 @@
       }
     }
   },
-  "missingPreviewAutoDetected": "Auto-detected"
+  "missingPreviewAutoDetected": "Auto-detected",
+  "missingPreviewRemoveEverything": "Remove all not found ({count})",
+  "@missingPreviewRemoveEverything": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "missingPreviewRemoveIncludesDrive": "Of these, {count} can still be downloaded from Google Drive.",
+  "@missingPreviewRemoveIncludesDrive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "missingPreviewRemoveIncludesOtherComputer": "Of these, {count} may still play on another computer.",
+  "@missingPreviewRemoveIncludesOtherComputer": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

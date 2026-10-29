@@ -7997,4 +7997,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get missingPreviewAutoDetected => '自动检测';
+
+  @override
+  String missingPreviewRemoveEverything(int count) {
+    return '移除所有未找到的（$count）';
+  }
+
+  @override
+  String missingPreviewRemoveIncludesDrive(int count) {
+    return '其中 $count 首仍可从 Google Drive 下载。';
+  }
+
+  @override
+  String missingPreviewRemoveIncludesOtherComputer(int count) {
+    return '其中 $count 首在另一台电脑上可能仍可播放。';
+  }
 }

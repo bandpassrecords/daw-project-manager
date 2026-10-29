@@ -4457,5 +4457,8 @@
   "missingPreviewDownloadedResult": "Скачано {done} из {total}.",
   "missingPreviewFoundResult": "Сведённый файл найден для {found} из {total}.",
   "missingPreviewDownloadFailed": "Не удалось скачать трек для {name}.",
-  "missingPreviewAutoDetected": "Найдено автоматически"
+  "missingPreviewAutoDetected": "Найдено автоматически",
+  "missingPreviewRemoveEverything": "Удалить все ненайденные ({count})",
+  "missingPreviewRemoveIncludesDrive": "Из них {count} ещё можно скачать с Google Drive.",
+  "missingPreviewRemoveIncludesOtherComputer": "Из них {count}, возможно, ещё воспроизводятся на другом компьютере."
 }

@@ -4457,5 +4457,8 @@
   "missingPreviewDownloadedResult": "{done} sur {total} téléchargées.",
   "missingPreviewFoundResult": "Mixdown trouvé pour {found} sur {total}.",
   "missingPreviewDownloadFailed": "Impossible de télécharger la chanson de {name}.",
-  "missingPreviewAutoDetected": "Détectée automatiquement"
+  "missingPreviewAutoDetected": "Détectée automatiquement",
+  "missingPreviewRemoveEverything": "Retirer toutes les introuvables ({count})",
+  "missingPreviewRemoveIncludesDrive": "Parmi elles, {count} peuvent encore être téléchargées depuis Google Drive.",
+  "missingPreviewRemoveIncludesOtherComputer": "Parmi elles, {count} se lisent peut-être encore sur un autre ordinateur."
 }

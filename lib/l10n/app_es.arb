@@ -4457,5 +4457,8 @@
   "missingPreviewDownloadedResult": "Descargadas {done} de {total}.",
   "missingPreviewFoundResult": "Se encontró una mezcla para {found} de {total}.",
   "missingPreviewDownloadFailed": "No se pudo descargar la canción de {name}.",
-  "missingPreviewAutoDetected": "Detectada automáticamente"
+  "missingPreviewAutoDetected": "Detectada automáticamente",
+  "missingPreviewRemoveEverything": "Quitar todas las no encontradas ({count})",
+  "missingPreviewRemoveIncludesDrive": "De ellas, {count} todavía se pueden descargar de Google Drive.",
+  "missingPreviewRemoveIncludesOtherComputer": "De ellas, {count} quizá todavía se reproducen en otro equipo."
 }

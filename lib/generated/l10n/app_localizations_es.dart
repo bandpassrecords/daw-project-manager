@@ -8605,4 +8605,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get missingPreviewAutoDetected => 'Detectada automáticamente';
+
+  @override
+  String missingPreviewRemoveEverything(int count) {
+    return 'Quitar todas las no encontradas ($count)';
+  }
+
+  @override
+  String missingPreviewRemoveIncludesDrive(int count) {
+    return 'De ellas, $count todavía se pueden descargar de Google Drive.';
+  }
+
+  @override
+  String missingPreviewRemoveIncludesOtherComputer(int count) {
+    return 'De ellas, $count quizá todavía se reproducen en otro equipo.';
+  }
 }

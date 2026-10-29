@@ -126,6 +126,26 @@ void main() {
     });
   });
 
+  test('stillPlayableElsewhere counts what removing would give up', () {
+    MissingPreviewSong song(MissingPreviewKind kind) => MissingPreviewSong(
+          project: TestFactories.makeProject(),
+          path: '/x.wav',
+          manual: true,
+          kind: kind,
+        );
+
+    final counts = stillPlayableElsewhere([
+      song(MissingPreviewKind.onDrive),
+      song(MissingPreviewKind.onDrive),
+      song(MissingPreviewKind.otherComputer),
+      song(MissingPreviewKind.folderMissing),
+      song(MissingPreviewKind.fileMissing),
+    ]);
+
+    expect(counts.onDrive, 2);
+    expect(counts.otherComputer, 1);
+  });
+
   group('what an action makes of the project', () {
     final missing = MissingPreviewSong(
       project: TestFactories.makeProject(id: 'a'),

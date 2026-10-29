@@ -13597,6 +13597,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Auto-detected'**
   String get missingPreviewAutoDetected;
+
+  /// No description provided for @missingPreviewRemoveEverything.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all not found ({count})'**
+  String missingPreviewRemoveEverything(int count);
+
+  /// No description provided for @missingPreviewRemoveIncludesDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Of these, {count} can still be downloaded from Google Drive.'**
+  String missingPreviewRemoveIncludesDrive(int count);
+
+  /// No description provided for @missingPreviewRemoveIncludesOtherComputer.
+  ///
+  /// In en, this message translates to:
+  /// **'Of these, {count} may still play on another computer.'**
+  String missingPreviewRemoveIncludesOtherComputer(int count);
 }
 
 class _AppLocalizationsDelegate

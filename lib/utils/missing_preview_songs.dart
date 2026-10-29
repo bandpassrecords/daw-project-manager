@@ -113,6 +113,14 @@ Future<List<MissingPreviewSong>> findMissingPreviewSongs(
   return missing;
 }
 
+/// Of [songs], how many are not lost even though this computer can't find
+/// them — Drive can still download them, or they belong to another computer
+/// where they may play — for the confirmation before removing them.
+({int onDrive, int otherComputer}) stillPlayableElsewhere(Iterable<MissingPreviewSong> songs) => (
+      onDrive: songs.where((s) => s.kind == MissingPreviewKind.onDrive).length,
+      otherComputer: songs.where((s) => s.kind == MissingPreviewKind.otherComputer).length,
+    );
+
 /// [project] with the missing song of [song] taken off: the slot it was in
 /// is cleared, nothing else. The other slot, if it has a song, plays next.
 MusicProject withoutMissingPreview(MusicProject project, MissingPreviewSong song) => song.manual

@@ -105,6 +105,29 @@ void main() {
     expect(calls, ['download d', 'find g1,g2', 'remove all g1,g2']);
   });
 
+  testWidgets('one button removes every song not found, whatever its group', (tester) async {
+    await tester.pumpWidget(app(items: [
+      _song('d', MissingPreviewKind.onDrive),
+      _song('o', MissingPreviewKind.otherComputer),
+      _song('f', MissingPreviewKind.folderMissing),
+      _song('g', MissingPreviewKind.fileMissing),
+    ]));
+
+    final everything = find.byKey(const ValueKey('missing-preview-remove-everything'));
+    await tester.ensureVisible(everything);
+    await tester.pump();
+    expect(find.text('Remove all not found (4)'), findsOneWidget);
+    await tester.tap(everything);
+
+    expect(calls, ['remove all d,o,f,g']);
+  });
+
+  testWidgets('a clean check offers nothing to remove', (tester) async {
+    await tester.pumpWidget(app(items: const []));
+
+    expect(find.byKey(const ValueKey('missing-preview-remove-everything')), findsNothing);
+  });
+
   testWidgets('a row downloads, finds, picks or removes just its song', (tester) async {
     await tester.pumpWidget(app(items: [
       _song('d', MissingPreviewKind.onDrive),

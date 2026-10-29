@@ -4457,5 +4457,8 @@
   "missingPreviewDownloadedResult": "Scaricati {done} su {total}.",
   "missingPreviewFoundResult": "Trovato un mixdown per {found} su {total}.",
   "missingPreviewDownloadFailed": "Impossibile scaricare il brano di {name}.",
-  "missingPreviewAutoDetected": "Rilevato automaticamente"
+  "missingPreviewAutoDetected": "Rilevato automaticamente",
+  "missingPreviewRemoveEverything": "Rimuovi tutti i non trovati ({count})",
+  "missingPreviewRemoveIncludesDrive": "Di questi, {count} si possono ancora scaricare da Google Drive.",
+  "missingPreviewRemoveIncludesOtherComputer": "Di questi, {count} forse si riproducono ancora su un altro computer."
 }
