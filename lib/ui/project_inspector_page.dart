@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,8 +9,62 @@ import 'package:path/path.dart' as p;
 import '../generated/l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import '../services/scanner_service.dart';
+import '../utils/cloud_file.dart';
 import 'app_snack_bar.dart';
+import 'dialogs/archive_project_dialog.dart' show formatByteSize;
 import 'widgets/project_inspector_view.dart';
+
+/// Opens [path] in the Inspector tab and brings the tab to the front: the
+/// one way in, for the project menu, Open project… and a dropped file.
+///
+/// A file this app can't read is refused with a note. A cloud placeholder
+/// (its contents not on this computer) is read only once the user says so:
+/// reading it downloads all of it. Returns whether the file was opened.
+Future<bool> openInInspector(
+  BuildContext context,
+  WidgetRef ref,
+  String path,
+) async {
+  final l10n = AppLocalizations.of(context)!;
+  final ext = p.extension(path).toLowerCase();
+  final file = File(path);
+  if (!ScannerService.supportedExtensions.contains(ext) || !file.existsSync()) {
+    ScaffoldMessenger.of(context).showAppSnackBar(
+      SnackBar(
+        content: Text(l10n.inspectorUnsupported(ext.isEmpty ? path : ext)),
+      ),
+    );
+    return false;
+  }
+  final stat = file.statSync();
+  if (isCloudOnlyFile(path)) {
+    final read = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.inspectorCloudTitle),
+        content: Text(l10n.inspectorCloudBody(formatByteSize(stat.size))),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.inspectorCloudRead),
+          ),
+        ],
+      ),
+    );
+    if (read != true) return false;
+  }
+  ref.read(inspectorFileProvider.notifier).open((
+    path: path,
+    size: stat.size,
+    modifiedMs: stat.modified.millisecondsSinceEpoch,
+  ));
+  ref.read(inspectorShowRequestProvider.notifier).request();
+  return true;
+}
 
 /// The Inspector tab: a project file read without its DAW (#196).
 ///
@@ -27,19 +83,7 @@ class ProjectInspectorPage extends ConsumerStatefulWidget {
 class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
   bool _dragging = false;
 
-  void _open(String path) {
-    final l10n = AppLocalizations.of(context)!;
-    final ext = p.extension(path).toLowerCase();
-    if (!ScannerService.supportedExtensions.contains(ext)) {
-      ScaffoldMessenger.of(context).showAppSnackBar(
-        SnackBar(content: Text(l10n.inspectorUnsupported(ext.isEmpty ? path : ext))),
-      );
-      return;
-    }
-    // A file read before may have changed since: read it again.
-    ref.invalidate(projectAnatomyProvider(path));
-    ref.read(inspectorFileProvider.notifier).open(path);
-  }
+  void _open(String path) => openInInspector(context, ref, path);
 
   Future<void> _pick() async {
     final l10n = AppLocalizations.of(context)!;
@@ -55,10 +99,10 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final path = ref.watch(inspectorFileProvider);
+    final inspected = ref.watch(inspectorFileProvider);
 
     final Widget body;
-    if (path == null) {
+    if (inspected == null) {
       body = Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
@@ -93,10 +137,12 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
         ),
       );
     } else {
-      final anatomy = ref.watch(projectAnatomyProvider(path));
-      final media = ref.watch(inspectorMediaChecksProvider(path));
+      final path = inspected.path;
+      final anatomy = ref.watch(projectAnatomyProvider(inspected));
+      final media = ref.watch(inspectorMediaChecksProvider(inspected));
       void close() => ref.read(inspectorFileProvider.notifier).close();
-      void reload() => ref.invalidate(projectAnatomyProvider(path));
+      // "Read again" reads even an unchanged file: the user asked.
+      void reload() => ref.invalidate(projectAnatomyProvider(inspected));
       body = anatomy.when(
         loading: () => Center(
           child: Column(

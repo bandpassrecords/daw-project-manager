@@ -4548,5 +4548,8 @@
   "inspectorInsertsCount": "{count, plural, one{1 inserción} other{{count} inserciones}}",
   "inspectorChannelsCount": "{count, plural, one{1 canal} other{{count} canales}}",
   "projectMenuInspect": "Inspeccionar",
-  "sampleRateColumn": "Frecuencia de muestreo"
+  "sampleRateColumn": "Frecuencia de muestreo",
+  "inspectorCloudTitle": "¿Descargar este proyecto?",
+  "inspectorCloudBody": "Este proyecto está en la nube, no en este ordenador. Leerlo descarga el archivo completo ({size}).",
+  "inspectorCloudRead": "Descargar y leer"
 }

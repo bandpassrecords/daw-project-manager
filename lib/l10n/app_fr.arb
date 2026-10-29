@@ -4548,5 +4548,8 @@
   "inspectorInsertsCount": "{count, plural, one{1 insert} other{{count} inserts}}",
   "inspectorChannelsCount": "{count, plural, one{1 voie} other{{count} voies}}",
   "projectMenuInspect": "Inspecter",
-  "sampleRateColumn": "Fréquence d'échantillonnage"
+  "sampleRateColumn": "Fréquence d'échantillonnage",
+  "inspectorCloudTitle": "Télécharger ce projet ?",
+  "inspectorCloudBody": "Ce projet est dans le cloud, pas sur cet ordinateur. Le lire télécharge tout le fichier ({size}).",
+  "inspectorCloudRead": "Télécharger et lire"
 }

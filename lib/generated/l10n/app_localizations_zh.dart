@@ -8319,4 +8319,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sampleRateColumn => '采样率';
+
+  @override
+  String get inspectorCloudTitle => '下载此项目？';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return '此项目位于云端，不在这台电脑上。读取它会下载整个文件（$size）。';
+  }
+
+  @override
+  String get inspectorCloudRead => '下载并读取';
 }

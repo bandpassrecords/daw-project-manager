@@ -8953,4 +8953,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get sampleRateColumn => 'Taxa de amostragem';
+
+  @override
+  String get inspectorCloudTitle => 'Baixar este projeto?';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return 'Este projeto está na nuvem, não neste computador. Ler o projeto baixa o arquivo inteiro ($size).';
+  }
+
+  @override
+  String get inspectorCloudRead => 'Baixar e ler';
 }

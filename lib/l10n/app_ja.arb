@@ -4548,5 +4548,8 @@
   "inspectorInsertsCount": "インサート {count}",
   "inspectorChannelsCount": "チャンネル {count}",
   "projectMenuInspect": "調べる",
-  "sampleRateColumn": "サンプルレート"
+  "sampleRateColumn": "サンプルレート",
+  "inspectorCloudTitle": "このプロジェクトをダウンロードしますか？",
+  "inspectorCloudBody": "このプロジェクトはクラウド上にあり、このコンピューターにはありません。読み込むとファイル全体（{size}）がダウンロードされます。",
+  "inspectorCloudRead": "ダウンロードして読み込む"
 }

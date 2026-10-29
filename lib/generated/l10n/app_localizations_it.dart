@@ -8968,4 +8968,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get sampleRateColumn => 'Frequenza di campionamento';
+
+  @override
+  String get inspectorCloudTitle => 'Scaricare questo progetto?';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return 'Questo progetto è nel cloud, non su questo computer. Leggerlo scarica l’intero file ($size).';
+  }
+
+  @override
+  String get inspectorCloudRead => 'Scarica e leggi';
 }

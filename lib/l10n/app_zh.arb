@@ -4548,5 +4548,8 @@
   "inspectorInsertsCount": "{count} 个插入",
   "inspectorChannelsCount": "{count} 个通道",
   "projectMenuInspect": "检查",
-  "sampleRateColumn": "采样率"
+  "sampleRateColumn": "采样率",
+  "inspectorCloudTitle": "下载此项目？",
+  "inspectorCloudBody": "此项目位于云端，不在这台电脑上。读取它会下载整个文件（{size}）。",
+  "inspectorCloudRead": "下载并读取"
 }

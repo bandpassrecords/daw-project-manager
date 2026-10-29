@@ -3074,19 +3074,27 @@ final midiCollectionToOpenProvider =
 // Project Inspector (#196)
 // ---------------------------------------------------------------------------
 
+/// A project file as the Inspector reads it: its path, and the size and
+/// modification time it had then. Reads are keyed by all three, so opening
+/// an unchanged file again shows what was read, and a saved one is read
+/// afresh.
+typedef InspectedFile = ({String path, int size, int modifiedMs});
+
 /// The project file the Inspector tab shows, or null for its empty state.
 /// Session-only: a file opened from outside the library is the user's
 /// passing look, not something to restore at the next launch.
-class InspectorFileNotifier extends Notifier<String?> {
+class InspectorFileNotifier extends Notifier<InspectedFile?> {
   @override
-  String? build() => null;
+  InspectedFile? build() => null;
 
-  void open(String filePath) => state = filePath;
+  void open(InspectedFile file) => state = file;
   void close() => state = null;
 }
 
 final inspectorFileProvider =
-    NotifierProvider<InspectorFileNotifier, String?>(InspectorFileNotifier.new);
+    NotifierProvider<InspectorFileNotifier, InspectedFile?>(
+      InspectorFileNotifier.new,
+    );
 
 /// Set when something asks for the Inspector tab to come to the front (the
 /// project menu's Inspect); the dashboard switches and consumes it.
@@ -3115,21 +3123,21 @@ final inspectorSearchProvider =
       InspectorSearchNotifier.new,
     );
 
-/// A project file read for the Inspector. Read again when asked to
-/// ([Ref.invalidate]); never stored, never synced.
+/// A project file read for the Inspector, kept for the session; never
+/// stored, never synced. "Read again" invalidates it.
 final projectAnatomyProvider =
-    FutureProvider.family<ProjectAnatomy, String>(
-      (ref, filePath) => readProjectAnatomy(filePath),
+    FutureProvider.family<ProjectAnatomy, InspectedFile>(
+      (ref, file) => readProjectAnatomy(file.path),
     );
 
 /// Whether each audio file the inspected project uses is on this computer:
 /// existence checks only, nothing opened.
 final inspectorMediaChecksProvider =
-    FutureProvider.family<List<MediaCheck>?, String>((ref, filePath) async {
-      final anatomy = await ref.watch(projectAnatomyProvider(filePath).future);
+    FutureProvider.family<List<MediaCheck>?, InspectedFile>((ref, file) async {
+      final anatomy = await ref.watch(projectAnatomyProvider(file).future);
       final media = anatomy.media;
       if (media == null) return null;
-      return checkMedia(media, projectDir: File(filePath).parent.path);
+      return checkMedia(media, projectDir: File(file.path).parent.path);
     });
 
 /// The current profile's MIDI collections, live.

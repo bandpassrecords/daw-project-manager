@@ -4548,5 +4548,8 @@
   "inspectorInsertsCount": "{count, plural, one{{count} вставка} few{{count} вставки} many{{count} вставок} other{{count} вставки}}",
   "inspectorChannelsCount": "{count, plural, one{{count} канал} few{{count} канала} many{{count} каналов} other{{count} канала}}",
   "projectMenuInspect": "Изучить",
-  "sampleRateColumn": "Частота дискретизации"
+  "sampleRateColumn": "Частота дискретизации",
+  "inspectorCloudTitle": "Скачать этот проект?",
+  "inspectorCloudBody": "Этот проект находится в облаке, а не на этом компьютере. При чтении будет скачан весь файл ({size}).",
+  "inspectorCloudRead": "Скачать и прочитать"
 }

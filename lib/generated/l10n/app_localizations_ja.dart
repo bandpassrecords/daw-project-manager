@@ -8413,4 +8413,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get sampleRateColumn => 'サンプルレート';
+
+  @override
+  String get inspectorCloudTitle => 'このプロジェクトをダウンロードしますか？';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return 'このプロジェクトはクラウド上にあり、このコンピューターにはありません。読み込むとファイル全体（$size）がダウンロードされます。';
+  }
+
+  @override
+  String get inspectorCloudRead => 'ダウンロードして読み込む';
 }

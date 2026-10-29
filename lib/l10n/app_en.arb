@@ -8652,5 +8652,22 @@
   "sampleRateColumn": "Sample rate",
   "@sampleRateColumn": {
     "description": "Column and project-page label: the project's sample rate and bit depth"
+  },
+  "inspectorCloudTitle": "Download this project?",
+  "@inspectorCloudTitle": {
+    "description": "Title of the prompt before reading a project stored only in the cloud"
+  },
+  "inspectorCloudBody": "This project is in the cloud, not on this computer. Reading it downloads the whole file ({size}).",
+  "@inspectorCloudBody": {
+    "description": "Prompt text before reading a cloud-only project; size is the file size",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorCloudRead": "Download and read",
+  "@inspectorCloudRead": {
+    "description": "Button that downloads and reads a cloud-only project"
   }
 }

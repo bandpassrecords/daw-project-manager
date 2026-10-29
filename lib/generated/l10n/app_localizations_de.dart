@@ -8948,4 +8948,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get sampleRateColumn => 'Abtastrate';
+
+  @override
+  String get inspectorCloudTitle => 'Dieses Projekt herunterladen?';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return 'Dieses Projekt liegt in der Cloud, nicht auf diesem Computer. Beim Lesen wird die ganze Datei heruntergeladen ($size).';
+  }
+
+  @override
+  String get inspectorCloudRead => 'Herunterladen und lesen';
 }

@@ -8932,4 +8932,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sampleRateColumn => 'Частота дискретизации';
+
+  @override
+  String get inspectorCloudTitle => 'Скачать этот проект?';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return 'Этот проект находится в облаке, а не на этом компьютере. При чтении будет скачан весь файл ($size).';
+  }
+
+  @override
+  String get inspectorCloudRead => 'Скачать и прочитать';
 }

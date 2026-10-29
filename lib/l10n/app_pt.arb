@@ -4572,5 +4572,8 @@
   "inspectorInsertsCount": "{count, plural, one{1 insert} other{{count} inserts}}",
   "inspectorChannelsCount": "{count, plural, one{1 canal} other{{count} canais}}",
   "projectMenuInspect": "Inspecionar",
-  "sampleRateColumn": "Taxa de amostragem"
+  "sampleRateColumn": "Taxa de amostragem",
+  "inspectorCloudTitle": "Baixar este projeto?",
+  "inspectorCloudBody": "Este projeto está na nuvem, não neste computador. Ler o projeto baixa o arquivo inteiro ({size}).",
+  "inspectorCloudRead": "Baixar e ler"
 }

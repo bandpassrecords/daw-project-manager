@@ -8888,4 +8888,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sampleRateColumn => 'Sample rate';
+
+  @override
+  String get inspectorCloudTitle => 'Download this project?';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return 'This project is in the cloud, not on this computer. Reading it downloads the whole file ($size).';
+  }
+
+  @override
+  String get inspectorCloudRead => 'Download and read';
 }

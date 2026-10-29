@@ -4548,5 +4548,8 @@
   "inspectorInsertsCount": "{count, plural, one{1 Insert} other{{count} Inserts}}",
   "inspectorChannelsCount": "{count, plural, one{1 Kanal} other{{count} Kanäle}}",
   "projectMenuInspect": "Untersuchen",
-  "sampleRateColumn": "Abtastrate"
+  "sampleRateColumn": "Abtastrate",
+  "inspectorCloudTitle": "Dieses Projekt herunterladen?",
+  "inspectorCloudBody": "Dieses Projekt liegt in der Cloud, nicht auf diesem Computer. Beim Lesen wird die ganze Datei heruntergeladen ({size}).",
+  "inspectorCloudRead": "Herunterladen und lesen"
 }

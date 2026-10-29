@@ -17,6 +17,7 @@ import 'dialogs/card_initials_dialog.dart';
 import 'dialogs/move_project_dialog.dart';
 import 'preview_share.dart';
 import 'project_detail_page.dart';
+import 'project_inspector_page.dart';
 import 'project_playback.dart';
 import 'profile_move_actions.dart';
 import 'recently_deleted_actions.dart';
@@ -176,10 +177,7 @@ Future<void> showProjectContextMenu({
         await openProjectFolder(context, project);
         break;
       case 'inspect':
-        // Read it fresh: the file may have changed since it was last open.
-        ref.invalidate(projectAnatomyProvider(project.filePath));
-        ref.read(inspectorFileProvider.notifier).open(project.filePath);
-        ref.read(inspectorShowRequestProvider.notifier).request();
+        await openInInspector(context, ref, project.filePath);
         break;
       case 'playCapture':
         await playProjectCapture(context, ref, project);

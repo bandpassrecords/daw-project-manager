@@ -14143,6 +14143,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sample rate'**
   String get sampleRateColumn;
+
+  /// Title of the prompt before reading a project stored only in the cloud
+  ///
+  /// In en, this message translates to:
+  /// **'Download this project?'**
+  String get inspectorCloudTitle;
+
+  /// Prompt text before reading a cloud-only project; size is the file size
+  ///
+  /// In en, this message translates to:
+  /// **'This project is in the cloud, not on this computer. Reading it downloads the whole file ({size}).'**
+  String inspectorCloudBody(String size);
+
+  /// Button that downloads and reads a cloud-only project
+  ///
+  /// In en, this message translates to:
+  /// **'Download and read'**
+  String get inspectorCloudRead;
 }
 
 class _AppLocalizationsDelegate
