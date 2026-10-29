@@ -664,6 +664,675 @@
       }
     ]
   },
+  "test-01_db_level.cpr": {
+    "dawType": "Cubase",
+    "dawVersion": "13",
+    "bpm": 150.0,
+    "key": "A Major",
+    "markers": [],
+    "stats": {
+      "audio": 12,
+      "midi": 49,
+      "instrument": 16,
+      "sampler": 1,
+      "bus": 2,
+      "folder": 1,
+      "plugins": [
+        "ANA2",
+        "Compressor",
+        "Diva",
+        "Endless Smile 64",
+        "FabFilter Pro-C 2",
+        "FabFilter Pro-Q 3",
+        "FabFilter Saturn 2",
+        "FilterFreak1",
+        "HALion Sonic",
+        "kHs Trance Gate",
+        "Kick 2",
+        "LFOTool",
+        "LittleAlterBoy",
+        "Looperator",
+        "Manipulator",
+        "MSaturator",
+        "MSaturatorMB",
+        "MSpectralDynamics",
+        "MultibandEnvelopeShaper",
+        "OTT",
+        "PHA-979",
+        "PingPongDelay",
+        "Pro-C 2",
+        "Pro-Q 3",
+        "PsyScope_Pro",
+        "PuigTec EQP1A Stereo",
+        "RBass Stereo",
+        "reastream-standalone",
+        "Saturn 2",
+        "Serum",
+        "Simplon",
+        "StereoDelay",
+        "StereoEnhancer",
+        "Sylenth1",
+        "TransX Multi Stereo",
+        "Tube-Tech Equalizers mk II",
+        "ValhallaRoom",
+        "Vitamin Stereo",
+        "Volcano 2"
+      ],
+      "midiClips": 52
+    },
+    "midiClips": [
+      {
+        "name": "Kick 2 x64 01",
+        "track": "Kick 2 x64 01",
+        "ppq": 480,
+        "lengthTicks": 1920,
+        "notes": 4,
+        "events": 0,
+        "content": "e2ccc754a561"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "3c36cbf20c83"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 36,
+        "events": 0,
+        "content": "5f910f480864"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "72db4f82f5af"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 36,
+        "events": 0,
+        "content": "cb9ca4f8e46e"
+      },
+      {
+        "name": "Sylenth1 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "38f4ff21abcb"
+      },
+      {
+        "name": "Sylenth1 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "b3553a04b2a5"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Serum 03",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "98d9bc44677f"
+      },
+      {
+        "name": "ANA2 x64 01",
+        "track": "ANA2 x64 01",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 16,
+        "events": 0,
+        "content": "db694efeb801"
+      },
+      {
+        "name": "Sylenth1 11",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 32,
+        "events": 0,
+        "content": "daaceb40dac1"
+      },
+      {
+        "name": "Sylenth1 11",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 32,
+        "events": 0,
+        "content": "16f50b03ae03"
+      },
+      {
+        "name": "Serum 02",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 17280,
+        "notes": 65,
+        "events": 0,
+        "content": "df1a30c8d2c1"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 38,
+        "events": 0,
+        "content": "0777b5949b6c"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 32,
+        "events": 0,
+        "content": "427079fdaff5"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 128,
+        "events": 0,
+        "content": "ee072b433b46"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 128,
+        "events": 0,
+        "content": "f29ab5128097"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 129,
+        "events": 0,
+        "content": "082e693af173"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 38,
+        "events": 0,
+        "content": "e453f23c38bc"
+      },
+      {
+        "name": "MIDI 43",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 60,
+        "events": 0,
+        "content": "911c40b8b29c"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "3025840742e4"
+      },
+      {
+        "name": "MIDI 52",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 95,
+        "events": 0,
+        "content": "ba5cd4177ded"
+      },
+      {
+        "name": "MIDI 60",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "715bc641f3c1"
+      },
+      {
+        "name": "ANA2 x64 01",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 131,
+        "events": 0,
+        "content": "ba4e05801f39"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "ANA2 x64 01_db_-2",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 129,
+        "events": 0,
+        "content": "84d15c9accfc"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 129,
+        "events": 0,
+        "content": "3943969ee382"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 3840,
+        "notes": 32,
+        "events": 0,
+        "content": "ceaadfa0827d"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 38,
+        "events": 0,
+        "content": "8d4cfd3a25fb"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "414938356370"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Main Lead 01",
+        "ppq": 480,
+        "lengthTicks": 22272,
+        "notes": 68,
+        "events": 0,
+        "content": "ae7861c9a7c7"
+      },
+      {
+        "name": "Acid Lead 01",
+        "track": "Acid Lead 01",
+        "ppq": 480,
+        "lengthTicks": 14848,
+        "notes": 72,
+        "events": 0,
+        "content": "87413fcda801"
+      },
+      {
+        "name": "Acid Lead 01 (D)",
+        "track": "Acid Lead 01 (D)",
+        "ppq": 480,
+        "lengthTicks": 3712,
+        "notes": 1,
+        "events": 0,
+        "content": "badebc532da5"
+      },
+      {
+        "name": "Acid Lead 01 (D)",
+        "track": "Acid Lead 01 (D)",
+        "ppq": 480,
+        "lengthTicks": 3712,
+        "notes": 1,
+        "events": 0,
+        "content": "16265064ae1c"
+      },
+      {
+        "name": "Acid Lead 01 (D)",
+        "track": "Acid Lead 01 (D)",
+        "ppq": 480,
+        "lengthTicks": 3712,
+        "notes": 1,
+        "events": 0,
+        "content": "cdc8b1f1655e"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Serum 01",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "4cd97934c895"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Serum 01",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 36,
+        "events": 0,
+        "content": "bf0fa9585da3"
+      },
+      {
+        "name": "Slap Bass 2",
+        "track": "Slap Bass 2",
+        "ppq": 480,
+        "lengthTicks": 288000,
+        "notes": 649,
+        "events": 0,
+        "content": "b1895bd130ae"
+      },
+      {
+        "name": "Electric Guitar (clean)",
+        "track": "Electric Guitar (clean)",
+        "ppq": 480,
+        "lengthTicks": 38400,
+        "notes": 81,
+        "events": 0,
+        "content": "e9ffb5b77f32"
+      },
+      {
+        "name": "Electric Guitar (clean)",
+        "track": "Electric Guitar (clean)",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 16,
+        "events": 0,
+        "content": "1890c3366582"
+      },
+      {
+        "name": "Electric Guitar (clean)",
+        "track": "Electric Guitar (clean)",
+        "ppq": 480,
+        "lengthTicks": 63360,
+        "notes": 240,
+        "events": 0,
+        "content": "16260805926e"
+      },
+      {
+        "name": "Synth Brass 1",
+        "track": "Synth Brass 1",
+        "ppq": 480,
+        "lengthTicks": 109440,
+        "notes": 118,
+        "events": 0,
+        "content": "9a67ef21d877"
+      },
+      {
+        "name": "Synth Brass 1",
+        "track": "Synth Brass 1",
+        "ppq": 480,
+        "lengthTicks": 96000,
+        "notes": 101,
+        "events": 0,
+        "content": "6037ed6a93c2"
+      },
+      {
+        "name": "Synth Strings 1",
+        "track": "Synth Strings 1",
+        "ppq": 480,
+        "lengthTicks": 132480,
+        "notes": 157,
+        "events": 0,
+        "content": "dc5c225a2954"
+      },
+      {
+        "name": "Synth Strings 1",
+        "track": "Synth Strings 1",
+        "ppq": 480,
+        "lengthTicks": 145920,
+        "notes": 168,
+        "events": 0,
+        "content": "4995ba7f9d81"
+      },
+      {
+        "name": "Pad 3 (polysynth)",
+        "track": "Pad 3 (polysynth)",
+        "ppq": 480,
+        "lengthTicks": 23040,
+        "notes": 142,
+        "events": 0,
+        "content": "babb15938f3d"
+      },
+      {
+        "name": "Pad 3 (polysynth)",
+        "track": "Pad 3 (polysynth)",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 190,
+        "events": 0,
+        "content": "1576fe742fc8"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Harpsichord",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 104,
+        "events": 0,
+        "content": "d131c1a67ddc"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Harpsichord",
+        "ppq": 480,
+        "lengthTicks": 24960,
+        "notes": 96,
+        "events": 0,
+        "content": "7e69dfd0cd8d"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Harpsichord",
+        "ppq": 480,
+        "lengthTicks": 24960,
+        "notes": 96,
+        "events": 0,
+        "content": "47d38b590025"
+      },
+      {
+        "name": "Voice Aahs",
+        "track": "Voice Aahs",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 15,
+        "events": 0,
+        "content": "c12b5a93d9a9"
+      },
+      {
+        "name": "Voice Aahs",
+        "track": "Voice Aahs",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 15,
+        "events": 0,
+        "content": "41ae5017406e"
+      },
+      {
+        "name": "Voice Aahs",
+        "track": "Voice Aahs",
+        "ppq": 480,
+        "lengthTicks": 72960,
+        "notes": 33,
+        "events": 0,
+        "content": "8cf9cbebf597"
+      },
+      {
+        "name": "GM Drums",
+        "track": "GM Drums",
+        "ppq": 480,
+        "lengthTicks": 303360,
+        "notes": 2897,
+        "events": 0,
+        "content": "b814817e2acd"
+      }
+    ],
+    "sampleReferences": [
+      {
+        "file": "RTW_Kick_1-01.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "a-ha - Take On Me.wav",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take On Me.mp3",
+        "use": "audio"
+      },
+      {
+        "file": "Acid Lead 01 (D).wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_15_Tops.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_15_Tops.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_14_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_14_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_11_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_11_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_Crash_9.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_Crash_9.wav",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take on Me (Only Vocals) [TubeRipper.com].flac",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take on Me (Only Vocals) [TubeRipper.com].flac",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take on Me (Only Vocals) [TubeRipper.com]-Time Stretch-F2DC3CEA40B84AEB8057ADD558B52ADF.flac",
+        "use": "audio"
+      },
+      {
+        "file": "IF_KikSnrFillB_140-07.wav",
+        "use": "audio"
+      },
+      {
+        "file": "IF_KikSnrFillB_140-07.wav",
+        "use": "audio"
+      },
+      {
+        "file": "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO.wav",
+        "use": "audio"
+      },
+      {
+        "file": "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO.mp3",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_Kick_1.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_1-01.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_10.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_12.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_3.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_4.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_5.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_6.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_7.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_8.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_9.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "Techno 01.aiff",
+        "use": "plugin"
+      }
+    ]
+  },
   "test-02.cpr": {
     "dawType": "Cubase",
     "dawVersion": "13",

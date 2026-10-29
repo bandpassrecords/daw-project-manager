@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 
 import 'package:daw_project_manager/models/midi_clip.dart';
 import 'package:daw_project_manager/models/sample_reference.dart';
@@ -643,27 +645,53 @@ void main() {
     });
   });
 
-  test('volumeDb: the fader scale, against faders read in Cubase 13', () {
+  test('volumeDb: the ends of the scale', () {
     expect(CubaseProjectParser.volumeDb(null), isNull);
     expect(CubaseProjectParser.volumeDb(0), double.negativeInfinity);
     expect(CubaseProjectParser.volumeDb(25856), 0);
     expect(CubaseProjectParser.volumeDb(32767), 6);
-    // test-01.cpr in the collection, opened in Cubase 13: stored value and
-    // what its fader showed.
-    for (final (stored, shown) in [
-      (14219.642578125, -10.8), // Kick 2 x64 01
-      (21492.33203125, -3.15), // Bassline
-      (15244.541015625, -9.56), // Serum 03
-      (12897.6494140625, -12.5), // Main Lead 01
-      (11770.669921875, -14.1), // RTW_145_Drums_15_Tops
-    ]) {
-      expect(CubaseProjectParser.volumeDb(stored), closeTo(shown, 0.2),
-          reason: '$stored');
-    }
+    // Below the faders read, it keeps falling, without a jump at the join.
+    final atFloor = CubaseProjectParser.volumeDb(11770.669921875)!;
+    expect(CubaseProjectParser.volumeDb(11770.6)!, closeTo(atFloor, 0.01));
+    expect(CubaseProjectParser.volumeDb(5000)!, lessThan(-20));
+    expect(CubaseProjectParser.volumeDb(1)!, lessThan(-100));
     // Above 0 dB it keeps rising to +6.
     final above = CubaseProjectParser.volumeDb(29000)!;
     expect(above, greaterThan(0));
     expect(above, lessThan(6));
+  });
+
+  group('faders in dB, as Cubase 13 showed them', () {
+    // The test collection's Test 2025, opened in Cubase 13: each channel's
+    // fader as Cubase displayed it. test-01_db_level.cpr was saved with two
+    // channels set to exactly 0 and -2 dB.
+    final dir = p.join('test', 'fixtures', 'projects', 'cubase',
+        'Test 2025 (Cubase 13)');
+    Map<String, double?> faders(String file) => {
+          for (final t in CubaseProjectParser(
+                  File(p.join(dir, file)).readAsBytesSync())
+              .readTracks())
+            t.name: CubaseProjectParser.volumeDb(t.volume),
+        };
+
+    test('test-01.cpr', () {
+      final db = faders('test-01.cpr');
+      for (final (name, shown) in [
+        ('Kick 2 x64 01', -10.8),
+        ('Bassline', -3.15),
+        ('Serum 03', -9.56),
+        ('Main Lead 01', -12.5),
+        ('RTW_145_Drums_15_Tops', -14.1),
+      ]) {
+        expect(db[name], closeTo(shown, 0.05), reason: name);
+      }
+    });
+
+    test('test-01_db_level.cpr', () {
+      final db = faders('test-01_db_level.cpr');
+      expect(db['ANA2 x64 01_db_0'], 0);
+      expect(db['ANA2 x64 01_db_-2'], closeTo(-2, 0.05));
+    });
   });
 
   group('readMidiClips', () {

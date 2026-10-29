@@ -225,22 +225,39 @@ class CubaseProjectParser {
 
   /// The fader in dB.
   ///
-  /// Below 0 dB the scale is a power law: gain = (volume / unity)^2.069,
-  /// fitted to five faders read in Cubase 13 (−3.15 to −14.1 dB; worst
-  /// error 0.17 dB, the one nearest 0 dB, the rest within 0.06). Above 0 dB
-  /// the scale is steeper — the same law would top out at +4.3 dB — so that
-  /// stretch is a power law of its own through +6 dB at [maxVolume], not yet
-  /// checked against a reading between.
+  /// From −14 to 0 dB the scale is a quadratic in the fader's position
+  /// (`volume / maxVolume`, 0 dB at 0.789): fitted to seven faders read in
+  /// Cubase 13 — the test collection's Test 2025, whose
+  /// `test-01_db_level.cpr` has channels set to exactly 0 and −2 dB — every
+  /// one within 0.03 dB. A power law, tried first, was 0.2 dB out near 0 dB.
+  /// Below −14 dB the curve carries on with the slope it has there, down to
+  /// −∞; above 0 dB it rises to +6 dB at [maxVolume]. Neither stretch has
+  /// been checked against a reading yet.
   static double? volumeDb(double? volume) {
     if (volume == null) return null;
     if (volume <= 0) return double.negativeInfinity;
     if (volume >= maxVolume) return 6;
-    final ratio = math.log(volume / unityVolume) / math.ln10;
-    if (volume <= unityVolume) return 20 * _belowUnityExponent * ratio;
-    return 6 * ratio / (math.log(maxVolume / unityVolume) / math.ln10);
+    if (volume > unityVolume) {
+      return 6 * math.log(volume / unityVolume) /
+          math.log(maxVolume / unityVolume);
+    }
+    if (volume >= _fittedFloor) {
+      final d = (volume - unityVolume) / maxVolume;
+      return _linear * d + _quadratic * d * d;
+    }
+    return _floorDb + _floorSlope * math.log(volume / _fittedFloor);
   }
 
-  static const _belowUnityExponent = 2.069;
+  static const _linear = 19.489919;
+  static const _quadratic = -30.836339;
+
+  /// The lowest fader read (−14.1 dB): the fitted stretch ends here.
+  static const _fittedFloor = 11770.669921875;
+  static const _floorDb = -14.076014;
+
+  /// dB per natural-log step of the stored value at [_fittedFloor], so the
+  /// curve below joins without a kink.
+  static const _floorSlope = 16.524537;
 
   late final Map<_ArchiveIndex, _Arranged> _arranged = {};
   final Map<_Instance, _Channel?> _channels = {};
