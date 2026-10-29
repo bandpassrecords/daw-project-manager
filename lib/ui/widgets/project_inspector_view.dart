@@ -132,37 +132,43 @@ class _ProjectInspectorViewState extends State<ProjectInspectorView> {
     final daw = a.dawType ?? '';
     final channels = a.channels;
     return switch (_section) {
-      InspectorSection.tracks => channels == null
-          ? _Note(l10n.inspectorNotAvailable(daw))
-          : _TracksSection(
-              channels: channels,
-              search: widget.search,
-              kind: _kind,
-              selected: _selected,
-              onKind: (k) => setState(() => _kind = k),
-              onSelect: (i) => setState(() => _selected = i),
-            ),
-      InspectorSection.plugins =>
-        _PluginsSection(anatomy: a, search: widget.search),
-      InspectorSection.routing => channels == null
-          ? _Note(l10n.inspectorNotAvailable(daw))
-          : _RoutingSection(
-              channels: channels,
-              search: widget.search,
-              selected: _selected,
-              byDestination: _byDestination,
-              onSelect: (i) => setState(() => _selected = i),
-              onView: (v) => setState(() => _byDestination = v),
-            ),
-      InspectorSection.audioIo => a.audioIo == null
-          ? _Note(l10n.inspectorNotAvailable(daw))
-          : _AudioIoSection(io: a.audioIo!),
-      InspectorSection.media => a.media == null
-          ? _Note(l10n.inspectorNotAvailable(daw))
-          : _MediaSection(
-              checks: widget.mediaChecks,
-              checking: widget.mediaChecking,
-            ),
+      InspectorSection.tracks =>
+        channels == null
+            ? _Note(l10n.inspectorNotAvailable(daw))
+            : _TracksSection(
+                channels: channels,
+                search: widget.search,
+                kind: _kind,
+                selected: _selected,
+                onKind: (k) => setState(() => _kind = k),
+                onSelect: (i) => setState(() => _selected = i),
+              ),
+      InspectorSection.plugins => _PluginsSection(
+        anatomy: a,
+        search: widget.search,
+      ),
+      InspectorSection.routing =>
+        channels == null
+            ? _Note(l10n.inspectorNotAvailable(daw))
+            : _RoutingSection(
+                channels: channels,
+                search: widget.search,
+                selected: _selected,
+                byDestination: _byDestination,
+                onSelect: (i) => setState(() => _selected = i),
+                onView: (v) => setState(() => _byDestination = v),
+              ),
+      InspectorSection.audioIo =>
+        a.audioIo == null
+            ? _Note(l10n.inspectorNotAvailable(daw))
+            : _AudioIoSection(io: a.audioIo!),
+      InspectorSection.media =>
+        a.media == null
+            ? _Note(l10n.inspectorNotAvailable(daw))
+            : _MediaSection(
+                checks: widget.mediaChecks,
+                checking: widget.mediaChecking,
+              ),
       InspectorSection.statistics => _StatisticsSection(anatomy: a),
     };
   }
@@ -269,9 +275,7 @@ class _Tiles extends StatelessWidget {
     final a = anatomy;
     final channels = a.channels;
     final counts = channels == null ? null : channelCounts(channels);
-    final tracks = channels == null
-        ? null
-        : mixerChannels(channels).length;
+    final tracks = channels == null ? null : mixerChannels(channels).length;
     final instances = pluginInstanceCounts(a.plugins);
     final rate = a.sampleRate;
     return Wrap(
@@ -370,10 +374,7 @@ class _Tile extends StatelessWidget {
               Text.rich(
                 TextSpan(
                   children: [
-                    TextSpan(
-                      text: value,
-                      style: theme.textTheme.headlineSmall,
-                    ),
+                    TextSpan(text: value, style: theme.textTheme.headlineSmall),
                     if (unit != null)
                       TextSpan(
                         text: ' $unit',
@@ -439,7 +440,9 @@ class _TracksSection extends StatelessWidget {
                 runSpacing: 6,
                 children: [
                   ChoiceChip(
-                    label: Text('${l10n.inspectorFilterAll} ${channels.length}'),
+                    label: Text(
+                      '${l10n.inspectorFilterAll} ${channels.length}',
+                    ),
                     selected: kind == null,
                     onSelected: (_) => onKind(null),
                   ),
@@ -534,8 +537,9 @@ class _ChannelRow extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 8),
                     child: Text(
                       l10n.inspectorSoloed,
-                      style: theme.textTheme.labelSmall
-                          ?.copyWith(color: theme.colorScheme.tertiary),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.tertiary,
+                      ),
                     ),
                   ),
                 _FaderReadout(db: c.volumeDb, position: c.faderPosition),
@@ -612,9 +616,7 @@ class _ChannelDetail extends StatelessWidget {
           children: [
             Icon(_kindIcon(c.kind)),
             const SizedBox(width: 8),
-            Expanded(
-              child: Text(c.name, style: theme.textTheme.titleMedium),
-            ),
+            Expanded(child: Text(c.name, style: theme.textTheme.titleMedium)),
             _FaderReadout(db: c.volumeDb, position: c.faderPosition),
           ],
         ),
@@ -631,9 +633,11 @@ class _ChannelDetail extends StatelessWidget {
         if (c.instrument != null) ...[
           const SizedBox(height: 12),
           _Label(l10n.inspectorInstrument),
-          Text(c.instrumentPreset == null
-              ? c.instrument!
-              : '${c.instrument!} — ${c.instrumentPreset}'),
+          Text(
+            c.instrumentPreset == null
+                ? c.instrument!
+                : '${c.instrument!} — ${c.instrumentPreset}',
+          ),
         ],
         if (c.eqBandsOn != null) ...[
           const SizedBox(height: 12),
@@ -705,10 +709,7 @@ class _PathChips extends StatelessWidget {
       children: [
         for (final (i, name) in path.indexed) ...[
           if (i > 0) const Icon(Icons.arrow_forward, size: 14),
-          Chip(
-            label: Text(name),
-            visualDensity: VisualDensity.compact,
-          ),
+          Chip(label: Text(name), visualDensity: VisualDensity.compact),
         ],
       ],
     );
@@ -726,10 +727,13 @@ class _PluginsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final plugins =
-        anatomy.plugins.where((pl) => pluginMatches(pl, search)).toList();
-    final total = anatomy.plugins
-        .fold<int>(0, (sum, pl) => sum + (pl.instances ?? 1));
+    final plugins = anatomy.plugins
+        .where((pl) => pluginMatches(pl, search))
+        .toList();
+    final total = anatomy.plugins.fold<int>(
+      0,
+      (sum, pl) => sum + (pl.instances ?? 1),
+    );
     final groups = anatomy.pluginInstancesKnown
         ? [
             (
@@ -774,10 +778,7 @@ class _PluginsSection extends StatelessWidget {
         for (final (title, items) in groups)
           if (items.isNotEmpty) ...[
             const SizedBox(height: 16),
-            Text(
-              '$title (${items.length})',
-              style: theme.textTheme.titleSmall,
-            ),
+            Text('$title (${items.length})', style: theme.textTheme.titleSmall),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -818,14 +819,18 @@ class _PluginCard extends StatelessWidget {
                     ),
                   ),
                   if (pl.instances != null)
-                    Text('×${pl.instances}', style: theme.textTheme.labelMedium),
+                    Text(
+                      '×${pl.instances}',
+                      style: theme.textTheme.labelMedium,
+                    ),
                 ],
               ),
               if (pl.vendor != null || pl.format != null)
                 Text(
                   [?pl.vendor, ?pl.format].join(' · '),
-                  style: theme.textTheme.labelSmall
-                      ?.copyWith(color: theme.colorScheme.primary),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
               if (pl.channels.isNotEmpty) ...[
                 const SizedBox(height: 4),
@@ -907,8 +912,11 @@ class _RoutingSection extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.info_outline,
-                    size: 16, color: theme.colorScheme.tertiary),
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: theme.colorScheme.tertiary,
+                ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -966,26 +974,25 @@ class _SignalFlow extends StatelessWidget {
     Widget flow() {
       if (current == null) return _Note(l10n.inspectorSelectChannel);
       final sources = sourcesOf(channels, current.name);
+      final indexOf = {for (final (i, c) in channels.indexed) c.name: i};
       return ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(current.name, style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
           _Label(l10n.inspectorSignalPath),
           _PathChips(path: signalPath(channels, current.name)),
           const SizedBox(height: 16),
-          _Label(l10n.inspectorFeedsIn),
-          if (sources.isEmpty)
-            Text(l10n.inspectorNothingFeeds, style: theme.textTheme.bodySmall)
-          else
-            for (final s in sources) _SourceLine(source: s),
-          const SizedBox(height: 16),
-          _Label(l10n.inspectorGoesTo),
-          Text(
-            '${l10n.inspectorOutput}: '
-            '${current.output ?? l10n.inspectorNotConnected}',
+          _FlowDiagram(
+            channel: current,
+            sources: sources,
+            onOpen: (name) {
+              final i = indexOf[name];
+              if (i != null) onSelect(i);
+            },
           ),
-          for (final s in current.sends) _SendLine(send: s),
+          if (sources.isEmpty) ...[
+            const SizedBox(height: 8),
+            Text(l10n.inspectorNothingFeeds, style: theme.textTheme.bodySmall),
+          ],
         ],
       );
     }
@@ -1016,42 +1023,312 @@ class _SignalFlow extends StatelessWidget {
   }
 }
 
-class _SourceLine extends StatelessWidget {
-  const _SourceLine({required this.source});
-  final RoutingSource source;
+/// Where a signal-flow diagram's boxes go: [sources] boxes feeding a
+/// channel down the left, the channel in the middle ([centerLines] lines
+/// tall), [destinations] boxes it feeds down the right, in a diagram
+/// [width] wide. Columns stay centred on each other, so a channel fed by
+/// one source draws a straight line.
+class FlowLayout {
+  const FlowLayout(this.sources, this.center, this.destinations, this.height);
+  final List<Rect> sources;
+  final Rect center;
+  final List<Rect> destinations;
+  final double height;
+
+  static const nodeHeight = 40.0;
+  static const gap = 8.0;
+  static const lineHeight = 20.0;
+
+  factory FlowLayout.of({
+    required int sources,
+    required int destinations,
+    required int centerLines,
+    required double width,
+  }) {
+    final column = width * 0.3;
+    final middle = width * 0.3;
+    double stack(int n) => n == 0 ? 0 : n * nodeHeight + (n - 1) * gap;
+    final centerHeight = 64 + lineHeight * centerLines.clamp(0, 12);
+    final height = [
+      stack(sources),
+      stack(destinations),
+      centerHeight,
+      120.0,
+    ].reduce((a, b) => a > b ? a : b);
+    List<Rect> column_(int n, double left) {
+      final top = (height - stack(n)) / 2;
+      return [
+        for (var i = 0; i < n; i++)
+          Rect.fromLTWH(left, top + i * (nodeHeight + gap), column, nodeHeight),
+      ];
+    }
+
+    return FlowLayout(
+      column_(sources, 0),
+      Rect.fromLTWH(
+        (width - middle) / 2,
+        (height - centerHeight) / 2,
+        middle,
+        centerHeight,
+      ),
+      column_(destinations, width - column),
+      height,
+    );
+  }
+}
+
+/// One box at either side of the diagram.
+class _FlowNode {
+  const _FlowNode(this.name, this.detail, this.icon, {this.dashed = false});
+  final String name;
+  final String? detail;
+  final IconData icon;
+
+  /// A send or side-chain, drawn dashed; an output is a solid line.
+  final bool dashed;
+}
+
+/// A channel's signal flow drawn as CPR Inspector draws it: what feeds it
+/// on the left, the channel and its inserts in the middle, where it goes
+/// on the right — solid for outputs, dashed for sends and side-chains. A
+/// box that is a channel opens it.
+class _FlowDiagram extends StatelessWidget {
+  const _FlowDiagram({
+    required this.channel,
+    required this.sources,
+    required this.onOpen,
+  });
+
+  final AnatomyChannel channel;
+  final List<RoutingSource> sources;
+  final ValueChanged<String> onOpen;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final s = source;
-    final via = switch (s.via) {
-      RoutingVia.output => l10n.inspectorOutput,
-      RoutingVia.send => l10n.inspectorViaSend,
-      RoutingVia.sideChain =>
-        l10n.inspectorSideChainInto(s.send?.sideChainOf ?? ''),
-    };
-    final level = s.send?.levelDb;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(_kindIcon(s.channel.kind), size: 16),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              [
-                s.channel.name,
-                via,
-                if (level != null) _formatDb(level),
-                if (s.send?.on == false) l10n.inspectorSendSwitchedOff,
-              ].join(' · '),
+    final theme = Theme.of(context);
+    final c = channel;
+    final left = [
+      for (final s in sources)
+        _FlowNode(
+          s.channel.name,
+          switch (s.via) {
+            RoutingVia.output => null,
+            RoutingVia.send => [
+              l10n.inspectorViaSend,
+              if (s.send?.levelDb != null) _formatDb(s.send!.levelDb!),
+            ].join(' · '),
+            RoutingVia.sideChain => l10n.inspectorSideChainInto(
+              s.send?.sideChainOf ?? '',
+            ),
+          },
+          _kindIcon(s.channel.kind),
+          dashed: s.via != RoutingVia.output,
+        ),
+    ];
+    final right = [
+      _FlowNode(
+        c.output ?? l10n.inspectorNotConnected,
+        l10n.inspectorOutput,
+        c.output == null ? Icons.link_off : Icons.speaker,
+      ),
+      for (final s in c.sends)
+        _FlowNode(
+          s.destination ?? '—',
+          [
+            if (s.sideChainOf != null)
+              l10n.inspectorSideChainInto(s.sideChainOf!)
+            else
+              l10n.inspectorViaSend,
+            if (s.levelDb != null) _formatDb(s.levelDb!),
+            if (!s.on) l10n.inspectorSendSwitchedOff,
+          ].join(' · '),
+          Icons.call_split,
+          dashed: true,
+        ),
+    ];
+    final lines = [
+      if (c.instrument != null) c.instrument!,
+      for (final i in c.inserts)
+        '${i.slot + 1}. ${i.plugin}${i.deactivated == true ? ' (${l10n.inspectorDeactivated})' : ''}',
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final layout = FlowLayout.of(
+          sources: left.length,
+          destinations: right.length,
+          centerLines: lines.length,
+          width: constraints.maxWidth,
+        );
+        Widget node(_FlowNode n, Rect r) => Positioned.fromRect(
+          rect: r,
+          child: Material(
+            color: theme.colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(8),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => onOpen(n.name),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(n.icon, size: 16),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            n.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                          if (n.detail != null)
+                            Text(
+                              n.detail!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-        ],
-      ),
+        );
+        return SizedBox(
+          height: layout.height,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _FlowPainter(
+                    layout: layout,
+                    leftDashed: [for (final n in left) n.dashed],
+                    rightDashed: [for (final n in right) n.dashed],
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+              for (final (i, n) in left.indexed) node(n, layout.sources[i]),
+              for (final (i, n) in right.indexed)
+                node(n, layout.destinations[i]),
+              Positioned.fromRect(
+                rect: layout.center,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: theme.colorScheme.primary),
+                  ),
+                  // Clipped, never overflowing: a theme with taller text cuts
+                  // the last line short rather than drawing stripes.
+                  child: ClipRect(
+                    child: OverflowBox(
+                      alignment: Alignment.topLeft,
+                      maxHeight: double.infinity,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(_kindIcon(c.kind), size: 18),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  c.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleSmall,
+                                ),
+                              ),
+                              _FaderReadout(
+                                db: c.volumeDb,
+                                position: c.faderPosition,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          for (final line in lines.take(12))
+                            Text(
+                              line,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
+}
+
+class _FlowPainter extends CustomPainter {
+  _FlowPainter({
+    required this.layout,
+    required this.leftDashed,
+    required this.rightDashed,
+    required this.color,
+  });
+
+  final FlowLayout layout;
+  final List<bool> leftDashed;
+  final List<bool> rightDashed;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color.withValues(alpha: 0.7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    final center = layout.center;
+    for (final (i, r) in layout.sources.indexed) {
+      _curve(canvas, paint, r.centerRight, center.centerLeft, leftDashed[i]);
+    }
+    for (final (i, r) in layout.destinations.indexed) {
+      _curve(canvas, paint, center.centerRight, r.centerLeft, rightDashed[i]);
+    }
+  }
+
+  void _curve(Canvas canvas, Paint paint, Offset a, Offset b, bool dashed) {
+    final mid = (a.dx + b.dx) / 2;
+    final path = Path()
+      ..moveTo(a.dx, a.dy)
+      ..cubicTo(mid, a.dy, mid, b.dy, b.dx, b.dy);
+    if (!dashed) {
+      canvas.drawPath(path, paint);
+      return;
+    }
+    for (final metric in path.computeMetrics()) {
+      for (var d = 0.0; d < metric.length; d += 9) {
+        canvas.drawPath(metric.extractPath(d, d + 5), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_FlowPainter old) =>
+      old.layout != layout || old.color != color;
 }
 
 class _Destinations extends StatelessWidget {
@@ -1085,8 +1362,7 @@ class _Destinations extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child:
-                            Text(name, style: theme.textTheme.titleSmall),
+                        child: Text(name, style: theme.textTheme.titleSmall),
                       ),
                       Text(
                         l10n.inspectorSourcesCount(sources.length),
@@ -1170,22 +1446,18 @@ class _AudioIoSection extends StatelessWidget {
             ],
           );
     Widget card(String title, Widget body) => SizedBox(
-          width: 520,
-          child: Card(
-            margin: EdgeInsets.zero,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Label(title),
-                  const SizedBox(height: 4),
-                  body,
-                ],
-              ),
-            ),
+      width: 520,
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [_Label(title), const SizedBox(height: 4), body],
           ),
-        );
+        ),
+      ),
+    );
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -1257,8 +1529,9 @@ class _MediaSection extends StatelessWidget {
     final counts = mediaCounts(all);
     final missing = counts[MediaStatus.missing] ?? 0;
     // Missing first: they are what this list is for.
-    final sorted = [...all]..sort((a, b) =>
-        _statusOrder(a.status).compareTo(_statusOrder(b.status)));
+    final sorted = [
+      ...all,
+    ]..sort((a, b) => _statusOrder(a.status).compareTo(_statusOrder(b.status)));
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -1307,10 +1580,10 @@ class _MediaSection extends StatelessWidget {
   }
 
   static int _statusOrder(MediaStatus s) => switch (s) {
-        MediaStatus.missing => 0,
-        MediaStatus.foundElsewhere => 1,
-        MediaStatus.found => 2,
-      };
+    MediaStatus.missing => 0,
+    MediaStatus.foundElsewhere => 1,
+    MediaStatus.found => 2,
+  };
 }
 
 // --- statistics -------------------------------------------------------------
@@ -1327,59 +1600,70 @@ class _StatisticsSection extends StatelessWidget {
     final cards = <Widget>[];
     if (channels != null) {
       final counts = channelCounts(channels);
-      cards.add(_BarCard(
-        title: l10n.inspectorStatTrackTypes,
-        rows: [
-          for (final (k, label) in _kindLabels(l10n))
-            if ((counts[k] ?? 0) > 0 && k != AnatomyChannelKind.folder)
-              (label, counts[k]!),
-        ],
-      ));
+      cards.add(
+        _BarCard(
+          title: l10n.inspectorStatTrackTypes,
+          rows: [
+            for (final (k, label) in _kindLabels(l10n))
+              if ((counts[k] ?? 0) > 0 && k != AnatomyChannelKind.folder)
+                (label, counts[k]!),
+          ],
+        ),
+      );
     }
     if (a.pluginInstancesKnown) {
       final i = pluginInstanceCounts(a.plugins);
-      cards.add(_BarCard(
-        title: l10n.inspectorStatPluginInstances,
-        rows: [
-          (l10n.inspectorGroupThirdParty, i.thirdPartyEffects),
-          (l10n.inspectorGroupStock, i.stockEffects),
-          (l10n.inspectorGroupInstruments, i.instruments),
-          if (i.unknown > 0) (l10n.inspectorStatUnknown, i.unknown),
-        ],
-      ));
-      cards.add(_BarCard(
-        title: l10n.inspectorStatMostUsed,
-        rows: [
-          for (final pl in mostUsedPlugins(a.plugins)) (pl.name, pl.instances!),
-        ],
-      ));
+      cards.add(
+        _BarCard(
+          title: l10n.inspectorStatPluginInstances,
+          rows: [
+            (l10n.inspectorGroupThirdParty, i.thirdPartyEffects),
+            (l10n.inspectorGroupStock, i.stockEffects),
+            (l10n.inspectorGroupInstruments, i.instruments),
+            if (i.unknown > 0) (l10n.inspectorStatUnknown, i.unknown),
+          ],
+        ),
+      );
+      cards.add(
+        _BarCard(
+          title: l10n.inspectorStatMostUsed,
+          rows: [
+            for (final pl in mostUsedPlugins(a.plugins))
+              (pl.name, pl.instances!),
+          ],
+        ),
+      );
     }
     if (channels != null) {
       final chains = usualChains(channels);
-      cards.add(_BarCard(
-        title: l10n.inspectorStatUsualChains,
-        empty: l10n.inspectorStatNoChains,
-        rows: [
-          for (final (chain, n) in chains) (chain.join(' → '), n),
-        ],
-      ));
+      cards.add(
+        _BarCard(
+          title: l10n.inspectorStatUsualChains,
+          empty: l10n.inspectorStatNoChains,
+          rows: [for (final (chain, n) in chains) (chain.join(' → '), n)],
+        ),
+      );
       final perChannel = insertsPerChannel(channels).entries.toList()
         ..sort((x, y) => x.key.compareTo(y.key));
-      cards.add(_BarCard(
-        title: l10n.inspectorStatInsertsPerChannel,
-        rows: [
-          for (final e in perChannel)
-            (l10n.inspectorInsertsCount(e.key), e.value),
-        ],
-        unit: l10n.inspectorChannelsCount,
-      ));
-      cards.add(_BarCard(
-        title: l10n.inspectorStatBusiest,
-        rows: [
-          for (final (name, sources) in destinations(channels).take(10))
-            if (sources.isNotEmpty) (name, sources.length),
-        ],
-      ));
+      cards.add(
+        _BarCard(
+          title: l10n.inspectorStatInsertsPerChannel,
+          rows: [
+            for (final e in perChannel)
+              (l10n.inspectorInsertsCount(e.key), e.value),
+          ],
+          unit: l10n.inspectorChannelsCount,
+        ),
+      );
+      cards.add(
+        _BarCard(
+          title: l10n.inspectorStatBusiest,
+          rows: [
+            for (final (name, sources) in destinations(channels).take(10))
+              if (sources.isNotEmpty) (name, sources.length),
+          ],
+        ),
+      );
     }
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -1471,15 +1755,15 @@ class _Note extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    ),
+  );
 }
 
 class _Label extends StatelessWidget {
@@ -1488,36 +1772,36 @@ class _Label extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 4),
-        child: Text(
-          text.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                letterSpacing: 0.8,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-        ),
-      );
+    padding: const EdgeInsets.only(bottom: 4),
+    child: Text(
+      text.toUpperCase(),
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        letterSpacing: 0.8,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+    ),
+  );
 }
 
 List<(AnatomyChannelKind, String)> _kindLabels(AppLocalizations l10n) => [
-      (AnatomyChannelKind.audio, l10n.inspectorKindAudio),
-      (AnatomyChannelKind.instrument, l10n.inspectorKindInstrument),
-      (AnatomyChannelKind.sampler, l10n.inspectorKindSampler),
-      (AnatomyChannelKind.midi, l10n.inspectorKindMidi),
-      (AnatomyChannelKind.group, l10n.inspectorKindGroup),
-      (AnatomyChannelKind.fx, l10n.inspectorKindFx),
-      (AnatomyChannelKind.folder, l10n.inspectorKindFolder),
-    ];
+  (AnatomyChannelKind.audio, l10n.inspectorKindAudio),
+  (AnatomyChannelKind.instrument, l10n.inspectorKindInstrument),
+  (AnatomyChannelKind.sampler, l10n.inspectorKindSampler),
+  (AnatomyChannelKind.midi, l10n.inspectorKindMidi),
+  (AnatomyChannelKind.group, l10n.inspectorKindGroup),
+  (AnatomyChannelKind.fx, l10n.inspectorKindFx),
+  (AnatomyChannelKind.folder, l10n.inspectorKindFolder),
+];
 
 IconData _kindIcon(AnatomyChannelKind kind) => switch (kind) {
-      AnatomyChannelKind.audio => Icons.graphic_eq,
-      AnatomyChannelKind.instrument => Icons.piano,
-      AnatomyChannelKind.midi => Icons.music_note,
-      AnatomyChannelKind.sampler => Icons.grain,
-      AnatomyChannelKind.group => Icons.layers,
-      AnatomyChannelKind.fx => Icons.blur_on,
-      AnatomyChannelKind.folder => Icons.folder,
-    };
+  AnatomyChannelKind.audio => Icons.graphic_eq,
+  AnatomyChannelKind.instrument => Icons.piano,
+  AnatomyChannelKind.midi => Icons.music_note,
+  AnatomyChannelKind.sampler => Icons.grain,
+  AnatomyChannelKind.group => Icons.layers,
+  AnatomyChannelKind.fx => Icons.blur_on,
+  AnatomyChannelKind.folder => Icons.folder,
+};
 
 /// "C", "L30", "R100" — a pan from -1 to 1, as DAWs print it.
 String formatPan(double pan) {

@@ -89,6 +89,44 @@ const _cubase = ProjectAnatomy(
 void main() {
   final binding = SemanticsOrphanBinding.ensureInitialized();
 
+  group('FlowLayout', () {
+    test('three columns, centred on each other, the height of the tallest',
+        () {
+      final l = FlowLayout.of(
+          sources: 3, destinations: 1, centerLines: 2, width: 1000);
+      expect(l.sources, hasLength(3));
+      expect(l.destinations, hasLength(1));
+      expect(l.sources.first.left, 0);
+      expect(l.destinations.single.right, 1000);
+      expect(l.center.center.dx, 500);
+      // Three boxes stacked set the height; the others centre on them.
+      expect(l.height, 3 * FlowLayout.nodeHeight + 2 * FlowLayout.gap);
+      expect(l.destinations.single.center.dy, closeTo(l.height / 2, 0.01));
+      expect(l.center.center.dy, closeTo(l.height / 2, 0.01));
+      // Boxes never overlap.
+      for (var i = 1; i < l.sources.length; i++) {
+        expect(l.sources[i].top, greaterThanOrEqualTo(l.sources[i - 1].bottom));
+      }
+    });
+
+    test('a channel nothing feeds still has its place, and a minimum height',
+        () {
+      final l = FlowLayout.of(
+          sources: 0, destinations: 1, centerLines: 0, width: 600);
+      expect(l.sources, isEmpty);
+      expect(l.height, 120);
+    });
+
+    test('a long chain of inserts makes the middle box tall, up to a cap', () {
+      final few = FlowLayout.of(
+          sources: 1, destinations: 1, centerLines: 2, width: 600);
+      final many = FlowLayout.of(
+          sources: 1, destinations: 1, centerLines: 40, width: 600);
+      expect(many.center.height, greaterThan(few.center.height));
+      expect(many.center.height, 64 + FlowLayout.lineHeight * 12);
+    });
+  });
+
   test('formatPan prints C, L and R the way DAWs do', () {
     expect(formatPan(0), 'C');
     expect(formatPan(0.004), 'C');
@@ -179,6 +217,26 @@ void main() {
     expect(find.text('Third-party effects (1)'), findsOneWidget);
     expect(find.text('3 unique · 3 instances'), findsOneWidget);
     expect(find.text('FabFilter · VST3'), findsOneWidget);
+  });
+
+  testWidgets('signal flow draws the channel, what feeds it and where it goes',
+      (tester) async {
+    await pump(tester, _cubase, section: InspectorSection.routing);
+    await tester.tap(find.text('Drum Bus').first);
+    await tester.pumpAndSettle();
+    // Kick feeds the bus; the bus goes to Stereo Out.
+    expect(find.descendant(of: find.byType(Stack), matching: find.text('Kick')),
+        findsOneWidget);
+    expect(
+        find.descendant(
+            of: find.byType(Stack), matching: find.text('Stereo Out')),
+        findsOneWidget);
+    // A box that is a channel opens it.
+    await tester.tap(
+        find.descendant(of: find.byType(Stack), matching: find.text('Kick')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Side-chain into Compressor'), findsWidgets,
+        reason: "now Kick's flow: its side-chain send into Bass");
   });
 
   testWidgets('routing by destination lists what feeds each bus',
