@@ -9000,4 +9000,34 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get inspectorMuted => 'Stumm';
+
+  @override
+  String get inspectorChannelStrip => 'Channel Strip';
+
+  @override
+  String get inspectorStripBypassed => 'Strip umgangen';
+
+  @override
+  String get inspectorStripBeforeInserts => 'Vor den Inserts';
+
+  @override
+  String get inspectorStripGate => 'Gate';
+
+  @override
+  String get inspectorStripCompressor => 'Kompressor';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => 'Tools';
+
+  @override
+  String get inspectorStripSaturation => 'Sättigung';
+
+  @override
+  String get inspectorStripLimiter => 'Limiter';
+
+  @override
+  String get inspectorStripModule => 'Modul';
 }

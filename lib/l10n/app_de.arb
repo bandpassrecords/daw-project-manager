@@ -4564,5 +4564,15 @@
   "inspectorMidiOutputs": "MIDI-Ausgänge",
   "inspectorNone": "Keine",
   "inspectorPan": "Panorama",
-  "inspectorMuted": "Stumm"
+  "inspectorMuted": "Stumm",
+  "inspectorChannelStrip": "Channel Strip",
+  "inspectorStripBypassed": "Strip umgangen",
+  "inspectorStripBeforeInserts": "Vor den Inserts",
+  "inspectorStripGate": "Gate",
+  "inspectorStripCompressor": "Kompressor",
+  "inspectorStripEq": "EQ",
+  "inspectorStripTools": "Tools",
+  "inspectorStripSaturation": "Sättigung",
+  "inspectorStripLimiter": "Limiter",
+  "inspectorStripModule": "Modul"
 }

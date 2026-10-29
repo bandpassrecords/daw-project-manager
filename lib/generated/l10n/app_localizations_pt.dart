@@ -9005,4 +9005,34 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get inspectorMuted => 'Mudo';
+
+  @override
+  String get inspectorChannelStrip => 'Channel strip';
+
+  @override
+  String get inspectorStripBypassed => 'Strip em bypass';
+
+  @override
+  String get inspectorStripBeforeInserts => 'Antes dos inserts';
+
+  @override
+  String get inspectorStripGate => 'Gate';
+
+  @override
+  String get inspectorStripCompressor => 'Compressor';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => 'Ferramentas';
+
+  @override
+  String get inspectorStripSaturation => 'Saturação';
+
+  @override
+  String get inspectorStripLimiter => 'Limitador';
+
+  @override
+  String get inspectorStripModule => 'Módulo';
 }

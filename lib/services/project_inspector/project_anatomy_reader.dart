@@ -115,6 +115,26 @@ ProjectAnatomy cubaseAnatomy({
               preset: i.preset,
             ),
         ],
+        strip: [
+          for (final m in t.strip)
+            AnatomyStripModule(
+              kind: switch (m.kind) {
+                null => null,
+                CubaseStripKind.gate => AnatomyStripKind.gate,
+                CubaseStripKind.compressor => AnatomyStripKind.compressor,
+                CubaseStripKind.eq => AnatomyStripKind.eq,
+                CubaseStripKind.tools => AnatomyStripKind.tools,
+                CubaseStripKind.saturation => AnatomyStripKind.saturation,
+                CubaseStripKind.limiter => AnatomyStripKind.limiter,
+              },
+              plugin: cleanPluginName(m.plugin.plugin),
+              pluginId: m.plugin.pluginId,
+              preset: m.plugin.preset,
+              deactivated: m.plugin.deactivated,
+            ),
+        ],
+        stripBypassed: t.stripBypassed,
+        stripBeforeInserts: t.stripBeforeInserts,
         sends: [
           for (final s in t.sends)
             AnatomySend(
@@ -151,7 +171,7 @@ ProjectAnatomy cubaseAnatomy({
           ]
         : _cubasePlugins(channels, rack, {
       for (final t in tracks)
-        for (final i in t.inserts)
+        for (final i in [...t.inserts, for (final m in t.strip) m.plugin])
           if (i.vendor != null) cleanPluginName(i.plugin).toLowerCase(): i.vendor!,
     }),
     pluginInstancesKnown: channelsDecoded,
@@ -179,8 +199,9 @@ AnatomyAudioIo _audioIo(CubaseAudioConnections io) {
   );
 }
 
-/// Every plug-in by name, with its instances and channels: inserts are
-/// effects; instrument tracks' instruments and the rack's are instruments.
+/// Every plug-in by name, with its instances and channels: inserts and
+/// channel strip modules are effects (the strip's EQ, on every channel, is
+/// none); instrument tracks' instruments and the rack's are instruments.
 /// [vendors] maps a lower-case name to the maker one of its instances
 /// named: the maker of every instance. Steinberg's own count as stock even
 /// where the name list doesn't know them.
@@ -201,6 +222,9 @@ List<AnatomyPlugin> _cubasePlugins(
     }
     for (final i in c.inserts) {
       tally(i.plugin, AnatomyPluginRole.effect, i.pluginId).add(c.name);
+    }
+    for (final m in c.stripModules) {
+      tally(m.plugin, AnatomyPluginRole.effect, m.pluginId).add(c.name);
     }
   }
   final rackSlots = <int>{};

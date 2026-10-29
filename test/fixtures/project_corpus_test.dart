@@ -102,6 +102,14 @@ Map<String, Object?> inspectorSummary(ProjectAnatomy a) {
                   '${i.slot}:${i.plugin}${i.deactivated == true ? ' (off)' : ''}'
                       '${i.preset == null ? '' : ' (${i.preset})'}',
               ].join(', ')}',
+            // Only a strip with something in it: every channel has the EQ.
+            if (c.stripModules.isNotEmpty || c.stripBypassed == true)
+              'strip${c.stripBypassed == true ? ' (bypassed)' : ''}'
+                  '${c.stripBeforeInserts == true ? ' (pre)' : ''} ${[
+                for (final m in c.strip)
+                  '${m.kind?.name ?? '?'}${m.kind == AnatomyStripKind.eq ? '' : ':${m.plugin}'}'
+                      '${m.deactivated == true ? ' (off)' : ''}',
+              ].join(', ')}',
             if (c.sends.isNotEmpty)
               'sends ${[
                 for (final s in c.sends)

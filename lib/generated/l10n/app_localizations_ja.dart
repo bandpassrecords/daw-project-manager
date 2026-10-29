@@ -8465,4 +8465,34 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get inspectorMuted => 'ミュート';
+
+  @override
+  String get inspectorChannelStrip => 'チャンネルストリップ';
+
+  @override
+  String get inspectorStripBypassed => 'ストリップをバイパス';
+
+  @override
+  String get inspectorStripBeforeInserts => 'インサートの前';
+
+  @override
+  String get inspectorStripGate => 'ゲート';
+
+  @override
+  String get inspectorStripCompressor => 'コンプレッサー';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => 'ツール';
+
+  @override
+  String get inspectorStripSaturation => 'サチュレーション';
+
+  @override
+  String get inspectorStripLimiter => 'リミッター';
+
+  @override
+  String get inspectorStripModule => 'モジュール';
 }

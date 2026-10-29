@@ -8940,4 +8940,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inspectorMuted => 'Muted';
+
+  @override
+  String get inspectorChannelStrip => 'Channel strip';
+
+  @override
+  String get inspectorStripBypassed => 'Strip bypassed';
+
+  @override
+  String get inspectorStripBeforeInserts => 'Before the inserts';
+
+  @override
+  String get inspectorStripGate => 'Gate';
+
+  @override
+  String get inspectorStripCompressor => 'Compressor';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => 'Tools';
+
+  @override
+  String get inspectorStripSaturation => 'Saturation';
+
+  @override
+  String get inspectorStripLimiter => 'Limiter';
+
+  @override
+  String get inspectorStripModule => 'Module';
 }

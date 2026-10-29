@@ -653,6 +653,7 @@ class _ChannelDetail extends StatelessWidget {
           const SizedBox(height: 12),
           Text(l10n.inspectorEqBandsOn(c.eqBandsOn!)),
         ],
+        if (c.stripBeforeInserts == true) _StripSection(channel: c),
         const SizedBox(height: 12),
         _Label(l10n.inspectorInserts),
         if (c.inserts.isEmpty)
@@ -670,6 +671,7 @@ class _ChannelDetail extends StatelessWidget {
                     : null,
               ),
             ),
+        if (c.stripBeforeInserts != true) _StripSection(channel: c),
         const SizedBox(height: 12),
         _Label(l10n.inspectorSends),
         if (c.sends.isEmpty)
@@ -679,6 +681,74 @@ class _ChannelDetail extends StatelessWidget {
       ],
     );
   }
+}
+
+/// A channel strip's modules in the order they run, the EQ's place among
+/// them included; nothing for a channel with none loaded — every channel
+/// has the EQ, and its bands are shown above.
+class _StripSection extends StatelessWidget {
+  const _StripSection({required this.channel});
+  final AnatomyChannel channel;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = channel;
+    if (c.stripModules.isEmpty && c.stripBypassed != true) {
+      return const SizedBox.shrink();
+    }
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final bypassed = c.stripBypassed == true;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        _Label(l10n.inspectorChannelStrip),
+        if (bypassed || c.stripBeforeInserts == true)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              [
+                if (bypassed) l10n.inspectorStripBypassed,
+                if (c.stripBeforeInserts == true)
+                  l10n.inspectorStripBeforeInserts,
+              ].join(' · '),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: bypassed ? theme.colorScheme.error : null,
+              ),
+            ),
+          ),
+        for (final m in c.strip)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Text(
+              stripModuleText(l10n, m),
+              style: bypassed || m.deactivated == true
+                  ? TextStyle(color: theme.disabledColor)
+                  : null,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// "Compressor: Standard Compressor — Vocal (off)"; the EQ is only its
+/// place: "EQ".
+String stripModuleText(AppLocalizations l10n, AnatomyStripModule m) {
+  final kind = switch (m.kind) {
+    AnatomyStripKind.gate => l10n.inspectorStripGate,
+    AnatomyStripKind.compressor => l10n.inspectorStripCompressor,
+    AnatomyStripKind.eq => l10n.inspectorStripEq,
+    AnatomyStripKind.tools => l10n.inspectorStripTools,
+    AnatomyStripKind.saturation => l10n.inspectorStripSaturation,
+    AnatomyStripKind.limiter => l10n.inspectorStripLimiter,
+    null => l10n.inspectorStripModule,
+  };
+  if (m.kind == AnatomyStripKind.eq) return kind;
+  return '$kind: ${m.plugin}'
+      '${m.preset == null ? '' : ' — ${m.preset}'}'
+      '${m.deactivated == true ? ' (${l10n.inspectorDeactivated})' : ''}';
 }
 
 class _SendLine extends StatelessWidget {
@@ -1157,10 +1227,16 @@ class _FlowDiagram extends StatelessWidget {
           dashed: true,
         ),
     ];
+    final strip = [
+      if (c.stripBypassed != true)
+        for (final m in c.stripModules) stripModuleText(l10n, m),
+    ];
     final lines = [
       if (c.instrument != null) c.instrument!,
+      if (c.stripBeforeInserts == true) ...strip,
       for (final i in c.inserts)
         '${i.slot + 1}. ${i.plugin}${i.deactivated == true ? ' (${l10n.inspectorDeactivated})' : ''}',
+      if (c.stripBeforeInserts != true) ...strip,
     ];
 
     return LayoutBuilder(

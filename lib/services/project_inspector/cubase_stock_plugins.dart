@@ -12,6 +12,10 @@ const kCubaseStockPlugins = {
   'expander', 'limiter', 'brickwall limiter', 'maximizer', 'deesser',
   'de-esser', 'vst dynamics', 'squasher', 'magneto ii', 'magneto',
   'mid-side compressor',
+  // The channel strip's modules, as its slots name them ("Standard
+  // Compressor" in a real project); the rest are listed above.
+  'noise gate', 'standard compressor', 'vintage compressor',
+  'tape saturation', 'tube saturation', 'standard limiter',
   // EQ and filters
   'studioeq', 'geq-10', 'geq-30', 'frequency', 'frequency 2', 'curve eq',
   'dj-eq', 'morphfilter', 'dualfilter', 'stepfilter', 'autofilter', 'eq',

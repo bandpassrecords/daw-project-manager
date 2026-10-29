@@ -8371,4 +8371,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get inspectorMuted => '静音';
+
+  @override
+  String get inspectorChannelStrip => '通道条';
+
+  @override
+  String get inspectorStripBypassed => '通道条已旁通';
+
+  @override
+  String get inspectorStripBeforeInserts => '在插入之前';
+
+  @override
+  String get inspectorStripGate => '门限';
+
+  @override
+  String get inspectorStripCompressor => '压缩器';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => '工具';
+
+  @override
+  String get inspectorStripSaturation => '饱和';
+
+  @override
+  String get inspectorStripLimiter => '限制器';
+
+  @override
+  String get inspectorStripModule => '模块';
 }

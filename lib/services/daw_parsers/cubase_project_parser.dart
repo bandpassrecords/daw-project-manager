@@ -128,7 +128,10 @@ class CubaseProjectParser {
       final channelOf = {for (final (t, c) in channels) t.instance: c};
       for (final (track, channel) in channels) {
         if (channel.ownBus != null) byBus[channel.ownBus!] = track.name;
-        for (final insert in channel.inserts) {
+        for (final insert in [
+          ...channel.inserts,
+          for (final m in channel.strip) m.plugin,
+        ]) {
           for (final bus in insert.sideChainBuses) {
             sideChains[bus] = (track.name, insert.plugin);
           }
@@ -159,6 +162,12 @@ class CubaseProjectParser {
           inserts: [
             for (final i in channel?.inserts ?? const <_Insert>[]) i.insert,
           ],
+          strip: [
+            for (final m in channel?.strip ?? const <_StripModule>[])
+              CubaseStripModule(kind: m.kind, plugin: m.plugin.insert),
+          ],
+          stripBypassed: channel?.stripBypassed,
+          stripBeforeInserts: channel?.stripBeforeInserts,
           volume: channel?.volume,
           pan: channel?.pan,
           inputGain: channel?.inputGain,
@@ -859,33 +868,25 @@ class CubaseProjectParser {
     final tree = _decoder.rootAt(start, limit: track.end);
     if (tree == null) return null;
 
-    final inserts = <_Insert>[];
     final slots = tree.folder('InsertFolder')?.list('Slot') ?? const [];
-    for (var slot = 0; slot < slots.length; slot++) {
-      final plugin = slots[slot].folder('Plugin');
-      final name = plugin?.string('Plugin Name');
-      if (plugin == null || name == null || name.isEmpty) continue;
-      final identity = pluginIdentity(plugin);
-      inserts.add(_Insert(
-        CubaseInsert(
-          slot: slot,
-          plugin: name,
-          pluginId: identity.id,
-          format: identity.format,
-          vendor: identity.vendor,
-          preset: identity.preset,
-          deactivated: switch (plugin.integer('Active')) {
-            null => null,
-            final a => a == 0,
-          },
-        ),
-        [
-          for (final (key, value) in plugin.entries)
-            if (key.startsWith('Sidechain Bus Id') && value is int && value != 0)
-              value,
-        ],
-      ));
-    }
+    final inserts = [
+      for (var slot = 0; slot < slots.length; slot++)
+        ?_slotPlugin(slot, slots[slot].folder('Plugin')),
+    ];
+
+    // The channel strip (Cubase 7 on): six slots in the order the user set,
+    // each a module of one kind by its SlotType, empty unless one of that
+    // kind's plug-ins is loaded — the EQ's slot only says where the channel
+    // EQ sits among them. Measured on 5,236 channels in 160 projects
+    // (Cubase 8 to 13): every one had six slots and the EQ's, 5,204 in the
+    // default order and 32 (one project) with the compressor moved first.
+    final strip = tree.folder('StripFolder');
+    final stripSlots = strip?.list('Slot') ?? const [];
+    final modules = [
+      for (var i = 0; i < stripSlots.length; i++)
+        if (_slotPlugin(i, stripSlots[i].folder('Plugin')) case final p?)
+          _StripModule(_stripKind(stripSlots[i].integer('SlotType')), p),
+    ];
 
     final sendSlots = tree.folder('SendFolder')?.list('Slot') ?? const [];
     final sends = <_Send>[];
@@ -912,6 +913,18 @@ class CubaseProjectParser {
       ownBus: tree.folder('OwnInputBus')?.integer('Bus UID'),
       outBus: tree.valueOf('OutputBusValue')?.toInt(),
       inserts: inserts,
+      strip: modules,
+      // The strip's own bypass button: on one channel in 5,236 (a Standard
+      // Compressor's strip, in the Psyform Stellardrone template).
+      stripBypassed: switch (strip?.integer('Bypass')) {
+        null => null,
+        final b => b != 0,
+      },
+      // 0 on every channel measured; the name says what 1 would be.
+      stripBeforeInserts: switch (tree.integer('ChannelStripsPreInserts')) {
+        null => null,
+        final p => p != 0,
+      },
       sends: sends,
       volume: tree.valueOf('Volume'),
       inputGain: tree.valueOf('InputGain'),
@@ -934,6 +947,47 @@ class CubaseProjectParser {
       instrumentPreset: instrument?.preset,
     );
   }
+
+  /// The plug-in in an insert or strip slot, with the side-chain buses it
+  /// offers; null for an empty slot.
+  static _Insert? _slotPlugin(int slot, CubaseAttributes? plugin) {
+    final name = plugin?.string('Plugin Name');
+    if (plugin == null || name == null || name.isEmpty) return null;
+    final identity = pluginIdentity(plugin);
+    return _Insert(
+      CubaseInsert(
+        slot: slot,
+        plugin: name,
+        pluginId: identity.id,
+        format: identity.format,
+        vendor: identity.vendor,
+        preset: identity.preset,
+        deactivated: switch (plugin.integer('Active')) {
+          null => null,
+          final a => a == 0,
+        },
+      ),
+      [
+        for (final (key, value) in plugin.entries)
+          if (key.startsWith('Sidechain Bus Id') && value is int && value != 0)
+            value,
+      ],
+    );
+  }
+
+  /// A strip slot's module, by its SlotType. 4 holds the EQ ("VstCtrlEQ")
+  /// and 6 the Standard Compressor in real projects; 5, 9, 8 and 7 are the
+  /// rest of Cubase's default order — gate, compressor, EQ, tools,
+  /// saturation, limiter — which 5,204 of 5,236 channels keep.
+  static CubaseStripKind? _stripKind(int? slotType) => switch (slotType) {
+        4 => CubaseStripKind.eq,
+        5 => CubaseStripKind.gate,
+        6 => CubaseStripKind.compressor,
+        7 => CubaseStripKind.limiter,
+        8 => CubaseStripKind.saturation,
+        9 => CubaseStripKind.tools,
+        _ => null,
+      };
 
   /// Where a stereo channel's panner sits, 0 (left) to 1 (right): the
   /// Standard Panner keeps it as the first float of its state, little-endian
@@ -1282,6 +1336,9 @@ class CubaseTrack {
     this.parent,
     this.output,
     this.inserts = const [],
+    this.strip = const [],
+    this.stripBypassed,
+    this.stripBeforeInserts,
     this.volume,
     this.pan,
     this.inputGain,
@@ -1309,6 +1366,17 @@ class CubaseTrack {
 
   /// Plug-ins in the channel's insert slots, in slot order.
   final List<CubaseInsert> inserts;
+
+  /// The channel strip's loaded slots in the order the user arranged them,
+  /// the EQ's included (it marks where the channel EQ sits); empty before
+  /// Cubase 7 or with no channel.
+  final List<CubaseStripModule> strip;
+
+  /// The whole strip bypassed when saved; null with no strip.
+  final bool? stripBypassed;
+
+  /// The strip placed before the inserts rather than after them.
+  final bool? stripBeforeInserts;
 
   /// The fader as Cubase stores it, from 0 (−∞) to 32767 (+6 dB), 0 dB at
   /// [CubaseProjectParser.unityVolume]. See [CubaseProjectParser.volumeDb].
@@ -1387,6 +1455,18 @@ class CubaseInsert {
 
   /// Switched off in the slot (not loaded) when saved.
   final bool? deactivated;
+}
+
+/// The kinds of module a Cubase channel strip holds, a slot for each.
+enum CubaseStripKind { gate, compressor, eq, tools, saturation, limiter }
+
+/// One loaded slot of a channel strip: its kind (null for a slot type this
+/// reader doesn't know) and the plug-in in it — "Standard Compressor",
+/// "Magneto II"… — whose [CubaseInsert.slot] is its place in the strip.
+class CubaseStripModule {
+  const CubaseStripModule({required this.kind, required this.plugin});
+  final CubaseStripKind? kind;
+  final CubaseInsert plugin;
 }
 
 /// A routed send: where it goes, how loud, and whether it is on.
@@ -1528,6 +1608,9 @@ class _Channel {
     this.ownBus,
     this.outBus,
     this.inserts = const [],
+    this.strip = const [],
+    this.stripBypassed,
+    this.stripBeforeInserts,
     this.sends = const [],
     this.volume,
     this.inputGain,
@@ -1544,6 +1627,9 @@ class _Channel {
   final int? ownBus;
   final int? outBus;
   final List<_Insert> inserts;
+  final List<_StripModule> strip;
+  final bool? stripBypassed;
+  final bool? stripBeforeInserts;
   final List<_Send> sends;
   final double? volume;
   final double? inputGain;
@@ -1561,6 +1647,12 @@ class _Insert {
   final CubaseInsert insert;
   final List<int> sideChainBuses;
   String get plugin => insert.plugin;
+}
+
+class _StripModule {
+  const _StripModule(this.kind, this.plugin);
+  final CubaseStripKind? kind;
+  final _Insert plugin;
 }
 
 class _Send {

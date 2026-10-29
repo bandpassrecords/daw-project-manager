@@ -4564,5 +4564,15 @@
   "inspectorMidiOutputs": "MIDI出力",
   "inspectorNone": "なし",
   "inspectorPan": "パン",
-  "inspectorMuted": "ミュート"
+  "inspectorMuted": "ミュート",
+  "inspectorChannelStrip": "チャンネルストリップ",
+  "inspectorStripBypassed": "ストリップをバイパス",
+  "inspectorStripBeforeInserts": "インサートの前",
+  "inspectorStripGate": "ゲート",
+  "inspectorStripCompressor": "コンプレッサー",
+  "inspectorStripEq": "EQ",
+  "inspectorStripTools": "ツール",
+  "inspectorStripSaturation": "サチュレーション",
+  "inspectorStripLimiter": "リミッター",
+  "inspectorStripModule": "モジュール"
 }

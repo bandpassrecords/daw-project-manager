@@ -232,7 +232,8 @@ bool channelMatches(AnatomyChannel channel, String query) {
   if (q.isEmpty) return true;
   return channel.name.toLowerCase().contains(q) ||
       (channel.instrument?.toLowerCase().contains(q) ?? false) ||
-      channel.inserts.any((i) => i.plugin.toLowerCase().contains(q));
+      channel.inserts.any((i) => i.plugin.toLowerCase().contains(q)) ||
+      channel.stripModules.any((m) => m.plugin.toLowerCase().contains(q));
 }
 
 /// Whether [query] finds [plugin] by name.

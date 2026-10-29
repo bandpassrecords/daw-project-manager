@@ -9038,4 +9038,34 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inspectorMuted => 'Coupé';
+
+  @override
+  String get inspectorChannelStrip => 'Channel strip';
+
+  @override
+  String get inspectorStripBypassed => 'Strip contourné';
+
+  @override
+  String get inspectorStripBeforeInserts => 'Avant les inserts';
+
+  @override
+  String get inspectorStripGate => 'Gate';
+
+  @override
+  String get inspectorStripCompressor => 'Compresseur';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => 'Outils';
+
+  @override
+  String get inspectorStripSaturation => 'Saturation';
+
+  @override
+  String get inspectorStripLimiter => 'Limiteur';
+
+  @override
+  String get inspectorStripModule => 'Module';
 }

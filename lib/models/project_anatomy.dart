@@ -108,6 +108,9 @@ class AnatomyChannel {
     this.instrumentId,
     this.instrumentPreset,
     this.inserts = const [],
+    this.strip = const [],
+    this.stripBypassed,
+    this.stripBeforeInserts,
     this.sends = const [],
   });
 
@@ -143,7 +146,22 @@ class AnatomyChannel {
   /// The preset its instrument had loaded.
   final String? instrumentPreset;
   final List<AnatomyInsert> inserts;
+
+  /// The channel strip's loaded modules in the order the user arranged
+  /// them. The EQ is among them where the DAW says where it sits, as a
+  /// module of kind [AnatomyStripKind.eq].
+  final List<AnatomyStripModule> strip;
+
+  /// The whole strip bypassed when saved.
+  final bool? stripBypassed;
+
+  /// The strip placed before the inserts rather than after them.
+  final bool? stripBeforeInserts;
   final List<AnatomySend> sends;
+
+  /// The strip's modules other than the EQ, which every channel has.
+  Iterable<AnatomyStripModule> get stripModules =>
+      strip.where((m) => m.kind != AnatomyStripKind.eq);
 
   /// Whether the channel mixes others rather than holding material.
   bool get isBus =>
@@ -170,6 +188,25 @@ class AnatomyInsert {
   final String? preset;
 
   /// Switched off in its slot when saved.
+  final bool? deactivated;
+}
+
+enum AnatomyStripKind { gate, compressor, eq, tools, saturation, limiter }
+
+/// One module in a channel strip: its kind (null when the reader can't
+/// tell) and the plug-in loaded in it.
+class AnatomyStripModule {
+  const AnatomyStripModule({
+    required this.kind,
+    required this.plugin,
+    this.pluginId,
+    this.preset,
+    this.deactivated,
+  });
+  final AnatomyStripKind? kind;
+  final String plugin;
+  final String? pluginId;
+  final String? preset;
   final bool? deactivated;
 }
 

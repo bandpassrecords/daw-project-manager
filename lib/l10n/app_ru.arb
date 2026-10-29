@@ -4564,5 +4564,15 @@
   "inspectorMidiOutputs": "MIDI-выходы",
   "inspectorNone": "Нет",
   "inspectorPan": "Панорама",
-  "inspectorMuted": "Заглушен"
+  "inspectorMuted": "Заглушен",
+  "inspectorChannelStrip": "Channel strip",
+  "inspectorStripBypassed": "Strip в обходе",
+  "inspectorStripBeforeInserts": "Перед вставками",
+  "inspectorStripGate": "Гейт",
+  "inspectorStripCompressor": "Компрессор",
+  "inspectorStripEq": "EQ",
+  "inspectorStripTools": "Инструменты",
+  "inspectorStripSaturation": "Сатурация",
+  "inspectorStripLimiter": "Лимитер",
+  "inspectorStripModule": "Модуль"
 }

@@ -8726,5 +8726,45 @@
   "inspectorMuted": "Muted",
   "@inspectorMuted": {
     "description": "A track that was muted when the project was saved"
+  },
+  "inspectorChannelStrip": "Channel strip",
+  "@inspectorChannelStrip": {
+    "description": "Heading for a Cubase channel's strip modules (gate, compressor, EQ, tools, saturation, limiter), in the order they run"
+  },
+  "inspectorStripBypassed": "Strip bypassed",
+  "@inspectorStripBypassed": {
+    "description": "The channel strip's own bypass button was on when the project was saved"
+  },
+  "inspectorStripBeforeInserts": "Before the inserts",
+  "@inspectorStripBeforeInserts": {
+    "description": "The channel strip runs before the insert slots rather than after them"
+  },
+  "inspectorStripGate": "Gate",
+  "@inspectorStripGate": {
+    "description": "The kind of a channel strip module: a noise gate"
+  },
+  "inspectorStripCompressor": "Compressor",
+  "@inspectorStripCompressor": {
+    "description": "The kind of a channel strip module: a compressor"
+  },
+  "inspectorStripEq": "EQ",
+  "@inspectorStripEq": {
+    "description": "The channel EQ's place among the channel strip modules"
+  },
+  "inspectorStripTools": "Tools",
+  "@inspectorStripTools": {
+    "description": "The kind of a channel strip module: tools (de-esser, envelope shaper)"
+  },
+  "inspectorStripSaturation": "Saturation",
+  "@inspectorStripSaturation": {
+    "description": "The kind of a channel strip module: saturation (tape, tube)"
+  },
+  "inspectorStripLimiter": "Limiter",
+  "@inspectorStripLimiter": {
+    "description": "The kind of a channel strip module: a limiter"
+  },
+  "inspectorStripModule": "Module",
+  "@inspectorStripModule": {
+    "description": "A channel strip module whose kind isn't known"
   }
 }

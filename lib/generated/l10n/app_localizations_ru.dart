@@ -8984,4 +8984,34 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inspectorMuted => 'Заглушен';
+
+  @override
+  String get inspectorChannelStrip => 'Channel strip';
+
+  @override
+  String get inspectorStripBypassed => 'Strip в обходе';
+
+  @override
+  String get inspectorStripBeforeInserts => 'Перед вставками';
+
+  @override
+  String get inspectorStripGate => 'Гейт';
+
+  @override
+  String get inspectorStripCompressor => 'Компрессор';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => 'Инструменты';
+
+  @override
+  String get inspectorStripSaturation => 'Сатурация';
+
+  @override
+  String get inspectorStripLimiter => 'Лимитер';
+
+  @override
+  String get inspectorStripModule => 'Модуль';
 }

@@ -14239,6 +14239,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Muted'**
   String get inspectorMuted;
+
+  /// Heading for a Cubase channel's strip modules (gate, compressor, EQ, tools, saturation, limiter), in the order they run
+  ///
+  /// In en, this message translates to:
+  /// **'Channel strip'**
+  String get inspectorChannelStrip;
+
+  /// The channel strip's own bypass button was on when the project was saved
+  ///
+  /// In en, this message translates to:
+  /// **'Strip bypassed'**
+  String get inspectorStripBypassed;
+
+  /// The channel strip runs before the insert slots rather than after them
+  ///
+  /// In en, this message translates to:
+  /// **'Before the inserts'**
+  String get inspectorStripBeforeInserts;
+
+  /// The kind of a channel strip module: a noise gate
+  ///
+  /// In en, this message translates to:
+  /// **'Gate'**
+  String get inspectorStripGate;
+
+  /// The kind of a channel strip module: a compressor
+  ///
+  /// In en, this message translates to:
+  /// **'Compressor'**
+  String get inspectorStripCompressor;
+
+  /// The channel EQ's place among the channel strip modules
+  ///
+  /// In en, this message translates to:
+  /// **'EQ'**
+  String get inspectorStripEq;
+
+  /// The kind of a channel strip module: tools (de-esser, envelope shaper)
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get inspectorStripTools;
+
+  /// The kind of a channel strip module: saturation (tape, tube)
+  ///
+  /// In en, this message translates to:
+  /// **'Saturation'**
+  String get inspectorStripSaturation;
+
+  /// The kind of a channel strip module: a limiter
+  ///
+  /// In en, this message translates to:
+  /// **'Limiter'**
+  String get inspectorStripLimiter;
+
+  /// A channel strip module whose kind isn't known
+  ///
+  /// In en, this message translates to:
+  /// **'Module'**
+  String get inspectorStripModule;
 }
 
 class _AppLocalizationsDelegate

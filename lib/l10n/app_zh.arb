@@ -4564,5 +4564,15 @@
   "inspectorMidiOutputs": "MIDI 输出",
   "inspectorNone": "无",
   "inspectorPan": "声像",
-  "inspectorMuted": "静音"
+  "inspectorMuted": "静音",
+  "inspectorChannelStrip": "通道条",
+  "inspectorStripBypassed": "通道条已旁通",
+  "inspectorStripBeforeInserts": "在插入之前",
+  "inspectorStripGate": "门限",
+  "inspectorStripCompressor": "压缩器",
+  "inspectorStripEq": "EQ",
+  "inspectorStripTools": "工具",
+  "inspectorStripSaturation": "饱和",
+  "inspectorStripLimiter": "限制器",
+  "inspectorStripModule": "模块"
 }

@@ -150,6 +150,19 @@ void main() {
                 instrument: 'Serum'),
             'serum'),
         isTrue);
+    const stripped = AnatomyChannel(
+      name: 'Bass',
+      kind: AnatomyChannelKind.audio,
+      strip: [
+        AnatomyStripModule(kind: AnatomyStripKind.eq, plugin: 'EQ'),
+        AnatomyStripModule(
+            kind: AnatomyStripKind.saturation, plugin: 'Magneto II'),
+      ],
+    );
+    expect(channelMatches(stripped, 'magneto'), isTrue,
+        reason: 'a channel strip module is a plug-in on it');
+    expect(channelMatches(stripped, 'eq'), isFalse,
+        reason: 'every channel has the EQ');
     expect(pluginMatches(const AnatomyPlugin(name: 'Pro-Q 3'), 'pro'), isTrue);
   });
 }
