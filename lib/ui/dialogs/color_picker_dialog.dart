@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../utils/phase_colors.dart';
 import '../widgets/color_wheel.dart';
+import '../widgets/semantics_safe.dart';
 
 /// Parses `#RRGGBB`, `RRGGBB`, `#RGB` or `RGB` into a color.
 ///
@@ -242,7 +243,7 @@ class _PresetSwatchState extends State<_PresetSwatch> {
             ? Colors.white
             : Colors.black;
 
-    return Tooltip(
+    return StandaloneTooltip(
       message: colorToHex(widget.color),
       waitDuration: const Duration(milliseconds: 400),
       child: MouseRegion(

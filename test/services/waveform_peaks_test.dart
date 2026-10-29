@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import 'package:daw_project_manager/providers/providers.dart';
 import 'package:daw_project_manager/services/audio_analysis_service.dart';
 import 'package:daw_project_manager/services/waveform_disk_cache.dart';
 
@@ -20,42 +22,89 @@ class _FakePathProvider extends PathProviderPlatform
   Future<String?> getApplicationSupportPath() async => supportPath;
 }
 
-/// Writes a 16-bit PCM WAV whose channels are [channels] (each the same
-/// length, samples in −1…+1).
+/// The RIFF header, `fmt ` chunk and `data` chunk header of a WAV — everything
+/// before its samples. [leadingChunkBytes] puts a `JUNK` chunk of that size
+/// between the two, the way BWF metadata sits before the samples.
+Uint8List wavHeader({
+  required int numChannels,
+  required int numFrames,
+  required int sampleRate,
+  int bitDepth = 16,
+  bool float = false,
+  int leadingChunkBytes = 0,
+}) {
+  final bytesPerSample = bitDepth ~/ 8;
+  final dataSize = numFrames * numChannels * bytesPerSample;
+  final junk = leadingChunkBytes > 0 ? 8 + leadingChunkBytes : 0;
+
+  final bytes = Uint8List(44 + junk);
+  final bd = ByteData.sublistView(bytes);
+  bytes.setAll(0, 'RIFF'.codeUnits);
+  bd.setUint32(4, 36 + junk + dataSize, Endian.little);
+  bytes.setAll(8, 'WAVE'.codeUnits);
+  bytes.setAll(12, 'fmt '.codeUnits);
+  bd.setUint32(16, 16, Endian.little);
+  bd.setUint16(20, float ? 3 : 1, Endian.little);
+  bd.setUint16(22, numChannels, Endian.little);
+  bd.setUint32(24, sampleRate, Endian.little);
+  bd.setUint32(28, sampleRate * numChannels * bytesPerSample, Endian.little);
+  bd.setUint16(32, numChannels * bytesPerSample, Endian.little);
+  bd.setUint16(34, bitDepth, Endian.little);
+  if (junk > 0) {
+    bytes.setAll(36, 'JUNK'.codeUnits);
+    bd.setUint32(40, leadingChunkBytes, Endian.little);
+  }
+  bytes.setAll(36 + junk, 'data'.codeUnits);
+  bd.setUint32(40 + junk, dataSize, Endian.little);
+  return bytes;
+}
+
+/// Writes a PCM WAV (16-, 24- or 32-bit, or 32-bit float) whose channels are
+/// [channels] (each the same length, samples in −1…+1).
 Future<File> writeWav(
   String path,
   List<List<double>> channels, {
   int sampleRate = 8000,
+  int bitDepth = 16,
+  bool float = false,
+  int leadingChunkBytes = 0,
 }) async {
   final numChannels = channels.length;
   final numFrames = channels.first.length;
-  final dataSize = numFrames * numChannels * 2;
+  final bytesPerSample = bitDepth ~/ 8;
+  final header = wavHeader(
+    numChannels: numChannels,
+    numFrames: numFrames,
+    sampleRate: sampleRate,
+    bitDepth: bitDepth,
+    float: float,
+    leadingChunkBytes: leadingChunkBytes,
+  );
 
-  final bytes = Uint8List(44 + dataSize);
-  final bd = ByteData.sublistView(bytes);
-  bytes.setAll(0, 'RIFF'.codeUnits);
-  bd.setUint32(4, 36 + dataSize, Endian.little);
-  bytes.setAll(8, 'WAVE'.codeUnits);
-  bytes.setAll(12, 'fmt '.codeUnits);
-  bd.setUint32(16, 16, Endian.little);
-  bd.setUint16(20, 1, Endian.little); // PCM
-  bd.setUint16(22, numChannels, Endian.little);
-  bd.setUint32(24, sampleRate, Endian.little);
-  bd.setUint32(28, sampleRate * numChannels * 2, Endian.little);
-  bd.setUint16(32, numChannels * 2, Endian.little);
-  bd.setUint16(34, 16, Endian.little);
-  bytes.setAll(36, 'data'.codeUnits);
-  bd.setUint32(40, dataSize, Endian.little);
-
+  final data = Uint8List(numFrames * numChannels * bytesPerSample);
+  final bd = ByteData.sublistView(data);
   for (int f = 0; f < numFrames; f++) {
     for (int c = 0; c < numChannels; c++) {
-      final off = 44 + (f * numChannels + c) * 2;
-      bd.setInt16(off, (channels[c][f] * 32767).round(), Endian.little);
+      final off = (f * numChannels + c) * bytesPerSample;
+      final s = channels[c][f];
+      if (float) {
+        bd.setFloat32(off, s, Endian.little);
+      } else if (bitDepth == 16) {
+        bd.setInt16(off, (s * 32767).round(), Endian.little);
+      } else if (bitDepth == 24) {
+        final v = (s * 8388607).round();
+        data[off] = v & 0xFF;
+        data[off + 1] = (v >> 8) & 0xFF;
+        data[off + 2] = (v >> 16) & 0xFF;
+      } else {
+        bd.setInt32(off, (s * 2147483647).round(), Endian.little);
+      }
     }
   }
 
   final file = File(path);
-  await file.writeAsBytes(bytes);
+  await file.writeAsBytes(
+      (BytesBuilder(copy: false)..add(header)..add(data)).toBytes());
   return file;
 }
 
@@ -230,6 +279,107 @@ void main() {
     });
   });
 
+  group('extractWaveformPeaks — long files', () {
+    // Regression: the whole WAV was read into memory and every sample turned
+    // into a Dart double — per channel, plus a mono mixdown — about seven
+    // times the file's size for a stereo 16-bit file. A 60-minute bounce
+    // needed gigabytes, and on a phone the OS killed the app outright.
+    test('memory stays flat however long the file is', () async {
+      // Three minutes of 48 kHz stereo, ~35 MB: the old code peaked ~250 MB
+      // above where it started.
+      const sampleRate = 48000;
+      const seconds = 180;
+      const numFrames = sampleRate * seconds;
+      final path = p.join(tempDir.path, 'long.wav');
+
+      // Written a second at a time, so writing it doesn't raise the peak.
+      // Quiet for the first half, loud for the second.
+      final raf = File(path).openSync(mode: FileMode.write);
+      raf.writeFromSync(wavHeader(
+        numChannels: 2,
+        numFrames: numFrames,
+        sampleRate: sampleRate,
+      ));
+      final second = Uint8List(sampleRate * 4);
+      final bd = ByteData.sublistView(second);
+      for (int s = 0; s < seconds; s++) {
+        final amplitude = s < seconds ~/ 2 ? 3000 : 30000;
+        for (int f = 0; f < sampleRate; f++) {
+          final v = f.isEven ? amplitude : -amplitude;
+          bd.setInt16(f * 4, v, Endian.little);
+          bd.setInt16(f * 4 + 2, v ~/ 2, Endian.little);
+        }
+        raf.writeFromSync(second);
+      }
+      raf.closeSync();
+
+      final before = ProcessInfo.maxRss;
+      final peaks = await AudioAnalysisService.extractWaveformPeaks(path);
+      final grew = ProcessInfo.maxRss - before;
+
+      expect(peaks, isNotNull);
+      expect(grew, lessThan(64 * 1024 * 1024),
+          reason: 'peak memory grew by ${grew ~/ (1024 * 1024)} MB');
+
+      expect(peaks!.frameCount, AudioAnalysisService.waveformFrameCount);
+      expect(peaks.durationSeconds, closeTo(seconds, 0.001));
+      expect(peaks.maxValues.first, closeTo(3000 * 0.75 / 32768, 0.001));
+      expect(peaks.maxValues.last, closeTo(30000 * 0.75 / 32768, 0.001));
+      expect(peaks.channelMax[0].last, closeTo(30000 / 32768, 0.001));
+      expect(peaks.channelMax[1].last, closeTo(15000 / 32768, 0.001));
+      // Halfway through is where it gets loud, give or take one frame.
+      final loudFrom = peaks.maxValues.indexWhere((v) => v > 0.5);
+      expect(loudFrom, closeTo(peaks.frameCount ~/ 2, 1));
+    }, timeout: const Timeout(Duration(minutes: 2)));
+  });
+
+  group('extractWaveformPeaks — sample formats', () {
+    for (final (name, bitDepth, float) in [
+      ('24-bit', 24, false),
+      ('32-bit', 32, false),
+      ('32-bit float', 32, true),
+    ]) {
+      test('reads $name samples', () async {
+        final wav = await writeWav(
+          p.join(tempDir.path, '$bitDepth$float.wav'),
+          [buzz(4000, 0.5), buzz(4000, 0.25)],
+          bitDepth: bitDepth,
+          float: float,
+        );
+
+        final peaks = await AudioAnalysisService.extractWaveformPeaks(
+          wav.path,
+          targetFrames: 100,
+        );
+
+        expect(peaks, isNotNull);
+        expect(peaks!.channelMax[0].reduce(max), closeTo(0.5, 0.001));
+        expect(peaks.channelMin[1].reduce(min), closeTo(-0.25, 0.001));
+        expect(peaks.maxValues.reduce(max), closeTo(0.375, 0.001));
+        expect(peaks.rmsValues.first, closeTo(0.375, 0.001));
+      });
+    }
+
+    test('finds the samples behind a large metadata chunk', () async {
+      // Bigger than any fixed-size header read would cover.
+      final wav = await writeWav(
+        p.join(tempDir.path, 'bwf.wav'),
+        [buzz(4000, 0.5)],
+        leadingChunkBytes: 200 * 1024,
+      );
+
+      final peaks = await AudioAnalysisService.extractWaveformPeaks(
+        wav.path,
+        targetFrames: 100,
+      );
+
+      expect(peaks, isNotNull);
+      expect(peaks!.frameCount, 100);
+      expect(peaks.maxValues.reduce(max), closeTo(0.5, 0.001));
+      expect(peaks.durationSeconds, closeTo(0.5, 0.001));
+    });
+  });
+
   group('WaveformDiskCache', () {
     late Directory supportDir;
 
@@ -292,31 +442,33 @@ void main() {
       expect(loaded.maxValues, hasLength(peaks.frameCount));
     });
 
-    test('rejects an entry written by the pre-lane cache format', () async {
-      // v1 entries have neither the lanes nor the higher frame count, so they
-      // must be discarded and re-extracted rather than read as v2 and
-      // misparsed.
-      final wav = await writeWav(
-        p.join(tempDir.path, 'legacy.wav'),
-        [buzz(4000, 0.5)],
-      );
-      final peaks = await AudioAnalysisService.extractWaveformPeaks(
-        wav.path,
-        targetFrames: 200,
-      );
-      await WaveformDiskCache.save(wav.path, peaks!);
+    // v1 entries have neither the lanes nor the higher frame count, v2 no
+    // source size, so they must be discarded and re-extracted rather than
+    // read as the current format and misparsed.
+    for (final version in [1, 2]) {
+      test('rejects an entry written by cache format v$version', () async {
+        final wav = await writeWav(
+          p.join(tempDir.path, 'legacy.wav'),
+          [buzz(4000, 0.5)],
+        );
+        final peaks = await AudioAnalysisService.extractWaveformPeaks(
+          wav.path,
+          targetFrames: 200,
+        );
+        await WaveformDiskCache.save(wav.path, peaks!);
 
-      // Find the entry we just wrote and stamp it back to version 1.
-      final entry = Directory(p.join(supportDir.path, 'waveform_cache'))
-          .listSync()
-          .whereType<File>()
-          .single;
-      final bytes = await entry.readAsBytes();
-      ByteData.sublistView(bytes).setUint32(4, 1, Endian.little);
-      await entry.writeAsBytes(bytes);
+        // Find the entry we just wrote and stamp it back to the old version.
+        final entry = Directory(p.join(supportDir.path, 'waveform_cache'))
+            .listSync()
+            .whereType<File>()
+            .single;
+        final bytes = await entry.readAsBytes();
+        ByteData.sublistView(bytes).setUint32(4, version, Endian.little);
+        await entry.writeAsBytes(bytes);
 
-      expect(await WaveformDiskCache.load(wav.path), isNull);
-    });
+        expect(await WaveformDiskCache.load(wav.path), isNull);
+      });
+    }
 
     test('invalidates when the source file changes', () async {
       final path = p.join(tempDir.path, 'changing.wav');
@@ -336,6 +488,93 @@ void main() {
       );
 
       expect(await WaveformDiskCache.load(wav.path), isNull);
+    });
+
+    // A copy or a sync tool can carry the old modification time over to new
+    // audio; the size is what still tells them apart.
+    test('invalidates when the size changes but the mtime is kept', () async {
+      final path = p.join(tempDir.path, 'resynced.wav');
+      final wav = await writeWav(path, [buzz(4000, 0.5)]);
+      final mtime = File(path).lastModifiedSync();
+      final peaks = await AudioAnalysisService.extractWaveformPeaks(
+        wav.path,
+        targetFrames: 200,
+      );
+      await WaveformDiskCache.save(wav.path, peaks!);
+
+      await writeWav(path, [buzz(6000, 0.9)]);
+      File(path).setLastModifiedSync(mtime);
+
+      expect(await WaveformDiskCache.load(wav.path), isNull);
+    });
+  });
+
+  // The player bar asks for a file's details on every play; remembered, a
+  // replay shows them at once instead of a placeholder first.
+  group('AudioAnalysisService.knownFileInfo', () {
+    test('is null until the file has been read', () async {
+      final wav = await writeWav(
+          p.join(tempDir.path, 'unread.wav'), [buzz(800, 0.5)]);
+      expect(AudioAnalysisService.knownFileInfo(wav.path), isNull);
+    });
+
+    test('remembers what getFileInfo read', () async {
+      final wav = await writeWav(p.join(tempDir.path, 'read.wav'),
+          [buzz(800, 0.5), buzz(800, 0.5)],
+          sampleRate: 44100, bitDepth: 24);
+      await AudioAnalysisService.getFileInfo(wav.path);
+
+      final info = AudioAnalysisService.knownFileInfo(wav.path);
+      expect(info, isNotNull);
+      expect(info!.sampleRate, 44100);
+      expect(info.bitDepth, 24);
+      expect(info.channels, 2);
+    });
+
+    test('forgets it once the file changes', () async {
+      final path = p.join(tempDir.path, 'rebounced.wav');
+      await writeWav(path, [buzz(800, 0.5)]);
+      final mtime = File(path).lastModifiedSync();
+      await AudioAnalysisService.getFileInfo(path);
+
+      // Same modification time, different size: still a different file.
+      await writeWav(path, [buzz(1600, 0.5)], sampleRate: 48000);
+      File(path).setLastModifiedSync(mtime);
+      expect(AudioAnalysisService.knownFileInfo(path), isNull);
+    });
+  });
+
+  group('waveformCacheProvider', () {
+    late Directory supportDir;
+
+    setUp(() async {
+      supportDir = await Directory.systemTemp.createTemp('waveform_cache_test_');
+      PathProviderPlatform.instance = _FakePathProvider(supportDir.path);
+    });
+
+    tearDown(() async {
+      if (await supportDir.exists()) await supportDir.delete(recursive: true);
+    });
+
+    test('re-extracts a file whose size changed under the same mtime',
+        () async {
+      final path = p.join(tempDir.path, 'held.wav');
+      await writeWav(path, [buzz(4000, 0.5)]);
+      final mtime = File(path).lastModifiedSync();
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final cache = container.read(waveformCacheProvider.notifier);
+
+      final first = await cache.getOrExtract(path);
+      expect(first!.maxValues.reduce(max), closeTo(0.5, 0.001));
+
+      await writeWav(path, [buzz(6000, 0.9)]);
+      File(path).setLastModifiedSync(mtime);
+
+      var stale = false;
+      final second = await cache.getOrExtract(path, onStale: () => stale = true);
+      expect(stale, isTrue);
+      expect(second!.maxValues.reduce(max), closeTo(0.9, 0.001));
     });
   });
 }

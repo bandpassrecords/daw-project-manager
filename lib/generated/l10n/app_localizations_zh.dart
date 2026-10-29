@@ -502,13 +502,13 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String projectsHidden(int count, String plural) {
-    return '$count个项目$plural已隐藏。';
+  String projectsHidden(int count) {
+    return '$count个项目已隐藏。';
   }
 
   @override
-  String projectsUnhidden(int count, String plural) {
-    return '$count个项目$plural已显示。';
+  String projectsUnhidden(int count) {
+    return '$count个项目已显示。';
   }
 
   @override
@@ -528,24 +528,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteMissingProjectsTitle => '删除缺失的项目？';
 
   @override
-  String deleteMissingProjectsConfirm(int count, String plural) {
-    return '在此设备上找不到文件的$count个项目$plural将移到“最近删除”（设置 > 项目文件夹），30 天内可连同备注、截止日期和会话历史一起恢复。';
+  String deleteMissingProjectsConfirm(int count) {
+    return '在此设备上找不到文件的$count个项目将移到“最近删除”（设置 > 项目文件夹），30 天内可连同备注、截止日期和会话历史一起恢复。';
   }
 
   @override
   String get deleteMissingProjectsConfirmButton => '删除';
 
   @override
-  String missingProjectsDeleted(int count, String plural) {
-    return '已删除$count个缺失的项目$plural。';
+  String missingProjectsDeleted(int count) {
+    return '已删除$count个缺失的项目。';
   }
 
   @override
-  String deleteMissingProjectsAlsoDeleteReleaseTracked(
-    int count,
-    String plural,
-  ) {
-    return '同时删除属于发行版的$count个项目$plural（也会将它们从该发行版中移除）';
+  String deleteMissingProjectsAlsoDeleteReleaseTracked(int count) {
+    return '同时删除属于发行版的$count个项目（也会将它们从该发行版中移除）';
   }
 
   @override
@@ -587,16 +584,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get enterReleaseTitleHint => '输入发布标题';
 
   @override
-  String metadataExtractedForProjects(
-    int count,
-    String plural,
-    String failures,
-  ) {
-    return '已为$count个项目$plural提取元数据。$failures';
+  String metadataExtractedForProjects(int count, String failures) {
+    return '已为$count个项目提取元数据。$failures';
   }
 
   @override
-  String extractionFailures(int count, Object plural) {
+  String extractionFailures(int count) {
     return '$count个失败。';
   }
 
@@ -624,16 +617,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String scanComplete(String type, int count, String plural) {
-    return '$type完成: $count个项目$plural已添加/更新。';
+  String scanComplete(String type, int count) {
+    return '$type完成: $count个项目已添加/更新。';
   }
 
   @override
   String get scanCancelled => '扫描已取消。';
 
   @override
-  String scanFailuresSnackbar(int count, String plural) {
-    return '$count个项目$plural加载失败。';
+  String scanFailuresSnackbar(int count) {
+    return '$count个项目加载失败。';
   }
 
   @override
@@ -646,8 +639,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scanFailuresDialogIntro => '扫描过程中无法读取以下文件（可能已被删除、移动或被其他程序锁定）：';
 
   @override
-  String projectsSelected(int count, String plural) {
-    return '$count个项目$plural已选择';
+  String projectsSelected(int count) {
+    return '$count个项目已选择';
   }
 
   @override
@@ -683,21 +676,21 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String releasesSelected(int count, String plural) {
-    return '已选择$count个发布$plural';
+  String releasesSelected(int count) {
+    return '已选择$count个发布';
   }
 
   @override
   String get deleteSelectedReleases => '删除所选';
 
   @override
-  String deleteSelectedReleasesConfirm(int count, String plural) {
-    return '确定要删除$count个发布$plural吗?';
+  String deleteSelectedReleasesConfirm(int count) {
+    return '确定要删除$count个发布吗?';
   }
 
   @override
-  String releasesDeleted(int count, String plural) {
-    return '已删除$count个发布$plural';
+  String releasesDeleted(int count) {
+    return '已删除$count个发布';
   }
 
   @override
@@ -734,8 +727,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get allProjectsAlreadyInRelease => '所有项目已在此发布中。';
 
   @override
-  String addedTracksToRelease(int count, String plural) {
-    return '已向发布添加$count首曲目$plural。';
+  String addedTracksToRelease(int count) {
+    return '已向发布添加$count首曲目。';
   }
 
   @override
@@ -747,8 +740,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addFiles => '添加文件';
 
   @override
-  String addedFilesToRelease(int count, String plural) {
-    return '已向发布添加$count个文件$plural。';
+  String addedFilesToRelease(int count) {
+    return '已向发布添加$count个文件。';
   }
 
   @override
@@ -869,7 +862,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get description => '描述';
 
   @override
-  String selectTracksToInclude(int count, Object plural) {
+  String selectTracksToInclude(int count) {
     return '选择要包含在发布中的曲目（已选择$count）';
   }
 
@@ -1073,21 +1066,21 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String templatesSelected(int count, String plural) {
-    return '已选择$count个模板$plural';
+  String templatesSelected(int count) {
+    return '已选择$count个模板';
   }
 
   @override
   String get deleteSelectedTemplates => '删除所选';
 
   @override
-  String deleteSelectedTemplatesConfirm(int count, String plural) {
-    return '确定要删除$count个模板$plural吗?';
+  String deleteSelectedTemplatesConfirm(int count) {
+    return '确定要删除$count个模板吗?';
   }
 
   @override
-  String templatesDeleted(int count, String plural) {
-    return '已删除$count个模板$plural';
+  String templatesDeleted(int count) {
+    return '已删除$count个模板';
   }
 
   @override
@@ -1215,19 +1208,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectNewStatus => '选择新阶段:';
 
   @override
-  String statusChangedForProjects(int count, String plural, String status) {
-    return '$count 个项目$plural的阶段已更改为「$status」';
+  String statusChangedForProjects(int count, String status) {
+    return '$count 个项目的阶段已更改为「$status」';
   }
 
   @override
   String statusChangedForProjectsWithErrors(
     int successCount,
-    String successPlural,
     int failCount,
-    String failPlural,
     String status,
   ) {
-    return '$successCount 个项目$successPlural的阶段已更改为「$status」，$failCount 个失败$failPlural';
+    return '$successCount 个项目的阶段已更改为「$status」，$failCount 个失败';
   }
 
   @override
@@ -1497,6 +1488,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get currentProfileRequired => '合并或替换模式需要当前配置文件';
 
   @override
+  String get importLaunchCommandsTitle => '导入\"在DAW中启动\"的程序？';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      '此备份指定了\"在DAW中启动\"将在这台电脑上运行的程序。仅当备份是你自己创建的时才导入。';
+
+  @override
+  String get importLaunchCommandsSkip => '不导入';
+
+  @override
+  String get importLaunchCommandsImport => '导入';
+
+  @override
   String get previewSong => '预览歌曲';
 
   @override
@@ -1603,7 +1607,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String dateYearsAgo(int count, Object plural) {
+  String dateYearsAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -1613,42 +1617,32 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String ageYearsMonths(
-    int years,
-    String yearPlural,
-    int months,
-    String monthPlural,
-  ) {
+  String ageYearsMonths(int years, int months) {
     return '$years年$months个月';
   }
 
   @override
-  String ageYears(int years, String plural) {
+  String ageYears(int years) {
     return '$years年';
   }
 
   @override
-  String ageMonthsDays(
-    int months,
-    String monthPlural,
-    int days,
-    String dayPlural,
-  ) {
+  String ageMonthsDays(int months, int days) {
     return '$months个月$days天';
   }
 
   @override
-  String ageMonths(int months, String plural) {
+  String ageMonths(int months) {
     return '$months个月';
   }
 
   @override
-  String ageDays(int days, String plural) {
+  String ageDays(int days) {
     return '$days天';
   }
 
   @override
-  String ageHours(int hours, String plural) {
+  String ageHours(int hours) {
     return '$hours小时';
   }
 
@@ -2486,13 +2480,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get additionalAssets => '附加资源';
 
   @override
-  String downloadNFiles(int count, String plural) {
-    return '下载 $count 个文件$plural';
+  String downloadNFiles(int count) {
+    return '下载 $count 个文件';
   }
 
   @override
-  String nFilesSavedTo(int count, String plural, String filename) {
-    return '$count 个文件$plural已保存至 $filename';
+  String nFilesSavedTo(int count, String filename) {
+    return '$count 个文件已保存至 $filename';
   }
 
   @override
@@ -5055,8 +5049,8 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String attachmentExportSkippedMissing(int count, String plural) {
-    return '已跳过 $count 个丢失的文件$plural';
+  String attachmentExportSkippedMissing(int count) {
+    return '已跳过 $count 个丢失的文件';
   }
 
   @override
@@ -7906,4 +7900,116 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get legacyInstallRemoveFailed => '无法启动旧副本的卸载程序。';
+
+  @override
+  String get missingPreviewSongsTitle => '缺失的预览歌曲';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      '当前配置文件中此电脑找不到的预览歌曲。先检查，再逐个下载、查找或移除——在你选择之前不会有任何改动。';
+
+  @override
+  String get missingPreviewSongsCheck => '检查';
+
+  @override
+  String get missingPreviewSongsChecking => '正在检查…';
+
+  @override
+  String get missingPreviewSongsNone => '所有预览歌曲都在应在的位置。';
+
+  @override
+  String get missingPreviewSongsSignInHint => '登录 Google Drive，也可在那里查找。';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return '在 Google Drive 上（$count）';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription => '备份中有这些歌曲。下载后会在此电脑上保存一份副本。';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return '来自另一台电脑（$count）';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      '它们的路径属于另一台电脑，在那里可能可以正常播放。在此选择一个文件，即可在这台电脑上播放。';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return '文件夹不存在（$count）';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      '它们的文件夹也不在：可能是驱动器未连接，或文件夹已移动或删除。移除任何内容前，请先连接驱动器并重新检查。';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return '文件不存在（$count）';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription => '文件夹还在，但文件不在了。';
+
+  @override
+  String get missingPreviewDownload => '下载';
+
+  @override
+  String get missingPreviewDownloadAll => '全部下载';
+
+  @override
+  String get missingPreviewFindAll => '全部查找';
+
+  @override
+  String get missingPreviewRemoveAll => '全部移除';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '移除 $count 首预览歌曲？',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      '只会在此电脑上移除，不会删除任何文件。如果其他设备仍有其中某首歌曲，下次同步会把它带回这里。';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return '已下载 $done/$total。';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return '已为 $found/$total 找到缩混。';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return '无法下载 $name 的歌曲。';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => '自动检测';
+
+  @override
+  String missingPreviewRemoveEverything(int count) {
+    return '移除所有未找到的（$count）';
+  }
+
+  @override
+  String missingPreviewRemoveIncludesDrive(int count) {
+    return '其中 $count 首仍可从 Google Drive 下载。';
+  }
+
+  @override
+  String missingPreviewRemoveIncludesOtherComputer(int count) {
+    return '其中 $count 首在另一台电脑上可能仍可播放。';
+  }
 }

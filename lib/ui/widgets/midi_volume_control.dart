@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'ctrl_wheel_volume.dart';
+import 'semantics_safe.dart';
 
 /// Strings for [MidiVolumeControl], resolved by the caller.
 class MidiVolumeLabels {
@@ -78,12 +79,14 @@ class _MidiVolumeControlState extends State<MidiVolumeControl> {
           ),
           SizedBox(
             width: widget.sliderWidth,
-            child: Slider(
-              value: widget.volume.clamp(0.0, 1.0),
-              label: widget.labels.volume,
-              semanticFormatterCallback: (v) =>
-                  '${widget.labels.volume} ${(v * 100).round()}%',
-              onChanged: widget.onChanged,
+            child: SliderOverlay(
+              child: Slider(
+                value: widget.volume.clamp(0.0, 1.0),
+                label: widget.labels.volume,
+                semanticFormatterCallback: (v) =>
+                    '${widget.labels.volume} ${(v * 100).round()}%',
+                onChanged: widget.onChanged,
+              ),
             ),
           ),
         ],

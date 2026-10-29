@@ -45,6 +45,7 @@ import '../utils/daw_logo.dart';
 import '../utils/deep_scan.dart';
 import '../utils/grid_current_cell_parking.dart';
 import '../utils/library_projects.dart';
+import '../utils/empty_projects_view.dart';
 import '../utils/mobile_utils.dart';
 import '../services/player_volume_store.dart';
 import '../utils/text_input_focus.dart';
@@ -114,10 +115,12 @@ import '../services/google_drive_sync_service.dart' show GoogleDriveSyncService;
 import '../utils/playback_todo_utils.dart';
 import '../utils/custom_fields.dart';
 import 'widgets/custom_field_column.dart';
+import 'widgets/player_readout.dart';
 import '../models/custom_field.dart';
 import 'package:uuid/uuid.dart';
 import 'app_snack_bar.dart';
 import 'dialogs/root_overlap_dialog.dart';
+import 'widgets/semantics_safe.dart';
 
 /// App version embedded at build-time (CI passes `--dart-define=APP_VERSION=x.y.z`).
 /// For PR/local builds, we fall back to a dummy version.
@@ -1120,7 +1123,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             ? AppLocalizations.of(context)!.noProjectsFoundInRoots
             : AppLocalizations.of(
                 context,
-              )!.scanComplete(scanType, foundCount, foundCount == 1 ? '' : 's');
+              )!.scanComplete(scanType, foundCount);
         ScaffoldMessenger.of(
           context,
         ).showAppSnackBar(SnackBar(content: Text(msg)));
@@ -1136,7 +1139,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               content: Text(
                 l10n.scanFailuresSnackbar(
                   allFailures.length,
-                  allFailures.length == 1 ? '' : 's',
                 ),
               ),
               action: SnackBarAction(
@@ -1384,7 +1386,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             content: Text(
               l10n.projectsHidden(
                 selectedProjectIds.length,
-                selectedProjectIds.length == 1 ? '' : 's',
               ),
             ),
             action: allowUndo
@@ -1478,7 +1479,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             content: Text(
               l10n.projectsUnhidden(
                 selectedProjectIds.length,
-                selectedProjectIds.length == 1 ? '' : 's',
               ),
             ),
             action: allowUndo
@@ -1549,7 +1549,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) {
           final idsToDelete = alsoDeleteReleaseTracked ? missingIds : freeIds;
-          final plural = idsToDelete.length == 1 ? '' : 's';
           return AlertDialog(
             title: Text(l10n.deleteMissingProjectsTitle),
             content: Column(
@@ -1557,7 +1556,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.deleteMissingProjectsConfirm(idsToDelete.length, plural),
+                  l10n.deleteMissingProjectsConfirm(idsToDelete.length),
                 ),
                 if (releaseTrackedIds.isNotEmpty) ...[
                   const SizedBox(height: 12),
@@ -1569,7 +1568,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     title: Text(
                       l10n.deleteMissingProjectsAlsoDeleteReleaseTracked(
                         releaseTrackedIds.length,
-                        releaseTrackedIds.length == 1 ? '' : 's',
                       ),
                     ),
                     controlAffinity: ListTileControlAffinity.leading,
@@ -1620,11 +1618,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       ref.invalidate(allProjectsStreamProvider);
       ref.invalidate(recentlyDeletedProvider);
       if (mounted) {
-        final plural = idsToDelete.length == 1 ? '' : 's';
         ScaffoldMessenger.of(context).showAppSnackBar(
           SnackBar(
             content: Text(
-              l10n.missingProjectsDeleted(idsToDelete.length, plural),
+              l10n.missingProjectsDeleted(idsToDelete.length),
             ),
           ),
         );
@@ -4852,7 +4849,6 @@ class _PlutoProjectsTableWithSelectionState
               content: Text(
                 AppLocalizations.of(context)!.statusChangedForProjects(
                   successCount,
-                  successCount == 1 ? '' : 's',
                   statusText,
                 ),
               ),
@@ -4866,9 +4862,7 @@ class _PlutoProjectsTableWithSelectionState
                   context,
                 )!.statusChangedForProjectsWithErrors(
                   successCount,
-                  successCount == 1 ? '' : 's',
                   failCount,
-                  failCount == 1 ? '' : 's',
                   statusText,
                 ),
               ),
@@ -5523,7 +5517,6 @@ class _PlutoProjectsTableWithSelectionState
                 Text(
                   AppLocalizations.of(context)!.projectsSelected(
                     _selectedProjectIds.length,
-                    _selectedProjectIds.length == 1 ? '' : 's',
                   ),
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -5695,15 +5688,11 @@ class _PlutoProjectsTableWithSelectionState
                                       ref.invalidate(allProjectsStreamProvider);
 
                                       if (mounted) {
-                                        final plural = successCount == 1
-                                            ? ''
-                                            : 's';
                                         final failures = failCount > 0
                                             ? AppLocalizations.of(
                                                 context,
                                               )!.extractionFailures(
                                                 failCount,
-                                                failCount == 1 ? '' : 's',
                                               )
                                             : '';
                                         final message =
@@ -5711,7 +5700,6 @@ class _PlutoProjectsTableWithSelectionState
                                               context,
                                             )!.metadataExtractedForProjects(
                                               successCount,
-                                              plural,
                                               failures,
                                             );
                                         ScaffoldMessenger.of(
@@ -6908,7 +6896,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
       row.cells['key']?.value = updated.musicalKey ?? '';
       row.cells['tags']?.value = updated.tags.join(', ');
       row.cells['lastModified']?.value = updated.lastModifiedAt;
-      row.cells['deadline']?.value = updated.deadlineStatus ?? '';
+      row.cells['deadline']?.value = deadlineSortValue(updated);
       for (final f in _tableCustomFields) {
         row.cells[customFieldColumnField(f.id)]?.value =
             customFieldValue(updated, f);
@@ -7742,7 +7730,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                 ),
               ],
               if (isNotesMatch)
-                Tooltip(
+                StandaloneTooltip(
                   message: AppLocalizations.of(context)!.matchedInDescription,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 6),
@@ -7754,7 +7742,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   ),
                 ),
               if (isProjectNotesMatch)
-                Tooltip(
+                StandaloneTooltip(
                   message: AppLocalizations.of(
                     context,
                   )!.matchedInProjectNotes,
@@ -7773,7 +7761,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
               // distinguishes the two archived states, since one is still
               // openable in the DAW and the other is not.
               if (project.isArchived && !MobileUtils.isMobile())
-                Tooltip(
+                StandaloneTooltip(
                   message: fileExists
                       ? AppLocalizations.of(context)!.archivedWithLocalCopy
                       : AppLocalizations.of(context)!.archivedAwayTooltip,
@@ -7795,7 +7783,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
               if (!fileExists &&
                   project.isMissingFileCandidate &&
                   !MobileUtils.isMobile())
-                Tooltip(
+                StandaloneTooltip(
                   message: AppLocalizations.of(
                     context,
                   )!.sourceFileNotFoundOnThisMachine,
@@ -8893,6 +8881,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
   bool _isGeneratingMono = false;
   String? _monoFilePath;
   AudioFileInfo? _fileInfo;
+  bool _fileInfoLoading = true;
   String? _autoDetectedPath;
 
   String? get _effectivePreviewPath =>
@@ -9005,9 +8994,17 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
   void _startBackgroundPrep() {
     if (!_hasAudioFile()) return;
     final filePath = _effectivePreviewPath!;
-    AudioAnalysisService.getFileInfo(filePath).then((info) {
-      if (mounted && info != null) setState(() => _fileInfo = info);
-    });
+    _fileInfo = AudioAnalysisService.knownFileInfo(filePath);
+    _fileInfoLoading = _fileInfo == null;
+    if (_fileInfoLoading) {
+      AudioAnalysisService.getFileInfo(filePath).then((info) {
+        if (!mounted) return;
+        setState(() {
+          _fileInfo = info;
+          _fileInfoLoading = false;
+        });
+      });
+    }
     if (_supportsMonoMix()) _prepareMonoFile(filePath);
   }
 
@@ -9222,16 +9219,6 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
     await _audioPlayer.seek(clamped);
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = duration.inHours;
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return hours > 0
-        ? '${twoDigits(hours)}:$minutes:$seconds'
-        : '$minutes:$seconds';
-  }
-
   static final _uuidPreviewRe = RegExp(
     r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}_preview\.',
     caseSensitive: false,
@@ -9325,17 +9312,19 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                 ).colorScheme.primary.withValues(alpha: 0.12),
                 trackHeight: 4.0,
               ),
-              child: Slider(
-                value: _duration.inMilliseconds > 0
-                    ? _position.inMilliseconds.toDouble()
-                    : 0.0,
-                max: _duration.inMilliseconds > 0
-                    ? _duration.inMilliseconds.toDouble()
-                    : 100.0,
-                onChanged: (value) async {
-                  final position = Duration(milliseconds: value.toInt());
-                  await _audioPlayer.seek(position);
-                },
+              child: SliderOverlay(
+                child: Slider(
+                  value: _duration.inMilliseconds > 0
+                      ? _position.inMilliseconds.toDouble()
+                      : 0.0,
+                  max: _duration.inMilliseconds > 0
+                      ? _duration.inMilliseconds.toDouble()
+                      : 100.0,
+                  onChanged: (value) async {
+                    final position = Duration(milliseconds: value.toInt());
+                    await _audioPlayer.seek(position);
+                  },
+                ),
               ),
             ),
             Padding(
@@ -9344,15 +9333,19 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    _formatDuration(_position),
+                    formatPlaybackTimestamp(_position),
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    _formatDuration(_duration),
+                  PlayerReadout(
+                    text: _duration > Duration.zero
+                        ? formatPlaybackTimestamp(_duration)
+                        : null,
+                    templates: [formatPlaybackTimestamp(_duration)],
+                    loadingLabel: AppLocalizations.of(context)!.loading,
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 14,
@@ -9376,15 +9369,17 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
               color: Theme.of(context).textTheme.bodySmall?.color,
             ),
             Expanded(
-              child: Slider(
-                value: _volume,
-                min: 0.0,
-                max: 1.0,
-                onChanged: _setVolume,
+              child: SliderOverlay(
+                child: Slider(
+                  value: _volume,
+                  min: 0.0,
+                  max: 1.0,
+                  onChanged: _setVolume,
+                ),
               ),
             ),
             const SizedBox(width: 8),
-            Tooltip(
+            StandaloneTooltip(
               message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -9479,31 +9474,37 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                       ).colorScheme.primary.withValues(alpha: 0.12),
                       trackHeight: 3.0,
                     ),
-                    child: Slider(
-                      value: _duration.inMilliseconds > 0
-                          ? _position.inMilliseconds.toDouble()
-                          : 0.0,
-                      max: _duration.inMilliseconds > 0
-                          ? _duration.inMilliseconds.toDouble()
-                          : 100.0,
-                      onChanged: (value) async {
-                        final position = Duration(milliseconds: value.toInt());
-                        await _audioPlayer.seek(position);
-                      },
+                    child: SliderOverlay(
+                      child: Slider(
+                        value: _duration.inMilliseconds > 0
+                            ? _position.inMilliseconds.toDouble()
+                            : 0.0,
+                        max: _duration.inMilliseconds > 0
+                            ? _duration.inMilliseconds.toDouble()
+                            : 100.0,
+                        onChanged: (value) async {
+                          final position = Duration(milliseconds: value.toInt());
+                          await _audioPlayer.seek(position);
+                        },
+                      ),
                     ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _formatDuration(_position),
+                        formatPlaybackTimestamp(_position),
                         style: TextStyle(
                           color: Theme.of(context).textTheme.bodySmall?.color,
                           fontSize: 12,
                         ),
                       ),
-                      Text(
-                        _formatDuration(_duration),
+                      PlayerReadout(
+                        text: _duration > Duration.zero
+                            ? formatPlaybackTimestamp(_duration)
+                            : null,
+                        templates: [formatPlaybackTimestamp(_duration)],
+                        loadingLabel: AppLocalizations.of(context)!.loading,
                         style: TextStyle(
                           color: Theme.of(context).textTheme.bodySmall?.color,
                           fontSize: 12,
@@ -9525,11 +9526,13 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
             ),
             SizedBox(
               width: 120,
-              child: Slider(
-                value: _volume,
-                min: 0.0,
-                max: 1.0,
-                onChanged: _setVolume,
+              child: SliderOverlay(
+                child: Slider(
+                  value: _volume,
+                  min: 0.0,
+                  max: 1.0,
+                  onChanged: _setVolume,
+                ),
               ),
             ),
           ],
@@ -9537,7 +9540,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
         const SizedBox(height: 4),
         Row(
           children: [
-            Tooltip(
+            StandaloneTooltip(
               message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -9607,8 +9610,15 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
                   );
                 }
                 parts.add(formatLabel);
-                return Text(
-                  parts.join(' · '),
+                return PlayerReadout(
+                  text: _fileInfoLoading ? null : parts.join(' · '),
+                  templates: const [
+                    '44.1 kHz · 24-bit · Stereo · AIFF',
+                    '44.1 kHz · 320 kbps · Stereo · M4A',
+                    '192 kHz · 32-bit · Stereo · FLAC',
+                  ],
+                  loadingLabel: AppLocalizations.of(context)!.loading,
+                  alignment: AlignmentDirectional.centerStart,
                   style: TextStyle(fontSize: 11, color: dim),
                 );
               },
@@ -10071,11 +10081,11 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   bool _isGeneratingMono = false;
   String? _monoFilePath;
   AudioFileInfo? _fileInfo;
+  bool _fileInfoLoading = true;
   WaveformPeaks? _peaks;
-  double _barHeight = 200.0;
+  // The saved height from the first frame — see PlayerBarHeightStore.
+  double _barHeight = PlayerBarHeightStore.current;
   final FocusNode _focusNode = FocusNode();
-
-  static const _kBarHeightKey = 'player_bar_height';
 
   String get _activePath => _isMono && _monoFilePath != null
       ? _monoFilePath!
@@ -10130,19 +10140,6 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     }.contains(ext);
   }
 
-  Future<void> _loadBarHeight() async {
-    final box = await Hive.openBox<String>('app_settings');
-    final saved = box.get(_kBarHeightKey);
-    if (saved != null && mounted) {
-      setState(() => _barHeight = double.tryParse(saved) ?? 200.0);
-    }
-  }
-
-  Future<void> _saveBarHeight() async {
-    final box = await Hive.openBox<String>('app_settings');
-    await box.put(_kBarHeightKey, _barHeight.toString());
-  }
-
   bool _handleKeyboard(KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) return false;
     // Never steal keys from text inputs.
@@ -10187,7 +10184,6 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     _isPlayingNotifier = ref.read(desktopIsPlayingProvider.notifier);
     _positionNotifier = ref.read(desktopPlayerPositionProvider.notifier);
     _durationNotifier = ref.read(desktopPlayerDurationProvider.notifier);
-    _loadBarHeight();
     HardwareKeyboard.instance.addHandler(_handleKeyboard);
     _player = AudioPlayer();
     _player.onPlayerStateChanged.listen((s) {
@@ -10306,10 +10302,20 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
           setState(() => _peaks = peaks);
         });
 
-    // File info
-    AudioAnalysisService.getFileInfo(filePath).then((info) {
-      if (mounted && info != null) setState(() => _fileInfo = info);
-    });
+    // File info — at once when this file's was read before, else read now
+    // while its slot holds a placeholder.
+    _fileInfo = AudioAnalysisService.knownFileInfo(filePath);
+    _fileInfoLoading = _fileInfo == null;
+    if (_fileInfoLoading) {
+      AudioAnalysisService.getFileInfo(filePath).then((info) {
+        // A switch to another track since must not get this one's details.
+        if (!mounted || widget.request.resolvedPath != filePath) return;
+        setState(() {
+          _fileInfo = info;
+          _fileInfoLoading = false;
+        });
+      });
+    }
 
     // Pre-generate mono in background
     if (_supportsMonoMix()) _prepareMonoFile(filePath);
@@ -10416,14 +10422,6 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     await _player.seek(clamped);
     setState(() => _position = clamped);
     _positionNotifier.set(clamped);
-  }
-
-  String _fmt(Duration d) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    final h = d.inHours;
-    final m = two(d.inMinutes.remainder(60));
-    final s = two(d.inSeconds.remainder(60));
-    return h > 0 ? '${two(h)}:$m:$s' : '$m:$s';
   }
 
   Future<void> _addTodoAtTimestamp() async {
@@ -10601,7 +10599,8 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                         );
                       });
                     },
-                    onVerticalDragEnd: (_) => _saveBarHeight(),
+                    onVerticalDragEnd: (_) =>
+                        unawaited(PlayerBarHeightStore.save(_barHeight)),
                     child: SizedBox(
                       height: 8,
                       child: Center(
@@ -10707,11 +10706,13 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                       ),
                       SizedBox(
                         width: 135,
-                        child: Slider(
-                          value: _volume,
-                          min: 0,
-                          max: 1,
-                          onChanged: _setVolume,
+                        child: SliderOverlay(
+                          child: Slider(
+                            value: _volume,
+                            min: 0,
+                            max: 1,
+                            onChanged: _setVolume,
+                          ),
                         ),
                       ),
                       // Centered track name + filename
@@ -10756,19 +10757,23 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                           ),
                         ),
                       ),
-                      // Time display (fixed-width to prevent jitter)
-                      SizedBox(
-                        width: 92,
-                        child: Text(
-                          '${_fmt(_position)} / ${_fmt(_duration)}',
-                          style: theme.textTheme.bodySmall,
-                          textAlign: TextAlign.right,
+                      // Time display: one width whatever the file's length
+                      // (tabular figures, room for hours), and a placeholder
+                      // until the length is known rather than 00:00 / 00:00.
+                      PlayerReadout(
+                        text: _duration > Duration.zero
+                            ? formatPlaybackProgress(_position, _duration)
+                            : null,
+                        templates: const ['00:00:00 / 00:00:00'],
+                        loadingLabel: l10n.loading,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                       const SizedBox(width: 8),
                       // Mono toggle
                       if (_supportsMonoMix())
-                        Tooltip(
+                        StandaloneTooltip(
                           message: '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -10804,9 +10809,17 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                           ),
                         ),
                       const SizedBox(width: 8),
-                      // File info
-                      Text(
-                        infoParts.join(' · '),
+                      // File info, in a slot as wide as the longest it can
+                      // read, so its arrival doesn't move the track name.
+                      PlayerReadout(
+                        text: _fileInfoLoading ? null : infoParts.join(' · '),
+                        templates: const [
+                          '44.1kHz · 24-bit · Stereo · AIFF',
+                          '44.1kHz · 320kbps · Stereo · M4A',
+                          '192kHz · 32-bit · Stereo · FLAC',
+                        ],
+                        loadingLabel: l10n.loading,
+                        alignment: AlignmentDirectional.centerStart,
                         style: TextStyle(
                           fontSize: 11,
                           color: cs.onSurface.withValues(alpha: 0.5),
@@ -10866,7 +10879,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
                         iconSize: 18,
                         padding: iconPad,
                         constraints: iconConstraints,
-                        tooltip: l10n.addTodoAtTimestamp(_fmt(_position)),
+                        tooltip: l10n.addTodoAtTimestamp(formatPlaybackTimestamp(_position)),
                         onPressed: _addTodoAtTimestamp,
                       ),
                       // Open Folder
@@ -11136,8 +11149,15 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
 
     if (widget.projects.isEmpty) {
       final allProjectsAsync = ref.watch(allProjectsStreamProvider);
-      final totalProjects = allProjectsAsync.value?.length ?? 0;
-      final hasProjectsButFiltered = totalProjects > 0;
+      final view = emptyProjectsView(
+        // An error is an answer too: never spin forever over one.
+        libraryLoaded: allProjectsAsync.hasValue || allProjectsAsync.hasError,
+        totalProjects: allProjectsAsync.value?.length ?? 0,
+      );
+      if (view == EmptyProjectsView.loading) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final hasProjectsButFiltered = view == EmptyProjectsView.filteredOut;
 
       return Center(
         child: Padding(
@@ -11334,7 +11354,7 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                           ),
                         ],
                         if (isNotesMatch)
-                          Tooltip(
+                          StandaloneTooltip(
                             message: AppLocalizations.of(
                               context,
                             )!.matchedInDescription,
@@ -11348,7 +11368,7 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                             ),
                           ),
                         if (isProjectNotesMatch)
-                          Tooltip(
+                          StandaloneTooltip(
                             message: AppLocalizations.of(
                               context,
                             )!.matchedInProjectNotes,
@@ -11579,7 +11599,6 @@ class _MobileProjectsListState extends ConsumerState<_MobileProjectsList> {
                 Text(
                   l10n.projectsSelected(
                     _selectedProjectIds.length,
-                    _selectedProjectIds.length == 1 ? '' : 's',
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -12427,7 +12446,7 @@ class _ActiveProjectChipState extends ConsumerState<_ActiveProjectChip>
             mainAxisSize: MainAxisSize.min,
             children: [
               // Line 1 — project name (tooltip shows full name when truncated)
-              Tooltip(
+              StandaloneTooltip(
                 message: project.displayName,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 400),
@@ -12675,7 +12694,7 @@ class _PauseSessionButtonState extends State<_PauseSessionButton> {
         ? Icons.play_arrow_rounded
         : Icons.pause_rounded;
 
-    return Tooltip(
+    return StandaloneTooltip(
       message: widget.isPaused ? l10n.resume : l10n.pause,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
@@ -12729,7 +12748,7 @@ class _StopSessionButtonState extends State<_StopSessionButton> {
     const red = Color(0xFFEF5350);
     final color = _hovered ? red : Colors.white54;
 
-    return Tooltip(
+    return StandaloneTooltip(
       message: l10n.stop,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,

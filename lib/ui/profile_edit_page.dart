@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
+import 'dart:isolate';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'widgets/desktop_title_bar.dart';
-import 'package:archive/archive.dart';
 import '../models/profile.dart';
 import '../providers/providers.dart';
+import '../services/zip_export_service.dart';
 import '../utils/app_paths.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/file_launcher.dart';
@@ -339,60 +339,11 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
     );
 
     try {
-      final zipFile = File(savePath);
-      if (!await zipFile.parent.exists()) {
-        await zipFile.parent.create(recursive: true);
-      }
-      if (await zipFile.exists()) {
-        await zipFile.delete();
-      }
+      // Each file once — two loops used to add every file twice — streamed
+      // on an isolate of its own.
+      final entries = profileZipEntries(filesToDownload, bio: profile.bio);
+      await Isolate.run(() => writeZipExport(savePath, entries));
 
-      final archive = Archive();
-
-      for (final entry in filesToDownload) {
-        final file = File(entry.value);
-        if (await file.exists()) {
-          final fileData = await file.readAsBytes();
-          archive.addFile(
-            ArchiveFile(
-              entry.key,
-              fileData.length,
-              fileData,
-            ),
-          );
-        }
-      }
-
-      // Handle biography as special case
-      for (final entry in filesToDownload) {
-        if (entry.value == 'biography.txt') {
-          final bioText = profile.bio ?? '';
-          final bioBytes = utf8.encode(bioText);
-          archive.addFile(
-            ArchiveFile(
-              'biography.txt',
-              bioBytes.length,
-              bioBytes,
-            ),
-          );
-        } else {
-          final file = File(entry.value);
-          if (await file.exists()) {
-            final fileData = await file.readAsBytes();
-            archive.addFile(
-              ArchiveFile(
-                entry.key,
-                fileData.length,
-                fileData,
-              ),
-            );
-          }
-        }
-      }
-
-      final zipData = ZipEncoder().encode(archive);
-      await zipFile.writeAsBytes(zipData);
-    
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showAppSnackBar(
@@ -683,7 +634,7 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
                 onPressed: selectedFiles.isEmpty
                     ? null
                     : () => Navigator.pop(context, selectedFiles),
-                child: Text(AppLocalizations.of(context)!.downloadNFiles(selectedFiles.length, selectedFiles.length == 1 ? '' : 's')),
+                child: Text(AppLocalizations.of(context)!.downloadNFiles(selectedFiles.length)),
               ),
             ],
           );
@@ -734,54 +685,13 @@ class _ProfileEditPageState extends ConsumerState<ProfileEditPage> {
     );
 
     try {
-      final zipFile = File(savePath);
-      if (!await zipFile.parent.exists()) {
-        await zipFile.parent.create(recursive: true);
-      }
-      if (await zipFile.exists()) {
-        await zipFile.delete();
-      }
+      final entries = profileZipEntries(selectedFiles.entries, bio: profile.bio);
+      await Isolate.run(() => writeZipExport(savePath, entries));
 
-      final archive = Archive();
-
-      for (final entry in selectedFiles.entries) {
-        final displayName = entry.key;
-        final filePath = entry.value;
-
-        // Handle biography as special case
-        if (filePath == 'biography.txt') {
-          final bioText = profile.bio ?? '';
-          final bioBytes = utf8.encode(bioText);
-          archive.addFile(
-            ArchiveFile(
-              'biography.txt',
-              bioBytes.length,
-              bioBytes,
-            ),
-          );
-        } else {
-          // Handle regular files
-          final file = File(filePath);
-          if (await file.exists()) {
-            final fileData = await file.readAsBytes();
-            archive.addFile(
-              ArchiveFile(
-                displayName,
-                fileData.length,
-                fileData,
-              ),
-            );
-          }
-        }
-      }
-
-      final zipData = ZipEncoder().encode(archive);
-      await zipFile.writeAsBytes(zipData);
-    
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.nFilesSavedTo(selectedFiles.length, selectedFiles.length == 1 ? '' : 's', path.basename(savePath)))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.nFilesSavedTo(selectedFiles.length, path.basename(savePath)))),
         );
       }
     } catch (e) {

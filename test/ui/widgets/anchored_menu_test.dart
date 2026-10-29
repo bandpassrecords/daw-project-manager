@@ -2,7 +2,10 @@ import 'package:daw_project_manager/ui/widgets/anchored_menu.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../helpers/semantics_orphans.dart';
+
 void main() {
+  final binding = SemanticsOrphanBinding.ensureInitialized();
   late BuildContext host;
   Future<String?>? pending;
 
@@ -72,4 +75,21 @@ void main() {
     expect(await pending, isNull);
     expect(find.text('One'), findsNothing);
   });
+
+  // Its anchor once had no size, so it formed no semantics node and the menu
+  // went to the engine with no parent: Windows' accessibility bridge rejected
+  // every update while a project's right-click menu was open.
+  testWidgets('the open menu hangs from a node, as Windows needs',
+      (tester) async {
+    binding.resetSemanticsRecord();
+    final handle = tester.ensureSemantics();
+    await pumpHost(tester);
+    open();
+    await tester.pumpAndSettle();
+
+    expect(find.text('One'), findsOneWidget);
+    expect(binding.orphans, isEmpty);
+    handle.dispose();
+  });
 }
+

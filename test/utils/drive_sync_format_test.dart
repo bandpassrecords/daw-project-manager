@@ -248,6 +248,38 @@ void main() {
       );
     });
 
+    test('a sync only because the app started merges only something new', () {
+      // Every launch ran the whole sync, whatever Drive held.
+      expect(
+        AutoBackupInterval.off.syncsOnlyForLaunch(
+          lastSync: now,
+          now: now,
+          syncOnStartup: true,
+          atLaunch: true,
+        ),
+        isTrue,
+      );
+      expect(
+        AutoBackupInterval.hourly.syncsOnlyForLaunch(
+          lastSync: now.subtract(const Duration(hours: 2)),
+          now: now,
+          syncOnStartup: true,
+          atLaunch: true,
+        ),
+        isFalse,
+        reason: 'a due interval merges as Sync now does',
+      );
+      expect(
+        AutoBackupInterval.off.syncsOnlyForLaunch(
+          lastSync: now,
+          now: now,
+          syncOnStartup: true,
+        ),
+        isFalse,
+        reason: 'only at launch',
+      );
+    });
+
     test('startup sync is on unless turned off', () {
       expect(SyncOnStartupNotifier.fromStored(null), isTrue);
       expect(SyncOnStartupNotifier.fromStored('true'), isTrue);

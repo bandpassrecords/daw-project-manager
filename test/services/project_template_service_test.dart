@@ -385,12 +385,9 @@ void main() {
         ).writeAsStringSync('wav data');
 
         final destination = p.join(destinationsDir.path, 'My New Track');
-        // Simulate a filesystem conflict partway through the copy: a plain
-        // file sitting exactly where the recursive copy needs to create a
-        // "Samples" subdirectory. This forces instantiate() to fail after
-        // it has already copied "Song Template.als" into the destination.
-        await Directory(destination).create(recursive: true);
-        File(p.join(destination, 'Samples')).writeAsStringSync('conflict');
+        // A copy that fails once files are already in the destination.
+        debugAfterTemplateCopy = (_) => throw const FileSystemException('disk full');
+        addTearDown(() => debugAfterTemplateCopy = null);
 
         await expectLater(
           ProjectTemplateService.instantiate(
@@ -401,13 +398,36 @@ void main() {
           throwsA(isA<FileSystemException>()),
         );
 
-        // The whole destination folder — including the file already copied
-        // and the seeded conflict — must be gone. Left behind, it would
-        // collide with a same-named retry ("folder already exists") with no
-        // way for the user to tell it apart from a real project.
+        // The whole destination folder — including what was already copied —
+        // must be gone. Left behind, it would collide with a same-named retry
+        // ("folder already exists") with no way for the user to tell it apart
+        // from a real project.
         expect(await Directory(destination).exists(), isFalse);
       },
     );
+
+    test('refuses a destination that already exists, and leaves it as it was',
+        () async {
+      // The failure cleanup deletes the destination recursively. It used to
+      // trust the dialog to have checked the folder was new — when the name
+      // was typed — so a folder appearing by the time the copy ran (a cloud
+      // sync, a second click on Finish) was deleted with whatever was in it.
+      File(p.join(sourceDir.path, 'Song Template.als')).writeAsStringSync('als data');
+      final destination = Directory(p.join(destinationsDir.path, 'My New Track'));
+      await destination.create(recursive: true);
+      final mine = File(p.join(destination.path, 'vocals take 3.wav'))..writeAsStringSync('mine');
+
+      await expectLater(
+        ProjectTemplateService.instantiate(
+          template: makeTemplate(),
+          destinationFolderPath: destination.path,
+          newProjectName: 'My New Track',
+        ),
+        throwsStateError,
+      );
+
+      expect(await mine.readAsString(), 'mine');
+    });
   });
 
   group('ProjectTemplateService.discoverTemplateCandidates', () {

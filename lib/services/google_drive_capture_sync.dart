@@ -122,7 +122,9 @@ extension _CaptureSync on GoogleDriveSyncService {
       if (!captureNeedsDownload(local: local, localFileExists: localExists, remote: entry)) continue;
 
       // The name alone, never a path a backup could steer elsewhere.
-      final target = path.join(pluginDir, projectId, path.basename(entry.name));
+      final projectDir = safeFileIn(pluginDir, projectId);
+      final target = projectDir == null ? null : safeFileIn(projectDir, path.basename(entry.name));
+      if (target == null) continue;
       try {
         await _downloadCaptureFile(entry, target);
       } catch (e) {
@@ -155,28 +157,8 @@ extension _CaptureSync on GoogleDriveSyncService {
   /// Downloads [entry]'s file to [target], whole or not at all, and checks
   /// it against the hash the uploader recorded.
   Future<void> _downloadCaptureFile(CaptureEntry entry, String target) async {
-    final file = File(target);
-    await file.parent.create(recursive: true);
-    final partial = File('$target.part');
-    await _withRetry(() async {
-      final media = (await _driveApi!.files.get(
-        entry.fileId,
-        downloadOptions: drive.DownloadOptions.fullMedia,
-      )) as drive.Media;
-      final sink = partial.openWrite();
-      try {
-        await for (final chunk in media.stream) {
-          sink.add(chunk);
-        }
-      } finally {
-        await sink.close();
-      }
-    });
-    if (await _calculateFileHash(partial.path) != entry.hash) {
-      await partial.delete();
-      throw StateError('downloaded capture does not match its hash');
+    if (await _downloadVerified(entry.fileId, target, entry.hash) == null) {
+      throw StateError('capture download failed or does not match its hash');
     }
-    if (await file.exists()) await file.delete();
-    await partial.rename(target);
   }
 }

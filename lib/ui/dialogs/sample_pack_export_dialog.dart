@@ -4,6 +4,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../services/sample_pack/sample_classifier.dart';
 import '../../services/sample_pack/sample_naming.dart';
 import '../../services/sample_pack/sample_pack_exporter.dart';
+import '../widgets/semantics_safe.dart';
 
 /// A profile as the export dialog lists it.
 class SamplePackProfileChoice {
@@ -399,7 +400,7 @@ class _SamplePackExportDialogState extends State<SamplePackExportDialog> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: Tooltip(
+              child: StandaloneTooltip(
                 message: l10n.samplePackLibraryFoldersHelp,
                 child: Text(l10n.samplePackLibraryFolders,
                     style: theme.textTheme.titleSmall),

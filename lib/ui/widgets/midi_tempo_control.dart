@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'semantics_safe.dart';
 
 /// Tempos the preview accepts. Below 20 a bar lasts longer than most
 /// previews; above 400 notes smear into each other.
@@ -144,7 +145,7 @@ class _MidiTempoControlState extends State<MidiTempoControl> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Tooltip(
+        StandaloneTooltip(
           message: labels.tooltip,
           child: Icon(
             Icons.speed,

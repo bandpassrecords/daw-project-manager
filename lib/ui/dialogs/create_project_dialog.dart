@@ -21,6 +21,7 @@ import '../../utils/file_launcher.dart';
 import '../project_templates_page.dart';
 import '../session_actions.dart';
 import '../app_snack_bar.dart';
+import '../widgets/semantics_safe.dart';
 
 enum _NamingScheme { artistTrack, collab, dateTrack, custom, remix }
 
@@ -757,7 +758,7 @@ class _CreateProjectDialogState extends ConsumerState<CreateProjectDialog> {
                                           : null,
                                     ),
                               ),
-                              Tooltip(
+                              StandaloneTooltip(
                                 message: root.path,
                                 child: Text(
                                   root.path,
@@ -1386,7 +1387,7 @@ class _CreateProjectDialogState extends ConsumerState<CreateProjectDialog> {
                                             : null,
                                       ),
                                 ),
-                                Tooltip(
+                                StandaloneTooltip(
                                   message: daw.executablePath,
                                   child: Text(
                                     daw.executablePath,
@@ -1609,7 +1610,7 @@ class _FolderPreview extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Tooltip(
+                child: StandaloneTooltip(
                   message: displayPath,
                   child: Text(
                     displayPath,

@@ -284,25 +284,19 @@
       }
     }
   },
-  "projectsHidden": "{count} проект{plural} скрыт{plural}.",
+  "projectsHidden": "{count, plural, one{{count} проект скрыт.} few{{count} проекта скрыты.} many{{count} проектов скрыто.} other{{count} проекта скрыты.}}",
   "@projectsHidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "projectsUnhidden": "{count} проект{plural} показан{plural}.",
+  "projectsUnhidden": "{count, plural, one{{count} проект показан.} few{{count} проекта показаны.} many{{count} проектов показано.} other{{count} проекта показаны.}}",
   "@projectsUnhidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -324,37 +318,28 @@
   },
   "deleteMissingProjects": "Удалить отсутствующие",
   "deleteMissingProjectsTitle": "Удалить отсутствующие проекты?",
-  "deleteMissingProjectsConfirm": "{count} проект{plural}, файл которых не найден на этом компьютере, попадут в «Недавно удалённые» (Настройки > Папки проектов), где их можно восстановить вместе с заметками, сроками и историей сессий в течение 30 дней.",
+  "deleteMissingProjectsConfirm": "{count, plural, one{{count} проект, файл которого не найден на этом компьютере, попадёт в «Недавно удалённые» (Настройки > Папки проектов), где его можно восстановить вместе с заметками, сроками и историей сессий в течение 30 дней.} few{{count} проекта, файлы которых не найдены на этом компьютере, попадут в «Недавно удалённые» (Настройки > Папки проектов), где их можно восстановить вместе с заметками, сроками и историей сессий в течение 30 дней.} many{{count} проектов, файлы которых не найдены на этом компьютере, попадут в «Недавно удалённые» (Настройки > Папки проектов), где их можно восстановить вместе с заметками, сроками и историей сессий в течение 30 дней.} other{{count} проекта, файлы которых не найдены на этом компьютере, попадут в «Недавно удалённые» (Настройки > Папки проектов), где их можно восстановить вместе с заметками, сроками и историей сессий в течение 30 дней.}}",
   "@deleteMissingProjectsConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteMissingProjectsConfirmButton": "Удалить",
-  "missingProjectsDeleted": "Удалено {count} отсутствующих проект{plural}.",
+  "missingProjectsDeleted": "{count, plural, one{Удалён {count} отсутствующий проект.} few{Удалено {count} отсутствующих проекта.} many{Удалено {count} отсутствующих проектов.} other{Удалено {count} отсутствующих проекта.}}",
   "@missingProjectsDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "deleteMissingProjectsAlsoDeleteReleaseTracked": "Также удалить {count} проект{plural}, входящих в релиз (также удаляет их из этого релиза)",
+  "deleteMissingProjectsAlsoDeleteReleaseTracked": "{count, plural, one{Также удалить {count} проект, входящий в релиз (также удаляет его из этого релиза)} few{Также удалить {count} проекта, входящих в релиз (также удаляет их из этого релиза)} many{Также удалить {count} проектов, входящих в релиз (также удаляет их из этого релиза)} other{Также удалить {count} проекта, входящих в релиз (также удаляет их из этого релиза)}}",
   "@deleteMissingProjectsAlsoDeleteReleaseTracked": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -397,21 +382,18 @@
   "enterReleaseTitle": "Введите Название Релиза",
   "releaseTitle": "Название Релиза",
   "enterReleaseTitleHint": "Введите название релиза",
-  "metadataExtractedForProjects": "Метаданные извлечены для {count} проект{plural}. {failures}",
+  "metadataExtractedForProjects": "{count, plural, one{Метаданные извлечены для {count} проекта.} few{Метаданные извлечены для {count} проектов.} many{Метаданные извлечены для {count} проектов.} other{Метаданные извлечены для {count} проектов.}} {failures}",
   "@metadataExtractedForProjects": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "failures": {
         "type": "String"
       }
     }
   },
-  "extractionFailures": "{count} не удалось{plural}.",
+  "extractionFailures": "Не удалось: {count}.",
   "@extractionFailures": {
     "placeholders": {
       "count": {
@@ -452,7 +434,7 @@
       }
     }
   },
-  "scanComplete": "{type} завершено: {count} проект{plural} добавлен{plural}/обновлен{plural}.",
+  "scanComplete": "{count, plural, one{{type} завершено: {count} проект добавлен/обновлён.} few{{type} завершено: {count} проекта добавлено/обновлено.} many{{type} завершено: {count} проектов добавлено/обновлено.} other{{type} завершено: {count} проекта добавлено/обновлено.}}",
   "@scanComplete": {
     "placeholders": {
       "type": {
@@ -460,21 +442,15 @@
       },
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "scanCancelled": "Сканирование отменено.",
-  "scanFailuresSnackbar": "{count} проект{plural} не удалось загрузить.",
+  "scanFailuresSnackbar": "{count, plural, one{Не удалось загрузить {count} проект.} few{Не удалось загрузить {count} проекта.} many{Не удалось загрузить {count} проектов.} other{Не удалось загрузить {count} проекта.}}",
   "@scanFailuresSnackbar": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -484,14 +460,11 @@
   "@scanFailuresDialogTitle": {},
   "scanFailuresDialogIntro": "Эти файлы не удалось прочитать во время сканирования (возможно, они были удалены, перемещены или заблокированы другой программой):",
   "@scanFailuresDialogIntro": {},
-  "projectsSelected": "{count} проект{plural} выбран{plural}",
+  "projectsSelected": "{count, plural, one{Выбран {count} проект} few{Выбрано {count} проекта} many{Выбрано {count} проектов} other{Выбрано {count} проекта}}",
   "@projectsSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -531,17 +504,14 @@
       }
     }
   },
-  "releasesSelected": "Выбрано релизов: {count}{plural}",
+  "releasesSelected": "Выбрано релизов: {count}",
   "deleteSelectedReleases": "Удалить выбранное",
-  "deleteSelectedReleasesConfirm": "Удалить выбранные релизы ({count}{plural})?",
-  "releasesDeleted": "Удалено релизов: {count}{plural}",
+  "deleteSelectedReleasesConfirm": "Удалить выбранные релизы ({count})?",
+  "releasesDeleted": "Удалено релизов: {count}",
   "@releasesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -549,9 +519,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -559,9 +526,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -595,14 +559,11 @@
   },
   "addTracks": "Добавить Треки",
   "allProjectsAlreadyInRelease": "Все проекты уже в этом релизе.",
-  "addedTracksToRelease": "Добавлен{plural} {count} трек{plural} в релиз.",
+  "addedTracksToRelease": "{count, plural, one{В релиз добавлен {count} трек.} few{В релиз добавлено {count} трека.} many{В релиз добавлено {count} треков.} other{В релиз добавлено {count} трека.}}",
   "@addedTracksToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -615,14 +576,11 @@
     }
   },
   "addFiles": "Добавить Файлы",
-  "addedFilesToRelease": "Добавлен{plural} {count} файл{plural} в релиз.",
+  "addedFilesToRelease": "{count, plural, one{В релиз добавлен {count} файл.} few{В релиз добавлено {count} файла.} many{В релиз добавлено {count} файлов.} other{В релиз добавлено {count} файла.}}",
   "@addedFilesToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -841,37 +799,28 @@
       }
     }
   },
-  "templatesSelected": "Выбрано шаблонов: {count}{plural}",
+  "templatesSelected": "Выбрано шаблонов: {count}",
   "@templatesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteSelectedTemplates": "Удалить выбранное",
-  "deleteSelectedTemplatesConfirm": "Удалить выбранные шаблоны ({count}{plural})?",
+  "deleteSelectedTemplatesConfirm": "Удалить выбранные шаблоны ({count})?",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "templatesDeleted": "Удалено шаблонов: {count}{plural}",
+  "templatesDeleted": "Удалено шаблонов: {count}",
   "@templatesDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -953,36 +902,27 @@
   "projectPhaseFinished": "Завершено",
   "changeStatus": "Изменить Фазу",
   "selectNewStatus": "Выберите новую фазу:",
-  "statusChangedForProjects": "Фаза изменена на \"{status}\" для {count} проект{plural}",
+  "statusChangedForProjects": "{count, plural, one{Фаза изменена на \"{status}\" для {count} проекта} few{Фаза изменена на \"{status}\" для {count} проектов} many{Фаза изменена на \"{status}\" для {count} проектов} other{Фаза изменена на \"{status}\" для {count} проектов}}",
   "@statusChangedForProjects": {
     "description": "Сообщение об успехе при изменении статуса для нескольких проектов",
     "placeholders": {
       "count": {
         "type": "int"
       },
-      "plural": {
-        "type": "String"
-      },
       "status": {
         "type": "String"
       }
     }
   },
-  "statusChangedForProjectsWithErrors": "Фаза изменена на \"{status}\" для {successCount} проект{successPlural}, {failCount} не удалось{failPlural}",
+  "statusChangedForProjectsWithErrors": "Фаза изменена на \"{status}\" для {successCount, plural, one{{successCount} проекта} few{{successCount} проектов} many{{successCount} проектов} other{{successCount} проектов}}, не удалось: {failCount}",
   "@statusChangedForProjectsWithErrors": {
     "description": "Сообщение, когда изменение статуса частично не удалось",
     "placeholders": {
       "successCount": {
         "type": "int"
       },
-      "successPlural": {
-        "type": "String"
-      },
       "failCount": {
         "type": "int"
-      },
-      "failPlural": {
-        "type": "String"
       },
       "status": {
         "type": "String"
@@ -1282,6 +1222,10 @@
   "invalidBackupFileFormat": "Неверный формат файла резервной копии: отсутствует версия",
   "profileNameRequiredForNewProfile": "Имя профиля обязательно при создании нового профиля",
   "currentProfileRequired": "Текущий профиль обязателен для режима объединения или замены",
+  "importLaunchCommandsTitle": "Импортировать программы для «Запустить в DAW»?",
+  "importLaunchCommandsMessage": "В этой резервной копии указаны программы, которые «Запустить в DAW» будет запускать на этом компьютере. Импортируйте их, только если вы сами создали эту резервную копию.",
+  "importLaunchCommandsSkip": "Не импортировать",
+  "importLaunchCommandsImport": "Импортировать",
   "previewSong": "Превью Трека",
   "previewSongRemoved": "Превью трека удалено",
   "previewSongAdded": "Превью трека добавлено",
@@ -1743,27 +1687,21 @@
   "@additionalAssets": {
     "description": "Section header for additional assets"
   },
-  "downloadNFiles": "Скачать {count} файл{plural}",
+  "downloadNFiles": "{count, plural, one{Скачать {count} файл} few{Скачать {count} файла} many{Скачать {count} файлов} other{Скачать {count} файла}}",
   "@downloadNFiles": {
     "description": "Button label to download N files",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "nFilesSavedTo": "{count} файл{plural} сохранено в {filename}",
+  "nFilesSavedTo": "{count, plural, one{{count} файл сохранён в {filename}} few{{count} файла сохранено в {filename}} many{{count} файлов сохранено в {filename}} other{{count} файла сохранено в {filename}}}",
   "@nFilesSavedTo": {
     "description": "Success message when N files are saved",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "filename": {
         "type": "String"
@@ -3520,14 +3458,11 @@
       }
     }
   },
-  "attachmentExportSkippedMissing": "Пропущено отсутствующих файлов: {count}{plural}",
+  "attachmentExportSkippedMissing": "Пропущено отсутствующих файлов: {count}",
   "@attachmentExportSkippedMissing": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -4498,5 +4433,32 @@
   "legacyInstallMessage": "Старая копия DAW Project Manager, установленная прежним установщиком, всё ещё на компьютере. Эта копия заменяет её и теперь обновляется сама. Удаление старой копии не затрагивает вашу библиотеку.",
   "legacyInstallRemove": "Удалить",
   "legacyInstallKeep": "Оставить",
-  "legacyInstallRemoveFailed": "Не удалось запустить деинсталлятор старой копии."
+  "legacyInstallRemoveFailed": "Не удалось запустить деинсталлятор старой копии.",
+  "missingPreviewSongsTitle": "Недостающие превью треков",
+  "missingPreviewSongsSubtitle": "Превью треков текущего профиля, которые этот компьютер не находит. Проверьте их, затем скачайте, найдите или удалите каждое — ничего не изменится, пока вы не выберете.",
+  "missingPreviewSongsCheck": "Проверить",
+  "missingPreviewSongsChecking": "Проверка…",
+  "missingPreviewSongsNone": "Все превью треков на своих местах.",
+  "missingPreviewSongsSignInHint": "Войдите в Google Drive, чтобы искать их и там.",
+  "missingPreviewOnDriveTitle": "На Google Drive ({count})",
+  "missingPreviewOnDriveDescription": "Эти треки есть в резервной копии. При скачивании копия сохранится на этом компьютере.",
+  "missingPreviewOtherComputerTitle": "С другого компьютера ({count})",
+  "missingPreviewOtherComputerDescription": "Их пути относятся к другому компьютеру, где они, возможно, нормально воспроизводятся. Выберите файл здесь, чтобы воспроизводить их и на этом компьютере.",
+  "missingPreviewFolderMissingTitle": "Папка не найдена ({count})",
+  "missingPreviewFolderMissingDescription": "Их папки тоже нет: диск не подключён, или папка перемещена или удалена. Подключите диск и проверьте снова, прежде чем что-то удалять.",
+  "missingPreviewFileMissingTitle": "Файл не найден ({count})",
+  "missingPreviewFileMissingDescription": "Папка на месте, а файла нет.",
+  "missingPreviewDownload": "Скачать",
+  "missingPreviewDownloadAll": "Скачать все",
+  "missingPreviewFindAll": "Найти все",
+  "missingPreviewRemoveAll": "Удалить все",
+  "missingPreviewRemoveAllTitle": "{count, plural, one{Удалить {count} превью трека?} few{Удалить {count} превью треков?} many{Удалить {count} превью треков?} other{Удалить {count} превью трека?}}",
+  "missingPreviewRemoveBody": "Они удаляются только на этом компьютере, файлы не удаляются. Если на другом устройстве ещё есть какой-то из этих треков, следующая синхронизация вернёт его сюда.",
+  "missingPreviewDownloadedResult": "Скачано {done} из {total}.",
+  "missingPreviewFoundResult": "Сведённый файл найден для {found} из {total}.",
+  "missingPreviewDownloadFailed": "Не удалось скачать трек для {name}.",
+  "missingPreviewAutoDetected": "Найдено автоматически",
+  "missingPreviewRemoveEverything": "Удалить все ненайденные ({count})",
+  "missingPreviewRemoveIncludesDrive": "Из них {count} ещё можно скачать с Google Drive.",
+  "missingPreviewRemoveIncludesOtherComputer": "Из них {count}, возможно, ещё воспроизводятся на другом компьютере."
 }

@@ -9,6 +9,7 @@ import '../models/music_project.dart';
 import '../models/todo_item.dart';
 import '../providers/providers.dart';
 import '../services/camelot_playlist_generator.dart';
+import '../utils/deadline_text.dart';
 import '../utils/playback_todo_utils.dart';
 import '../utils/project_freshness.dart';
 import 'camelot_wheel_widget.dart';
@@ -786,7 +787,7 @@ class _MusicPlayerPageState extends ConsumerState<MusicPlayerPage>
                     ),
                   if (project.deadline != null)
                     _Chip(
-                      label: project.deadlineStatus ?? '',
+                      label: deadlineText(AppLocalizations.of(context)!, project.daysUntilDeadline ?? 0),
                       color: (project.daysUntilDeadline != null && project.daysUntilDeadline! < 0)
                           ? Colors.red.shade300
                           : cs.onSurface.withValues(alpha: 0.5),

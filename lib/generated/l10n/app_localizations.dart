@@ -1021,14 +1021,14 @@ abstract class AppLocalizations {
   /// No description provided for @projectsHidden.
   ///
   /// In en, this message translates to:
-  /// **'{count} project{plural} hidden.'**
-  String projectsHidden(int count, String plural);
+  /// **'{count, plural, one{{count} project hidden.} other{{count} projects hidden.}}'**
+  String projectsHidden(int count);
 
   /// No description provided for @projectsUnhidden.
   ///
   /// In en, this message translates to:
-  /// **'{count} project{plural} unhidden.'**
-  String projectsUnhidden(int count, String plural);
+  /// **'{count, plural, one{{count} project unhidden.} other{{count} projects unhidden.}}'**
+  String projectsUnhidden(int count);
 
   /// No description provided for @failedToHideProjects.
   ///
@@ -1057,8 +1057,8 @@ abstract class AppLocalizations {
   /// No description provided for @deleteMissingProjectsConfirm.
   ///
   /// In en, this message translates to:
-  /// **'{count} project{plural} whose file could not be found on this machine will move to Recently deleted (Settings > Project folders), where you can restore them with their notes, deadlines and session history for 30 days.'**
-  String deleteMissingProjectsConfirm(int count, String plural);
+  /// **'{count, plural, one{{count} project whose file could not be found on this machine will move to Recently deleted (Settings > Project folders), where you can restore it with its notes, deadlines and session history for 30 days.} other{{count} projects whose files could not be found on this machine will move to Recently deleted (Settings > Project folders), where you can restore them with their notes, deadlines and session history for 30 days.}}'**
+  String deleteMissingProjectsConfirm(int count);
 
   /// No description provided for @deleteMissingProjectsConfirmButton.
   ///
@@ -1069,17 +1069,14 @@ abstract class AppLocalizations {
   /// No description provided for @missingProjectsDeleted.
   ///
   /// In en, this message translates to:
-  /// **'{count} missing project{plural} deleted.'**
-  String missingProjectsDeleted(int count, String plural);
+  /// **'{count, plural, one{{count} missing project deleted.} other{{count} missing projects deleted.}}'**
+  String missingProjectsDeleted(int count);
 
   /// No description provided for @deleteMissingProjectsAlsoDeleteReleaseTracked.
   ///
   /// In en, this message translates to:
-  /// **'Also delete {count} project{plural} that are part of a release (removes them from that release too)'**
-  String deleteMissingProjectsAlsoDeleteReleaseTracked(
-    int count,
-    String plural,
-  );
+  /// **'{count, plural, one{Also delete {count} project that is part of a release (removes it from that release too)} other{Also delete {count} projects that are part of a release (removes them from that release too)}}'**
+  String deleteMissingProjectsAlsoDeleteReleaseTracked(int count);
 
   /// Confirmation message when hiding a project
   ///
@@ -1144,18 +1141,14 @@ abstract class AppLocalizations {
   /// No description provided for @metadataExtractedForProjects.
   ///
   /// In en, this message translates to:
-  /// **'Extracted metadata for {count} project{plural}. {failures}'**
-  String metadataExtractedForProjects(
-    int count,
-    String plural,
-    String failures,
-  );
+  /// **'{count, plural, one{Extracted metadata for {count} project.} other{Extracted metadata for {count} projects.}} {failures}'**
+  String metadataExtractedForProjects(int count, String failures);
 
   /// No description provided for @extractionFailures.
   ///
   /// In en, this message translates to:
   /// **'{count} failed.'**
-  String extractionFailures(int count, Object plural);
+  String extractionFailures(int count);
 
   /// No description provided for @failedToWriteBpmFile.
   ///
@@ -1190,8 +1183,8 @@ abstract class AppLocalizations {
   /// No description provided for @scanComplete.
   ///
   /// In en, this message translates to:
-  /// **'{type} complete: {count} project{plural} added/updated.'**
-  String scanComplete(String type, int count, String plural);
+  /// **'{count, plural, one{{type} complete: {count} project added/updated.} other{{type} complete: {count} projects added/updated.}}'**
+  String scanComplete(String type, int count);
 
   /// No description provided for @scanCancelled.
   ///
@@ -1202,8 +1195,8 @@ abstract class AppLocalizations {
   /// No description provided for @scanFailuresSnackbar.
   ///
   /// In en, this message translates to:
-  /// **'{count} project{plural} failed to load.'**
-  String scanFailuresSnackbar(int count, String plural);
+  /// **'{count, plural, one{{count} project failed to load.} other{{count} projects failed to load.}}'**
+  String scanFailuresSnackbar(int count);
 
   /// No description provided for @scanFailuresSnackbarAction.
   ///
@@ -1226,8 +1219,8 @@ abstract class AppLocalizations {
   /// No description provided for @projectsSelected.
   ///
   /// In en, this message translates to:
-  /// **'{count} project{plural} selected'**
-  String projectsSelected(int count, String plural);
+  /// **'{count, plural, one{{count} project selected} other{{count} projects selected}}'**
+  String projectsSelected(int count);
 
   /// No description provided for @openingFolder.
   ///
@@ -1280,8 +1273,8 @@ abstract class AppLocalizations {
   /// No description provided for @releasesSelected.
   ///
   /// In en, this message translates to:
-  /// **'{count} release{plural} selected'**
-  String releasesSelected(int count, String plural);
+  /// **'{count, plural, one{{count} release selected} other{{count} releases selected}}'**
+  String releasesSelected(int count);
 
   /// No description provided for @deleteSelectedReleases.
   ///
@@ -1292,14 +1285,14 @@ abstract class AppLocalizations {
   /// No description provided for @deleteSelectedReleasesConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete {count} release{plural}?'**
-  String deleteSelectedReleasesConfirm(int count, String plural);
+  /// **'{count, plural, one{Are you sure you want to delete {count} release?} other{Are you sure you want to delete {count} releases?}}'**
+  String deleteSelectedReleasesConfirm(int count);
 
   /// No description provided for @releasesDeleted.
   ///
   /// In en, this message translates to:
-  /// **'{count} release{plural} deleted'**
-  String releasesDeleted(int count, String plural);
+  /// **'{count, plural, one{{count} release deleted} other{{count} releases deleted}}'**
+  String releasesDeleted(int count);
 
   /// No description provided for @selectTracks.
   ///
@@ -1358,8 +1351,8 @@ abstract class AppLocalizations {
   /// No description provided for @addedTracksToRelease.
   ///
   /// In en, this message translates to:
-  /// **'Added {count} track{plural} to release.'**
-  String addedTracksToRelease(int count, String plural);
+  /// **'{count, plural, one{Added {count} track to release.} other{Added {count} tracks to release.}}'**
+  String addedTracksToRelease(int count);
 
   /// No description provided for @releaseFilesCount.
   ///
@@ -1376,8 +1369,8 @@ abstract class AppLocalizations {
   /// No description provided for @addedFilesToRelease.
   ///
   /// In en, this message translates to:
-  /// **'Added {count} file{plural} to release.'**
-  String addedFilesToRelease(int count, String plural);
+  /// **'{count, plural, one{Added {count} file to release.} other{Added {count} files to release.}}'**
+  String addedFilesToRelease(int count);
 
   /// No description provided for @failedToAddFiles.
   ///
@@ -1569,7 +1562,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Select tracks to include in the release ({count} selected)'**
-  String selectTracksToInclude(int count, Object plural);
+  String selectTracksToInclude(int count);
 
   /// No description provided for @searchTracks.
   ///
@@ -1940,8 +1933,8 @@ abstract class AppLocalizations {
   /// No description provided for @templatesSelected.
   ///
   /// In en, this message translates to:
-  /// **'{count} template{plural} selected'**
-  String templatesSelected(int count, String plural);
+  /// **'{count, plural, one{{count} template selected} other{{count} templates selected}}'**
+  String templatesSelected(int count);
 
   /// No description provided for @deleteSelectedTemplates.
   ///
@@ -1952,14 +1945,14 @@ abstract class AppLocalizations {
   /// No description provided for @deleteSelectedTemplatesConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete {count} template{plural}?'**
-  String deleteSelectedTemplatesConfirm(int count, String plural);
+  /// **'{count, plural, one{Are you sure you want to delete {count} template?} other{Are you sure you want to delete {count} templates?}}'**
+  String deleteSelectedTemplatesConfirm(int count);
 
   /// No description provided for @templatesDeleted.
   ///
   /// In en, this message translates to:
-  /// **'{count} template{plural} deleted'**
-  String templatesDeleted(int count, String plural);
+  /// **'{count, plural, one{{count} template deleted} other{{count} templates deleted}}'**
+  String templatesDeleted(int count);
 
   /// No description provided for @templateDetailTitle.
   ///
@@ -2180,18 +2173,16 @@ abstract class AppLocalizations {
   /// Success message when status is changed for multiple projects
   ///
   /// In en, this message translates to:
-  /// **'Phase changed to \"{status}\" for {count} project{plural}'**
-  String statusChangedForProjects(int count, String plural, String status);
+  /// **'{count, plural, one{Phase changed to \"{status}\" for {count} project} other{Phase changed to \"{status}\" for {count} projects}}'**
+  String statusChangedForProjects(int count, String status);
 
   /// Message when status change partially fails
   ///
   /// In en, this message translates to:
-  /// **'Phase changed to \"{status}\" for {successCount} project{successPlural}, {failCount} failed{failPlural}'**
+  /// **'Phase changed to \"{status}\" for {successCount, plural, one{{successCount} project} other{{successCount} projects}}, {failCount} failed'**
   String statusChangedForProjectsWithErrors(
     int successCount,
-    String successPlural,
     int failCount,
-    String failPlural,
     String status,
   );
 
@@ -2618,6 +2609,30 @@ abstract class AppLocalizations {
   /// **'Current profile is required for merge or replace mode'**
   String get currentProfileRequired;
 
+  /// No description provided for @importLaunchCommandsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import programs for \"Launch in DAW\"?'**
+  String get importLaunchCommandsTitle;
+
+  /// No description provided for @importLaunchCommandsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup names programs that \"Launch in DAW\" would run on this computer. Import them only if you made the backup yourself.'**
+  String get importLaunchCommandsMessage;
+
+  /// No description provided for @importLaunchCommandsSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t import'**
+  String get importLaunchCommandsSkip;
+
+  /// No description provided for @importLaunchCommandsImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import them'**
+  String get importLaunchCommandsImport;
+
   /// No description provided for @previewSong.
   ///
   /// In en, this message translates to:
@@ -2772,53 +2787,43 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 year ago} other{{count} years ago}}'**
-  String dateYearsAgo(int count, Object plural);
+  String dateYearsAgo(int count);
 
   /// No description provided for @ageYearsMonths.
   ///
   /// In en, this message translates to:
-  /// **'{years} year{yearPlural}, {months} month{monthPlural}'**
-  String ageYearsMonths(
-    int years,
-    String yearPlural,
-    int months,
-    String monthPlural,
-  );
+  /// **'{years, plural, one{{years} year} other{{years} years}}, {months, plural, one{{months} month} other{{months} months}}'**
+  String ageYearsMonths(int years, int months);
 
   /// No description provided for @ageYears.
   ///
   /// In en, this message translates to:
-  /// **'{years} year{plural}'**
-  String ageYears(int years, String plural);
+  /// **'{years, plural, one{{years} year} other{{years} years}}'**
+  String ageYears(int years);
 
   /// No description provided for @ageMonthsDays.
   ///
   /// In en, this message translates to:
-  /// **'{months} month{monthPlural}, {days} day{dayPlural}'**
-  String ageMonthsDays(
-    int months,
-    String monthPlural,
-    int days,
-    String dayPlural,
-  );
+  /// **'{months, plural, one{{months} month} other{{months} months}}, {days, plural, one{{days} day} other{{days} days}}'**
+  String ageMonthsDays(int months, int days);
 
   /// No description provided for @ageMonths.
   ///
   /// In en, this message translates to:
-  /// **'{months} month{plural}'**
-  String ageMonths(int months, String plural);
+  /// **'{months, plural, one{{months} month} other{{months} months}}'**
+  String ageMonths(int months);
 
   /// No description provided for @ageDays.
   ///
   /// In en, this message translates to:
-  /// **'{days} day{plural}'**
-  String ageDays(int days, String plural);
+  /// **'{days, plural, one{{days} day} other{{days} days}}'**
+  String ageDays(int days);
 
   /// No description provided for @ageHours.
   ///
   /// In en, this message translates to:
-  /// **'{hours} hour{plural}'**
-  String ageHours(int hours, String plural);
+  /// **'{hours, plural, one{{hours} hour} other{{hours} hours}}'**
+  String ageHours(int hours);
 
   /// No description provided for @ageJustNow.
   ///
@@ -4304,14 +4309,14 @@ abstract class AppLocalizations {
   /// Button label to download N files
   ///
   /// In en, this message translates to:
-  /// **'Download {count} file{plural}'**
-  String downloadNFiles(int count, String plural);
+  /// **'{count, plural, one{Download {count} file} other{Download {count} files}}'**
+  String downloadNFiles(int count);
 
   /// Success message when N files are saved
   ///
   /// In en, this message translates to:
-  /// **'{count} file{plural} saved to {filename}'**
-  String nFilesSavedTo(int count, String plural, String filename);
+  /// **'{count, plural, one{{count} file saved to {filename}} other{{count} files saved to {filename}}}'**
+  String nFilesSavedTo(int count, String filename);
 
   /// Dialog title and button label for adding an asset
   ///
@@ -8864,8 +8869,8 @@ abstract class AppLocalizations {
   /// No description provided for @attachmentExportSkippedMissing.
   ///
   /// In en, this message translates to:
-  /// **'{count} missing file{plural} skipped'**
-  String attachmentExportSkippedMissing(int count, String plural);
+  /// **'{count, plural, one{{count} missing file skipped} other{{count} missing files skipped}}'**
+  String attachmentExportSkippedMissing(int count);
 
   /// No description provided for @attachmentExportFailed.
   ///
@@ -13448,6 +13453,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The old copy\'s uninstaller couldn\'t be started.'**
   String get legacyInstallRemoveFailed;
+
+  /// No description provided for @missingPreviewSongsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing preview songs'**
+  String get missingPreviewSongsTitle;
+
+  /// No description provided for @missingPreviewSongsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview songs of the current profile that this computer can\'t find. Check them, then download, find or remove each one — nothing changes until you choose.'**
+  String get missingPreviewSongsSubtitle;
+
+  /// No description provided for @missingPreviewSongsCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get missingPreviewSongsCheck;
+
+  /// No description provided for @missingPreviewSongsChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking…'**
+  String get missingPreviewSongsChecking;
+
+  /// No description provided for @missingPreviewSongsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Every preview song is where it should be.'**
+  String get missingPreviewSongsNone;
+
+  /// No description provided for @missingPreviewSongsSignInHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to Google Drive to look for them there too.'**
+  String get missingPreviewSongsSignInHint;
+
+  /// No description provided for @missingPreviewOnDriveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On Google Drive ({count})'**
+  String missingPreviewOnDriveTitle(int count);
+
+  /// No description provided for @missingPreviewOnDriveDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A backup has these songs. Downloading puts a copy on this computer.'**
+  String get missingPreviewOnDriveDescription;
+
+  /// No description provided for @missingPreviewOtherComputerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'From another computer ({count})'**
+  String missingPreviewOtherComputerTitle(int count);
+
+  /// No description provided for @missingPreviewOtherComputerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Their paths belong to another computer, where they may play fine. Pick a file here to play them on this computer too.'**
+  String get missingPreviewOtherComputerDescription;
+
+  /// No description provided for @missingPreviewFolderMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder not there ({count})'**
+  String missingPreviewFolderMissingTitle(int count);
+
+  /// No description provided for @missingPreviewFolderMissingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Their folder isn\'t there either: a drive that isn\'t connected, or a folder moved or deleted. Connect the drive and check again before removing anything.'**
+  String get missingPreviewFolderMissingDescription;
+
+  /// No description provided for @missingPreviewFileMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'File gone ({count})'**
+  String missingPreviewFileMissingTitle(int count);
+
+  /// No description provided for @missingPreviewFileMissingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The folder is there, but the file isn\'t.'**
+  String get missingPreviewFileMissingDescription;
+
+  /// No description provided for @missingPreviewDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get missingPreviewDownload;
+
+  /// No description provided for @missingPreviewDownloadAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Download all'**
+  String get missingPreviewDownloadAll;
+
+  /// No description provided for @missingPreviewFindAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Find all'**
+  String get missingPreviewFindAll;
+
+  /// No description provided for @missingPreviewRemoveAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all'**
+  String get missingPreviewRemoveAll;
+
+  /// No description provided for @missingPreviewRemoveAllTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Remove {count} preview song?} other{Remove {count} preview songs?}}'**
+  String missingPreviewRemoveAllTitle(int count);
+
+  /// No description provided for @missingPreviewRemoveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'They are removed on this computer only, and no file is deleted. If another device still has one of these songs, the next sync brings it back here.'**
+  String get missingPreviewRemoveBody;
+
+  /// No description provided for @missingPreviewDownloadedResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded {done} of {total}.'**
+  String missingPreviewDownloadedResult(int done, int total);
+
+  /// No description provided for @missingPreviewFoundResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Found a mixdown for {found} of {total}.'**
+  String missingPreviewFoundResult(int found, int total);
+
+  /// No description provided for @missingPreviewDownloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t download the song for {name}.'**
+  String missingPreviewDownloadFailed(String name);
+
+  /// No description provided for @missingPreviewAutoDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-detected'**
+  String get missingPreviewAutoDetected;
+
+  /// No description provided for @missingPreviewRemoveEverything.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all not found ({count})'**
+  String missingPreviewRemoveEverything(int count);
+
+  /// No description provided for @missingPreviewRemoveIncludesDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Of these, {count} can still be downloaded from Google Drive.'**
+  String missingPreviewRemoveIncludesDrive(int count);
+
+  /// No description provided for @missingPreviewRemoveIncludesOtherComputer.
+  ///
+  /// In en, this message translates to:
+  /// **'Of these, {count} may still play on another computer.'**
+  String missingPreviewRemoveIncludesOtherComputer(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -15,6 +15,8 @@ import 'package:daw_project_manager/ui/widgets/midi_piano_roll.dart';
 import 'package:daw_project_manager/utils/musical_scale.dart';
 import 'package:daw_project_manager/ui/widgets/midi_volume_control.dart';
 
+import '../helpers/semantics_orphans.dart';
+
 const _clip = MidiClip(
   name: 'Riff',
   ppq: 480,
@@ -49,6 +51,8 @@ const _labels = MidiPianoRollWindowLabels(
 );
 
 void main() {
+  final binding = SemanticsOrphanBinding.ensureInitialized();
+
   group('MidiPreviewPlayer seek', () {
     test('jumps the playing clip, paused or not', () async {
       final player = MidiPreviewPlayer()..playingKey = 'k';
@@ -192,6 +196,21 @@ void main() {
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
     }
+
+    // Its vertical zoom slider, in a dialog, once sent Windows' accessibility
+    // bridge a node with no parent the moment the window opened; every
+    // update after it was rejected while the window stayed open.
+    testWidgets('opens, and shows each tooltip, with no node Windows rejects',
+        (tester) async {
+      binding.resetSemanticsRecord();
+      final handle = tester.ensureSemantics();
+      await open(tester);
+      expect(binding.orphans, isEmpty);
+
+      expect(await expectNoOrphanSemanticsWhileHovering(tester),
+          greaterThan(5));
+      handle.dispose();
+    });
 
     testWidgets('Space starts, pauses and resumes', (tester) async {
       await open(tester);

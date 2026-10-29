@@ -1,9 +1,10 @@
 # Shown before every check on a PR ("CI / Unit tests (Linux)"), so kept short.
 name: CI
 
-# PERMISSÃO: Necessária para que a ação 'upload-release-asset' funcione.
+# Read-only by default. Only the jobs that upload to a release get
+# contents: write, each in its own permissions block.
 permissions:
-  contents: write 
+  contents: read
 
 # 1. Gatilhos do Workflow
 on:
@@ -86,7 +87,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # Catches exactly the failure mode that motivated this check: the
       # Flatpak build reads its APP_VERSION straight from this file's first
@@ -130,7 +131,7 @@ jobs:
           echo "Tag v${TAG_VERSION} matches changelog entry ${CHANGELOG_VERSION}"
 
       - name: Setup Flutter ${{ env.FLUTTER_BASE_VERSION }} (Stable)
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ env.FLUTTER_BASE_VERSION }}
           channel: 'stable'
@@ -144,9 +145,9 @@ jobs:
         shell: pwsh
         run: |
           powershell -ExecutionPolicy Bypass -File scripts/inject_oauth_config.ps1 `
-            -DesktopClientId "${{ secrets.DESKTOP_CLIENT_ID }}" `
-            -DesktopClientSecret "${{ secrets.DESKTOP_CLIENT_SECRET }}" `
-            -AndroidWebClientId "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+            -DesktopClientId "$env:DESKTOP_CLIENT_ID" `
+            -DesktopClientSecret "$env:DESKTOP_CLIENT_SECRET" `
+            -AndroidWebClientId "$env:ANDROID_WEB_CLIENT_ID"
         env:
           DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
           DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
@@ -156,7 +157,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           chmod +x scripts/inject_oauth_config.sh
-          ./scripts/inject_oauth_config.sh -d "${{ secrets.DESKTOP_CLIENT_ID }}" -s "${{ secrets.DESKTOP_CLIENT_SECRET }}" -a "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+          ./scripts/inject_oauth_config.sh -d "$DESKTOP_CLIENT_ID" -s "$DESKTOP_CLIENT_SECRET" -a "$ANDROID_WEB_CLIENT_ID"
         env:
           DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
           DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
@@ -191,14 +192,14 @@ jobs:
       PLUGIN_LINUX_DEPS: pkg-config libfreetype-dev libfontconfig1-dev
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Read the pinned plugin commit
         id: pin
         run: echo "ref=$(tr -d '[:space:]' < test/plugin_integration/plugin_ref)" >> "$GITHUB_OUTPUT"
 
       - name: Check out the plugin at that commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: bandpassrecords/daw-project-manager-plugin
           ref: ${{ steps.pin.outputs.ref }}
@@ -214,7 +215,7 @@ jobs:
 
       # JUCE arrives through CMake's FetchContent: kept between runs.
       - name: Cache JUCE
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ${{ env.PLUGIN_DIR }}/build/_deps
           key: plugin-deps-${{ runner.os }}-${{ steps.pin.outputs.ref }}
@@ -233,7 +234,7 @@ jobs:
           echo "DPM_PLUGIN_DRIVER=$DRIVER" >> "$GITHUB_ENV"
 
       - name: Setup Flutter ${{ env.FLUTTER_BASE_VERSION }} (Stable)
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ env.FLUTTER_BASE_VERSION }}
           channel: 'stable'
@@ -244,7 +245,7 @@ jobs:
       - name: Inject OAuth Credentials
         run: |
           chmod +x scripts/inject_oauth_config.sh
-          ./scripts/inject_oauth_config.sh -d "${{ secrets.DESKTOP_CLIENT_ID }}" -s "${{ secrets.DESKTOP_CLIENT_SECRET }}" -a "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+          ./scripts/inject_oauth_config.sh -d "$DESKTOP_CLIENT_ID" -s "$DESKTOP_CLIENT_SECRET" -a "$ANDROID_WEB_CLIENT_ID"
         env:
           DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
           DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
@@ -267,10 +268,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup Flutter ${{ env.FLUTTER_BASE_VERSION }} (Stable)
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ env.FLUTTER_BASE_VERSION }}
           channel: 'stable' 
@@ -285,9 +286,9 @@ jobs:
       - name: Inject OAuth Credentials
         run: |
             powershell -ExecutionPolicy Bypass -File scripts/inject_oauth_config.ps1 `
-              -DesktopClientId "${{ secrets.DESKTOP_CLIENT_ID }}" `
-              -DesktopClientSecret "${{ secrets.DESKTOP_CLIENT_SECRET }}" `
-              -AndroidWebClientId "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+              -DesktopClientId "$env:DESKTOP_CLIENT_ID" `
+              -DesktopClientSecret "$env:DESKTOP_CLIENT_SECRET" `
+              -AndroidWebClientId "$env:ANDROID_WEB_CLIENT_ID"
         env:
           DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
           DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
@@ -313,6 +314,8 @@ jobs:
     name: Build ${{ matrix.label }}
     needs: [unit_tests, plugin_integration]
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
     runs-on: ${{ matrix.os }}
 
     # Apple signing/notarization secrets, hoisted to job level so that step-level
@@ -383,11 +386,11 @@ jobs:
             is_dmg: false
             
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # 1. Setup Flutter (Canal STABLE)
       - name: Setup Flutter ${{ env.FLUTTER_BASE_VERSION }} (Stable)
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ env.FLUTTER_BASE_VERSION }}
           channel: 'stable' 
@@ -411,9 +414,9 @@ jobs:
         shell: pwsh
         run: |
           powershell -ExecutionPolicy Bypass -File scripts/inject_oauth_config.ps1 `
-            -DesktopClientId "${{ secrets.DESKTOP_CLIENT_ID }}" `
-            -DesktopClientSecret "${{ secrets.DESKTOP_CLIENT_SECRET }}" `
-            -AndroidWebClientId "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+            -DesktopClientId "$env:DESKTOP_CLIENT_ID" `
+            -DesktopClientSecret "$env:DESKTOP_CLIENT_SECRET" `
+            -AndroidWebClientId "$env:ANDROID_WEB_CLIENT_ID"
         env:
           DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
           DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
@@ -423,7 +426,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           chmod +x scripts/inject_oauth_config.sh
-          ./scripts/inject_oauth_config.sh -d "${{ secrets.DESKTOP_CLIENT_ID }}" -s "${{ secrets.DESKTOP_CLIENT_SECRET }}" -a "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+          ./scripts/inject_oauth_config.sh -d "$DESKTOP_CLIENT_ID" -s "$DESKTOP_CLIENT_SECRET" -a "$ANDROID_WEB_CLIENT_ID"
         env:
           DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
           DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
@@ -534,17 +537,17 @@ jobs:
         if: ${{ (matrix.is_dmg == true || matrix.is_zip == true) && env.APPLE_CERTIFICATE_BASE64 != '' && env.COMPILE_ONLY != 'true' }}
         run: |
           # Create keychain
-          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security list-keychains -s build.keychain
           security default-keychain -s build.keychain
-          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security set-keychain-settings -t 3600 -u build.keychain
           
           # Import certificate
           # Use base64 -d (works on macOS GitHub Actions runners)
           echo "$APPLE_CERTIFICATE_BASE64" | base64 -d > certificate.p12
           security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
           rm certificate.p12
       
       - name: Sign macOS App Bundle
@@ -735,7 +738,7 @@ jobs:
 
       - name: Upload the self-updating Setup (PR only)
         if: matrix.is_installer == true && github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: DAW_Project_Manager_Setup_${{ steps.sanitize_ref.outputs.sanitized_ref }}
           path: Output/DAW_Project_Manager_Setup_${{ steps.sanitize_ref.outputs.sanitized_ref }}.exe
@@ -761,7 +764,7 @@ jobs:
       # the installer and MSIX built from the same run.
       - name: Upload portable Windows build (PR only)
         if: matrix.is_installer == true && github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: DAW_Project_Manager_Windows_Portable_${{ steps.sanitize_ref.outputs.sanitized_ref }}
           path: build/windows/x64/runner/Release/
@@ -815,7 +818,7 @@ jobs:
 
       - name: Upload portable Windows debug build (PR only)
         if: matrix.is_installer == true && github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: DAW_Project_Manager_Windows_Debug_${{ steps.sanitize_ref.outputs.sanitized_ref }}
           path: build/windows/x64/runner/Debug/
@@ -863,7 +866,7 @@ jobs:
       - name: Find Existing Release URL
         if: startsWith(github.ref, 'refs/tags/v')
         id: find_release
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         with:
@@ -884,31 +887,33 @@ jobs:
       - name: Upload ${{ matrix.os_name }} Release Asset
         # CONDIÇÃO DE SEGURANÇA: Só executa se a URL foi resolvida e é um tag
         if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
-        uses: actions/upload-release-asset@v1
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: ${{ steps.set_asset_paths.outputs.asset_path }}
-          asset_name: ${{ steps.set_asset_paths.outputs.asset_name }}
-          asset_content_type: ${{ matrix.asset_content_type }}
+          GH_TOKEN: ${{ github.token }}
+          ASSET_PATH: ${{ steps.set_asset_paths.outputs.asset_path }}
+          ASSET_NAME: ${{ steps.set_asset_paths.outputs.asset_name }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-asset"
+          cp "$ASSET_PATH" "$RUNNER_TEMP/release-asset/$ASSET_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-asset/$ASSET_NAME" --clobber --repo "$GITHUB_REPOSITORY"
 
       # 7a.1 Upload the SHA256 checksum alongside the release asset
       - name: Upload ${{ matrix.os_name }} SHA256 Checksum
         if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
-        uses: actions/upload-release-asset@v1
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: ${{ steps.set_asset_paths.outputs.asset_path }}.sha256
-          asset_name: ${{ steps.set_asset_paths.outputs.asset_name }}.sha256
-          asset_content_type: text/plain
+          GH_TOKEN: ${{ github.token }}
+          ASSET_PATH: ${{ steps.set_asset_paths.outputs.asset_path }}.sha256
+          ASSET_NAME: ${{ steps.set_asset_paths.outputs.asset_name }}.sha256
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-asset"
+          cp "$ASSET_PATH" "$RUNNER_TEMP/release-asset/$ASSET_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-asset/$ASSET_NAME" --clobber --repo "$GITHUB_REPOSITORY"
 
       # 7b. Upload do Artefato para GitHub Actions Artifacts (apenas para pull requests)
       - name: Upload ${{ matrix.os_name }} Artifact
         if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ matrix.os_name }}_${{ steps.set_asset_paths.outputs.asset_name }}
           path: ${{ steps.set_asset_paths.outputs.asset_path }}
@@ -921,10 +926,12 @@ jobs:
     name: Build Linux app (.tar.gz + AppImage)
     needs: [unit_tests, plugin_integration]
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Install Linux build dependencies
         run: |
@@ -934,7 +941,7 @@ jobs:
             libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
       - name: Setup Flutter ${{ env.FLUTTER_BASE_VERSION }} (Stable)
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ env.FLUTTER_BASE_VERSION }}
           channel: 'stable'
@@ -951,7 +958,7 @@ jobs:
       - name: Inject OAuth Credentials (Linux)
         run: |
           chmod +x scripts/inject_oauth_config.sh
-          ./scripts/inject_oauth_config.sh -d "${{ secrets.DESKTOP_CLIENT_ID }}" -s "${{ secrets.DESKTOP_CLIENT_SECRET }}" -a "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+          ./scripts/inject_oauth_config.sh -d "$DESKTOP_CLIENT_ID" -s "$DESKTOP_CLIENT_SECRET" -a "$ANDROID_WEB_CLIENT_ID"
         env:
           DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
           DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
@@ -1019,7 +1026,7 @@ jobs:
       - name: Find Existing Release URL
         if: startsWith(github.ref, 'refs/tags/v')
         id: find_release
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         with:
@@ -1038,29 +1045,31 @@ jobs:
 
       - name: Upload Linux Release Asset
         if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
-        uses: actions/upload-release-asset@v1
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: ${{ steps.package.outputs.asset_path }}
-          asset_name: ${{ steps.package.outputs.asset_name }}
-          asset_content_type: application/gzip
+          GH_TOKEN: ${{ github.token }}
+          ASSET_PATH: ${{ steps.package.outputs.asset_path }}
+          ASSET_NAME: ${{ steps.package.outputs.asset_name }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-asset"
+          cp "$ASSET_PATH" "$RUNNER_TEMP/release-asset/$ASSET_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-asset/$ASSET_NAME" --clobber --repo "$GITHUB_REPOSITORY"
 
       - name: Upload Linux SHA256 Checksum
         if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
-        uses: actions/upload-release-asset@v1
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: ${{ steps.package.outputs.asset_path }}.sha256
-          asset_name: ${{ steps.package.outputs.asset_name }}.sha256
-          asset_content_type: text/plain
+          GH_TOKEN: ${{ github.token }}
+          ASSET_PATH: ${{ steps.package.outputs.asset_path }}.sha256
+          ASSET_NAME: ${{ steps.package.outputs.asset_name }}.sha256
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-asset"
+          cp "$ASSET_PATH" "$RUNNER_TEMP/release-asset/$ASSET_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-asset/$ASSET_NAME" --clobber --repo "$GITHUB_REPOSITORY"
 
       - name: Upload Linux Artifact
         if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Linux_${{ steps.package.outputs.asset_name }}
           path: ${{ steps.package.outputs.asset_path }}
@@ -1115,29 +1124,31 @@ jobs:
 
       - name: Upload AppImage Release Asset
         if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
-        uses: actions/upload-release-asset@v1
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: ${{ steps.appimage.outputs.asset_path }}
-          asset_name: ${{ steps.appimage.outputs.asset_name }}
-          asset_content_type: application/vnd.appimage
+          GH_TOKEN: ${{ github.token }}
+          ASSET_PATH: ${{ steps.appimage.outputs.asset_path }}
+          ASSET_NAME: ${{ steps.appimage.outputs.asset_name }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-asset"
+          cp "$ASSET_PATH" "$RUNNER_TEMP/release-asset/$ASSET_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-asset/$ASSET_NAME" --clobber --repo "$GITHUB_REPOSITORY"
 
       - name: Upload AppImage SHA256 Checksum
         if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
-        uses: actions/upload-release-asset@v1
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: ${{ steps.appimage.outputs.asset_path }}.sha256
-          asset_name: ${{ steps.appimage.outputs.asset_name }}.sha256
-          asset_content_type: text/plain
+          GH_TOKEN: ${{ github.token }}
+          ASSET_PATH: ${{ steps.appimage.outputs.asset_path }}.sha256
+          ASSET_NAME: ${{ steps.appimage.outputs.asset_name }}.sha256
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-asset"
+          cp "$ASSET_PATH" "$RUNNER_TEMP/release-asset/$ASSET_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-asset/$ASSET_NAME" --clobber --repo "$GITHUB_REPOSITORY"
 
       - name: Upload AppImage Artifact
         if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Linux_${{ steps.appimage.outputs.asset_name }}
           path: ${{ steps.appimage.outputs.asset_path }}
@@ -1165,11 +1176,13 @@ jobs:
     name: Build Flatpak (as Flathub would)
     needs: [unit_tests, plugin_integration]
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     continue-on-error: true
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # flatpak/shared-modules is a submodule (provides libappindicator
           # for tray_manager's pkg-config requirement).
@@ -1296,7 +1309,7 @@ jobs:
       # build cache, and upload-artifact skips hidden dirs by default.)
       - name: Upload generated Flathub sources
         if: always() && env.COMPILE_ONLY != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: flatpak-generated-sources
           path: |
@@ -1308,7 +1321,7 @@ jobs:
       - name: Find Existing Release URL
         if: startsWith(github.ref, 'refs/tags/v')
         id: find_release
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         with:
@@ -1327,34 +1340,37 @@ jobs:
 
       - name: Upload Flatpak Bundle to Release
         if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
-        uses: actions/upload-release-asset@v1
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: DAW_Project_Manager_${{ github.ref_name }}.flatpak
-          asset_name: DAW_Project_Manager_${{ github.ref_name }}.flatpak
-          asset_content_type: application/vnd.flatpak
+          GH_TOKEN: ${{ github.token }}
+          ASSET_PATH: DAW_Project_Manager_${{ github.ref_name }}.flatpak
+          ASSET_NAME: DAW_Project_Manager_${{ github.ref_name }}.flatpak
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-asset"
+          cp "$ASSET_PATH" "$RUNNER_TEMP/release-asset/$ASSET_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-asset/$ASSET_NAME" --clobber --repo "$GITHUB_REPOSITORY"
 
   # Android Build Job (for both PRs and Releases)
   build-android:
     name: Build Android app (${{ github.event_name == 'pull_request' && 'test .apk' || github.ref == 'refs/heads/main' && 'compiles' || '.apk + Play Store .aab' }})
     needs: [unit_tests, plugin_integration]
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
       - name: Setup Flutter ${{ env.FLUTTER_BASE_VERSION }} (Stable)
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ env.FLUTTER_BASE_VERSION }}
           channel: 'stable'
@@ -1372,9 +1388,9 @@ jobs:
         run: |
           chmod +x scripts/inject_oauth_config.sh
           ./scripts/inject_oauth_config.sh \
-            -d "${{ secrets.DESKTOP_CLIENT_ID }}" \
-            -s "${{ secrets.DESKTOP_CLIENT_SECRET }}" \
-            -a "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+            -d "$DESKTOP_CLIENT_ID" \
+            -s "$DESKTOP_CLIENT_SECRET" \
+            -a "$ANDROID_WEB_CLIENT_ID"
         env:
           DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
           DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
@@ -1383,13 +1399,13 @@ jobs:
       - name: Setup Android Keystore (Release only)
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
           mkdir -p android
           cat > android/key.properties << EOF
           storeFile=app/release.keystore
-          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          keyPassword=$ANDROID_KEY_PASSWORD
           EOF
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -1462,7 +1478,7 @@ jobs:
       - name: Find Existing Release URL
         if: startsWith(github.ref, 'refs/tags/v')
         id: find_release
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         with:
@@ -1481,29 +1497,31 @@ jobs:
 
       - name: Upload AAB to Release
         if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
-        uses: actions/upload-release-asset@v1
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: build/app/outputs/bundle/release/app-release.aab
-          asset_name: DAW_Project_Manager_Android_${{ github.ref_name }}.aab
-          asset_content_type: application/vnd.android.package-archive
+          GH_TOKEN: ${{ github.token }}
+          ASSET_PATH: build/app/outputs/bundle/release/app-release.aab
+          ASSET_NAME: DAW_Project_Manager_Android_${{ github.ref_name }}.aab
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-asset"
+          cp "$ASSET_PATH" "$RUNNER_TEMP/release-asset/$ASSET_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-asset/$ASSET_NAME" --clobber --repo "$GITHUB_REPOSITORY"
 
       - name: Upload AAB SHA256 Checksum
         if: startsWith(github.ref, 'refs/tags/v') && steps.find_release.outputs.upload_url != ''
-        uses: actions/upload-release-asset@v1
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.find_release.outputs.upload_url }}
-          asset_path: build/app/outputs/bundle/release/app-release.aab.sha256
-          asset_name: DAW_Project_Manager_Android_${{ github.ref_name }}.aab.sha256
-          asset_content_type: text/plain
+          GH_TOKEN: ${{ github.token }}
+          ASSET_PATH: build/app/outputs/bundle/release/app-release.aab.sha256
+          ASSET_NAME: DAW_Project_Manager_Android_${{ github.ref_name }}.aab.sha256
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-asset"
+          cp "$ASSET_PATH" "$RUNNER_TEMP/release-asset/$ASSET_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/release-asset/$ASSET_NAME" --clobber --repo "$GITHUB_REPOSITORY"
 
       - name: Upload APK artifacts (PR)
         if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: android-apk-pr-test
           path: build/app/outputs/flutter-apk/*.apk
@@ -1513,7 +1531,7 @@ jobs:
 
       - name: Upload APK artifacts (Release - for testing)
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: android-apks
           path: build/app/outputs/flutter-apk/*.apk
@@ -1574,10 +1592,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup Flutter ${{ env.FLUTTER_BASE_VERSION }} (Stable)
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ env.FLUTTER_BASE_VERSION }}
           channel: 'stable'
@@ -1595,9 +1613,13 @@ jobs:
         run: |
           chmod +x scripts/inject_oauth_config.sh
           ./scripts/inject_oauth_config.sh \
-            -d "${{ secrets.DESKTOP_CLIENT_ID }}" \
-            -s "${{ secrets.DESKTOP_CLIENT_SECRET }}" \
-            -a "${{ secrets.ANDROID_WEB_CLIENT_ID }}"
+            -d "$DESKTOP_CLIENT_ID" \
+            -s "$DESKTOP_CLIENT_SECRET" \
+            -a "$ANDROID_WEB_CLIENT_ID"
+        env:
+          DESKTOP_CLIENT_ID: ${{ secrets.DESKTOP_CLIENT_ID }}
+          DESKTOP_CLIENT_SECRET: ${{ secrets.DESKTOP_CLIENT_SECRET }}
+          ANDROID_WEB_CLIENT_ID: ${{ secrets.ANDROID_WEB_CLIENT_ID }}
 
       - name: Generate Hive Adapters
         run: dart run build_runner build --delete-conflicting-outputs

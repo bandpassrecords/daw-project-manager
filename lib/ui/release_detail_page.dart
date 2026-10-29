@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 import 'package:desktop_drop/desktop_drop.dart';
 
 import 'package:file_picker/file_picker.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
-import 'package:archive/archive.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/release.dart';
 import '../services/app_audio_focus.dart';
@@ -37,16 +37,20 @@ import 'session_actions.dart';
 import 'widgets/resizable_text_field.dart';
 import 'widgets/todo_list_widget.dart';
 import '../services/track_duration_probe_service.dart';
+import '../services/zip_export_service.dart';
 import '../utils/text_input_focus.dart';
 import '../utils/player_shortcuts.dart';
 import '../utils/track_duration.dart';
+import '../utils/playback_todo_utils.dart';
 import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/release_track_details.dart';
 import 'widgets/scroll_more_hint.dart';
 import 'widgets/release_total_length_footer.dart';
 import 'widgets/release_tracks_table.dart';
+import 'widgets/player_readout.dart';
 import 'widgets/waveform_widget.dart';
 import 'app_snack_bar.dart';
+import 'widgets/semantics_safe.dart';
 
 class ReleaseDetailPage extends ConsumerStatefulWidget {
   final String releaseId;
@@ -271,7 +275,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
       await repo.updateRelease(release.copyWith(files: [...release.files, ...newFiles]));
       if (mounted) {
         ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.addedFilesToRelease(newFiles.length, newFiles.length == 1 ? '' : 's'))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.addedFilesToRelease(newFiles.length))),
         );
       }
     }
@@ -351,53 +355,17 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
 
     try {
       final zipFile = File(savePath);
-      if (!await zipFile.parent.exists()) {
-        await zipFile.parent.create(recursive: true);
-      }
-      if (await zipFile.exists()) {
-        await zipFile.delete();
-      }
+      // Audio first, by its display name (which may carry track numbers),
+      // then everything else. Streamed on an isolate of its own: a release
+      // of WAVs read into memory at once froze the app.
+      final entries = [
+        for (final f in release.files.where((f) => f.fileType == 'audio'))
+          ZipExportEntry.file(f.fileName, f.filePath),
+        for (final f in release.files.where((f) => f.fileType != 'audio'))
+          ZipExportEntry.file(f.fileName, f.filePath),
+      ];
+      await Isolate.run(() => writeZipExport(savePath, entries));
 
-      final archive = Archive();
-      
-      // Separate audio files from other files
-      final audioFiles = release.files.where((f) => f.fileType == 'audio').toList();
-      final otherFiles = release.files.where((f) => f.fileType != 'audio').toList();
-      
-      // Add audio files using their display names
-      for (final releaseFile in audioFiles) {
-        final file = File(releaseFile.filePath);
-        if (await file.exists()) {
-          final fileData = await file.readAsBytes();
-          // Use the display fileName (which may include track numbers if user added them)
-          archive.addFile(
-            ArchiveFile(
-              releaseFile.fileName,
-              fileData.length,
-              fileData,
-            ),
-          );
-        }
-      }
-      
-      // Add other files without track numbers
-      for (final releaseFile in otherFiles) {
-        final file = File(releaseFile.filePath);
-        if (await file.exists()) {
-          final fileData = await file.readAsBytes();
-          archive.addFile(
-            ArchiveFile(
-              releaseFile.fileName,
-              fileData.length,
-              fileData,
-            ),
-          );
-        }
-      }
-
-      final zipData = ZipEncoder().encode(archive);
-      await zipFile.writeAsBytes(zipData);
-    
       // Close loading dialog
       if (mounted) {
         Navigator.of(context).pop();
@@ -1329,7 +1297,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
       await repo.updateRelease(updatedRelease);
       if (mounted) {
         ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length, selectedIds.length == 1 ? '' : 's'))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length))),
         );
       }
     }
@@ -1601,7 +1569,7 @@ class _ReleaseDetailPageState extends ConsumerState<ReleaseDetailPage>
                               await repo.updateRelease(updatedRelease);
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showAppSnackBar(
-                                  SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length, selectedIds.length == 1 ? '' : 's'))),
+                                  SnackBar(content: Text(AppLocalizations.of(context)!.addedTracksToRelease(selectedIds.length))),
                                 );
                               }
                             }
@@ -2054,7 +2022,7 @@ class _FilesSectionState extends ConsumerState<_FilesSection> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (!fileExists)
-                    Tooltip(
+                    StandaloneTooltip(
                       message: AppLocalizations.of(context)!.fileNotFound,
                       child: const Icon(Icons.warning, color: Colors.red, size: 20),
                     ),
@@ -2122,6 +2090,10 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
   bool _isGeneratingMono = false;
   String? _monoFilePath;
   AudioFileInfo? _fileInfo;
+
+  /// The up-front read of the length is still out: the total holds a
+  /// placeholder, not 00:00, until it lands.
+  bool _probingDuration = true;
   WaveformPeaks? _peaks;
 
   void _attachListeners(AudioPlayer player, int gen) {
@@ -2281,11 +2253,15 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     // the file is played: the player only reports a duration once it has
     // loaded a source, and this row is worth reading without starting it.
     TrackDurationProbeService.probe(filePath).then((measured) {
-      if (!mounted || measured == null) return;
-      // Never clobber a duration the player has since reported for real —
-      // the probe can land after playback has started.
-      if (_duration > Duration.zero) return;
-      setState(() => _duration = measured);
+      if (!mounted) return;
+      setState(() {
+        _probingDuration = false;
+        // Never clobber a duration the player has since reported for real —
+        // the probe can land after playback has started.
+        if (measured != null && _duration == Duration.zero) {
+          _duration = measured;
+        }
+      });
     });
     ref.read(waveformCacheProvider.notifier).getOrExtract(
       filePath,
@@ -2445,13 +2421,6 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     });
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$minutes:$seconds';
-  }
-
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
@@ -2604,11 +2573,15 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            _formatDuration(_position),
+                            formatPlaybackTimestamp(_position),
                             style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                           ),
-                          Text(
-                            _formatDuration(_duration),
+                          PlayerReadout(
+                            text: _duration == Duration.zero && _probingDuration
+                                ? null
+                                : formatPlaybackTimestamp(_duration),
+                            templates: [formatPlaybackTimestamp(_duration)],
+                            loadingLabel: AppLocalizations.of(context)!.loading,
                             style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12),
                           ),
                         ],
@@ -2625,11 +2598,13 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
                 ),
                 SizedBox(
                   width: 80,
-                  child: Slider(
-                    value: _volume,
-                    min: 0.0,
-                    max: 1.0,
-                    onChanged: _setVolume,
+                  child: SliderOverlay(
+                    child: Slider(
+                      value: _volume,
+                      min: 0.0,
+                      max: 1.0,
+                      onChanged: _setVolume,
+                    ),
                   ),
                 ),
               ],
@@ -2638,7 +2613,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  Tooltip(
+                  StandaloneTooltip(
                     message:
                         '${AppLocalizations.of(context)!.monoToggleTooltip}  (M)',
                     child: Row(

@@ -25,6 +25,43 @@ void main() {
         '01:02:03',
       );
     });
+
+    test('withHours shows hours under an hour too', () {
+      expect(
+        formatPlaybackTimestamp(const Duration(minutes: 12), withHours: true),
+        '00:12:00',
+      );
+    });
+  });
+
+  group('formatPlaybackProgress', () {
+    test('under an hour is mm:ss on both sides', () {
+      expect(
+        formatPlaybackProgress(
+            const Duration(minutes: 1, seconds: 5), const Duration(minutes: 4)),
+        '01:05 / 04:00',
+      );
+    });
+
+    // Regression: players formatting with minutes and seconds only showed
+    // 1:12:00 of a 90-minute file as "12:00 / 30:00".
+    test('past an hour keeps the hours', () {
+      expect(
+        formatPlaybackProgress(const Duration(hours: 1, minutes: 12),
+            const Duration(hours: 1, minutes: 30)),
+        '01:12:00 / 01:30:00',
+      );
+    });
+
+    test('an hour-long file shows hours from the start, so its width holds',
+        () {
+      final early = formatPlaybackProgress(
+          const Duration(minutes: 12), const Duration(hours: 1, minutes: 30));
+      final late = formatPlaybackProgress(const Duration(hours: 1, minutes: 12),
+          const Duration(hours: 1, minutes: 30));
+      expect(early, '00:12:00 / 01:30:00');
+      expect(early.length, late.length);
+    });
   });
 
   group('buildTimestampedTodoText', () {

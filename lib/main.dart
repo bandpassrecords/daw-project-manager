@@ -178,7 +178,6 @@ Future<void> _triggerProjectScan() async {
           : l10n.scanComplete(
               l10n.rescan,
               foundCount,
-              foundCount == 1 ? '' : 's',
             );
       ScaffoldMessenger.of(ctx).showAppSnackBar(SnackBar(content: Text(msg)));
     });
@@ -340,7 +339,15 @@ Future<void> _runAutoSync(
       return;
     }
 
-    await status.syncNow(quiet: true);
+    await status.syncNow(
+      quiet: true,
+      mergeOnlyIfNewer: interval.syncsOnlyForLaunch(
+        lastSync: lastSync,
+        now: DateTime.now(),
+        syncOnStartup: syncOnStartup,
+        atLaunch: atLaunch,
+      ),
+    );
     if (kDebugMode) print('Auto-sync completed successfully');
   } catch (e) {
     // Recorded by syncDatabase and shown on the dashboard's cloud button.
@@ -897,6 +904,7 @@ Future<void> _main(List<String> args) async {
   // Read the remembered playback volume before any player can be built, so
   // the first one opens at the user's level rather than at full volume.
   await PlayerVolumeStore.load();
+  await PlayerBarHeightStore.load();
   await MidiPreviewVolumeStore.load();
   await MidiPreviewLoopStore.load();
   await MidiAcousticFeedbackStore.load();

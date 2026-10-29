@@ -328,9 +328,7 @@ DpmPluginMessage? parseDpmPluginMessage(String text) {
       : const <String, dynamic>{};
 
   final plugin = decoded['plugin'];
-  final runId = plugin is Map<String, dynamic> && plugin['runId'] is String && (plugin['runId'] as String).isNotEmpty
-      ? plugin['runId'] as String
-      : null;
+  final runId = plugin is Map<String, dynamic> ? dpmPluginRunIdOf(plugin['runId']) : null;
   final pluginVersion = plugin is Map<String, dynamic> && plugin['version'] is String ? plugin['version'] as String : '';
 
   final host = decoded['host'];
@@ -453,6 +451,12 @@ class DpmPluginDeparture {
   const DpmPluginDeparture(this.at, this.reason, {this.hostName = ''});
 }
 
+/// [value] when it is a run id the app can name a file after, else null. The
+/// plugin sends a dashed UUID; anything else — `../../x` above all, which
+/// made a goodbye delete `x.json` wherever that led — is no instance at all.
+String? dpmPluginRunIdOf(Object? value) =>
+    value is String && RegExp(r'^[A-Za-z0-9_-]{1,64}$').hasMatch(value) ? value : null;
+
 /// Reads `instances/<runId>.json`. Null when it isn't a linked heartbeat.
 DpmPluginInstance? parseDpmPluginHeartbeat(String text) {
   final Object? decoded;
@@ -462,10 +466,10 @@ DpmPluginInstance? parseDpmPluginHeartbeat(String text) {
     return null;
   }
   if (decoded is! Map<String, dynamic>) return null;
-  final runId = decoded['runId'];
+  final runId = dpmPluginRunIdOf(decoded['runId']);
   final project = _parseRef(decoded['project']);
   final lastSeen = dpmPluginTime(decoded['lastSeen']);
-  if (runId is! String || runId.isEmpty || project == null || lastSeen == null) return null;
+  if (runId == null || project == null || lastSeen == null) return null;
   final host = decoded['host'];
   final hostName = host is Map<String, dynamic> && host['name'] is String ? host['name'] as String : '';
   final pluginVersion = decoded['pluginVersion'] is String ? decoded['pluginVersion'] as String : '';

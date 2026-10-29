@@ -2,6 +2,7 @@ import 'dart:io';
 import '../services/app_audio_focus.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/search_utils.dart';
+import '../utils/playback_todo_utils.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'app_snack_bar.dart';
+import 'widgets/semantics_safe.dart';
 
 /// Playlists page - Android only
 /// Allows creating playlists with preview songs and playing them in sequence
@@ -895,13 +897,6 @@ class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
     });
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$minutes:$seconds';
-  }
-
   @override
   void dispose() {
     _audioPlayer.dispose();
@@ -1236,22 +1231,24 @@ class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
             child: Column(
               children: [
                 // Progress bar
-                Slider(
-                  value: _duration.inMilliseconds > 0
-                      ? _position.inMilliseconds / _duration.inMilliseconds
-                      : 0.0,
-                  onChanged: (value) async {
-                    final newPosition = Duration(
-                      milliseconds: (value * _duration.inMilliseconds).round(),
-                    );
-                    await _audioPlayer.seek(newPosition);
-                  },
+                SliderOverlay(
+                  child: Slider(
+                    value: _duration.inMilliseconds > 0
+                        ? _position.inMilliseconds / _duration.inMilliseconds
+                        : 0.0,
+                    onChanged: (value) async {
+                      final newPosition = Duration(
+                        milliseconds: (value * _duration.inMilliseconds).round(),
+                      );
+                      await _audioPlayer.seek(newPosition);
+                    },
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(_formatDuration(_position)),
-                    Text(_formatDuration(_duration)),
+                    Text(formatPlaybackTimestamp(_position)),
+                    Text(formatPlaybackTimestamp(_duration)),
                   ],
                 ),
                 const SizedBox(height: 16),

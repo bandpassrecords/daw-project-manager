@@ -284,25 +284,19 @@
       }
     }
   },
-  "projectsHidden": "{count} projet{plural} masqué{plural}.",
+  "projectsHidden": "{count, plural, one{{count} projet masqué.} other{{count} projets masqués.}}",
   "@projectsHidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "projectsUnhidden": "{count} projet{plural} affiché{plural}.",
+  "projectsUnhidden": "{count, plural, one{{count} projet affiché.} other{{count} projets affichés.}}",
   "@projectsUnhidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -324,37 +318,28 @@
   },
   "deleteMissingProjects": "Supprimer les manquants",
   "deleteMissingProjectsTitle": "Supprimer les projets manquants ?",
-  "deleteMissingProjectsConfirm": "{count} projet{plural} dont le fichier est introuvable sur cette machine passeront dans Supprimés récemment (Réglages > Dossiers de projets), où vous pourrez les restaurer avec leurs notes, échéances et historique des sessions pendant 30 jours.",
+  "deleteMissingProjectsConfirm": "{count, plural, one{{count} projet dont le fichier est introuvable sur cette machine passera dans Supprimés récemment (Réglages > Dossiers de projets), où vous pourrez le restaurer avec ses notes, échéances et historique des sessions pendant 30 jours.} other{{count} projets dont les fichiers sont introuvables sur cette machine passeront dans Supprimés récemment (Réglages > Dossiers de projets), où vous pourrez les restaurer avec leurs notes, échéances et historique des sessions pendant 30 jours.}}",
   "@deleteMissingProjectsConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteMissingProjectsConfirmButton": "Supprimer",
-  "missingProjectsDeleted": "{count} projet{plural} manquant supprimé.",
+  "missingProjectsDeleted": "{count, plural, one{{count} projet manquant supprimé.} other{{count} projets manquants supprimés.}}",
   "@missingProjectsDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "deleteMissingProjectsAlsoDeleteReleaseTracked": "Supprimer également {count} projet{plural} faisant partie d'une sortie (les retire aussi de cette sortie)",
+  "deleteMissingProjectsAlsoDeleteReleaseTracked": "{count, plural, one{Supprimer également {count} projet faisant partie d'une sortie (le retire aussi de cette sortie)} other{Supprimer également {count} projets faisant partie d'une sortie (les retire aussi de cette sortie)}}",
   "@deleteMissingProjectsAlsoDeleteReleaseTracked": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -397,21 +382,18 @@
   "enterReleaseTitle": "Entrez le Titre de la Sortie",
   "releaseTitle": "Titre de la Sortie",
   "enterReleaseTitleHint": "Entrez le titre de la sortie",
-  "metadataExtractedForProjects": "Métadonnées extraites pour {count} projet{plural}. {failures}",
+  "metadataExtractedForProjects": "{count, plural, one{Métadonnées extraites pour {count} projet.} other{Métadonnées extraites pour {count} projets.}} {failures}",
   "@metadataExtractedForProjects": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "failures": {
         "type": "String"
       }
     }
   },
-  "extractionFailures": "{count} échoué{plural}.",
+  "extractionFailures": "{count, plural, one{{count} a échoué.} other{{count} ont échoué.}}",
   "@extractionFailures": {
     "placeholders": {
       "count": {
@@ -452,7 +434,7 @@
       }
     }
   },
-  "scanComplete": "{type} terminé: {count} projet{plural} ajouté{plural}/mis à jour{plural}.",
+  "scanComplete": "{count, plural, one{{type} terminé: {count} projet ajouté/mis à jour.} other{{type} terminé: {count} projets ajoutés/mis à jour.}}",
   "@scanComplete": {
     "placeholders": {
       "type": {
@@ -460,21 +442,15 @@
       },
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "scanCancelled": "Scan annulé.",
-  "scanFailuresSnackbar": "{count} projet{plural} n'a/n'ont pas pu être chargé{plural}.",
+  "scanFailuresSnackbar": "{count, plural, one{{count} projet n'a pas pu être chargé.} other{{count} projets n'ont pas pu être chargés.}}",
   "@scanFailuresSnackbar": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -484,14 +460,11 @@
   "@scanFailuresDialogTitle": {},
   "scanFailuresDialogIntro": "Ces fichiers n'ont pas pu être lus pendant le scan (ils ont peut-être été supprimés, déplacés ou verrouillés par un autre programme) :",
   "@scanFailuresDialogIntro": {},
-  "projectsSelected": "{count} projet{plural} sélectionné{plural}",
+  "projectsSelected": "{count, plural, one{{count} projet sélectionné} other{{count} projets sélectionnés}}",
   "@projectsSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -531,17 +504,14 @@
       }
     }
   },
-  "releasesSelected": "{count} sortie{plural} sélectionnée{plural}",
+  "releasesSelected": "{count, plural, one{{count} sortie sélectionnée} other{{count} sorties sélectionnées}}",
   "deleteSelectedReleases": "Supprimer la sélection",
-  "deleteSelectedReleasesConfirm": "Voulez-vous vraiment supprimer {count} sortie{plural} ?",
-  "releasesDeleted": "{count} sortie{plural} supprimée{plural}",
+  "deleteSelectedReleasesConfirm": "{count, plural, one{Voulez-vous vraiment supprimer {count} sortie ?} other{Voulez-vous vraiment supprimer {count} sorties ?}}",
+  "releasesDeleted": "{count, plural, one{{count} sortie supprimée} other{{count} sorties supprimées}}",
   "@releasesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -549,9 +519,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -559,9 +526,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -595,14 +559,11 @@
   },
   "addTracks": "Ajouter des Pistes",
   "allProjectsAlreadyInRelease": "Tous les projets sont déjà dans cette sortie.",
-  "addedTracksToRelease": "Ajouté{plural} {count} piste{plural} à la sortie.",
+  "addedTracksToRelease": "{count, plural, one{{count} piste ajoutée à la sortie.} other{{count} pistes ajoutées à la sortie.}}",
   "@addedTracksToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -615,14 +576,11 @@
     }
   },
   "addFiles": "Ajouter des Fichiers",
-  "addedFilesToRelease": "Ajouté{plural} {count} fichier{plural} à la sortie.",
+  "addedFilesToRelease": "{count, plural, one{{count} fichier ajouté à la sortie.} other{{count} fichiers ajoutés à la sortie.}}",
   "@addedFilesToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -751,7 +709,7 @@
   "title": "Titre",
   "tracks": "Pistes",
   "description": "Description",
-  "selectTracksToInclude": "Sélectionner les pistes à inclure dans la sortie ({count} sélectionnée{plural})",
+  "selectTracksToInclude": "Sélectionner les pistes à inclure dans la sortie ({count, plural, one{{count} sélectionnée} other{{count} sélectionnées}})",
   "@selectTracksToInclude": {
     "placeholders": {
       "count": {
@@ -841,37 +799,28 @@
       }
     }
   },
-  "templatesSelected": "{count} modèle{plural} sélectionné{plural}",
+  "templatesSelected": "{count, plural, one{{count} modèle sélectionné} other{{count} modèles sélectionnés}}",
   "@templatesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteSelectedTemplates": "Supprimer la sélection",
-  "deleteSelectedTemplatesConfirm": "Voulez-vous vraiment supprimer {count} modèle{plural} ?",
+  "deleteSelectedTemplatesConfirm": "{count, plural, one{Voulez-vous vraiment supprimer {count} modèle ?} other{Voulez-vous vraiment supprimer {count} modèles ?}}",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "templatesDeleted": "{count} modèle{plural} supprimé{plural}",
+  "templatesDeleted": "{count, plural, one{{count} modèle supprimé} other{{count} modèles supprimés}}",
   "@templatesDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -953,36 +902,27 @@
   "projectPhaseFinished": "Terminé",
   "changeStatus": "Changer la Phase",
   "selectNewStatus": "Sélectionnez la nouvelle phase:",
-  "statusChangedForProjects": "Phase changée en \"{status}\" pour {count} projet{plural}",
+  "statusChangedForProjects": "{count, plural, one{Phase changée en \"{status}\" pour {count} projet} other{Phase changée en \"{status}\" pour {count} projets}}",
   "@statusChangedForProjects": {
     "description": "Message de succès lorsque le statut est changé pour plusieurs projets",
     "placeholders": {
       "count": {
         "type": "int"
       },
-      "plural": {
-        "type": "String"
-      },
       "status": {
         "type": "String"
       }
     }
   },
-  "statusChangedForProjectsWithErrors": "Phase changée en \"{status}\" pour {successCount} projet{successPlural}, {failCount} a échoué{failPlural}",
+  "statusChangedForProjectsWithErrors": "Phase changée en \"{status}\" pour {successCount, plural, one{{successCount} projet} other{{successCount} projets}}, {failCount, plural, one{{failCount} a échoué} other{{failCount} ont échoué}}",
   "@statusChangedForProjectsWithErrors": {
     "description": "Message lorsque le changement de statut échoue partiellement",
     "placeholders": {
       "successCount": {
         "type": "int"
       },
-      "successPlural": {
-        "type": "String"
-      },
       "failCount": {
         "type": "int"
-      },
-      "failPlural": {
-        "type": "String"
       },
       "status": {
         "type": "String"
@@ -1282,6 +1222,10 @@
   "invalidBackupFileFormat": "Format de fichier de sauvegarde invalide : version manquante",
   "profileNameRequiredForNewProfile": "Le nom du profil est requis lors de la création d'un nouveau profil",
   "currentProfileRequired": "Le profil actuel est requis pour le mode fusionner ou remplacer",
+  "importLaunchCommandsTitle": "Importer les programmes de « Lancer dans le DAW » ?",
+  "importLaunchCommandsMessage": "Cette sauvegarde désigne des programmes que « Lancer dans le DAW » exécuterait sur cet ordinateur. Ne les importez que si vous avez créé la sauvegarde vous-même.",
+  "importLaunchCommandsSkip": "Ne pas importer",
+  "importLaunchCommandsImport": "Les importer",
   "previewSong": "Chanson d'Aperçu",
   "previewSongRemoved": "Chanson d'aperçu supprimée",
   "previewSongAdded": "Chanson d'aperçu ajoutée",
@@ -1310,12 +1254,12 @@
   "dateWeeksAgo": "{count, plural, =1{il y a 1 semaine} other{il y a {count} semaines}}",
   "dateMonthsAgo": "{count, plural, =1{il y a 1 mois} other{il y a {count} mois}}",
   "dateYearsAgo": "{count, plural, =1{il y a 1 an} other{il y a {count} ans}}",
-  "ageYearsMonths": "{years} an{yearPlural}, {months} mois",
-  "ageYears": "{years} an{plural}",
-  "ageMonthsDays": "{months} mois, {days} jour{dayPlural}",
+  "ageYearsMonths": "{years, plural, one{{years} an} other{{years} ans}}, {months} mois",
+  "ageYears": "{years, plural, one{{years} an} other{{years} ans}}",
+  "ageMonthsDays": "{months} mois, {days, plural, one{{days} jour} other{{days} jours}}",
   "ageMonths": "{months} mois",
-  "ageDays": "{days} jour{plural}",
-  "ageHours": "{hours} heure{plural}",
+  "ageDays": "{days, plural, one{{days} jour} other{{days} jours}}",
+  "ageHours": "{hours, plural, one{{hours} heure} other{{hours} heures}}",
   "ageJustNow": "À l'instant",
   "ageLessThanHour": "Moins d'une heure",
   "viewProfile": "Voir le Profil",
@@ -1743,27 +1687,21 @@
   "@additionalAssets": {
     "description": "Section header for additional assets"
   },
-  "downloadNFiles": "Télécharger {count} fichier{plural}",
+  "downloadNFiles": "{count, plural, one{Télécharger {count} fichier} other{Télécharger {count} fichiers}}",
   "@downloadNFiles": {
     "description": "Button label to download N files",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "nFilesSavedTo": "{count} fichier{plural} enregistré dans {filename}",
+  "nFilesSavedTo": "{count, plural, one{{count} fichier enregistré dans {filename}} other{{count} fichiers enregistrés dans {filename}}}",
   "@nFilesSavedTo": {
     "description": "Success message when N files are saved",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "filename": {
         "type": "String"
@@ -3520,14 +3458,11 @@
       }
     }
   },
-  "attachmentExportSkippedMissing": "{count} fichier{plural} introuvable{plural} ignoré{plural}",
+  "attachmentExportSkippedMissing": "{count, plural, one{{count} fichier introuvable ignoré} other{{count} fichiers introuvables ignorés}}",
   "@attachmentExportSkippedMissing": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -4498,5 +4433,32 @@
   "legacyInstallMessage": "Une ancienne copie de DAW Project Manager, issue du précédent programme d’installation, est encore installée. Celle-ci la remplace et se met désormais à jour toute seule. Supprimer l’ancienne copie ne touche pas à votre bibliothèque.",
   "legacyInstallRemove": "La supprimer",
   "legacyInstallKeep": "La garder",
-  "legacyInstallRemoveFailed": "Impossible de lancer le programme de désinstallation de l’ancienne copie."
+  "legacyInstallRemoveFailed": "Impossible de lancer le programme de désinstallation de l’ancienne copie.",
+  "missingPreviewSongsTitle": "Chansons d'aperçu manquantes",
+  "missingPreviewSongsSubtitle": "Les chansons d'aperçu du profil actuel que cet ordinateur ne trouve pas. Vérifiez-les, puis téléchargez, recherchez ou retirez chacune : rien ne change tant que vous n'avez pas choisi.",
+  "missingPreviewSongsCheck": "Vérifier",
+  "missingPreviewSongsChecking": "Vérification…",
+  "missingPreviewSongsNone": "Toutes les chansons d'aperçu sont à leur place.",
+  "missingPreviewSongsSignInHint": "Connectez-vous à Google Drive pour les y chercher aussi.",
+  "missingPreviewOnDriveTitle": "Sur Google Drive ({count})",
+  "missingPreviewOnDriveDescription": "Une sauvegarde contient ces chansons. Les télécharger en place une copie sur cet ordinateur.",
+  "missingPreviewOtherComputerTitle": "D'un autre ordinateur ({count})",
+  "missingPreviewOtherComputerDescription": "Leurs chemins appartiennent à un autre ordinateur, où elles se lisent peut-être très bien. Choisissez un fichier ici pour les lire aussi sur cet ordinateur.",
+  "missingPreviewFolderMissingTitle": "Dossier introuvable ({count})",
+  "missingPreviewFolderMissingDescription": "Leur dossier n'est pas là non plus : un disque non connecté, ou un dossier déplacé ou supprimé. Connectez le disque et vérifiez à nouveau avant de retirer quoi que ce soit.",
+  "missingPreviewFileMissingTitle": "Fichier introuvable ({count})",
+  "missingPreviewFileMissingDescription": "Le dossier est là, mais pas le fichier.",
+  "missingPreviewDownload": "Télécharger",
+  "missingPreviewDownloadAll": "Tout télécharger",
+  "missingPreviewFindAll": "Tout rechercher",
+  "missingPreviewRemoveAll": "Tout retirer",
+  "missingPreviewRemoveAllTitle": "{count, plural, one{Retirer {count} chanson d'aperçu ?} other{Retirer {count} chansons d'aperçu ?}}",
+  "missingPreviewRemoveBody": "Elles ne sont retirées que sur cet ordinateur, et aucun fichier n'est supprimé. Si un autre appareil a encore l'une de ces chansons, la prochaine synchronisation la ramène ici.",
+  "missingPreviewDownloadedResult": "{done} sur {total} téléchargées.",
+  "missingPreviewFoundResult": "Mixdown trouvé pour {found} sur {total}.",
+  "missingPreviewDownloadFailed": "Impossible de télécharger la chanson de {name}.",
+  "missingPreviewAutoDetected": "Détectée automatiquement",
+  "missingPreviewRemoveEverything": "Retirer toutes les introuvables ({count})",
+  "missingPreviewRemoveIncludesDrive": "Parmi elles, {count} peuvent encore être téléchargées depuis Google Drive.",
+  "missingPreviewRemoveIncludesOtherComputer": "Parmi elles, {count} se lisent peut-être encore sur un autre ordinateur."
 }

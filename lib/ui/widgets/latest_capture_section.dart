@@ -14,6 +14,7 @@ import '../../services/app_audio_focus.dart';
 import '../../services/player_volume_store.dart';
 import '../../utils/track_duration.dart';
 import '../app_snack_bar.dart';
+import 'semantics_safe.dart';
 
 /// The project page's "Latest capture": the last pass the DAW plugin
 /// recorded, beside the preview song and never in its place. Plays on its
@@ -201,12 +202,14 @@ class LatestCaptureView extends StatelessWidget {
                   onPressed: available ? onPlayPause : null,
                 ),
                 Expanded(
-                  child: Slider(
-                    value: position.inMilliseconds.clamp(0, length.inMilliseconds).toDouble(),
-                    max: length.inMilliseconds > 0 ? length.inMilliseconds.toDouble() : 1,
-                    onChanged: available && length > Duration.zero
-                        ? (v) => onSeek(Duration(milliseconds: v.round()))
-                        : null,
+                  child: SliderOverlay(
+                    child: Slider(
+                      value: position.inMilliseconds.clamp(0, length.inMilliseconds).toDouble(),
+                      max: length.inMilliseconds > 0 ? length.inMilliseconds.toDouble() : 1,
+                      onChanged: available && length > Duration.zero
+                          ? (v) => onSeek(Duration(milliseconds: v.round()))
+                          : null,
+                    ),
                   ),
                 ),
                 Text(

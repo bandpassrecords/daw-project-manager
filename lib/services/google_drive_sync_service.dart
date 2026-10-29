@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:daw_project_manager/utils/mobile_utils.dart';
 import 'package:flutter/foundation.dart';
@@ -51,6 +52,10 @@ import '../utils/app_paths.dart'
 import '../config/oauth_config.dart' show desktopClientSecret, desktopClientId, androidWebClientId;
 import 'plugin_bridge/plugin_protocol.dart' show dpmPluginCaptureFileInUse, dpmPluginPreviewFolderName;
 import 'plugin_capture_sync.dart';
+import 'backup_unchanged.dart';
+import 'file_hash_cache.dart';
+import 'preview_song_sync.dart';
+import '../utils/safe_file_name.dart';
 import '../utils/sync_time.dart';
 
 part 'google_drive_capture_sync.dart';
@@ -664,6 +669,17 @@ class GoogleDriveSyncService {
     return remoteModified.isAfter(lastSeen.add(const Duration(seconds: 5)));
   }
 
+  /// Whether [backup] is newer than the Drive copy this device last merged
+  /// or wrote ([isRemoteNewer]).
+  Future<bool> _holdsUnmerged(FetchedBackup backup) async {
+    final lastSeen = await _getTimestamp(_lastSeenRemoteKey);
+    return isRemoteNewer(
+      remoteModified: backup.info.modifiedTime,
+      lastSeen: lastSeen ?? await getLastBackupDownloadTimestamp(),
+      lastSeenIsDriveTime: lastSeen != null,
+    );
+  }
+
   Future<void> _rememberRemote(DateTime driveModified) async {
     await _putTimestamp(_lastSeenRemoteKey, driveModified.toUtc());
     await saveLastBackupDownloadTimestamp(driveModified.toUtc());
@@ -912,23 +928,27 @@ class GoogleDriveSyncService {
       server.listen((request) async {
         if (codeCompleter.isCompleted) return;
         final uri = request.uri;
+        final isCallback = uri.queryParameters.containsKey('code') ||
+            uri.queryParameters.containsKey('error');
+        if (isCallback && uri.queryParameters['state'] != state) {
+          // Not Google's answer to this sign-in: any web page can send the
+          // browser here. It is answered and ignored — ending the wait on it
+          // let any page cancel a sign-in, and taking its code would sign
+          // the app into someone else's Drive.
+          if (kDebugMode) print('State mismatch in OAuth callback');
+          request.response
+            ..statusCode = 400
+            ..headers.contentType = ContentType.html
+            ..write(_loopbackResponsePage(
+              heading: pageTexts.errorHeading,
+              message: pageTexts.errorMessage,
+              isError: true,
+            ));
+          await request.response.close();
+          return;
+        }
         if (uri.queryParameters.containsKey('code')) {
           final code = uri.queryParameters['code'];
-          final returnedState = uri.queryParameters['state'];
-          if (returnedState != state) {
-            if (kDebugMode) print('State mismatch in OAuth callback');
-            request.response
-              ..statusCode = 400
-              ..headers.contentType = ContentType.html
-              ..write(_loopbackResponsePage(
-                heading: pageTexts.errorHeading,
-                message: pageTexts.errorMessage,
-                isError: true,
-              ));
-            await request.response.close();
-            if (!codeCompleter.isCompleted) codeCompleter.complete(null);
-            return;
-          }
           request.response
             ..statusCode = 200
             ..headers.contentType = ContentType.html
@@ -1070,8 +1090,11 @@ class GoogleDriveSyncService {
 </html>''';
   }
 
+  /// The OAuth `state`: 32 random bytes. It was a hash of the clock and the
+  /// (public) client id, which a page racing the sign-in could guess.
   static String _generateState() {
-    final bytes = sha256.convert(utf8.encode('${DateTime.now().microsecondsSinceEpoch}-$_desktopClientId')).bytes;
+    final random = Random.secure();
+    final bytes = List<int>.generate(32, (_) => random.nextInt(256));
     return base64Url.encode(bytes).replaceAll('=', '');
   }
 
@@ -1733,7 +1756,7 @@ class GoogleDriveSyncService {
 
     try {
       // Calculate current file hash
-      final currentHash = await _calculateFileHash(localFilePath);
+      final currentHash = await _fileHash(localFilePath);
       
       // If hash exists and matches, skip upload
       if (existingHash != null && existingHash == currentHash) {
@@ -1844,7 +1867,7 @@ class GoogleDriveSyncService {
 
     try {
       // Calculate current file hash
-      final currentHash = await _calculateFileHash(localFilePath);
+      final currentHash = await _fileHash(localFilePath);
       
       // If hash exists and matches, skip upload
       if (existingHash != null && existingHash == currentHash) {
@@ -1951,7 +1974,7 @@ class GoogleDriveSyncService {
 
     try {
       // Calculate current file hash
-      final currentHash = await _calculateFileHash(localFilePath);
+      final currentHash = await _fileHash(localFilePath);
       
       // If hash exists and matches, skip upload
       if (existingHash != null && existingHash == currentHash) {
@@ -2061,7 +2084,7 @@ class GoogleDriveSyncService {
     }
 
     try {
-      final currentHash = await _calculateFileHash(localFilePath);
+      final currentHash = await _fileHash(localFilePath);
       final fileExtension = path.extension(localFilePath);
       final driveFileName = '${projectId}_cover$fileExtension';
       final coverArtFolderId = await _ensureProjectCoverArtFolder();
@@ -2126,6 +2149,61 @@ class GoogleDriveSyncService {
     }
   }
 
+  /// Downloads the Drive file [driveFileId] to [localFilePath], whole or not
+  /// at all: written to a `.part` beside it, checked against [expectedHash]
+  /// when there is one, and only then put in place of whatever was there. A
+  /// file already matching the hash isn't downloaded again.
+  ///
+  /// Returns the path, or null when the download failed or arrived unlike
+  /// its hash. The file already there, if any, is left as it was and the next
+  /// sync tries again — before, a mismatch was only logged and the file kept,
+  /// and an interrupted download left a truncated file at the final path.
+  Future<String?> _downloadVerified(String driveFileId, String localFilePath, String? expectedHash) async {
+    final file = File(localFilePath);
+    if (expectedHash != null && await file.exists()) {
+      try {
+        if (await _fileHash(localFilePath) == expectedHash) return localFilePath;
+      } catch (_) {
+        // Unreadable: download it again.
+      }
+    }
+
+    final partial = File('$localFilePath.part');
+    try {
+      await file.parent.create(recursive: true);
+      // A fresh Media handle on every attempt, so a retry never reuses a
+      // half-read stream; openWrite starts the .part over each time.
+      await _withRetry(() async {
+        final media = (await _driveApi!.files.get(
+          driveFileId,
+          downloadOptions: drive.DownloadOptions.fullMedia,
+        )) as drive.Media;
+        final sink = partial.openWrite();
+        try {
+          await for (final chunk in media.stream) {
+            sink.add(chunk);
+          }
+        } finally {
+          await sink.close();
+        }
+      });
+      if (expectedHash != null && await _calculateFileHash(partial.path) != expectedHash) {
+        if (kDebugMode) print('Download of $driveFileId does not match its hash; keeping what was there');
+        await partial.delete();
+        return null;
+      }
+      if (await file.exists()) await file.delete();
+      await partial.rename(localFilePath);
+      return localFilePath;
+    } catch (e) {
+      if (kDebugMode) print('Download of $driveFileId failed: $e');
+      try {
+        if (await partial.exists()) await partial.delete();
+      } catch (_) {}
+      return null;
+    }
+  }
+
   /// Download a project's cover art from Google Drive to local storage (#110).
   ///
   /// Returns the local file path, or null if the download failed. Unlike a
@@ -2154,59 +2232,10 @@ class GoogleDriveSyncService {
         await coverArtDir.create(recursive: true);
       }
 
-      final ext = fileExtension ?? '.jpg';
-      final localFilePath = path.join(coverArtPath, '${projectId}_cover$ext');
-
-      final existingFile = File(localFilePath);
-      if (await existingFile.exists() && expectedHash != null) {
-        try {
-          final existingHash = await _calculateFileHash(localFilePath);
-          if (existingHash == expectedHash) {
-            if (kDebugMode) {
-              print('Project cover art already downloaded with matching hash, skipping download');
-            }
-            return localFilePath;
-          }
-          await existingFile.delete();
-        } catch (e) {
-          if (kDebugMode) print('Error checking existing project cover art hash: $e, will re-download');
-          if (await existingFile.exists()) {
-            await existingFile.delete();
-          }
-        }
-      }
-
-      final file = File(localFilePath);
-      await _withRetry(() async {
-        final media = (await _driveApi!.files.get(
-          driveFileId,
-          downloadOptions: drive.DownloadOptions.fullMedia,
-        )) as drive.Media;
-
-        if (await file.exists()) await file.delete();
-
-        final sink = file.openWrite();
-        try {
-          await for (final chunk in media.stream) {
-            sink.add(chunk);
-          }
-        } catch (e) {
-          await sink.close();
-          if (await file.exists()) await file.delete();
-          rethrow;
-        }
-        await sink.close();
-      });
-
-      if (expectedHash != null) {
-        final downloadedHash = await _calculateFileHash(localFilePath);
-        if (downloadedHash != expectedHash && kDebugMode) {
-          print('WARNING: Downloaded project cover art hash mismatch! Expected: $expectedHash, Got: $downloadedHash');
-        }
-      }
-
-      if (kDebugMode) print('Downloaded project cover art to: $localFilePath');
-      return localFilePath;
+      final ext = safeExtension(fileExtension, fallback: '.jpg');
+      final localFilePath = safeFileIn(coverArtPath, '${projectId}_cover$ext');
+      if (localFilePath == null) return null;
+      return await _downloadVerified(driveFileId, localFilePath, expectedHash);
     } catch (e) {
       if (kDebugMode) print('Error downloading project cover art: $e');
       return null;
@@ -2216,6 +2245,101 @@ class GoogleDriveSyncService {
   /// Download preview song file from Google Drive to local storage
   /// Returns the local file path, or null if download failed
   /// Uses hash comparison to avoid unnecessary downloads
+  /// Every file in Drive's preview songs folder, read page by page.
+  Future<List<PreviewSongOnDrive>> _listPreviewSongsOnDrive() async {
+    final folderId = await _ensurePreviewSongsFolder();
+    final found = <PreviewSongOnDrive>[];
+    String? pageToken;
+    do {
+      final page = await _driveApi!.files.list(
+        q: "parents in '$folderId' and trashed=false",
+        spaces: 'drive',
+        pageSize: 1000,
+        pageToken: pageToken,
+        $fields: 'nextPageToken, files(id, name, modifiedTime)',
+      );
+      for (final f in page.files ?? const <drive.File>[]) {
+        if (f.id == null || f.name == null) continue;
+        found.add(PreviewSongOnDrive(fileId: f.id!, name: f.name!, modifiedTime: f.modifiedTime));
+      }
+      pageToken = page.nextPageToken;
+    } while (pageToken != null);
+    return found;
+  }
+
+  /// Fills in, for each of [projects] that still has a preview song but no
+  /// entry in [files] yet, what [carriedPreviewSongEntry] keeps for it.
+  /// Drive's folder is read only when there is such a project, and once.
+  Future<void> _carryPreviewSongEntries({
+    required List<MusicProject> projects,
+    required Map<String, PreviewSongEntry> previous,
+    required bool includeAutoDetected,
+    required Map<String, String> files,
+    required Map<String, String> hashes,
+    required Map<String, String> names,
+    required Future<List<PreviewSongOnDrive>> Function() listOnDrive,
+  }) async {
+    final unlisted = [
+      for (final project in projects)
+        if (!files.containsKey(project.id) &&
+            previewSongWanted(project, includeAutoDetected: includeAutoDetected))
+          project,
+    ];
+    if (unlisted.isEmpty) return;
+    Map<String, PreviewSongOnDrive>? onDrive;
+    try {
+      onDrive = previewSongsByProject(await listOnDrive());
+    } catch (e) {
+      // Unread, entries are kept as the previous backup had them.
+      if (kDebugMode) print('Could not list the preview songs on Drive: $e');
+    }
+    for (final project in unlisted) {
+      final entry = carriedPreviewSongEntry(
+        project: project,
+        includeAutoDetected: includeAutoDetected,
+        previous: previous[project.id],
+        onDrive: onDrive,
+      );
+      if (entry == null) continue;
+      files[project.id] = entry.fileId;
+      if (entry.hash != null) {
+        hashes[project.id] = entry.hash!;
+      } else {
+        hashes.remove(project.id);
+      }
+      if (entry.fileName != null) names.putIfAbsent(project.id, () => entry.fileName!);
+      if (kDebugMode) {
+        print('  Kept the preview song on Drive for project ${project.id}: no file for it here');
+      }
+    }
+  }
+
+  /// The preview songs Drive has, by project id (see [previewSongsAvailable]),
+  /// for Settings' review of missing preview songs. A backup that can't be
+  /// read still leaves the files in Drive's folder to go by.
+  Future<Map<String, PreviewSongEntry>> previewSongsOnDrive() async {
+    var listed = const <String, PreviewSongEntry>{};
+    try {
+      listed = previewSongEntriesFrom(await downloadDatabase());
+    } catch (e) {
+      if (kDebugMode) print('No backup to read preview songs from: $e');
+    }
+    return previewSongsAvailable(
+      listed: listed,
+      onDrive: previewSongsByProject(await _listPreviewSongsOnDrive()),
+    );
+  }
+
+  /// Downloads [entry], the song Drive has for [projectId], into this app's
+  /// preview songs folder. The local path, or null when it couldn't.
+  Future<String?> downloadPreviewSong(String projectId, PreviewSongEntry entry) =>
+      downloadPreviewSongFile(
+        driveFileId: entry.fileId,
+        projectId: projectId,
+        expectedHash: entry.hash,
+        fileExtension: entry.fileName == null ? null : path.extension(entry.fileName!),
+      );
+
   Future<String?> downloadPreviewSongFile({
     required String driveFileId,
     required String projectId,
@@ -2234,87 +2358,10 @@ class GoogleDriveSyncService {
     try {
       // Get local preview songs directory
       final previewSongsDir = await getPreviewSongsPath();
-      final ext = fileExtension ?? '.mp3';
-      final localFilePath = path.join(previewSongsDir, '${projectId}_preview$ext');
-      
-      // Check if file already exists and hash matches
-      final existingFile = File(localFilePath);
-      if (await existingFile.exists() && expectedHash != null) {
-        try {
-          final existingHash = await _calculateFileHash(localFilePath);
-          if (existingHash == expectedHash) {
-            if (kDebugMode) {
-              print('Preview song already downloaded with matching hash, skipping download');
-            }
-            return localFilePath;
-          } else {
-            if (kDebugMode) {
-              print('Preview song hash mismatch (local: $existingHash, expected: $expectedHash), re-downloading...');
-            }
-            // Delete old file
-            await existingFile.delete();
-          }
-        } catch (e) {
-          if (kDebugMode) print('Error checking existing file hash: $e, will re-download');
-          // If hash check fails, delete and re-download
-          if (await existingFile.exists()) {
-            await existingFile.delete();
-          }
-        }
-      }
-      
-      if (kDebugMode) {
-        print('Downloading preview song from Drive: $driveFileId');
-      }
-      
-      // Download file using Drive API, retrying the full download (including
-      // stream consumption) so transient network errors mid-stream are retried.
-      final file = File(localFilePath);
-      await _withRetry(() async {
-        // Get a fresh Media handle on every attempt so the stream is not reused.
-        final media = (await _driveApi!.files.get(
-          driveFileId,
-          downloadOptions: drive.DownloadOptions.fullMedia,
-        )) as drive.Media;
-
-        // Delete any partial file left by a previous failed attempt.
-        if (await file.exists()) await file.delete();
-
-        final sink = file.openWrite();
-        try {
-          await for (final chunk in media.stream) {
-            sink.add(chunk);
-          }
-        } catch (e) {
-          // Always close the sink and remove the partial file before rethrowing
-          // so we never leak file handles or leave corrupt data on disk.
-          await sink.close();
-          if (await file.exists()) await file.delete();
-          rethrow;
-        }
-        await sink.close();
-      });
-
-      // Verify hash if expected hash was provided
-      if (expectedHash != null) {
-        final downloadedHash = await _calculateFileHash(localFilePath);
-        if (downloadedHash != expectedHash) {
-          if (kDebugMode) {
-            print('WARNING: Downloaded file hash mismatch! Expected: $expectedHash, Got: $downloadedHash');
-          }
-          // Still return the file, but log the warning
-        } else {
-          if (kDebugMode) {
-            print('Downloaded file hash verified: $downloadedHash');
-          }
-        }
-      }
-
-      if (kDebugMode) {
-        print('Downloaded preview song to: $localFilePath');
-      }
-
-      return localFilePath;
+      final ext = safeExtension(fileExtension, fallback: '.mp3');
+      final localFilePath = safeFileIn(previewSongsDir, '${projectId}_preview$ext');
+      if (localFilePath == null) return null;
+      return await _downloadVerified(driveFileId, localFilePath, expectedHash);
     } catch (e) {
       if (kDebugMode) print('Error downloading preview song: $e');
       return null;
@@ -2347,83 +2394,10 @@ class GoogleDriveSyncService {
         await profilePhotosDir.create(recursive: true);
       }
       
-      final ext = fileExtension ?? '.jpg';
-      final localFilePath = path.join(profilePhotosDir.path, '${profileId}_photo$ext');
-      
-      // Check if file already exists and hash matches
-      final existingFile = File(localFilePath);
-      if (await existingFile.exists() && expectedHash != null) {
-        try {
-          final existingHash = await _calculateFileHash(localFilePath);
-          if (existingHash == expectedHash) {
-            if (kDebugMode) {
-              print('Profile photo already downloaded with matching hash, skipping download');
-            }
-            return localFilePath;
-          } else {
-            if (kDebugMode) {
-              print('Profile photo hash mismatch (local: $existingHash, expected: $expectedHash), re-downloading...');
-            }
-            // Delete old file
-            await existingFile.delete();
-          }
-        } catch (e) {
-          if (kDebugMode) print('Error checking existing profile photo hash: $e, will re-download');
-          // If hash check fails, delete and re-download
-          if (await existingFile.exists()) {
-            await existingFile.delete();
-          }
-        }
-      }
-      
-      if (kDebugMode) {
-        print('Downloading profile photo from Drive: $driveFileId');
-      }
-      
-      // Download file using Drive API, retrying the full download (including
-      // stream consumption) so transient network errors mid-stream are retried.
-      final file = File(localFilePath);
-      await _withRetry(() async {
-        final media = (await _driveApi!.files.get(
-          driveFileId,
-          downloadOptions: drive.DownloadOptions.fullMedia,
-        )) as drive.Media;
-
-        if (await file.exists()) await file.delete();
-
-        final sink = file.openWrite();
-        try {
-          await for (final chunk in media.stream) {
-            sink.add(chunk);
-          }
-        } catch (e) {
-          await sink.close();
-          if (await file.exists()) await file.delete();
-          rethrow;
-        }
-        await sink.close();
-      });
-
-      // Verify hash if expected hash was provided
-      if (expectedHash != null) {
-        final downloadedHash = await _calculateFileHash(localFilePath);
-        if (downloadedHash != expectedHash) {
-          if (kDebugMode) {
-            print('WARNING: Downloaded profile photo hash mismatch! Expected: $expectedHash, Got: $downloadedHash');
-          }
-          // Still return the file, but log the warning
-        } else {
-          if (kDebugMode) {
-            print('Downloaded profile photo hash verified: $downloadedHash');
-          }
-        }
-      }
-
-      if (kDebugMode) {
-        print('Downloaded profile photo to: $localFilePath');
-      }
-
-      return localFilePath;
+      final ext = safeExtension(fileExtension, fallback: '.jpg');
+      final localFilePath = safeFileIn(profilePhotosDir.path, '${profileId}_photo$ext');
+      if (localFilePath == null) return null;
+      return await _downloadVerified(driveFileId, localFilePath, expectedHash);
     } catch (e) {
       if (kDebugMode) print('Error downloading profile photo: $e');
       return null;
@@ -2456,83 +2430,10 @@ class GoogleDriveSyncService {
         await releaseArtworkDir.create(recursive: true);
       }
       
-      final ext = fileExtension ?? '.jpg';
-      final localFilePath = path.join(releaseArtworkPath, '${releaseId}_artwork$ext');
-      
-      // Check if file already exists and hash matches
-      final existingFile = File(localFilePath);
-      if (await existingFile.exists() && expectedHash != null) {
-        try {
-          final existingHash = await _calculateFileHash(localFilePath);
-          if (existingHash == expectedHash) {
-            if (kDebugMode) {
-              print('Release artwork already downloaded with matching hash, skipping download');
-            }
-            return localFilePath;
-          } else {
-            if (kDebugMode) {
-              print('Release artwork hash mismatch (local: $existingHash, expected: $expectedHash), re-downloading...');
-            }
-            // Delete old file
-            await existingFile.delete();
-          }
-        } catch (e) {
-          if (kDebugMode) print('Error checking existing release artwork hash: $e, will re-download');
-          // If hash check fails, delete and re-download
-          if (await existingFile.exists()) {
-            await existingFile.delete();
-          }
-        }
-      }
-      
-      if (kDebugMode) {
-        print('Downloading release artwork from Drive: $driveFileId');
-      }
-      
-      // Download file using Drive API, retrying the full download (including
-      // stream consumption) so transient network errors mid-stream are retried.
-      final file = File(localFilePath);
-      await _withRetry(() async {
-        final media = (await _driveApi!.files.get(
-          driveFileId,
-          downloadOptions: drive.DownloadOptions.fullMedia,
-        )) as drive.Media;
-
-        if (await file.exists()) await file.delete();
-
-        final sink = file.openWrite();
-        try {
-          await for (final chunk in media.stream) {
-            sink.add(chunk);
-          }
-        } catch (e) {
-          await sink.close();
-          if (await file.exists()) await file.delete();
-          rethrow;
-        }
-        await sink.close();
-      });
-
-      // Verify hash if expected hash was provided
-      if (expectedHash != null) {
-        final downloadedHash = await _calculateFileHash(localFilePath);
-        if (downloadedHash != expectedHash) {
-          if (kDebugMode) {
-            print('WARNING: Downloaded release artwork hash mismatch! Expected: $expectedHash, Got: $downloadedHash');
-          }
-          // Still return the file, but log the warning
-        } else {
-          if (kDebugMode) {
-            print('Downloaded release artwork hash verified: $downloadedHash');
-          }
-        }
-      }
-
-      if (kDebugMode) {
-        print('Downloaded release artwork to: $localFilePath');
-      }
-
-      return localFilePath;
+      final ext = safeExtension(fileExtension, fallback: '.jpg');
+      final localFilePath = safeFileIn(releaseArtworkPath, '${releaseId}_artwork$ext');
+      if (localFilePath == null) return null;
+      return await _downloadVerified(driveFileId, localFilePath, expectedHash);
     } catch (e) {
       if (kDebugMode) print('Error downloading release artwork: $e');
       return null;
@@ -2570,10 +2471,26 @@ class GoogleDriveSyncService {
     return digest.toString();
   }
 
-  /// Like [_calculateFileHash] but memoises the result in [_mergeHashCache] so
-  /// the same file is only read from disk once per merge operation.
+  FileHashCache? _fileHashCache;
+
+  /// [filePath]'s hash, remembered across syncs and launches while the file
+  /// keeps its size and modification time ([FileHashCache]) — every sync
+  /// used to read every preview song, cover and photo whole. A download just
+  /// written is checked with [_calculateFileHash], which always reads.
+  Future<String> _fileHash(String filePath) async {
+    FileHashCache cache;
+    try {
+      cache = _fileHashCache ??= await FileHashCache.open();
+    } catch (_) {
+      return _calculateFileHash(filePath);
+    }
+    return cache.hashOf(filePath, () => _calculateFileHash(filePath));
+  }
+
+  /// Like [_fileHash] but memoises the result in [_mergeHashCache] so
+  /// the same file is only looked at once per merge operation.
   Future<String> _cachedFileHash(String filePath) async {
-    return _mergeHashCache[filePath] ??= await _calculateFileHash(filePath);
+    return _mergeHashCache[filePath] ??= await _fileHash(filePath);
   }
 
   /// Returns the basename of [filePath] to use as a preview song's display name,
@@ -2661,11 +2578,17 @@ class GoogleDriveSyncService {
   /// Upload database to Google Drive
   /// Backs up the ENTIRE application (all profiles, projects, releases, etc.)
   /// Mobile will mirror the desktop app - it doesn't need its own functionality
+  ///
+  /// [previous] is the backup on Drive when the caller has just read it (a
+  /// sync's merge did), so it isn't downloaded a second time. When the
+  /// backup this device would write says exactly what Drive's already does,
+  /// nothing is written — no new history copy either ([backupUnchanged]).
   Future<void> uploadDatabase({
     required ProjectRepository projectRepo,
     required ProfileRepository profileRepo,
     String? profileId, // Optional - kept for compatibility but not used in filename
     bool uploadAutoDetectedSongs = false,
+    FetchedBackup? previous,
   }) async {
     if (_driveApi == null || _appDataFolderId == null) {
       throw Exception('Not signed in to Google Drive');
@@ -2709,6 +2632,17 @@ class GoogleDriveSyncService {
       // Map to track original filenames
       // projectId -> originalFileName
       final previewSongFileNames = <String, String>{};
+      // Drive's preview songs folder, read once, when the first song needs
+      // it — asking for each song by name was a request per song per sync.
+      Future<List<PreviewSongOnDrive>>? previewSongsFolder;
+      Future<List<PreviewSongOnDrive>> previewSongsFolderOnce() =>
+          previewSongsFolder ??= _listPreviewSongsOnDrive();
+      Future<String?> previewSongOnDrive(String driveFileName) async {
+        for (final f in await previewSongsFolderOnce()) {
+          if (f.name == driveFileName) return f.fileId;
+        }
+        return null;
+      }
       
       // Map to track profile photo files in Google Drive
       // profileId -> driveFileId
@@ -2739,9 +2673,16 @@ class GoogleDriveSyncService {
       // The DAW plugin's captures the previous backup holds (their own track,
       // google_drive_capture_sync.dart).
       Map<String, CaptureEntry> existingCaptures = const {};
+      // The preview songs it lists, for the ones this device has no file for
+      // (preview_song_sync.dart).
+      Map<String, PreviewSongEntry> existingPreviewSongs = const {};
+      // The backup as Drive has it, to tell whether this one says anything new.
+      FetchedBackup? onDrive = previous;
       try {
-        final existingBackup = await downloadDatabase();
+        onDrive ??= await fetchBackup();
+        final existingBackup = onDrive.data;
         existingCaptures = captureEntriesFrom(existingBackup['pluginCaptures']);
+        existingPreviewSongs = previewSongEntriesFrom(existingBackup);
         if (existingBackup['previewSongHashes'] != null) {
           existingHashes = Map<String, String>.from(existingBackup['previewSongHashes'] as Map);
           if (kDebugMode) {
@@ -2886,7 +2827,7 @@ class GoogleDriveSyncService {
                 final latestProject = profileProjectsBox.get(project.id);
                 final coverPath = latestProject?.thumbnailPath;
                 if (latestProject != null && coverPath != null && coverPath.isNotEmpty) {
-                  final currentLocalHash = await _calculateFileHash(coverPath);
+                  final currentLocalHash = await _fileHash(coverPath);
                   final existingHash = existingProjectCoverArtHashes[latestProject.id];
 
                   if (existingHash != null && existingHash == currentLocalHash) {
@@ -2941,7 +2882,7 @@ class GoogleDriveSyncService {
                     }
                     
                     // Calculate current file hash first
-                    final currentLocalHash = await _calculateFileHash(latestProject.previewSongPath!);
+                    final currentLocalHash = await _fileHash(latestProject.previewSongPath!);
                     
                     // Compare with hash stored in local database (retrieved from Hive)
                     // Only use existingHashes from backup if project.uploadedPreviewSongHash is null
@@ -2953,19 +2894,14 @@ class GoogleDriveSyncService {
                         print('  Preview song hash matches for project ${latestProject.id} (hash: $currentLocalHash), checking Drive...');
                       }
                       // Check if file exists in Drive
-                      final previewSongsFolderId = await _ensurePreviewSongsFolder();
                       final fileName = path.basename(latestProject.previewSongPath!);
                       final fileExtension = path.extension(fileName);
-                      final driveFileName = '${latestProject.id}_preview$fileExtension';
-                      
-                      var response = await _driveApi!.files.list(
-                        q: "name='$driveFileName' and parents in '$previewSongsFolderId' and trashed=false",
-                        spaces: 'drive',
-                      );
-                      
-                      if (response.files != null && response.files!.isNotEmpty) {
+                      final driveFileId =
+                          await previewSongOnDrive('${latestProject.id}_preview$fileExtension');
+
+                      if (driveFileId != null) {
                         // File exists in Drive and hash matches - skip upload
-                        previewSongFileMap[latestProject.id] = response.files!.first.id!;
+                        previewSongFileMap[latestProject.id] = driveFileId;
                         previewSongHashes[latestProject.id] = currentLocalHash;
                         // Store display name only if it's a real filename (not a UUID backup name)
                         final localBasename = path.basename(latestProject.previewSongPath!);
@@ -3025,19 +2961,15 @@ class GoogleDriveSyncService {
                   final autoPath = latestProject.previewSongAutoPath;
                   if (autoPath == null || autoPath.isEmpty) continue;
 
-                  final currentHash = await _calculateFileHash(autoPath);
+                  final currentHash = await _fileHash(autoPath);
                   final storedHash = latestProject.uploadedPreviewSongHash;
 
                   if (storedHash != null && storedHash == currentHash) {
                     // Hash matches — check if already on Drive
-                    final previewSongsFolderId = await _ensurePreviewSongsFolder();
-                    final driveFileName = '${latestProject.id}_preview${path.extension(autoPath)}';
-                    final response = await _driveApi!.files.list(
-                      q: "name='$driveFileName' and parents in '$previewSongsFolderId' and trashed=false",
-                      spaces: 'drive',
-                    );
-                    if (response.files != null && response.files!.isNotEmpty) {
-                      previewSongFileMap[latestProject.id] = response.files!.first.id!;
+                    final driveFileId =
+                        await previewSongOnDrive('${latestProject.id}_preview${path.extension(autoPath)}');
+                    if (driveFileId != null) {
+                      previewSongFileMap[latestProject.id] = driveFileId;
                       previewSongHashes[latestProject.id] = currentHash;
                       previewSongFileNames[latestProject.id] = path.basename(autoPath);
                       if (kDebugMode) print('  Auto preview song already on Drive, skipping upload');
@@ -3072,7 +3004,7 @@ class GoogleDriveSyncService {
               if (release.artworkImagePath != null && release.artworkImagePath!.isNotEmpty) {
                 try {
                   // Calculate current file hash
-                  final currentLocalHash = await _calculateFileHash(release.artworkImagePath!);
+                  final currentLocalHash = await _fileHash(release.artworkImagePath!);
                   
                   // Compare with hash from existing backup
                   final existingHash = existingReleaseArtworkHashes[release.id];
@@ -3149,7 +3081,7 @@ class GoogleDriveSyncService {
             if (profile.photoPath != null && profile.photoPath!.isNotEmpty) {
               try {
                 // Calculate current file hash
-                final currentLocalHash = await _calculateFileHash(profile.photoPath!);
+                final currentLocalHash = await _fileHash(profile.photoPath!);
                 
                 // Compare with hash from existing backup
                 final existingHash = existingProfilePhotoHashes[profile.id];
@@ -3289,7 +3221,21 @@ class GoogleDriveSyncService {
           _lastUploadWarnings.add('Preview song error (${project.displayName}): $e');
         }
       }
-      
+
+      // A preview song this device found no file for, or failed to upload,
+      // keeps what Drive has for it. Rebuilt from this device's files alone,
+      // the backup let go of every song whose copy was gone here — and on a
+      // phone, of all of them.
+      await _carryPreviewSongEntries(
+        projects: [for (final (_, project) in allProjects) project],
+        previous: existingPreviewSongs,
+        includeAutoDetected: uploadAutoDetectedSongs,
+        files: previewSongFileMap,
+        hashes: previewSongHashes,
+        names: previewSongFileNames,
+        listOnDrive: previewSongsFolderOnce,
+      );
+
       // Now upload all profile photos that need uploading
       if (kDebugMode) {
         print('Found ${profilePhotosToUpload.length} profile photos that need upload');
@@ -3674,6 +3620,23 @@ class GoogleDriveSyncService {
       
       final jsonData = jsonEncode(data);
       final bytes = utf8.encode(jsonData);
+
+      if (onDrive != null && backupUnchanged(onDrive.data, jsonDecode(jsonData) as Map<String, dynamic>)) {
+        // Drive already holds all of it. Writing anyway pushed one of the
+        // earlier backups out of `history` on every launch and timer tick.
+        if (kDebugMode) print('Backup unchanged since the copy on Drive: nothing written');
+        await saveLastBackupUploadTimestamp(DateTime.now());
+        await markMerged(onDrive);
+        _progressController.add(BackupProgress(
+          stage: BackupProgressStage.completed,
+          currentItem: 'Already backed up',
+          currentIndex: 1,
+          totalItems: 1,
+          progress: 1.0,
+          warnings: List.unmodifiable(_lastUploadWarnings),
+        ));
+        return;
+      }
 
       // Use a single filename for the entire application backup
       // No profileId in filename - this is the complete app backup
@@ -4226,12 +4189,18 @@ class GoogleDriveSyncService {
   /// tray and the automatic timer. A plain [uploadDatabase] replaces Drive's
   /// copy wholesale, so the tray's old "Backup now" could wipe out what a
   /// phone had pushed an hour earlier.
+  ///
+  /// With [mergeOnlyIfNewer] — the sync when the app starts — the merge is
+  /// skipped when Drive holds nothing this device hasn't merged or written
+  /// itself; what this device has that Drive lacks is still uploaded. Sync
+  /// now always merges: that is also what downloads songs missing here.
   Future<SyncResult> syncDatabase({
     required ProjectRepository projectRepo,
     required ProfileRepository profileRepo,
     String? profileId, // Optional - kept for compatibility but not used
     bool uploadAutoDetectedSongs = false,
     bool downloadPreviewSongs = true,
+    bool mergeOnlyIfNewer = false,
   }) async {
     try {
       FetchedBackup? remote;
@@ -4247,7 +4216,7 @@ class GoogleDriveSyncService {
         releasesAdded: 0,
         releasesUpdated: 0,
       );
-      if (remote != null) {
+      if (remote != null && (!mergeOnlyIfNewer || await _holdsUnmerged(remote))) {
         result = await mergeData(
           remoteData: remote.data,
           projectRepo: projectRepo,
@@ -4256,10 +4225,13 @@ class GoogleDriveSyncService {
         );
       }
 
+      // The backup the merge read is still Drive's: the upload compares
+      // against it rather than downloading it again.
       await uploadDatabase(
         projectRepo: projectRepo,
         profileRepo: profileRepo,
         uploadAutoDetectedSongs: uploadAutoDetectedSongs,
+        previous: remote,
       );
 
       if (kDebugMode) {

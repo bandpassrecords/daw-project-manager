@@ -9,6 +9,7 @@ import 'package:window_manager/window_manager.dart'
 import '../../generated/l10n/app_localizations.dart';
 import '../../providers/providers.dart';
 import '../../utils/mobile_utils.dart';
+import 'semantics_safe.dart';
 
 /// Icon for the maximize/restore window-control button: a single square
 /// when the window can still be maximized, two overlapping squares once it
@@ -450,7 +451,7 @@ class _CrumbLinkState extends State<_CrumbLink> {
   @override
   Widget build(BuildContext context) {
     final color = _hovered ? widget.hoverColor : widget.restingColor;
-    return Tooltip(
+    return StandaloneTooltip(
       message: AppLocalizations.of(context)!.breadcrumbGoTo(widget.label),
       waitDuration: const Duration(milliseconds: 500),
       child: MouseRegion(

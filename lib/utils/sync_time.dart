@@ -14,7 +14,13 @@
 /// date, the same day in every time zone.
 library;
 
-String syncInstant(DateTime t) => t.toUtc().toIso8601String();
+/// Written to the millisecond, the precision Hive keeps: a row changed this
+/// session still holds microseconds in memory, the same row read back after
+/// a restart does not, and the backup each wrote would never read as the
+/// same — so an unchanged library was uploaded again on every launch
+/// (`backupUnchanged`).
+String syncInstant(DateTime t) =>
+    DateTime.fromMillisecondsSinceEpoch(t.millisecondsSinceEpoch, isUtc: true).toIso8601String();
 
 String? syncInstantOrNull(DateTime? t) => t == null ? null : syncInstant(t);
 

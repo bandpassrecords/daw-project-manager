@@ -44,7 +44,14 @@ Future<T?> showAnchoredMenu<T>({
         onClose: () =>
             WidgetsBinding.instance.addPostFrameCallback((_) => finish()),
         menuChildren: builder((value) => chosen = value),
-        child: const SizedBox.shrink(),
+        // The menu's semantics hang under its anchor's node, and an anchor of
+        // no size forms none: the menu would go to the engine with no parent,
+        // which Windows' accessibility bridge rejects (see semantics_safe.dart).
+        // One pixel, in a node of its own, is enough to hold it.
+        child: Semantics(
+          container: true,
+          child: const SizedBox(width: 1, height: 1),
+        ),
       ),
     ),
   );

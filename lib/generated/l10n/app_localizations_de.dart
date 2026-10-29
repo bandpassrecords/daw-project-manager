@@ -515,13 +515,25 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String projectsHidden(int count, String plural) {
-    return '$count Projekt$plural versteckt.';
+  String projectsHidden(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte versteckt.',
+      one: '$count Projekt versteckt.',
+    );
+    return '$_temp0';
   }
 
   @override
-  String projectsUnhidden(int count, String plural) {
-    return '$count Projekt$plural angezeigt.';
+  String projectsUnhidden(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte angezeigt.',
+      one: '$count Projekt angezeigt.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -541,24 +553,43 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deleteMissingProjectsTitle => 'Fehlende Projekte löschen?';
 
   @override
-  String deleteMissingProjectsConfirm(int count, String plural) {
-    return '$count Projekt$plural, deren Datei auf diesem Computer nicht gefunden werden konnte, kommen in „Zuletzt gelöscht“ (Einstellungen > Projektordner), wo du sie 30 Tage lang samt Notizen, Fristen und Sitzungsverlauf wiederherstellen kannst.';
+  String deleteMissingProjectsConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count Projekte, deren Dateien auf diesem Computer nicht gefunden werden konnten, kommen in „Zuletzt gelöscht“ (Einstellungen > Projektordner), wo du sie 30 Tage lang samt Notizen, Fristen und Sitzungsverlauf wiederherstellen kannst.',
+      one:
+          '$count Projekt, dessen Datei auf diesem Computer nicht gefunden werden konnte, kommt in „Zuletzt gelöscht“ (Einstellungen > Projektordner), wo du es 30 Tage lang samt Notizen, Fristen und Sitzungsverlauf wiederherstellen kannst.',
+    );
+    return '$_temp0';
   }
 
   @override
   String get deleteMissingProjectsConfirmButton => 'Löschen';
 
   @override
-  String missingProjectsDeleted(int count, String plural) {
-    return '$count nicht gefundene Projekt$plural gelöscht.';
+  String missingProjectsDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nicht gefundene Projekte gelöscht.',
+      one: '$count nicht gefundenes Projekt gelöscht.',
+    );
+    return '$_temp0';
   }
 
   @override
-  String deleteMissingProjectsAlsoDeleteReleaseTracked(
-    int count,
-    String plural,
-  ) {
-    return 'Auch $count Projekt$plural löschen, die Teil eines Release sind (entfernt sie auch aus diesem Release)';
+  String deleteMissingProjectsAlsoDeleteReleaseTracked(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Auch $count Projekte löschen, die Teil eines Release sind (entfernt sie auch aus diesem Release)',
+      one:
+          'Auch $count Projekt löschen, das Teil eines Release ist (entfernt es auch aus diesem Release)',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -601,16 +632,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get enterReleaseTitleHint => 'Veröffentlichungstitel eingeben';
 
   @override
-  String metadataExtractedForProjects(
-    int count,
-    String plural,
-    String failures,
-  ) {
-    return 'Metadaten für $count Projekt$plural extrahiert. $failures';
+  String metadataExtractedForProjects(int count, String failures) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Metadaten für $count Projekte extrahiert.',
+      one: 'Metadaten für $count Projekt extrahiert.',
+    );
+    return '$_temp0 $failures';
   }
 
   @override
-  String extractionFailures(int count, Object plural) {
+  String extractionFailures(int count) {
     return '$count fehlgeschlagen.';
   }
 
@@ -638,16 +671,28 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String scanComplete(String type, int count, String plural) {
-    return '$type abgeschlossen: $count Projekt$plural hinzugefügt/aktualisiert.';
+  String scanComplete(String type, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$type abgeschlossen: $count Projekte hinzugefügt/aktualisiert.',
+      one: '$type abgeschlossen: $count Projekt hinzugefügt/aktualisiert.',
+    );
+    return '$_temp0';
   }
 
   @override
   String get scanCancelled => 'Scan abgebrochen.';
 
   @override
-  String scanFailuresSnackbar(int count, String plural) {
-    return '$count Projekt$plural konnte(n) nicht geladen werden.';
+  String scanFailuresSnackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte konnten nicht geladen werden.',
+      one: '$count Projekt konnte nicht geladen werden.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -661,8 +706,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Diese Dateien konnten beim Scan nicht gelesen werden (möglicherweise gelöscht, verschoben oder von einem anderen Programm gesperrt):';
 
   @override
-  String projectsSelected(int count, String plural) {
-    return '$count Projekt$plural ausgewählt';
+  String projectsSelected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte ausgewählt',
+      one: '$count Projekt ausgewählt',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -700,21 +751,39 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String releasesSelected(int count, String plural) {
-    return '$count Veröffentlichung$plural ausgewählt';
+  String releasesSelected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Veröffentlichungen ausgewählt',
+      one: '$count Veröffentlichung ausgewählt',
+    );
+    return '$_temp0';
   }
 
   @override
   String get deleteSelectedReleases => 'Auswahl löschen';
 
   @override
-  String deleteSelectedReleasesConfirm(int count, String plural) {
-    return 'Möchten Sie $count Veröffentlichung$plural wirklich löschen?';
+  String deleteSelectedReleasesConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Möchten Sie $count Veröffentlichungen wirklich löschen?',
+      one: 'Möchten Sie $count Veröffentlichung wirklich löschen?',
+    );
+    return '$_temp0';
   }
 
   @override
-  String releasesDeleted(int count, String plural) {
-    return '$count Veröffentlichung$plural gelöscht';
+  String releasesDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Veröffentlichungen gelöscht',
+      one: '$count Veröffentlichung gelöscht',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -753,8 +822,8 @@ class AppLocalizationsDe extends AppLocalizations {
       'Alle Projekte sind bereits in dieser Veröffentlichung.';
 
   @override
-  String addedTracksToRelease(int count, String plural) {
-    return '$count Titel$plural zur Veröffentlichung hinzugefügt.';
+  String addedTracksToRelease(int count) {
+    return '$count Titel zur Veröffentlichung hinzugefügt.';
   }
 
   @override
@@ -766,8 +835,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get addFiles => 'Dateien Hinzufügen';
 
   @override
-  String addedFilesToRelease(int count, String plural) {
-    return '$count Datei$plural zur Veröffentlichung hinzugefügt.';
+  String addedFilesToRelease(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Dateien zur Veröffentlichung hinzugefügt.',
+      one: '$count Datei zur Veröffentlichung hinzugefügt.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -888,7 +963,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get description => 'Beschreibung';
 
   @override
-  String selectTracksToInclude(int count, Object plural) {
+  String selectTracksToInclude(int count) {
     return 'Titel zum Einbeziehen in die Veröffentlichung auswählen ($count ausgewählt)';
   }
 
@@ -1099,21 +1174,39 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String templatesSelected(int count, String plural) {
-    return '$count Vorlage$plural ausgewählt';
+  String templatesSelected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Vorlagen ausgewählt',
+      one: '$count Vorlage ausgewählt',
+    );
+    return '$_temp0';
   }
 
   @override
   String get deleteSelectedTemplates => 'Auswahl löschen';
 
   @override
-  String deleteSelectedTemplatesConfirm(int count, String plural) {
-    return 'Möchten Sie $count Vorlage$plural wirklich löschen?';
+  String deleteSelectedTemplatesConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Möchten Sie $count Vorlagen wirklich löschen?',
+      one: 'Möchten Sie $count Vorlage wirklich löschen?',
+    );
+    return '$_temp0';
   }
 
   @override
-  String templatesDeleted(int count, String plural) {
-    return '$count Vorlage$plural gelöscht';
+  String templatesDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Vorlagen gelöscht',
+      one: '$count Vorlage gelöscht',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1244,19 +1337,29 @@ class AppLocalizationsDe extends AppLocalizations {
   String get selectNewStatus => 'Neue Phase auswählen:';
 
   @override
-  String statusChangedForProjects(int count, String plural, String status) {
-    return 'Phase für $count Projekt$plural auf \"$status\" geändert';
+  String statusChangedForProjects(int count, String status) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Phase für $count Projekte auf \"$status\" geändert',
+      one: 'Phase für $count Projekt auf \"$status\" geändert',
+    );
+    return '$_temp0';
   }
 
   @override
   String statusChangedForProjectsWithErrors(
     int successCount,
-    String successPlural,
     int failCount,
-    String failPlural,
     String status,
   ) {
-    return 'Phase für $successCount Projekt$successPlural auf \"$status\" geändert, $failCount fehlgeschlagen$failPlural';
+    String _temp0 = intl.Intl.pluralLogic(
+      successCount,
+      locale: localeName,
+      other: '$successCount Projekte',
+      one: '$successCount Projekt',
+    );
+    return 'Phase für $_temp0 auf \"$status\" geändert, $failCount fehlgeschlagen';
   }
 
   @override
@@ -1536,6 +1639,20 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das aktuelle Profil ist für den Modus Zusammenführen oder Ersetzen erforderlich';
 
   @override
+  String get importLaunchCommandsTitle =>
+      'Programme für „Im DAW starten\" importieren?';
+
+  @override
+  String get importLaunchCommandsMessage =>
+      'Diese Sicherung nennt Programme, die „Im DAW starten\" auf diesem Computer ausführen würde. Importiere sie nur, wenn du die Sicherung selbst erstellt hast.';
+
+  @override
+  String get importLaunchCommandsSkip => 'Nicht importieren';
+
+  @override
+  String get importLaunchCommandsImport => 'Importieren';
+
+  @override
   String get previewSong => 'Vorschau-Song';
 
   @override
@@ -1649,7 +1766,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String dateYearsAgo(int count, Object plural) {
+  String dateYearsAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -1660,43 +1777,81 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String ageYearsMonths(
-    int years,
-    String yearPlural,
-    int months,
-    String monthPlural,
-  ) {
-    return '$years Jahr$yearPlural, $months Monat$monthPlural';
+  String ageYearsMonths(int years, int months) {
+    String _temp0 = intl.Intl.pluralLogic(
+      years,
+      locale: localeName,
+      other: '$years Jahre',
+      one: '$years Jahr',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months Monate',
+      one: '$months Monat',
+    );
+    return '$_temp0, $_temp1';
   }
 
   @override
-  String ageYears(int years, String plural) {
-    return '$years Jahr$plural';
+  String ageYears(int years) {
+    String _temp0 = intl.Intl.pluralLogic(
+      years,
+      locale: localeName,
+      other: '$years Jahre',
+      one: '$years Jahr',
+    );
+    return '$_temp0';
   }
 
   @override
-  String ageMonthsDays(
-    int months,
-    String monthPlural,
-    int days,
-    String dayPlural,
-  ) {
-    return '$months Monat$monthPlural, $days Tag$dayPlural';
+  String ageMonthsDays(int months, int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months Monate',
+      one: '$months Monat',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days Tage',
+      one: '$days Tag',
+    );
+    return '$_temp0, $_temp1';
   }
 
   @override
-  String ageMonths(int months, String plural) {
-    return '$months Monat$plural';
+  String ageMonths(int months) {
+    String _temp0 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months Monate',
+      one: '$months Monat',
+    );
+    return '$_temp0';
   }
 
   @override
-  String ageDays(int days, String plural) {
-    return '$days Tag$plural';
+  String ageDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days Tage',
+      one: '$days Tag',
+    );
+    return '$_temp0';
   }
 
   @override
-  String ageHours(int hours, String plural) {
-    return '$hours Stunde$plural';
+  String ageHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours Stunden',
+      one: '$hours Stunde',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2583,13 +2738,25 @@ class AppLocalizationsDe extends AppLocalizations {
   String get additionalAssets => 'Zusätzliche Assets';
 
   @override
-  String downloadNFiles(int count, String plural) {
-    return '$count Datei$plural herunterladen';
+  String downloadNFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Dateien herunterladen',
+      one: '$count Datei herunterladen',
+    );
+    return '$_temp0';
   }
 
   @override
-  String nFilesSavedTo(int count, String plural, String filename) {
-    return '$count Datei$plural gespeichert unter $filename';
+  String nFilesSavedTo(int count, String filename) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Dateien gespeichert unter $filename',
+      one: '$count Datei gespeichert unter $filename',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5271,8 +5438,14 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String attachmentExportSkippedMissing(int count, String plural) {
-    return '$count fehlende Datei$plural übersprungen';
+  String attachmentExportSkippedMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fehlende Dateien übersprungen',
+      one: '$count fehlende Datei übersprungen',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8291,4 +8464,121 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get legacyInstallRemoveFailed =>
       'Das Deinstallationsprogramm der alten Kopie konnte nicht gestartet werden.';
+
+  @override
+  String get missingPreviewSongsTitle => 'Fehlende Vorschau-Songs';
+
+  @override
+  String get missingPreviewSongsSubtitle =>
+      'Vorschau-Songs des aktuellen Profils, die dieser Computer nicht findet. Prüfe sie und lade dann jeden herunter, suche ihn oder entferne ihn – ohne deine Wahl ändert sich nichts.';
+
+  @override
+  String get missingPreviewSongsCheck => 'Prüfen';
+
+  @override
+  String get missingPreviewSongsChecking => 'Wird geprüft …';
+
+  @override
+  String get missingPreviewSongsNone =>
+      'Alle Vorschau-Songs sind da, wo sie sein sollen.';
+
+  @override
+  String get missingPreviewSongsSignInHint =>
+      'Melde dich bei Google Drive an, um sie auch dort zu suchen.';
+
+  @override
+  String missingPreviewOnDriveTitle(int count) {
+    return 'Auf Google Drive ($count)';
+  }
+
+  @override
+  String get missingPreviewOnDriveDescription =>
+      'Ein Backup enthält diese Songs. Beim Herunterladen kommt eine Kopie auf diesen Computer.';
+
+  @override
+  String missingPreviewOtherComputerTitle(int count) {
+    return 'Von einem anderen Computer ($count)';
+  }
+
+  @override
+  String get missingPreviewOtherComputerDescription =>
+      'Ihre Pfade gehören zu einem anderen Computer, wo sie vielleicht problemlos laufen. Wähle hier eine Datei, um sie auch auf diesem Computer abzuspielen.';
+
+  @override
+  String missingPreviewFolderMissingTitle(int count) {
+    return 'Ordner fehlt ($count)';
+  }
+
+  @override
+  String get missingPreviewFolderMissingDescription =>
+      'Auch ihr Ordner ist nicht da: ein nicht verbundenes Laufwerk oder ein verschobener oder gelöschter Ordner. Verbinde das Laufwerk und prüfe erneut, bevor du etwas entfernst.';
+
+  @override
+  String missingPreviewFileMissingTitle(int count) {
+    return 'Datei fehlt ($count)';
+  }
+
+  @override
+  String get missingPreviewFileMissingDescription =>
+      'Der Ordner ist da, die Datei aber nicht.';
+
+  @override
+  String get missingPreviewDownload => 'Herunterladen';
+
+  @override
+  String get missingPreviewDownloadAll => 'Alle herunterladen';
+
+  @override
+  String get missingPreviewFindAll => 'Alle suchen';
+
+  @override
+  String get missingPreviewRemoveAll => 'Alle entfernen';
+
+  @override
+  String missingPreviewRemoveAllTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Vorschau-Songs entfernen?',
+      one: '$count Vorschau-Song entfernen?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingPreviewRemoveBody =>
+      'Sie werden nur auf diesem Computer entfernt, und keine Datei wird gelöscht. Hat ein anderes Gerät einen dieser Songs noch, bringt ihn die nächste Synchronisierung hierher zurück.';
+
+  @override
+  String missingPreviewDownloadedResult(int done, int total) {
+    return '$done von $total heruntergeladen.';
+  }
+
+  @override
+  String missingPreviewFoundResult(int found, int total) {
+    return 'Für $found von $total einen Mixdown gefunden.';
+  }
+
+  @override
+  String missingPreviewDownloadFailed(String name) {
+    return 'Der Song für $name konnte nicht heruntergeladen werden.';
+  }
+
+  @override
+  String get missingPreviewAutoDetected => 'Automatisch erkannt';
+
+  @override
+  String missingPreviewRemoveEverything(int count) {
+    return 'Alle nicht gefundenen entfernen ($count)';
+  }
+
+  @override
+  String missingPreviewRemoveIncludesDrive(int count) {
+    return 'Davon können $count noch von Google Drive heruntergeladen werden.';
+  }
+
+  @override
+  String missingPreviewRemoveIncludesOtherComputer(int count) {
+    return 'Davon laufen $count vielleicht noch auf einem anderen Computer.';
+  }
 }

@@ -6,8 +6,10 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
 import '../../providers/providers.dart' show finishedPhaseProvider;
 import '../../utils/project_summary_text.dart';
+import '../../utils/deadline_text.dart';
 import '../../utils/track_duration.dart';
 import 'release_track_parts_chip.dart';
+import 'semantics_safe.dart';
 
 /// Columns about a project that the projects table and a release's
 /// tracklist both offer: one definition each, so the two tables show the
@@ -33,7 +35,10 @@ MusicProject? _projectOf(TrinaColumnRendererContext ctx) =>
 /// The shared columns' cells for [project]'s row.
 Map<String, TrinaCell> projectInfoCells(MusicProject project) => {
       kTagsColumnField: TrinaCell(value: project.tags.join(', ')),
-      kDeadlineColumnField: TrinaCell(value: project.deadlineStatus ?? ''),
+      // Days until the deadline, so the column sorts by date; the renderer
+      // words it. It held English text ("3 days left"), which sorted
+      // "10 days" before "2 days".
+      kDeadlineColumnField: TrinaCell(value: deadlineSortValue(project)),
       // Milliseconds so the column sorts by real length rather than by the
       // "3:45" string; the renderer formats it.
       kLengthColumnField: TrinaCell(
@@ -52,7 +57,7 @@ Map<String, TrinaCell> projectInfoCells(MusicProject project) => {
 /// The shared columns' cells for a row that isn't a project's.
 Map<String, TrinaCell> emptyProjectInfoCells() => {
       kTagsColumnField: TrinaCell(value: ''),
-      kDeadlineColumnField: TrinaCell(value: ''),
+      kDeadlineColumnField: TrinaCell(value: kNoDeadlineSortValue),
       kLengthColumnField: TrinaCell(value: 0),
       kNotesColumnField: TrinaCell(value: ''),
       kPartsColumnField: TrinaCell(value: 0),
@@ -96,7 +101,7 @@ TrinaColumn projectNotesColumn({
         // table.
         final full =
             project == null ? text : (projectNoteFullText(project) ?? text);
-        return Tooltip(
+        return StandaloneTooltip(
           message: full,
           waitDuration: const Duration(milliseconds: 400),
           child: Text(text, overflow: TextOverflow.ellipsis, style: textStyle),
@@ -155,7 +160,7 @@ TrinaColumn projectTagsColumn({
 TrinaColumn projectDeadlineColumn({required String title}) => TrinaColumn(
       title: title,
       field: kDeadlineColumnField,
-      type: TrinaColumnType.text(),
+      type: TrinaColumnType.number(),
       enableEditingMode: false,
       width: 120,
       minWidth: 100,
@@ -172,12 +177,7 @@ TrinaColumn projectDeadlineColumn({required String title}) => TrinaColumn(
             }
             final l10n = AppLocalizations.of(context)!;
             final badge = deadlineBadgeOf(project.daysUntilDeadline ?? 0);
-            final text = switch (badge.kind) {
-              DeadlineBadgeKind.late => l10n.daysLate(badge.days),
-              DeadlineBadgeKind.today => l10n.dueToday,
-              DeadlineBadgeKind.soon || DeadlineBadgeKind.later =>
-                l10n.daysLeft(badge.days),
-            };
+            final text = deadlineText(l10n, project.daysUntilDeadline ?? 0);
             final color = badge.color;
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -209,6 +209,14 @@ TrinaColumn projectDeadlineColumn({required String title}) => TrinaColumn(
         );
       },
     );
+
+/// The Deadline cell of a project with none: past any real deadline, so
+/// those rows sort last.
+const kNoDeadlineSortValue = 1 << 30;
+
+/// The Deadline cell's value: days until [project]'s deadline.
+int deadlineSortValue(MusicProject project) =>
+    project.daysUntilDeadline ?? kNoDeadlineSortValue;
 
 enum DeadlineBadgeKind { late, today, soon, later }
 

@@ -55,6 +55,7 @@ import '../utils/phase_colors.dart';
 import 'dashboard_page.dart' show appVersion;
 import 'dialogs/daw_launch_command_dialog.dart';
 import 'google_drive_sync_page.dart' show GoogleDriveSyncSection;
+import 'missing_preview_songs_section.dart';
 import 'recently_deleted_actions.dart' show RecentlyDeletedSection;
 import 'widgets/folders_profile_picker.dart';
 import 'metadata_extraction_info_page.dart';
@@ -92,6 +93,7 @@ import 'midi_collection_naming.dart' show midiNamingLabelsOf;
 import 'widgets/sample_pack_card.dart';
 import 'dialogs/root_overlap_dialog.dart';
 import 'dialogs/relocate_folder_dialog.dart';
+import 'widgets/semantics_safe.dart';
 
 /// A Flatpak document-portal path, e.g.
 /// `/run/user/1000/doc/98127/projects` — the portal never exposes the real
@@ -411,6 +413,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         invalidBackupFormatMessage: AppLocalizations.of(context)!.invalidBackupFileFormat,
         profileNameRequiredMessage: AppLocalizations.of(context)!.profileNameRequiredForNewProfile,
         currentProfileRequiredMessage: AppLocalizations.of(context)!.currentProfileRequired,
+        confirmLaunchCommands: _confirmImportLaunchCommands,
       );
 
       if (importResult.cancelled) {
@@ -444,6 +447,51 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         );
       }
     }
+  }
+
+  /// Asks before a backup adds programs for "Launch in DAW": a backup someone
+  /// else made could otherwise choose what that button runs. Shows each
+  /// program in full, since the path is what the user has to judge.
+  Future<bool> _confirmImportLaunchCommands(Map<String, List<String>> commands) async {
+    if (!mounted) return false;
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).cardColor,
+        title: Text(l10n.importLaunchCommandsTitle),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.importLaunchCommandsMessage),
+              const SizedBox(height: 12),
+              for (final MapEntry(key: daw, value: paths) in commands.entries) ...[
+                Text(daw, style: const TextStyle(fontWeight: FontWeight.bold)),
+                for (final path in paths)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, top: 2),
+                    child: SelectableText(path, style: const TextStyle(fontFamily: 'monospace')),
+                  ),
+                const SizedBox(height: 8),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.importLaunchCommandsSkip),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.importLaunchCommandsImport),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
   }
 
   // ---------------------------------------------------------------------
@@ -939,7 +987,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     final msg = found == 0
         ? l10n.noProjectsFoundInRoots
-        : l10n.scanComplete(l10n.rescan, found, found == 1 ? '' : 's');
+        : l10n.scanComplete(l10n.rescan, found);
     ScaffoldMessenger.of(context).showAppSnackBar(SnackBar(content: Text(msg)));
   }
 
@@ -1655,6 +1703,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         ],
         _SearchEntry(SettingsSection.mixdownFolders, Icons.audio_file_outlined, l10n.mixdownFoldersTabLabel, l10n.mixdownFoldersSectionDescription),
         _SearchEntry(SettingsSection.mixdownFolders, Icons.folder_open, l10n.previewMixdownFolderTitle, l10n.previewMixdownFolderSubtitle),
+        _SearchEntry(SettingsSection.mixdownFolders, Icons.music_off_outlined, l10n.missingPreviewSongsTitle, l10n.missingPreviewSongsSubtitle),
         for (final dawKey in MixdownDetectorService.dawFolders.keys)
           _SearchEntry(SettingsSection.mixdownFolders, Icons.piano_outlined, dawKey, MixdownDetectorService.dawFolders[dawKey]!.join(', ')),
         _SearchEntry(SettingsSection.phases, Icons.timeline_outlined, l10n.phases, l10n.phasesDescription),
@@ -2641,6 +2690,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l10n.mixdownFoldersSectionDescription, style: Theme.of(context).textTheme.bodySmall),
+        const SizedBox(height: 12),
+
+        const MissingPreviewSongsSection(),
         const SizedBox(height: 12),
 
         // Global custom mixdown folders — checked first, for every DAW.
@@ -4542,7 +4594,7 @@ class _DawLaunchCommandGroup extends StatelessWidget {
                 child: Row(
                   children: [
                     if (!FileLauncher.targetExists(path)) ...[
-                      Tooltip(
+                      StandaloneTooltip(
                         message: missingTooltip,
                         child: Icon(
                           Icons.warning_amber_rounded,

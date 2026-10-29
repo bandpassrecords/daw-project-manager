@@ -284,25 +284,19 @@
       }
     }
   },
-  "projectsHidden": "{count} projeto{plural} oculto{plural}.",
+  "projectsHidden": "{count, plural, one{{count} projeto oculto.} other{{count} projetos ocultos.}}",
   "@projectsHidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "projectsUnhidden": "{count} projeto{plural} mostrado{plural}.",
+  "projectsUnhidden": "{count, plural, one{{count} projeto mostrado.} other{{count} projetos mostrados.}}",
   "@projectsUnhidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -324,37 +318,28 @@
   },
   "deleteMissingProjects": "Excluir ausentes",
   "deleteMissingProjectsTitle": "Excluir projetos ausentes?",
-  "deleteMissingProjectsConfirm": "{count} projeto{plural} cujo arquivo não pôde ser encontrado nesta máquina vão para Excluídos recentemente (Configurações > Pastas de projetos), onde você pode restaurá-los com anotações, prazos e histórico de sessões por 30 dias.",
+  "deleteMissingProjectsConfirm": "{count, plural, one{{count} projeto cujo arquivo não pôde ser encontrado nesta máquina vai para Excluídos recentemente (Configurações > Pastas de projetos), onde você pode restaurá-lo com anotações, prazos e histórico de sessões por 30 dias.} other{{count} projetos cujos arquivos não puderam ser encontrados nesta máquina vão para Excluídos recentemente (Configurações > Pastas de projetos), onde você pode restaurá-los com anotações, prazos e histórico de sessões por 30 dias.}}",
   "@deleteMissingProjectsConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteMissingProjectsConfirmButton": "Excluir",
-  "missingProjectsDeleted": "{count} projeto{plural} ausente excluído.",
+  "missingProjectsDeleted": "{count, plural, one{{count} projeto ausente excluído.} other{{count} projetos ausentes excluídos.}}",
   "@missingProjectsDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "deleteMissingProjectsAlsoDeleteReleaseTracked": "Também excluir {count} projeto{plural} que fazem parte de um lançamento (também os remove desse lançamento)",
+  "deleteMissingProjectsAlsoDeleteReleaseTracked": "{count, plural, one{Também excluir {count} projeto que faz parte de um lançamento (também o remove desse lançamento)} other{Também excluir {count} projetos que fazem parte de um lançamento (também os remove desse lançamento)}}",
   "@deleteMissingProjectsAlsoDeleteReleaseTracked": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -397,21 +382,18 @@
   "enterReleaseTitle": "Digite o Título do Lançamento",
   "releaseTitle": "Título do Lançamento",
   "enterReleaseTitleHint": "Digite o título do lançamento",
-  "metadataExtractedForProjects": "Metadados extraídos para {count} projeto{plural}. {failures}",
+  "metadataExtractedForProjects": "{count, plural, one{Metadados extraídos para {count} projeto.} other{Metadados extraídos para {count} projetos.}} {failures}",
   "@metadataExtractedForProjects": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "failures": {
         "type": "String"
       }
     }
   },
-  "extractionFailures": "{count} falhou{plural}.",
+  "extractionFailures": "{count, plural, one{{count} falhou.} other{{count} falharam.}}",
   "@extractionFailures": {
     "placeholders": {
       "count": {
@@ -452,7 +434,7 @@
       }
     }
   },
-  "scanComplete": "{type} concluída: {count} projeto{plural} adicionado{plural}/atualizado{plural}.",
+  "scanComplete": "{count, plural, one{{type} concluída: {count} projeto adicionado/atualizado.} other{{type} concluída: {count} projetos adicionados/atualizados.}}",
   "@scanComplete": {
     "placeholders": {
       "type": {
@@ -460,21 +442,15 @@
       },
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "scanCancelled": "Varredura cancelada.",
-  "scanFailuresSnackbar": "{count} projeto{plural} não pôde/puderam ser carregado{plural}.",
+  "scanFailuresSnackbar": "{count, plural, one{{count} projeto não pôde ser carregado.} other{{count} projetos não puderam ser carregados.}}",
   "@scanFailuresSnackbar": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -484,14 +460,11 @@
   "@scanFailuresDialogTitle": {},
   "scanFailuresDialogIntro": "Estes arquivos não puderam ser lidos durante a varredura (podem ter sido excluídos, movidos ou bloqueados por outro programa):",
   "@scanFailuresDialogIntro": {},
-  "projectsSelected": "{count} projeto{plural} selecionado{plural}",
+  "projectsSelected": "{count, plural, one{{count} projeto selecionado} other{{count} projetos selecionados}}",
   "@projectsSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -531,17 +504,14 @@
       }
     }
   },
-  "releasesSelected": "{count} lançamento{plural} selecionado{plural}",
+  "releasesSelected": "{count, plural, one{{count} lançamento selecionado} other{{count} lançamentos selecionados}}",
   "deleteSelectedReleases": "Excluir selecionados",
-  "deleteSelectedReleasesConfirm": "Tem certeza de que deseja excluir {count} lançamento{plural}?",
-  "releasesDeleted": "{count} lançamento{plural} excluído{plural}",
+  "deleteSelectedReleasesConfirm": "{count, plural, one{Tem certeza de que deseja excluir {count} lançamento?} other{Tem certeza de que deseja excluir {count} lançamentos?}}",
+  "releasesDeleted": "{count, plural, one{{count} lançamento excluído} other{{count} lançamentos excluídos}}",
   "@releasesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -549,9 +519,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -559,9 +526,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -595,14 +559,11 @@
   },
   "addTracks": "Adicionar Faixas",
   "allProjectsAlreadyInRelease": "Todos os projetos já estão neste lançamento.",
-  "addedTracksToRelease": "Adicionada{plural} {count} faixa{plural} ao lançamento.",
+  "addedTracksToRelease": "{count, plural, one{{count} faixa adicionada ao lançamento.} other{{count} faixas adicionadas ao lançamento.}}",
   "@addedTracksToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -615,14 +576,11 @@
     }
   },
   "addFiles": "Adicionar Arquivos",
-  "addedFilesToRelease": "Adicionado{plural} {count} arquivo{plural} ao lançamento.",
+  "addedFilesToRelease": "{count, plural, one{{count} arquivo adicionado ao lançamento.} other{{count} arquivos adicionados ao lançamento.}}",
   "@addedFilesToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -751,7 +709,7 @@
   "title": "Título",
   "tracks": "Faixas",
   "description": "Descrição",
-  "selectTracksToInclude": "Selecionar faixas para incluir no lançamento ({count} selecionada{plural})",
+  "selectTracksToInclude": "Selecionar faixas para incluir no lançamento ({count, plural, one{{count} selecionada} other{{count} selecionadas}})",
   "@selectTracksToInclude": {
     "placeholders": {
       "count": {
@@ -841,37 +799,28 @@
       }
     }
   },
-  "templatesSelected": "{count} template{plural} selecionado{plural}",
+  "templatesSelected": "{count, plural, one{{count} template selecionado} other{{count} templates selecionados}}",
   "@templatesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteSelectedTemplates": "Excluir selecionados",
-  "deleteSelectedTemplatesConfirm": "Tem certeza de que deseja excluir {count} template{plural}?",
+  "deleteSelectedTemplatesConfirm": "{count, plural, one{Tem certeza de que deseja excluir {count} template?} other{Tem certeza de que deseja excluir {count} templates?}}",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "templatesDeleted": "{count} template{plural} excluído{plural}",
+  "templatesDeleted": "{count, plural, one{{count} template excluído} other{{count} templates excluídos}}",
   "@templatesDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -953,36 +902,27 @@
   "projectPhaseFinished": "Finalizado",
   "changeStatus": "Alterar Fase",
   "selectNewStatus": "Selecione a nova fase:",
-  "statusChangedForProjects": "Fase alterada para \"{status}\" em {count} projeto{plural}",
+  "statusChangedForProjects": "{count, plural, one{Fase alterada para \"{status}\" em {count} projeto} other{Fase alterada para \"{status}\" em {count} projetos}}",
   "@statusChangedForProjects": {
     "description": "Mensagem de sucesso quando o status é alterado para múltiplos projetos",
     "placeholders": {
       "count": {
         "type": "int"
       },
-      "plural": {
-        "type": "String"
-      },
       "status": {
         "type": "String"
       }
     }
   },
-  "statusChangedForProjectsWithErrors": "Fase alterada para \"{status}\" em {successCount} projeto{successPlural}, {failCount} falhou{failPlural}",
+  "statusChangedForProjectsWithErrors": "Fase alterada para \"{status}\" em {successCount, plural, one{{successCount} projeto} other{{successCount} projetos}}, {failCount, plural, one{{failCount} falhou} other{{failCount} falharam}}",
   "@statusChangedForProjectsWithErrors": {
     "description": "Mensagem quando a alteração de status falha parcialmente",
     "placeholders": {
       "successCount": {
         "type": "int"
       },
-      "successPlural": {
-        "type": "String"
-      },
       "failCount": {
         "type": "int"
-      },
-      "failPlural": {
-        "type": "String"
       },
       "status": {
         "type": "String"
@@ -1282,6 +1222,10 @@
   "invalidBackupFileFormat": "Formato de arquivo de backup inválido: versão ausente",
   "profileNameRequiredForNewProfile": "O nome do perfil é obrigatório ao criar um novo perfil",
   "currentProfileRequired": "O perfil atual é obrigatório para o modo mesclar ou substituir",
+  "importLaunchCommandsTitle": "Importar programas para \"Lançar no DAW\"?",
+  "importLaunchCommandsMessage": "Este backup indica programas que \"Lançar no DAW\" executaria neste computador. Importe-os somente se você mesmo criou o backup.",
+  "importLaunchCommandsSkip": "Não importar",
+  "importLaunchCommandsImport": "Importar",
   "previewSong": "Música de Prévia",
   "previewSongRemoved": "Música de prévia removida",
   "previewSongAdded": "Música de prévia adicionada",
@@ -1309,13 +1253,13 @@
   "dateDaysAgo": "{count, plural, =1{há 1 dia} other{há {count} dias}}",
   "dateWeeksAgo": "{count, plural, =1{há 1 semana} other{há {count} semanas}}",
   "dateMonthsAgo": "{count, plural, =1{há 1 mês} other{há {count} meses}}",
-  "dateYearsAgo": "há {count} ano{plural}",
-  "ageYearsMonths": "{years} ano{yearPlural}, {months} meses",
-  "ageYears": "{years} ano{plural}",
-  "ageMonthsDays": "{months} meses, {days} dia{dayPlural}",
-  "ageMonths": "{months} meses",
-  "ageDays": "{days} dia{plural}",
-  "ageHours": "{hours} hora{plural}",
+  "dateYearsAgo": "{count, plural, =1{há 1 ano} other{há {count} anos}}",
+  "ageYearsMonths": "{years, plural, one{{years} ano} other{{years} anos}}, {months, plural, one{{months} mês} other{{months} meses}}",
+  "ageYears": "{years, plural, one{{years} ano} other{{years} anos}}",
+  "ageMonthsDays": "{months, plural, one{{months} mês} other{{months} meses}}, {days, plural, one{{days} dia} other{{days} dias}}",
+  "ageMonths": "{months, plural, one{{months} mês} other{{months} meses}}",
+  "ageDays": "{days, plural, one{{days} dia} other{{days} dias}}",
+  "ageHours": "{hours, plural, one{{hours} hora} other{{hours} horas}}",
   "ageJustNow": "Agora mesmo",
   "ageLessThanHour": "Menos de uma hora",
   "viewProfile": "Ver Perfil",
@@ -1767,27 +1711,21 @@
   "@additionalAssets": {
     "description": "Section header for additional assets"
   },
-  "downloadNFiles": "Baixar {count} arquivo{plural}",
+  "downloadNFiles": "{count, plural, one{Baixar {count} arquivo} other{Baixar {count} arquivos}}",
   "@downloadNFiles": {
     "description": "Button label to download N files",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "nFilesSavedTo": "{count} arquivo{plural} salvo em {filename}",
+  "nFilesSavedTo": "{count, plural, one{{count} arquivo salvo em {filename}} other{{count} arquivos salvos em {filename}}}",
   "@nFilesSavedTo": {
     "description": "Success message when N files are saved",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "filename": {
         "type": "String"
@@ -3544,14 +3482,11 @@
       }
     }
   },
-  "attachmentExportSkippedMissing": "{count} arquivo{plural} ausente{plural} ignorado{plural}",
+  "attachmentExportSkippedMissing": "{count, plural, one{{count} arquivo ausente ignorado} other{{count} arquivos ausentes ignorados}}",
   "@attachmentExportSkippedMissing": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -4522,5 +4457,32 @@
   "legacyInstallMessage": "Uma cópia antiga do DAW Project Manager, do instalador anterior, ainda está instalada. Esta a substitui e, a partir de agora, se atualiza sozinha. Remover a cópia antiga não mexe na sua biblioteca.",
   "legacyInstallRemove": "Remover",
   "legacyInstallKeep": "Manter",
-  "legacyInstallRemoveFailed": "Não foi possível iniciar o desinstalador da cópia antiga."
+  "legacyInstallRemoveFailed": "Não foi possível iniciar o desinstalador da cópia antiga.",
+  "missingPreviewSongsTitle": "Músicas de prévia ausentes",
+  "missingPreviewSongsSubtitle": "Músicas de prévia do perfil atual que este computador não encontra. Revise-as e depois baixe, procure ou remova cada uma — nada muda até você escolher.",
+  "missingPreviewSongsCheck": "Verificar",
+  "missingPreviewSongsChecking": "Verificando…",
+  "missingPreviewSongsNone": "Todas as músicas de prévia estão onde deveriam.",
+  "missingPreviewSongsSignInHint": "Entre no Google Drive para procurá-las lá também.",
+  "missingPreviewOnDriveTitle": "No Google Drive ({count})",
+  "missingPreviewOnDriveDescription": "Um backup tem essas músicas. Ao baixar, uma cópia fica neste computador.",
+  "missingPreviewOtherComputerTitle": "De outro computador ({count})",
+  "missingPreviewOtherComputerDescription": "Os caminhos delas são de outro computador, onde talvez toquem normalmente. Escolha um arquivo aqui para tocá-las neste computador também.",
+  "missingPreviewFolderMissingTitle": "Pasta não encontrada ({count})",
+  "missingPreviewFolderMissingDescription": "A pasta delas também não está lá: uma unidade desconectada, ou uma pasta movida ou excluída. Conecte a unidade e verifique de novo antes de remover qualquer coisa.",
+  "missingPreviewFileMissingTitle": "Arquivo não encontrado ({count})",
+  "missingPreviewFileMissingDescription": "A pasta está lá, mas o arquivo não.",
+  "missingPreviewDownload": "Baixar",
+  "missingPreviewDownloadAll": "Baixar todas",
+  "missingPreviewFindAll": "Procurar todas",
+  "missingPreviewRemoveAll": "Remover todas",
+  "missingPreviewRemoveAllTitle": "{count, plural, one{Remover {count} música de prévia?} other{Remover {count} músicas de prévia?}}",
+  "missingPreviewRemoveBody": "Elas são removidas só neste computador, e nenhum arquivo é excluído. Se outro dispositivo ainda tiver alguma dessas músicas, a próxima sincronização a traz de volta para cá.",
+  "missingPreviewDownloadedResult": "{done} de {total} baixadas.",
+  "missingPreviewFoundResult": "Mixdown encontrado para {found} de {total}.",
+  "missingPreviewDownloadFailed": "Não foi possível baixar a música de {name}.",
+  "missingPreviewAutoDetected": "Detectada automaticamente",
+  "missingPreviewRemoveEverything": "Remover todas as não encontradas ({count})",
+  "missingPreviewRemoveIncludesDrive": "Destas, {count} ainda podem ser baixadas do Google Drive.",
+  "missingPreviewRemoveIncludesOtherComputer": "Destas, {count} talvez ainda toquem em outro computador."
 }

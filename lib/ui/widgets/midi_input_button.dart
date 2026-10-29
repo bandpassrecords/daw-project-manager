@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../services/midi/input/midi_input.dart';
+import 'semantics_safe.dart';
 
 /// The MIDI input button's strings.
 class MidiInputLabels {
@@ -215,12 +216,14 @@ class _MidiLatencyDialogState extends State<MidiLatencyDialog> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: Slider(
-                    key: const ValueKey('midi-latency-slider'),
-                    value: _ms,
-                    max: widget.maxMs.toDouble(),
-                    divisions: widget.maxMs ~/ 5,
-                    onChanged: (v) => setState(() => _ms = v),
+                  child: SliderOverlay(
+                    child: Slider(
+                      key: const ValueKey('midi-latency-slider'),
+                      value: _ms,
+                      max: widget.maxMs.toDouble(),
+                      divisions: widget.maxMs ~/ 5,
+                      onChanged: (v) => setState(() => _ms = v),
+                    ),
                   ),
                 ),
                 SizedBox(

@@ -1,11 +1,16 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show kDebugMode, visibleForTesting;
 import 'package:path/path.dart' as p;
 
 import '../models/project_template.dart';
 import '../utils/folder_copy_utils.dart';
 import 'scanner_service.dart';
+
+/// Called once [ProjectTemplateService.instantiate] has copied the template;
+/// a test throws from it to stand in for a copy that fails partway.
+@visibleForTesting
+void Function(String destinationFolderPath)? debugAfterTemplateCopy;
 
 /// A single recognized DAW project file found by
 /// [ProjectTemplateService.discoverTemplateCandidates], ready to be turned
@@ -235,9 +240,16 @@ class ProjectTemplateService {
       excludedPaths.add(p.join(template.sourceFolderPath, siblingFirstSegment));
     }
 
-    // The destination folder must not already exist when we're called (see
-    // the class doc comment — callers validate that first), so anything
-    // found under it on failure is ours to clean up: a half-copied folder
+    // Checked here as well as by the dialog: the cleanup below deletes the
+    // folder recursively, so it must only ever be one this call made. The
+    // dialog checks when the name is typed, and a folder can appear by the
+    // time the copy starts (a cloud sync, a second click on Finish).
+    if (await FileSystemEntity.type(destinationFolderPath) != FileSystemEntityType.notFound) {
+      throw StateError('Destination already exists: $destinationFolderPath');
+    }
+
+    // The destination folder did not exist a moment ago, so anything found
+    // under it on failure is ours to clean up: a half-copied folder
     // left behind would otherwise collide with a same-named retry ("folder
     // already exists") with no way for the user to tell it apart from a
     // real project.
@@ -247,6 +259,7 @@ class ProjectTemplateService {
         Directory(destinationFolderPath),
         excludedPaths: excludedPaths,
       );
+      debugAfterTemplateCopy?.call(destinationFolderPath);
 
       final copiedMainFile = File(
         p.join(destinationFolderPath, template.mainFileRelativePath),

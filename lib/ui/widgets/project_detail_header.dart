@@ -3,8 +3,10 @@ import 'package:intl/intl.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
+import '../../utils/deadline_text.dart';
 import '../../utils/project_visuals.dart';
 import 'project_cover_avatar.dart';
+import 'semantics_safe.dart';
 
 /// Compact header for the project detail page: the project's cover tile on the
 /// left, then title + phase chip on top and a single muted meta line below
@@ -35,54 +37,11 @@ class ProjectDetailHeader extends StatelessWidget {
     this.onEditAppearance,
   });
 
-  String _formatAge(AppLocalizations l10n, Duration duration) {
-    final years = duration.inDays ~/ 365;
-    final months = (duration.inDays % 365) ~/ 30;
-    final days = duration.inDays % 30;
+  String _formatAge(AppLocalizations l10n, Duration duration) =>
+      ageText(l10n, duration, underAnHour: l10n.ageJustNow);
 
-    if (years > 0) {
-      if (months > 0) {
-        return l10n.ageYearsMonths(years, years > 1 ? 's' : '', months, months > 1 ? 's' : '');
-      }
-      return l10n.ageYears(years, years > 1 ? 's' : '');
-    } else if (months > 0) {
-      if (days > 0) {
-        return l10n.ageMonthsDays(months, months > 1 ? 's' : '', days, days > 1 ? 's' : '');
-      }
-      return l10n.ageMonths(months, months > 1 ? 's' : '');
-    } else if (days > 0) {
-      return l10n.ageDays(days, days > 1 ? 's' : '');
-    } else if (duration.inHours > 0) {
-      return l10n.ageHours(duration.inHours, duration.inHours > 1 ? 's' : '');
-    } else {
-      return l10n.ageJustNow;
-    }
-  }
-
-  String? _formatCompletion(AppLocalizations l10n, Duration? duration) {
-    if (duration == null) return null;
-    final years = duration.inDays ~/ 365;
-    final months = (duration.inDays % 365) ~/ 30;
-    final days = duration.inDays % 30;
-
-    if (years > 0) {
-      if (months > 0) {
-        return l10n.ageYearsMonths(years, years > 1 ? 's' : '', months, months > 1 ? 's' : '');
-      }
-      return l10n.ageYears(years, years > 1 ? 's' : '');
-    } else if (months > 0) {
-      if (days > 0) {
-        return l10n.ageMonthsDays(months, months > 1 ? 's' : '', days, days > 1 ? 's' : '');
-      }
-      return l10n.ageMonths(months, months > 1 ? 's' : '');
-    } else if (days > 0) {
-      return l10n.ageDays(days, days > 1 ? 's' : '');
-    } else if (duration.inHours > 0) {
-      return l10n.ageHours(duration.inHours, duration.inHours > 1 ? 's' : '');
-    } else {
-      return l10n.ageLessThanHour;
-    }
-  }
+  String? _formatCompletion(AppLocalizations l10n, Duration? duration) =>
+      duration == null ? null : ageText(l10n, duration, underAnHour: l10n.ageLessThanHour);
 
   String _formatTotalWork(int seconds) {
     final h = seconds ~/ 3600;
@@ -107,7 +66,7 @@ class ProjectDetailHeader extends StatelessWidget {
     if (diff.inDays < 7) return l10n.dateDaysAgo(diff.inDays);
     if (diff.inDays < 30) return l10n.dateWeeksAgo(diff.inDays ~/ 7);
     if (diff.inDays < 365) return l10n.dateMonthsAgo(diff.inDays ~/ 30);
-    return l10n.dateYearsAgo(diff.inDays ~/ 365, '');
+    return l10n.dateYearsAgo(diff.inDays ~/ 365);
   }
 
   Color _phaseColor(String status) {
@@ -174,7 +133,7 @@ class ProjectDetailHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Tooltip(
+                      child: StandaloneTooltip(
                         message: project.filePath,
                         waitDuration: const Duration(milliseconds: 500),
                         child: Text(
@@ -205,7 +164,7 @@ class ProjectDetailHeader extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 6),
-                Tooltip(
+                StandaloneTooltip(
                   message: detailLines.join('\n'),
                   waitDuration: const Duration(milliseconds: 500),
                   child: Text.rich(

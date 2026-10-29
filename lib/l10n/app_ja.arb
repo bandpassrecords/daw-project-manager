@@ -284,25 +284,19 @@
       }
     }
   },
-  "projectsHidden": "{count}プロジェクト{plural}を非表示にしました。",
+  "projectsHidden": "{count}プロジェクトを非表示にしました。",
   "@projectsHidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "projectsUnhidden": "{count}プロジェクト{plural}を表示しました。",
+  "projectsUnhidden": "{count}プロジェクトを表示しました。",
   "@projectsUnhidden": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -324,37 +318,28 @@
   },
   "deleteMissingProjects": "見つからない項目を削除",
   "deleteMissingProjectsTitle": "見つからないプロジェクトを削除しますか？",
-  "deleteMissingProjectsConfirm": "このマシンでファイルが見つからなかった{count}件のプロジェクト{plural}は「最近削除した項目」（設定 > プロジェクトフォルダ）に移動し、30日間はメモ、締切、セッション履歴ごと復元できます。",
+  "deleteMissingProjectsConfirm": "このマシンでファイルが見つからなかった{count}件のプロジェクトは「最近削除した項目」（設定 > プロジェクトフォルダ）に移動し、30日間はメモ、締切、セッション履歴ごと復元できます。",
   "@deleteMissingProjectsConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteMissingProjectsConfirmButton": "削除",
-  "missingProjectsDeleted": "見つからないプロジェクト{plural}を{count}件削除しました。",
+  "missingProjectsDeleted": "見つからないプロジェクトを{count}件削除しました。",
   "@missingProjectsDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "deleteMissingProjectsAlsoDeleteReleaseTracked": "リリースの一部である{count}件のプロジェクト{plural}も削除する（そのリリースからも削除されます）",
+  "deleteMissingProjectsAlsoDeleteReleaseTracked": "リリースの一部である{count}件のプロジェクトも削除する（そのリリースからも削除されます）",
   "@deleteMissingProjectsAlsoDeleteReleaseTracked": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -397,21 +382,18 @@
   "enterReleaseTitle": "リリースタイトルを入力",
   "releaseTitle": "リリースタイトル",
   "enterReleaseTitleHint": "リリースタイトルを入力",
-  "metadataExtractedForProjects": "{count}プロジェクト{plural}のメタデータを抽出しました。{failures}",
+  "metadataExtractedForProjects": "{count}プロジェクトのメタデータを抽出しました。{failures}",
   "@metadataExtractedForProjects": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "failures": {
         "type": "String"
       }
     }
   },
-  "extractionFailures": "{count}失敗しました。",
+  "extractionFailures": "{count}件失敗しました。",
   "@extractionFailures": {
     "placeholders": {
       "count": {
@@ -452,7 +434,7 @@
       }
     }
   },
-  "scanComplete": "{type}完了: {count}プロジェクト{plural}を追加/更新しました。",
+  "scanComplete": "{type}完了: {count}プロジェクトを追加/更新しました。",
   "@scanComplete": {
     "placeholders": {
       "type": {
@@ -460,21 +442,15 @@
       },
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "scanCancelled": "スキャンをキャンセルしました。",
-  "scanFailuresSnackbar": "{count}件のプロジェクト{plural}を読み込めませんでした。",
+  "scanFailuresSnackbar": "{count}件のプロジェクトを読み込めませんでした。",
   "@scanFailuresSnackbar": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -484,14 +460,11 @@
   "@scanFailuresDialogTitle": {},
   "scanFailuresDialogIntro": "スキャン中にこれらのファイルを読み取れませんでした（削除、移動、または他のプログラムによってロックされている可能性があります）：",
   "@scanFailuresDialogIntro": {},
-  "projectsSelected": "{count}プロジェクト{plural}を選択しました",
+  "projectsSelected": "{count}プロジェクトを選択しました",
   "@projectsSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -531,17 +504,14 @@
       }
     }
   },
-  "releasesSelected": "{count}件のリリース{plural}を選択しました",
+  "releasesSelected": "{count}件のリリースを選択しました",
   "deleteSelectedReleases": "選択項目を削除",
-  "deleteSelectedReleasesConfirm": "{count}件のリリース{plural}を削除してもよろしいですか?",
-  "releasesDeleted": "{count}件のリリース{plural}を削除しました",
+  "deleteSelectedReleasesConfirm": "{count}件のリリースを削除してもよろしいですか?",
+  "releasesDeleted": "{count}件のリリースを削除しました",
   "@releasesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -549,9 +519,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -559,9 +526,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -595,14 +559,11 @@
   },
   "addTracks": "トラックを追加",
   "allProjectsAlreadyInRelease": "すべてのプロジェクトがすでにこのリリースに含まれています。",
-  "addedTracksToRelease": "リリースに{count}トラック{plural}を追加しました。",
+  "addedTracksToRelease": "リリースに{count}トラックを追加しました。",
   "@addedTracksToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -615,14 +576,11 @@
     }
   },
   "addFiles": "ファイルを追加",
-  "addedFilesToRelease": "リリースに{count}ファイル{plural}を追加しました。",
+  "addedFilesToRelease": "リリースに{count}ファイルを追加しました。",
   "@addedFilesToRelease": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -841,37 +799,28 @@
       }
     }
   },
-  "templatesSelected": "{count}件のテンプレート{plural}を選択しました",
+  "templatesSelected": "{count}件のテンプレートを選択しました",
   "@templatesSelected": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
   "deleteSelectedTemplates": "選択項目を削除",
-  "deleteSelectedTemplatesConfirm": "{count}件のテンプレート{plural}を削除してもよろしいですか?",
+  "deleteSelectedTemplatesConfirm": "{count}件のテンプレートを削除してもよろしいですか?",
   "@deleteSelectedTemplatesConfirm": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "templatesDeleted": "{count}件のテンプレート{plural}を削除しました",
+  "templatesDeleted": "{count}件のテンプレートを削除しました",
   "@templatesDeleted": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -953,36 +902,27 @@
   "projectPhaseFinished": "完了",
   "changeStatus": "フェーズを変更",
   "selectNewStatus": "新しいフェーズを選択:",
-  "statusChangedForProjects": "{count} プロジェクト{plural}のフェーズを「{status}」に変更しました",
+  "statusChangedForProjects": "{count} プロジェクトのフェーズを「{status}」に変更しました",
   "@statusChangedForProjects": {
     "description": "複数のプロジェクトのステータスが変更されたときの成功メッセージ",
     "placeholders": {
       "count": {
         "type": "int"
       },
-      "plural": {
-        "type": "String"
-      },
       "status": {
         "type": "String"
       }
     }
   },
-  "statusChangedForProjectsWithErrors": "{successCount} プロジェクト{successPlural}のフェーズを「{status}」に変更しましたが、{failCount} が失敗{failPlural}しました",
+  "statusChangedForProjectsWithErrors": "{successCount} プロジェクトのフェーズを「{status}」に変更しましたが、{failCount} 件が失敗しました",
   "@statusChangedForProjectsWithErrors": {
     "description": "ステータス変更が部分的に失敗したときのメッセージ",
     "placeholders": {
       "successCount": {
         "type": "int"
       },
-      "successPlural": {
-        "type": "String"
-      },
       "failCount": {
         "type": "int"
-      },
-      "failPlural": {
-        "type": "String"
       },
       "status": {
         "type": "String"
@@ -1282,6 +1222,10 @@
   "invalidBackupFileFormat": "無効なバックアップファイル形式: バージョンがありません",
   "profileNameRequiredForNewProfile": "新しいプロフィールを作成する際は、プロフィール名が必要です",
   "currentProfileRequired": "マージまたは置き換えモードには現在のプロフィールが必要です",
+  "importLaunchCommandsTitle": "「DAWで起動」のプログラムをインポートしますか？",
+  "importLaunchCommandsMessage": "このバックアップには、このコンピューターで「DAWで起動」が実行するプログラムが含まれています。自分で作成したバックアップの場合にのみインポートしてください。",
+  "importLaunchCommandsSkip": "インポートしない",
+  "importLaunchCommandsImport": "インポートする",
   "previewSong": "プレビュー曲",
   "previewSongRemoved": "プレビュー曲が削除されました",
   "previewSongAdded": "プレビュー曲が追加されました",
@@ -1743,27 +1687,21 @@
   "@additionalAssets": {
     "description": "Section header for additional assets"
   },
-  "downloadNFiles": "{count}個のファイル{plural}をダウンロード",
+  "downloadNFiles": "{count}個のファイルをダウンロード",
   "@downloadNFiles": {
     "description": "Button label to download N files",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
-  "nFilesSavedTo": "{count}個のファイル{plural}を {filename} に保存しました",
+  "nFilesSavedTo": "{count}個のファイルを {filename} に保存しました",
   "@nFilesSavedTo": {
     "description": "Success message when N files are saved",
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       },
       "filename": {
         "type": "String"
@@ -3520,14 +3458,11 @@
       }
     }
   },
-  "attachmentExportSkippedMissing": "見つからないファイル {count} 件をスキップしました{plural}",
+  "attachmentExportSkippedMissing": "見つからないファイル {count} 件をスキップしました",
   "@attachmentExportSkippedMissing": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "plural": {
-        "type": "String"
       }
     }
   },
@@ -4498,5 +4433,32 @@
   "legacyInstallMessage": "以前のインストーラーで入れた DAW Project Manager の古いコピーがまだインストールされています。このコピーがそれに代わり、今後は自動で更新されます。古いコピーを削除してもライブラリには影響しません。",
   "legacyInstallRemove": "削除する",
   "legacyInstallKeep": "残す",
-  "legacyInstallRemoveFailed": "古いコピーのアンインストーラーを起動できませんでした。"
+  "legacyInstallRemoveFailed": "古いコピーのアンインストーラーを起動できませんでした。",
+  "missingPreviewSongsTitle": "見つからないプレビュー曲",
+  "missingPreviewSongsSubtitle": "現在のプロファイルで、このコンピューターが見つけられないプレビュー曲です。確認してから、それぞれダウンロード・検索・削除を選んでください。選ぶまで何も変わりません。",
+  "missingPreviewSongsCheck": "確認",
+  "missingPreviewSongsChecking": "確認中…",
+  "missingPreviewSongsNone": "すべてのプレビュー曲が所定の場所にあります。",
+  "missingPreviewSongsSignInHint": "Google ドライブにログインすると、そこでも探せます。",
+  "missingPreviewOnDriveTitle": "Google ドライブ上 ({count})",
+  "missingPreviewOnDriveDescription": "バックアップにこれらの曲があります。ダウンロードすると、このコンピューターにコピーが保存されます。",
+  "missingPreviewOtherComputerTitle": "別のコンピューターから ({count})",
+  "missingPreviewOtherComputerDescription": "パスは別のコンピューターのもので、そちらでは問題なく再生できるかもしれません。このコンピューターでも再生するには、ここでファイルを選んでください。",
+  "missingPreviewFolderMissingTitle": "フォルダーがありません ({count})",
+  "missingPreviewFolderMissingDescription": "フォルダーも見つかりません。ドライブが接続されていないか、フォルダーが移動または削除されています。何かを削除する前に、ドライブを接続してもう一度確認してください。",
+  "missingPreviewFileMissingTitle": "ファイルがありません ({count})",
+  "missingPreviewFileMissingDescription": "フォルダーはありますが、ファイルがありません。",
+  "missingPreviewDownload": "ダウンロード",
+  "missingPreviewDownloadAll": "すべてダウンロード",
+  "missingPreviewFindAll": "すべて検索",
+  "missingPreviewRemoveAll": "すべて削除",
+  "missingPreviewRemoveAllTitle": "{count, plural, other{プレビュー曲を{count}件削除しますか？}}",
+  "missingPreviewRemoveBody": "このコンピューター上でのみ削除され、ファイルは削除されません。別のデバイスにまだこれらの曲がある場合は、次回の同期でここに戻ります。",
+  "missingPreviewDownloadedResult": "{total}件中{done}件をダウンロードしました。",
+  "missingPreviewFoundResult": "{total}件中{found}件のミックスダウンが見つかりました。",
+  "missingPreviewDownloadFailed": "{name}の曲をダウンロードできませんでした。",
+  "missingPreviewAutoDetected": "自動検出",
+  "missingPreviewRemoveEverything": "見つからないものをすべて削除 ({count})",
+  "missingPreviewRemoveIncludesDrive": "このうち{count}件は、まだ Google ドライブからダウンロードできます。",
+  "missingPreviewRemoveIncludesOtherComputer": "このうち{count}件は、別のコンピューターではまだ再生できるかもしれません。"
 }

@@ -38,6 +38,22 @@ void main() {
     expect(cells.containsKey(kDeadlineColumnField), isTrue);
   });
 
+  test('the Deadline cell sorts by date, with no deadline last', () {
+    // It held English text ("10 days left", "2 days left"), which sorted
+    // alphabetically and read English in every language.
+    final now = DateTime.now();
+    int cellOf(int daysAhead) => projectInfoCells(TestFactories.makeProject(
+          deadline: DateTime(now.year, now.month, now.day + daysAhead, 12),
+        ))[kDeadlineColumnField]!.value as int;
+
+    expect(cellOf(2), 2);
+    expect(cellOf(10), 10);
+    expect(cellOf(-3), -3);
+    expect(projectInfoCells(TestFactories.makeProject())[kDeadlineColumnField]!.value,
+        kNoDeadlineSortValue);
+    expect(emptyProjectInfoCells()[kDeadlineColumnField]!.value, kNoDeadlineSortValue);
+  });
+
   test('deadline badges: late, today, this week, later', () {
     expect(deadlineBadgeOf(-3).kind, DeadlineBadgeKind.late);
     expect(deadlineBadgeOf(-3).days, 3);

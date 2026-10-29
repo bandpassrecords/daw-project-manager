@@ -47,6 +47,18 @@ enum AutoBackupInterval {
   }) =>
       (atLaunch && syncOnStartup) || isDue(lastSync: lastSync, now: now);
 
+  /// Whether the sync [shouldSyncNow] asks for runs only because the app
+  /// started — and so merges only when Drive holds something this device
+  /// hasn't seen (`syncDatabase(mergeOnlyIfNewer:)`). A due interval merges
+  /// as Sync now does. Every launch used to run the whole sync.
+  bool syncsOnlyForLaunch({
+    required DateTime? lastSync,
+    required DateTime now,
+    required bool syncOnStartup,
+    bool atLaunch = false,
+  }) =>
+      atLaunch && syncOnStartup && !isDue(lastSync: lastSync, now: now);
+
   /// Whether this device syncs on its own at all.
   bool syncsAutomatically({required bool syncOnStartup}) =>
       syncOnStartup || duration != null;
