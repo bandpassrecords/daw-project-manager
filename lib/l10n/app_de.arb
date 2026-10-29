@@ -4547,5 +4547,6 @@
   "inspectorStatBusiest": "Meistgenutzte Ziele",
   "inspectorInsertsCount": "{count, plural, one{1 Insert} other{{count} Inserts}}",
   "inspectorChannelsCount": "{count, plural, one{1 Kanal} other{{count} Kanäle}}",
-  "projectMenuInspect": "Untersuchen"
+  "projectMenuInspect": "Untersuchen",
+  "sampleRateColumn": "Abtastrate"
 }

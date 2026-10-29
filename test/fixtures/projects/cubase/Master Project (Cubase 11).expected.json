@@ -22,7 +22,9 @@
         "VBC FG-Red",
         "Vertigo VSM-3"
       ],
-      "midiClips": 0
+      "midiClips": 0,
+      "sampleRate": 44100,
+      "bitDepth": 24
     },
     "midiClips": [],
     "sampleReferences": []

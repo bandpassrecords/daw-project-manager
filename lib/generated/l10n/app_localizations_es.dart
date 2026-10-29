@@ -8984,4 +8984,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get projectMenuInspect => 'Inspeccionar';
+
+  @override
+  String get sampleRateColumn => 'Frecuencia de muestreo';
 }

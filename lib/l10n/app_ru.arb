@@ -4547,5 +4547,6 @@
   "inspectorStatBusiest": "Самые загруженные назначения",
   "inspectorInsertsCount": "{count, plural, one{{count} вставка} few{{count} вставки} many{{count} вставок} other{{count} вставки}}",
   "inspectorChannelsCount": "{count, plural, one{{count} канал} few{{count} канала} many{{count} каналов} other{{count} канала}}",
-  "projectMenuInspect": "Изучить"
+  "projectMenuInspect": "Изучить",
+  "sampleRateColumn": "Частота дискретизации"
 }

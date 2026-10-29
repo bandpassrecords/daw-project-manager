@@ -53,7 +53,9 @@
         "Vitamin Stereo",
         "Volcano 2"
       ],
-      "midiClips": 52
+      "midiClips": 52,
+      "sampleRate": 44100,
+      "bitDepth": 24
     },
     "midiClips": [
       {
@@ -718,7 +720,9 @@
         "Vitamin Stereo",
         "Volcano 2"
       ],
-      "midiClips": 52
+      "midiClips": 52,
+      "sampleRate": 44100,
+      "bitDepth": 24
     },
     "midiClips": [
       {
@@ -1392,7 +1396,9 @@
         "Vitamin Stereo",
         "Volcano 2"
       ],
-      "midiClips": 53
+      "midiClips": 53,
+      "sampleRate": 44100,
+      "bitDepth": 24
     },
     "midiClips": [
       {
@@ -2064,7 +2070,9 @@
         "Vitamin Stereo",
         "Volcano 2"
       ],
-      "midiClips": 20
+      "midiClips": 20,
+      "sampleRate": 44100,
+      "bitDepth": 24
     },
     "midiClips": [
       {

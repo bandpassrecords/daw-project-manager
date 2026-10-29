@@ -8945,4 +8945,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get projectMenuInspect => 'Untersuchen';
+
+  @override
+  String get sampleRateColumn => 'Abtastrate';
 }

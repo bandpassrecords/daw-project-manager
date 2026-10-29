@@ -8316,4 +8316,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get projectMenuInspect => '检查';
+
+  @override
+  String get sampleRateColumn => '采样率';
 }

@@ -25,7 +25,9 @@
         "Vanguard",
         "z3ta+"
       ],
-      "midiClips": 19
+      "midiClips": 19,
+      "sampleRate": 44100,
+      "bitDepth": 16
     },
     "midiClips": [
       {

@@ -8648,5 +8648,9 @@
   "projectMenuInspect": "Inspect",
   "@projectMenuInspect": {
     "description": "Project menu entry that opens the project in the Inspector tab"
+  },
+  "sampleRateColumn": "Sample rate",
+  "@sampleRateColumn": {
+    "description": "Column and project-page label: the project's sample rate and bit depth"
   }
 }

@@ -4547,5 +4547,6 @@
   "inspectorStatBusiest": "Destinos más concurridos",
   "inspectorInsertsCount": "{count, plural, one{1 inserción} other{{count} inserciones}}",
   "inspectorChannelsCount": "{count, plural, one{1 canal} other{{count} canales}}",
-  "projectMenuInspect": "Inspeccionar"
+  "projectMenuInspect": "Inspeccionar",
+  "sampleRateColumn": "Frecuencia de muestreo"
 }

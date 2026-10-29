@@ -4571,5 +4571,6 @@
   "inspectorStatBusiest": "Destinos mais movimentados",
   "inspectorInsertsCount": "{count, plural, one{1 insert} other{{count} inserts}}",
   "inspectorChannelsCount": "{count, plural, one{1 canal} other{{count} canais}}",
-  "projectMenuInspect": "Inspecionar"
+  "projectMenuInspect": "Inspecionar",
+  "sampleRateColumn": "Taxa de amostragem"
 }

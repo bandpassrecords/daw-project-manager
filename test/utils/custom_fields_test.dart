@@ -165,8 +165,9 @@ void main() {
     test('notes, length and parts (the tracklist columns) are on offer',
         () {
       expect(kProjectsTableBuiltInColumns,
-          containsAll(['notes', 'length', 'parts']));
-      expect(kProjectsTableHiddenByDefault, {'notes', 'length', 'parts'});
+          containsAll(['notes', 'length', 'parts', 'sampleRate']));
+      expect(kProjectsTableHiddenByDefault,
+          {'notes', 'length', 'parts', 'sampleRate'});
     });
 
     test('a layout saved before them gets them appended, hidden', () {
@@ -176,8 +177,12 @@ void main() {
         TableColumnSetting('bpm', visible: false),
       ]);
       expect(older.take(2).map((s) => s.toString()), ['deadline', 'bpm (hidden)']);
-      expect(older.sublist(older.length - 3).map((s) => s.toString()),
-          ['notes (hidden)', 'length (hidden)', 'parts (hidden)']);
+      expect(older.sublist(older.length - 4).map((s) => s.toString()), [
+        'notes (hidden)',
+        'length (hidden)',
+        'parts (hidden)',
+        'sampleRate (hidden) (not in tracks)',
+      ]);
       expect(older.firstWhere((s) => s.id == 'status').visible, isTrue,
           reason: 'older built-ins it lacked still come in visible');
     });

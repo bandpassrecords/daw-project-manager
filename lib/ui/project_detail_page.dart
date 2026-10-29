@@ -1988,6 +1988,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                     plugins: l10n.projectStatsPlugins,
                                     showAll: l10n.showAll,
                                     collapse: l10n.collapse,
+                                    sampleRate: l10n.sampleRateColumn,
+                                    bitDepth: l10n.inspectorBitDepth,
                                   ),
                                 ),
                               ],

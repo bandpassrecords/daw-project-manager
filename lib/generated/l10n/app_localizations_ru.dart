@@ -8929,4 +8929,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get projectMenuInspect => 'Изучить';
+
+  @override
+  String get sampleRateColumn => 'Частота дискретизации';
 }

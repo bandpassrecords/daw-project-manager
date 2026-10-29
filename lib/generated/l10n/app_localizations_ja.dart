@@ -8410,4 +8410,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get projectMenuInspect => '調べる';
+
+  @override
+  String get sampleRateColumn => 'サンプルレート';
 }

@@ -4547,5 +4547,6 @@
   "inspectorStatBusiest": "Destinations les plus chargées",
   "inspectorInsertsCount": "{count, plural, one{1 insert} other{{count} inserts}}",
   "inspectorChannelsCount": "{count, plural, one{1 voie} other{{count} voies}}",
-  "projectMenuInspect": "Inspecter"
+  "projectMenuInspect": "Inspecter",
+  "sampleRateColumn": "Fréquence d'échantillonnage"
 }

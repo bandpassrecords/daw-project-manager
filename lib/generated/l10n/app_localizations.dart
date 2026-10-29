@@ -14137,6 +14137,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Inspect'**
   String get projectMenuInspect;
+
+  /// Column and project-page label: the project's sample rate and bit depth
+  ///
+  /// In en, this message translates to:
+  /// **'Sample rate'**
+  String get sampleRateColumn;
 }
 
 class _AppLocalizationsDelegate

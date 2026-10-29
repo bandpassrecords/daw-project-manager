@@ -78,6 +78,7 @@ class CubaseProjectParser {
       _ascii(8, 4) == 'NUND';
 
   ProjectStats readStats({bool countMidiClips = true}) {
+    final setup = readProjectSetup();
     final counts = <CubaseTrackType, int>{};
     for (final index in _indices) {
       for (final t in _arrangedOf(index).tracks) {
@@ -95,6 +96,8 @@ class CubaseProjectParser {
       folderTracks: counts[CubaseTrackType.folder] ?? 0,
       plugins: normalizePluginNames(readPluginNames()),
       midiClipCount: countMidiClips ? readMidiClips().length : null,
+      sampleRate: setup.sampleRate,
+      bitDepth: setup.bitDepth,
     );
   }
 
@@ -181,9 +184,18 @@ class CubaseProjectParser {
   /// time signature from 8 on). Measured on 160 projects from Cubase 5 to 13:
   /// the sample rate agreed with the project's recordings in every one.
   CubaseProjectSetup readProjectSetup() {
+    // The media attributes sit together: once the first is found, the rest
+    // are looked for next to it before the whole file is (300 MB projects).
+    var near = -1;
     CubaseAttributes? attribute(String id) {
-      final at = _indexOf(_keyBytes(id), 0);
+      final key = _keyBytes(id);
+      var at = near < 0
+          ? -1
+          : _find(key, near > 65536 ? near - 65536 : 0,
+              near + 65536 < bytes.length ? near + 65536 : bytes.length);
+      if (at < 0) at = _indexOf(key, 0);
       if (at < 0) return null;
+      near = at;
       // The ID string is followed by the attribute's own fields: Type,
       // Flags, then the value under a key naming its type.
       final keyEnd = at + id.length + 5;

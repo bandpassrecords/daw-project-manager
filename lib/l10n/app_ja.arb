@@ -4547,5 +4547,6 @@
   "inspectorStatBusiest": "入力の多い送り先",
   "inspectorInsertsCount": "インサート {count}",
   "inspectorChannelsCount": "チャンネル {count}",
-  "projectMenuInspect": "調べる"
+  "projectMenuInspect": "調べる",
+  "sampleRateColumn": "サンプルレート"
 }

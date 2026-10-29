@@ -8950,4 +8950,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get projectMenuInspect => 'Inspecionar';
+
+  @override
+  String get sampleRateColumn => 'Taxa de amostragem';
 }

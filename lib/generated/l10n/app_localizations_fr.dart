@@ -8983,4 +8983,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get projectMenuInspect => 'Inspecter';
+
+  @override
+  String get sampleRateColumn => 'Fréquence d\'échantillonnage';
 }

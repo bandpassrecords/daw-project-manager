@@ -245,6 +245,10 @@ class _ReleaseTracksTableState extends ConsumerState<ReleaseTracksTable> {
         minWidth: 70,
       ),
       projectLengthColumn(title: l10n.songLengthColumn),
+      projectSampleRateColumn(
+        title: l10n.sampleRateColumn,
+        bitDepthText: l10n.inspectorBitDepth,
+      ),
       TrinaColumn(
         title: l10n.phase,
         field: 'status',

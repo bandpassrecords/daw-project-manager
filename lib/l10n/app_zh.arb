@@ -4547,5 +4547,6 @@
   "inspectorStatBusiest": "最繁忙的目标",
   "inspectorInsertsCount": "{count} 个插入",
   "inspectorChannelsCount": "{count} 个通道",
-  "projectMenuInspect": "检查"
+  "projectMenuInspect": "检查",
+  "sampleRateColumn": "采样率"
 }

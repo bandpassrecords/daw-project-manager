@@ -3733,6 +3733,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         return l10n.songLengthColumn;
       case 'parts':
         return l10n.partsColumn;
+      case 'sampleRate':
+        return l10n.sampleRateColumn;
     }
     return id;
   }

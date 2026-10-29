@@ -1337,7 +1337,9 @@
         "Sonalksis TBK Stereo",
         "UltraPitch 6-Voice"
       ],
-      "midiClips": 20
+      "midiClips": 20,
+      "sampleRate": 44100,
+      "bitDepth": 16
     },
     "midiClips": [
       {
@@ -1682,7 +1684,9 @@
         "UltraPitch 6-Voice",
         "z3ta+"
       ],
-      "midiClips": 25
+      "midiClips": 25,
+      "sampleRate": 44100,
+      "bitDepth": 16
     },
     "midiClips": [
       {
@@ -2073,7 +2077,9 @@
         "UltraPitch 6-Voice",
         "z3ta+"
       ],
-      "midiClips": 25
+      "midiClips": 25,
+      "sampleRate": 44100,
+      "bitDepth": 16
     },
     "midiClips": [
       {

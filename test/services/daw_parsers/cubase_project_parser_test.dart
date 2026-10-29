@@ -468,6 +468,11 @@ void main() {
   });
 
   group('readStats', () {
+    test('carries the sample rate and bit depth', () {
+      final stats = parser.readStats();
+      expect((stats.sampleRate, stats.bitDepth), (48000, 24));
+    });
+
     test('counts every track kind, following back-references', () {
       // Two audio tracks: the second is written as a reference, not a name —
       // counting class names alone would find one.

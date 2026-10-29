@@ -8407,6 +8407,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         title: AppLocalizations.of(context)!.songLengthColumn,
       ),
       projectPartsColumn(title: AppLocalizations.of(context)!.partsColumn),
+      projectSampleRateColumn(
+        title: AppLocalizations.of(context)!.sampleRateColumn,
+        bitDepthText: AppLocalizations.of(context)!.inspectorBitDepth,
+      ),
       // Hidden backing column for passing the model instance
       TrinaColumn(
         title: 'data',
