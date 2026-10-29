@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import '../../models/midi_clip.dart';
@@ -222,16 +223,24 @@ class CubaseProjectParser {
   /// The top of the fader's scale, +6 dB.
   static const double maxVolume = 32767;
 
-  /// The fader in dB, for the points of the scale that are known: −∞, 0 dB
-  /// and +6 dB. The curve between them hasn't been measured against Cubase,
-  /// so anything else is null rather than a guess.
-  static double? volumeDb(double? volume) => switch (volume) {
-        null => null,
-        <= 0 => double.negativeInfinity,
-        unityVolume => 0,
-        >= maxVolume => 6,
-        _ => null,
-      };
+  /// The fader in dB.
+  ///
+  /// Below 0 dB the scale is a power law: gain = (volume / unity)^2.069,
+  /// fitted to five faders read in Cubase 13 (−3.15 to −14.1 dB; worst
+  /// error 0.17 dB, the one nearest 0 dB, the rest within 0.06). Above 0 dB
+  /// the scale is steeper — the same law would top out at +4.3 dB — so that
+  /// stretch is a power law of its own through +6 dB at [maxVolume], not yet
+  /// checked against a reading between.
+  static double? volumeDb(double? volume) {
+    if (volume == null) return null;
+    if (volume <= 0) return double.negativeInfinity;
+    if (volume >= maxVolume) return 6;
+    final ratio = math.log(volume / unityVolume) / math.ln10;
+    if (volume <= unityVolume) return 20 * _belowUnityExponent * ratio;
+    return 6 * ratio / (math.log(maxVolume / unityVolume) / math.ln10);
+  }
+
+  static const _belowUnityExponent = 2.069;
 
   late final Map<_ArchiveIndex, _Arranged> _arranged = {};
   final Map<_Instance, _Channel?> _channels = {};

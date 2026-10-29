@@ -643,14 +643,27 @@ void main() {
     });
   });
 
-  test('volumeDb gives only the points of the fader scale that are known',
-      () {
+  test('volumeDb: the fader scale, against faders read in Cubase 13', () {
     expect(CubaseProjectParser.volumeDb(null), isNull);
     expect(CubaseProjectParser.volumeDb(0), double.negativeInfinity);
     expect(CubaseProjectParser.volumeDb(25856), 0);
     expect(CubaseProjectParser.volumeDb(32767), 6);
-    expect(CubaseProjectParser.volumeDb(20000), isNull,
-        reason: 'not measured: no guess');
+    // test-01.cpr in the collection, opened in Cubase 13: stored value and
+    // what its fader showed.
+    for (final (stored, shown) in [
+      (14219.642578125, -10.8), // Kick 2 x64 01
+      (21492.33203125, -3.15), // Bassline
+      (15244.541015625, -9.56), // Serum 03
+      (12897.6494140625, -12.5), // Main Lead 01
+      (11770.669921875, -14.1), // RTW_145_Drums_15_Tops
+    ]) {
+      expect(CubaseProjectParser.volumeDb(stored), closeTo(shown, 0.2),
+          reason: '$stored');
+    }
+    // Above 0 dB it keeps rising to +6.
+    final above = CubaseProjectParser.volumeDb(29000)!;
+    expect(above, greaterThan(0));
+    expect(above, lessThan(6));
   });
 
   group('readMidiClips', () {
