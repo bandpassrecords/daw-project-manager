@@ -623,6 +623,11 @@ class _ChannelDetail extends StatelessWidget {
           _Label(l10n.inspectorSignalPath),
           _PathChips(path: path),
         ],
+        if (c.pan != null) ...[
+          const SizedBox(height: 12),
+          _Label(l10n.inspectorPan),
+          Text(formatPan(c.pan!)),
+        ],
         if (c.instrument != null) ...[
           const SizedBox(height: 12),
           _Label(l10n.inspectorInstrument),
@@ -1513,6 +1518,13 @@ IconData _kindIcon(AnatomyChannelKind kind) => switch (kind) {
       AnatomyChannelKind.fx => Icons.blur_on,
       AnatomyChannelKind.folder => Icons.folder,
     };
+
+/// "C", "L30", "R100" — a pan from -1 to 1, as DAWs print it.
+String formatPan(double pan) {
+  final amount = (pan.abs() * 100).round();
+  if (amount == 0) return 'C';
+  return '${pan < 0 ? 'L' : 'R'}$amount';
+}
 
 /// "0.0 dB", "+6.0 dB", "−∞ dB".
 String _formatDb(double db) {

@@ -160,6 +160,7 @@ class CubaseProjectParser {
             for (final i in channel?.inserts ?? const <_Insert>[]) i.insert,
           ],
           volume: channel?.volume,
+          pan: channel?.pan,
           inputGain: channel?.inputGain,
           phaseInverted: channel?.phaseInverted,
           soloed: channel?.soloed,
@@ -895,6 +896,7 @@ class CubaseProjectParser {
     final bands = tree.folder('EQ')?.list('Band') ?? const [];
     final instrument = _instrumentOf(tree.folder('Synth Slot'));
     return _Channel(
+      pan: _panOf(tree.folder('Panner')),
       kind: _channelKind(tree.integer('Type')),
       ownBus: tree.folder('OwnInputBus')?.integer('Bus UID'),
       outBus: tree.valueOf('OutputBusValue')?.toInt(),
@@ -914,6 +916,22 @@ class CubaseProjectParser {
       instrumentId: instrument?.id,
       instrumentPreset: instrument?.preset,
     );
+  }
+
+  /// Where a stereo channel's panner sits, 0 (left) to 1 (right): the
+  /// Standard Panner keeps it as the first float of its state, little-endian
+  /// (0.5 in 5,285 of 5,436 channels measured: the centre). Null for another
+  /// panner, or a state too short to hold it.
+  double? _panOf(CubaseAttributes? panner) {
+    if (panner == null || panner.string('Plugin Name') != 'Standard Panner') {
+      return null;
+    }
+    final state = panner['audioComponent'];
+    if (state is! CubaseBlob || state.length < 4 || !_has(state.offset, 4)) {
+      return null;
+    }
+    final v = _data.getFloat32(state.offset, Endian.little);
+    return v.isFinite && v >= 0 && v <= 1 ? v : null;
   }
 
   /// An instrument track's instrument, from its "Synth Slot": the plug-in's
@@ -1248,6 +1266,7 @@ class CubaseTrack {
     this.output,
     this.inserts = const [],
     this.volume,
+    this.pan,
     this.inputGain,
     this.phaseInverted,
     this.soloed,
@@ -1276,6 +1295,10 @@ class CubaseTrack {
   /// [CubaseProjectParser.unityVolume]. See [CubaseProjectParser.volumeDb].
   /// Null when the track has no channel.
   final double? volume;
+
+  /// The panner, 0 (hard left) to 1 (hard right), 0.5 the centre; null
+  /// when it isn't the Standard Panner or there is no channel.
+  final double? pan;
 
   /// The pre-section's input gain on the same 0–32767 scale, 0 dB in the
   /// middle (16383.5).
@@ -1469,6 +1492,7 @@ enum _ChannelKind { audio, group, rack, instrument, fx, sampler }
 /// the bus its output goes to, its inserts and sends, its fader.
 class _Channel {
   const _Channel({
+    this.pan,
     this.kind,
     this.ownBus,
     this.outBus,
@@ -1483,6 +1507,7 @@ class _Channel {
     this.instrumentId,
     this.instrumentPreset,
   });
+  final double? pan;
   final _ChannelKind? kind;
   final int? ownBus;
   final int? outBus;

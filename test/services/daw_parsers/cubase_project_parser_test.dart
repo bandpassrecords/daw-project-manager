@@ -106,6 +106,11 @@ class _Archive {
         f64(d);
       case final String text:
         stringValue(text);
+      case final _Blob blob:
+        _u16(2);
+        _u16(7);
+        _u32(blob.bytes.length);
+        raw(blob.bytes);
       case final _Strings list:
         _u16(2);
         _u16(4);
@@ -164,6 +169,7 @@ class _Archive {
     int eqBandsOn = 0,
     String? instrument,
     String? instrumentLabel,
+    double pan = 0.5,
   }) {
     tree('VST Multitrack', {
       'RuntimeID': 1,
@@ -172,6 +178,11 @@ class _Archive {
       'InputGain': {'Value': 16383.5},
       'InputPhase': 0,
       'Volume': {'Value': volume, 'AnchorValue': 0.0},
+      'Panner': {
+        'Plugin Name': 'Standard Panner',
+        'audioComponent': _pannerState(pan),
+        'Active': 1,
+      },
       'InsertFolder': {
         'RuntimeID': 2,
         'Bypass': 0,
@@ -412,6 +423,7 @@ Uint8List _project() {
       inserts: {0: ('Compressor', false)},
       sideChains: {0: 40},
       volume: 20000,
+      pan: 0.25,
       soloed: true,
       eqBandsOn: 2,
     );
@@ -493,6 +505,19 @@ Uint8List _project() {
   a.end();
   return a.toCpr();
 }
+
+/// A plug-in's state in an attribute tree.
+class _Blob {
+  const _Blob(this.bytes);
+  final List<int> bytes;
+}
+
+/// The Standard Panner's state as Cubase 13 keeps it: the pan as a
+/// little-endian float (0.5 the centre), then fields not read.
+_Blob _pannerState(double pan) => _Blob([
+      ...(ByteData(4)..setFloat32(0, pan, Endian.little)).buffer.asUint8List(),
+      0, 0, 0, 0x3F, 4, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0,
+    ]);
 
 /// A string list in an attribute tree ("Connections").
 class _Strings {
@@ -619,6 +644,8 @@ void main() {
       expect(byName['Guitar']!.volume, 20000);
       expect(byName['Guitar']!.soloed, isTrue);
       expect(byName['Guitar']!.eqBandsOn, 2);
+      expect(byName['Guitar']!.pan, 0.25);
+      expect(byName['Vocals']!.pan, 0.5, reason: 'the centre');
       expect(byName['Vocals']!.volume, CubaseProjectParser.unityVolume);
       expect(byName['Vocals']!.soloed, isFalse);
       expect(byName['Vocals']!.phaseInverted, isFalse);

@@ -14227,6 +14227,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'None'**
   String get inspectorNone;
+
+  /// Label: where a channel's panner sits
+  ///
+  /// In en, this message translates to:
+  /// **'Pan'**
+  String get inspectorPan;
 }
 
 class _AppLocalizationsDelegate

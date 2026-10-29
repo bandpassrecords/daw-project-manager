@@ -8978,4 +8978,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inspectorNone => 'Нет';
+
+  @override
+  String get inspectorPan => 'Панорама';
 }

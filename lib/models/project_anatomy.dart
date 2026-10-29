@@ -100,6 +100,7 @@ class AnatomyChannel {
     this.output,
     this.volumeDb,
     this.faderPosition,
+    this.pan,
     this.soloed,
     this.eqBandsOn,
     this.instrument,
@@ -125,6 +126,9 @@ class AnatomyChannel {
   /// The fader's position from 0 (bottom) to 1 (top), for drawing it when
   /// [volumeDb] isn't known.
   final double? faderPosition;
+
+  /// The panner, -1 (left) to 1 (right), 0 the centre.
+  final double? pan;
   final bool? soloed;
   final int? eqBandsOn;
 

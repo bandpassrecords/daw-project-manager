@@ -60,6 +60,7 @@ void main() {
           [(0, 'Endless Smile 64')]);
       expect(group.output, 'Stereo Out');
       expect(group.volumeDb, 0, reason: 'a channel left at 0 dB');
+      expect(group.pan, 0, reason: 'left in the centre');
     });
 
     test('plug-in names lose their architecture suffix', () {

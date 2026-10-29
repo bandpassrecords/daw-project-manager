@@ -8459,4 +8459,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get inspectorNone => 'なし';
+
+  @override
+  String get inspectorPan => 'パン';
 }

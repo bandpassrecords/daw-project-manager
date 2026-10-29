@@ -8999,4 +8999,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get inspectorNone => 'Nenhum';
+
+  @override
+  String get inspectorPan => 'Pan';
 }

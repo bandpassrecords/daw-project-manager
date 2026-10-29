@@ -4562,5 +4562,6 @@
   "inspectorInterfaceOutputs": "インターフェースの出力",
   "inspectorMidiInputs": "MIDI入力",
   "inspectorMidiOutputs": "MIDI出力",
-  "inspectorNone": "なし"
+  "inspectorNone": "なし",
+  "inspectorPan": "パン"
 }

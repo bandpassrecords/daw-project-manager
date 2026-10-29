@@ -97,6 +97,7 @@ ProjectAnatomy cubaseAnatomy({
         output: t.output,
         volumeDb: CubaseProjectParser.volumeDb(t.volume),
         faderPosition: position(t.volume),
+        pan: t.pan == null ? null : t.pan! * 2 - 1,
         soloed: t.soloed,
         eqBandsOn: t.eqBandsOn,
         instrument: t.instrument == null ? null : cleanPluginName(t.instrument!),

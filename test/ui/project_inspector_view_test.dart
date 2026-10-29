@@ -16,6 +16,7 @@ const _kick = AnatomyChannel(
   output: 'Drum Bus',
   volumeDb: 0,
   faderPosition: 0.79,
+  pan: -0.3,
   inserts: [AnatomyInsert(slot: 0, plugin: 'Pro-Q 3', preset: 'Kick Shape')],
   sends: [
     AnatomySend(destination: 'Bass', sideChainOf: 'Compressor'),
@@ -88,6 +89,13 @@ const _cubase = ProjectAnatomy(
 void main() {
   final binding = SemanticsOrphanBinding.ensureInitialized();
 
+  test('formatPan prints C, L and R the way DAWs do', () {
+    expect(formatPan(0), 'C');
+    expect(formatPan(0.004), 'C');
+    expect(formatPan(-0.3), 'L30');
+    expect(formatPan(1), 'R100');
+  });
+
   Future<List<String>> pump(
     WidgetTester tester,
     ProjectAnatomy anatomy, {
@@ -143,6 +151,7 @@ void main() {
     await tester.tap(find.text('Kick').first);
     await tester.pumpAndSettle();
     expect(find.text('1. Pro-Q 3 — Kick Shape'), findsOneWidget);
+    expect(find.text('L30'), findsOneWidget);
     expect(find.textContaining('Side-chain into Compressor'), findsOneWidget);
     // Kick → Drum Bus → Stereo Out.
     expect(find.widgetWithText(Chip, 'Stereo Out'), findsOneWidget);

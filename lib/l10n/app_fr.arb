@@ -4562,5 +4562,6 @@
   "inspectorInterfaceOutputs": "Sorties de l’interface",
   "inspectorMidiInputs": "Entrées MIDI",
   "inspectorMidiOutputs": "Sorties MIDI",
-  "inspectorNone": "Aucun"
+  "inspectorNone": "Aucun",
+  "inspectorPan": "Panoramique"
 }

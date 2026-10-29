@@ -8934,4 +8934,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inspectorNone => 'None';
+
+  @override
+  String get inspectorPan => 'Pan';
 }

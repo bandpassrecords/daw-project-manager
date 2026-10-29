@@ -8365,4 +8365,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get inspectorNone => '无';
+
+  @override
+  String get inspectorPan => '声像';
 }

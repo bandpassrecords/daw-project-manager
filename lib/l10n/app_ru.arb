@@ -4562,5 +4562,6 @@
   "inspectorInterfaceOutputs": "Выходы интерфейса",
   "inspectorMidiInputs": "MIDI-входы",
   "inspectorMidiOutputs": "MIDI-выходы",
-  "inspectorNone": "Нет"
+  "inspectorNone": "Нет",
+  "inspectorPan": "Панорама"
 }

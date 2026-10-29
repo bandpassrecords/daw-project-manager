@@ -8718,5 +8718,9 @@
   "inspectorNone": "None",
   "@inspectorNone": {
     "description": "Shown when a list of ports or buses is empty"
+  },
+  "inspectorPan": "Pan",
+  "@inspectorPan": {
+    "description": "Label: where a channel's panner sits"
   }
 }

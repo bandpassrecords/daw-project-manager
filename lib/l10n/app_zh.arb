@@ -4562,5 +4562,6 @@
   "inspectorInterfaceOutputs": "接口输出",
   "inspectorMidiInputs": "MIDI 输入",
   "inspectorMidiOutputs": "MIDI 输出",
-  "inspectorNone": "无"
+  "inspectorNone": "无",
+  "inspectorPan": "声像"
 }

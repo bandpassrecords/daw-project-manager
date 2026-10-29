@@ -8994,4 +8994,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get inspectorNone => 'Keine';
+
+  @override
+  String get inspectorPan => 'Panorama';
 }
