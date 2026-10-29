@@ -165,6 +165,7 @@ class _Archive {
     Map<int, int> sideChains = const {},
     List<(int, int, double, bool, bool)> sends = const [],
     double volume = 25856,
+    bool muted = false,
     bool soloed = false,
     int eqBandsOn = 0,
     String? instrument,
@@ -245,7 +246,9 @@ class _Archive {
             },
         ],
       },
-      if (soloed) 'SoloFlag': 1,
+      // Cubase calls mute "SoloFlag".
+      if (muted) 'SoloFlag': 1,
+      if (soloed) 'Solo': 1,
       'OwnInputBus': {'Name': ownName, 'Bus UID': ownBus, 'Bus Type': 13},
       'OutputBusValue': {'Value': outBus},
       'IDString': 'Audio',
@@ -424,7 +427,7 @@ Uint8List _project() {
       sideChains: {0: 40},
       volume: 20000,
       pan: 0.25,
-      soloed: true,
+      muted: true,
       eqBandsOn: 2,
     );
   });
@@ -642,12 +645,14 @@ void main() {
     test('the fader, solo and EQ as the channel stores them', () {
       final byName = {for (final t in parser.readTracks()) t.name: t};
       expect(byName['Guitar']!.volume, 20000);
-      expect(byName['Guitar']!.soloed, isTrue);
+      expect(byName['Guitar']!.muted, isTrue);
+      expect(byName['Guitar']!.soloed, isFalse);
       expect(byName['Guitar']!.eqBandsOn, 2);
       expect(byName['Guitar']!.pan, 0.25);
       expect(byName['Vocals']!.pan, 0.5, reason: 'the centre');
       expect(byName['Vocals']!.volume, CubaseProjectParser.unityVolume);
       expect(byName['Vocals']!.soloed, isFalse);
+      expect(byName['Vocals']!.muted, isFalse);
       expect(byName['Vocals']!.phaseInverted, isFalse);
       expect(byName['MIDI 01']!.volume, isNull, reason: 'no channel');
     });
@@ -916,15 +921,23 @@ void main() {
           reason: 'the fader at the top');
     });
 
-    test('a muted track: bit 0 of the track flags', () {
-      bool? muted(String file) => CubaseProjectParser(
-              File(p.join(dir, file)).readAsBytesSync())
-          .readTracks()
-          .firstWhere((t) => t.name == 'RTW_Kick_12')
-          .muted;
-      // The same track, muted in Cubase 13 for test-01_db_level.cpr.
-      expect(muted('test-01.cpr'), isFalse);
-      expect(muted('test-01_db_level.cpr'), isTrue);
+    test('mute is the channel\'s "SoloFlag"; flags bit 0 is the selection',
+        () {
+      CubaseTrack kick(String file) =>
+          CubaseProjectParser(File(p.join(dir, file)).readAsBytesSync())
+              .readTracks()
+              .firstWhere((t) => t.name == 'RTW_Kick_12');
+      // Muted in Cubase 13 for test-01_db_level.cpr, then unmuted for
+      // test-01_db_level-01.cpr. Clicking it selected it, and it stayed
+      // selected: an earlier reading took the selection for mute.
+      expect(kick('test-01_db_level.cpr').muted, isTrue);
+      expect(kick('test-01_db_level-01.cpr').muted, isFalse);
+      // Then soloed for -02: "Solo", and nothing else changed.
+      expect(kick('test-01_db_level-01.cpr').soloed, isFalse);
+      expect(kick('test-01_db_level-02.cpr').soloed, isTrue);
+      expect(kick('test-01_db_level-02.cpr').muted, isFalse);
+      expect(kick('test-01_db_level.cpr').selected, isTrue);
+      expect(kick('test-01_db_level-01.cpr').selected, isTrue);
     });
   });
 

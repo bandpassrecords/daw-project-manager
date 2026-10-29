@@ -165,6 +165,7 @@ class CubaseProjectParser {
           flags: _has(t.instance.body, 2)
               ? _data.getUint16(t.instance.body)
               : null,
+          muted: channel?.muted,
           phaseInverted: channel?.phaseInverted,
           soloed: channel?.soloed,
           eqBandsOn: channel?.eqBandsOn,
@@ -918,7 +919,13 @@ class CubaseProjectParser {
         null => null,
         final p => p != 0,
       },
-      soloed: tree.integer('SoloFlag') == 1 || tree.integer('Solo') == 1,
+      // "SoloFlag" is mute, whatever its name: muting RTW_Kick_12 in Cubase
+      // 13 wrote it and unmuting removed it (test-01_db_level.cpr and
+      // -01), and projects carry it on 0 to 34 channels each — a mute's
+      // spread, not a solo's. "Solo" is solo: soloing the same track wrote
+      // it, and nothing else (test-01_db_level-02.cpr).
+      muted: tree.integer('SoloFlag') == 1,
+      soloed: tree.integer('Solo') == 1,
       eqBandsOn: bands.isEmpty
           ? null
           : bands.where((b) => b.integer('Enable') == 1).length,
@@ -1279,6 +1286,7 @@ class CubaseTrack {
     this.pan,
     this.inputGain,
     this.flags,
+    this.muted,
     this.phaseInverted,
     this.soloed,
     this.eqBandsOn,
@@ -1315,14 +1323,16 @@ class CubaseTrack {
   /// middle (16383.5).
   final double? inputGain;
 
-  /// The first two bytes of the track object's body: flags, of which bit
-  /// 0 is mute ([muted]).
+  /// The first two bytes of the track object's body: flags. Bit 0 marks
+  /// the selected track — exactly one or none in each of 160 projects, and
+  /// set on the track that was clicked to mute it ([selected]). Other bits
+  /// aren't known.
   final int? flags;
 
-  /// Muted when saved: bit 0 of [flags] — RTW_Kick_12 in the test
-  /// collection's test-01_db_level.cpr, muted in Cubase 13, against the
-  /// same track unmuted in test-01.cpr.
-  bool? get muted => flags == null ? null : flags! & 1 != 0;
+  bool? get selected => flags == null ? null : flags! & 1 != 0;
+
+  /// Muted when saved; null when the track has no channel.
+  final bool? muted;
 
   final bool? phaseInverted;
   final bool? soloed;
@@ -1513,6 +1523,7 @@ enum _ChannelKind { audio, group, rack, instrument, fx, sampler }
 class _Channel {
   const _Channel({
     this.pan,
+    this.muted,
     this.kind,
     this.ownBus,
     this.outBus,
@@ -1528,6 +1539,7 @@ class _Channel {
     this.instrumentPreset,
   });
   final double? pan;
+  final bool? muted;
   final _ChannelKind? kind;
   final int? ownBus;
   final int? outBus;

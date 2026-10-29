@@ -224,7 +224,7 @@
       "bitDepth": null,
       "timeSignature": null,
       "channels": [
-        "Kick [audio] | -> - | - - mute",
+        "Kick [audio] | -> - | - -",
         "Audio 13 [audio] | -> - | - -",
         "Bass Principal [midi] | -> - | - -",
         "snare [audio] | -> - | - -",

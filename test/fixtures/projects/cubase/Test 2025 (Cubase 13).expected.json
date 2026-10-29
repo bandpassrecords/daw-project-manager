@@ -674,15 +674,15 @@
         "Kick 2 x64 01 [instrument] | -> Stereo Out | -10.8 dB C | instrument Kick 2 | inserts 1:PuigTec EQP1A Stereo, 14:PsyScope_Pro",
         "Bassline [instrument] | -> Stereo Out | -3.1 dB C | instrument Diva | inserts 0:RBass Stereo, 2:MSaturatorMB, 3:Vitamin Stereo, 4:PHA-979, 5:Saturn 2, 6:Pro-C 2, 7:Pro-Q 3, 8:MSpectralDynamics, 9:StereoDelay, 11:LFOTool, 15:PsyScope_Pro",
         "Serum 03 [instrument] | -> Stereo Out | -9.5 dB C | instrument Serum | inserts 1:Pro-C 2, 2:Pro-Q 3, 3:LFOTool",
-        "RTW_Kick_12 [sampler] | -> Stereo Out | -5.0 dB C solo | inserts 0:PsyScope_Pro",
+        "RTW_Kick_12 [sampler] | -> Stereo Out | -5.0 dB C mute | inserts 0:PsyScope_Pro",
         "ANA2 x64 01 [instrument] | -> Stereo Out | -7.0 dB C | instrument ANA2",
         "Serum 02 [instrument] | -> Stereo Out | -5.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:Looperator, 12:LFOTool",
         "ANA2 x64 01 [instrument] | -> Main Lead Group | -9.9 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:LFOTool",
         "ANA2 x64 01 (D) [instrument] | -> Main Lead Group | -11.6 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
         "ANA2 x64 01 (D) [instrument] | -> Main Lead Group | -16.7 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
         "Main Lead Group [group] | -> Stereo Out | 0.0 dB C | inserts 0:Endless Smile 64",
-        "Serum 02 (D) [instrument] | -> Stereo Out | -14.6 dB C mute | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:ValhallaRoom, 12:Looperator, 13:LFOTool",
-        "a-ha - Take On Me [audio] | -> Stereo Out | 0.0 dB C solo",
+        "Serum 02 (D) [instrument] | -> Stereo Out | -14.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:ValhallaRoom, 12:Looperator, 13:LFOTool",
+        "a-ha - Take On Me [audio] | -> Stereo Out | 0.0 dB C mute",
         "Leads [folder]",
         "Sylenth1 01 [instrument] | in Leads | -> Stereo Out | -4.9 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT",
         "Sylenth1 01 (R) 01 [audio] | in Leads | -> Stereo Out | 0.0 dB C",
@@ -692,16 +692,1646 @@
         "Acid Lead 01 (D) (R) [audio] | in Leads | -> Stereo Out | -3.3 dB C",
         "Acid Lead 01 (D) [instrument] | in Leads | -> Stereo Out | -6.3 dB C | instrument Sylenth1 | inserts 0:LFOTool, 1:Simplon, 2:OTT",
         "Leads [group] | in Leads | -> Stereo Out | 0.0 dB C | inserts 0:Simplon",
-        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C solo | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
+        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C mute | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
         "RTW_145_Drums_15_Tops [audio] | -> Stereo Out | -14.1 dB C",
         "RTW_145_Drums_14_Snares [audio] | -> Stereo Out | -14.1 dB C",
-        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C solo",
+        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C mute",
         "RTW_145_Drums_13_Snares [audio] | -> Stereo Out | -14.1 dB C",
         "RTW_145_Drums_11_Hats [audio] | -> Stereo Out | -12.7 dB C",
         "RTW_Crash_9 [audio] | -> Stereo Out | -12.8 dB C | inserts 0:ValhallaRoom",
         "a-ha - Take on Me (Only Vocals) [TubeRipper.com] [audio] | -> Stereo Out | -7.9 dB C",
         "IF_KikSnrFillB_140-07 [audio] | -> Stereo Out | -3.8 dB C | inserts 0:ValhallaRoom",
-        "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO [audio] | -> Stereo Out | -2.8 dB C solo | inserts 0:ValhallaRoom, 1:PingPongDelay, 2:LittleAlterBoy, 3:Looperator, 4:Manipulator",
+        "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO [audio] | -> Stereo Out | -2.8 dB C mute | inserts 0:ValhallaRoom, 1:PingPongDelay, 2:LittleAlterBoy, 3:Looperator, 4:Manipulator",
+        "Slap Bass 2 [midi] | -> - | - -",
+        "Main Lead 01 [instrument] | -> Stereo Out | -12.5 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT, 2:Compressor, 3:Simplon",
+        "Synth Bass 2 [midi] | -> - | - -",
+        "Electric Guitar (clean) [midi] | -> - | - -",
+        "Synth Brass 1 [midi] | -> - | - -",
+        "Synth Strings 1 [midi] | -> - | - -",
+        "Pad 3 (polysynth) [midi] | -> - | - -",
+        "Harpsichord [midi] | -> - | - -",
+        "Voice Aahs [midi] | -> - | - -",
+        "GM Drums [midi] | -> - | - -",
+        "SysEx Data [midi] | -> - | - -",
+        "MIDI 43 [midi] | -> - | - -",
+        "MIDI 22 [midi] | -> - | - -",
+        "MIDI 23 [midi] | -> - | - -",
+        "MIDI 24 [midi] | -> - | - -",
+        "MIDI 26 [midi] | -> - | - -",
+        "MIDI 27 [midi] | -> - | - -",
+        "MIDI 28 [midi] | -> - | - -",
+        "MIDI 29 [midi] | -> - | - -",
+        "MIDI 30 [midi] | -> - | - -",
+        "MIDI 31 [midi] | -> - | - -",
+        "MIDI 32 [midi] | -> - | - -",
+        "MIDI 33 [midi] | -> - | - -",
+        "MIDI 34 [midi] | -> - | - -",
+        "MIDI 35 [midi] | -> - | - -",
+        "MIDI 36 [midi] | -> - | - -",
+        "MIDI 37 [midi] | -> - | - -",
+        "MIDI 38 [midi] | -> - | - -",
+        "MIDI 39 [midi] | -> - | - -",
+        "MIDI 40 [midi] | -> - | - -",
+        "MIDI 41 [midi] | -> - | - -",
+        "MIDI 42 [midi] | -> - | - -",
+        "MIDI 43 [midi] | -> - | - -",
+        "MIDI 44 [midi] | -> - | - -",
+        "MIDI 45 [midi] | -> - | - -",
+        "MIDI 46 [midi] | -> - | - -",
+        "MIDI 47 [midi] | -> - | - -",
+        "MIDI 48 [midi] | -> - | - -",
+        "MIDI 49 [midi] | -> - | - -",
+        "MIDI 50 [midi] | -> - | - -",
+        "MIDI 51 [midi] | -> - | - -",
+        "MIDI 52 [midi] | -> - | - -",
+        "MIDI 53 [midi] | -> - | - -",
+        "MIDI 54 [midi] | -> - | - -",
+        "MIDI 55 [midi] | -> - | - -",
+        "MIDI 56 [midi] | -> - | - -",
+        "MIDI 57 [midi] | -> - | - -",
+        "MIDI 58 [midi] | -> - | - -",
+        "MIDI 59 [midi] | -> - | - -",
+        "MIDI 60 [midi] | -> - | - -"
+      ],
+      "plugins": [
+        "ANA2 | instrument | third-party | x4 | VST2",
+        "Compressor | effect | stock | x2 | VST3",
+        "Diva | instrument | third-party | x1 | VST3",
+        "Endless Smile 64 | effect | third-party | x6 | VST2",
+        "FabFilter Pro-C 2 | effect | third-party | x1 | VST2",
+        "FabFilter Pro-Q 3 | effect | third-party | x6 | VST2",
+        "FabFilter Saturn 2 | effect | third-party | x6 | VST2",
+        "FilterFreak1 | effect | third-party | x5 | VST2",
+        "HALion Sonic | instrument | stock | x2",
+        "kHs Trance Gate | effect | third-party | x5 | VST3",
+        "Kick 2 | instrument | third-party | x1 | VST2",
+        "LFOTool | effect | third-party | x9 | Xfer Records | VST2",
+        "LittleAlterBoy | effect | third-party | x1 | VST2",
+        "Looperator | effect | third-party | x3 | VST2",
+        "Manipulator | effect | third-party | x1 | VST2",
+        "MSaturator | effect | third-party | x1 | VST3",
+        "MSaturatorMB | effect | third-party | x1 | VST2",
+        "MSpectralDynamics | effect | third-party | x1 | VST3",
+        "MultibandEnvelopeShaper | effect | stock | x1 | VST3",
+        "OTT | effect | third-party | x11 | VST2",
+        "PHA-979 | effect | third-party | x1 | VST3",
+        "PingPongDelay | effect | stock | x1 | Steinberg Media Technologies | VST3",
+        "Pro-C 2 | effect | third-party | x2 | VST3",
+        "Pro-Q 3 | effect | third-party | x2 | VST3",
+        "PSYSCOPE | effect | third-party | x1 | VST2",
+        "PsyScope_Pro | effect | third-party | x3 | VST3",
+        "PuigTec EQP1A Stereo | effect | third-party | x1 | VST2",
+        "RBass Stereo | effect | third-party | x2 | VST2",
+        "Saturn 2 | effect | third-party | x4 | VST3",
+        "Serum | instrument | third-party | x4 | VST2",
+        "Simplon | effect | third-party | x8 | VST3",
+        "StereoDelay | effect | stock | x1 | VST3",
+        "StereoEnhancer | effect | stock | x5 | VST3",
+        "Sylenth1 | instrument | third-party | x6 | VST2",
+        "TransX Multi Stereo | effect | third-party | x1 | VST2",
+        "Tube-Tech Equalizers mk II | effect | third-party | x1 | VST3",
+        "ValhallaRoom | effect | third-party | x4 | VST2",
+        "Vitamin Stereo | effect | third-party | x1 | VST2",
+        "Volcano 2 | effect | third-party | x5 | FabFilter | VST3"
+      ],
+      "audioIo": {
+        "driver": "Studio USB ASIO Driver",
+        "platform": "Windows",
+        "inputBuses": [
+          "Stereo In <- Input 1, Input 2"
+        ],
+        "outputBuses": [
+          "Stereo Out -> Main Out Left, Main Out Right"
+        ],
+        "midiInputs": [
+          "Studio 24c MIDI In"
+        ],
+        "midiOutputs": []
+      }
+    }
+  },
+  "test-01_db_level-01.cpr": {
+    "dawType": "Cubase",
+    "dawVersion": "13",
+    "bpm": 150.0,
+    "key": "A Major",
+    "markers": [],
+    "stats": {
+      "audio": 12,
+      "midi": 49,
+      "instrument": 16,
+      "sampler": 1,
+      "bus": 2,
+      "folder": 1,
+      "plugins": [
+        "ANA2",
+        "Compressor",
+        "Diva",
+        "Endless Smile 64",
+        "FabFilter Pro-C 2",
+        "FabFilter Pro-Q 3",
+        "FabFilter Saturn 2",
+        "FilterFreak1",
+        "HALion Sonic",
+        "kHs Trance Gate",
+        "Kick 2",
+        "LFOTool",
+        "LittleAlterBoy",
+        "Looperator",
+        "Manipulator",
+        "MSaturator",
+        "MSaturatorMB",
+        "MSpectralDynamics",
+        "MultibandEnvelopeShaper",
+        "OTT",
+        "PHA-979",
+        "PingPongDelay",
+        "Pro-C 2",
+        "Pro-Q 3",
+        "PsyScope_Pro",
+        "PuigTec EQP1A Stereo",
+        "RBass Stereo",
+        "reastream-standalone",
+        "Saturn 2",
+        "Serum",
+        "Simplon",
+        "StereoDelay",
+        "StereoEnhancer",
+        "Sylenth1",
+        "TransX Multi Stereo",
+        "Tube-Tech Equalizers mk II",
+        "ValhallaRoom",
+        "Vitamin Stereo",
+        "Volcano 2"
+      ],
+      "midiClips": 52,
+      "sampleRate": 44100,
+      "bitDepth": 24
+    },
+    "midiClips": [
+      {
+        "name": "Kick 2 x64 01",
+        "track": "Kick 2 x64 01",
+        "ppq": 480,
+        "lengthTicks": 1920,
+        "notes": 4,
+        "events": 0,
+        "content": "e2ccc754a561"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "3c36cbf20c83"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 36,
+        "events": 0,
+        "content": "5f910f480864"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "72db4f82f5af"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 36,
+        "events": 0,
+        "content": "cb9ca4f8e46e"
+      },
+      {
+        "name": "Sylenth1 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "38f4ff21abcb"
+      },
+      {
+        "name": "Sylenth1 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "b3553a04b2a5"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Serum 03",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "98d9bc44677f"
+      },
+      {
+        "name": "ANA2 x64 01",
+        "track": "ANA2 x64 01",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 16,
+        "events": 0,
+        "content": "db694efeb801"
+      },
+      {
+        "name": "Sylenth1 11",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 32,
+        "events": 0,
+        "content": "daaceb40dac1"
+      },
+      {
+        "name": "Sylenth1 11",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 32,
+        "events": 0,
+        "content": "16f50b03ae03"
+      },
+      {
+        "name": "Serum 02",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 17280,
+        "notes": 65,
+        "events": 0,
+        "content": "df1a30c8d2c1"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 38,
+        "events": 0,
+        "content": "0777b5949b6c"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 32,
+        "events": 0,
+        "content": "427079fdaff5"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 128,
+        "events": 0,
+        "content": "ee072b433b46"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 128,
+        "events": 0,
+        "content": "f29ab5128097"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 129,
+        "events": 0,
+        "content": "082e693af173"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 38,
+        "events": 0,
+        "content": "e453f23c38bc"
+      },
+      {
+        "name": "MIDI 43",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 60,
+        "events": 0,
+        "content": "911c40b8b29c"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "3025840742e4"
+      },
+      {
+        "name": "MIDI 52",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 95,
+        "events": 0,
+        "content": "ba5cd4177ded"
+      },
+      {
+        "name": "MIDI 60",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "715bc641f3c1"
+      },
+      {
+        "name": "ANA2 x64 01",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 131,
+        "events": 0,
+        "content": "ba4e05801f39"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "ANA2 x64 01_db_-2",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 129,
+        "events": 0,
+        "content": "84d15c9accfc"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 129,
+        "events": 0,
+        "content": "3943969ee382"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 3840,
+        "notes": 32,
+        "events": 0,
+        "content": "ceaadfa0827d"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 38,
+        "events": 0,
+        "content": "8d4cfd3a25fb"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "414938356370"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Main Lead 01",
+        "ppq": 480,
+        "lengthTicks": 22272,
+        "notes": 68,
+        "events": 0,
+        "content": "ae7861c9a7c7"
+      },
+      {
+        "name": "Acid Lead 01",
+        "track": "Acid Lead 01",
+        "ppq": 480,
+        "lengthTicks": 14848,
+        "notes": 72,
+        "events": 0,
+        "content": "87413fcda801"
+      },
+      {
+        "name": "Acid Lead 01 (D)",
+        "track": "Acid Lead 01 (D)",
+        "ppq": 480,
+        "lengthTicks": 3712,
+        "notes": 1,
+        "events": 0,
+        "content": "badebc532da5"
+      },
+      {
+        "name": "Acid Lead 01 (D)",
+        "track": "Acid Lead 01 (D)",
+        "ppq": 480,
+        "lengthTicks": 3712,
+        "notes": 1,
+        "events": 0,
+        "content": "16265064ae1c"
+      },
+      {
+        "name": "Acid Lead 01 (D)",
+        "track": "Acid Lead 01 (D)",
+        "ppq": 480,
+        "lengthTicks": 3712,
+        "notes": 1,
+        "events": 0,
+        "content": "cdc8b1f1655e"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Serum 01",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "4cd97934c895"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Serum 01",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 36,
+        "events": 0,
+        "content": "bf0fa9585da3"
+      },
+      {
+        "name": "Slap Bass 2",
+        "track": "Slap Bass 2",
+        "ppq": 480,
+        "lengthTicks": 288000,
+        "notes": 649,
+        "events": 0,
+        "content": "b1895bd130ae"
+      },
+      {
+        "name": "Electric Guitar (clean)",
+        "track": "Electric Guitar (clean)",
+        "ppq": 480,
+        "lengthTicks": 38400,
+        "notes": 81,
+        "events": 0,
+        "content": "e9ffb5b77f32"
+      },
+      {
+        "name": "Electric Guitar (clean)",
+        "track": "Electric Guitar (clean)",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 16,
+        "events": 0,
+        "content": "1890c3366582"
+      },
+      {
+        "name": "Electric Guitar (clean)",
+        "track": "Electric Guitar (clean)",
+        "ppq": 480,
+        "lengthTicks": 63360,
+        "notes": 240,
+        "events": 0,
+        "content": "16260805926e"
+      },
+      {
+        "name": "Synth Brass 1",
+        "track": "Synth Brass 1",
+        "ppq": 480,
+        "lengthTicks": 109440,
+        "notes": 118,
+        "events": 0,
+        "content": "9a67ef21d877"
+      },
+      {
+        "name": "Synth Brass 1",
+        "track": "Synth Brass 1",
+        "ppq": 480,
+        "lengthTicks": 96000,
+        "notes": 101,
+        "events": 0,
+        "content": "6037ed6a93c2"
+      },
+      {
+        "name": "Synth Strings 1",
+        "track": "Synth Strings 1",
+        "ppq": 480,
+        "lengthTicks": 132480,
+        "notes": 157,
+        "events": 0,
+        "content": "dc5c225a2954"
+      },
+      {
+        "name": "Synth Strings 1",
+        "track": "Synth Strings 1",
+        "ppq": 480,
+        "lengthTicks": 145920,
+        "notes": 168,
+        "events": 0,
+        "content": "4995ba7f9d81"
+      },
+      {
+        "name": "Pad 3 (polysynth)",
+        "track": "Pad 3 (polysynth)",
+        "ppq": 480,
+        "lengthTicks": 23040,
+        "notes": 142,
+        "events": 0,
+        "content": "babb15938f3d"
+      },
+      {
+        "name": "Pad 3 (polysynth)",
+        "track": "Pad 3 (polysynth)",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 190,
+        "events": 0,
+        "content": "1576fe742fc8"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Harpsichord",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 104,
+        "events": 0,
+        "content": "d131c1a67ddc"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Harpsichord",
+        "ppq": 480,
+        "lengthTicks": 24960,
+        "notes": 96,
+        "events": 0,
+        "content": "7e69dfd0cd8d"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Harpsichord",
+        "ppq": 480,
+        "lengthTicks": 24960,
+        "notes": 96,
+        "events": 0,
+        "content": "47d38b590025"
+      },
+      {
+        "name": "Voice Aahs",
+        "track": "Voice Aahs",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 15,
+        "events": 0,
+        "content": "c12b5a93d9a9"
+      },
+      {
+        "name": "Voice Aahs",
+        "track": "Voice Aahs",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 15,
+        "events": 0,
+        "content": "41ae5017406e"
+      },
+      {
+        "name": "Voice Aahs",
+        "track": "Voice Aahs",
+        "ppq": 480,
+        "lengthTicks": 72960,
+        "notes": 33,
+        "events": 0,
+        "content": "8cf9cbebf597"
+      },
+      {
+        "name": "GM Drums",
+        "track": "GM Drums",
+        "ppq": 480,
+        "lengthTicks": 303360,
+        "notes": 2897,
+        "events": 0,
+        "content": "b814817e2acd"
+      }
+    ],
+    "sampleReferences": [
+      {
+        "file": "RTW_Kick_1-01.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "a-ha - Take On Me.wav",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take On Me.mp3",
+        "use": "audio"
+      },
+      {
+        "file": "Acid Lead 01 (D).wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_15_Tops.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_15_Tops.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_14_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_14_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_11_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_11_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_Crash_9.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_Crash_9.wav",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take on Me (Only Vocals) [TubeRipper.com].flac",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take on Me (Only Vocals) [TubeRipper.com].flac",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take on Me (Only Vocals) [TubeRipper.com]-Time Stretch-F2DC3CEA40B84AEB8057ADD558B52ADF.flac",
+        "use": "audio"
+      },
+      {
+        "file": "IF_KikSnrFillB_140-07.wav",
+        "use": "audio"
+      },
+      {
+        "file": "IF_KikSnrFillB_140-07.wav",
+        "use": "audio"
+      },
+      {
+        "file": "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO.wav",
+        "use": "audio"
+      },
+      {
+        "file": "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO.mp3",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_Kick_1.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_1-01.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_10.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_12.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_3.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_4.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_5.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_6.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_7.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_8.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_9.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "Techno 01.aiff",
+        "use": "plugin"
+      }
+    ],
+    "inspector": {
+      "savedWith": "13.0.55",
+      "sampleRate": 44100,
+      "bitDepth": 24,
+      "timeSignature": "4/4",
+      "channels": [
+        "Kick 2 x64 01 [instrument] | -> Stereo Out | -10.8 dB C | instrument Kick 2 | inserts 1:PuigTec EQP1A Stereo, 14:PsyScope_Pro",
+        "Bassline [instrument] | -> Stereo Out | -3.1 dB C | instrument Diva | inserts 0:RBass Stereo, 2:MSaturatorMB, 3:Vitamin Stereo, 4:PHA-979, 5:Saturn 2, 6:Pro-C 2, 7:Pro-Q 3, 8:MSpectralDynamics, 9:StereoDelay, 11:LFOTool, 15:PsyScope_Pro",
+        "Serum 03 [instrument] | -> Stereo Out | -9.5 dB C | instrument Serum | inserts 1:Pro-C 2, 2:Pro-Q 3, 3:LFOTool",
+        "RTW_Kick_12 [sampler] | -> Stereo Out | -5.0 dB C | inserts 0:PsyScope_Pro",
+        "ANA2 x64 01 [instrument] | -> Stereo Out | -7.0 dB C | instrument ANA2",
+        "Serum 02 [instrument] | -> Stereo Out | -5.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:Looperator, 12:LFOTool",
+        "ANA2 x64 01_db_0 [instrument] | -> Main Lead Group | 0.0 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:LFOTool",
+        "ANA2 x64 01_db_-2 [instrument] | -> Main Lead Group | -2.0 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
+        "ANA2 x64 01_db_6 [instrument] | -> Main Lead Group | 6.0 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
+        "Main Lead Group [group] | -> Stereo Out | 0.0 dB C | inserts 0:Endless Smile 64",
+        "Serum 02 (D) [instrument] | -> Stereo Out | -14.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:ValhallaRoom, 12:Looperator, 13:LFOTool",
+        "a-ha - Take On Me [audio] | -> Stereo Out | 0.0 dB C mute",
+        "Leads [folder]",
+        "Sylenth1 01 [instrument] | in Leads | -> Stereo Out | -4.9 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT",
+        "Sylenth1 01 (R) 01 [audio] | in Leads | -> Stereo Out | 0.0 dB C",
+        "Main Lead 01 [instrument] | in Leads | -> Leads | -12.5 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT, 2:Compressor, 3:Simplon",
+        "Acid Lead 01 [instrument] | in Leads | -> Stereo Out | -5.3 dB C | instrument Sylenth1 | inserts 0:LFOTool, 1:Simplon, 2:OTT",
+        "Acid Lead 01 (D) [instrument] | in Leads | -> Stereo Out | -3.3 dB C | instrument Sylenth1 | inserts 0:LFOTool, 1:Simplon, 2:OTT",
+        "Acid Lead 01 (D) (R) [audio] | in Leads | -> Stereo Out | -3.3 dB C",
+        "Acid Lead 01 (D) [instrument] | in Leads | -> Stereo Out | -6.3 dB C | instrument Sylenth1 | inserts 0:LFOTool, 1:Simplon, 2:OTT",
+        "Leads [group] | in Leads | -> Stereo Out | 0.0 dB C | inserts 0:Simplon",
+        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C mute | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
+        "RTW_145_Drums_15_Tops [audio] | -> Stereo Out | -14.1 dB C",
+        "RTW_145_Drums_14_Snares [audio] | -> Stereo Out | -14.1 dB C",
+        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C mute",
+        "RTW_145_Drums_13_Snares [audio] | -> Stereo Out | -14.1 dB C",
+        "RTW_145_Drums_11_Hats [audio] | -> Stereo Out | -12.7 dB C",
+        "RTW_Crash_9 [audio] | -> Stereo Out | -12.8 dB C | inserts 0:ValhallaRoom",
+        "a-ha - Take on Me (Only Vocals) [TubeRipper.com] [audio] | -> Stereo Out | -7.9 dB C",
+        "IF_KikSnrFillB_140-07 [audio] | -> Stereo Out | -3.8 dB C | inserts 0:ValhallaRoom",
+        "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO [audio] | -> Stereo Out | -2.8 dB C mute | inserts 0:ValhallaRoom, 1:PingPongDelay, 2:LittleAlterBoy, 3:Looperator, 4:Manipulator",
+        "Slap Bass 2 [midi] | -> - | - -",
+        "Main Lead 01 [instrument] | -> Stereo Out | -12.5 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT, 2:Compressor, 3:Simplon",
+        "Synth Bass 2 [midi] | -> - | - -",
+        "Electric Guitar (clean) [midi] | -> - | - -",
+        "Synth Brass 1 [midi] | -> - | - -",
+        "Synth Strings 1 [midi] | -> - | - -",
+        "Pad 3 (polysynth) [midi] | -> - | - -",
+        "Harpsichord [midi] | -> - | - -",
+        "Voice Aahs [midi] | -> - | - -",
+        "GM Drums [midi] | -> - | - -",
+        "SysEx Data [midi] | -> - | - -",
+        "MIDI 43 [midi] | -> - | - -",
+        "MIDI 22 [midi] | -> - | - -",
+        "MIDI 23 [midi] | -> - | - -",
+        "MIDI 24 [midi] | -> - | - -",
+        "MIDI 26 [midi] | -> - | - -",
+        "MIDI 27 [midi] | -> - | - -",
+        "MIDI 28 [midi] | -> - | - -",
+        "MIDI 29 [midi] | -> - | - -",
+        "MIDI 30 [midi] | -> - | - -",
+        "MIDI 31 [midi] | -> - | - -",
+        "MIDI 32 [midi] | -> - | - -",
+        "MIDI 33 [midi] | -> - | - -",
+        "MIDI 34 [midi] | -> - | - -",
+        "MIDI 35 [midi] | -> - | - -",
+        "MIDI 36 [midi] | -> - | - -",
+        "MIDI 37 [midi] | -> - | - -",
+        "MIDI 38 [midi] | -> - | - -",
+        "MIDI 39 [midi] | -> - | - -",
+        "MIDI 40 [midi] | -> - | - -",
+        "MIDI 41 [midi] | -> - | - -",
+        "MIDI 42 [midi] | -> - | - -",
+        "MIDI 43 [midi] | -> - | - -",
+        "MIDI 44 [midi] | -> - | - -",
+        "MIDI 45 [midi] | -> - | - -",
+        "MIDI 46 [midi] | -> - | - -",
+        "MIDI 47 [midi] | -> - | - -",
+        "MIDI 48 [midi] | -> - | - -",
+        "MIDI 49 [midi] | -> - | - -",
+        "MIDI 50 [midi] | -> - | - -",
+        "MIDI 51 [midi] | -> - | - -",
+        "MIDI 52 [midi] | -> - | - -",
+        "MIDI 53 [midi] | -> - | - -",
+        "MIDI 54 [midi] | -> - | - -",
+        "MIDI 55 [midi] | -> - | - -",
+        "MIDI 56 [midi] | -> - | - -",
+        "MIDI 57 [midi] | -> - | - -",
+        "MIDI 58 [midi] | -> - | - -",
+        "MIDI 59 [midi] | -> - | - -",
+        "MIDI 60 [midi] | -> - | - -"
+      ],
+      "plugins": [
+        "ANA2 | instrument | third-party | x4 | VST2",
+        "Compressor | effect | stock | x2 | VST3",
+        "Diva | instrument | third-party | x1 | VST3",
+        "Endless Smile 64 | effect | third-party | x6 | VST2",
+        "FabFilter Pro-C 2 | effect | third-party | x1 | VST2",
+        "FabFilter Pro-Q 3 | effect | third-party | x6 | VST2",
+        "FabFilter Saturn 2 | effect | third-party | x6 | VST2",
+        "FilterFreak1 | effect | third-party | x5 | VST2",
+        "HALion Sonic | instrument | stock | x2",
+        "kHs Trance Gate | effect | third-party | x5 | VST3",
+        "Kick 2 | instrument | third-party | x1 | VST2",
+        "LFOTool | effect | third-party | x9 | Xfer Records | VST2",
+        "LittleAlterBoy | effect | third-party | x1 | VST2",
+        "Looperator | effect | third-party | x3 | VST2",
+        "Manipulator | effect | third-party | x1 | VST2",
+        "MSaturator | effect | third-party | x1 | VST3",
+        "MSaturatorMB | effect | third-party | x1 | VST2",
+        "MSpectralDynamics | effect | third-party | x1 | VST3",
+        "MultibandEnvelopeShaper | effect | stock | x1 | VST3",
+        "OTT | effect | third-party | x11 | VST2",
+        "PHA-979 | effect | third-party | x1 | VST3",
+        "PingPongDelay | effect | stock | x1 | Steinberg Media Technologies | VST3",
+        "Pro-C 2 | effect | third-party | x2 | VST3",
+        "Pro-Q 3 | effect | third-party | x2 | VST3",
+        "PSYSCOPE | effect | third-party | x1 | VST2",
+        "PsyScope_Pro | effect | third-party | x3 | VST3",
+        "PuigTec EQP1A Stereo | effect | third-party | x1 | VST2",
+        "RBass Stereo | effect | third-party | x2 | VST2",
+        "Saturn 2 | effect | third-party | x4 | VST3",
+        "Serum | instrument | third-party | x4 | VST2",
+        "Simplon | effect | third-party | x8 | VST3",
+        "StereoDelay | effect | stock | x1 | VST3",
+        "StereoEnhancer | effect | stock | x5 | VST3",
+        "Sylenth1 | instrument | third-party | x6 | VST2",
+        "TransX Multi Stereo | effect | third-party | x1 | VST2",
+        "Tube-Tech Equalizers mk II | effect | third-party | x1 | VST3",
+        "ValhallaRoom | effect | third-party | x4 | VST2",
+        "Vitamin Stereo | effect | third-party | x1 | VST2",
+        "Volcano 2 | effect | third-party | x5 | FabFilter | VST3"
+      ],
+      "audioIo": {
+        "driver": "Studio USB ASIO Driver",
+        "platform": "Windows",
+        "inputBuses": [
+          "Stereo In <- Input 1, Input 2"
+        ],
+        "outputBuses": [
+          "Stereo Out -> Main Out Left, Main Out Right"
+        ],
+        "midiInputs": [
+          "Studio 24c MIDI In"
+        ],
+        "midiOutputs": []
+      }
+    }
+  },
+  "test-01_db_level-02.cpr": {
+    "dawType": "Cubase",
+    "dawVersion": "13",
+    "bpm": 150.0,
+    "key": "A Major",
+    "markers": [],
+    "stats": {
+      "audio": 12,
+      "midi": 49,
+      "instrument": 16,
+      "sampler": 1,
+      "bus": 2,
+      "folder": 1,
+      "plugins": [
+        "ANA2",
+        "Compressor",
+        "Diva",
+        "Endless Smile 64",
+        "FabFilter Pro-C 2",
+        "FabFilter Pro-Q 3",
+        "FabFilter Saturn 2",
+        "FilterFreak1",
+        "HALion Sonic",
+        "kHs Trance Gate",
+        "Kick 2",
+        "LFOTool",
+        "LittleAlterBoy",
+        "Looperator",
+        "Manipulator",
+        "MSaturator",
+        "MSaturatorMB",
+        "MSpectralDynamics",
+        "MultibandEnvelopeShaper",
+        "OTT",
+        "PHA-979",
+        "PingPongDelay",
+        "Pro-C 2",
+        "Pro-Q 3",
+        "PsyScope_Pro",
+        "PuigTec EQP1A Stereo",
+        "RBass Stereo",
+        "reastream-standalone",
+        "Saturn 2",
+        "Serum",
+        "Simplon",
+        "StereoDelay",
+        "StereoEnhancer",
+        "Sylenth1",
+        "TransX Multi Stereo",
+        "Tube-Tech Equalizers mk II",
+        "ValhallaRoom",
+        "Vitamin Stereo",
+        "Volcano 2"
+      ],
+      "midiClips": 52,
+      "sampleRate": 44100,
+      "bitDepth": 24
+    },
+    "midiClips": [
+      {
+        "name": "Kick 2 x64 01",
+        "track": "Kick 2 x64 01",
+        "ppq": 480,
+        "lengthTicks": 1920,
+        "notes": 4,
+        "events": 0,
+        "content": "e2ccc754a561"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "3c36cbf20c83"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 36,
+        "events": 0,
+        "content": "5f910f480864"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "72db4f82f5af"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 36,
+        "events": 0,
+        "content": "cb9ca4f8e46e"
+      },
+      {
+        "name": "Sylenth1 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "38f4ff21abcb"
+      },
+      {
+        "name": "Sylenth1 01",
+        "track": "Bassline",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "b3553a04b2a5"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Serum 03",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "98d9bc44677f"
+      },
+      {
+        "name": "ANA2 x64 01",
+        "track": "ANA2 x64 01",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 16,
+        "events": 0,
+        "content": "db694efeb801"
+      },
+      {
+        "name": "Sylenth1 11",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 32,
+        "events": 0,
+        "content": "daaceb40dac1"
+      },
+      {
+        "name": "Sylenth1 11",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 32,
+        "events": 0,
+        "content": "16f50b03ae03"
+      },
+      {
+        "name": "Serum 02",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 17280,
+        "notes": 65,
+        "events": 0,
+        "content": "df1a30c8d2c1"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 38,
+        "events": 0,
+        "content": "0777b5949b6c"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 32,
+        "events": 0,
+        "content": "427079fdaff5"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 128,
+        "events": 0,
+        "content": "ee072b433b46"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 128,
+        "events": 0,
+        "content": "f29ab5128097"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 129,
+        "events": 0,
+        "content": "082e693af173"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 38,
+        "events": 0,
+        "content": "e453f23c38bc"
+      },
+      {
+        "name": "MIDI 43",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 60,
+        "events": 0,
+        "content": "911c40b8b29c"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "3025840742e4"
+      },
+      {
+        "name": "MIDI 52",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 95,
+        "events": 0,
+        "content": "ba5cd4177ded"
+      },
+      {
+        "name": "MIDI 60",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "715bc641f3c1"
+      },
+      {
+        "name": "ANA2 x64 01",
+        "track": "ANA2 x64 01_db_0",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 131,
+        "events": 0,
+        "content": "ba4e05801f39"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "ANA2 x64 01_db_-2",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 129,
+        "events": 0,
+        "content": "84d15c9accfc"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 15360,
+        "notes": 129,
+        "events": 0,
+        "content": "3943969ee382"
+      },
+      {
+        "name": "MIDI 02",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 3840,
+        "notes": 32,
+        "events": 0,
+        "content": "ceaadfa0827d"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 38,
+        "events": 0,
+        "content": "8d4cfd3a25fb"
+      },
+      {
+        "name": "Main Lead 01",
+        "track": "Serum 02 (D)",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 64,
+        "events": 0,
+        "content": "414938356370"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Main Lead 01",
+        "ppq": 480,
+        "lengthTicks": 22272,
+        "notes": 68,
+        "events": 0,
+        "content": "ae7861c9a7c7"
+      },
+      {
+        "name": "Acid Lead 01",
+        "track": "Acid Lead 01",
+        "ppq": 480,
+        "lengthTicks": 14848,
+        "notes": 72,
+        "events": 0,
+        "content": "87413fcda801"
+      },
+      {
+        "name": "Acid Lead 01 (D)",
+        "track": "Acid Lead 01 (D)",
+        "ppq": 480,
+        "lengthTicks": 3712,
+        "notes": 1,
+        "events": 0,
+        "content": "badebc532da5"
+      },
+      {
+        "name": "Acid Lead 01 (D)",
+        "track": "Acid Lead 01 (D)",
+        "ppq": 480,
+        "lengthTicks": 3712,
+        "notes": 1,
+        "events": 0,
+        "content": "16265064ae1c"
+      },
+      {
+        "name": "Acid Lead 01 (D)",
+        "track": "Acid Lead 01 (D)",
+        "ppq": 480,
+        "lengthTicks": 3712,
+        "notes": 1,
+        "events": 0,
+        "content": "cdc8b1f1655e"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Serum 01",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 48,
+        "events": 0,
+        "content": "4cd97934c895"
+      },
+      {
+        "name": "Serum 01",
+        "track": "Serum 01",
+        "ppq": 480,
+        "lengthTicks": 5760,
+        "notes": 36,
+        "events": 0,
+        "content": "bf0fa9585da3"
+      },
+      {
+        "name": "Slap Bass 2",
+        "track": "Slap Bass 2",
+        "ppq": 480,
+        "lengthTicks": 288000,
+        "notes": 649,
+        "events": 0,
+        "content": "b1895bd130ae"
+      },
+      {
+        "name": "Electric Guitar (clean)",
+        "track": "Electric Guitar (clean)",
+        "ppq": 480,
+        "lengthTicks": 38400,
+        "notes": 81,
+        "events": 0,
+        "content": "e9ffb5b77f32"
+      },
+      {
+        "name": "Electric Guitar (clean)",
+        "track": "Electric Guitar (clean)",
+        "ppq": 480,
+        "lengthTicks": 7680,
+        "notes": 16,
+        "events": 0,
+        "content": "1890c3366582"
+      },
+      {
+        "name": "Electric Guitar (clean)",
+        "track": "Electric Guitar (clean)",
+        "ppq": 480,
+        "lengthTicks": 63360,
+        "notes": 240,
+        "events": 0,
+        "content": "16260805926e"
+      },
+      {
+        "name": "Synth Brass 1",
+        "track": "Synth Brass 1",
+        "ppq": 480,
+        "lengthTicks": 109440,
+        "notes": 118,
+        "events": 0,
+        "content": "9a67ef21d877"
+      },
+      {
+        "name": "Synth Brass 1",
+        "track": "Synth Brass 1",
+        "ppq": 480,
+        "lengthTicks": 96000,
+        "notes": 101,
+        "events": 0,
+        "content": "6037ed6a93c2"
+      },
+      {
+        "name": "Synth Strings 1",
+        "track": "Synth Strings 1",
+        "ppq": 480,
+        "lengthTicks": 132480,
+        "notes": 157,
+        "events": 0,
+        "content": "dc5c225a2954"
+      },
+      {
+        "name": "Synth Strings 1",
+        "track": "Synth Strings 1",
+        "ppq": 480,
+        "lengthTicks": 145920,
+        "notes": 168,
+        "events": 0,
+        "content": "4995ba7f9d81"
+      },
+      {
+        "name": "Pad 3 (polysynth)",
+        "track": "Pad 3 (polysynth)",
+        "ppq": 480,
+        "lengthTicks": 23040,
+        "notes": 142,
+        "events": 0,
+        "content": "babb15938f3d"
+      },
+      {
+        "name": "Pad 3 (polysynth)",
+        "track": "Pad 3 (polysynth)",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 190,
+        "events": 0,
+        "content": "1576fe742fc8"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Harpsichord",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 104,
+        "events": 0,
+        "content": "d131c1a67ddc"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Harpsichord",
+        "ppq": 480,
+        "lengthTicks": 24960,
+        "notes": 96,
+        "events": 0,
+        "content": "7e69dfd0cd8d"
+      },
+      {
+        "name": "Harpsichord",
+        "track": "Harpsichord",
+        "ppq": 480,
+        "lengthTicks": 24960,
+        "notes": 96,
+        "events": 0,
+        "content": "47d38b590025"
+      },
+      {
+        "name": "Voice Aahs",
+        "track": "Voice Aahs",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 15,
+        "events": 0,
+        "content": "c12b5a93d9a9"
+      },
+      {
+        "name": "Voice Aahs",
+        "track": "Voice Aahs",
+        "ppq": 480,
+        "lengthTicks": 32640,
+        "notes": 15,
+        "events": 0,
+        "content": "41ae5017406e"
+      },
+      {
+        "name": "Voice Aahs",
+        "track": "Voice Aahs",
+        "ppq": 480,
+        "lengthTicks": 72960,
+        "notes": 33,
+        "events": 0,
+        "content": "8cf9cbebf597"
+      },
+      {
+        "name": "GM Drums",
+        "track": "GM Drums",
+        "ppq": 480,
+        "lengthTicks": 303360,
+        "notes": 2897,
+        "events": 0,
+        "content": "b814817e2acd"
+      }
+    ],
+    "sampleReferences": [
+      {
+        "file": "RTW_Kick_1-01.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "a-ha - Take On Me.wav",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take On Me.mp3",
+        "use": "audio"
+      },
+      {
+        "file": "Acid Lead 01 (D).wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_15_Tops.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_15_Tops.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_14_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_14_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_13_Snares.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_11_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_145_Drums_11_Hats.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_Crash_9.wav",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_Crash_9.wav",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take on Me (Only Vocals) [TubeRipper.com].flac",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take on Me (Only Vocals) [TubeRipper.com].flac",
+        "use": "audio"
+      },
+      {
+        "file": "a-ha - Take on Me (Only Vocals) [TubeRipper.com]-Time Stretch-F2DC3CEA40B84AEB8057ADD558B52ADF.flac",
+        "use": "audio"
+      },
+      {
+        "file": "IF_KikSnrFillB_140-07.wav",
+        "use": "audio"
+      },
+      {
+        "file": "IF_KikSnrFillB_140-07.wav",
+        "use": "audio"
+      },
+      {
+        "file": "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO.wav",
+        "use": "audio"
+      },
+      {
+        "file": "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO.mp3",
+        "use": "audio"
+      },
+      {
+        "file": "RTW_Kick_1.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_1-01.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_10.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_12.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_3.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_4.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_5.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_6.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_7.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_8.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "RTW_Kick_9.wav",
+        "use": "sampler"
+      },
+      {
+        "file": "Techno 01.aiff",
+        "use": "plugin"
+      }
+    ],
+    "inspector": {
+      "savedWith": "13.0.55",
+      "sampleRate": 44100,
+      "bitDepth": 24,
+      "timeSignature": "4/4",
+      "channels": [
+        "Kick 2 x64 01 [instrument] | -> Stereo Out | -10.8 dB C | instrument Kick 2 | inserts 1:PuigTec EQP1A Stereo, 14:PsyScope_Pro",
+        "Bassline [instrument] | -> Stereo Out | -3.1 dB C | instrument Diva | inserts 0:RBass Stereo, 2:MSaturatorMB, 3:Vitamin Stereo, 4:PHA-979, 5:Saturn 2, 6:Pro-C 2, 7:Pro-Q 3, 8:MSpectralDynamics, 9:StereoDelay, 11:LFOTool, 15:PsyScope_Pro",
+        "Serum 03 [instrument] | -> Stereo Out | -9.5 dB C | instrument Serum | inserts 1:Pro-C 2, 2:Pro-Q 3, 3:LFOTool",
+        "RTW_Kick_12 [sampler] | -> Stereo Out | -5.0 dB C solo | inserts 0:PsyScope_Pro",
+        "ANA2 x64 01 [instrument] | -> Stereo Out | -7.0 dB C | instrument ANA2",
+        "Serum 02 [instrument] | -> Stereo Out | -5.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:Looperator, 12:LFOTool",
+        "ANA2 x64 01_db_0 [instrument] | -> Main Lead Group | 0.0 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:LFOTool",
+        "ANA2 x64 01_db_-2 [instrument] | -> Main Lead Group | -2.0 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
+        "ANA2 x64 01_db_6 [instrument] | -> Main Lead Group | 6.0 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
+        "Main Lead Group [group] | -> Stereo Out | 0.0 dB C | inserts 0:Endless Smile 64",
+        "Serum 02 (D) [instrument] | -> Stereo Out | -14.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:ValhallaRoom, 12:Looperator, 13:LFOTool",
+        "a-ha - Take On Me [audio] | -> Stereo Out | 0.0 dB C mute",
+        "Leads [folder]",
+        "Sylenth1 01 [instrument] | in Leads | -> Stereo Out | -4.9 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT",
+        "Sylenth1 01 (R) 01 [audio] | in Leads | -> Stereo Out | 0.0 dB C",
+        "Main Lead 01 [instrument] | in Leads | -> Leads | -12.5 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT, 2:Compressor, 3:Simplon",
+        "Acid Lead 01 [instrument] | in Leads | -> Stereo Out | -5.3 dB C | instrument Sylenth1 | inserts 0:LFOTool, 1:Simplon, 2:OTT",
+        "Acid Lead 01 (D) [instrument] | in Leads | -> Stereo Out | -3.3 dB C | instrument Sylenth1 | inserts 0:LFOTool, 1:Simplon, 2:OTT",
+        "Acid Lead 01 (D) (R) [audio] | in Leads | -> Stereo Out | -3.3 dB C",
+        "Acid Lead 01 (D) [instrument] | in Leads | -> Stereo Out | -6.3 dB C | instrument Sylenth1 | inserts 0:LFOTool, 1:Simplon, 2:OTT",
+        "Leads [group] | in Leads | -> Stereo Out | 0.0 dB C | inserts 0:Simplon",
+        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C mute | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
+        "RTW_145_Drums_15_Tops [audio] | -> Stereo Out | -14.1 dB C",
+        "RTW_145_Drums_14_Snares [audio] | -> Stereo Out | -14.1 dB C",
+        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C mute",
+        "RTW_145_Drums_13_Snares [audio] | -> Stereo Out | -14.1 dB C",
+        "RTW_145_Drums_11_Hats [audio] | -> Stereo Out | -12.7 dB C",
+        "RTW_Crash_9 [audio] | -> Stereo Out | -12.8 dB C | inserts 0:ValhallaRoom",
+        "a-ha - Take on Me (Only Vocals) [TubeRipper.com] [audio] | -> Stereo Out | -7.9 dB C",
+        "IF_KikSnrFillB_140-07 [audio] | -> Stereo Out | -3.8 dB C | inserts 0:ValhallaRoom",
+        "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO [audio] | -> Stereo Out | -2.8 dB C mute | inserts 0:ValhallaRoom, 1:PingPongDelay, 2:LittleAlterBoy, 3:Looperator, 4:Manipulator",
         "Slap Bass 2 [midi] | -> - | - -",
         "Main Lead 01 [instrument] | -> Stereo Out | -12.5 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT, 2:Compressor, 3:Simplon",
         "Synth Bass 2 [midi] | -> - | - -",
@@ -1489,7 +3119,7 @@
         "Kick 2 x64 01 [instrument] | -> Stereo Out | -10.8 dB C | instrument Kick 2 | inserts 1:PuigTec EQP1A Stereo, 14:PsyScope_Pro",
         "Bassline [instrument] | -> Stereo Out | -3.1 dB C | instrument Diva | inserts 0:RBass Stereo, 2:MSaturatorMB, 3:Vitamin Stereo, 4:PHA-979, 5:Saturn 2, 6:Pro-C 2, 7:Pro-Q 3, 8:MSpectralDynamics, 9:StereoDelay, 11:LFOTool, 15:PsyScope_Pro",
         "Serum 03 [instrument] | -> Stereo Out | -9.5 dB C | instrument Serum | inserts 1:Pro-C 2, 2:Pro-Q 3, 3:LFOTool",
-        "RTW_Kick_12 [sampler] | -> Stereo Out | -5.0 dB C mute solo | inserts 0:PsyScope_Pro",
+        "RTW_Kick_12 [sampler] | -> Stereo Out | -5.0 dB C mute | inserts 0:PsyScope_Pro",
         "ANA2 x64 01 [instrument] | -> Stereo Out | -7.0 dB C | instrument ANA2",
         "Serum 02 [instrument] | -> Stereo Out | -5.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:Looperator, 12:LFOTool",
         "ANA2 x64 01_db_0 [instrument] | -> Main Lead Group | 0.0 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:LFOTool",
@@ -1497,7 +3127,7 @@
         "ANA2 x64 01_db_6 [instrument] | -> Main Lead Group | 6.0 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
         "Main Lead Group [group] | -> Stereo Out | 0.0 dB C | inserts 0:Endless Smile 64",
         "Serum 02 (D) [instrument] | -> Stereo Out | -14.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:ValhallaRoom, 12:Looperator, 13:LFOTool",
-        "a-ha - Take On Me [audio] | -> Stereo Out | 0.0 dB C solo",
+        "a-ha - Take On Me [audio] | -> Stereo Out | 0.0 dB C mute",
         "Leads [folder]",
         "Sylenth1 01 [instrument] | in Leads | -> Stereo Out | -4.9 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT",
         "Sylenth1 01 (R) 01 [audio] | in Leads | -> Stereo Out | 0.0 dB C",
@@ -1507,16 +3137,16 @@
         "Acid Lead 01 (D) (R) [audio] | in Leads | -> Stereo Out | -3.3 dB C",
         "Acid Lead 01 (D) [instrument] | in Leads | -> Stereo Out | -6.3 dB C | instrument Sylenth1 | inserts 0:LFOTool, 1:Simplon, 2:OTT",
         "Leads [group] | in Leads | -> Stereo Out | 0.0 dB C | inserts 0:Simplon",
-        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C solo | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
+        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C mute | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
         "RTW_145_Drums_15_Tops [audio] | -> Stereo Out | -14.1 dB C",
         "RTW_145_Drums_14_Snares [audio] | -> Stereo Out | -14.1 dB C",
-        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C solo",
+        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C mute",
         "RTW_145_Drums_13_Snares [audio] | -> Stereo Out | -14.1 dB C",
         "RTW_145_Drums_11_Hats [audio] | -> Stereo Out | -12.7 dB C",
         "RTW_Crash_9 [audio] | -> Stereo Out | -12.8 dB C | inserts 0:ValhallaRoom",
         "a-ha - Take on Me (Only Vocals) [TubeRipper.com] [audio] | -> Stereo Out | -7.9 dB C",
         "IF_KikSnrFillB_140-07 [audio] | -> Stereo Out | -3.8 dB C | inserts 0:ValhallaRoom",
-        "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO [audio] | -> Stereo Out | -2.8 dB C solo | inserts 0:ValhallaRoom, 1:PingPongDelay, 2:LittleAlterBoy, 3:Looperator, 4:Manipulator",
+        "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO [audio] | -> Stereo Out | -2.8 dB C mute | inserts 0:ValhallaRoom, 1:PingPongDelay, 2:LittleAlterBoy, 3:Looperator, 4:Manipulator",
         "Slap Bass 2 [midi] | -> - | - -",
         "Main Lead 01 [instrument] | -> Stereo Out | -12.5 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT, 2:Compressor, 3:Simplon",
         "Synth Bass 2 [midi] | -> - | - -",
@@ -2322,7 +3952,7 @@
         "ANA2 x64 01 (D) [instrument] | -> Main Lead Group | -16.7 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
         "Main Lead Group [group] | -> Stereo Out | 0.0 dB C | inserts 0:Endless Smile 64",
         "Serum 02 (D) [instrument] | -> Stereo Out | -14.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:ValhallaRoom, 12:Looperator, 13:LFOTool",
-        "a-ha - Take On Me [audio] | -> Stereo Out | 0.0 dB C solo",
+        "a-ha - Take On Me [audio] | -> Stereo Out | 0.0 dB C mute",
         "Leads [folder]",
         "Sylenth1 01 [instrument] | in Leads | -> Stereo Out | -4.9 dB C | instrument Sylenth1 | inserts 0:Saturn 2, 1:OTT",
         "Sylenth1 01 (R) 01 [audio] | in Leads | -> Stereo Out | 0.0 dB C",
@@ -2332,10 +3962,10 @@
         "Acid Lead 01 (D) (R) [audio] | in Leads | -> Stereo Out | -3.3 dB C",
         "Acid Lead 01 (D) [instrument] | in Leads | -> Stereo Out | -6.3 dB C | instrument Sylenth1 | inserts 0:LFOTool, 1:Simplon, 2:OTT",
         "Leads [group] | in Leads | -> Stereo Out | 0.0 dB C | inserts 0:Simplon",
-        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C solo | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
+        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C mute | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
         "RTW_145_Drums_15_Tops [audio] | -> Stereo Out | -14.1 dB C",
         "RTW_145_Drums_14_Snares [audio] | -> Stereo Out | -14.1 dB C",
-        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C solo",
+        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C mute",
         "RTW_145_Drums_13_Snares [audio] | -> Stereo Out | -14.1 dB C",
         "RTW_145_Drums_11_Hats [audio] | -> Stereo Out | -12.7 dB C",
         "RTW_Crash_9 [audio] | -> Stereo Out | -12.8 dB C | inserts 0:ValhallaRoom",
@@ -2816,23 +4446,23 @@
         "Kick 2 x64 01 [instrument] | -> Stereo Out | -10.8 dB C | instrument Kick 2 | inserts 1:PuigTec EQP1A Stereo, 14:PsyScope_Pro",
         "Bassline [instrument] | -> Stereo Out | -3.1 dB C | instrument Diva | inserts 0:RBass Stereo, 2:MSaturatorMB, 3:Vitamin Stereo, 4:PHA-979, 5:Saturn 2, 6:Pro-C 2, 7:Pro-Q 3, 8:MSpectralDynamics, 9:StereoDelay, 11:LFOTool, 15:PsyScope_Pro",
         "Serum 03 [instrument] | -> Stereo Out | -9.5 dB C | instrument Serum | inserts 1:Pro-C 2, 2:Pro-Q 3, 3:LFOTool",
-        "RTW_Kick_12 [sampler] | -> Stereo Out | -5.0 dB C solo | inserts 0:PsyScope_Pro",
+        "RTW_Kick_12 [sampler] | -> Stereo Out | -5.0 dB C mute | inserts 0:PsyScope_Pro",
         "ANA2 x64 01 [instrument] | -> Stereo Out | -7.0 dB C | instrument ANA2",
-        "Serum 02 [instrument] | -> Stereo Out | -9.5 dB C mute | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:Looperator",
+        "Serum 02 [instrument] | -> Stereo Out | -9.5 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:Looperator",
         "ANA2 x64 01 [instrument] | -> Main Lead Group | -9.9 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
         "ANA2 x64 01 (D) [instrument] | -> Main Lead Group | -11.6 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
         "ANA2 x64 01 (D) [instrument] | -> Main Lead Group | -16.7 dB C | instrument ANA2 | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3",
         "Main Lead Group [group] | -> Stereo Out | 0.0 dB C | inserts 0:Endless Smile 64",
         "Serum 02 (D) [instrument] | -> Stereo Out | -14.6 dB C | instrument Serum | inserts 0:OTT, 1:FabFilter Saturn 2, 2:StereoEnhancer, 4:Endless Smile 64, 6:FilterFreak1, 7:kHs Trance Gate, 8:Volcano 2, 9:FabFilter Pro-Q 3, 10:Simplon, 11:ValhallaRoom, 12:Looperator",
-        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C solo | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
+        "Serum 01 [instrument] | -> Stereo Out | 0.0 dB C mute | instrument Serum | inserts 0:RBass Stereo, 3:TransX Multi Stereo, 4:Tube-Tech Equalizers mk II, 5:MultibandEnvelopeShaper, 6:FabFilter Saturn 2, 7:FabFilter Pro-C 2, 8:FabFilter Pro-Q 3, 10:MSaturator, 11:LFOTool, 12:PSYSCOPE",
         "RTW_145_Drums_15_Tops [audio] | -> Stereo Out | -14.1 dB C",
         "RTW_145_Drums_14_Snares [audio] | -> Stereo Out | -14.1 dB C",
-        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C solo",
+        "RTW_145_Drums_13_Hats [audio] | -> Stereo Out | -11.7 dB C mute",
         "RTW_145_Drums_13_Snares [audio] | -> Stereo Out | -14.1 dB C",
         "RTW_145_Drums_11_Hats [audio] | -> Stereo Out | -12.7 dB C",
         "RTW_Crash_9 [audio] | -> Stereo Out | -12.8 dB C | inserts 0:ValhallaRoom",
         "IF_KikSnrFillB_140-07 [audio] | -> Stereo Out | -3.8 dB C | inserts 0:ValhallaRoom",
-        "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO [audio] | -> Stereo Out | -2.8 dB C solo | inserts 0:ValhallaRoom, 1:PingPongDelay, 2:LittleAlterBoy, 3:Looperator, 4:Manipulator"
+        "CRÍTICA DO PASTOR AO DOOM 2 O DIABO NÃO ESTA BRINCANDO CONTIGO [audio] | -> Stereo Out | -2.8 dB C mute | inserts 0:ValhallaRoom, 1:PingPongDelay, 2:LittleAlterBoy, 3:Looperator, 4:Manipulator"
       ],
       "plugins": [
         "ANA2 | instrument | third-party | x4 | VST2",
