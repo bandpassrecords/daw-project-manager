@@ -401,7 +401,9 @@ class CubaseArchive {
 
   /// A pool file as Cubase writes it: an `FNPath` holding the name, the
   /// type ("WAVE", the extension twice, a description) and the folder.
-  void poolFile(String name, String folder) {
+  /// With [folderRoom], the folder is written as a relink in place writes
+  /// it: in a string that held a longer one, NUL-padded to that many bytes.
+  void poolFile(String name, String folder, {int? folderRoom}) {
     begin('FNPath');
     string(name);
     raw(ascii.encode('WAVE'));
@@ -409,7 +411,14 @@ class CubaseArchive {
     string('wav');
     string('Wave File');
     raw([0, 0, 0, 1, 0, 0]);
-    string(folder);
+    if (folderRoom == null) {
+      string(folder);
+    } else {
+      final text = utf8.encode(folder);
+      _u32(folderRoom + 4);
+      raw([...text, ...List.filled(folderRoom + 1 - text.length, 0)]);
+      raw([0xEF, 0xBB, 0xBF]);
+    }
     end();
   }
 

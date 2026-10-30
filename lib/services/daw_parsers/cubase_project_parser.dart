@@ -1264,8 +1264,14 @@ class CubaseProjectParser {
       stop -= 3;
     }
     if (bytes[stop - 1] != 0) return null;
+    // The text ends at its first NUL: a path relinked in place keeps the
+    // string's length and pads the rest (see CubaseRelinkWriter).
+    var textEnd = offset + 4;
+    while (textEnd < stop - 1 && bytes[textEnd] != 0) {
+      textEnd++;
+    }
     final text = utf8.decode(
-      bytes.sublist(offset + 4, stop - 1),
+      bytes.sublist(offset + 4, textEnd),
       allowMalformed: true,
     );
     return (text: text, end: offset + 4 + len);
