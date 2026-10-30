@@ -15049,6 +15049,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Summary copied'**
   String get reportCopied;
+
+  /// Button in the Inspector: plug-in usage across the whole library
+  ///
+  /// In en, this message translates to:
+  /// **'Plug-ins across your library'**
+  String get usageOpen;
+
+  /// Under the title of the library plug-in usage view
+  ///
+  /// In en, this message translates to:
+  /// **'From what the deep scan read in each project: no project file is opened here. It\'s information only — nothing is changed or deleted.'**
+  String get usageIntro;
+
+  /// Total: projects whose plug-ins the deep scan has read
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 project read} other{{count} projects read}}'**
+  String usageProjectsRead(int count);
+
+  /// Projects the deep scan has not read: their plug-ins are not counted
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 project not read yet — a deep scan counts its plug-ins} other{{count} projects not read yet — a deep scan counts their plug-ins}}'**
+  String usageProjectsUnread(int count);
+
+  /// Total: distinct plug-ins used across the library
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 plug-in in use} other{{count} plug-ins in use}}'**
+  String usagePluginsInUse(int count);
+
+  /// Total: plug-ins used in one song only
+  ///
+  /// In en, this message translates to:
+  /// **'{count} used in one song only'**
+  String usageRareCount(int count);
+
+  /// Filter chip: plug-ins by how many songs use them
+  ///
+  /// In en, this message translates to:
+  /// **'Most used'**
+  String get usageFilterMostUsed;
+
+  /// Filter chip: plug-ins used in one song only
+  ///
+  /// In en, this message translates to:
+  /// **'Used once'**
+  String get usageFilterRare;
+
+  /// Switch: leave out the DAW's own plug-ins
+  ///
+  /// In en, this message translates to:
+  /// **'Hide stock plug-ins'**
+  String get usageHideStock;
+
+  /// How many songs use a plug-in
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 song} other{{count} songs}}'**
+  String usageSongs(int count);
+
+  /// How many project files use a plug-in
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 project} other{{count} projects}}'**
+  String usageProjects(int count);
+
+  /// When a plug-in was last used: the date of the newest project using it
+  ///
+  /// In en, this message translates to:
+  /// **'last used {date}'**
+  String usageLastUsed(String date);
+
+  /// Button: show the projects using this plug-in in the projects list
+  ///
+  /// In en, this message translates to:
+  /// **'Show these projects'**
+  String get usageShowProjects;
+
+  /// Button: read Cubase projects to count how many times each plug-in is loaded
+  ///
+  /// In en, this message translates to:
+  /// **'Count instances in Cubase projects…'**
+  String get usageCountInstances;
+
+  /// Where instance counts and chains come from
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Instances and chains from 1 Cubase project} other{Instances and chains from {count} Cubase projects}}'**
+  String usageInstancesFrom(int count);
+
+  /// When no project has had its plug-ins read
+  ///
+  /// In en, this message translates to:
+  /// **'No plug-ins found yet. A deep scan reads which plug-ins each project uses.'**
+  String get usageNothing;
+
+  /// Asking before reading Cubase projects to count plug-in instances
+  ///
+  /// In en, this message translates to:
+  /// **'Read Cubase projects?'**
+  String get usageReadTitle;
+
+  /// How many Cubase projects would be read, and their size
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Cubase projects ({size}) haven\'t had their tracks read, or changed since. Reading opens each file; files on a cloud drive are downloaded first.'**
+  String usageReadBody(int count, String size);
+
+  /// Button: read the Cubase projects, then count
+  ///
+  /// In en, this message translates to:
+  /// **'Read and count'**
+  String get usageReadAndCount;
+
+  /// Button while reading: stop and count what's read so far
+  ///
+  /// In en, this message translates to:
+  /// **'Stop and count what\'s read'**
+  String get usageReadStop;
+
+  /// Dashboard filter chip: only projects using this plug-in
+  ///
+  /// In en, this message translates to:
+  /// **'Uses {plugin}'**
+  String filterUsesPlugin(String plugin);
+
+  /// Settings switch: read a project before opening it in the DAW, and warn
+  ///
+  /// In en, this message translates to:
+  /// **'Check a project before opening it'**
+  String get launchCheckSetting;
+
+  /// What the check before opening does
+  ///
+  /// In en, this message translates to:
+  /// **'Before the DAW opens, say when audio files are missing or the project\'s sample rate isn\'t your studio\'s. A project on a cloud drive, or a very big one, opens without it.'**
+  String get launchCheckSettingHint;
+
+  /// Setting: the sample rate the person's studio runs at
+  ///
+  /// In en, this message translates to:
+  /// **'My studio runs at'**
+  String get studioSampleRate;
+
+  /// The studio sample rate is not set
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get studioSampleRateNotSet;
+
+  /// Title of the warnings shown before a project opens
+  ///
+  /// In en, this message translates to:
+  /// **'Before opening {name}'**
+  String launchCheckTitle(String name);
+
+  /// Warning before opening: audio files missing
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 of its {total} audio files is missing} other{{count} of its {total} audio files are missing}}'**
+  String launchCheckMissingAudio(int count, int total);
+
+  /// Warning before opening: the project's sample rate is not the studio's
+  ///
+  /// In en, this message translates to:
+  /// **'Saved at {project}; your studio runs at {studio}'**
+  String launchCheckSampleRate(String project, String studio);
+
+  /// Button: open the project in its DAW despite the warnings
+  ///
+  /// In en, this message translates to:
+  /// **'Open anyway'**
+  String get launchCheckOpenAnyway;
 }
 
 class _AppLocalizationsDelegate

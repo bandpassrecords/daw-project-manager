@@ -9676,4 +9676,180 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reportCopied => 'Сводка скопирована';
+
+  @override
+  String get usageOpen => 'Плагины во всей библиотеке';
+
+  @override
+  String get usageIntro =>
+      'По данным глубокого сканирования каждого проекта: здесь файлы проектов не открываются. Это только информация — ничего не изменяется и не удаляется.';
+
+  @override
+  String usageProjectsRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Прочитано $count проекта',
+      many: 'Прочитано $count проектов',
+      few: 'Прочитано $count проекта',
+      one: 'Прочитан $count проект',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjectsUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count проекта ещё не прочитаны — глубокое сканирование посчитает их плагины',
+      many:
+          '$count проектов ещё не прочитаны — глубокое сканирование посчитает их плагины',
+      few:
+          '$count проекта ещё не прочитаны — глубокое сканирование посчитает их плагины',
+      one:
+          '$count проект ещё не прочитан — глубокое сканирование посчитает его плагины',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usagePluginsInUse(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Используется $count плагина',
+      many: 'Используется $count плагинов',
+      few: 'Используется $count плагина',
+      one: 'Используется $count плагин',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageRareCount(int count) {
+    return '$count — только в одной песне';
+  }
+
+  @override
+  String get usageFilterMostUsed => 'Самые используемые';
+
+  @override
+  String get usageFilterRare => 'Использованы один раз';
+
+  @override
+  String get usageHideStock => 'Скрыть встроенные плагины';
+
+  @override
+  String usageSongs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count песни',
+      many: '$count песен',
+      few: '$count песни',
+      one: '$count песня',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjects(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count проекта',
+      many: '$count проектов',
+      few: '$count проекта',
+      one: '$count проект',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageLastUsed(String date) {
+    return 'последнее использование $date';
+  }
+
+  @override
+  String get usageShowProjects => 'Показать эти проекты';
+
+  @override
+  String get usageCountInstances => 'Подсчитать экземпляры в проектах Cubase…';
+
+  @override
+  String usageInstancesFrom(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Экземпляры и цепочки из $count проекта Cubase',
+      many: 'Экземпляры и цепочки из $count проектов Cubase',
+      few: 'Экземпляры и цепочки из $count проектов Cubase',
+      one: 'Экземпляры и цепочки из $count проекта Cubase',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get usageNothing =>
+      'Плагины пока не найдены. Глубокое сканирование определяет, какие плагины использует каждый проект.';
+
+  @override
+  String get usageReadTitle => 'Прочитать проекты Cubase?';
+
+  @override
+  String usageReadBody(int count, String size) {
+    return 'Дорожки $count проектов Cubase ($size) не прочитаны или с тех пор изменились. При чтении открывается каждый файл; файлы с облачного диска сначала скачиваются.';
+  }
+
+  @override
+  String get usageReadAndCount => 'Прочитать и посчитать';
+
+  @override
+  String get usageReadStop => 'Остановить и посчитать прочитанное';
+
+  @override
+  String filterUsesPlugin(String plugin) {
+    return 'Использует $plugin';
+  }
+
+  @override
+  String get launchCheckSetting => 'Проверять проект перед открытием';
+
+  @override
+  String get launchCheckSettingHint =>
+      'Перед открытием DAW сообщать, если аудиофайлы отсутствуют или частота дискретизации проекта отличается от студийной. Проект на облачном диске или очень большой открывается без проверки.';
+
+  @override
+  String get studioSampleRate => 'Моя студия работает на';
+
+  @override
+  String get studioSampleRateNotSet => 'Не задано';
+
+  @override
+  String launchCheckTitle(String name) {
+    return 'Перед открытием $name';
+  }
+
+  @override
+  String launchCheckMissingAudio(int count, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Отсутствуют $count из $total аудиофайлов',
+      many: 'Отсутствуют $count из $total аудиофайлов',
+      few: 'Отсутствуют $count из $total аудиофайлов',
+      one: 'Отсутствует $count из $total аудиофайлов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String launchCheckSampleRate(String project, String studio) {
+    return 'Сохранён на $project; ваша студия работает на $studio';
+  }
+
+  @override
+  String get launchCheckOpenAnyway => 'Всё равно открыть';
 }

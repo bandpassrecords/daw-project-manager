@@ -56,6 +56,8 @@ import '../models/project_event.dart';
 import '../models/project_anatomy.dart';
 import '../services/project_inspector/media_check.dart';
 import '../services/project_inspector/project_anatomy_reader.dart';
+import '../services/project_inspector/library/plugin_usage.dart';
+import '../services/template_export/reference_service.dart';
 import '../repository/project_repository.dart';
 import '../repository/project_trash.dart';
 import '../utils/project_midi.dart';
@@ -653,6 +655,14 @@ final projectsProvider = Provider<List<MusicProject>>((ref) {
         if (ref.watch(hasMidiFilterProvider)) {
           final all = allProjectsAsync.value ?? const <MusicProject>[];
           projects = projects.where((p) => projectHasMidi(p, all)).toList();
+        }
+
+        // --- Filter: only projects using a plug-in (#225) ---
+        if (ref.watch(pluginFilterProvider) case final plugin?) {
+          final all = allProjectsAsync.value ?? const <MusicProject>[];
+          projects = projects
+              .where((p) => projectUsesPlugin(p, plugin, all))
+              .toList();
         }
 
         // --- Filter finished projects ---
@@ -2334,6 +2344,79 @@ final tagsEnabledProvider = NotifierProvider<TagsEnabledNotifier, bool>(
   TagsEnabledNotifier.new,
 );
 
+/// Whether a project is checked before it opens in its DAW (#222): missing
+/// audio, a sample rate other than the studio's. Off by default; device-local
+/// (`settings` box), like the other launch preferences.
+class LaunchCheckEnabledNotifier extends Notifier<bool> {
+  static const _key = 'checkBeforeLaunch';
+
+  @override
+  bool build() {
+    try {
+      return Hive.box<String>('settings').get(_key) == 'true';
+    } catch (e) {
+      if (kDebugMode) print('Failed to load checkBeforeLaunch: $e');
+      return false;
+    }
+  }
+
+  Future<void> set(bool value) async {
+    if (value == state) return;
+    state = value;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      await box.put(_key, value.toString());
+    } catch (e) {
+      if (kDebugMode) print('Failed to save checkBeforeLaunch: $e');
+    }
+  }
+}
+
+final launchCheckEnabledProvider =
+    NotifierProvider<LaunchCheckEnabledNotifier, bool>(
+      LaunchCheckEnabledNotifier.new,
+    );
+
+/// The sample rate this studio runs at, in Hz (#213, #222); null when not
+/// set. Device-local: another computer can be another studio.
+class StudioSampleRateNotifier extends Notifier<int?> {
+  static const _key = 'studioSampleRate';
+
+  @override
+  int? build() {
+    try {
+      return int.tryParse(Hive.box<String>('settings').get(_key) ?? '');
+    } catch (e) {
+      if (kDebugMode) print('Failed to load studioSampleRate: $e');
+      return null;
+    }
+  }
+
+  Future<void> set(int? value) async {
+    if (value == state) return;
+    state = value;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      if (value == null) {
+        await box.delete(_key);
+      } else {
+        await box.put(_key, '$value');
+      }
+    } catch (e) {
+      if (kDebugMode) print('Failed to save studioSampleRate: $e');
+    }
+  }
+}
+
+final studioSampleRateProvider =
+    NotifierProvider<StudioSampleRateNotifier, int?>(
+      StudioSampleRateNotifier.new,
+    );
+
 // ---------------------------------------------------------------------------
 // Custom fields + projects-table columns
 // ---------------------------------------------------------------------------
@@ -3102,6 +3185,50 @@ final inspectorCompareFileProvider =
     NotifierProvider<InspectorFileNotifier, InspectedFile?>(
       InspectorFileNotifier.new,
     );
+
+/// Whether the Inspector tab shows plug-in usage across the library (#225)
+/// rather than a project. Session-only.
+class InspectorLibraryUsageNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+  void open() => state = true;
+  void close() => state = false;
+}
+
+final inspectorLibraryUsageProvider =
+    NotifierProvider<InspectorLibraryUsageNotifier, bool>(
+      InspectorLibraryUsageNotifier.new,
+    );
+
+/// Plug-in usage across the active profile's library (#225): from what the
+/// deep scan stored on each project, with instances from the Cubase tracks
+/// the insert reference page's cache already holds. Reads no project file.
+final pluginUsageReportProvider = FutureProvider<PluginUsageReport>((
+  ref,
+) async {
+  final projects = await ref.watch(allProjectsStreamProvider.future);
+  ReferenceCache? cache;
+  try {
+    cache = await loadReferenceCache();
+  } catch (_) {
+    cache = null; // Device-local and optional: names alone still count.
+  }
+  return buildPluginUsage(projects, tracksOf: cache?.freshTracksOf);
+});
+
+/// Shows only projects using this plug-in (see `projectUsesPlugin`), set
+/// from the Inspector's plug-in usage. Session-only, like the other
+/// dashboard filters.
+class PluginFilterNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+  void set(String plugin) => state = plugin;
+  void clear() => state = null;
+}
+
+final pluginFilterProvider = NotifierProvider<PluginFilterNotifier, String?>(
+  PluginFilterNotifier.new,
+);
 
 /// Set when something asks for the Inspector tab to come to the front (the
 /// project menu's Inspect); the dashboard switches and consumes it.

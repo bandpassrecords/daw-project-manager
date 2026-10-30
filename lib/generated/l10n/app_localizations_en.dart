@@ -9592,4 +9592,162 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportCopied => 'Summary copied';
+
+  @override
+  String get usageOpen => 'Plug-ins across your library';
+
+  @override
+  String get usageIntro =>
+      'From what the deep scan read in each project: no project file is opened here. It\'s information only — nothing is changed or deleted.';
+
+  @override
+  String usageProjectsRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects read',
+      one: '1 project read',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjectsUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects not read yet — a deep scan counts their plug-ins',
+      one: '1 project not read yet — a deep scan counts its plug-ins',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usagePluginsInUse(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plug-ins in use',
+      one: '1 plug-in in use',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageRareCount(int count) {
+    return '$count used in one song only';
+  }
+
+  @override
+  String get usageFilterMostUsed => 'Most used';
+
+  @override
+  String get usageFilterRare => 'Used once';
+
+  @override
+  String get usageHideStock => 'Hide stock plug-ins';
+
+  @override
+  String usageSongs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count songs',
+      one: '1 song',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjects(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count projects',
+      one: '1 project',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageLastUsed(String date) {
+    return 'last used $date';
+  }
+
+  @override
+  String get usageShowProjects => 'Show these projects';
+
+  @override
+  String get usageCountInstances => 'Count instances in Cubase projects…';
+
+  @override
+  String usageInstancesFrom(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Instances and chains from $count Cubase projects',
+      one: 'Instances and chains from 1 Cubase project',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get usageNothing =>
+      'No plug-ins found yet. A deep scan reads which plug-ins each project uses.';
+
+  @override
+  String get usageReadTitle => 'Read Cubase projects?';
+
+  @override
+  String usageReadBody(int count, String size) {
+    return '$count Cubase projects ($size) haven\'t had their tracks read, or changed since. Reading opens each file; files on a cloud drive are downloaded first.';
+  }
+
+  @override
+  String get usageReadAndCount => 'Read and count';
+
+  @override
+  String get usageReadStop => 'Stop and count what\'s read';
+
+  @override
+  String filterUsesPlugin(String plugin) {
+    return 'Uses $plugin';
+  }
+
+  @override
+  String get launchCheckSetting => 'Check a project before opening it';
+
+  @override
+  String get launchCheckSettingHint =>
+      'Before the DAW opens, say when audio files are missing or the project\'s sample rate isn\'t your studio\'s. A project on a cloud drive, or a very big one, opens without it.';
+
+  @override
+  String get studioSampleRate => 'My studio runs at';
+
+  @override
+  String get studioSampleRateNotSet => 'Not set';
+
+  @override
+  String launchCheckTitle(String name) {
+    return 'Before opening $name';
+  }
+
+  @override
+  String launchCheckMissingAudio(int count, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count of its $total audio files are missing',
+      one: '1 of its $total audio files is missing',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String launchCheckSampleRate(String project, String studio) {
+    return 'Saved at $project; your studio runs at $studio';
+  }
+
+  @override
+  String get launchCheckOpenAnyway => 'Open anyway';
 }

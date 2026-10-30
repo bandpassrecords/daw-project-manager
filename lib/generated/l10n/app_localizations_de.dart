@@ -9652,4 +9652,163 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get reportCopied => 'Zusammenfassung kopiert';
+
+  @override
+  String get usageOpen => 'Plug-ins in deiner Bibliothek';
+
+  @override
+  String get usageIntro =>
+      'Aus dem, was der Tiefenscan in jedem Projekt gelesen hat: Hier wird keine Projektdatei geöffnet. Nur zur Information – nichts wird geändert oder gelöscht.';
+
+  @override
+  String usageProjectsRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte gelesen',
+      one: '1 Projekt gelesen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjectsUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count Projekte noch nicht gelesen – ein Tiefenscan zählt ihre Plug-ins',
+      one: '1 Projekt noch nicht gelesen – ein Tiefenscan zählt seine Plug-ins',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usagePluginsInUse(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Plug-ins in Verwendung',
+      one: '1 Plug-in in Verwendung',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageRareCount(int count) {
+    return '$count nur in einem Song verwendet';
+  }
+
+  @override
+  String get usageFilterMostUsed => 'Am häufigsten';
+
+  @override
+  String get usageFilterRare => 'Einmal verwendet';
+
+  @override
+  String get usageHideStock => 'Mitgelieferte Plug-ins ausblenden';
+
+  @override
+  String usageSongs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Songs',
+      one: '1 Song',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjects(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte',
+      one: '1 Projekt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageLastUsed(String date) {
+    return 'zuletzt $date';
+  }
+
+  @override
+  String get usageShowProjects => 'Diese Projekte anzeigen';
+
+  @override
+  String get usageCountInstances => 'Instanzen in Cubase-Projekten zählen…';
+
+  @override
+  String usageInstancesFrom(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Instanzen und Ketten aus $count Cubase-Projekten',
+      one: 'Instanzen und Ketten aus 1 Cubase-Projekt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get usageNothing =>
+      'Noch keine Plug-ins gefunden. Ein Tiefenscan liest, welche Plug-ins jedes Projekt verwendet.';
+
+  @override
+  String get usageReadTitle => 'Cubase-Projekte lesen?';
+
+  @override
+  String usageReadBody(int count, String size) {
+    return '$count Cubase-Projekte ($size) wurden noch nicht nach Spuren gelesen oder haben sich seitdem geändert. Beim Lesen wird jede Datei geöffnet; Dateien auf einem Cloud-Laufwerk werden zuerst heruntergeladen.';
+  }
+
+  @override
+  String get usageReadAndCount => 'Lesen und zählen';
+
+  @override
+  String get usageReadStop => 'Anhalten und Gelesenes zählen';
+
+  @override
+  String filterUsesPlugin(String plugin) {
+    return 'Verwendet $plugin';
+  }
+
+  @override
+  String get launchCheckSetting => 'Projekt vor dem Öffnen prüfen';
+
+  @override
+  String get launchCheckSettingHint =>
+      'Bevor die DAW öffnet, Bescheid geben, wenn Audiodateien fehlen oder die Samplerate des Projekts nicht die deines Studios ist. Ein Projekt auf einem Cloud-Laufwerk oder ein sehr großes öffnet ohne Prüfung.';
+
+  @override
+  String get studioSampleRate => 'Mein Studio läuft mit';
+
+  @override
+  String get studioSampleRateNotSet => 'Nicht festgelegt';
+
+  @override
+  String launchCheckTitle(String name) {
+    return 'Vor dem Öffnen von $name';
+  }
+
+  @override
+  String launchCheckMissingAudio(int count, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count von $total Audiodateien fehlen',
+      one: '1 von $total Audiodateien fehlt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String launchCheckSampleRate(String project, String studio) {
+    return 'Gespeichert mit $project; dein Studio läuft mit $studio';
+  }
+
+  @override
+  String get launchCheckOpenAnyway => 'Trotzdem öffnen';
 }

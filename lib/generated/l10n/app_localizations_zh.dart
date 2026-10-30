@@ -8996,4 +8996,153 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reportCopied => '摘要已复制';
+
+  @override
+  String get usageOpen => '整个库中的插件';
+
+  @override
+  String get usageIntro => '基于深度扫描在每个项目中读取的内容：此处不会打开任何项目文件。仅供参考——不会更改或删除任何内容。';
+
+  @override
+  String usageProjectsRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已读取 $count 个项目',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjectsUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个项目尚未读取——深度扫描会统计其插件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usagePluginsInUse(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '使用中的插件 $count 个',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageRareCount(int count) {
+    return '$count 个仅用于一首歌';
+  }
+
+  @override
+  String get usageFilterMostUsed => '最常用';
+
+  @override
+  String get usageFilterRare => '仅用过一次';
+
+  @override
+  String get usageHideStock => '隐藏自带插件';
+
+  @override
+  String usageSongs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 首歌',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjects(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个项目',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageLastUsed(String date) {
+    return '最近使用 $date';
+  }
+
+  @override
+  String get usageShowProjects => '显示这些项目';
+
+  @override
+  String get usageCountInstances => '统计 Cubase 项目中的实例…';
+
+  @override
+  String usageInstancesFrom(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '来自 $count 个 Cubase 项目的实例和链',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get usageNothing => '尚未找到插件。深度扫描会读取每个项目使用的插件。';
+
+  @override
+  String get usageReadTitle => '读取 Cubase 项目？';
+
+  @override
+  String usageReadBody(int count, String size) {
+    return '$count 个 Cubase 项目（$size）的轨道尚未读取或之后有更改。读取会打开每个文件；云盘上的文件会先下载。';
+  }
+
+  @override
+  String get usageReadAndCount => '读取并统计';
+
+  @override
+  String get usageReadStop => '停止并统计已读取的内容';
+
+  @override
+  String filterUsesPlugin(String plugin) {
+    return '使用 $plugin';
+  }
+
+  @override
+  String get launchCheckSetting => '打开前检查项目';
+
+  @override
+  String get launchCheckSettingHint =>
+      '在 DAW 打开前，若缺少音频文件或项目采样率与工作室不同则提示。云盘上的项目或非常大的项目会直接打开，不做检查。';
+
+  @override
+  String get studioSampleRate => '我的工作室采样率';
+
+  @override
+  String get studioSampleRateNotSet => '未设置';
+
+  @override
+  String launchCheckTitle(String name) {
+    return '打开 $name 之前';
+  }
+
+  @override
+  String launchCheckMissingAudio(int count, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$total 个音频文件中缺少 $count 个',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String launchCheckSampleRate(String project, String studio) {
+    return '保存为 $project；你的工作室为 $studio';
+  }
+
+  @override
+  String get launchCheckOpenAnyway => '仍然打开';
 }

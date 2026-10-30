@@ -9659,5 +9659,195 @@
   "reportCopied": "Summary copied",
   "@reportCopied": {
     "description": "Snackbar after copying the project summary"
+  },
+  "usageOpen": "Plug-ins across your library",
+  "@usageOpen": {
+    "description": "Button in the Inspector: plug-in usage across the whole library"
+  },
+  "usageIntro": "From what the deep scan read in each project: no project file is opened here. It's information only — nothing is changed or deleted.",
+  "@usageIntro": {
+    "description": "Under the title of the library plug-in usage view"
+  },
+  "usageProjectsRead": "{count, plural, one{1 project read} other{{count} projects read}}",
+  "@usageProjectsRead": {
+    "description": "Total: projects whose plug-ins the deep scan has read",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageProjectsUnread": "{count, plural, one{1 project not read yet — a deep scan counts its plug-ins} other{{count} projects not read yet — a deep scan counts their plug-ins}}",
+  "@usageProjectsUnread": {
+    "description": "Projects the deep scan has not read: their plug-ins are not counted",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usagePluginsInUse": "{count, plural, one{1 plug-in in use} other{{count} plug-ins in use}}",
+  "@usagePluginsInUse": {
+    "description": "Total: distinct plug-ins used across the library",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageRareCount": "{count} used in one song only",
+  "@usageRareCount": {
+    "description": "Total: plug-ins used in one song only",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageFilterMostUsed": "Most used",
+  "@usageFilterMostUsed": {
+    "description": "Filter chip: plug-ins by how many songs use them"
+  },
+  "usageFilterRare": "Used once",
+  "@usageFilterRare": {
+    "description": "Filter chip: plug-ins used in one song only"
+  },
+  "usageHideStock": "Hide stock plug-ins",
+  "@usageHideStock": {
+    "description": "Switch: leave out the DAW's own plug-ins"
+  },
+  "usageSongs": "{count, plural, one{1 song} other{{count} songs}}",
+  "@usageSongs": {
+    "description": "How many songs use a plug-in",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageProjects": "{count, plural, one{1 project} other{{count} projects}}",
+  "@usageProjects": {
+    "description": "How many project files use a plug-in",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageLastUsed": "last used {date}",
+  "@usageLastUsed": {
+    "description": "When a plug-in was last used: the date of the newest project using it",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "usageShowProjects": "Show these projects",
+  "@usageShowProjects": {
+    "description": "Button: show the projects using this plug-in in the projects list"
+  },
+  "usageCountInstances": "Count instances in Cubase projects…",
+  "@usageCountInstances": {
+    "description": "Button: read Cubase projects to count how many times each plug-in is loaded"
+  },
+  "usageInstancesFrom": "{count, plural, one{Instances and chains from 1 Cubase project} other{Instances and chains from {count} Cubase projects}}",
+  "@usageInstancesFrom": {
+    "description": "Where instance counts and chains come from",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageNothing": "No plug-ins found yet. A deep scan reads which plug-ins each project uses.",
+  "@usageNothing": {
+    "description": "When no project has had its plug-ins read"
+  },
+  "usageReadTitle": "Read Cubase projects?",
+  "@usageReadTitle": {
+    "description": "Asking before reading Cubase projects to count plug-in instances"
+  },
+  "usageReadBody": "{count} Cubase projects ({size}) haven't had their tracks read, or changed since. Reading opens each file; files on a cloud drive are downloaded first.",
+  "@usageReadBody": {
+    "description": "How many Cubase projects would be read, and their size",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "usageReadAndCount": "Read and count",
+  "@usageReadAndCount": {
+    "description": "Button: read the Cubase projects, then count"
+  },
+  "usageReadStop": "Stop and count what's read",
+  "@usageReadStop": {
+    "description": "Button while reading: stop and count what's read so far"
+  },
+  "filterUsesPlugin": "Uses {plugin}",
+  "@filterUsesPlugin": {
+    "description": "Dashboard filter chip: only projects using this plug-in",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      }
+    }
+  },
+  "launchCheckSetting": "Check a project before opening it",
+  "@launchCheckSetting": {
+    "description": "Settings switch: read a project before opening it in the DAW, and warn"
+  },
+  "launchCheckSettingHint": "Before the DAW opens, say when audio files are missing or the project's sample rate isn't your studio's. A project on a cloud drive, or a very big one, opens without it.",
+  "@launchCheckSettingHint": {
+    "description": "What the check before opening does"
+  },
+  "studioSampleRate": "My studio runs at",
+  "@studioSampleRate": {
+    "description": "Setting: the sample rate the person's studio runs at"
+  },
+  "studioSampleRateNotSet": "Not set",
+  "@studioSampleRateNotSet": {
+    "description": "The studio sample rate is not set"
+  },
+  "launchCheckTitle": "Before opening {name}",
+  "@launchCheckTitle": {
+    "description": "Title of the warnings shown before a project opens",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "launchCheckMissingAudio": "{count, plural, one{1 of its {total} audio files is missing} other{{count} of its {total} audio files are missing}}",
+  "@launchCheckMissingAudio": {
+    "description": "Warning before opening: audio files missing",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "launchCheckSampleRate": "Saved at {project}; your studio runs at {studio}",
+  "@launchCheckSampleRate": {
+    "description": "Warning before opening: the project's sample rate is not the studio's",
+    "placeholders": {
+      "project": {
+        "type": "String"
+      },
+      "studio": {
+        "type": "String"
+      }
+    }
+  },
+  "launchCheckOpenAnyway": "Open anyway",
+  "@launchCheckOpenAnyway": {
+    "description": "Button: open the project in its DAW despite the warnings"
   }
 }

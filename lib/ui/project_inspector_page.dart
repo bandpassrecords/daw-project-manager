@@ -12,11 +12,13 @@ import '../models/project_anatomy.dart';
 import '../providers/providers.dart';
 import '../services/project_inspector/compare/anatomy_diff.dart';
 import '../services/project_inspector/compare/anatomy_diff_csv.dart';
+import '../services/project_inspector/library/plugin_usage.dart';
 import '../services/project_inspector/media_check.dart';
 import '../services/project_inspector/report/anatomy_report_csv.dart';
 import '../services/project_inspector/relink/relink_writer.dart';
 import '../services/project_inspector/safe_copy/safe_copy.dart';
 import '../services/scanner_service.dart';
+import '../services/template_export/reference_service.dart';
 import '../utils/cloud_file.dart';
 import '../utils/save_file_dialog.dart';
 import 'app_snack_bar.dart';
@@ -25,8 +27,10 @@ import 'dialogs/relink_dialog.dart';
 import 'dialogs/safe_copy_dialog.dart';
 import 'widgets/anatomy_compare_text.dart';
 import 'widgets/inspector_report_text.dart';
+import 'widgets/library_plugin_usage_view.dart';
 import 'widgets/project_compare_view.dart';
 import 'widgets/project_inspector_view.dart';
+import 'widgets/reference_cache_flow.dart';
 
 /// Opens [path] in the Inspector tab and brings the tab to the front: the
 /// one way in, for the project menu, Open project… and a dropped file. A
@@ -43,6 +47,7 @@ Future<bool> openInInspector(
   final file = await _inspectable(context, path);
   if (file == null) return false;
   ref.read(inspectorCompareFileProvider.notifier).close();
+  ref.read(inspectorLibraryUsageProvider.notifier).close();
   ref.read(inspectorFileProvider.notifier).open(file);
   ref.read(inspectorShowRequestProvider.notifier).request();
   return true;
@@ -61,6 +66,7 @@ Future<bool> compareInInspector(
   if (a == null || !context.mounted) return false;
   final b = await _inspectable(context, bPath);
   if (b == null) return false;
+  ref.read(inspectorLibraryUsageProvider.notifier).close();
   ref.read(inspectorFileProvider.notifier).open(a);
   ref.read(inspectorCompareFileProvider.notifier).open(b);
   ref.read(inspectorShowRequestProvider.notifier).request();
@@ -243,6 +249,76 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
     );
   }
 
+  /// Reads, after asking, the Cubase projects whose tracks aren't read yet,
+  /// then counts again: the insert reference page's reading, shared.
+  Future<void> _countInstances() async {
+    final l10n = AppLocalizations.of(context)!;
+    final projects = await ref.read(allProjectsStreamProvider.future);
+    final cache = await loadReferenceCache();
+    if (!mounted) return;
+    await updateReferenceCache(
+      context,
+      projects,
+      cache,
+      words: ReferenceReadWords(
+        title: l10n.usageReadTitle,
+        body: l10n.usageReadBody,
+        readLabel: l10n.usageReadAndCount,
+        skipLabel: l10n.referenceUseRead,
+        readingTitle: l10n.referenceReadingTitle,
+        stopLabel: l10n.usageReadStop,
+      ),
+    );
+    ref.invalidate(pluginUsageReportProvider);
+  }
+
+  Future<void> _exportUsageCsv(PluginUsageReport report) async {
+    final l10n = AppLocalizations.of(context)!;
+    final saved = await saveTextWithDialog(
+      fileName: 'plug-in usage.csv',
+      text: pluginUsageCsv(report),
+      dialogTitle: l10n.reportSaveTitle,
+      type: FileType.custom,
+      allowedExtensions: const ['csv'],
+    );
+    if (saved == null || !mounted) return;
+    ScaffoldMessenger.of(context).showAppSnackBar(
+      SnackBar(content: Text(l10n.compareSaved(p.basename(saved)))),
+    );
+  }
+
+  Widget _libraryUsage() {
+    final l10n = AppLocalizations.of(context)!;
+    final report = ref.watch(pluginUsageReportProvider);
+    void close() => ref.read(inspectorLibraryUsageProvider.notifier).close();
+    return report.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, _) => _failed(
+        l10n.usageOpen,
+        error,
+        () => ref.invalidate(pluginUsageReportProvider),
+        close,
+      ),
+      data: (r) {
+        final projects = ref.watch(allProjectsStreamProvider).value ?? const [];
+        final cubase = referenceCandidates(projects).length;
+        return LibraryPluginUsageView(
+          report: r,
+          search: ref.watch(inspectorSearchProvider),
+          onClose: close,
+          onShowProjects: (u) =>
+              ref.read(pluginFilterProvider.notifier).set(u.name),
+          onExportCsv: () => _exportUsageCsv(r),
+          // Only when some Cubase project's tracks aren't read yet: the
+          // question would have nothing to ask otherwise.
+          onCountInstances: cubase > r.projectsWithInstances
+              ? _countInstances
+              : null,
+        );
+      },
+    );
+  }
+
   Widget _reading(String path) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -305,7 +381,9 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
     final other = ref.watch(inspectorCompareFileProvider);
 
     final Widget body;
-    if (inspected == null) {
+    if (ref.watch(inspectorLibraryUsageProvider)) {
+      body = _libraryUsage();
+    } else if (inspected == null) {
       body = Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
@@ -336,6 +414,13 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
                   onPressed: _pick,
                   icon: const Icon(Icons.folder_open),
                   label: Text(l10n.inspectorOpenProject),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: () =>
+                      ref.read(inspectorLibraryUsageProvider.notifier).open(),
+                  icon: const Icon(Icons.insights),
+                  label: Text(l10n.usageOpen),
                 ),
               ],
             ),
