@@ -3558,6 +3558,9 @@ class WaveformCacheNotifier extends Notifier<Map<String, WaveformPeaks>> {
   /// files that have been overwritten with new content.
   final Map<String, WaveformSourceStamp> _stamps = {};
 
+  /// Disk writes not yet finished: `put` doesn't wait for them.
+  final Set<Future<void>> _saving = {};
+
   @override
   Map<String, WaveformPeaks> build() => {};
 
@@ -3568,8 +3571,16 @@ class WaveformCacheNotifier extends Notifier<Map<String, WaveformPeaks>> {
       _stamps[path] = WaveformDiskCache.sourceStamp(path);
     } catch (_) {}
     state = {...state, path: peaks};
-    WaveformDiskCache.save(path, peaks); // fire-and-forget
+    late final Future<void> save;
+    save = WaveformDiskCache.save(path, peaks).whenComplete(
+      () => _saving.remove(save),
+    );
+    _saving.add(save);
   }
+
+  /// Completes once every disk write `put` started has finished — before the
+  /// cache folder is deleted, which Windows refuses while a file is open.
+  Future<void> flushed() => Future.wait(_saving.toList());
 
   /// Returns cached peaks (memory → disk → fresh extraction), storing the
   /// result so subsequent calls for the same path are instant.

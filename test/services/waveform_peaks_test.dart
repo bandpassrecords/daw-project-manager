@@ -575,6 +575,25 @@ void main() {
       final second = await cache.getOrExtract(path, onStale: () => stale = true);
       expect(stale, isTrue);
       expect(second!.maxValues.reduce(max), closeTo(0.9, 0.001));
+      // The save of the second extraction would otherwise still be writing
+      // into supportDir when tearDown deletes it: a Windows CI run failed so.
+      await cache.flushed();
+    });
+
+    test('flushed() waits for the disk write put() started', () async {
+      final path = p.join(tempDir.path, 'saved.wav');
+      await writeWav(path, [buzz(4000, 0.5)]);
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final cache = container.read(waveformCacheProvider.notifier);
+
+      cache.put(path, (await AudioAnalysisService.extractWaveformPeaks(path))!);
+      await cache.flushed();
+
+      final onDisk = await WaveformDiskCache.load(path);
+      expect(onDisk, isNotNull);
+      expect(onDisk!.maxValues.reduce(max), closeTo(0.5, 0.001));
+      await cache.flushed(); // nothing left: completes at once
     });
   });
 }
