@@ -34,7 +34,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Dashboard overview with projects across multiple DAWs</caption>
-      <image>https://raw.githubusercontent.com/bandpassrecords/daw-project-manager/v3.0.0/resources/screenshots/dashboard/dashboard-overview.png</image>
+      <image>https://raw.githubusercontent.com/bandpassrecords/daw-project-manager/v3.0.1/resources/screenshots/dashboard/dashboard-overview.png</image>
     </screenshot>
   </screenshots>
 
@@ -58,6 +58,21 @@
       this one for each shipped version instead of overwriting it, so the
       changelog accumulates.
     -->
+    <release version="3.0.1" date="2026-10-30">
+      <description>
+        <ul>
+          <li>Google Drive sync no longer drops a preview song from the backup when one device doesn't have its file, and it uploads only what changed.</li>
+          <li>Settings &gt; Mixdown Folders lists the preview songs this computer can't find, and says whether each one is on Drive, on another computer, or gone.</li>
+          <li>Times in backups and sync mean the same moment on every device, so a project restored around a clock change no longer loses to its own deletion.</li>
+          <li>Undoing or restoring an archive checks every file before the zip is trusted, and Drive downloads are checked before they're used.</li>
+          <li>Importing a backup asks before adding programs to "Launch in DAW".</li>
+          <li>Counts, deadlines and ages read correctly in every language, and the Deadline column sorts by date.</li>
+          <li>The player keeps its hours past an hour, holds its layout while loading, and opens at its saved height; long WAVs draw their waveform without loading the whole file.</li>
+          <li>Screen readers on Windows no longer stop updating, and profile and release zips hold each file once.</li>
+        </ul>
+      </description>
+      <url>https://github.com/bandpassrecords/daw-project-manager/releases/tag/v3.0.1</url>
+    </release>
     <release version="3.0.0" date="2026-10-25">
       <description>
         <ul>

@@ -15,6 +15,102 @@
   ],
   "releases": [
     {
+      "version": "3.0.1",
+      "date": "2026-10-30",
+      "highlights": {
+        "en": [
+          "Google Drive sync no longer drops a preview song from the backup when one device doesn't have its file, and it uploads only what changed.",
+          "Settings > Mixdown Folders lists the preview songs this computer can't find, and says whether each one is on Drive, on another computer, or gone.",
+          "Times in backups and sync mean the same moment on every device, so a project restored around a clock change no longer loses to its own deletion.",
+          "Undoing or restoring an archive checks every file before the zip is trusted, and Drive downloads are checked before they're used.",
+          "Importing a backup asks before adding programs to \"Launch in DAW\".",
+          "Counts, deadlines and ages read correctly in every language, and the Deadline column sorts by date.",
+          "The player keeps its hours past an hour, holds its layout while loading, and opens at its saved height; long WAVs draw their waveform without loading the whole file.",
+          "Screen readers on Windows no longer stop updating, and profile and release zips hold each file once."
+        ],
+        "pt": [
+          "A sincronização com o Google Drive não tira mais uma música de prévia do backup quando um dispositivo não tem o arquivo, e envia só o que mudou.",
+          "Configurações > Pastas de Mixdown lista as músicas de prévia que este computador não encontra e diz se cada uma está no Drive, em outro computador ou sumiu.",
+          "Os horários nos backups e na sincronização indicam o mesmo momento em todos os dispositivos, então um projeto restaurado perto de uma mudança de horário não perde mais para a própria exclusão.",
+          "Desfazer ou restaurar um arquivamento confere cada arquivo antes de confiar no zip, e os downloads do Drive são conferidos antes de serem usados.",
+          "Importar um backup pergunta antes de adicionar programas a \"Lançar no DAW\".",
+          "Contagens, prazos e idades aparecem corretos em todos os idiomas, e a coluna Prazo ordena por data.",
+          "O player mostra as horas depois de uma hora, mantém o layout enquanto carrega e abre na altura salva; WAVs longos desenham a forma de onda sem carregar o arquivo inteiro.",
+          "Leitores de tela no Windows não param mais de atualizar, e os zips de perfis e lançamentos têm cada arquivo uma só vez."
+        ],
+        "es": [
+          "La sincronización con Google Drive ya no quita una canción de vista previa de la copia de seguridad cuando un dispositivo no tiene su archivo, y solo sube lo que cambió.",
+          "Configuración > Carpetas de Mezcla muestra las canciones de vista previa que este equipo no encuentra, y dice si cada una está en Drive, en otro equipo o ya no existe.",
+          "Las horas en las copias de seguridad y la sincronización indican el mismo momento en todos los dispositivos, así que un proyecto restaurado cerca de un cambio de hora ya no pierde frente a su propio borrado.",
+          "Deshacer o restaurar un archivado comprueba cada archivo antes de fiarse del zip, y las descargas de Drive se comprueban antes de usarse.",
+          "Importar una copia de seguridad pregunta antes de añadir programas a \"Lanzar en DAW\".",
+          "Los recuentos, las fechas límite y las antigüedades se leen bien en todos los idiomas, y la columna Fecha Límite ordena por fecha.",
+          "El reproductor muestra las horas pasada una hora, mantiene su diseño mientras carga y se abre con la altura guardada; los WAV largos dibujan su forma de onda sin cargar el archivo entero.",
+          "Los lectores de pantalla en Windows ya no dejan de actualizarse, y los zips de perfiles y lanzamientos contienen cada archivo una sola vez."
+        ],
+        "fr": [
+          "La synchronisation Google Drive ne retire plus une chanson d'aperçu de la sauvegarde quand un appareil n'a pas son fichier, et n'envoie que ce qui a changé.",
+          "Paramètres > Dossiers de Mixdown liste les chansons d'aperçu introuvables sur cet ordinateur, et indique si chacune est sur Drive, sur un autre ordinateur ou disparue.",
+          "Les heures des sauvegardes et de la synchronisation désignent le même instant sur chaque appareil : un projet restauré autour d'un changement d'heure ne perd plus face à sa propre suppression.",
+          "Annuler ou restaurer un archivage vérifie chaque fichier avant de se fier au zip, et les téléchargements depuis Drive sont vérifiés avant d'être utilisés.",
+          "Importer une sauvegarde demande avant d'ajouter des programmes à « Lancer dans le DAW ».",
+          "Les nombres, les échéances et les âges s'affichent correctement dans chaque langue, et la colonne Date Limite se trie par date.",
+          "Le lecteur garde les heures au-delà d'une heure, conserve sa mise en page pendant le chargement et s'ouvre à sa hauteur enregistrée ; les longs WAV affichent leur forme d'onde sans charger tout le fichier.",
+          "Les lecteurs d'écran sous Windows ne cessent plus de se mettre à jour, et les zips de profils et de sorties contiennent chaque fichier une seule fois."
+        ],
+        "de": [
+          "Die Google-Drive-Synchronisierung entfernt einen Vorschau-Song nicht mehr aus der Sicherung, wenn ein Gerät seine Datei nicht hat, und lädt nur hoch, was sich geändert hat.",
+          "Einstellungen > Mixdown-Ordner listet die Vorschau-Songs, die dieser Computer nicht findet, und sagt, ob jeder auf Drive, auf einem anderen Computer oder weg ist.",
+          "Zeiten in Sicherungen und Synchronisierung meinen auf jedem Gerät denselben Moment, sodass ein um eine Zeitumstellung wiederhergestelltes Projekt nicht mehr gegen seine eigene Löschung verliert.",
+          "Rückgängigmachen oder Wiederherstellen einer Archivierung prüft jede Datei, bevor dem Zip vertraut wird, und Downloads von Drive werden vor der Verwendung geprüft.",
+          "Beim Import einer Sicherung wird gefragt, bevor Programme für „Im DAW starten“ hinzugefügt werden.",
+          "Anzahlen, Fristen und Alter stehen in jeder Sprache richtig da, und die Spalte Frist sortiert nach Datum.",
+          "Der Player zeigt nach einer Stunde die Stunden, behält sein Layout beim Laden und öffnet sich in der gespeicherten Höhe; lange WAVs zeichnen ihre Wellenform, ohne die ganze Datei zu laden.",
+          "Bildschirmleser unter Windows hören nicht mehr auf, sich zu aktualisieren, und Profil- und Release-Zips enthalten jede Datei nur einmal."
+        ],
+        "it": [
+          "La sincronizzazione con Google Drive non toglie più un brano di anteprima dal backup quando un dispositivo non ha il suo file, e carica solo ciò che è cambiato.",
+          "Impostazioni > Cartelle di Mixdown elenca i brani di anteprima che questo computer non trova, e dice se ciascuno è su Drive, su un altro computer o non c'è più.",
+          "Gli orari nei backup e nella sincronizzazione indicano lo stesso momento su ogni dispositivo, così un progetto ripristinato vicino a un cambio d'ora non perde più contro la propria eliminazione.",
+          "Annullare o ripristinare un'archiviazione controlla ogni file prima di fidarsi dello zip, e i download da Drive vengono controllati prima dell'uso.",
+          "L'importazione di un backup chiede prima di aggiungere programmi ad \"Avvia nel DAW\".",
+          "Conteggi, scadenze ed età si leggono correttamente in ogni lingua, e la colonna Scadenza ordina per data.",
+          "Il lettore mostra le ore oltre la prima ora, mantiene il layout durante il caricamento e si apre all'altezza salvata; i WAV lunghi disegnano la forma d'onda senza caricare tutto il file.",
+          "Gli screen reader su Windows non smettono più di aggiornarsi, e gli zip di profili e release contengono ogni file una sola volta."
+        ],
+        "ja": [
+          "Google ドライブ同期で、ある端末にファイルがないプレビュー曲がバックアップから消えることがなくなり、変更分だけをアップロードするようになりました。",
+          "設定 > ミックスダウンフォルダで、このコンピューターで見つからないプレビュー曲を一覧し、それぞれがドライブにあるか、別のコンピューターにあるか、なくなったかを表示します。",
+          "バックアップと同期の時刻がどの端末でも同じ瞬間を指すようになり、時刻の切り替え前後に復元したプロジェクトが自身の削除に負けることがなくなりました。",
+          "アーカイブの取り消しや復元では、zip を信頼する前にすべてのファイルを確認し、ドライブからのダウンロードも使う前に確認します。",
+          "バックアップの読み込み時、「DAWで起動」にプログラムを追加する前に確認するようになりました。",
+          "件数・期限・経過時間がどの言語でも正しく表示され、期限の列は日付順に並びます。",
+          "プレーヤーは1時間を超えても時間を表示し、読み込み中もレイアウトを保ち、保存した高さで開きます。長い WAV はファイル全体を読み込まずに波形を描きます。",
+          "Windows のスクリーンリーダーが更新を止めなくなり、プロフィールとリリースの zip には各ファイルが一度だけ入ります。"
+        ],
+        "zh": [
+          "Google 云端硬盘同步不再因某台设备缺少文件而把预览歌曲从备份中删掉，并且只上传有变化的内容。",
+          "设置 > 混音文件夹列出这台电脑找不到的预览歌曲，并说明每首是在云端硬盘、在另一台电脑上，还是已经不在了。",
+          "备份和同步中的时间在每台设备上都指同一时刻，因此在时钟调整前后恢复的项目不会再输给它自己的删除记录。",
+          "撤销或恢复归档时，会先检查每个文件再信任 zip；从云端硬盘下载的文件也会在使用前检查。",
+          "导入备份时，向“在DAW中启动”添加程序之前会先询问。",
+          "数量、截止日期和时长在每种语言中都显示正确，截止日期列按日期排序。",
+          "播放器超过一小时会显示小时，加载时保持布局，并以保存的高度打开；较长的 WAV 不必加载整个文件即可绘制波形。",
+          "Windows 上的屏幕阅读器不再停止更新，配置文件和发行版的 zip 中每个文件只出现一次。"
+        ],
+        "ru": [
+          "Синхронизация с Google Диском больше не убирает превью трека из резервной копии, если на одном устройстве нет его файла, и загружает только то, что изменилось.",
+          "Настройки > Папки для микса показывают превью треков, которые этот компьютер не находит, и говорят, где каждое: на Диске, на другом компьютере или его больше нет.",
+          "Время в резервных копиях и синхронизации означает один и тот же момент на всех устройствах, поэтому проект, восстановленный около перевода часов, больше не проигрывает собственному удалению.",
+          "Отмена или восстановление архивации проверяет каждый файл, прежде чем доверять zip, а загрузки с Диска проверяются перед использованием.",
+          "Импорт резервной копии спрашивает, прежде чем добавлять программы для «Запустить в DAW».",
+          "Количества, сроки и давность правильно читаются на всех языках, а столбец «Срок» сортируется по дате.",
+          "Плеер показывает часы после первого часа, сохраняет раскладку при загрузке и открывается на сохранённой высоте; длинные WAV рисуют форму волны, не загружая весь файл.",
+          "Экранные дикторы в Windows больше не перестают обновляться, а zip-архивы профилей и релизов содержат каждый файл один раз."
+        ]
+      }
+    },
+    {
       "version": "3.0.0",
       "date": "2026-10-25",
       "highlights": {
