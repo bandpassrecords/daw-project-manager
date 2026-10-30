@@ -182,6 +182,8 @@ void main() {
             onOpenOther: () => calls.add('open'),
             onRelink: relinkable ? () => calls.add('relink') : null,
             onSafeCopy: safeCopyable ? () => calls.add('safe copy') : null,
+            onCompare: () => calls.add('compare'),
+            onReport: (action) => calls.add('report ${action.name}'),
           ),
         ),
       ),
@@ -470,6 +472,22 @@ void main() {
     );
     await tester.tap(find.text('Safe copy…'));
     expect(calls, ['safe copy']);
+  });
+
+  testWidgets('compare and the report menu are offered from the header', (
+    tester,
+  ) async {
+    final calls = await pump(tester, _cubase);
+    await tester.tap(find.text('Compare with…'));
+    await tester.tap(find.byTooltip('Report'));
+    await tester.pumpAndSettle();
+    expect(find.text('Copy summary'), findsOneWidget);
+    expect(find.text('Save report (Markdown)…'), findsOneWidget);
+    expect(find.text('Save track list (CSV)…'), findsOneWidget);
+    expect(find.text('Save plug-ins (CSV)…'), findsOneWidget);
+    await tester.tap(find.text('Save plug-ins (CSV)…'));
+    await tester.pumpAndSettle();
+    expect(calls, ['compare', 'report pluginsCsv']);
   });
 
   testWidgets('audio I/O: the driver, where it was saved, buses and ports', (

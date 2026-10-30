@@ -3096,6 +3096,13 @@ final inspectorFileProvider =
       InspectorFileNotifier.new,
     );
 
+/// The project the Inspector compares its open one with (#223): B, the open
+/// one being A. Null when not comparing; session-only like the open one.
+final inspectorCompareFileProvider =
+    NotifierProvider<InspectorFileNotifier, InspectedFile?>(
+      InspectorFileNotifier.new,
+    );
+
 /// Set when something asks for the Inspector tab to come to the front (the
 /// project menu's Inspect); the dashboard switches and consumes it.
 class InspectorShowRequestNotifier extends Notifier<int> {

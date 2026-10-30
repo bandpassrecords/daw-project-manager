@@ -9318,4 +9318,338 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get safeCopyNothingWritten =>
       'Keines dieser Plug-ins war eingeschaltet, daher wurde nichts geschrieben.';
+
+  @override
+  String get compareWith => 'Vergleichen mit…';
+
+  @override
+  String get compareWithTitle => 'Projekt zum Vergleichen wählen';
+
+  @override
+  String get compareWithPrevious => 'Mit vorheriger Version vergleichen';
+
+  @override
+  String get compareTitle => 'Vergleich';
+
+  @override
+  String get compareSwap => 'A und B tauschen';
+
+  @override
+  String get compareClose => 'Vergleich schließen';
+
+  @override
+  String get compareCopySummary => 'Zusammenfassung kopieren';
+
+  @override
+  String get compareSummaryCopied => 'Zusammenfassung kopiert';
+
+  @override
+  String get compareExportCsv => 'CSV exportieren';
+
+  @override
+  String get compareExportCsvTitle => 'Änderungen als CSV speichern';
+
+  @override
+  String compareSaved(String name) {
+    return '$name gespeichert';
+  }
+
+  @override
+  String compareChangesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Änderungen',
+      one: '1 Änderung',
+      zero: 'Keine Änderungen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareChannelsChanged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Kanäle geändert',
+      one: '1 Kanal geändert',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareUnchanged(int count) {
+    return '$count unverändert';
+  }
+
+  @override
+  String compareOnlyInA(int count) {
+    return '$count nur in A';
+  }
+
+  @override
+  String compareOnlyInB(int count) {
+    return '$count nur in B';
+  }
+
+  @override
+  String comparePluginChanges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Plug-in-Änderungen',
+      one: '1 Plug-in-Änderung',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get compareFilterLevels => 'Pegel';
+
+  @override
+  String get compareProject => 'Projekt';
+
+  @override
+  String get compareNoDifferences => 'Keine Unterschiede gefunden';
+
+  @override
+  String compareChannelsNotRead(String daw) {
+    return 'Die Kanäle von $daw-Projekten werden noch nicht gelesen: Verglichen werden das Projekt und die verwendeten Plug-ins.';
+  }
+
+  @override
+  String get compareBadgeOnlyInA => 'Nur in A';
+
+  @override
+  String get compareBadgeOnlyInB => 'Nur in B';
+
+  @override
+  String get compareNoneValue => 'keine';
+
+  @override
+  String changeTempo(String before, String after) {
+    return 'Tempo $before → $after BPM';
+  }
+
+  @override
+  String changeTimeSignature(String before, String after) {
+    return 'Taktart $before → $after';
+  }
+
+  @override
+  String changeSampleRate(String before, String after) {
+    return 'Samplerate $before → $after';
+  }
+
+  @override
+  String changeBitDepth(String before, String after) {
+    return 'Bittiefe $before → $after';
+  }
+
+  @override
+  String changeKey(String before, String after) {
+    return 'Tonart $before → $after';
+  }
+
+  @override
+  String changePluginAdded(String plugin) {
+    return 'Verwendet jetzt $plugin';
+  }
+
+  @override
+  String changePluginRemoved(String plugin) {
+    return 'Verwendet $plugin nicht mehr';
+  }
+
+  @override
+  String get changeChannelAdded => 'Hinzugefügt';
+
+  @override
+  String get changeChannelRemoved => 'Entfernt';
+
+  @override
+  String changeRenamed(String before) {
+    return 'Umbenannt von $before';
+  }
+
+  @override
+  String changeKind(String before, String after) {
+    return 'Art $before → $after';
+  }
+
+  @override
+  String changeFolder(String before, String after) {
+    return 'Ordner $before → $after';
+  }
+
+  @override
+  String changeOutput(String before, String after) {
+    return 'Ausgang $before → $after';
+  }
+
+  @override
+  String changeFader(String before, String after) {
+    return 'Fader $before → $after';
+  }
+
+  @override
+  String changePan(String before, String after) {
+    return 'Panorama $before → $after';
+  }
+
+  @override
+  String get changeMuted => 'Stummgeschaltet';
+
+  @override
+  String get changeUnmuted => 'Stummschaltung aufgehoben';
+
+  @override
+  String get changeSoloed => 'Solo';
+
+  @override
+  String get changeUnsoloed => 'Nicht mehr solo';
+
+  @override
+  String changeEqBands(String before, String after) {
+    return 'Aktive EQ-Bänder $before → $after';
+  }
+
+  @override
+  String changeInstrument(String before, String after) {
+    return 'Instrument $before → $after';
+  }
+
+  @override
+  String changePreset(String plugin, String before, String after) {
+    return '$plugin-Preset $before → $after';
+  }
+
+  @override
+  String changeInsertAdded(String plugin, int slot) {
+    return '$plugin in Slot $slot eingefügt';
+  }
+
+  @override
+  String changeInsertRemoved(String plugin, int slot) {
+    return '$plugin aus Slot $slot entfernt';
+  }
+
+  @override
+  String changeInsertReplaced(int slot, String before, String after) {
+    return 'Slot $slot: $before durch $after ersetzt';
+  }
+
+  @override
+  String changeInsertMoved(String plugin, int before, int after) {
+    return '$plugin von Slot $before nach $after verschoben';
+  }
+
+  @override
+  String changePluginOff(String plugin) {
+    return '$plugin ausgeschaltet';
+  }
+
+  @override
+  String changePluginOn(String plugin) {
+    return '$plugin eingeschaltet';
+  }
+
+  @override
+  String changeStripAdded(String plugin) {
+    return 'Channel Strip: $plugin hinzugefügt';
+  }
+
+  @override
+  String changeStripRemoved(String plugin) {
+    return 'Channel Strip: $plugin entfernt';
+  }
+
+  @override
+  String changeStripReplaced(String before, String after) {
+    return 'Channel Strip: $before durch $after ersetzt';
+  }
+
+  @override
+  String get changeStripBypassed => 'Channel Strip umgangen';
+
+  @override
+  String get changeStripBack => 'Channel Strip wieder aktiv';
+
+  @override
+  String changeSendAdded(String destination) {
+    return 'Send zu $destination hinzugefügt';
+  }
+
+  @override
+  String changeSendRemoved(String destination) {
+    return 'Send zu $destination entfernt';
+  }
+
+  @override
+  String changeSendLevel(String destination, String before, String after) {
+    return 'Send zu $destination $before → $after';
+  }
+
+  @override
+  String changeSendOff(String destination) {
+    return 'Send zu $destination ausgeschaltet';
+  }
+
+  @override
+  String changeSendOn(String destination) {
+    return 'Send zu $destination eingeschaltet';
+  }
+
+  @override
+  String changeSendPre(String destination) {
+    return 'Send zu $destination jetzt Pre-Fader';
+  }
+
+  @override
+  String changeSendPost(String destination) {
+    return 'Send zu $destination jetzt Post-Fader';
+  }
+
+  @override
+  String get inspectorReport => 'Bericht';
+
+  @override
+  String get reportSaveMarkdown => 'Bericht speichern (Markdown)…';
+
+  @override
+  String get reportSaveTracksCsv => 'Spurliste speichern (CSV)…';
+
+  @override
+  String get reportSavePluginsCsv => 'Plug-ins speichern (CSV)…';
+
+  @override
+  String get reportSaveTitle => 'Bericht speichern';
+
+  @override
+  String reportMadeBy(String date) {
+    return 'Erstellt mit DAW Project Manager am $date';
+  }
+
+  @override
+  String get reportOverview => 'Überblick';
+
+  @override
+  String get reportColumnChannel => 'Kanal';
+
+  @override
+  String get reportColumnKind => 'Art';
+
+  @override
+  String reportMissingFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Audiodateien fehlen',
+      one: '1 Audiodatei fehlt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reportCopied => 'Zusammenfassung kopiert';
 }

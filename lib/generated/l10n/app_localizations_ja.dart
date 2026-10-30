@@ -8763,4 +8763,334 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get safeCopyNothingWritten => '選んだプラグインはどれもオンではなかったため、何も書き出されませんでした。';
+
+  @override
+  String get compareWith => '比較…';
+
+  @override
+  String get compareWithTitle => '比較するプロジェクトを選択';
+
+  @override
+  String get compareWithPrevious => '前のバージョンと比較';
+
+  @override
+  String get compareTitle => '比較';
+
+  @override
+  String get compareSwap => 'A と B を入れ替え';
+
+  @override
+  String get compareClose => '比較を閉じる';
+
+  @override
+  String get compareCopySummary => '概要をコピー';
+
+  @override
+  String get compareSummaryCopied => '概要をコピーしました';
+
+  @override
+  String get compareExportCsv => 'CSV を書き出す';
+
+  @override
+  String get compareExportCsvTitle => '変更点を CSV で保存';
+
+  @override
+  String compareSaved(String name) {
+    return '$name を保存しました';
+  }
+
+  @override
+  String compareChangesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件の変更',
+      zero: '変更なし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareChannelsChanged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count チャンネルが変更',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareUnchanged(int count) {
+    return '$count 変更なし';
+  }
+
+  @override
+  String compareOnlyInA(int count) {
+    return 'A のみ $count';
+  }
+
+  @override
+  String compareOnlyInB(int count) {
+    return 'B のみ $count';
+  }
+
+  @override
+  String comparePluginChanges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'プラグインの変更 $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get compareFilterLevels => 'レベル';
+
+  @override
+  String get compareProject => 'プロジェクト';
+
+  @override
+  String get compareNoDifferences => '違いは見つかりませんでした';
+
+  @override
+  String compareChannelsNotRead(String daw) {
+    return '$daw プロジェクトのチャンネルはまだ読み込めません。プロジェクトと使用プラグインを比較します。';
+  }
+
+  @override
+  String get compareBadgeOnlyInA => 'A のみ';
+
+  @override
+  String get compareBadgeOnlyInB => 'B のみ';
+
+  @override
+  String get compareNoneValue => 'なし';
+
+  @override
+  String changeTempo(String before, String after) {
+    return 'テンポ $before → $after BPM';
+  }
+
+  @override
+  String changeTimeSignature(String before, String after) {
+    return '拍子 $before → $after';
+  }
+
+  @override
+  String changeSampleRate(String before, String after) {
+    return 'サンプルレート $before → $after';
+  }
+
+  @override
+  String changeBitDepth(String before, String after) {
+    return 'ビット深度 $before → $after';
+  }
+
+  @override
+  String changeKey(String before, String after) {
+    return 'キー $before → $after';
+  }
+
+  @override
+  String changePluginAdded(String plugin) {
+    return '$plugin を使用するように';
+  }
+
+  @override
+  String changePluginRemoved(String plugin) {
+    return '$plugin を使用しなくなった';
+  }
+
+  @override
+  String get changeChannelAdded => '追加';
+
+  @override
+  String get changeChannelRemoved => '削除';
+
+  @override
+  String changeRenamed(String before) {
+    return '$before から名前を変更';
+  }
+
+  @override
+  String changeKind(String before, String after) {
+    return '種類 $before → $after';
+  }
+
+  @override
+  String changeFolder(String before, String after) {
+    return 'フォルダー $before → $after';
+  }
+
+  @override
+  String changeOutput(String before, String after) {
+    return '出力 $before → $after';
+  }
+
+  @override
+  String changeFader(String before, String after) {
+    return 'フェーダー $before → $after';
+  }
+
+  @override
+  String changePan(String before, String after) {
+    return 'パン $before → $after';
+  }
+
+  @override
+  String get changeMuted => 'ミュート';
+
+  @override
+  String get changeUnmuted => 'ミュート解除';
+
+  @override
+  String get changeSoloed => 'ソロ';
+
+  @override
+  String get changeUnsoloed => 'ソロ解除';
+
+  @override
+  String changeEqBands(String before, String after) {
+    return 'オンの EQ バンド $before → $after';
+  }
+
+  @override
+  String changeInstrument(String before, String after) {
+    return 'インストゥルメント $before → $after';
+  }
+
+  @override
+  String changePreset(String plugin, String before, String after) {
+    return '$plugin のプリセット $before → $after';
+  }
+
+  @override
+  String changeInsertAdded(String plugin, int slot) {
+    return '$plugin をスロット $slot に挿入';
+  }
+
+  @override
+  String changeInsertRemoved(String plugin, int slot) {
+    return '$plugin をスロット $slot から削除';
+  }
+
+  @override
+  String changeInsertReplaced(int slot, String before, String after) {
+    return 'スロット $slot: $before を $after に置き換え';
+  }
+
+  @override
+  String changeInsertMoved(String plugin, int before, int after) {
+    return '$plugin をスロット $before から $after に移動';
+  }
+
+  @override
+  String changePluginOff(String plugin) {
+    return '$plugin をオフ';
+  }
+
+  @override
+  String changePluginOn(String plugin) {
+    return '$plugin をオン';
+  }
+
+  @override
+  String changeStripAdded(String plugin) {
+    return 'チャンネルストリップ: $plugin を追加';
+  }
+
+  @override
+  String changeStripRemoved(String plugin) {
+    return 'チャンネルストリップ: $plugin を削除';
+  }
+
+  @override
+  String changeStripReplaced(String before, String after) {
+    return 'チャンネルストリップ: $before を $after に置き換え';
+  }
+
+  @override
+  String get changeStripBypassed => 'チャンネルストリップをバイパス';
+
+  @override
+  String get changeStripBack => 'チャンネルストリップを再びオン';
+
+  @override
+  String changeSendAdded(String destination) {
+    return '$destination へのセンドを追加';
+  }
+
+  @override
+  String changeSendRemoved(String destination) {
+    return '$destination へのセンドを削除';
+  }
+
+  @override
+  String changeSendLevel(String destination, String before, String after) {
+    return '$destination へのセンド $before → $after';
+  }
+
+  @override
+  String changeSendOff(String destination) {
+    return '$destination へのセンドをオフ';
+  }
+
+  @override
+  String changeSendOn(String destination) {
+    return '$destination へのセンドをオン';
+  }
+
+  @override
+  String changeSendPre(String destination) {
+    return '$destination へのセンドをプリフェーダーに';
+  }
+
+  @override
+  String changeSendPost(String destination) {
+    return '$destination へのセンドをポストフェーダーに';
+  }
+
+  @override
+  String get inspectorReport => 'レポート';
+
+  @override
+  String get reportSaveMarkdown => 'レポートを保存 (Markdown)…';
+
+  @override
+  String get reportSaveTracksCsv => 'トラックリストを保存 (CSV)…';
+
+  @override
+  String get reportSavePluginsCsv => 'プラグインを保存 (CSV)…';
+
+  @override
+  String get reportSaveTitle => 'レポートを保存';
+
+  @override
+  String reportMadeBy(String date) {
+    return '$date に DAW Project Manager で作成';
+  }
+
+  @override
+  String get reportOverview => '概要';
+
+  @override
+  String get reportColumnChannel => 'チャンネル';
+
+  @override
+  String get reportColumnKind => '種類';
+
+  @override
+  String reportMissingFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'オーディオファイル $count 件が見つかりません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reportCopied => '概要をコピーしました';
 }

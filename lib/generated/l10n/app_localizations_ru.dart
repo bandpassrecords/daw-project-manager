@@ -9334,4 +9334,346 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get safeCopyNothingWritten =>
       'Ни один из этих плагинов не был включён, поэтому ничего не записано.';
+
+  @override
+  String get compareWith => 'Сравнить с…';
+
+  @override
+  String get compareWithTitle => 'Выберите проект для сравнения';
+
+  @override
+  String get compareWithPrevious => 'Сравнить с предыдущей версией';
+
+  @override
+  String get compareTitle => 'Сравнение';
+
+  @override
+  String get compareSwap => 'Поменять A и B местами';
+
+  @override
+  String get compareClose => 'Закрыть сравнение';
+
+  @override
+  String get compareCopySummary => 'Копировать сводку';
+
+  @override
+  String get compareSummaryCopied => 'Сводка скопирована';
+
+  @override
+  String get compareExportCsv => 'Экспорт CSV';
+
+  @override
+  String get compareExportCsvTitle => 'Сохранить изменения в CSV';
+
+  @override
+  String compareSaved(String name) {
+    return 'Сохранено: $name';
+  }
+
+  @override
+  String compareChangesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count изменения',
+      many: '$count изменений',
+      few: '$count изменения',
+      one: '$count изменение',
+      zero: 'Нет изменений',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareChannelsChanged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Изменено $count канала',
+      many: 'Изменено $count каналов',
+      few: 'Изменено $count канала',
+      one: 'Изменён $count канал',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareUnchanged(int count) {
+    return '$count без изменений';
+  }
+
+  @override
+  String compareOnlyInA(int count) {
+    return '$count только в A';
+  }
+
+  @override
+  String compareOnlyInB(int count) {
+    return '$count только в B';
+  }
+
+  @override
+  String comparePluginChanges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count изменения плагинов',
+      many: '$count изменений плагинов',
+      few: '$count изменения плагинов',
+      one: '$count изменение плагинов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get compareFilterLevels => 'Уровни';
+
+  @override
+  String get compareProject => 'Проект';
+
+  @override
+  String get compareNoDifferences => 'Различий не найдено';
+
+  @override
+  String compareChannelsNotRead(String daw) {
+    return 'Каналы проектов $daw пока не читаются: сравниваются проект и используемые плагины.';
+  }
+
+  @override
+  String get compareBadgeOnlyInA => 'Только в A';
+
+  @override
+  String get compareBadgeOnlyInB => 'Только в B';
+
+  @override
+  String get compareNoneValue => 'нет';
+
+  @override
+  String changeTempo(String before, String after) {
+    return 'Темп $before → $after BPM';
+  }
+
+  @override
+  String changeTimeSignature(String before, String after) {
+    return 'Размер $before → $after';
+  }
+
+  @override
+  String changeSampleRate(String before, String after) {
+    return 'Частота дискретизации $before → $after';
+  }
+
+  @override
+  String changeBitDepth(String before, String after) {
+    return 'Разрядность $before → $after';
+  }
+
+  @override
+  String changeKey(String before, String after) {
+    return 'Тональность $before → $after';
+  }
+
+  @override
+  String changePluginAdded(String plugin) {
+    return 'Теперь использует $plugin';
+  }
+
+  @override
+  String changePluginRemoved(String plugin) {
+    return 'Больше не использует $plugin';
+  }
+
+  @override
+  String get changeChannelAdded => 'Добавлен';
+
+  @override
+  String get changeChannelRemoved => 'Удалён';
+
+  @override
+  String changeRenamed(String before) {
+    return 'Переименован из $before';
+  }
+
+  @override
+  String changeKind(String before, String after) {
+    return 'Тип $before → $after';
+  }
+
+  @override
+  String changeFolder(String before, String after) {
+    return 'Папка $before → $after';
+  }
+
+  @override
+  String changeOutput(String before, String after) {
+    return 'Выход $before → $after';
+  }
+
+  @override
+  String changeFader(String before, String after) {
+    return 'Фейдер $before → $after';
+  }
+
+  @override
+  String changePan(String before, String after) {
+    return 'Панорама $before → $after';
+  }
+
+  @override
+  String get changeMuted => 'Заглушён';
+
+  @override
+  String get changeUnmuted => 'Звук включён';
+
+  @override
+  String get changeSoloed => 'Соло';
+
+  @override
+  String get changeUnsoloed => 'Соло снято';
+
+  @override
+  String changeEqBands(String before, String after) {
+    return 'Включённые полосы EQ $before → $after';
+  }
+
+  @override
+  String changeInstrument(String before, String after) {
+    return 'Инструмент $before → $after';
+  }
+
+  @override
+  String changePreset(String plugin, String before, String after) {
+    return 'Пресет $plugin $before → $after';
+  }
+
+  @override
+  String changeInsertAdded(String plugin, int slot) {
+    return '$plugin добавлен в слот $slot';
+  }
+
+  @override
+  String changeInsertRemoved(String plugin, int slot) {
+    return '$plugin удалён из слота $slot';
+  }
+
+  @override
+  String changeInsertReplaced(int slot, String before, String after) {
+    return 'Слот $slot: $before заменён на $after';
+  }
+
+  @override
+  String changeInsertMoved(String plugin, int before, int after) {
+    return '$plugin перемещён из слота $before в $after';
+  }
+
+  @override
+  String changePluginOff(String plugin) {
+    return '$plugin выключен';
+  }
+
+  @override
+  String changePluginOn(String plugin) {
+    return '$plugin включён';
+  }
+
+  @override
+  String changeStripAdded(String plugin) {
+    return 'Channel strip: добавлен $plugin';
+  }
+
+  @override
+  String changeStripRemoved(String plugin) {
+    return 'Channel strip: удалён $plugin';
+  }
+
+  @override
+  String changeStripReplaced(String before, String after) {
+    return 'Channel strip: $before заменён на $after';
+  }
+
+  @override
+  String get changeStripBypassed => 'Channel strip в обходе';
+
+  @override
+  String get changeStripBack => 'Channel strip снова включён';
+
+  @override
+  String changeSendAdded(String destination) {
+    return 'Добавлен посыл на $destination';
+  }
+
+  @override
+  String changeSendRemoved(String destination) {
+    return 'Удалён посыл на $destination';
+  }
+
+  @override
+  String changeSendLevel(String destination, String before, String after) {
+    return 'Посыл на $destination $before → $after';
+  }
+
+  @override
+  String changeSendOff(String destination) {
+    return 'Посыл на $destination выключен';
+  }
+
+  @override
+  String changeSendOn(String destination) {
+    return 'Посыл на $destination включён';
+  }
+
+  @override
+  String changeSendPre(String destination) {
+    return 'Посыл на $destination теперь до фейдера';
+  }
+
+  @override
+  String changeSendPost(String destination) {
+    return 'Посыл на $destination теперь после фейдера';
+  }
+
+  @override
+  String get inspectorReport => 'Отчёт';
+
+  @override
+  String get reportSaveMarkdown => 'Сохранить отчёт (Markdown)…';
+
+  @override
+  String get reportSaveTracksCsv => 'Сохранить список дорожек (CSV)…';
+
+  @override
+  String get reportSavePluginsCsv => 'Сохранить плагины (CSV)…';
+
+  @override
+  String get reportSaveTitle => 'Сохранить отчёт';
+
+  @override
+  String reportMadeBy(String date) {
+    return 'Создано в DAW Project Manager $date';
+  }
+
+  @override
+  String get reportOverview => 'Обзор';
+
+  @override
+  String get reportColumnChannel => 'Канал';
+
+  @override
+  String get reportColumnKind => 'Тип';
+
+  @override
+  String reportMissingFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Нет $count аудиофайла',
+      many: 'Нет $count аудиофайлов',
+      few: 'Нет $count аудиофайлов',
+      one: 'Нет $count аудиофайла',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reportCopied => 'Сводка скопирована';
 }
