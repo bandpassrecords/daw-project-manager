@@ -9807,6 +9807,24 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get inspectorPickSearch => 'Cerca nei tuoi progetti';
+
+  @override
+  String get inspectorPickVersions => 'Versioni di questo brano';
+
+  @override
+  String get inspectorPickLibrary => 'Altri progetti';
+
+  @override
+  String get inspectorPickBrowse => 'Sfoglia file…';
+
+  @override
+  String get inspectorPickNone => 'Nessun progetto corrisponde';
+
+  @override
+  String get filterShowAllProjects => 'Mostra tutti i progetti';
+
+  @override
   String get launchCheckSetting => 'Controlla un progetto prima di aprirlo';
 
   @override

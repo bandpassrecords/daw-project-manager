@@ -9825,6 +9825,24 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get inspectorPickSearch => 'Поиск по проектам';
+
+  @override
+  String get inspectorPickVersions => 'Версии этой песни';
+
+  @override
+  String get inspectorPickLibrary => 'Другие проекты';
+
+  @override
+  String get inspectorPickBrowse => 'Выбрать файл…';
+
+  @override
+  String get inspectorPickNone => 'Нет подходящих проектов';
+
+  @override
+  String get filterShowAllProjects => 'Показать все проекты';
+
+  @override
   String get launchCheckSetting => 'Проверять проект перед открытием';
 
   @override

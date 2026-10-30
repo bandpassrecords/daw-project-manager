@@ -9219,6 +9219,24 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get inspectorPickSearch => 'プロジェクトを検索';
+
+  @override
+  String get inspectorPickVersions => 'この曲のバージョン';
+
+  @override
+  String get inspectorPickLibrary => 'その他のプロジェクト';
+
+  @override
+  String get inspectorPickBrowse => 'ファイルを参照…';
+
+  @override
+  String get inspectorPickNone => '一致するプロジェクトはありません';
+
+  @override
+  String get filterShowAllProjects => 'すべてのプロジェクトを表示';
+
+  @override
   String get launchCheckSetting => '開く前にプロジェクトを確認';
 
   @override
