@@ -249,6 +249,12 @@ void main() {
       expect(anatomy.pluginInstancesKnown, isFalse);
       expect(anatomy.media, isNotNull);
       expect(anatomy.plugins.every((pl) => pl.instances == null), isTrue);
+      // What the scan reads is carried along: tracks by kind, MIDI clips,
+      // markers (REAPER keeps them), the `.mid` files it looked for.
+      expect(anatomy.stats, isNotNull);
+      expect(anatomy.midiClipCount, isNotNull);
+      expect(anatomy.markers, isNotNull);
+      expect(anatomy.missingMidiFiles, isNotNull);
     },
   );
 
@@ -256,6 +262,7 @@ void main() {
     final anatomy = await readProjectAnatomy(_cubase13);
     expect(anatomy.channels, isNotEmpty);
     expect(anatomy.tempo, 150, reason: 'from MetadataExtractor');
+    expect(anatomy.midiClipCount, isNotNull, reason: 'and its MIDI clips');
   });
 
   test('stock plug-ins are matched by name, ignoring case and spaces', () {

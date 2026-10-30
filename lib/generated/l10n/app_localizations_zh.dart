@@ -8401,4 +8401,269 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get inspectorStripModule => '模块';
+
+  @override
+  String get relinkFixButton => '修复缺失的文件…';
+
+  @override
+  String get relinkTitle => '修复缺失的文件';
+
+  @override
+  String get relinkIntro => '在项目旁边写入一个副本，指向文件现在所在的位置。项目本身永远不会被修改。';
+
+  @override
+  String get relinkSearchFolder => '搜索文件夹…';
+
+  @override
+  String get relinkSearchFolderTitle => '缺失的文件在哪里？';
+
+  @override
+  String get relinkSearching => '正在查找文件…';
+
+  @override
+  String relinkSearchedIn(String folders) {
+    return '已搜索：$folders';
+  }
+
+  @override
+  String relinkWillFix(int count, int total) {
+    return '将重新链接 $total 个文件中的 $count 个';
+  }
+
+  @override
+  String relinkChooseOne(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '找到 $count 个 — 请选择一个',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNotFound => '未找到';
+
+  @override
+  String get relinkBrowse => '浏览…';
+
+  @override
+  String relinkBrowseTitle(String name) {
+    return '$name 在哪里？';
+  }
+
+  @override
+  String get relinkLeave => '保持不变';
+
+  @override
+  String get relinkChange => '选择指向位置';
+
+  @override
+  String relinkRuleOffer(int count, String from, String to) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '同样的移动还能找到 $count 个文件：$from → $to',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkApplyRule => '应用';
+
+  @override
+  String get relinkWrite => '写入重新链接的副本';
+
+  @override
+  String get relinkWriting => '正在写入并检查副本…';
+
+  @override
+  String relinkWrote(String name) {
+    return '已写入 $name';
+  }
+
+  @override
+  String relinkRelinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已重新链接 $count 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedTooLong(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个未重新链接：新路径超出项目可容纳的长度。请移到更短的路径，或在 Cubase 中查找。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedEncoding(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个未重新链接：这个旧项目无法保存新路径中的特殊字符。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedNotFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个未重新链接：项目只在副本无法修改的位置记录了它们。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNothingWritten => '没有可重新链接的文件，因此没有写入副本。';
+
+  @override
+  String relinkFailed(String reason) {
+    return '副本未通过检查，未予保留：$reason';
+  }
+
+  @override
+  String get relinkInspectCopy => '检查副本';
+
+  @override
+  String get inspectorTileKey => '调性';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '个 MIDI 片段',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '个标记',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个区域',
+      zero: '没有区域',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '个插件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => '仅名称';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '缺少 $count 个 .mid 文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => '编组和效果';
+
+  @override
+  String get inspectorNotesTitle => '项目中的备注';
+
+  @override
+  String get inspectorMissingMidiTitle => '未找到的 MIDI 文件';
+
+  @override
+  String get safeCopyButton => '安全副本…';
+
+  @override
+  String get safeCopyTitle => '安全副本';
+
+  @override
+  String get safeCopyIntro =>
+      '项目的一个副本，其中你选择的插件被关闭，这样即使其中某个插件会让 DAW 崩溃或未安装，副本也能打开。在副本中它们显示为已停用：可在其插槽中重新启用或替换。原项目不会被更改。';
+
+  @override
+  String get safeCopyFilter => '筛选插件';
+
+  @override
+  String get safeCopyReading => '正在读取插件…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return '无法读取项目的插件：$reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个实例',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count 个已关闭';
+  }
+
+  @override
+  String get safeCopyAllOff => '已全部关闭';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '将关闭 $count 个实例',
+      zero: '选择要关闭的插件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => '写入安全副本';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已关闭 $count 个实例',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep => '在你的 DAW 中打开副本：这些插件在其插槽中显示为已停用，可以重新启用或替换。';
+
+  @override
+  String get safeCopyNothingWritten => '这些插件都未开启，因此没有写入任何内容。';
 }

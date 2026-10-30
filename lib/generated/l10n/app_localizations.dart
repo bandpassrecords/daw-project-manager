@@ -14299,6 +14299,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Module'**
   String get inspectorStripModule;
+
+  /// Button in the Inspector's audio files: find missing files and write a repaired copy of the project
+  ///
+  /// In en, this message translates to:
+  /// **'Fix missing files…'**
+  String get relinkFixButton;
+
+  /// Title of the dialog that relinks a project's missing audio files
+  ///
+  /// In en, this message translates to:
+  /// **'Fix missing files'**
+  String get relinkTitle;
+
+  /// Explains that relinking writes a new copy and never changes the original project
+  ///
+  /// In en, this message translates to:
+  /// **'A copy of the project is written beside it, pointing to where the files are now. The project itself is never changed.'**
+  String get relinkIntro;
+
+  /// Button: choose a folder to look for the missing files in
+  ///
+  /// In en, this message translates to:
+  /// **'Search a folder…'**
+  String get relinkSearchFolder;
+
+  /// Title of the folder picker for finding missing files
+  ///
+  /// In en, this message translates to:
+  /// **'Where are the missing files?'**
+  String get relinkSearchFolderTitle;
+
+  /// Shown while the folders are searched for the missing files
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for the files…'**
+  String get relinkSearching;
+
+  /// The folders searched so far, separated by commas
+  ///
+  /// In en, this message translates to:
+  /// **'Searched: {folders}'**
+  String relinkSearchedIn(String folders);
+
+  /// How many of the missing files the copy will point to a file for
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} files will be relinked'**
+  String relinkWillFix(int count, int total);
+
+  /// A missing file found several times, none clearly right: the user picks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{Found {count} times — choose one}}'**
+  String relinkChooseOne(int count);
+
+  /// A missing file that wasn't found anywhere searched
+  ///
+  /// In en, this message translates to:
+  /// **'Not found'**
+  String get relinkNotFound;
+
+  /// Button / menu entry: point a missing file at one chosen by hand
+  ///
+  /// In en, this message translates to:
+  /// **'Browse…'**
+  String get relinkBrowse;
+
+  /// Title of the file picker for one missing file
+  ///
+  /// In en, this message translates to:
+  /// **'Where is {name}?'**
+  String relinkBrowseTitle(String name);
+
+  /// Menu entry: leave a missing file pointing where the project says
+  ///
+  /// In en, this message translates to:
+  /// **'Leave as it is'**
+  String get relinkLeave;
+
+  /// Tooltip of the menu that changes where one file will point
+  ///
+  /// In en, this message translates to:
+  /// **'Choose where it points'**
+  String get relinkChange;
+
+  /// After the user picks one file: the same folder move would find more files
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{The same move finds 1 more file: {from} → {to}} other{The same move finds {count} more files: {from} → {to}}}'**
+  String relinkRuleOffer(int count, String from, String to);
+
+  /// Button: apply the offered folder move to every file it finds
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get relinkApplyRule;
+
+  /// Button: write the relinked copy of the project
+  ///
+  /// In en, this message translates to:
+  /// **'Write relinked copy'**
+  String get relinkWrite;
+
+  /// Shown while the relinked copy is written and checked
+  ///
+  /// In en, this message translates to:
+  /// **'Writing and checking the copy…'**
+  String get relinkWriting;
+
+  /// After writing: the copy's file name
+  ///
+  /// In en, this message translates to:
+  /// **'Wrote {name}'**
+  String relinkWrote(String name);
+
+  /// How many files the copy now finds
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 file relinked} other{{count} files relinked}}'**
+  String relinkRelinkedCount(int count);
+
+  /// Files found but not relinked: the new path is longer than the project file has room for (Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 not relinked: its new path is longer than the project has room for. Move it to a shorter path, or find it in Cubase.} other{{count} not relinked: their new path is longer than the project has room for. Move them to a shorter path, or find them in Cubase.}}'**
+  String relinkRefusedTooLong(int count);
+
+  /// Files not relinked: an old project can't store the new path's accented characters
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 not relinked: this older project can\'t store the accented characters in its new path.} other{{count} not relinked: this older project can\'t store the accented characters in their new path.}}'**
+  String relinkRefusedEncoding(int count);
+
+  /// Files not relinked: the project names them only where the copy can't change them
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 not relinked: the project names it only where a copy can\'t change it.} other{{count} not relinked: the project names them only where a copy can\'t change them.}}'**
+  String relinkRefusedNotFound(int count);
+
+  /// After trying: no file could be relinked, so nothing was written
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing could be relinked, so no copy was written.'**
+  String get relinkNothingWritten;
+
+  /// The written copy didn't read back as it should and was deleted; the reason follows
+  ///
+  /// In en, this message translates to:
+  /// **'The copy didn\'t check out and was not kept: {reason}'**
+  String relinkFailed(String reason);
+
+  /// Button after writing: open the relinked copy in the Inspector
+  ///
+  /// In en, this message translates to:
+  /// **'Inspect the copy'**
+  String get relinkInspectCopy;
+
+  /// Inspector header tile: the project's musical key
+  ///
+  /// In en, this message translates to:
+  /// **'Key'**
+  String get inspectorTileKey;
+
+  /// Unit after the number of MIDI clips in a project
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{MIDI clip} other{MIDI clips}}'**
+  String inspectorTileMidiClips(int count);
+
+  /// Unit after the number of markers and regions on a project's timeline
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{marker} other{markers}}'**
+  String inspectorTileMarkers(int count);
+
+  /// Caption under the markers tile: how many of them are regions
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No regions} one{1 region} other{{count} regions}}'**
+  String inspectorMarkerRegions(int count);
+
+  /// Unit after the number of plug-ins, when only their names were read
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{plug-in} other{plug-ins}}'**
+  String inspectorTilePlugins(int count);
+
+  /// Caption: the plug-ins are known by name only, not where they are used
+  ///
+  /// In en, this message translates to:
+  /// **'By name only'**
+  String get inspectorPluginNamesOnly;
+
+  /// Caption: .mid files the project references that aren't on this computer
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 .mid file missing} other{{count} .mid files missing}}'**
+  String inspectorMidiFilesMissing(int count);
+
+  /// Group and FX channels counted together, for a DAW whose reader doesn't tell them apart
+  ///
+  /// In en, this message translates to:
+  /// **'Group & FX'**
+  String get inspectorKindBuses;
+
+  /// Heading for the notes saved inside the project file itself
+  ///
+  /// In en, this message translates to:
+  /// **'Notes in the project'**
+  String get inspectorNotesTitle;
+
+  /// Heading for the .mid files a project references that can't be found
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI files not found'**
+  String get inspectorMissingMidiTitle;
+
+  /// Button in the Inspector's plug-ins: write a copy of the project with chosen plug-ins switched off
+  ///
+  /// In en, this message translates to:
+  /// **'Safe copy…'**
+  String get safeCopyButton;
+
+  /// Title of the dialog that writes a copy of a project with chosen plug-ins switched off
+  ///
+  /// In en, this message translates to:
+  /// **'Safe copy'**
+  String get safeCopyTitle;
+
+  /// What a safe copy is, at the top of its dialog
+  ///
+  /// In en, this message translates to:
+  /// **'A copy of the project with the plug-ins you pick switched off, so it opens even when one of them crashes the DAW or isn\'t installed. In the copy they show as deactivated: switch them back on, or replace them, from their slots. The project itself is not changed.'**
+  String get safeCopyIntro;
+
+  /// Hint of the field that filters the safe copy dialog's plug-in list
+  ///
+  /// In en, this message translates to:
+  /// **'Filter plug-ins'**
+  String get safeCopyFilter;
+
+  /// While the project's plug-ins are being read for a safe copy
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the plug-ins…'**
+  String get safeCopyReading;
+
+  /// The project's plug-ins couldn't be read for a safe copy; the reason follows
+  ///
+  /// In en, this message translates to:
+  /// **'The project\'s plug-ins couldn\'t be read: {reason}'**
+  String safeCopyReadFailed(String reason);
+
+  /// How many instances of a plug-in are switched on in the project
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 instance} other{{count} instances}}'**
+  String safeCopyInstances(int count);
+
+  /// How many instances of a plug-in are already switched off in the project
+  ///
+  /// In en, this message translates to:
+  /// **'{count} already off'**
+  String safeCopyAlreadyOff(int count);
+
+  /// A plug-in whose every instance is already switched off: a safe copy has nothing to change
+  ///
+  /// In en, this message translates to:
+  /// **'Already off everywhere'**
+  String get safeCopyAllOff;
+
+  /// Under the plug-in list: how many instances the safe copy will switch off
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Pick the plug-ins to switch off} one{1 instance will be switched off} other{{count} instances will be switched off}}'**
+  String safeCopyWillSwitchOff(int count);
+
+  /// Button: write the safe copy
+  ///
+  /// In en, this message translates to:
+  /// **'Write safe copy'**
+  String get safeCopyWrite;
+
+  /// After writing a safe copy: how many plug-in instances it switched off
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 instance switched off} other{{count} instances switched off}}'**
+  String safeCopySwitchedOff(int count);
+
+  /// After writing a safe copy: what to do with it
+  ///
+  /// In en, this message translates to:
+  /// **'Open the copy in your DAW: those plug-ins show as deactivated in their slots, ready to switch back on or replace.'**
+  String get safeCopyNextStep;
+
+  /// After a safe copy: none of the chosen plug-ins was on, so no copy was written
+  ///
+  /// In en, this message translates to:
+  /// **'None of those plug-ins was on, so nothing was written.'**
+  String get safeCopyNothingWritten;
 }
 
 class _AppLocalizationsDelegate

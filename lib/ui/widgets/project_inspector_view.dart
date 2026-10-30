@@ -3,9 +3,12 @@ import 'package:path/path.dart' as p;
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/project_anatomy.dart';
+import '../../models/project_stats.dart';
+import '../../models/sample_reference.dart';
 import '../../services/project_inspector/media_check.dart';
 import '../../utils/project_anatomy_stats.dart';
 import '../dialogs/archive_project_dialog.dart' show formatByteSize;
+import 'project_markers_section.dart';
 import 'semantics_safe.dart';
 
 /// The Project Inspector's sections.
@@ -24,6 +27,8 @@ class ProjectInspectorView extends StatefulWidget {
     required this.onOpenOther,
     this.mediaChecks,
     this.mediaChecking = false,
+    this.onRelink,
+    this.onSafeCopy,
     this.initialSection = InspectorSection.tracks,
   });
 
@@ -39,6 +44,14 @@ class ProjectInspectorView extends StatefulWidget {
   /// project's audio files aren't read.
   final List<MediaCheck>? mediaChecks;
   final bool mediaChecking;
+
+  /// Fixes the missing audio files in a relinked copy; null where this
+  /// DAW's projects can't be relinked yet.
+  final VoidCallback? onRelink;
+
+  /// Writes a copy with chosen plug-ins switched off; null where this DAW's
+  /// projects can't be written yet.
+  final VoidCallback? onSafeCopy;
   final InspectorSection initialSection;
 
   @override
@@ -146,6 +159,7 @@ class _ProjectInspectorViewState extends State<ProjectInspectorView> {
       InspectorSection.plugins => _PluginsSection(
         anatomy: a,
         search: widget.search,
+        onSafeCopy: widget.onSafeCopy,
       ),
       InspectorSection.routing =>
         channels == null
@@ -168,6 +182,7 @@ class _ProjectInspectorViewState extends State<ProjectInspectorView> {
             : _MediaSection(
                 checks: widget.mediaChecks,
                 checking: widget.mediaChecking,
+                onRelink: widget.onRelink,
               ),
       InspectorSection.statistics => _StatisticsSection(anatomy: a),
     };
@@ -276,8 +291,15 @@ class _Tiles extends StatelessWidget {
     final channels = a.channels;
     final counts = channels == null ? null : channelCounts(channels);
     final tracks = channels == null ? null : mixerChannels(channels).length;
+    // A DAW whose mixer isn't read yet still has the scan's track counts.
+    final statRows = channels == null && a.stats != null
+        ? statsTrackRows(l10n, a.stats!)
+        : null;
     final instances = pluginInstanceCounts(a.plugins);
     final rate = a.sampleRate;
+    final markers = a.markers ?? const [];
+    final clips = a.midiClipCount;
+    final missingMidi = a.missingMidiFiles?.length ?? 0;
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -297,6 +319,13 @@ class _Tiles extends StatelessWidget {
           caption: a.timeSignature == null
               ? l10n.inspectorNotInFile
               : l10n.inspectorTileTimeSignature,
+        ),
+        _Tile(
+          icon: Icons.music_note,
+          value: a.key ?? '—',
+          caption: a.key == null
+              ? l10n.inspectorNotInFile
+              : l10n.inspectorTileKey,
         ),
         _Tile(
           icon: Icons.graphic_eq,
@@ -319,6 +348,42 @@ class _Tiles extends StatelessWidget {
                     kind != AnatomyChannelKind.folder)
                   '${counts[kind]} ${label.toLowerCase()}',
             ].join(' · '),
+          )
+        else if (statRows != null)
+          _Tile(
+            icon: Icons.view_list,
+            value: '${statRows.fold(0, (n, r) => n + r.$2)}',
+            unit: l10n.inspectorTileTracks(
+              statRows.fold(0, (n, r) => n + r.$2),
+            ),
+            caption: [
+              for (final (label, n) in statRows) '$n ${label.toLowerCase()}',
+            ].join(' · '),
+          ),
+        if (!a.pluginInstancesKnown && a.plugins.isNotEmpty)
+          _Tile(
+            icon: Icons.extension,
+            value: '${a.plugins.length}',
+            unit: l10n.inspectorTilePlugins(a.plugins.length),
+            caption: l10n.inspectorPluginNamesOnly,
+          ),
+        if (clips != null)
+          _Tile(
+            icon: Icons.library_music,
+            value: '$clips',
+            unit: l10n.inspectorTileMidiClips(clips),
+            caption: missingMidi == 0
+                ? ''
+                : l10n.inspectorMidiFilesMissing(missingMidi),
+          ),
+        if (markers.isNotEmpty)
+          _Tile(
+            icon: Icons.bookmark_border,
+            value: '${markers.length}',
+            unit: l10n.inspectorTileMarkers(markers.length),
+            caption: l10n.inspectorMarkerRegions(
+              markers.where((m) => m.isRegion).length,
+            ),
           ),
         if (a.pluginInstancesKnown) ...[
           _Tile(
@@ -799,9 +864,14 @@ class _PathChips extends StatelessWidget {
 // --- plug-ins ---------------------------------------------------------------
 
 class _PluginsSection extends StatelessWidget {
-  const _PluginsSection({required this.anatomy, required this.search});
+  const _PluginsSection({
+    required this.anatomy,
+    required this.search,
+    this.onSafeCopy,
+  });
   final ProjectAnatomy anatomy;
   final String search;
+  final VoidCallback? onSafeCopy;
 
   @override
   Widget build(BuildContext context) {
@@ -844,9 +914,22 @@ class _PluginsSection extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
-          l10n.inspectorPluginSummary(anatomy.plugins.length, total),
-          style: theme.textTheme.bodySmall,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                l10n.inspectorPluginSummary(anatomy.plugins.length, total),
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+            if (onSafeCopy != null && anatomy.plugins.isNotEmpty)
+              FilledButton.tonalIcon(
+                onPressed: onSafeCopy,
+                icon: const Icon(Icons.health_and_safety_outlined),
+                label: Text(l10n.safeCopyButton),
+              ),
+          ],
         ),
         if (!anatomy.pluginInstancesKnown) ...[
           const SizedBox(height: 4),
@@ -1590,9 +1673,14 @@ class _AudioIoSection extends StatelessWidget {
 // --- media ------------------------------------------------------------------
 
 class _MediaSection extends StatelessWidget {
-  const _MediaSection({required this.checks, required this.checking});
+  const _MediaSection({
+    required this.checks,
+    required this.checking,
+    this.onRelink,
+  });
   final List<MediaCheck>? checks;
   final bool checking;
+  final VoidCallback? onRelink;
 
   @override
   Widget build(BuildContext context) {
@@ -1614,6 +1702,11 @@ class _MediaSection extends StatelessWidget {
     if (all.isEmpty) return _Note(l10n.inspectorMediaNone);
     final counts = mediaCounts(all);
     final missing = counts[MediaStatus.missing] ?? 0;
+    // What a relink can point elsewhere: not a path in a plug-in's state.
+    final fixable = all.any(
+      (c) =>
+          c.status != MediaStatus.found && c.reference.use != SampleUse.plugin,
+    );
     // Missing first: they are what this list is for.
     final sorted = [
       ...all,
@@ -1621,13 +1714,26 @@ class _MediaSection extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
-          missing == 0
-              ? l10n.inspectorMediaAllFound(all.length)
-              : l10n.inspectorMediaSummary(missing, all.length),
-          style: theme.textTheme.titleSmall?.copyWith(
-            color: missing == 0 ? null : theme.colorScheme.error,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                missing == 0
+                    ? l10n.inspectorMediaAllFound(all.length)
+                    : l10n.inspectorMediaSummary(missing, all.length),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: missing == 0 ? null : theme.colorScheme.error,
+                ),
+              ),
+            ),
+            if (fixable && onRelink != null)
+              FilledButton.tonalIcon(
+                onPressed: onRelink,
+                icon: const Icon(Icons.healing),
+                label: Text(l10n.relinkFixButton),
+              ),
+          ],
         ),
         const SizedBox(height: 8),
         for (final c in sorted)
@@ -1684,6 +1790,14 @@ class _StatisticsSection extends StatelessWidget {
     final a = anatomy;
     final channels = a.channels;
     final cards = <Widget>[];
+    if (channels == null && a.stats != null) {
+      cards.add(
+        _BarCard(
+          title: l10n.inspectorStatTrackTypes,
+          rows: statsTrackRows(l10n, a.stats!),
+        ),
+      );
+    }
     if (channels != null) {
       final counts = channelCounts(channels);
       cards.add(
@@ -1751,12 +1865,62 @@ class _StatisticsSection extends StatelessWidget {
         ),
       );
     }
+    final theme = Theme.of(context);
+    final markers = a.markers ?? const [];
+    final missingMidi = a.missingMidiFiles ?? const [];
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Wrap(spacing: 12, runSpacing: 12, children: cards),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (a.notes case final notes?) ...[
+            _Label(l10n.inspectorNotesTitle),
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: SelectableText(notes),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          if (markers.isNotEmpty) ...[
+            ProjectMarkersSection(
+              markers: markers,
+              title: l10n.projectMarkers,
+              unnamedMarkerLabel: l10n.projectMarkerUnnamed,
+              unnamedRegionLabel: l10n.projectRegionUnnamed,
+              showAllLabel: l10n.showAll,
+              collapseLabel: l10n.collapse,
+              padding: EdgeInsets.zero,
+            ),
+            const SizedBox(height: 16),
+          ],
+          if (missingMidi.isNotEmpty) ...[
+            _Label(l10n.inspectorMissingMidiTitle),
+            for (final f in missingMidi)
+              Text(f, style: theme.textTheme.bodySmall),
+            const SizedBox(height: 16),
+          ],
+          Wrap(spacing: 12, runSpacing: 12, children: cards),
+        ],
+      ),
     );
   }
 }
+
+/// The scan's track counts by kind, for a DAW whose channels aren't read:
+/// its readers count group and FX channels together.
+List<(String, int)> statsTrackRows(AppLocalizations l10n, ProjectStats s) => [
+  for (final (label, n) in [
+    (l10n.inspectorKindAudio, s.audioTracks),
+    (l10n.inspectorKindInstrument, s.instrumentTracks),
+    (l10n.inspectorKindSampler, s.samplerTracks),
+    (l10n.inspectorKindMidi, s.midiTracks),
+    (l10n.inspectorKindBuses, s.busTracks),
+  ])
+    if (n > 0) (label, n),
+];
 
 class _BarCard extends StatelessWidget {
   const _BarCard({

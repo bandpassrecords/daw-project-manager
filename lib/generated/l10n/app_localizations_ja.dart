@@ -8495,4 +8495,272 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get inspectorStripModule => 'モジュール';
+
+  @override
+  String get relinkFixButton => '見つからないファイルを修復…';
+
+  @override
+  String get relinkTitle => '見つからないファイルを修復';
+
+  @override
+  String get relinkIntro =>
+      'ファイルの現在の場所を指すプロジェクトのコピーを隣に書き出します。元のプロジェクトは変更されません。';
+
+  @override
+  String get relinkSearchFolder => 'フォルダーを検索…';
+
+  @override
+  String get relinkSearchFolderTitle => '見つからないファイルはどこにありますか？';
+
+  @override
+  String get relinkSearching => 'ファイルを探しています…';
+
+  @override
+  String relinkSearchedIn(String folders) {
+    return '検索済み: $folders';
+  }
+
+  @override
+  String relinkWillFix(int count, int total) {
+    return '$total 件中 $count 件のファイルを再リンクします';
+  }
+
+  @override
+  String relinkChooseOne(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件見つかりました — 1 つ選んでください',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNotFound => '見つかりません';
+
+  @override
+  String get relinkBrowse => '参照…';
+
+  @override
+  String relinkBrowseTitle(String name) {
+    return '$name はどこにありますか？';
+  }
+
+  @override
+  String get relinkLeave => 'そのままにする';
+
+  @override
+  String get relinkChange => 'リンク先を選択';
+
+  @override
+  String relinkRuleOffer(int count, String from, String to) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '同じ移動でさらに $count 件見つかります: $from → $to',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkApplyRule => '適用';
+
+  @override
+  String get relinkWrite => '再リンクしたコピーを書き出す';
+
+  @override
+  String get relinkWriting => 'コピーを書き出して確認しています…';
+
+  @override
+  String relinkWrote(String name) {
+    return '$name を書き出しました';
+  }
+
+  @override
+  String relinkRelinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のファイルを再リンクしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedTooLong(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count 件は再リンクされませんでした: 新しいパスがプロジェクトに収まる長さを超えています。短いパスに移すか、Cubase で探してください。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedEncoding(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件は再リンクされませんでした: この古いプロジェクトは新しいパスの特殊文字を保存できません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedNotFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件は再リンクされませんでした: コピーで変更できない場所にしか記録されていません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNothingWritten => '再リンクできるものがなかったため、コピーは書き出されませんでした。';
+
+  @override
+  String relinkFailed(String reason) {
+    return 'コピーが確認に失敗したため保存しませんでした: $reason';
+  }
+
+  @override
+  String get relinkInspectCopy => 'コピーを調べる';
+
+  @override
+  String get inspectorTileKey => 'キー';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'MIDI クリップ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'マーカー',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'リージョン $count 件',
+      zero: 'リージョンなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'プラグイン',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => '名前のみ';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '.mid ファイル $count 件が見つかりません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => 'グループ / FX';
+
+  @override
+  String get inspectorNotesTitle => 'プロジェクト内のメモ';
+
+  @override
+  String get inspectorMissingMidiTitle => '見つからない MIDI ファイル';
+
+  @override
+  String get safeCopyButton => 'セーフコピー…';
+
+  @override
+  String get safeCopyTitle => 'セーフコピー';
+
+  @override
+  String get safeCopyIntro =>
+      '選んだプラグインをオフにしたプロジェクトのコピーです。どれかが DAW をクラッシュさせたり、インストールされていなかったりしても開けます。コピーではそれらが無効として表示されるので、スロットから再び有効にするか、差し替えてください。元のプロジェクトは変更されません。';
+
+  @override
+  String get safeCopyFilter => 'プラグインを絞り込む';
+
+  @override
+  String get safeCopyReading => 'プラグインを読み込み中…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'プロジェクトのプラグインを読み込めませんでした: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count インスタンス',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count 個はすでにオフ';
+  }
+
+  @override
+  String get safeCopyAllOff => 'すべてオフ済み';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count インスタンスがオフになります',
+      zero: 'オフにするプラグインを選んでください',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'セーフコピーを書き出す';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count インスタンスをオフにしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'コピーを DAW で開いてください。これらのプラグインはスロットで無効として表示され、再び有効にしたり差し替えたりできます。';
+
+  @override
+  String get safeCopyNothingWritten => '選んだプラグインはどれもオンではなかったため、何も書き出されませんでした。';
 }

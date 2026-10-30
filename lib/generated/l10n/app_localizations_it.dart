@@ -9050,4 +9050,292 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get inspectorStripModule => 'Modulo';
+
+  @override
+  String get relinkFixButton => 'Ripara i file mancanti…';
+
+  @override
+  String get relinkTitle => 'Ripara i file mancanti';
+
+  @override
+  String get relinkIntro =>
+      'Accanto al progetto viene scritta una copia che punta a dove si trovano ora i file. Il progetto stesso non viene mai modificato.';
+
+  @override
+  String get relinkSearchFolder => 'Cerca in una cartella…';
+
+  @override
+  String get relinkSearchFolderTitle => 'Dove sono i file mancanti?';
+
+  @override
+  String get relinkSearching => 'Ricerca dei file…';
+
+  @override
+  String relinkSearchedIn(String folders) {
+    return 'Cercato in: $folders';
+  }
+
+  @override
+  String relinkWillFix(int count, int total) {
+    return '$count file su $total verranno ricollegati';
+  }
+
+  @override
+  String relinkChooseOne(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Trovato $count volte: scegline uno',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNotFound => 'Non trovato';
+
+  @override
+  String get relinkBrowse => 'Sfoglia…';
+
+  @override
+  String relinkBrowseTitle(String name) {
+    return 'Dov\'è $name?';
+  }
+
+  @override
+  String get relinkLeave => 'Lascia com\'è';
+
+  @override
+  String get relinkChange => 'Scegli dove punta';
+
+  @override
+  String relinkRuleOffer(int count, String from, String to) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Lo stesso spostamento trova altri $count file: $from → $to',
+      one: 'Lo stesso spostamento trova 1 altro file: $from → $to',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkApplyRule => 'Applica';
+
+  @override
+  String get relinkWrite => 'Scrivi la copia ricollegata';
+
+  @override
+  String get relinkWriting => 'Scrittura e verifica della copia…';
+
+  @override
+  String relinkWrote(String name) {
+    return 'Scritto $name';
+  }
+
+  @override
+  String relinkRelinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count file ricollegati',
+      one: '1 file ricollegato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedTooLong(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count non ricollegati: il nuovo percorso è più lungo dello spazio nel progetto. Spostali in un percorso più breve o cercali in Cubase.',
+      one:
+          '1 non ricollegato: il nuovo percorso è più lungo dello spazio nel progetto. Spostalo in un percorso più breve o cercalo in Cubase.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedEncoding(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count non ricollegati: questo progetto più vecchio non può salvare gli accenti del nuovo percorso.',
+      one:
+          '1 non ricollegato: questo progetto più vecchio non può salvare gli accenti del nuovo percorso.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedNotFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count non ricollegati: il progetto li nomina solo dove una copia non può cambiarli.',
+      one:
+          '1 non ricollegato: il progetto lo nomina solo dove una copia non può cambiarlo.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNothingWritten =>
+      'Non è stato possibile ricollegare nulla, quindi non è stata scritta nessuna copia.';
+
+  @override
+  String relinkFailed(String reason) {
+    return 'La copia non ha superato la verifica e non è stata conservata: $reason';
+  }
+
+  @override
+  String get relinkInspectCopy => 'Ispeziona la copia';
+
+  @override
+  String get inspectorTileKey => 'Tonalità';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'clip MIDI',
+      one: 'clip MIDI',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'marker',
+      one: 'marker',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count regioni',
+      one: '1 regione',
+      zero: 'Nessuna regione',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'plug-in',
+      one: 'plug-in',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => 'Solo per nome';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count file .mid mancanti',
+      one: '1 file .mid mancante',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => 'Gruppo e FX';
+
+  @override
+  String get inspectorNotesTitle => 'Note nel progetto';
+
+  @override
+  String get inspectorMissingMidiTitle => 'File MIDI non trovati';
+
+  @override
+  String get safeCopyButton => 'Copia sicura…';
+
+  @override
+  String get safeCopyTitle => 'Copia sicura';
+
+  @override
+  String get safeCopyIntro =>
+      'Una copia del progetto con i plug-in scelti disattivati, così si apre anche se uno di essi fa crashare la DAW o non è installato. Nella copia risultano disattivati: riattivali, o sostituiscili, dai loro slot. Il progetto stesso non viene modificato.';
+
+  @override
+  String get safeCopyFilter => 'Filtra plug-in';
+
+  @override
+  String get safeCopyReading => 'Lettura dei plug-in…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'Impossibile leggere i plug-in del progetto: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count istanze',
+      one: '1 istanza',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count già disattivate';
+  }
+
+  @override
+  String get safeCopyAllOff => 'Già disattivato ovunque';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Verranno disattivate $count istanze',
+      one: 'Verrà disattivata 1 istanza',
+      zero: 'Scegli i plug-in da disattivare',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'Scrivi copia sicura';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count istanze disattivate',
+      one: '1 istanza disattivata',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'Apri la copia nella tua DAW: quei plug-in risultano disattivati nei loro slot, pronti per essere riattivati o sostituiti.';
+
+  @override
+  String get safeCopyNothingWritten =>
+      'Nessuno di quei plug-in era attivo, quindi non è stato scritto nulla.';
 }

@@ -49,14 +49,63 @@ class SampleLocator {
       if (path != null && await File(path).exists()) return p.normalize(path);
     }
 
-    final key = ref.fileName.toLowerCase();
-    final inProject =
-        (await _index(projectDir, projectTreeDepth))[key] ?? const <String>[];
+    final inProject = await _inProject(ref, projectDir);
     if (inProject.isNotEmpty) return _best(inProject, ref);
+    final trusted = await _inLibraries(ref);
+    return trusted.isEmpty ? null : _best(trusted, ref);
+  }
 
-    // A library holds many "Kick 15.wav"s, so one is only taken when it
-    // agrees with what the project recorded: the size, where the format
-    // keeps it, or else the folder the file was in.
+  /// Every file that could be the one [ref] names, besides its stored
+  /// places: same-named files in the project's tree, then those in the
+  /// [libraryFolders] that agree with the project, best first by the rules
+  /// [locate] picks with. What a relink offers to choose from.
+  Future<List<String>> candidatesFor(
+    SampleReference ref, {
+    required String projectDir,
+  }) async {
+    final hits = <String>[];
+    final seen = <String>{};
+    for (final hit in [
+      ...await _inProject(ref, projectDir),
+      ...await _inLibraries(ref),
+    ]) {
+      if (seen.add(p.normalize(hit).toLowerCase())) hits.add(hit);
+    }
+    final scores = {for (final h in hits) h: await _score(h, ref)};
+    // A stable sort: the project's own files stay ahead of a library's on
+    // a tie.
+    final ordered = [...hits.indexed]
+      ..sort((a, b) {
+        final byScore = scores[b.$2]!.compareTo(scores[a.$2]!);
+        return byScore != 0 ? byScore : a.$1.compareTo(b.$1);
+      });
+    return [for (final (_, h) in ordered) h];
+  }
+
+  /// Every file named like [ref]'s anywhere under [folder], however deep.
+  Future<List<String>> namedIn(String folder, SampleReference ref) async =>
+      (await _index(folder, null))[ref.fileName.toLowerCase()] ??
+      const <String>[];
+
+  /// The one of [hits] that agrees with [ref] better than every other — by
+  /// the size the project recorded, then the folders it shares with a
+  /// stored path — or null when two agree as well (or none is given).
+  Future<String?> clearBest(List<String> hits, SampleReference ref) async {
+    if (hits.length <= 1) return hits.firstOrNull;
+    final scored = [for (final h in hits) (h, await _score(h, ref))]
+      ..sort((a, b) => b.$2.compareTo(a.$2));
+    return scored[0].$2 > scored[1].$2 ? scored[0].$1 : null;
+  }
+
+  Future<List<String>> _inProject(SampleReference ref, String projectDir) async =>
+      (await _index(projectDir, projectTreeDepth))[ref.fileName.toLowerCase()] ??
+      const <String>[];
+
+  /// A library holds many "Kick 15.wav"s, so one is only taken when it
+  /// agrees with what the project recorded: the size, where the format
+  /// keeps it, or else the folder the file was in.
+  Future<List<String>> _inLibraries(SampleReference ref) async {
+    final key = ref.fileName.toLowerCase();
     final size = ref.sizeBytes;
     final needsFolder = ref.candidates.any((c) => _segments(c).length > 1);
     final trusted = <String>[];
@@ -68,7 +117,15 @@ class SampleLocator {
         if (ok) trusted.add(hit);
       }
     }
-    return trusted.isEmpty ? null : _best(trusted, ref);
+    return trusted;
+  }
+
+  Future<int> _score(String hit, SampleReference ref) async {
+    var score = _trailingMatch(hit, ref.candidates) * 2;
+    if (ref.sizeBytes != null && await _sizeOf(hit) == ref.sizeBytes) {
+      score += 1000;
+    }
+    return score;
   }
 
   /// The hit sharing the most trailing folders with a stored path, then the
@@ -78,10 +135,7 @@ class SampleLocator {
     var best = hits.first;
     var bestScore = -1;
     for (final hit in hits) {
-      var score = _trailingMatch(hit, ref.candidates) * 2;
-      if (ref.sizeBytes != null && await _sizeOf(hit) == ref.sizeBytes) {
-        score += 1000;
-      }
+      final score = await _score(hit, ref);
       if (score > bestScore) {
         best = hit;
         bestScore = score;

@@ -181,6 +181,7 @@ class CubaseProjectParser {
           instrument: channel?.instrument,
           instrumentId: channel?.instrumentId,
           instrumentPreset: channel?.instrumentPreset,
+          instrumentActiveAt: channel?.instrumentActiveAt,
           sends: [
             for (final s in channel?.sends ?? const <_Send>[]) send(s),
           ],
@@ -632,30 +633,11 @@ class CubaseProjectParser {
   /// a recording; "kick-01.wav" beside "kick.wav" is what Cubase writes when
   /// it processes or bounces a file.
   List<SampleReference> readSampleReferences() {
-    final pool = <({String name, String dir, bool sampler})>[];
-    for (final index in _indices) {
-      final samplerClips = index.instancesOf('PSamplerTrackAudioClip');
-      for (final fn in index.instancesOf('FNPath')) {
-        final name = _readString(fn.body);
-        if (name == null || name.end > fn.end) continue;
-        if (!isSampleAudioFile(name.text)) continue;
-        String? dir;
-        for (var o = name.end; o + 4 < fn.end; o++) {
-          final s = _readString(o);
-          if (s == null || s.end > fn.end || s.text.length < 2) continue;
-          if (s.text.endsWith(r'\') || s.text.endsWith('/')) {
-            dir = s.text;
-            break;
-          }
-        }
-        if (dir == null) continue;
-        pool.add((
-          name: name.text,
-          dir: dir,
-          sampler: samplerClips.any((c) => c.contains(fn.start)),
-        ));
-      }
-    }
+    final pool = [
+      for (final f in readPoolPaths())
+        if (isSampleAudioFile(f.name.text))
+          (name: f.name.text, dir: f.folder.text, sampler: f.sampler),
+    ];
 
     final names = {for (final f in pool) _stem(f.name).toLowerCase()};
     final trackNames = [for (final t in readTracks()) t.name];
@@ -703,6 +685,49 @@ class CubaseProjectParser {
       ));
     }
     return refs;
+  }
+
+  /// Every `FNPath` in the archive — each pool file, and each copy of one
+  /// on an event or in the Sampler Track — as its name and folder strings
+  /// and where they sit, in archive order. One file appears once per
+  /// object that names it (test-01.cpr names a kick in two). What
+  /// [readSampleReferences] reads, and what a relink rewrites in place.
+  List<CubasePoolPath> readPoolPaths() {
+    final paths = <CubasePoolPath>[];
+    for (final index in _indices) {
+      final samplerClips = index.instancesOf('PSamplerTrackAudioClip');
+      for (final fn in index.instancesOf('FNPath')) {
+        final name = _readString(fn.body);
+        if (name == null || name.end > fn.end) continue;
+        for (var o = name.end; o + 4 < fn.end; o++) {
+          final s = _readString(o);
+          if (s == null || s.end > fn.end || s.text.length < 2) continue;
+          if (s.text.endsWith(r'\') || s.text.endsWith('/')) {
+            paths.add(CubasePoolPath(
+              name: _slotOf(fn.body, name),
+              folder: _slotOf(o, s),
+              sampler: samplerClips.any((c) => c.contains(fn.start)),
+            ));
+            break;
+          }
+        }
+      }
+    }
+    return paths;
+  }
+
+  CubaseStringSlot _slotOf(int offset, ({String text, int end}) s) {
+    final length = _data.getUint32(offset);
+    final end = offset + 4 + length;
+    return CubaseStringSlot(
+      offset: offset,
+      length: length,
+      text: s.text,
+      bom: length >= 4 &&
+          bytes[end - 3] == 0xEF &&
+          bytes[end - 2] == 0xBB &&
+          bytes[end - 1] == 0xBF,
+    );
   }
 
   static final _processedCopy = RegExp(r'^(.+)-\d{2}$');
@@ -945,6 +970,7 @@ class CubaseProjectParser {
       instrument: instrument?.name,
       instrumentId: instrument?.id,
       instrumentPreset: instrument?.preset,
+      instrumentActiveAt: instrument?.activeAt,
     );
   }
 
@@ -966,6 +992,9 @@ class CubaseProjectParser {
           null => null,
           final a => a == 0,
         },
+        activeAt: plugin.integer('Active') == null
+            ? null
+            : plugin.offsetOf('Active'),
       ),
       [
         for (final (key, value) in plugin.entries)
@@ -1008,8 +1037,8 @@ class CubaseProjectParser {
   /// An instrument track's instrument, from its "Synth Slot": the plug-in's
   /// own name where the track renamed it ("Bassline" is a Serum), and
   /// nothing for the sampler track's built-in engine.
-  static ({String name, String? id, String? preset})? _instrumentOf(
-      CubaseAttributes? slot) {
+  static ({String name, String? id, String? preset, int? activeAt})?
+      _instrumentOf(CubaseAttributes? slot) {
     final plugin = slot?.folder('Plugin');
     final name = plugin == null
         ? _firstPluginName(slot)
@@ -1019,7 +1048,14 @@ class CubaseProjectParser {
       return null;
     }
     final identity = plugin == null ? null : pluginIdentity(plugin);
-    return (name: name, id: identity?.id, preset: identity?.preset);
+    return (
+      name: name,
+      id: identity?.id,
+      preset: identity?.preset,
+      activeAt: plugin?.integer('Active') == null
+          ? null
+          : plugin!.offsetOf('Active'),
+    );
   }
 
   /// What a slot's "Plugin" folder says about the plug-in beyond its name.
@@ -1098,6 +1134,8 @@ class CubaseProjectParser {
       // The slot's plug-in comes just before: "Plugin isA", then "Plugin".
       String? plugin;
       String? preset;
+      int? activeAt;
+      bool? deactivated;
       final isA = _lastIndexOf(_pluginIsAKey, at);
       if (isA >= 0) {
         final kind = _decoder.attributeAt(isA, limit: at);
@@ -1108,6 +1146,10 @@ class CubaseProjectParser {
           final attrs = folder!.value as CubaseAttributes;
           plugin = attrs.string('Plugin Name');
           preset = pluginIdentity(attrs).preset;
+          if (attrs.integer('Active') case final a?) {
+            activeAt = attrs.offsetOf('Active');
+            deactivated = a == 0;
+          }
         }
       }
       for (final item in outputs) {
@@ -1122,6 +1164,8 @@ class CubaseProjectParser {
           plugin: plugin,
           preset: preset,
           volume: channel.valueOf('Volume'),
+          activeAt: activeAt,
+          deactivated: deactivated,
         ));
       }
     }
@@ -1264,8 +1308,14 @@ class CubaseProjectParser {
       stop -= 3;
     }
     if (bytes[stop - 1] != 0) return null;
+    // The text ends at its first NUL: a path relinked in place keeps the
+    // string's length and pads the rest (see CubaseRelinkWriter).
+    var textEnd = offset + 4;
+    while (textEnd < stop - 1 && bytes[textEnd] != 0) {
+      textEnd++;
+    }
     final text = utf8.decode(
-      bytes.sublist(offset + 4, stop - 1),
+      bytes.sublist(offset + 4, textEnd),
       allowMalformed: true,
     );
     return (text: text, end: offset + 4 + len);
@@ -1350,6 +1400,7 @@ class CubaseTrack {
     this.instrument,
     this.instrumentId,
     this.instrumentPreset,
+    this.instrumentActiveAt,
     this.sends = const [],
   });
 
@@ -1418,6 +1469,9 @@ class CubaseTrack {
   /// The preset its instrument had loaded, other than "Default".
   final String? instrumentPreset;
 
+  /// Where its instrument's "Active" flag sits ([CubaseInsert.activeAt]).
+  final int? instrumentActiveAt;
+
   /// Routed send slots; empty slots are left out.
   final List<CubaseSend> sends;
 }
@@ -1433,6 +1487,7 @@ class CubaseInsert {
     this.format,
     this.vendor,
     this.preset,
+    this.activeAt,
   });
   final int slot;
   final String plugin;
@@ -1455,6 +1510,43 @@ class CubaseInsert {
 
   /// Switched off in the slot (not loaded) when saved.
   final bool? deactivated;
+
+  /// Where the plug-in's "Active" flag sits in the file: the 8 bytes of an
+  /// `i64`, 1 on and 0 off, which a Safe Copy rewrites in place.
+  final int? activeAt;
+}
+
+/// A string in the archive and where it sits: its u32 length at [offset],
+/// counting the text, a NUL and, when [bom], a UTF-8 BOM after it.
+class CubaseStringSlot {
+  const CubaseStringSlot({
+    required this.offset,
+    required this.length,
+    required this.text,
+    required this.bom,
+  });
+  final int offset;
+  final int length;
+  final String text;
+  final bool bom;
+
+  /// The most bytes of text the string can hold, its NUL kept.
+  int get room => length - 1 - (bom ? 3 : 0);
+}
+
+/// One `FNPath`: a file's name and the folder it is in, ending in a
+/// separator; [sampler] when the Sampler Track plays it.
+class CubasePoolPath {
+  const CubasePoolPath({
+    required this.name,
+    required this.folder,
+    this.sampler = false,
+  });
+  final CubaseStringSlot name;
+  final CubaseStringSlot folder;
+  final bool sampler;
+
+  String get path => '${folder.text}${name.text}';
 }
 
 /// The kinds of module a Cubase channel strip holds, a slot for each.
@@ -1505,6 +1597,8 @@ class CubaseRackInstrument {
     this.plugin,
     this.preset,
     this.volume,
+    this.activeAt,
+    this.deactivated,
   });
 
   /// Which rack slot, counted from 0 in the order the project stores them.
@@ -1517,6 +1611,11 @@ class CubaseRackInstrument {
   /// The preset it had loaded ("Rhodes Classic"), where readable.
   final String? preset;
   final double? volume;
+
+  /// Where the instrument's "Active" flag sits ([CubaseInsert.activeAt]);
+  /// the same for each output of one instrument.
+  final int? activeAt;
+  final bool? deactivated;
 }
 
 /// One port of the audio interface or a MIDI device, as a project names it.
@@ -1620,6 +1719,7 @@ class _Channel {
     this.instrument,
     this.instrumentId,
     this.instrumentPreset,
+    this.instrumentActiveAt,
   });
   final double? pan;
   final bool? muted;
@@ -1639,6 +1739,7 @@ class _Channel {
   final String? instrument;
   final String? instrumentId;
   final String? instrumentPreset;
+  final int? instrumentActiveAt;
 }
 
 /// An insert and the side-chain buses its plug-in offers.
