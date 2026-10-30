@@ -24,6 +24,8 @@ void main() {
     folderTracks: 4,
     plugins: ['Diva', 'Pro-Q 3', 'Serum'],
     midiClipCount: 25,
+    sampleRate: 48000,
+    bitDepth: 24,
   );
 
   group('ProjectStats', () {
@@ -36,6 +38,22 @@ void main() {
 
     test('map round-trip preserves every field', () {
       expect(ProjectStats.fromMap(stats.toMap()), stats);
+    });
+
+    test('a format with no sample rate keeps none; a bad one is dropped', () {
+      const none = ProjectStats(audioTracks: 1);
+      expect(none.toMap().containsKey('sampleRate'), isFalse);
+      final restored = ProjectStats.fromMap(none.toMap());
+      expect(restored.sampleRate, isNull);
+      expect(restored.bitDepth, isNull);
+      final bad = ProjectStats.fromMap({'sampleRate': 'fast', 'bitDepth': -1});
+      expect(bad.sampleRate, isNull);
+      expect(bad.bitDepth, isNull);
+    });
+
+    test('withMidiClipCount keeps the audio format', () {
+      final s = stats.withMidiClipCount(3);
+      expect((s.sampleRate, s.bitDepth), (48000, 24));
     });
 
     test('an unknown clip count stays unknown rather than becoming 0', () {

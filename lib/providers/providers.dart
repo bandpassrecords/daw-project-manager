@@ -53,6 +53,9 @@ import '../models/part_template.dart';
 import '../models/project_template.dart';
 import '../models/template_root.dart';
 import '../models/project_event.dart';
+import '../models/project_anatomy.dart';
+import '../services/project_inspector/media_check.dart';
+import '../services/project_inspector/project_anatomy_reader.dart';
 import '../repository/project_repository.dart';
 import '../repository/project_trash.dart';
 import '../utils/project_midi.dart';
@@ -2504,7 +2507,16 @@ final projectsTableColumnsProvider =
 // Tab Visibility
 // ---------------------------------------------------------------------------
 
-enum AppTab { projects, releases, playlists, midi, queue, statistics, player }
+enum AppTab {
+  projects,
+  releases,
+  playlists,
+  midi,
+  inspector,
+  queue,
+  statistics,
+  player,
+}
 
 class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
   static const _key = 'visibleTabs';
@@ -2515,6 +2527,7 @@ class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
     AppTab.releases,
     AppTab.playlists,
     AppTab.midi,
+    AppTab.inspector,
     AppTab.queue,
     AppTab.statistics,
     AppTab.player,
@@ -2528,11 +2541,15 @@ class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
       AppTab.releases,
       AppTab.playlists,
       AppTab.midi,
+      AppTab.inspector,
       AppTab.queue,
       AppTab.statistics,
       AppTab.player,
     };
-    if (MobileUtils.isMobile()) defaults.remove(AppTab.player);
+    if (MobileUtils.isMobile()) {
+      defaults.remove(AppTab.player);
+      defaults.remove(AppTab.inspector);
+    }
     return defaults;
   }
 
@@ -2572,7 +2589,10 @@ class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
           }
         }
         result.add(AppTab.projects); // always visible
-        if (MobileUtils.isMobile()) result.remove(AppTab.player);
+        if (MobileUtils.isMobile()) {
+          result.remove(AppTab.player);
+          result.remove(AppTab.inspector);
+        }
         state = result;
       }
     } catch (e) {
@@ -2582,8 +2602,12 @@ class VisibleTabsNotifier extends Notifier<Set<AppTab>> {
 
   Future<void> setTabVisible(AppTab tab, bool visible) async {
     if (tab == AppTab.projects) return;
-    // Player tab is desktop-only; never allow it to be enabled on mobile.
-    if (tab == AppTab.player && MobileUtils.isMobile()) return;
+    // The player and the inspector are desktop-only: a phone has neither
+    // the audio setup nor the project files.
+    if ((tab == AppTab.player || tab == AppTab.inspector) &&
+        MobileUtils.isMobile()) {
+      return;
+    }
     final updated = Set<AppTab>.from(state);
     if (visible) {
       updated.add(tab);
@@ -3045,6 +3069,76 @@ final midiCollectionToOpenProvider =
     NotifierProvider<MidiCollectionRequestNotifier, String?>(
       MidiCollectionRequestNotifier.new,
     );
+
+// ---------------------------------------------------------------------------
+// Project Inspector (#196)
+// ---------------------------------------------------------------------------
+
+/// A project file as the Inspector reads it: its path, and the size and
+/// modification time it had then. Reads are keyed by all three, so opening
+/// an unchanged file again shows what was read, and a saved one is read
+/// afresh.
+typedef InspectedFile = ({String path, int size, int modifiedMs});
+
+/// The project file the Inspector tab shows, or null for its empty state.
+/// Session-only: a file opened from outside the library is the user's
+/// passing look, not something to restore at the next launch.
+class InspectorFileNotifier extends Notifier<InspectedFile?> {
+  @override
+  InspectedFile? build() => null;
+
+  void open(InspectedFile file) => state = file;
+  void close() => state = null;
+}
+
+final inspectorFileProvider =
+    NotifierProvider<InspectorFileNotifier, InspectedFile?>(
+      InspectorFileNotifier.new,
+    );
+
+/// Set when something asks for the Inspector tab to come to the front (the
+/// project menu's Inspect); the dashboard switches and consumes it.
+class InspectorShowRequestNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
+  void request() => state++;
+}
+
+final inspectorShowRequestProvider =
+    NotifierProvider<InspectorShowRequestNotifier, int>(
+      InspectorShowRequestNotifier.new,
+    );
+
+class InspectorSearchNotifier extends Notifier<String> {
+  @override
+  String build() => '';
+  void set(String text) => state = text;
+  void clear() => state = '';
+}
+
+/// What the dashboard search box holds while the Inspector tab is showing:
+/// it searches the inspected project's tracks and plug-ins.
+final inspectorSearchProvider =
+    NotifierProvider<InspectorSearchNotifier, String>(
+      InspectorSearchNotifier.new,
+    );
+
+/// A project file read for the Inspector, kept for the session; never
+/// stored, never synced. "Read again" invalidates it.
+final projectAnatomyProvider =
+    FutureProvider.family<ProjectAnatomy, InspectedFile>(
+      (ref, file) => readProjectAnatomy(file.path),
+    );
+
+/// Whether each audio file the inspected project uses is on this computer:
+/// existence checks only, nothing opened.
+final inspectorMediaChecksProvider =
+    FutureProvider.family<List<MediaCheck>?, InspectedFile>((ref, file) async {
+      final anatomy = await ref.watch(projectAnatomyProvider(file).future);
+      final media = anatomy.media;
+      if (media == null) return null;
+      return checkMedia(media, projectDir: File(file.path).parent.path);
+    });
 
 /// The current profile's MIDI collections, live.
 final midiCollectionsProvider = StreamProvider<List<MidiCollection>>((

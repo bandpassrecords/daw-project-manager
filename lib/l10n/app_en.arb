@@ -8040,7 +8040,13 @@
   "dpmPluginDownloadUpdate": "Download the update",
   "dpmPluginInstalledTitle": "Installed",
   "dpmPluginInstalledVersion": "Version {version}",
-  "@dpmPluginInstalledVersion": {"placeholders": {"version": {"type": "String"}}},
+  "@dpmPluginInstalledVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "dpmPluginInstalledNone": "Not found in the standard plug-in folders.",
   "dpmPluginInstalledDuplicates": "More than one copy is installed, so your DAW may load either. Keep only one.",
   "dpmPluginSearchAgain": "Search again",
@@ -8177,5 +8183,588 @@
         "type": "int"
       }
     }
+  },
+  "inspectorTab": "Inspector",
+  "@inspectorTab": {
+    "description": "Dashboard tab that shows what is inside a project file"
+  },
+  "inspectorSearchHint": "Search tracks and plug-ins",
+  "@inspectorSearchHint": {
+    "description": "Search box hint on the Inspector tab"
+  },
+  "inspectorEmptyTitle": "See inside a project without opening the DAW",
+  "@inspectorEmptyTitle": {
+    "description": "Inspector tab heading when no project is open"
+  },
+  "inspectorEmptyBody": "Drop a project file here, open one, or choose Inspect in a project's menu. The project is only read, never changed.",
+  "@inspectorEmptyBody": {
+    "description": "Inspector tab text when no project is open"
+  },
+  "inspectorOpenProject": "Open project…",
+  "@inspectorOpenProject": {
+    "description": "Button that picks a project file to inspect"
+  },
+  "inspectorChooseProjectTitle": "Choose a project to inspect",
+  "@inspectorChooseProjectTitle": {
+    "description": "Title of the file dialog that picks a project to inspect"
+  },
+  "inspectorReading": "Reading the project…",
+  "@inspectorReading": {
+    "description": "Shown while a project is being read"
+  },
+  "inspectorReadFailed": "This project could not be read.",
+  "@inspectorReadFailed": {
+    "description": "Shown when a project could not be read"
+  },
+  "inspectorUnsupported": "The Inspector can't read {extension} files.",
+  "@inspectorUnsupported": {
+    "description": "Shown when a dropped file is not a project the app knows",
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorReload": "Read again",
+  "@inspectorReload": {
+    "description": "Button that reads the inspected project again"
+  },
+  "inspectorClose": "Close",
+  "@inspectorClose": {
+    "description": "Button that closes the inspected project"
+  },
+  "inspectorSavedWith": "Saved with {daw} {version}",
+  "@inspectorSavedWith": {
+    "description": "Which DAW version saved the project",
+    "placeholders": {
+      "daw": {
+        "type": "String"
+      },
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorTileTempo": "Tempo",
+  "@inspectorTileTempo": {
+    "description": "Caption of the tempo tile"
+  },
+  "inspectorTileTimeSignature": "Time signature",
+  "@inspectorTileTimeSignature": {
+    "description": "Caption of the time signature tile"
+  },
+  "inspectorTileSampleRate": "Sample rate",
+  "@inspectorTileSampleRate": {
+    "description": "Caption of the sample rate tile"
+  },
+  "inspectorBitDepth": "{bits}-bit",
+  "@inspectorBitDepth": {
+    "description": "Bit depth of the record format, e.g. 24-bit",
+    "placeholders": {
+      "bits": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorNotInFile": "Not in this project",
+  "@inspectorNotInFile": {
+    "description": "Tile caption when the project does not store this value"
+  },
+  "inspectorTileTracks": "{count, plural, one{track} other{tracks}}",
+  "@inspectorTileTracks": {
+    "description": "Unit after the number of tracks on a tile",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorTileEffects": "{count, plural, one{effect} other{effects}}",
+  "@inspectorTileEffects": {
+    "description": "Unit after the number of effect plug-ins on a tile",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorTileInstruments": "{count, plural, one{instrument} other{instruments}}",
+  "@inspectorTileInstruments": {
+    "description": "Unit after the number of instruments on a tile",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorEffectsBreakdown": "{stock} stock · {thirdParty} third-party",
+  "@inspectorEffectsBreakdown": {
+    "description": "Effects split into stock and third-party",
+    "placeholders": {
+      "stock": {
+        "type": "int"
+      },
+      "thirdParty": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorFilterAll": "All",
+  "@inspectorFilterAll": {
+    "description": "Filter chip that shows every channel"
+  },
+  "inspectorKindAudio": "Audio",
+  "@inspectorKindAudio": {
+    "description": "Channel kind: audio track"
+  },
+  "inspectorKindInstrument": "Instrument",
+  "@inspectorKindInstrument": {
+    "description": "Channel kind: instrument track"
+  },
+  "inspectorKindMidi": "MIDI",
+  "@inspectorKindMidi": {
+    "description": "Channel kind: MIDI track"
+  },
+  "inspectorKindSampler": "Sampler",
+  "@inspectorKindSampler": {
+    "description": "Channel kind: sampler track"
+  },
+  "inspectorKindGroup": "Group",
+  "@inspectorKindGroup": {
+    "description": "Channel kind: group channel"
+  },
+  "inspectorKindFx": "FX",
+  "@inspectorKindFx": {
+    "description": "Channel kind: FX channel"
+  },
+  "inspectorKindFolder": "Folder",
+  "@inspectorKindFolder": {
+    "description": "Channel kind: folder track"
+  },
+  "inspectorTabTracks": "Tracks",
+  "@inspectorTabTracks": {
+    "description": "Inspector section with every channel"
+  },
+  "inspectorTabPlugins": "Plug-ins",
+  "@inspectorTabPlugins": {
+    "description": "Inspector section with every plug-in"
+  },
+  "inspectorTabRouting": "Routing",
+  "@inspectorTabRouting": {
+    "description": "Inspector section with the signal flow"
+  },
+  "inspectorTabMedia": "Audio files",
+  "@inspectorTabMedia": {
+    "description": "Inspector section with the audio files a project uses"
+  },
+  "inspectorTabStatistics": "Statistics",
+  "@inspectorTabStatistics": {
+    "description": "Inspector section with numbers about the project"
+  },
+  "inspectorNotAvailable": "Not read for {daw} projects yet.",
+  "@inspectorNotAvailable": {
+    "description": "Shown in a section this DAW cannot fill yet",
+    "placeholders": {
+      "daw": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorOutput": "Output",
+  "@inspectorOutput": {
+    "description": "Label: where a channel goes"
+  },
+  "inspectorInserts": "Inserts",
+  "@inspectorInserts": {
+    "description": "Label: insert plug-ins of a channel"
+  },
+  "inspectorSends": "Sends",
+  "@inspectorSends": {
+    "description": "Label: sends of a channel"
+  },
+  "inspectorInstrument": "Instrument",
+  "@inspectorInstrument": {
+    "description": "Label: the instrument of an instrument track"
+  },
+  "inspectorFader": "Fader",
+  "@inspectorFader": {
+    "description": "Label: the channel fader"
+  },
+  "inspectorNoInserts": "No inserts",
+  "@inspectorNoInserts": {
+    "description": "Shown when a channel has no insert plug-ins"
+  },
+  "inspectorNoSends": "No sends",
+  "@inspectorNoSends": {
+    "description": "Shown when a channel has no sends"
+  },
+  "inspectorNotConnected": "Not connected",
+  "@inspectorNotConnected": {
+    "description": "A channel whose output goes nowhere"
+  },
+  "inspectorDeactivated": "off",
+  "@inspectorDeactivated": {
+    "description": "An insert that was switched off when saved"
+  },
+  "inspectorSoloed": "Solo",
+  "@inspectorSoloed": {
+    "description": "A channel that was soloed when saved"
+  },
+  "inspectorPreFader": "Pre-fader",
+  "@inspectorPreFader": {
+    "description": "A send taken before the fader"
+  },
+  "inspectorSendSwitchedOff": "Switched off",
+  "@inspectorSendSwitchedOff": {
+    "description": "A send that was switched off when saved"
+  },
+  "inspectorSideChainInto": "Side-chain into {plugin}",
+  "@inspectorSideChainInto": {
+    "description": "A send that feeds a plug-in side-chain",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorEqBandsOn": "{count, plural, =0{EQ off} one{EQ: 1 band on} other{EQ: {count} bands on}}",
+  "@inspectorEqBandsOn": {
+    "description": "How many bands of the channel EQ are on",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorFaderPositionOnly": "Where the fader sits; its value in dB isn't read yet",
+  "@inspectorFaderPositionOnly": {
+    "description": "Tooltip on a fader whose dB value is not known"
+  },
+  "inspectorSelectChannel": "Select a channel to see its routing and plug-ins.",
+  "@inspectorSelectChannel": {
+    "description": "Shown before a channel is selected"
+  },
+  "inspectorGroupStock": "Stock effects",
+  "@inspectorGroupStock": {
+    "description": "Plug-ins that come with the DAW"
+  },
+  "inspectorGroupThirdParty": "Third-party effects",
+  "@inspectorGroupThirdParty": {
+    "description": "Plug-ins from other makers"
+  },
+  "inspectorGroupInstruments": "Instruments",
+  "@inspectorGroupInstruments": {
+    "description": "Instrument plug-ins"
+  },
+  "inspectorPluginSummary": "{unique} unique · {instances} instances",
+  "@inspectorPluginSummary": {
+    "description": "How many plug-ins and how many times they are loaded",
+    "placeholders": {
+      "unique": {
+        "type": "int"
+      },
+      "instances": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorPluginsNamesOnly": "Which channels use each plug-in isn't read for {daw} projects yet.",
+  "@inspectorPluginsNamesOnly": {
+    "description": "Plug-ins tab note when only names are read",
+    "placeholders": {
+      "daw": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorSignalFlow": "Signal flow",
+  "@inspectorSignalFlow": {
+    "description": "Routing view following one channel"
+  },
+  "inspectorByDestination": "By destination",
+  "@inspectorByDestination": {
+    "description": "Routing view listing what feeds each bus"
+  },
+  "inspectorFeedsIn": "Feeds in",
+  "@inspectorFeedsIn": {
+    "description": "Channels feeding the selected one"
+  },
+  "inspectorGoesTo": "Goes to",
+  "@inspectorGoesTo": {
+    "description": "Where the selected channel goes"
+  },
+  "inspectorSignalPath": "Signal path",
+  "@inspectorSignalPath": {
+    "description": "The chain of outputs from a channel to the final output"
+  },
+  "inspectorViaSend": "Send",
+  "@inspectorViaSend": {
+    "description": "A channel reaching another through a send"
+  },
+  "inspectorViaSideChain": "Side-chain",
+  "@inspectorViaSideChain": {
+    "description": "A channel reaching a plug-in side-chain"
+  },
+  "inspectorNothingFeeds": "Nothing feeds this channel.",
+  "@inspectorNothingFeeds": {
+    "description": "Shown when no channel feeds the selected one"
+  },
+  "inspectorHintNowhere": "{count, plural, one{1 channel goes nowhere} other{{count} channels go nowhere}}",
+  "@inspectorHintNowhere": {
+    "description": "Hint: channels whose output is not connected",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorHintSkipBuses": "{count, plural, one{1 track goes straight to an output} other{{count} tracks go straight to an output}}",
+  "@inspectorHintSkipBuses": {
+    "description": "Hint: tracks sent straight to an output in a project with buses",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorSourcesCount": "{count, plural, one{1 source} other{{count} sources}}",
+  "@inspectorSourcesCount": {
+    "description": "How many channels feed a destination",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorMediaFound": "Found",
+  "@inspectorMediaFound": {
+    "description": "Audio file found where the project says"
+  },
+  "inspectorMediaElsewhere": "Found in the project folder",
+  "@inspectorMediaElsewhere": {
+    "description": "Audio file found under another path in the project folder"
+  },
+  "inspectorMediaMissing": "Missing",
+  "@inspectorMediaMissing": {
+    "description": "Audio file not found on this computer"
+  },
+  "inspectorMediaSummary": "{missing} of {total} missing",
+  "@inspectorMediaSummary": {
+    "description": "How many audio files are missing",
+    "placeholders": {
+      "missing": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorMediaAllFound": "All {total} found",
+  "@inspectorMediaAllFound": {
+    "description": "Every audio file was found",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorMediaChecking": "Looking for the files…",
+  "@inspectorMediaChecking": {
+    "description": "Shown while audio files are being looked for"
+  },
+  "inspectorMediaNone": "This project uses no audio files.",
+  "@inspectorMediaNone": {
+    "description": "Shown when a project uses no audio files"
+  },
+  "inspectorMediaStoredAt": "Project says: {path}",
+  "@inspectorMediaStoredAt": {
+    "description": "Where the project says an audio file is",
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorMediaFoundAt": "Found at: {path}",
+  "@inspectorMediaFoundAt": {
+    "description": "Where an audio file was found",
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorStatTrackTypes": "Track types",
+  "@inspectorStatTrackTypes": {
+    "description": "Statistics card: tracks by kind"
+  },
+  "inspectorStatPluginInstances": "Plug-in instances",
+  "@inspectorStatPluginInstances": {
+    "description": "Statistics card: plug-in instances by kind"
+  },
+  "inspectorStatUnknown": "Unknown",
+  "@inspectorStatUnknown": {
+    "description": "Plug-ins whose kind is not known"
+  },
+  "inspectorStatMostUsed": "Most used plug-ins",
+  "@inspectorStatMostUsed": {
+    "description": "Statistics card: plug-ins loaded most often"
+  },
+  "inspectorStatUsualChains": "Usual chains",
+  "@inspectorStatUsualChains": {
+    "description": "Statistics card: insert chains that repeat across channels"
+  },
+  "inspectorStatNoChains": "No chain of plug-ins repeats across channels.",
+  "@inspectorStatNoChains": {
+    "description": "Shown when no insert chain repeats"
+  },
+  "inspectorStatInsertsPerChannel": "Inserts per channel",
+  "@inspectorStatInsertsPerChannel": {
+    "description": "Statistics card: how many inserts channels have"
+  },
+  "inspectorStatBusiest": "Busiest destinations",
+  "@inspectorStatBusiest": {
+    "description": "Statistics card: buses with the most sources"
+  },
+  "inspectorInsertsCount": "{count, plural, one{1 insert} other{{count} inserts}}",
+  "@inspectorInsertsCount": {
+    "description": "Number of inserts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorChannelsCount": "{count, plural, one{1 channel} other{{count} channels}}",
+  "@inspectorChannelsCount": {
+    "description": "Number of channels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectMenuInspect": "Inspect",
+  "@projectMenuInspect": {
+    "description": "Project menu entry that opens the project in the Inspector tab"
+  },
+  "sampleRateColumn": "Sample rate",
+  "@sampleRateColumn": {
+    "description": "Column and project-page label: the project's sample rate and bit depth"
+  },
+  "inspectorCloudTitle": "Download this project?",
+  "@inspectorCloudTitle": {
+    "description": "Title of the prompt before reading a project stored only in the cloud"
+  },
+  "inspectorCloudBody": "This project is in the cloud, not on this computer. Reading it downloads the whole file ({size}).",
+  "@inspectorCloudBody": {
+    "description": "Prompt text before reading a cloud-only project; size is the file size",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorCloudRead": "Download and read",
+  "@inspectorCloudRead": {
+    "description": "Button that downloads and reads a cloud-only project"
+  },
+  "inspectorTabAudioIo": "Audio I/O",
+  "@inspectorTabAudioIo": {
+    "description": "Inspector section with the audio interface and buses"
+  },
+  "inspectorAudioDriver": "Audio driver",
+  "@inspectorAudioDriver": {
+    "description": "Label: the audio driver the project used"
+  },
+  "inspectorUnnamedDriver": "Not named in the project",
+  "@inspectorUnnamedDriver": {
+    "description": "The project names its driver only by an id"
+  },
+  "inspectorSavedOn": "Saved on {platform}",
+  "@inspectorSavedOn": {
+    "description": "Which operating system the project was saved on",
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorInputBuses": "Input buses",
+  "@inspectorInputBuses": {
+    "description": "Label: input buses and their ports"
+  },
+  "inspectorOutputBuses": "Output buses",
+  "@inspectorOutputBuses": {
+    "description": "Label: output buses and their ports"
+  },
+  "inspectorInterfaceInputs": "Interface inputs",
+  "@inspectorInterfaceInputs": {
+    "description": "Label: the audio interface inputs the project knows"
+  },
+  "inspectorInterfaceOutputs": "Interface outputs",
+  "@inspectorInterfaceOutputs": {
+    "description": "Label: the audio interface outputs the project knows"
+  },
+  "inspectorMidiInputs": "MIDI inputs",
+  "@inspectorMidiInputs": {
+    "description": "Label: MIDI input ports"
+  },
+  "inspectorMidiOutputs": "MIDI outputs",
+  "@inspectorMidiOutputs": {
+    "description": "Label: MIDI output ports"
+  },
+  "inspectorNone": "None",
+  "@inspectorNone": {
+    "description": "Shown when a list of ports or buses is empty"
+  },
+  "inspectorPan": "Pan",
+  "@inspectorPan": {
+    "description": "Label: where a channel's panner sits"
+  },
+  "inspectorMuted": "Muted",
+  "@inspectorMuted": {
+    "description": "A track that was muted when the project was saved"
+  },
+  "inspectorChannelStrip": "Channel strip",
+  "@inspectorChannelStrip": {
+    "description": "Heading for a Cubase channel's strip modules (gate, compressor, EQ, tools, saturation, limiter), in the order they run"
+  },
+  "inspectorStripBypassed": "Strip bypassed",
+  "@inspectorStripBypassed": {
+    "description": "The channel strip's own bypass button was on when the project was saved"
+  },
+  "inspectorStripBeforeInserts": "Before the inserts",
+  "@inspectorStripBeforeInserts": {
+    "description": "The channel strip runs before the insert slots rather than after them"
+  },
+  "inspectorStripGate": "Gate",
+  "@inspectorStripGate": {
+    "description": "The kind of a channel strip module: a noise gate"
+  },
+  "inspectorStripCompressor": "Compressor",
+  "@inspectorStripCompressor": {
+    "description": "The kind of a channel strip module: a compressor"
+  },
+  "inspectorStripEq": "EQ",
+  "@inspectorStripEq": {
+    "description": "The channel EQ's place among the channel strip modules"
+  },
+  "inspectorStripTools": "Tools",
+  "@inspectorStripTools": {
+    "description": "The kind of a channel strip module: tools (de-esser, envelope shaper)"
+  },
+  "inspectorStripSaturation": "Saturation",
+  "@inspectorStripSaturation": {
+    "description": "The kind of a channel strip module: saturation (tape, tube)"
+  },
+  "inspectorStripLimiter": "Limiter",
+  "@inspectorStripLimiter": {
+    "description": "The kind of a channel strip module: a limiter"
+  },
+  "inspectorStripModule": "Module",
+  "@inspectorStripModule": {
+    "description": "A channel strip module whose kind isn't known"
   }
 }

@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../models/project_stats.dart';
+import '../../utils/audio_format_text.dart';
 
 /// Localized strings for [ProjectStatsSection], resolved by the page so the
 /// widget itself needs no `AppLocalizations` (and stays widget-testable).
@@ -16,6 +17,8 @@ class ProjectStatsLabels {
     required this.plugins,
     required this.showAll,
     required this.collapse,
+    required this.sampleRate,
+    required this.bitDepth,
   });
 
   final String tracks;
@@ -28,6 +31,8 @@ class ProjectStatsLabels {
   final String plugins;
   final String showAll;
   final String collapse;
+  final String sampleRate;
+  final String Function(int bits) bitDepth;
 }
 
 /// Track counts by kind and the plug-in list read out of a project file.
@@ -106,6 +111,18 @@ class _ProjectStatsSectionState extends State<ProjectStatsSection> {
               children: [
                 for (final (icon, label, count) in kinds)
                   _StatPill(icon: icon, label: label, count: count),
+              ],
+            ),
+          ],
+          if (audioFormatText(
+                  stats.sampleRate, stats.bitDepth, labels.bitDepth)
+              case final format?) ...[
+            if (stats.totalTracks > 0) const SizedBox(height: 16),
+            Row(
+              children: [
+                Text(labels.sampleRate, style: headingStyle),
+                const SizedBox(width: 6),
+                Text(format, style: countStyle),
               ],
             ),
           ],

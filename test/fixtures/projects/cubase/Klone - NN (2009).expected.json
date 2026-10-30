@@ -11,7 +11,7 @@
       "instrument": 0,
       "sampler": 0,
       "bus": 0,
-      "folder": 1,
+      "folder": 0,
       "plugins": [
         "Vanguard"
       ],
@@ -103,6 +103,32 @@
         "file": "HIHAT322(CLSD).wav",
         "use": "audio"
       }
-    ]
+    ],
+    "inspector": {
+      "savedWith": "3.1.1",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": null,
+      "channels": [
+        "Kick [audio] | -> - | - -",
+        "MIDI 01 [midi] | -> - | - -",
+        "SNARE134 02 [audio] | -> - | - -",
+        "RIM19 03 [audio] | -> - | - -",
+        "Audio 04 [audio] | -> - | - -",
+        "Audio 05 [audio] | -> - | - -",
+        "Audio 06 [audio] | -> - | - -"
+      ],
+      "plugins": [
+        "Vanguard | - | third-party"
+      ],
+      "audioIo": {
+        "driver": null,
+        "platform": null,
+        "inputBuses": [],
+        "outputBuses": [],
+        "midiInputs": [],
+        "midiOutputs": []
+      }
+    }
   }
 }

@@ -8012,4 +8012,393 @@ class AppLocalizationsZh extends AppLocalizations {
   String missingPreviewRemoveIncludesOtherComputer(int count) {
     return '其中 $count 首在另一台电脑上可能仍可播放。';
   }
+
+  @override
+  String get inspectorTab => '检查器';
+
+  @override
+  String get inspectorSearchHint => '搜索轨道和插件';
+
+  @override
+  String get inspectorEmptyTitle => '无需打开 DAW 即可查看项目内容';
+
+  @override
+  String get inspectorEmptyBody =>
+      '将项目文件拖到这里、打开一个，或在项目菜单中选择“检查”。项目只会被读取，不会被更改。';
+
+  @override
+  String get inspectorOpenProject => '打开项目…';
+
+  @override
+  String get inspectorChooseProjectTitle => '选择要检查的项目';
+
+  @override
+  String get inspectorReading => '正在读取项目…';
+
+  @override
+  String get inspectorReadFailed => '无法读取此项目。';
+
+  @override
+  String inspectorUnsupported(String extension) {
+    return '检查器无法读取 $extension 文件。';
+  }
+
+  @override
+  String get inspectorReload => '重新读取';
+
+  @override
+  String get inspectorClose => '关闭';
+
+  @override
+  String inspectorSavedWith(String daw, String version) {
+    return '使用 $daw $version 保存';
+  }
+
+  @override
+  String get inspectorTileTempo => '速度';
+
+  @override
+  String get inspectorTileTimeSignature => '拍号';
+
+  @override
+  String get inspectorTileSampleRate => '采样率';
+
+  @override
+  String inspectorBitDepth(int bits) {
+    return '$bits 位';
+  }
+
+  @override
+  String get inspectorNotInFile => '项目中没有';
+
+  @override
+  String inspectorTileTracks(int count) {
+    return '条轨道';
+  }
+
+  @override
+  String inspectorTileEffects(int count) {
+    return '个效果';
+  }
+
+  @override
+  String inspectorTileInstruments(int count) {
+    return '个乐器';
+  }
+
+  @override
+  String inspectorEffectsBreakdown(int stock, int thirdParty) {
+    return '$stock 个内置 · $thirdParty 个第三方';
+  }
+
+  @override
+  String get inspectorFilterAll => '全部';
+
+  @override
+  String get inspectorKindAudio => '音频';
+
+  @override
+  String get inspectorKindInstrument => '乐器';
+
+  @override
+  String get inspectorKindMidi => 'MIDI';
+
+  @override
+  String get inspectorKindSampler => '采样器';
+
+  @override
+  String get inspectorKindGroup => '编组';
+
+  @override
+  String get inspectorKindFx => '效果';
+
+  @override
+  String get inspectorKindFolder => '文件夹';
+
+  @override
+  String get inspectorTabTracks => '轨道';
+
+  @override
+  String get inspectorTabPlugins => '插件';
+
+  @override
+  String get inspectorTabRouting => '路由';
+
+  @override
+  String get inspectorTabMedia => '音频文件';
+
+  @override
+  String get inspectorTabStatistics => '统计';
+
+  @override
+  String inspectorNotAvailable(String daw) {
+    return '尚不支持读取 $daw 项目的此信息。';
+  }
+
+  @override
+  String get inspectorOutput => '输出';
+
+  @override
+  String get inspectorInserts => '插入';
+
+  @override
+  String get inspectorSends => '发送';
+
+  @override
+  String get inspectorInstrument => '乐器';
+
+  @override
+  String get inspectorFader => '推子';
+
+  @override
+  String get inspectorNoInserts => '无插入';
+
+  @override
+  String get inspectorNoSends => '无发送';
+
+  @override
+  String get inspectorNotConnected => '未连接';
+
+  @override
+  String get inspectorDeactivated => '关闭';
+
+  @override
+  String get inspectorSoloed => '独奏';
+
+  @override
+  String get inspectorPreFader => '推子前';
+
+  @override
+  String get inspectorSendSwitchedOff => '已关闭';
+
+  @override
+  String inspectorSideChainInto(String plugin) {
+    return '侧链至 $plugin';
+  }
+
+  @override
+  String inspectorEqBandsOn(int count) {
+    return 'EQ：$count 个频段开启';
+  }
+
+  @override
+  String get inspectorFaderPositionOnly => '推子位置；尚未读取其 dB 值';
+
+  @override
+  String get inspectorSelectChannel => '选择一个通道以查看其路由和插件。';
+
+  @override
+  String get inspectorGroupStock => '内置效果';
+
+  @override
+  String get inspectorGroupThirdParty => '第三方效果';
+
+  @override
+  String get inspectorGroupInstruments => '乐器';
+
+  @override
+  String inspectorPluginSummary(int unique, int instances) {
+    return '$unique 个不同插件 · $instances 个实例';
+  }
+
+  @override
+  String inspectorPluginsNamesOnly(String daw) {
+    return '尚不支持读取 $daw 项目中各插件所在的通道。';
+  }
+
+  @override
+  String get inspectorSignalFlow => '信号流';
+
+  @override
+  String get inspectorByDestination => '按目标';
+
+  @override
+  String get inspectorFeedsIn => '输入来源';
+
+  @override
+  String get inspectorGoesTo => '送往';
+
+  @override
+  String get inspectorSignalPath => '信号路径';
+
+  @override
+  String get inspectorViaSend => '发送';
+
+  @override
+  String get inspectorViaSideChain => '侧链';
+
+  @override
+  String get inspectorNothingFeeds => '没有任何信号进入此通道。';
+
+  @override
+  String inspectorHintNowhere(int count) {
+    return '$count 个通道没有输出';
+  }
+
+  @override
+  String inspectorHintSkipBuses(int count) {
+    return '$count 条轨道直接送往输出';
+  }
+
+  @override
+  String inspectorSourcesCount(int count) {
+    return '$count 个来源';
+  }
+
+  @override
+  String get inspectorMediaFound => '已找到';
+
+  @override
+  String get inspectorMediaElsewhere => '在项目文件夹中找到';
+
+  @override
+  String get inspectorMediaMissing => '缺失';
+
+  @override
+  String inspectorMediaSummary(int missing, int total) {
+    return '$total 个中缺失 $missing 个';
+  }
+
+  @override
+  String inspectorMediaAllFound(int total) {
+    return '全部 $total 个均已找到';
+  }
+
+  @override
+  String get inspectorMediaChecking => '正在查找文件…';
+
+  @override
+  String get inspectorMediaNone => '此项目未使用音频文件。';
+
+  @override
+  String inspectorMediaStoredAt(String path) {
+    return '项目记录的位置：$path';
+  }
+
+  @override
+  String inspectorMediaFoundAt(String path) {
+    return '找到位置：$path';
+  }
+
+  @override
+  String get inspectorStatTrackTypes => '轨道类型';
+
+  @override
+  String get inspectorStatPluginInstances => '插件实例';
+
+  @override
+  String get inspectorStatUnknown => '未知';
+
+  @override
+  String get inspectorStatMostUsed => '最常用的插件';
+
+  @override
+  String get inspectorStatUsualChains => '常用插件链';
+
+  @override
+  String get inspectorStatNoChains => '没有在多个通道中重复的插件链。';
+
+  @override
+  String get inspectorStatInsertsPerChannel => '每个通道的插入数';
+
+  @override
+  String get inspectorStatBusiest => '最繁忙的目标';
+
+  @override
+  String inspectorInsertsCount(int count) {
+    return '$count 个插入';
+  }
+
+  @override
+  String inspectorChannelsCount(int count) {
+    return '$count 个通道';
+  }
+
+  @override
+  String get projectMenuInspect => '检查';
+
+  @override
+  String get sampleRateColumn => '采样率';
+
+  @override
+  String get inspectorCloudTitle => '下载此项目？';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return '此项目位于云端，不在这台电脑上。读取它会下载整个文件（$size）。';
+  }
+
+  @override
+  String get inspectorCloudRead => '下载并读取';
+
+  @override
+  String get inspectorTabAudioIo => '音频 I/O';
+
+  @override
+  String get inspectorAudioDriver => '音频驱动';
+
+  @override
+  String get inspectorUnnamedDriver => '项目中未命名';
+
+  @override
+  String inspectorSavedOn(String platform) {
+    return '在 $platform 上保存';
+  }
+
+  @override
+  String get inspectorInputBuses => '输入总线';
+
+  @override
+  String get inspectorOutputBuses => '输出总线';
+
+  @override
+  String get inspectorInterfaceInputs => '接口输入';
+
+  @override
+  String get inspectorInterfaceOutputs => '接口输出';
+
+  @override
+  String get inspectorMidiInputs => 'MIDI 输入';
+
+  @override
+  String get inspectorMidiOutputs => 'MIDI 输出';
+
+  @override
+  String get inspectorNone => '无';
+
+  @override
+  String get inspectorPan => '声像';
+
+  @override
+  String get inspectorMuted => '静音';
+
+  @override
+  String get inspectorChannelStrip => '通道条';
+
+  @override
+  String get inspectorStripBypassed => '通道条已旁通';
+
+  @override
+  String get inspectorStripBeforeInserts => '在插入之前';
+
+  @override
+  String get inspectorStripGate => '门限';
+
+  @override
+  String get inspectorStripCompressor => '压缩器';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => '工具';
+
+  @override
+  String get inspectorStripSaturation => '饱和';
+
+  @override
+  String get inspectorStripLimiter => '限制器';
+
+  @override
+  String get inspectorStripModule => '模块';
 }

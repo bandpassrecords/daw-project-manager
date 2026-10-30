@@ -18,6 +18,8 @@ class ProjectStats {
     this.folderTracks = 0,
     this.plugins = const [],
     this.midiClipCount,
+    this.sampleRate,
+    this.bitDepth,
   });
 
   final int audioTracks;
@@ -48,6 +50,13 @@ class ProjectStats {
   /// extractor for this DAW doesn't read clips.
   final int? midiClipCount;
 
+  /// The project's sample rate in Hz, where the format stores one (#213);
+  /// null when it doesn't, or this DAW's isn't read.
+  final int? sampleRate;
+
+  /// The record format's bit depth (16, 24, 32), under the same rule.
+  final int? bitDepth;
+
   /// Tracks that hold material: audio, MIDI, instrument and sampler.
   int get contentTracks =>
       audioTracks + midiTracks + instrumentTracks + samplerTracks;
@@ -63,6 +72,22 @@ class ProjectStats {
         folderTracks: folderTracks,
         plugins: plugins,
         midiClipCount: count,
+        sampleRate: sampleRate,
+        bitDepth: bitDepth,
+      );
+
+  ProjectStats withAudioFormat({int? sampleRate, int? bitDepth}) =>
+      ProjectStats(
+        audioTracks: audioTracks,
+        midiTracks: midiTracks,
+        instrumentTracks: instrumentTracks,
+        samplerTracks: samplerTracks,
+        busTracks: busTracks,
+        folderTracks: folderTracks,
+        plugins: plugins,
+        midiClipCount: midiClipCount,
+        sampleRate: sampleRate,
+        bitDepth: bitDepth,
       );
 
   bool get isEmpty =>
@@ -77,6 +102,8 @@ class ProjectStats {
         'folder': folderTracks,
         'plugins': plugins,
         if (midiClipCount != null) 'midiClips': midiClipCount,
+        if (sampleRate != null) 'sampleRate': sampleRate,
+        if (bitDepth != null) 'bitDepth': bitDepth,
       };
 
   /// Lenient on purpose: this runs inside Hive's adapter and on Drive/backup
@@ -89,6 +116,11 @@ class ProjectStats {
 
     final rawPlugins = map['plugins'];
     final clips = map['midiClips'];
+    int? positive(String key) {
+      final v = map[key];
+      return v is num && v > 0 ? v.toInt() : null;
+    }
+
     return ProjectStats(
       audioTracks: count('audio'),
       midiTracks: count('midi'),
@@ -100,6 +132,8 @@ class ProjectStats {
           ? List<String>.unmodifiable(rawPlugins.whereType<String>())
           : const [],
       midiClipCount: clips is num ? clips.toInt() : null,
+      sampleRate: positive('sampleRate'),
+      bitDepth: positive('bitDepth'),
     );
   }
 
@@ -118,18 +152,21 @@ class ProjectStats {
           busTracks == other.busTracks &&
           folderTracks == other.folderTracks &&
           midiClipCount == other.midiClipCount &&
+          sampleRate == other.sampleRate &&
+          bitDepth == other.bitDepth &&
           _listEquals(plugins, other.plugins);
 
   @override
   int get hashCode => Object.hash(audioTracks, midiTracks, instrumentTracks,
-      samplerTracks, busTracks, folderTracks, midiClipCount,
-      Object.hashAll(plugins));
+      samplerTracks, busTracks, folderTracks, midiClipCount, sampleRate,
+      bitDepth, Object.hashAll(plugins));
 
   @override
   String toString() => 'ProjectStats(audio: $audioTracks, midi: $midiTracks, '
       'instrument: $instrumentTracks, sampler: $samplerTracks, '
       'bus: $busTracks, folder: $folderTracks, plugins: ${plugins.length}, '
-      'midiClips: $midiClipCount)';
+      'midiClips: $midiClipCount, sampleRate: $sampleRate, '
+      'bitDepth: $bitDepth)';
 }
 
 bool _listEquals(List<String> a, List<String> b) {

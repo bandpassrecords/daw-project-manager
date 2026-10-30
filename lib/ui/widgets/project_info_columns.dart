@@ -5,6 +5,7 @@ import 'package:trina_grid/trina_grid.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/music_project.dart';
 import '../../providers/providers.dart' show finishedPhaseProvider;
+import '../../utils/audio_format_text.dart';
 import '../../utils/project_summary_text.dart';
 import '../../utils/deadline_text.dart';
 import '../../utils/track_duration.dart';
@@ -28,6 +29,7 @@ const kLengthColumnField = 'length';
 const kPartsColumnField = 'parts';
 const kTagsColumnField = 'tags';
 const kDeadlineColumnField = 'deadline';
+const kSampleRateColumnField = 'sampleRate';
 
 MusicProject? _projectOf(TrinaColumnRendererContext ctx) =>
     ctx.row.cells['data']?.value as MusicProject?;
@@ -52,6 +54,9 @@ Map<String, TrinaCell> projectInfoCells(MusicProject project) => {
       // project with no parts listed sorts alongside a finished one.
       kPartsColumnField:
           TrinaCell(value: ReleaseTrackPartsChip.neededCount(project)),
+      // Hz, so the column sorts by rate; 0 when the project says none. The
+      // renderer adds the bit depth (#213).
+      kSampleRateColumnField: TrinaCell(value: project.stats?.sampleRate ?? 0),
     };
 
 /// The shared columns' cells for a row that isn't a project's.
@@ -61,6 +66,7 @@ Map<String, TrinaCell> emptyProjectInfoCells() => {
       kLengthColumnField: TrinaCell(value: 0),
       kNotesColumnField: TrinaCell(value: ''),
       kPartsColumnField: TrinaCell(value: 0),
+      kSampleRateColumnField: TrinaCell(value: 0),
     };
 
 /// The song's length — measured from its audio, or typed in.
@@ -77,6 +83,27 @@ TrinaColumn projectLengthColumn({required String title}) => TrinaColumn(
         // can sort numerically — never shown as a time.
         if (ms <= 0) return const SizedBox.shrink();
         return Text(formatTrackDuration(Duration(milliseconds: ms)));
+      },
+    );
+
+/// The project's sample rate and bit depth ("48 kHz · 24-bit"), as its last
+/// deep scan read them; blank where the format stores none.
+TrinaColumn projectSampleRateColumn({
+  required String title,
+  required String Function(int bits) bitDepthText,
+}) =>
+    TrinaColumn(
+      title: title,
+      field: kSampleRateColumnField,
+      type: TrinaColumnType.number(),
+      enableEditingMode: false,
+      width: 130,
+      minWidth: 90,
+      renderer: (ctx) {
+        final stats = _projectOf(ctx)?.stats;
+        final text = audioFormatText(
+            stats?.sampleRate, stats?.bitDepth, bitDepthText);
+        return text == null ? const SizedBox.shrink() : Text(text);
       },
     );
 
