@@ -9014,4 +9014,163 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inspectorStripModule => 'Модуль';
+
+  @override
+  String get relinkFixButton => 'Исправить недостающие файлы…';
+
+  @override
+  String get relinkTitle => 'Исправить недостающие файлы';
+
+  @override
+  String get relinkIntro =>
+      'Рядом с проектом записывается копия, указывающая, где файлы находятся сейчас. Сам проект никогда не изменяется.';
+
+  @override
+  String get relinkSearchFolder => 'Искать в папке…';
+
+  @override
+  String get relinkSearchFolderTitle => 'Где недостающие файлы?';
+
+  @override
+  String get relinkSearching => 'Поиск файлов…';
+
+  @override
+  String relinkSearchedIn(String folders) {
+    return 'Просмотрено: $folders';
+  }
+
+  @override
+  String relinkWillFix(int count, int total) {
+    return 'Будет перепривязано файлов: $count из $total';
+  }
+
+  @override
+  String relinkChooseOne(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Найдено $count раз — выберите один',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNotFound => 'Не найден';
+
+  @override
+  String get relinkBrowse => 'Обзор…';
+
+  @override
+  String relinkBrowseTitle(String name) {
+    return 'Где $name?';
+  }
+
+  @override
+  String get relinkLeave => 'Оставить как есть';
+
+  @override
+  String get relinkChange => 'Выбрать, куда указывает';
+
+  @override
+  String relinkRuleOffer(int count, String from, String to) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Тот же перенос находит ещё $count файла: $from → $to',
+      many: 'Тот же перенос находит ещё $count файлов: $from → $to',
+      few: 'Тот же перенос находит ещё $count файла: $from → $to',
+      one: 'Тот же перенос находит ещё $count файл: $from → $to',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkApplyRule => 'Применить';
+
+  @override
+  String get relinkWrite => 'Записать перепривязанную копию';
+
+  @override
+  String get relinkWriting => 'Запись и проверка копии…';
+
+  @override
+  String relinkWrote(String name) {
+    return 'Записано: $name';
+  }
+
+  @override
+  String relinkRelinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Перепривязано $count файла',
+      many: 'Перепривязано $count файлов',
+      few: 'Перепривязано $count файла',
+      one: 'Перепривязан $count файл',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedTooLong(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count не перепривязаны: новый путь длиннее, чем помещается в проекте. Переместите в более короткий путь или найдите в Cubase.',
+      many:
+          '$count не перепривязаны: новый путь длиннее, чем помещается в проекте. Переместите в более короткий путь или найдите в Cubase.',
+      few:
+          '$count не перепривязаны: новый путь длиннее, чем помещается в проекте. Переместите в более короткий путь или найдите в Cubase.',
+      one:
+          '$count не перепривязан: новый путь длиннее, чем помещается в проекте. Переместите в более короткий путь или найдите в Cubase.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedEncoding(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count не перепривязаны: этот старый проект не может сохранить особые символы нового пути.',
+      many:
+          '$count не перепривязаны: этот старый проект не может сохранить особые символы нового пути.',
+      few:
+          '$count не перепривязаны: этот старый проект не может сохранить особые символы нового пути.',
+      one:
+          '$count не перепривязан: этот старый проект не может сохранить особые символы нового пути.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedNotFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count не перепривязаны: проект упоминает их только там, где копия не может это изменить.',
+      many:
+          '$count не перепривязаны: проект упоминает их только там, где копия не может это изменить.',
+      few:
+          '$count не перепривязаны: проект упоминает их только там, где копия не может это изменить.',
+      one:
+          '$count не перепривязан: проект упоминает его только там, где копия не может это изменить.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNothingWritten =>
+      'Ничего не удалось перепривязать, поэтому копия не записана.';
+
+  @override
+  String relinkFailed(String reason) {
+    return 'Копия не прошла проверку и не сохранена: $reason';
+  }
+
+  @override
+  String get relinkInspectCopy => 'Открыть копию в инспекторе';
 }

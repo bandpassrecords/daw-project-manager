@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/project_anatomy.dart';
+import '../../models/sample_reference.dart';
 import '../../services/project_inspector/media_check.dart';
 import '../../utils/project_anatomy_stats.dart';
 import '../dialogs/archive_project_dialog.dart' show formatByteSize;
@@ -24,6 +25,7 @@ class ProjectInspectorView extends StatefulWidget {
     required this.onOpenOther,
     this.mediaChecks,
     this.mediaChecking = false,
+    this.onRelink,
     this.initialSection = InspectorSection.tracks,
   });
 
@@ -39,6 +41,10 @@ class ProjectInspectorView extends StatefulWidget {
   /// project's audio files aren't read.
   final List<MediaCheck>? mediaChecks;
   final bool mediaChecking;
+
+  /// Fixes the missing audio files in a relinked copy; null where this
+  /// DAW's projects can't be relinked yet.
+  final VoidCallback? onRelink;
   final InspectorSection initialSection;
 
   @override
@@ -168,6 +174,7 @@ class _ProjectInspectorViewState extends State<ProjectInspectorView> {
             : _MediaSection(
                 checks: widget.mediaChecks,
                 checking: widget.mediaChecking,
+                onRelink: widget.onRelink,
               ),
       InspectorSection.statistics => _StatisticsSection(anatomy: a),
     };
@@ -1590,9 +1597,14 @@ class _AudioIoSection extends StatelessWidget {
 // --- media ------------------------------------------------------------------
 
 class _MediaSection extends StatelessWidget {
-  const _MediaSection({required this.checks, required this.checking});
+  const _MediaSection({
+    required this.checks,
+    required this.checking,
+    this.onRelink,
+  });
   final List<MediaCheck>? checks;
   final bool checking;
+  final VoidCallback? onRelink;
 
   @override
   Widget build(BuildContext context) {
@@ -1614,6 +1626,9 @@ class _MediaSection extends StatelessWidget {
     if (all.isEmpty) return _Note(l10n.inspectorMediaNone);
     final counts = mediaCounts(all);
     final missing = counts[MediaStatus.missing] ?? 0;
+    // What a relink can point elsewhere: not a path in a plug-in's state.
+    final fixable = all.any((c) =>
+        c.status != MediaStatus.found && c.reference.use != SampleUse.plugin);
     // Missing first: they are what this list is for.
     final sorted = [
       ...all,
@@ -1621,13 +1636,26 @@ class _MediaSection extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
-          missing == 0
-              ? l10n.inspectorMediaAllFound(all.length)
-              : l10n.inspectorMediaSummary(missing, all.length),
-          style: theme.textTheme.titleSmall?.copyWith(
-            color: missing == 0 ? null : theme.colorScheme.error,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                missing == 0
+                    ? l10n.inspectorMediaAllFound(all.length)
+                    : l10n.inspectorMediaSummary(missing, all.length),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: missing == 0 ? null : theme.colorScheme.error,
+                ),
+              ),
+            ),
+            if (fixable && onRelink != null)
+              FilledButton.tonalIcon(
+                onPressed: onRelink,
+                icon: const Icon(Icons.healing),
+                label: Text(l10n.relinkFixButton),
+              ),
+          ],
         ),
         const SizedBox(height: 8),
         for (final c in sorted)

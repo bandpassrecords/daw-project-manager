@@ -632,30 +632,11 @@ class CubaseProjectParser {
   /// a recording; "kick-01.wav" beside "kick.wav" is what Cubase writes when
   /// it processes or bounces a file.
   List<SampleReference> readSampleReferences() {
-    final pool = <({String name, String dir, bool sampler})>[];
-    for (final index in _indices) {
-      final samplerClips = index.instancesOf('PSamplerTrackAudioClip');
-      for (final fn in index.instancesOf('FNPath')) {
-        final name = _readString(fn.body);
-        if (name == null || name.end > fn.end) continue;
-        if (!isSampleAudioFile(name.text)) continue;
-        String? dir;
-        for (var o = name.end; o + 4 < fn.end; o++) {
-          final s = _readString(o);
-          if (s == null || s.end > fn.end || s.text.length < 2) continue;
-          if (s.text.endsWith(r'\') || s.text.endsWith('/')) {
-            dir = s.text;
-            break;
-          }
-        }
-        if (dir == null) continue;
-        pool.add((
-          name: name.text,
-          dir: dir,
-          sampler: samplerClips.any((c) => c.contains(fn.start)),
-        ));
-      }
-    }
+    final pool = [
+      for (final f in readPoolPaths())
+        if (isSampleAudioFile(f.name.text))
+          (name: f.name.text, dir: f.folder.text, sampler: f.sampler),
+    ];
 
     final names = {for (final f in pool) _stem(f.name).toLowerCase()};
     final trackNames = [for (final t in readTracks()) t.name];
@@ -703,6 +684,49 @@ class CubaseProjectParser {
       ));
     }
     return refs;
+  }
+
+  /// Every `FNPath` in the archive — each pool file, and each copy of one
+  /// on an event or in the Sampler Track — as its name and folder strings
+  /// and where they sit, in archive order. One file appears once per
+  /// object that names it (test-01.cpr names a kick in two). What
+  /// [readSampleReferences] reads, and what a relink rewrites in place.
+  List<CubasePoolPath> readPoolPaths() {
+    final paths = <CubasePoolPath>[];
+    for (final index in _indices) {
+      final samplerClips = index.instancesOf('PSamplerTrackAudioClip');
+      for (final fn in index.instancesOf('FNPath')) {
+        final name = _readString(fn.body);
+        if (name == null || name.end > fn.end) continue;
+        for (var o = name.end; o + 4 < fn.end; o++) {
+          final s = _readString(o);
+          if (s == null || s.end > fn.end || s.text.length < 2) continue;
+          if (s.text.endsWith(r'\') || s.text.endsWith('/')) {
+            paths.add(CubasePoolPath(
+              name: _slotOf(fn.body, name),
+              folder: _slotOf(o, s),
+              sampler: samplerClips.any((c) => c.contains(fn.start)),
+            ));
+            break;
+          }
+        }
+      }
+    }
+    return paths;
+  }
+
+  CubaseStringSlot _slotOf(int offset, ({String text, int end}) s) {
+    final length = _data.getUint32(offset);
+    final end = offset + 4 + length;
+    return CubaseStringSlot(
+      offset: offset,
+      length: length,
+      text: s.text,
+      bom: length >= 4 &&
+          bytes[end - 3] == 0xEF &&
+          bytes[end - 2] == 0xBB &&
+          bytes[end - 1] == 0xBF,
+    );
   }
 
   static final _processedCopy = RegExp(r'^(.+)-\d{2}$');
@@ -1461,6 +1485,39 @@ class CubaseInsert {
 
   /// Switched off in the slot (not loaded) when saved.
   final bool? deactivated;
+}
+
+/// A string in the archive and where it sits: its u32 length at [offset],
+/// counting the text, a NUL and, when [bom], a UTF-8 BOM after it.
+class CubaseStringSlot {
+  const CubaseStringSlot({
+    required this.offset,
+    required this.length,
+    required this.text,
+    required this.bom,
+  });
+  final int offset;
+  final int length;
+  final String text;
+  final bool bom;
+
+  /// The most bytes of text the string can hold, its NUL kept.
+  int get room => length - 1 - (bom ? 3 : 0);
+}
+
+/// One `FNPath`: a file's name and the folder it is in, ending in a
+/// separator; [sampler] when the Sampler Track plays it.
+class CubasePoolPath {
+  const CubasePoolPath({
+    required this.name,
+    required this.folder,
+    this.sampler = false,
+  });
+  final CubaseStringSlot name;
+  final CubaseStringSlot folder;
+  final bool sampler;
+
+  String get path => '${folder.text}${name.text}';
 }
 
 /// The kinds of module a Cubase channel strip holds, a slot for each.

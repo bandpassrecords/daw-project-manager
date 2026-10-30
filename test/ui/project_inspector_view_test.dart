@@ -158,6 +158,7 @@ void main() {
     String search = '',
     List<MediaCheck>? media,
     InspectorSection section = InspectorSection.tracks,
+    bool relinkable = false,
   }) async {
     final calls = <String>[];
     tester.view.physicalSize = const Size(1600, 1000);
@@ -176,6 +177,7 @@ void main() {
             onClose: () => calls.add('close'),
             onReload: () => calls.add('reload'),
             onOpenOther: () => calls.add('open'),
+            onRelink: relinkable ? () => calls.add('relink') : null,
           ),
         ),
       ),
@@ -408,6 +410,41 @@ void main() {
     final kickY = tester.getTopLeft(find.text('Kick.wav')).dy;
     final snareY = tester.getTopLeft(find.text('Snare.wav')).dy;
     expect(snareY, lessThan(kickY));
+    expect(find.text('Fix missing files…'), findsNothing,
+        reason: "this DAW's projects can't be relinked");
+  });
+
+  testWidgets('missing files offer a fix where the format can be relinked', (
+    tester,
+  ) async {
+    const snare = SampleReference(
+      fileName: 'Snare.wav',
+      candidates: ['/a/Snare.wav'],
+    );
+    const pad = SampleReference(
+      fileName: 'Pad.wav',
+      candidates: ['/a/Pad.wav'],
+      use: SampleUse.plugin,
+    );
+    var calls = await pump(
+      tester,
+      _cubase,
+      section: InspectorSection.media,
+      relinkable: true,
+      media: const [MediaCheck(snare, MediaStatus.missing)],
+    );
+    await tester.tap(find.text('Fix missing files…'));
+    expect(calls, ['relink']);
+
+    calls = await pump(
+      tester,
+      _cubase,
+      section: InspectorSection.media,
+      relinkable: true,
+      media: const [MediaCheck(pad, MediaStatus.missing)],
+    );
+    expect(find.text('Fix missing files…'), findsNothing,
+        reason: "a path in a plug-in's state isn't the project's to rewrite");
   });
 
   testWidgets('audio I/O: the driver, where it was saved, buses and ports', (

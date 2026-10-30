@@ -37,6 +37,13 @@ class CubaseArchive {
     raw(data);
   }
 
+  /// Strings before Cubase 6: the text and a NUL, in the system's code page.
+  void legacyString(String s) {
+    final data = [...latin1.encode(s), 0];
+    _u32(data.length);
+    raw(data);
+  }
+
   void begin(String cls, {int version = 0}) {
     final def = _defs[cls];
     if (def == null) {
@@ -403,15 +410,23 @@ class CubaseArchive {
   /// type ("WAVE", the extension twice, a description) and the folder.
   /// With [folderRoom], the folder is written as a relink in place writes
   /// it: in a string that held a longer one, NUL-padded to that many bytes.
-  void poolFile(String name, String folder, {int? folderRoom}) {
+  /// Without [bom], strings are written as Cubase 5 wrote them.
+  void poolFile(
+    String name,
+    String folder, {
+    int? folderRoom,
+    bool bom = true,
+  }) {
     begin('FNPath');
-    string(name);
+    bom ? string(name) : legacyString(name);
     raw(ascii.encode('WAVE'));
     string('wav');
     string('wav');
     string('Wave File');
     raw([0, 0, 0, 1, 0, 0]);
-    if (folderRoom == null) {
+    if (!bom) {
+      legacyString(folder);
+    } else if (folderRoom == null) {
       string(folder);
     } else {
       final text = utf8.encode(folder);

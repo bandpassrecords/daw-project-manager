@@ -9068,4 +9068,147 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inspectorStripModule => 'Module';
+
+  @override
+  String get relinkFixButton => 'Réparer les fichiers manquants…';
+
+  @override
+  String get relinkTitle => 'Réparer les fichiers manquants';
+
+  @override
+  String get relinkIntro =>
+      'Une copie du projet est écrite à côté de lui, pointant vers l\'emplacement actuel des fichiers. Le projet lui-même n\'est jamais modifié.';
+
+  @override
+  String get relinkSearchFolder => 'Chercher dans un dossier…';
+
+  @override
+  String get relinkSearchFolderTitle => 'Où sont les fichiers manquants ?';
+
+  @override
+  String get relinkSearching => 'Recherche des fichiers…';
+
+  @override
+  String relinkSearchedIn(String folders) {
+    return 'Recherché dans : $folders';
+  }
+
+  @override
+  String relinkWillFix(int count, int total) {
+    return '$count fichiers sur $total seront reliés';
+  }
+
+  @override
+  String relinkChooseOne(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Trouvé $count fois — choisissez',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNotFound => 'Introuvable';
+
+  @override
+  String get relinkBrowse => 'Parcourir…';
+
+  @override
+  String relinkBrowseTitle(String name) {
+    return 'Où est $name ?';
+  }
+
+  @override
+  String get relinkLeave => 'Laisser tel quel';
+
+  @override
+  String get relinkChange => 'Choisir la cible';
+
+  @override
+  String relinkRuleOffer(int count, String from, String to) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Le même déplacement trouve $count fichiers de plus : $from → $to',
+      one: 'Le même déplacement trouve 1 fichier de plus : $from → $to',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkApplyRule => 'Appliquer';
+
+  @override
+  String get relinkWrite => 'Écrire la copie reliée';
+
+  @override
+  String get relinkWriting => 'Écriture et vérification de la copie…';
+
+  @override
+  String relinkWrote(String name) {
+    return '$name écrit';
+  }
+
+  @override
+  String relinkRelinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fichiers reliés',
+      one: '1 fichier relié',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedTooLong(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count non reliés : leur nouveau chemin est plus long que la place dans le projet. Déplacez-les vers un chemin plus court ou cherchez-les dans Cubase.',
+      one:
+          '1 non relié : son nouveau chemin est plus long que la place dans le projet. Déplacez-le vers un chemin plus court ou cherchez-le dans Cubase.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedEncoding(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count non reliés : ce projet ancien ne peut pas stocker les accents de leur nouveau chemin.',
+      one:
+          '1 non relié : ce projet ancien ne peut pas stocker les accents de son nouveau chemin.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedNotFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count non reliés : le projet ne les nomme qu\'à des endroits qu\'une copie ne peut pas modifier.',
+      one:
+          '1 non relié : le projet ne le nomme qu\'à un endroit qu\'une copie ne peut pas modifier.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNothingWritten =>
+      'Rien n\'a pu être relié : aucune copie n\'a été écrite.';
+
+  @override
+  String relinkFailed(String reason) {
+    return 'La copie n\'a pas passé la vérification et n\'a pas été conservée : $reason';
+  }
+
+  @override
+  String get relinkInspectCopy => 'Inspecter la copie';
 }

@@ -8766,5 +8766,173 @@
   "inspectorStripModule": "Module",
   "@inspectorStripModule": {
     "description": "A channel strip module whose kind isn't known"
+  },
+  "relinkFixButton": "Fix missing files…",
+  "@relinkFixButton": {
+    "description": "Button in the Inspector's audio files: find missing files and write a repaired copy of the project"
+  },
+  "relinkTitle": "Fix missing files",
+  "@relinkTitle": {
+    "description": "Title of the dialog that relinks a project's missing audio files"
+  },
+  "relinkIntro": "A copy of the project is written beside it, pointing to where the files are now. The project itself is never changed.",
+  "@relinkIntro": {
+    "description": "Explains that relinking writes a new copy and never changes the original project"
+  },
+  "relinkSearchFolder": "Search a folder…",
+  "@relinkSearchFolder": {
+    "description": "Button: choose a folder to look for the missing files in"
+  },
+  "relinkSearchFolderTitle": "Where are the missing files?",
+  "@relinkSearchFolderTitle": {
+    "description": "Title of the folder picker for finding missing files"
+  },
+  "relinkSearching": "Looking for the files…",
+  "@relinkSearching": {
+    "description": "Shown while the folders are searched for the missing files"
+  },
+  "relinkSearchedIn": "Searched: {folders}",
+  "@relinkSearchedIn": {
+    "description": "The folders searched so far, separated by commas",
+    "placeholders": {
+      "folders": {
+        "type": "String"
+      }
+    }
+  },
+  "relinkWillFix": "{count} of {total} files will be relinked",
+  "@relinkWillFix": {
+    "description": "How many of the missing files the copy will point to a file for",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "relinkChooseOne": "{count, plural, other{Found {count} times — choose one}}",
+  "@relinkChooseOne": {
+    "description": "A missing file found several times, none clearly right: the user picks",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "relinkNotFound": "Not found",
+  "@relinkNotFound": {
+    "description": "A missing file that wasn't found anywhere searched"
+  },
+  "relinkBrowse": "Browse…",
+  "@relinkBrowse": {
+    "description": "Button / menu entry: point a missing file at one chosen by hand"
+  },
+  "relinkBrowseTitle": "Where is {name}?",
+  "@relinkBrowseTitle": {
+    "description": "Title of the file picker for one missing file",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "relinkLeave": "Leave as it is",
+  "@relinkLeave": {
+    "description": "Menu entry: leave a missing file pointing where the project says"
+  },
+  "relinkChange": "Choose where it points",
+  "@relinkChange": {
+    "description": "Tooltip of the menu that changes where one file will point"
+  },
+  "relinkRuleOffer": "{count, plural, one{The same move finds 1 more file: {from} → {to}} other{The same move finds {count} more files: {from} → {to}}}",
+  "@relinkRuleOffer": {
+    "description": "After the user picks one file: the same folder move would find more files",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "relinkApplyRule": "Apply",
+  "@relinkApplyRule": {
+    "description": "Button: apply the offered folder move to every file it finds"
+  },
+  "relinkWrite": "Write relinked copy",
+  "@relinkWrite": {
+    "description": "Button: write the relinked copy of the project"
+  },
+  "relinkWriting": "Writing and checking the copy…",
+  "@relinkWriting": {
+    "description": "Shown while the relinked copy is written and checked"
+  },
+  "relinkWrote": "Wrote {name}",
+  "@relinkWrote": {
+    "description": "After writing: the copy's file name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "relinkRelinkedCount": "{count, plural, one{1 file relinked} other{{count} files relinked}}",
+  "@relinkRelinkedCount": {
+    "description": "How many files the copy now finds",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "relinkRefusedTooLong": "{count, plural, one{1 not relinked: its new path is longer than the project has room for. Move it to a shorter path, or find it in Cubase.} other{{count} not relinked: their new path is longer than the project has room for. Move them to a shorter path, or find them in Cubase.}}",
+  "@relinkRefusedTooLong": {
+    "description": "Files found but not relinked: the new path is longer than the project file has room for (Cubase)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "relinkRefusedEncoding": "{count, plural, one{1 not relinked: this older project can't store the accented characters in its new path.} other{{count} not relinked: this older project can't store the accented characters in their new path.}}",
+  "@relinkRefusedEncoding": {
+    "description": "Files not relinked: an old project can't store the new path's accented characters",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "relinkRefusedNotFound": "{count, plural, one{1 not relinked: the project names it only where a copy can't change it.} other{{count} not relinked: the project names them only where a copy can't change them.}}",
+  "@relinkRefusedNotFound": {
+    "description": "Files not relinked: the project names them only where the copy can't change them",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "relinkNothingWritten": "Nothing could be relinked, so no copy was written.",
+  "@relinkNothingWritten": {
+    "description": "After trying: no file could be relinked, so nothing was written"
+  },
+  "relinkFailed": "The copy didn't check out and was not kept: {reason}",
+  "@relinkFailed": {
+    "description": "The written copy didn't read back as it should and was deleted; the reason follows",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "relinkInspectCopy": "Inspect the copy",
+  "@relinkInspectCopy": {
+    "description": "Button after writing: open the relinked copy in the Inspector"
   }
 }

@@ -8970,4 +8970,147 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inspectorStripModule => 'Module';
+
+  @override
+  String get relinkFixButton => 'Fix missing files…';
+
+  @override
+  String get relinkTitle => 'Fix missing files';
+
+  @override
+  String get relinkIntro =>
+      'A copy of the project is written beside it, pointing to where the files are now. The project itself is never changed.';
+
+  @override
+  String get relinkSearchFolder => 'Search a folder…';
+
+  @override
+  String get relinkSearchFolderTitle => 'Where are the missing files?';
+
+  @override
+  String get relinkSearching => 'Looking for the files…';
+
+  @override
+  String relinkSearchedIn(String folders) {
+    return 'Searched: $folders';
+  }
+
+  @override
+  String relinkWillFix(int count, int total) {
+    return '$count of $total files will be relinked';
+  }
+
+  @override
+  String relinkChooseOne(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Found $count times — choose one',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNotFound => 'Not found';
+
+  @override
+  String get relinkBrowse => 'Browse…';
+
+  @override
+  String relinkBrowseTitle(String name) {
+    return 'Where is $name?';
+  }
+
+  @override
+  String get relinkLeave => 'Leave as it is';
+
+  @override
+  String get relinkChange => 'Choose where it points';
+
+  @override
+  String relinkRuleOffer(int count, String from, String to) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'The same move finds $count more files: $from → $to',
+      one: 'The same move finds 1 more file: $from → $to',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkApplyRule => 'Apply';
+
+  @override
+  String get relinkWrite => 'Write relinked copy';
+
+  @override
+  String get relinkWriting => 'Writing and checking the copy…';
+
+  @override
+  String relinkWrote(String name) {
+    return 'Wrote $name';
+  }
+
+  @override
+  String relinkRelinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count files relinked',
+      one: '1 file relinked',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedTooLong(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count not relinked: their new path is longer than the project has room for. Move them to a shorter path, or find them in Cubase.',
+      one:
+          '1 not relinked: its new path is longer than the project has room for. Move it to a shorter path, or find it in Cubase.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedEncoding(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count not relinked: this older project can\'t store the accented characters in their new path.',
+      one:
+          '1 not relinked: this older project can\'t store the accented characters in its new path.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedNotFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count not relinked: the project names them only where a copy can\'t change them.',
+      one:
+          '1 not relinked: the project names it only where a copy can\'t change it.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNothingWritten =>
+      'Nothing could be relinked, so no copy was written.';
+
+  @override
+  String relinkFailed(String reason) {
+    return 'The copy didn\'t check out and was not kept: $reason';
+  }
+
+  @override
+  String get relinkInspectCopy => 'Inspect the copy';
 }

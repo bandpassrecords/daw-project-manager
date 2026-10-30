@@ -14299,6 +14299,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Module'**
   String get inspectorStripModule;
+
+  /// Button in the Inspector's audio files: find missing files and write a repaired copy of the project
+  ///
+  /// In en, this message translates to:
+  /// **'Fix missing files…'**
+  String get relinkFixButton;
+
+  /// Title of the dialog that relinks a project's missing audio files
+  ///
+  /// In en, this message translates to:
+  /// **'Fix missing files'**
+  String get relinkTitle;
+
+  /// Explains that relinking writes a new copy and never changes the original project
+  ///
+  /// In en, this message translates to:
+  /// **'A copy of the project is written beside it, pointing to where the files are now. The project itself is never changed.'**
+  String get relinkIntro;
+
+  /// Button: choose a folder to look for the missing files in
+  ///
+  /// In en, this message translates to:
+  /// **'Search a folder…'**
+  String get relinkSearchFolder;
+
+  /// Title of the folder picker for finding missing files
+  ///
+  /// In en, this message translates to:
+  /// **'Where are the missing files?'**
+  String get relinkSearchFolderTitle;
+
+  /// Shown while the folders are searched for the missing files
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for the files…'**
+  String get relinkSearching;
+
+  /// The folders searched so far, separated by commas
+  ///
+  /// In en, this message translates to:
+  /// **'Searched: {folders}'**
+  String relinkSearchedIn(String folders);
+
+  /// How many of the missing files the copy will point to a file for
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} files will be relinked'**
+  String relinkWillFix(int count, int total);
+
+  /// A missing file found several times, none clearly right: the user picks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{Found {count} times — choose one}}'**
+  String relinkChooseOne(int count);
+
+  /// A missing file that wasn't found anywhere searched
+  ///
+  /// In en, this message translates to:
+  /// **'Not found'**
+  String get relinkNotFound;
+
+  /// Button / menu entry: point a missing file at one chosen by hand
+  ///
+  /// In en, this message translates to:
+  /// **'Browse…'**
+  String get relinkBrowse;
+
+  /// Title of the file picker for one missing file
+  ///
+  /// In en, this message translates to:
+  /// **'Where is {name}?'**
+  String relinkBrowseTitle(String name);
+
+  /// Menu entry: leave a missing file pointing where the project says
+  ///
+  /// In en, this message translates to:
+  /// **'Leave as it is'**
+  String get relinkLeave;
+
+  /// Tooltip of the menu that changes where one file will point
+  ///
+  /// In en, this message translates to:
+  /// **'Choose where it points'**
+  String get relinkChange;
+
+  /// After the user picks one file: the same folder move would find more files
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{The same move finds 1 more file: {from} → {to}} other{The same move finds {count} more files: {from} → {to}}}'**
+  String relinkRuleOffer(int count, String from, String to);
+
+  /// Button: apply the offered folder move to every file it finds
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get relinkApplyRule;
+
+  /// Button: write the relinked copy of the project
+  ///
+  /// In en, this message translates to:
+  /// **'Write relinked copy'**
+  String get relinkWrite;
+
+  /// Shown while the relinked copy is written and checked
+  ///
+  /// In en, this message translates to:
+  /// **'Writing and checking the copy…'**
+  String get relinkWriting;
+
+  /// After writing: the copy's file name
+  ///
+  /// In en, this message translates to:
+  /// **'Wrote {name}'**
+  String relinkWrote(String name);
+
+  /// How many files the copy now finds
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 file relinked} other{{count} files relinked}}'**
+  String relinkRelinkedCount(int count);
+
+  /// Files found but not relinked: the new path is longer than the project file has room for (Cubase)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 not relinked: its new path is longer than the project has room for. Move it to a shorter path, or find it in Cubase.} other{{count} not relinked: their new path is longer than the project has room for. Move them to a shorter path, or find them in Cubase.}}'**
+  String relinkRefusedTooLong(int count);
+
+  /// Files not relinked: an old project can't store the new path's accented characters
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 not relinked: this older project can\'t store the accented characters in its new path.} other{{count} not relinked: this older project can\'t store the accented characters in their new path.}}'**
+  String relinkRefusedEncoding(int count);
+
+  /// Files not relinked: the project names them only where the copy can't change them
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 not relinked: the project names it only where a copy can\'t change it.} other{{count} not relinked: the project names them only where a copy can\'t change them.}}'**
+  String relinkRefusedNotFound(int count);
+
+  /// After trying: no file could be relinked, so nothing was written
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing could be relinked, so no copy was written.'**
+  String get relinkNothingWritten;
+
+  /// The written copy didn't read back as it should and was deleted; the reason follows
+  ///
+  /// In en, this message translates to:
+  /// **'The copy didn\'t check out and was not kept: {reason}'**
+  String relinkFailed(String reason);
+
+  /// Button after writing: open the relinked copy in the Inspector
+  ///
+  /// In en, this message translates to:
+  /// **'Inspect the copy'**
+  String get relinkInspectCopy;
 }
 
 class _AppLocalizationsDelegate

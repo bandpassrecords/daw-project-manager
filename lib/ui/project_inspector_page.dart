@@ -8,10 +8,12 @@ import 'package:path/path.dart' as p;
 
 import '../generated/l10n/app_localizations.dart';
 import '../providers/providers.dart';
+import '../services/project_inspector/relink/relink_writer.dart';
 import '../services/scanner_service.dart';
 import '../utils/cloud_file.dart';
 import 'app_snack_bar.dart';
 import 'dialogs/archive_project_dialog.dart' show formatByteSize;
+import 'dialogs/relink_dialog.dart';
 import 'widgets/project_inspector_view.dart';
 
 /// Opens [path] in the Inspector tab and brings the tab to the front: the
@@ -111,8 +113,11 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.manage_search,
-                    size: 56, color: theme.colorScheme.primary),
+                Icon(
+                  Icons.manage_search,
+                  size: 56,
+                  color: theme.colorScheme.primary,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   l10n.inspectorEmptyTitle,
@@ -162,10 +167,16 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.error_outline,
-                    size: 40, color: theme.colorScheme.error),
+                Icon(
+                  Icons.error_outline,
+                  size: 40,
+                  color: theme.colorScheme.error,
+                ),
                 const SizedBox(height: 12),
-                Text(l10n.inspectorReadFailed, style: theme.textTheme.titleMedium),
+                Text(
+                  l10n.inspectorReadFailed,
+                  style: theme.textTheme.titleMedium,
+                ),
                 const SizedBox(height: 4),
                 Text(path, style: theme.textTheme.bodySmall),
                 Text('$error', style: theme.textTheme.bodySmall),
@@ -173,8 +184,14 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
                 Wrap(
                   spacing: 8,
                   children: [
-                    OutlinedButton(onPressed: reload, child: Text(l10n.inspectorReload)),
-                    TextButton(onPressed: close, child: Text(l10n.inspectorClose)),
+                    OutlinedButton(
+                      onPressed: reload,
+                      child: Text(l10n.inspectorReload),
+                    ),
+                    TextButton(
+                      onPressed: close,
+                      child: Text(l10n.inspectorClose),
+                    ),
                   ],
                 ),
               ],
@@ -189,6 +206,14 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
           onClose: close,
           onReload: reload,
           onOpenOther: _pick,
+          onRelink: relinkWriterFor(a.filePath) == null || media.value == null
+              ? null
+              : () => showRelinkDialog(
+                  context,
+                  ref,
+                  projectPath: a.filePath,
+                  checks: media.value!,
+                ),
         ),
       );
     }
