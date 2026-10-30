@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as p;
 
+import '../project_copy.dart';
 import 'relink_writer.dart';
+
+export '../project_copy.dart' show CopyCheckFailed;
 
 /// A relinked copy as written, or why it wasn't.
 class RelinkCopy {
@@ -16,13 +18,8 @@ class RelinkCopy {
   final Map<String, RelinkRefusal> refused;
 }
 
-/// The written copy didn't read back as it should: nothing was kept.
-class RelinkCheckFailed implements Exception {
-  const RelinkCheckFailed(this.reason);
-  final String reason;
-  @override
-  String toString() => 'RelinkCheckFailed: $reason';
-}
+/// The written copy didn't read back as relinked: nothing was kept.
+typedef RelinkCheckFailed = CopyCheckFailed;
 
 /// Writes a copy of the project at [projectPath] with [moves] (stored path
 /// → where the file is now) applied, beside it as
@@ -68,18 +65,7 @@ Future<RelinkCopy> writeRelinkedCopy({
 
   final target = targetPath ??
       relinkedCopyPath(projectPath, (path) => File(path).existsSync());
-  final part = File('$target.part');
-  try {
-    await part.writeAsBytes(result.bytes, flush: true);
-    final Uint8List written = await part.readAsBytes();
-    if (!listEquals(written, result.bytes)) {
-      throw const RelinkCheckFailed('the copy on disk differs');
-    }
-    await part.rename(target);
-  } catch (_) {
-    if (await part.exists()) await part.delete();
-    rethrow;
-  }
+  await writeCheckedFile(target, result.bytes);
   return RelinkCopy(
     path: target,
     relinked: result.relinked,
@@ -89,13 +75,5 @@ Future<RelinkCopy> writeRelinkedCopy({
 
 /// `<name> (relinked).<ext>` beside [projectPath], numbered past any that
 /// [exists] already: `(relinked 2)`, `(relinked 3)`…
-String relinkedCopyPath(String projectPath, bool Function(String) exists) {
-  final dir = p.dirname(projectPath);
-  final stem = p.basenameWithoutExtension(projectPath);
-  final ext = p.extension(projectPath);
-  for (var n = 1;; n++) {
-    final label = n == 1 ? 'relinked' : 'relinked $n';
-    final candidate = p.join(dir, '$stem ($label)$ext');
-    if (!exists(candidate) && !exists('$candidate.part')) return candidate;
-  }
-}
+String relinkedCopyPath(String projectPath, bool Function(String) exists) =>
+    copyPathBeside(projectPath, 'relinked', exists);

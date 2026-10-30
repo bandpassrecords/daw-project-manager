@@ -270,6 +270,7 @@ class CubaseArchive {
             'Plugin Name': instrumentLabel ?? instrument,
             if (instrumentLabel != null) 'Original Plugin Name': instrument,
             'Bay Program': 'Init Saw',
+            'Active': 1,
           },
           'State': 1,
         },
@@ -312,9 +313,9 @@ class CubaseArchive {
 
   /// A slot of the VST Instruments rack: its plug-in, then its outputs —
   /// channels of type 3, which the arrangement shows as device tracks.
-  void rackSlot(String plugin, List<String> outputs) {
+  void rackSlot(String plugin, List<String> outputs, {bool off = false}) {
     attr('Plugin isA', 'VstCtrlInstrument');
-    attr('Plugin', {'Plugin Name': plugin});
+    attr('Plugin', {'Plugin Name': plugin, 'Active': off ? 0 : 1});
     attr('Output Channels', <Map<String, Object>>[
       for (final (i, name) in outputs.indexed)
         {

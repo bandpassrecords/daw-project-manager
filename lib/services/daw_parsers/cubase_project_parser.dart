@@ -181,6 +181,7 @@ class CubaseProjectParser {
           instrument: channel?.instrument,
           instrumentId: channel?.instrumentId,
           instrumentPreset: channel?.instrumentPreset,
+          instrumentActiveAt: channel?.instrumentActiveAt,
           sends: [
             for (final s in channel?.sends ?? const <_Send>[]) send(s),
           ],
@@ -969,6 +970,7 @@ class CubaseProjectParser {
       instrument: instrument?.name,
       instrumentId: instrument?.id,
       instrumentPreset: instrument?.preset,
+      instrumentActiveAt: instrument?.activeAt,
     );
   }
 
@@ -990,6 +992,9 @@ class CubaseProjectParser {
           null => null,
           final a => a == 0,
         },
+        activeAt: plugin.integer('Active') == null
+            ? null
+            : plugin.offsetOf('Active'),
       ),
       [
         for (final (key, value) in plugin.entries)
@@ -1032,8 +1037,8 @@ class CubaseProjectParser {
   /// An instrument track's instrument, from its "Synth Slot": the plug-in's
   /// own name where the track renamed it ("Bassline" is a Serum), and
   /// nothing for the sampler track's built-in engine.
-  static ({String name, String? id, String? preset})? _instrumentOf(
-      CubaseAttributes? slot) {
+  static ({String name, String? id, String? preset, int? activeAt})?
+      _instrumentOf(CubaseAttributes? slot) {
     final plugin = slot?.folder('Plugin');
     final name = plugin == null
         ? _firstPluginName(slot)
@@ -1043,7 +1048,14 @@ class CubaseProjectParser {
       return null;
     }
     final identity = plugin == null ? null : pluginIdentity(plugin);
-    return (name: name, id: identity?.id, preset: identity?.preset);
+    return (
+      name: name,
+      id: identity?.id,
+      preset: identity?.preset,
+      activeAt: plugin?.integer('Active') == null
+          ? null
+          : plugin!.offsetOf('Active'),
+    );
   }
 
   /// What a slot's "Plugin" folder says about the plug-in beyond its name.
@@ -1122,6 +1134,8 @@ class CubaseProjectParser {
       // The slot's plug-in comes just before: "Plugin isA", then "Plugin".
       String? plugin;
       String? preset;
+      int? activeAt;
+      bool? deactivated;
       final isA = _lastIndexOf(_pluginIsAKey, at);
       if (isA >= 0) {
         final kind = _decoder.attributeAt(isA, limit: at);
@@ -1132,6 +1146,10 @@ class CubaseProjectParser {
           final attrs = folder!.value as CubaseAttributes;
           plugin = attrs.string('Plugin Name');
           preset = pluginIdentity(attrs).preset;
+          if (attrs.integer('Active') case final a?) {
+            activeAt = attrs.offsetOf('Active');
+            deactivated = a == 0;
+          }
         }
       }
       for (final item in outputs) {
@@ -1146,6 +1164,8 @@ class CubaseProjectParser {
           plugin: plugin,
           preset: preset,
           volume: channel.valueOf('Volume'),
+          activeAt: activeAt,
+          deactivated: deactivated,
         ));
       }
     }
@@ -1380,6 +1400,7 @@ class CubaseTrack {
     this.instrument,
     this.instrumentId,
     this.instrumentPreset,
+    this.instrumentActiveAt,
     this.sends = const [],
   });
 
@@ -1448,6 +1469,9 @@ class CubaseTrack {
   /// The preset its instrument had loaded, other than "Default".
   final String? instrumentPreset;
 
+  /// Where its instrument's "Active" flag sits ([CubaseInsert.activeAt]).
+  final int? instrumentActiveAt;
+
   /// Routed send slots; empty slots are left out.
   final List<CubaseSend> sends;
 }
@@ -1463,6 +1487,7 @@ class CubaseInsert {
     this.format,
     this.vendor,
     this.preset,
+    this.activeAt,
   });
   final int slot;
   final String plugin;
@@ -1485,6 +1510,10 @@ class CubaseInsert {
 
   /// Switched off in the slot (not loaded) when saved.
   final bool? deactivated;
+
+  /// Where the plug-in's "Active" flag sits in the file: the 8 bytes of an
+  /// `i64`, 1 on and 0 off, which a Safe Copy rewrites in place.
+  final int? activeAt;
 }
 
 /// A string in the archive and where it sits: its u32 length at [offset],
@@ -1568,6 +1597,8 @@ class CubaseRackInstrument {
     this.plugin,
     this.preset,
     this.volume,
+    this.activeAt,
+    this.deactivated,
   });
 
   /// Which rack slot, counted from 0 in the order the project stores them.
@@ -1580,6 +1611,11 @@ class CubaseRackInstrument {
   /// The preset it had loaded ("Rhodes Classic"), where readable.
   final String? preset;
   final double? volume;
+
+  /// Where the instrument's "Active" flag sits ([CubaseInsert.activeAt]);
+  /// the same for each output of one instrument.
+  final int? activeAt;
+  final bool? deactivated;
 }
 
 /// One port of the audio interface or a MIDI device, as a project names it.
@@ -1683,6 +1719,7 @@ class _Channel {
     this.instrument,
     this.instrumentId,
     this.instrumentPreset,
+    this.instrumentActiveAt,
   });
   final double? pan;
   final bool? muted;
@@ -1702,6 +1739,7 @@ class _Channel {
   final String? instrument;
   final String? instrumentId;
   final String? instrumentPreset;
+  final int? instrumentActiveAt;
 }
 
 /// An insert and the side-chain buses its plug-in offers.
