@@ -4600,5 +4600,15 @@
   "relinkRefusedNotFound": "{count, plural, other{{count} 件は再リンクされませんでした: コピーで変更できない場所にしか記録されていません。}}",
   "relinkNothingWritten": "再リンクできるものがなかったため、コピーは書き出されませんでした。",
   "relinkFailed": "コピーが確認に失敗したため保存しませんでした: {reason}",
-  "relinkInspectCopy": "コピーを調べる"
+  "relinkInspectCopy": "コピーを調べる",
+  "inspectorTileKey": "キー",
+  "inspectorTileMidiClips": "{count, plural, other{MIDI クリップ}}",
+  "inspectorTileMarkers": "{count, plural, other{マーカー}}",
+  "inspectorMarkerRegions": "{count, plural, =0{リージョンなし} other{リージョン {count} 件}}",
+  "inspectorTilePlugins": "{count, plural, other{プラグイン}}",
+  "inspectorPluginNamesOnly": "名前のみ",
+  "inspectorMidiFilesMissing": "{count, plural, other{.mid ファイル {count} 件が見つかりません}}",
+  "inspectorKindBuses": "グループ / FX",
+  "inspectorNotesTitle": "プロジェクト内のメモ",
+  "inspectorMissingMidiTitle": "見つからない MIDI ファイル"
 }

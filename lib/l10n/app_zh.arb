@@ -4600,5 +4600,15 @@
   "relinkRefusedNotFound": "{count, plural, other{{count} 个未重新链接：项目只在副本无法修改的位置记录了它们。}}",
   "relinkNothingWritten": "没有可重新链接的文件，因此没有写入副本。",
   "relinkFailed": "副本未通过检查，未予保留：{reason}",
-  "relinkInspectCopy": "检查副本"
+  "relinkInspectCopy": "检查副本",
+  "inspectorTileKey": "调性",
+  "inspectorTileMidiClips": "{count, plural, other{个 MIDI 片段}}",
+  "inspectorTileMarkers": "{count, plural, other{个标记}}",
+  "inspectorMarkerRegions": "{count, plural, =0{没有区域} other{{count} 个区域}}",
+  "inspectorTilePlugins": "{count, plural, other{个插件}}",
+  "inspectorPluginNamesOnly": "仅名称",
+  "inspectorMidiFilesMissing": "{count, plural, other{缺少 {count} 个 .mid 文件}}",
+  "inspectorKindBuses": "编组和效果",
+  "inspectorNotesTitle": "项目中的备注",
+  "inspectorMissingMidiTitle": "未找到的 MIDI 文件"
 }

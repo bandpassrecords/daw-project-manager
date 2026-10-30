@@ -3,6 +3,8 @@ import 'package:material_ui/material_ui.dart';
 
 import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
 import 'package:daw_project_manager/models/project_anatomy.dart';
+import 'package:daw_project_manager/models/project_marker.dart';
+import 'package:daw_project_manager/models/project_stats.dart';
 import 'package:daw_project_manager/models/sample_reference.dart';
 import 'package:daw_project_manager/services/project_inspector/media_check.dart';
 import 'package:daw_project_manager/ui/widgets/project_inspector_view.dart';
@@ -410,8 +412,11 @@ void main() {
     final kickY = tester.getTopLeft(find.text('Kick.wav')).dy;
     final snareY = tester.getTopLeft(find.text('Snare.wav')).dy;
     expect(snareY, lessThan(kickY));
-    expect(find.text('Fix missing files…'), findsNothing,
-        reason: "this DAW's projects can't be relinked");
+    expect(
+      find.text('Fix missing files…'),
+      findsNothing,
+      reason: "this DAW's projects can't be relinked",
+    );
   });
 
   testWidgets('missing files offer a fix where the format can be relinked', (
@@ -443,8 +448,11 @@ void main() {
       relinkable: true,
       media: const [MediaCheck(pad, MediaStatus.missing)],
     );
-    expect(find.text('Fix missing files…'), findsNothing,
-        reason: "a path in a plug-in's state isn't the project's to rewrite");
+    expect(
+      find.text('Fix missing files…'),
+      findsNothing,
+      reason: "a path in a plug-in's state isn't the project's to rewrite",
+    );
   });
 
   testWidgets('audio I/O: the driver, where it was saved, buses and ports', (
@@ -482,6 +490,70 @@ void main() {
     await tester.tap(find.text('Audio files'));
     await tester.pumpAndSettle();
     expect(find.text('Not read for REAPER projects yet.'), findsOneWidget);
+  });
+
+  group('what the scan already reads', () {
+    const reaper = ProjectAnatomy(
+      filePath: '/music/Song.rpp',
+      fileSize: 1000,
+      dawType: 'REAPER',
+      tempo: 128,
+      key: 'A minor',
+      plugins: [
+        AnatomyPlugin(name: 'ReaEQ'),
+        AnatomyPlugin(name: 'Serum'),
+      ],
+      stats: ProjectStats(
+        audioTracks: 3,
+        midiTracks: 2,
+        busTracks: 1,
+        midiClipCount: 4,
+      ),
+      notes: 'Mix v2 sent to the label',
+      markers: [
+        ProjectMarker(index: 1, name: 'Drop', positionSeconds: 60),
+        ProjectMarker(
+          index: 1,
+          name: 'Intro',
+          positionSeconds: 0,
+          endSeconds: 30,
+        ),
+      ],
+      missingMidiFiles: ['riff.mid'],
+    );
+
+    testWidgets('the header: key, tracks by kind, plug-ins, MIDI, markers', (
+      tester,
+    ) async {
+      await pump(tester, reaper);
+      expect(find.text('A minor'), findsOneWidget);
+      expect(find.text('Key'), findsOneWidget);
+      expect(find.text('6 tracks', findRichText: true), findsOneWidget);
+      expect(find.text('3 audio · 2 midi · 1 group & fx'), findsOneWidget);
+      expect(find.text('2 plug-ins', findRichText: true), findsOneWidget);
+      expect(find.text('By name only'), findsOneWidget);
+      expect(find.text('4 MIDI clips', findRichText: true), findsOneWidget);
+      expect(find.text('1 .mid file missing'), findsOneWidget);
+      expect(find.text('2 markers', findRichText: true), findsOneWidget);
+      expect(find.text('1 region'), findsOneWidget);
+    });
+
+    testWidgets('statistics: notes, markers, missing MIDI, track types', (
+      tester,
+    ) async {
+      await pump(tester, reaper, section: InspectorSection.statistics);
+      expect(find.text('Mix v2 sent to the label'), findsOneWidget);
+      expect(find.textContaining('Drop'), findsOneWidget);
+      expect(find.textContaining('Intro'), findsOneWidget);
+      expect(find.text('riff.mid'), findsOneWidget);
+      expect(find.text('Track types'), findsOneWidget);
+    });
+
+    testWidgets('a key the file does not hold says so', (tester) async {
+      await pump(tester, _cubase);
+      expect(find.text('Key'), findsNothing);
+      expect(find.text('Not in this project'), findsWidgets);
+    });
   });
 
   testWidgets('statistics show without throwing on every card', (tester) async {

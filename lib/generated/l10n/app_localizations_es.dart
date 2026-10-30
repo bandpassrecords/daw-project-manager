@@ -9212,4 +9212,75 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get relinkInspectCopy => 'Inspeccionar la copia';
+
+  @override
+  String get inspectorTileKey => 'Tonalidad';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'clips MIDI',
+      one: 'clip MIDI',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'marcadores',
+      one: 'marcador',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count regiones',
+      one: '1 región',
+      zero: 'Sin regiones',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'plugins',
+      one: 'plugin',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => 'Solo por nombre';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Faltan $count archivos .mid',
+      one: 'Falta 1 archivo .mid',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => 'Grupo y FX';
+
+  @override
+  String get inspectorNotesTitle => 'Notas en el proyecto';
+
+  @override
+  String get inspectorMissingMidiTitle => 'Archivos MIDI no encontrados';
 }

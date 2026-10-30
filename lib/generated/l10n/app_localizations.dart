@@ -14455,6 +14455,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Inspect the copy'**
   String get relinkInspectCopy;
+
+  /// Inspector header tile: the project's musical key
+  ///
+  /// In en, this message translates to:
+  /// **'Key'**
+  String get inspectorTileKey;
+
+  /// Unit after the number of MIDI clips in a project
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{MIDI clip} other{MIDI clips}}'**
+  String inspectorTileMidiClips(int count);
+
+  /// Unit after the number of markers and regions on a project's timeline
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{marker} other{markers}}'**
+  String inspectorTileMarkers(int count);
+
+  /// Caption under the markers tile: how many of them are regions
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No regions} one{1 region} other{{count} regions}}'**
+  String inspectorMarkerRegions(int count);
+
+  /// Unit after the number of plug-ins, when only their names were read
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{plug-in} other{plug-ins}}'**
+  String inspectorTilePlugins(int count);
+
+  /// Caption: the plug-ins are known by name only, not where they are used
+  ///
+  /// In en, this message translates to:
+  /// **'By name only'**
+  String get inspectorPluginNamesOnly;
+
+  /// Caption: .mid files the project references that aren't on this computer
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 .mid file missing} other{{count} .mid files missing}}'**
+  String inspectorMidiFilesMissing(int count);
+
+  /// Group and FX channels counted together, for a DAW whose reader doesn't tell them apart
+  ///
+  /// In en, this message translates to:
+  /// **'Group & FX'**
+  String get inspectorKindBuses;
+
+  /// Heading for the notes saved inside the project file itself
+  ///
+  /// In en, this message translates to:
+  /// **'Notes in the project'**
+  String get inspectorNotesTitle;
+
+  /// Heading for the .mid files a project references that can't be found
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI files not found'**
+  String get inspectorMissingMidiTitle;
 }
 
 class _AppLocalizationsDelegate

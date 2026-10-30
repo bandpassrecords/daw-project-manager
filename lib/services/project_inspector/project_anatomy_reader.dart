@@ -30,12 +30,16 @@ Future<ProjectAnatomy> readProjectAnatomy(String filePath) async {
     final dawType = meta.dawType;
     final tempo = meta.bpm;
     final key = meta.key;
+    final stats = meta.stats;
+    final notes = meta.projectNotes;
     return Isolate.run(() => cubaseAnatomy(
           filePath: filePath,
           bytes: bytes,
           dawType: dawType,
           tempo: tempo,
           key: key,
+          stats: stats,
+          notes: notes,
         ));
   }
 
@@ -54,22 +58,35 @@ Future<ProjectAnatomy> readProjectAnatomy(String filePath) async {
     savedWith: meta.dawVersion,
     tempo: meta.bpm,
     key: meta.key,
+    sampleRate: meta.stats?.sampleRate,
+    bitDepth: meta.stats?.bitDepth,
     plugins: [
       for (final name in meta.stats?.plugins ?? const <String>[])
         AnatomyPlugin(name: name),
     ],
     media: media,
+    stats: meta.stats,
+    notes: _notes(meta.projectNotes),
+    markers: meta.markers,
+    missingMidiFiles: meta.missingMidiFiles,
   );
 }
 
-/// A Cubase project's anatomy from its bytes. [tempo] and [key] are what
-/// [MetadataExtractor] read; everything else is read here.
+/// Notes as the project keeps them; nothing for blank ones.
+String? _notes(String? text) =>
+    text == null || text.trim().isEmpty ? null : text.trim();
+
+/// A Cubase project's anatomy from its bytes. [tempo], [key], [stats]
+/// (for its MIDI clip count) and [notes] are what [MetadataExtractor]
+/// read; everything else is read here.
 ProjectAnatomy cubaseAnatomy({
   required String filePath,
   required Uint8List bytes,
   String? dawType,
   double? tempo,
   String? key,
+  ProjectStats? stats,
+  String? notes,
 }) {
   final parser = CubaseProjectParser(bytes);
   final setup = parser.readProjectSetup();
@@ -177,6 +194,8 @@ ProjectAnatomy cubaseAnatomy({
     pluginInstancesKnown: channelsDecoded,
     media: parser.readSampleReferences(),
     audioIo: _audioIo(parser.readAudioConnections()),
+    stats: stats,
+    notes: _notes(notes),
   );
 }
 

@@ -4600,5 +4600,15 @@
   "relinkRefusedNotFound": "{count, plural, one{1 non relié : le projet ne le nomme qu'à un endroit qu'une copie ne peut pas modifier.} other{{count} non reliés : le projet ne les nomme qu'à des endroits qu'une copie ne peut pas modifier.}}",
   "relinkNothingWritten": "Rien n'a pu être relié : aucune copie n'a été écrite.",
   "relinkFailed": "La copie n'a pas passé la vérification et n'a pas été conservée : {reason}",
-  "relinkInspectCopy": "Inspecter la copie"
+  "relinkInspectCopy": "Inspecter la copie",
+  "inspectorTileKey": "Tonalité",
+  "inspectorTileMidiClips": "{count, plural, one{clip MIDI} other{clips MIDI}}",
+  "inspectorTileMarkers": "{count, plural, one{marqueur} other{marqueurs}}",
+  "inspectorMarkerRegions": "{count, plural, =0{Aucune région} one{1 région} other{{count} régions}}",
+  "inspectorTilePlugins": "{count, plural, one{plug-in} other{plug-ins}}",
+  "inspectorPluginNamesOnly": "Par nom uniquement",
+  "inspectorMidiFilesMissing": "{count, plural, one{1 fichier .mid manquant} other{{count} fichiers .mid manquants}}",
+  "inspectorKindBuses": "Groupe et FX",
+  "inspectorNotesTitle": "Notes dans le projet",
+  "inspectorMissingMidiTitle": "Fichiers MIDI introuvables"
 }

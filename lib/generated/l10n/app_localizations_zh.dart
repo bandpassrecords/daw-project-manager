@@ -8531,4 +8531,70 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get relinkInspectCopy => '检查副本';
+
+  @override
+  String get inspectorTileKey => '调性';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '个 MIDI 片段',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '个标记',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个区域',
+      zero: '没有区域',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '个插件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => '仅名称';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '缺少 $count 个 .mid 文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => '编组和效果';
+
+  @override
+  String get inspectorNotesTitle => '项目中的备注';
+
+  @override
+  String get inspectorMissingMidiTitle => '未找到的 MIDI 文件';
 }

@@ -4600,5 +4600,15 @@
   "relinkRefusedNotFound": "{count, plural, one{{count} не перепривязан: проект упоминает его только там, где копия не может это изменить.} few{{count} не перепривязаны: проект упоминает их только там, где копия не может это изменить.} many{{count} не перепривязаны: проект упоминает их только там, где копия не может это изменить.} other{{count} не перепривязаны: проект упоминает их только там, где копия не может это изменить.}}",
   "relinkNothingWritten": "Ничего не удалось перепривязать, поэтому копия не записана.",
   "relinkFailed": "Копия не прошла проверку и не сохранена: {reason}",
-  "relinkInspectCopy": "Открыть копию в инспекторе"
+  "relinkInspectCopy": "Открыть копию в инспекторе",
+  "inspectorTileKey": "Тональность",
+  "inspectorTileMidiClips": "{count, plural, one{MIDI-клип} few{MIDI-клипа} many{MIDI-клипов} other{MIDI-клипа}}",
+  "inspectorTileMarkers": "{count, plural, one{маркер} few{маркера} many{маркеров} other{маркера}}",
+  "inspectorMarkerRegions": "{count, plural, =0{Нет регионов} one{{count} регион} few{{count} региона} many{{count} регионов} other{{count} региона}}",
+  "inspectorTilePlugins": "{count, plural, one{плагин} few{плагина} many{плагинов} other{плагина}}",
+  "inspectorPluginNamesOnly": "Только по названию",
+  "inspectorMidiFilesMissing": "{count, plural, one{Нет {count} файла .mid} few{Нет {count} файлов .mid} many{Нет {count} файлов .mid} other{Нет {count} файла .mid}}",
+  "inspectorKindBuses": "Группы и FX",
+  "inspectorNotesTitle": "Заметки в проекте",
+  "inspectorMissingMidiTitle": "Не найденные MIDI-файлы"
 }

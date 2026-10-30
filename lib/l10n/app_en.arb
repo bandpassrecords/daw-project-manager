@@ -8934,5 +8934,70 @@
   "relinkInspectCopy": "Inspect the copy",
   "@relinkInspectCopy": {
     "description": "Button after writing: open the relinked copy in the Inspector"
+  },
+  "inspectorTileKey": "Key",
+  "@inspectorTileKey": {
+    "description": "Inspector header tile: the project's musical key"
+  },
+  "inspectorTileMidiClips": "{count, plural, one{MIDI clip} other{MIDI clips}}",
+  "@inspectorTileMidiClips": {
+    "description": "Unit after the number of MIDI clips in a project",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorTileMarkers": "{count, plural, one{marker} other{markers}}",
+  "@inspectorTileMarkers": {
+    "description": "Unit after the number of markers and regions on a project's timeline",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorMarkerRegions": "{count, plural, =0{No regions} one{1 region} other{{count} regions}}",
+  "@inspectorMarkerRegions": {
+    "description": "Caption under the markers tile: how many of them are regions",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorTilePlugins": "{count, plural, one{plug-in} other{plug-ins}}",
+  "@inspectorTilePlugins": {
+    "description": "Unit after the number of plug-ins, when only their names were read",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorPluginNamesOnly": "By name only",
+  "@inspectorPluginNamesOnly": {
+    "description": "Caption: the plug-ins are known by name only, not where they are used"
+  },
+  "inspectorMidiFilesMissing": "{count, plural, one{1 .mid file missing} other{{count} .mid files missing}}",
+  "@inspectorMidiFilesMissing": {
+    "description": "Caption: .mid files the project references that aren't on this computer",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inspectorKindBuses": "Group & FX",
+  "@inspectorKindBuses": {
+    "description": "Group and FX channels counted together, for a DAW whose reader doesn't tell them apart"
+  },
+  "inspectorNotesTitle": "Notes in the project",
+  "@inspectorNotesTitle": {
+    "description": "Heading for the notes saved inside the project file itself"
+  },
+  "inspectorMissingMidiTitle": "MIDI files not found",
+  "@inspectorMissingMidiTitle": {
+    "description": "Heading for the .mid files a project references that can't be found"
   }
 }

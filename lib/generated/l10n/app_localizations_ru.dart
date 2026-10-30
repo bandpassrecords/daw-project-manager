@@ -9173,4 +9173,85 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get relinkInspectCopy => 'Открыть копию в инспекторе';
+
+  @override
+  String get inspectorTileKey => 'Тональность';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'MIDI-клипа',
+      many: 'MIDI-клипов',
+      few: 'MIDI-клипа',
+      one: 'MIDI-клип',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'маркера',
+      many: 'маркеров',
+      few: 'маркера',
+      one: 'маркер',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count региона',
+      many: '$count регионов',
+      few: '$count региона',
+      one: '$count регион',
+      zero: 'Нет регионов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'плагина',
+      many: 'плагинов',
+      few: 'плагина',
+      one: 'плагин',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => 'Только по названию';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Нет $count файла .mid',
+      many: 'Нет $count файлов .mid',
+      few: 'Нет $count файлов .mid',
+      one: 'Нет $count файла .mid',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => 'Группы и FX';
+
+  @override
+  String get inspectorNotesTitle => 'Заметки в проекте';
+
+  @override
+  String get inspectorMissingMidiTitle => 'Не найденные MIDI-файлы';
 }

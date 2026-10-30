@@ -8627,4 +8627,70 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get relinkInspectCopy => 'コピーを調べる';
+
+  @override
+  String get inspectorTileKey => 'キー';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'MIDI クリップ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'マーカー',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'リージョン $count 件',
+      zero: 'リージョンなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'プラグイン',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => '名前のみ';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '.mid ファイル $count 件が見つかりません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => 'グループ / FX';
+
+  @override
+  String get inspectorNotesTitle => 'プロジェクト内のメモ';
+
+  @override
+  String get inspectorMissingMidiTitle => '見つからない MIDI ファイル';
 }
