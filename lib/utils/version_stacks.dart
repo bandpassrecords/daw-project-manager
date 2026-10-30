@@ -81,3 +81,27 @@ MusicProject preferredStackMetadataSource(List<MusicProject> members) {
   final withSomething = members.where((m) => m.hasSomethingToPromote);
   return withSomething.isNotEmpty ? oldest(withSomething) : oldest(members);
 }
+
+/// The version of a song saved just before [member] (#223): the member of
+/// [members] last modified before it, its file still in place (an archived
+/// one is zipped). Null for the first version. Ties on the date go by name,
+/// so "Song 2" comes before "Song 3".
+MusicProject? previousVersionOf(
+  MusicProject member,
+  List<MusicProject> members,
+) {
+  int order(MusicProject x, MusicProject y) {
+    final byDate = x.lastModifiedAt.compareTo(y.lastModifiedAt);
+    return byDate != 0
+        ? byDate
+        : x.displayName.toLowerCase().compareTo(y.displayName.toLowerCase());
+  }
+
+  MusicProject? best;
+  for (final m in members) {
+    if (m.id == member.id || m.isVirtual || m.isArchived) continue;
+    if (order(m, member) >= 0) continue;
+    if (best == null || order(m, best) > 0) best = m;
+  }
+  return best;
+}

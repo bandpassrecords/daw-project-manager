@@ -1800,6 +1800,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       if (i >= 0 && _tabController.index != i) _tabController.animateTo(i);
     });
 
+    // "Show these projects" in the Inspector's plug-in usage: the projects
+    // list, filtered to them.
+    ref.listen<String?>(pluginFilterProvider, (_, plugin) {
+      if (plugin == null) return;
+      final i = _currentVisibleTabs.indexOf(AppTab.projects);
+      if (i >= 0 && _tabController.index != i) _tabController.animateTo(i);
+    });
+
     // The background initial scan at app launch also drives the Rescan
     // button's icon (see isScanning below), so flash the same success
     // checkmark when it finishes as a manual rescan gets.
@@ -1839,6 +1847,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
     final deadlineFilter = ref.watch(deadlineFilterProvider);
     final hasMidiFilter = ref.watch(hasMidiFilterProvider);
+    final pluginFilter = ref.watch(pluginFilterProvider);
     final initialScanning = ref.watch(initialScanStateProvider);
     final isProfileSwitching = ref.watch(profileSwitchingProvider);
     final isScanning = _scanning || initialScanning;
@@ -2940,6 +2949,28 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                             .notifier,
                                                       )
                                                       .toggle(),
+                                                ),
+                                              // Only projects using a
+                                              // plug-in (#225)
+                                              if (pluginFilter != null)
+                                                InputChip(
+                                                  avatar: const Icon(
+                                                    Icons.extension,
+                                                    size: 16,
+                                                  ),
+                                                  label: Text(
+                                                    AppLocalizations.of(
+                                                      context,
+                                                    )!.filterUsesPlugin(
+                                                      pluginFilter,
+                                                    ),
+                                                  ),
+                                                  onDeleted: () => ref
+                                                      .read(
+                                                        pluginFilterProvider
+                                                            .notifier,
+                                                      )
+                                                      .clear(),
                                                 ),
                                             ],
                                           ),

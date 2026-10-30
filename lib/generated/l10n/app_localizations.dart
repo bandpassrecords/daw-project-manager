@@ -14599,6 +14599,630 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'None of those plug-ins was on, so nothing was written.'**
   String get safeCopyNothingWritten;
+
+  /// Inspector header button: compare this project with another file
+  ///
+  /// In en, this message translates to:
+  /// **'Compare with…'**
+  String get compareWith;
+
+  /// File dialog title: choose the project to compare with
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the project to compare with'**
+  String get compareWithTitle;
+
+  /// Tooltip on a version in a stack: compare it with the version before it
+  ///
+  /// In en, this message translates to:
+  /// **'Compare with previous version'**
+  String get compareWithPrevious;
+
+  /// Heading of the view comparing two projects
+  ///
+  /// In en, this message translates to:
+  /// **'Compare'**
+  String get compareTitle;
+
+  /// Tooltip: swap which project is A and which is B
+  ///
+  /// In en, this message translates to:
+  /// **'Swap A and B'**
+  String get compareSwap;
+
+  /// Tooltip: leave the comparison, back to inspecting A
+  ///
+  /// In en, this message translates to:
+  /// **'Close compare'**
+  String get compareClose;
+
+  /// Button: copy a short summary of the changes to the clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copy summary'**
+  String get compareCopySummary;
+
+  /// Snackbar after copying a summary
+  ///
+  /// In en, this message translates to:
+  /// **'Summary copied'**
+  String get compareSummaryCopied;
+
+  /// Button: save the list of changes as a CSV file
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get compareExportCsv;
+
+  /// Save dialog title for the changes CSV
+  ///
+  /// In en, this message translates to:
+  /// **'Save the changes as CSV'**
+  String get compareExportCsvTitle;
+
+  /// Snackbar after a file was saved; its name follows
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {name}'**
+  String compareSaved(String name);
+
+  /// Total: how many changes between the two projects
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No changes} one{1 change} other{{count} changes}}'**
+  String compareChangesCount(int count);
+
+  /// Total: channels in both projects that changed
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 channel changed} other{{count} channels changed}}'**
+  String compareChannelsChanged(int count);
+
+  /// Total: channels with no change
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unchanged'**
+  String compareUnchanged(int count);
+
+  /// Total: channels only in project A
+  ///
+  /// In en, this message translates to:
+  /// **'{count} only in A'**
+  String compareOnlyInA(int count);
+
+  /// Total: channels only in project B
+  ///
+  /// In en, this message translates to:
+  /// **'{count} only in B'**
+  String compareOnlyInB(int count);
+
+  /// Total: changes to plug-ins
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 plug-in change} other{{count} plug-in changes}}'**
+  String comparePluginChanges(int count);
+
+  /// Filter chip: fader, pan, mute changes
+  ///
+  /// In en, this message translates to:
+  /// **'Levels'**
+  String get compareFilterLevels;
+
+  /// Heading of the changes to the project as a whole (tempo, sample rate…)
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get compareProject;
+
+  /// When the two projects read the same
+  ///
+  /// In en, this message translates to:
+  /// **'No differences found'**
+  String get compareNoDifferences;
+
+  /// When a DAW's channels aren't read: what is compared instead
+  ///
+  /// In en, this message translates to:
+  /// **'Channels of {daw} projects aren\'t read yet: the project and the plug-ins it uses are compared.'**
+  String compareChannelsNotRead(String daw);
+
+  /// Badge on a channel only in project A
+  ///
+  /// In en, this message translates to:
+  /// **'Only in A'**
+  String get compareBadgeOnlyInA;
+
+  /// Badge on a channel only in project B
+  ///
+  /// In en, this message translates to:
+  /// **'Only in B'**
+  String get compareBadgeOnlyInB;
+
+  /// A value that is not set (no output, top level of the track list)
+  ///
+  /// In en, this message translates to:
+  /// **'none'**
+  String get compareNoneValue;
+
+  /// A change: the tempo
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo {before} → {after} BPM'**
+  String changeTempo(String before, String after);
+
+  /// A change: the time signature
+  ///
+  /// In en, this message translates to:
+  /// **'Time signature {before} → {after}'**
+  String changeTimeSignature(String before, String after);
+
+  /// A change: the sample rate
+  ///
+  /// In en, this message translates to:
+  /// **'Sample rate {before} → {after}'**
+  String changeSampleRate(String before, String after);
+
+  /// A change: the bit depth
+  ///
+  /// In en, this message translates to:
+  /// **'Bit depth {before} → {after}'**
+  String changeBitDepth(String before, String after);
+
+  /// A change: the musical key
+  ///
+  /// In en, this message translates to:
+  /// **'Key {before} → {after}'**
+  String changeKey(String before, String after);
+
+  /// A change: a plug-in the project now uses
+  ///
+  /// In en, this message translates to:
+  /// **'Now uses {plugin}'**
+  String changePluginAdded(String plugin);
+
+  /// A change: a plug-in the project no longer uses
+  ///
+  /// In en, this message translates to:
+  /// **'No longer uses {plugin}'**
+  String changePluginRemoved(String plugin);
+
+  /// A change: a channel only in B
+  ///
+  /// In en, this message translates to:
+  /// **'Added'**
+  String get changeChannelAdded;
+
+  /// A change: a channel only in A
+  ///
+  /// In en, this message translates to:
+  /// **'Removed'**
+  String get changeChannelRemoved;
+
+  /// A change: the channel's old name
+  ///
+  /// In en, this message translates to:
+  /// **'Renamed from {before}'**
+  String changeRenamed(String before);
+
+  /// A change: the channel's kind
+  ///
+  /// In en, this message translates to:
+  /// **'Kind {before} → {after}'**
+  String changeKind(String before, String after);
+
+  /// A change: the folder holding the channel
+  ///
+  /// In en, this message translates to:
+  /// **'Folder {before} → {after}'**
+  String changeFolder(String before, String after);
+
+  /// A change: where the channel's output goes
+  ///
+  /// In en, this message translates to:
+  /// **'Output {before} → {after}'**
+  String changeOutput(String before, String after);
+
+  /// A change: the fader
+  ///
+  /// In en, this message translates to:
+  /// **'Fader {before} → {after}'**
+  String changeFader(String before, String after);
+
+  /// A change: the panner
+  ///
+  /// In en, this message translates to:
+  /// **'Pan {before} → {after}'**
+  String changePan(String before, String after);
+
+  /// A change: the channel is now muted
+  ///
+  /// In en, this message translates to:
+  /// **'Muted'**
+  String get changeMuted;
+
+  /// A change: the channel is no longer muted
+  ///
+  /// In en, this message translates to:
+  /// **'Unmuted'**
+  String get changeUnmuted;
+
+  /// A change: the channel is now soloed
+  ///
+  /// In en, this message translates to:
+  /// **'Soloed'**
+  String get changeSoloed;
+
+  /// A change: the channel is no longer soloed
+  ///
+  /// In en, this message translates to:
+  /// **'No longer soloed'**
+  String get changeUnsoloed;
+
+  /// A change: how many EQ bands are on
+  ///
+  /// In en, this message translates to:
+  /// **'EQ bands on {before} → {after}'**
+  String changeEqBands(String before, String after);
+
+  /// A change: an instrument track's instrument
+  ///
+  /// In en, this message translates to:
+  /// **'Instrument {before} → {after}'**
+  String changeInstrument(String before, String after);
+
+  /// A change: the preset a plug-in has loaded
+  ///
+  /// In en, this message translates to:
+  /// **'{plugin} preset {before} → {after}'**
+  String changePreset(String plugin, String before, String after);
+
+  /// A change: a plug-in inserted in an insert slot
+  ///
+  /// In en, this message translates to:
+  /// **'{plugin} inserted in slot {slot}'**
+  String changeInsertAdded(String plugin, int slot);
+
+  /// A change: a plug-in taken out of an insert slot
+  ///
+  /// In en, this message translates to:
+  /// **'{plugin} removed from slot {slot}'**
+  String changeInsertRemoved(String plugin, int slot);
+
+  /// A change: another plug-in in the same insert slot
+  ///
+  /// In en, this message translates to:
+  /// **'Slot {slot}: {before} replaced by {after}'**
+  String changeInsertReplaced(int slot, String before, String after);
+
+  /// A change: the same plug-in in another insert slot
+  ///
+  /// In en, this message translates to:
+  /// **'{plugin} moved from slot {before} to {after}'**
+  String changeInsertMoved(String plugin, int before, int after);
+
+  /// A change: a plug-in switched off (deactivated) in its slot
+  ///
+  /// In en, this message translates to:
+  /// **'{plugin} switched off'**
+  String changePluginOff(String plugin);
+
+  /// A change: a plug-in switched back on in its slot
+  ///
+  /// In en, this message translates to:
+  /// **'{plugin} switched on'**
+  String changePluginOn(String plugin);
+
+  /// A change: a channel strip module loaded
+  ///
+  /// In en, this message translates to:
+  /// **'Strip: {plugin} added'**
+  String changeStripAdded(String plugin);
+
+  /// A change: a channel strip module taken out
+  ///
+  /// In en, this message translates to:
+  /// **'Strip: {plugin} removed'**
+  String changeStripRemoved(String plugin);
+
+  /// A change: another module of the same kind in the channel strip
+  ///
+  /// In en, this message translates to:
+  /// **'Strip: {before} replaced by {after}'**
+  String changeStripReplaced(String before, String after);
+
+  /// A change: the whole channel strip bypassed
+  ///
+  /// In en, this message translates to:
+  /// **'Channel strip bypassed'**
+  String get changeStripBypassed;
+
+  /// A change: the channel strip no longer bypassed
+  ///
+  /// In en, this message translates to:
+  /// **'Channel strip back on'**
+  String get changeStripBack;
+
+  /// A change: a new send
+  ///
+  /// In en, this message translates to:
+  /// **'Send to {destination} added'**
+  String changeSendAdded(String destination);
+
+  /// A change: a send taken out
+  ///
+  /// In en, this message translates to:
+  /// **'Send to {destination} removed'**
+  String changeSendRemoved(String destination);
+
+  /// A change: a send's level
+  ///
+  /// In en, this message translates to:
+  /// **'Send to {destination} {before} → {after}'**
+  String changeSendLevel(String destination, String before, String after);
+
+  /// A change: a send switched off
+  ///
+  /// In en, this message translates to:
+  /// **'Send to {destination} switched off'**
+  String changeSendOff(String destination);
+
+  /// A change: a send switched on
+  ///
+  /// In en, this message translates to:
+  /// **'Send to {destination} switched on'**
+  String changeSendOn(String destination);
+
+  /// A change: a send now taken before the fader
+  ///
+  /// In en, this message translates to:
+  /// **'Send to {destination} now pre-fader'**
+  String changeSendPre(String destination);
+
+  /// A change: a send now taken after the fader
+  ///
+  /// In en, this message translates to:
+  /// **'Send to {destination} now post-fader'**
+  String changeSendPost(String destination);
+
+  /// Tooltip of the Inspector header menu that copies or saves a report of the project
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get inspectorReport;
+
+  /// Report menu: save the whole report as a Markdown file
+  ///
+  /// In en, this message translates to:
+  /// **'Save report (Markdown)…'**
+  String get reportSaveMarkdown;
+
+  /// Report menu: save the track list as CSV
+  ///
+  /// In en, this message translates to:
+  /// **'Save track list (CSV)…'**
+  String get reportSaveTracksCsv;
+
+  /// Report menu: save the plug-ins list as CSV
+  ///
+  /// In en, this message translates to:
+  /// **'Save plug-ins (CSV)…'**
+  String get reportSavePluginsCsv;
+
+  /// Save dialog title for a report file
+  ///
+  /// In en, this message translates to:
+  /// **'Save the report'**
+  String get reportSaveTitle;
+
+  /// Last line of a report: when it was made; the date follows
+  ///
+  /// In en, this message translates to:
+  /// **'Made with DAW Project Manager on {date}'**
+  String reportMadeBy(String date);
+
+  /// Report heading: the project at a glance
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get reportOverview;
+
+  /// Report table column: the channel name
+  ///
+  /// In en, this message translates to:
+  /// **'Channel'**
+  String get reportColumnChannel;
+
+  /// Report table column: the channel kind
+  ///
+  /// In en, this message translates to:
+  /// **'Kind'**
+  String get reportColumnKind;
+
+  /// Report: how many audio files are missing
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 audio file missing} other{{count} audio files missing}}'**
+  String reportMissingFiles(int count);
+
+  /// Snackbar after copying the project summary
+  ///
+  /// In en, this message translates to:
+  /// **'Summary copied'**
+  String get reportCopied;
+
+  /// Button in the Inspector: plug-in usage across the whole library
+  ///
+  /// In en, this message translates to:
+  /// **'Plug-ins across your library'**
+  String get usageOpen;
+
+  /// Under the title of the library plug-in usage view
+  ///
+  /// In en, this message translates to:
+  /// **'From what the deep scan read in each project: no project file is opened here. It\'s information only — nothing is changed or deleted.'**
+  String get usageIntro;
+
+  /// Total: projects whose plug-ins the deep scan has read
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 project read} other{{count} projects read}}'**
+  String usageProjectsRead(int count);
+
+  /// Projects the deep scan has not read: their plug-ins are not counted
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 project not read yet — a deep scan counts its plug-ins} other{{count} projects not read yet — a deep scan counts their plug-ins}}'**
+  String usageProjectsUnread(int count);
+
+  /// Total: distinct plug-ins used across the library
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 plug-in in use} other{{count} plug-ins in use}}'**
+  String usagePluginsInUse(int count);
+
+  /// Total: plug-ins used in one song only
+  ///
+  /// In en, this message translates to:
+  /// **'{count} used in one song only'**
+  String usageRareCount(int count);
+
+  /// Filter chip: plug-ins by how many songs use them
+  ///
+  /// In en, this message translates to:
+  /// **'Most used'**
+  String get usageFilterMostUsed;
+
+  /// Filter chip: plug-ins used in one song only
+  ///
+  /// In en, this message translates to:
+  /// **'Used once'**
+  String get usageFilterRare;
+
+  /// Switch: leave out the DAW's own plug-ins
+  ///
+  /// In en, this message translates to:
+  /// **'Hide stock plug-ins'**
+  String get usageHideStock;
+
+  /// How many songs use a plug-in
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 song} other{{count} songs}}'**
+  String usageSongs(int count);
+
+  /// How many project files use a plug-in
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 project} other{{count} projects}}'**
+  String usageProjects(int count);
+
+  /// When a plug-in was last used: the date of the newest project using it
+  ///
+  /// In en, this message translates to:
+  /// **'last used {date}'**
+  String usageLastUsed(String date);
+
+  /// Button: show the projects using this plug-in in the projects list
+  ///
+  /// In en, this message translates to:
+  /// **'Show these projects'**
+  String get usageShowProjects;
+
+  /// Button: read Cubase projects to count how many times each plug-in is loaded
+  ///
+  /// In en, this message translates to:
+  /// **'Count instances in Cubase projects…'**
+  String get usageCountInstances;
+
+  /// Where instance counts and chains come from
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Instances and chains from 1 Cubase project} other{Instances and chains from {count} Cubase projects}}'**
+  String usageInstancesFrom(int count);
+
+  /// When no project has had its plug-ins read
+  ///
+  /// In en, this message translates to:
+  /// **'No plug-ins found yet. A deep scan reads which plug-ins each project uses.'**
+  String get usageNothing;
+
+  /// Asking before reading Cubase projects to count plug-in instances
+  ///
+  /// In en, this message translates to:
+  /// **'Read Cubase projects?'**
+  String get usageReadTitle;
+
+  /// How many Cubase projects would be read, and their size
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Cubase projects ({size}) haven\'t had their tracks read, or changed since. Reading opens each file; files on a cloud drive are downloaded first.'**
+  String usageReadBody(int count, String size);
+
+  /// Button: read the Cubase projects, then count
+  ///
+  /// In en, this message translates to:
+  /// **'Read and count'**
+  String get usageReadAndCount;
+
+  /// Button while reading: stop and count what's read so far
+  ///
+  /// In en, this message translates to:
+  /// **'Stop and count what\'s read'**
+  String get usageReadStop;
+
+  /// Dashboard filter chip: only projects using this plug-in
+  ///
+  /// In en, this message translates to:
+  /// **'Uses {plugin}'**
+  String filterUsesPlugin(String plugin);
+
+  /// Settings switch: read a project before opening it in the DAW, and warn
+  ///
+  /// In en, this message translates to:
+  /// **'Check a project before opening it'**
+  String get launchCheckSetting;
+
+  /// What the check before opening does
+  ///
+  /// In en, this message translates to:
+  /// **'Before the DAW opens, say when audio files are missing or the project\'s sample rate isn\'t your studio\'s. A project on a cloud drive, or a very big one, opens without it.'**
+  String get launchCheckSettingHint;
+
+  /// Setting: the sample rate the person's studio runs at
+  ///
+  /// In en, this message translates to:
+  /// **'My studio runs at'**
+  String get studioSampleRate;
+
+  /// The studio sample rate is not set
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get studioSampleRateNotSet;
+
+  /// Title of the warnings shown before a project opens
+  ///
+  /// In en, this message translates to:
+  /// **'Before opening {name}'**
+  String launchCheckTitle(String name);
+
+  /// Warning before opening: audio files missing
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 of its {total} audio files is missing} other{{count} of its {total} audio files are missing}}'**
+  String launchCheckMissingAudio(int count, int total);
+
+  /// Warning before opening: the project's sample rate is not the studio's
+  ///
+  /// In en, this message translates to:
+  /// **'Saved at {project}; your studio runs at {studio}'**
+  String launchCheckSampleRate(String project, String studio);
+
+  /// Button: open the project in its DAW despite the warnings
+  ///
+  /// In en, this message translates to:
+  /// **'Open anyway'**
+  String get launchCheckOpenAnyway;
 }
 
 class _AppLocalizationsDelegate
