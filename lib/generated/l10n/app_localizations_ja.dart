@@ -8693,4 +8693,74 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get inspectorMissingMidiTitle => '見つからない MIDI ファイル';
+
+  @override
+  String get safeCopyButton => 'セーフコピー…';
+
+  @override
+  String get safeCopyTitle => 'セーフコピー';
+
+  @override
+  String get safeCopyIntro =>
+      '選んだプラグインをオフにしたプロジェクトのコピーです。どれかが DAW をクラッシュさせたり、インストールされていなかったりしても開けます。コピーではそれらが無効として表示されるので、スロットから再び有効にするか、差し替えてください。元のプロジェクトは変更されません。';
+
+  @override
+  String get safeCopyFilter => 'プラグインを絞り込む';
+
+  @override
+  String get safeCopyReading => 'プラグインを読み込み中…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'プロジェクトのプラグインを読み込めませんでした: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count インスタンス',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count 個はすでにオフ';
+  }
+
+  @override
+  String get safeCopyAllOff => 'すべてオフ済み';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count インスタンスがオフになります',
+      zero: 'オフにするプラグインを選んでください',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'セーフコピーを書き出す';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count インスタンスをオフにしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'コピーを DAW で開いてください。これらのプラグインはスロットで無効として表示され、再び有効にしたり差し替えたりできます。';
+
+  @override
+  String get safeCopyNothingWritten => '選んだプラグインはどれもオンではなかったため、何も書き出されませんでした。';
 }

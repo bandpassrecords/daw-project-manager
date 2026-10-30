@@ -8999,5 +8999,86 @@
   "inspectorMissingMidiTitle": "MIDI files not found",
   "@inspectorMissingMidiTitle": {
     "description": "Heading for the .mid files a project references that can't be found"
+  },
+  "safeCopyButton": "Safe copy…",
+  "@safeCopyButton": {
+    "description": "Button in the Inspector's plug-ins: write a copy of the project with chosen plug-ins switched off"
+  },
+  "safeCopyTitle": "Safe copy",
+  "@safeCopyTitle": {
+    "description": "Title of the dialog that writes a copy of a project with chosen plug-ins switched off"
+  },
+  "safeCopyIntro": "A copy of the project with the plug-ins you pick switched off, so it opens even when one of them crashes the DAW or isn't installed. In the copy they show as deactivated: switch them back on, or replace them, from their slots. The project itself is not changed.",
+  "@safeCopyIntro": {
+    "description": "What a safe copy is, at the top of its dialog"
+  },
+  "safeCopyFilter": "Filter plug-ins",
+  "@safeCopyFilter": {
+    "description": "Hint of the field that filters the safe copy dialog's plug-in list"
+  },
+  "safeCopyReading": "Reading the plug-ins…",
+  "@safeCopyReading": {
+    "description": "While the project's plug-ins are being read for a safe copy"
+  },
+  "safeCopyReadFailed": "The project's plug-ins couldn't be read: {reason}",
+  "@safeCopyReadFailed": {
+    "description": "The project's plug-ins couldn't be read for a safe copy; the reason follows",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "safeCopyInstances": "{count, plural, one{1 instance} other{{count} instances}}",
+  "@safeCopyInstances": {
+    "description": "How many instances of a plug-in are switched on in the project",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "safeCopyAlreadyOff": "{count} already off",
+  "@safeCopyAlreadyOff": {
+    "description": "How many instances of a plug-in are already switched off in the project",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "safeCopyAllOff": "Already off everywhere",
+  "@safeCopyAllOff": {
+    "description": "A plug-in whose every instance is already switched off: a safe copy has nothing to change"
+  },
+  "safeCopyWillSwitchOff": "{count, plural, =0{Pick the plug-ins to switch off} one{1 instance will be switched off} other{{count} instances will be switched off}}",
+  "@safeCopyWillSwitchOff": {
+    "description": "Under the plug-in list: how many instances the safe copy will switch off",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "safeCopyWrite": "Write safe copy",
+  "@safeCopyWrite": {
+    "description": "Button: write the safe copy"
+  },
+  "safeCopySwitchedOff": "{count, plural, one{1 instance switched off} other{{count} instances switched off}}",
+  "@safeCopySwitchedOff": {
+    "description": "After writing a safe copy: how many plug-in instances it switched off",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "safeCopyNextStep": "Open the copy in your DAW: those plug-ins show as deactivated in their slots, ready to switch back on or replace.",
+  "@safeCopyNextStep": {
+    "description": "After writing a safe copy: what to do with it"
+  },
+  "safeCopyNothingWritten": "None of those plug-ins was on, so nothing was written.",
+  "@safeCopyNothingWritten": {
+    "description": "After a safe copy: none of the chosen plug-ins was on, so no copy was written"
   }
 }

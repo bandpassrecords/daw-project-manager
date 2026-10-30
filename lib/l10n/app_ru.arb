@@ -4610,5 +4610,19 @@
   "inspectorMidiFilesMissing": "{count, plural, one{Нет {count} файла .mid} few{Нет {count} файлов .mid} many{Нет {count} файлов .mid} other{Нет {count} файла .mid}}",
   "inspectorKindBuses": "Группы и FX",
   "inspectorNotesTitle": "Заметки в проекте",
-  "inspectorMissingMidiTitle": "Не найденные MIDI-файлы"
+  "inspectorMissingMidiTitle": "Не найденные MIDI-файлы",
+  "safeCopyButton": "Безопасная копия…",
+  "safeCopyTitle": "Безопасная копия",
+  "safeCopyIntro": "Копия проекта, в которой выбранные плагины выключены, чтобы она открылась, даже если один из них роняет DAW или не установлен. В копии они отображаются отключёнными: включите их снова или замените в их слотах. Сам проект не изменяется.",
+  "safeCopyFilter": "Фильтр плагинов",
+  "safeCopyReading": "Чтение плагинов…",
+  "safeCopyReadFailed": "Не удалось прочитать плагины проекта: {reason}",
+  "safeCopyInstances": "{count, plural, one{{count} экземпляр} few{{count} экземпляра} many{{count} экземпляров} other{{count} экземпляра}}",
+  "safeCopyAlreadyOff": "{count} уже выключено",
+  "safeCopyAllOff": "Уже везде выключен",
+  "safeCopyWillSwitchOff": "{count, plural, =0{Выберите плагины, которые нужно выключить} one{Будет выключен {count} экземпляр} few{Будут выключены {count} экземпляра} many{Будут выключены {count} экземпляров} other{Будут выключены {count} экземпляра}}",
+  "safeCopyWrite": "Записать безопасную копию",
+  "safeCopySwitchedOff": "{count, plural, one{Выключен {count} экземпляр} few{Выключено {count} экземпляра} many{Выключено {count} экземпляров} other{Выключено {count} экземпляра}}",
+  "safeCopyNextStep": "Откройте копию в DAW: эти плагины будут отключены в своих слотах — их можно снова включить или заменить.",
+  "safeCopyNothingWritten": "Ни один из этих плагинов не был включён, поэтому ничего не записано."
 }

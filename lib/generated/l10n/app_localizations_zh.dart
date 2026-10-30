@@ -8597,4 +8597,73 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get inspectorMissingMidiTitle => '未找到的 MIDI 文件';
+
+  @override
+  String get safeCopyButton => '安全副本…';
+
+  @override
+  String get safeCopyTitle => '安全副本';
+
+  @override
+  String get safeCopyIntro =>
+      '项目的一个副本，其中你选择的插件被关闭，这样即使其中某个插件会让 DAW 崩溃或未安装，副本也能打开。在副本中它们显示为已停用：可在其插槽中重新启用或替换。原项目不会被更改。';
+
+  @override
+  String get safeCopyFilter => '筛选插件';
+
+  @override
+  String get safeCopyReading => '正在读取插件…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return '无法读取项目的插件：$reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个实例',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count 个已关闭';
+  }
+
+  @override
+  String get safeCopyAllOff => '已全部关闭';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '将关闭 $count 个实例',
+      zero: '选择要关闭的插件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => '写入安全副本';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已关闭 $count 个实例',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep => '在你的 DAW 中打开副本：这些插件在其插槽中显示为已停用，可以重新启用或替换。';
+
+  @override
+  String get safeCopyNothingWritten => '这些插件都未开启，因此没有写入任何内容。';
 }

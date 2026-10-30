@@ -14515,6 +14515,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'MIDI files not found'**
   String get inspectorMissingMidiTitle;
+
+  /// Button in the Inspector's plug-ins: write a copy of the project with chosen plug-ins switched off
+  ///
+  /// In en, this message translates to:
+  /// **'Safe copy…'**
+  String get safeCopyButton;
+
+  /// Title of the dialog that writes a copy of a project with chosen plug-ins switched off
+  ///
+  /// In en, this message translates to:
+  /// **'Safe copy'**
+  String get safeCopyTitle;
+
+  /// What a safe copy is, at the top of its dialog
+  ///
+  /// In en, this message translates to:
+  /// **'A copy of the project with the plug-ins you pick switched off, so it opens even when one of them crashes the DAW or isn\'t installed. In the copy they show as deactivated: switch them back on, or replace them, from their slots. The project itself is not changed.'**
+  String get safeCopyIntro;
+
+  /// Hint of the field that filters the safe copy dialog's plug-in list
+  ///
+  /// In en, this message translates to:
+  /// **'Filter plug-ins'**
+  String get safeCopyFilter;
+
+  /// While the project's plug-ins are being read for a safe copy
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the plug-ins…'**
+  String get safeCopyReading;
+
+  /// The project's plug-ins couldn't be read for a safe copy; the reason follows
+  ///
+  /// In en, this message translates to:
+  /// **'The project\'s plug-ins couldn\'t be read: {reason}'**
+  String safeCopyReadFailed(String reason);
+
+  /// How many instances of a plug-in are switched on in the project
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 instance} other{{count} instances}}'**
+  String safeCopyInstances(int count);
+
+  /// How many instances of a plug-in are already switched off in the project
+  ///
+  /// In en, this message translates to:
+  /// **'{count} already off'**
+  String safeCopyAlreadyOff(int count);
+
+  /// A plug-in whose every instance is already switched off: a safe copy has nothing to change
+  ///
+  /// In en, this message translates to:
+  /// **'Already off everywhere'**
+  String get safeCopyAllOff;
+
+  /// Under the plug-in list: how many instances the safe copy will switch off
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Pick the plug-ins to switch off} one{1 instance will be switched off} other{{count} instances will be switched off}}'**
+  String safeCopyWillSwitchOff(int count);
+
+  /// Button: write the safe copy
+  ///
+  /// In en, this message translates to:
+  /// **'Write safe copy'**
+  String get safeCopyWrite;
+
+  /// After writing a safe copy: how many plug-in instances it switched off
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 instance switched off} other{{count} instances switched off}}'**
+  String safeCopySwitchedOff(int count);
+
+  /// After writing a safe copy: what to do with it
+  ///
+  /// In en, this message translates to:
+  /// **'Open the copy in your DAW: those plug-ins show as deactivated in their slots, ready to switch back on or replace.'**
+  String get safeCopyNextStep;
+
+  /// After a safe copy: none of the chosen plug-ins was on, so no copy was written
+  ///
+  /// In en, this message translates to:
+  /// **'None of those plug-ins was on, so nothing was written.'**
+  String get safeCopyNothingWritten;
 }
 
 class _AppLocalizationsDelegate

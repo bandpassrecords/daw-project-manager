@@ -9264,4 +9264,78 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get inspectorMissingMidiTitle => 'File MIDI non trovati';
+
+  @override
+  String get safeCopyButton => 'Copia sicura…';
+
+  @override
+  String get safeCopyTitle => 'Copia sicura';
+
+  @override
+  String get safeCopyIntro =>
+      'Una copia del progetto con i plug-in scelti disattivati, così si apre anche se uno di essi fa crashare la DAW o non è installato. Nella copia risultano disattivati: riattivali, o sostituiscili, dai loro slot. Il progetto stesso non viene modificato.';
+
+  @override
+  String get safeCopyFilter => 'Filtra plug-in';
+
+  @override
+  String get safeCopyReading => 'Lettura dei plug-in…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'Impossibile leggere i plug-in del progetto: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count istanze',
+      one: '1 istanza',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count già disattivate';
+  }
+
+  @override
+  String get safeCopyAllOff => 'Già disattivato ovunque';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Verranno disattivate $count istanze',
+      one: 'Verrà disattivata 1 istanza',
+      zero: 'Scegli i plug-in da disattivare',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'Scrivi copia sicura';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count istanze disattivate',
+      one: '1 istanza disattivata',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'Apri la copia nella tua DAW: quei plug-in risultano disattivati nei loro slot, pronti per essere riattivati o sostituiti.';
+
+  @override
+  String get safeCopyNothingWritten =>
+      'Nessuno di quei plug-in era attivo, quindi non è stato scritto nulla.';
 }

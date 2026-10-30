@@ -4610,5 +4610,19 @@
   "inspectorMidiFilesMissing": "{count, plural, one{1 fichier .mid manquant} other{{count} fichiers .mid manquants}}",
   "inspectorKindBuses": "Groupe et FX",
   "inspectorNotesTitle": "Notes dans le projet",
-  "inspectorMissingMidiTitle": "Fichiers MIDI introuvables"
+  "inspectorMissingMidiTitle": "Fichiers MIDI introuvables",
+  "safeCopyButton": "Copie sûre…",
+  "safeCopyTitle": "Copie sûre",
+  "safeCopyIntro": "Une copie du projet où les plug-ins choisis sont désactivés, pour qu'elle s'ouvre même si l'un d'eux fait planter la DAW ou n'est pas installé. Dans la copie, ils apparaissent désactivés : réactivez-les ou remplacez-les depuis leurs emplacements. Le projet lui-même n'est pas modifié.",
+  "safeCopyFilter": "Filtrer les plug-ins",
+  "safeCopyReading": "Lecture des plug-ins…",
+  "safeCopyReadFailed": "Impossible de lire les plug-ins du projet : {reason}",
+  "safeCopyInstances": "{count, plural, one{1 instance} other{{count} instances}}",
+  "safeCopyAlreadyOff": "{count} déjà désactivées",
+  "safeCopyAllOff": "Déjà désactivé partout",
+  "safeCopyWillSwitchOff": "{count, plural, =0{Choisissez les plug-ins à désactiver} one{1 instance sera désactivée} other{{count} instances seront désactivées}}",
+  "safeCopyWrite": "Écrire la copie sûre",
+  "safeCopySwitchedOff": "{count, plural, one{1 instance désactivée} other{{count} instances désactivées}}",
+  "safeCopyNextStep": "Ouvrez la copie dans votre DAW : ces plug-ins apparaissent désactivés dans leurs emplacements, prêts à être réactivés ou remplacés.",
+  "safeCopyNothingWritten": "Aucun de ces plug-ins n'était activé : rien n'a été écrit."
 }

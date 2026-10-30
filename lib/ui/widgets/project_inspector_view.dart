@@ -28,6 +28,7 @@ class ProjectInspectorView extends StatefulWidget {
     this.mediaChecks,
     this.mediaChecking = false,
     this.onRelink,
+    this.onSafeCopy,
     this.initialSection = InspectorSection.tracks,
   });
 
@@ -47,6 +48,10 @@ class ProjectInspectorView extends StatefulWidget {
   /// Fixes the missing audio files in a relinked copy; null where this
   /// DAW's projects can't be relinked yet.
   final VoidCallback? onRelink;
+
+  /// Writes a copy with chosen plug-ins switched off; null where this DAW's
+  /// projects can't be written yet.
+  final VoidCallback? onSafeCopy;
   final InspectorSection initialSection;
 
   @override
@@ -154,6 +159,7 @@ class _ProjectInspectorViewState extends State<ProjectInspectorView> {
       InspectorSection.plugins => _PluginsSection(
         anatomy: a,
         search: widget.search,
+        onSafeCopy: widget.onSafeCopy,
       ),
       InspectorSection.routing =>
         channels == null
@@ -858,9 +864,14 @@ class _PathChips extends StatelessWidget {
 // --- plug-ins ---------------------------------------------------------------
 
 class _PluginsSection extends StatelessWidget {
-  const _PluginsSection({required this.anatomy, required this.search});
+  const _PluginsSection({
+    required this.anatomy,
+    required this.search,
+    this.onSafeCopy,
+  });
   final ProjectAnatomy anatomy;
   final String search;
+  final VoidCallback? onSafeCopy;
 
   @override
   Widget build(BuildContext context) {
@@ -903,9 +914,22 @@ class _PluginsSection extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
-          l10n.inspectorPluginSummary(anatomy.plugins.length, total),
-          style: theme.textTheme.bodySmall,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                l10n.inspectorPluginSummary(anatomy.plugins.length, total),
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+            if (onSafeCopy != null && anatomy.plugins.isNotEmpty)
+              FilledButton.tonalIcon(
+                onPressed: onSafeCopy,
+                icon: const Icon(Icons.health_and_safety_outlined),
+                label: Text(l10n.safeCopyButton),
+              ),
+          ],
         ),
         if (!anatomy.pluginInstancesKnown) ...[
           const SizedBox(height: 4),

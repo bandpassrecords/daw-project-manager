@@ -4610,5 +4610,19 @@
   "inspectorMidiFilesMissing": "{count, plural, other{缺少 {count} 个 .mid 文件}}",
   "inspectorKindBuses": "编组和效果",
   "inspectorNotesTitle": "项目中的备注",
-  "inspectorMissingMidiTitle": "未找到的 MIDI 文件"
+  "inspectorMissingMidiTitle": "未找到的 MIDI 文件",
+  "safeCopyButton": "安全副本…",
+  "safeCopyTitle": "安全副本",
+  "safeCopyIntro": "项目的一个副本，其中你选择的插件被关闭，这样即使其中某个插件会让 DAW 崩溃或未安装，副本也能打开。在副本中它们显示为已停用：可在其插槽中重新启用或替换。原项目不会被更改。",
+  "safeCopyFilter": "筛选插件",
+  "safeCopyReading": "正在读取插件…",
+  "safeCopyReadFailed": "无法读取项目的插件：{reason}",
+  "safeCopyInstances": "{count, plural, other{{count} 个实例}}",
+  "safeCopyAlreadyOff": "{count} 个已关闭",
+  "safeCopyAllOff": "已全部关闭",
+  "safeCopyWillSwitchOff": "{count, plural, =0{选择要关闭的插件} other{将关闭 {count} 个实例}}",
+  "safeCopyWrite": "写入安全副本",
+  "safeCopySwitchedOff": "{count, plural, other{已关闭 {count} 个实例}}",
+  "safeCopyNextStep": "在你的 DAW 中打开副本：这些插件在其插槽中显示为已停用，可以重新启用或替换。",
+  "safeCopyNothingWritten": "这些插件都未开启，因此没有写入任何内容。"
 }

@@ -9184,4 +9184,78 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inspectorMissingMidiTitle => 'MIDI files not found';
+
+  @override
+  String get safeCopyButton => 'Safe copy…';
+
+  @override
+  String get safeCopyTitle => 'Safe copy';
+
+  @override
+  String get safeCopyIntro =>
+      'A copy of the project with the plug-ins you pick switched off, so it opens even when one of them crashes the DAW or isn\'t installed. In the copy they show as deactivated: switch them back on, or replace them, from their slots. The project itself is not changed.';
+
+  @override
+  String get safeCopyFilter => 'Filter plug-ins';
+
+  @override
+  String get safeCopyReading => 'Reading the plug-ins…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'The project\'s plug-ins couldn\'t be read: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instances',
+      one: '1 instance',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count already off';
+  }
+
+  @override
+  String get safeCopyAllOff => 'Already off everywhere';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instances will be switched off',
+      one: '1 instance will be switched off',
+      zero: 'Pick the plug-ins to switch off',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'Write safe copy';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instances switched off',
+      one: '1 instance switched off',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'Open the copy in your DAW: those plug-ins show as deactivated in their slots, ready to switch back on or replace.';
+
+  @override
+  String get safeCopyNothingWritten =>
+      'None of those plug-ins was on, so nothing was written.';
 }

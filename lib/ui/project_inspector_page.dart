@@ -9,11 +9,13 @@ import 'package:path/path.dart' as p;
 import '../generated/l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import '../services/project_inspector/relink/relink_writer.dart';
+import '../services/project_inspector/safe_copy/safe_copy.dart';
 import '../services/scanner_service.dart';
 import '../utils/cloud_file.dart';
 import 'app_snack_bar.dart';
 import 'dialogs/archive_project_dialog.dart' show formatByteSize;
 import 'dialogs/relink_dialog.dart';
+import 'dialogs/safe_copy_dialog.dart';
 import 'widgets/project_inspector_view.dart';
 
 /// Opens [path] in the Inspector tab and brings the tab to the front: the
@@ -214,6 +216,9 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
                   projectPath: a.filePath,
                   checks: media.value!,
                 ),
+          onSafeCopy: safeCopyWriterFor(a.filePath) == null
+              ? null
+              : () => showSafeCopyDialog(context, ref, projectPath: a.filePath),
         ),
       );
     }

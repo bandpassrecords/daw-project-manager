@@ -9249,4 +9249,78 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get inspectorMissingMidiTitle => 'Arquivos MIDI não encontrados';
+
+  @override
+  String get safeCopyButton => 'Cópia segura…';
+
+  @override
+  String get safeCopyTitle => 'Cópia segura';
+
+  @override
+  String get safeCopyIntro =>
+      'Uma cópia do projeto com os plug-ins que você escolher desligados, para que ela abra mesmo quando um deles trava a DAW ou não está instalado. Na cópia eles aparecem desativados: ligue-os de novo, ou substitua-os, nos seus slots. O projeto em si não é alterado.';
+
+  @override
+  String get safeCopyFilter => 'Filtrar plug-ins';
+
+  @override
+  String get safeCopyReading => 'Lendo os plug-ins…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'Não foi possível ler os plug-ins do projeto: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instâncias',
+      one: '1 instância',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count já desligadas';
+  }
+
+  @override
+  String get safeCopyAllOff => 'Já desligado em todo lugar';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instâncias serão desligadas',
+      one: '1 instância será desligada',
+      zero: 'Escolha os plug-ins a desligar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'Gravar cópia segura';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instâncias desligadas',
+      one: '1 instância desligada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'Abra a cópia na sua DAW: esses plug-ins aparecem desativados nos seus slots, prontos para ligar de novo ou substituir.';
+
+  @override
+  String get safeCopyNothingWritten =>
+      'Nenhum desses plug-ins estava ligado, então nada foi gravado.';
 }

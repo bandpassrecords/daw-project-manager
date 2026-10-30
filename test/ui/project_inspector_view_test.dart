@@ -161,6 +161,7 @@ void main() {
     List<MediaCheck>? media,
     InspectorSection section = InspectorSection.tracks,
     bool relinkable = false,
+    bool safeCopyable = false,
   }) async {
     final calls = <String>[];
     tester.view.physicalSize = const Size(1600, 1000);
@@ -180,6 +181,7 @@ void main() {
             onReload: () => calls.add('reload'),
             onOpenOther: () => calls.add('open'),
             onRelink: relinkable ? () => calls.add('relink') : null,
+            onSafeCopy: safeCopyable ? () => calls.add('safe copy') : null,
           ),
         ),
       ),
@@ -453,6 +455,21 @@ void main() {
       findsNothing,
       reason: "a path in a plug-in's state isn't the project's to rewrite",
     );
+  });
+
+  testWidgets('plug-ins offer a Safe Copy where the format can be written', (
+    tester,
+  ) async {
+    await pump(tester, _cubase, section: InspectorSection.plugins);
+    expect(find.text('Safe copy…'), findsNothing);
+    final calls = await pump(
+      tester,
+      _cubase,
+      section: InspectorSection.plugins,
+      safeCopyable: true,
+    );
+    await tester.tap(find.text('Safe copy…'));
+    expect(calls, ['safe copy']);
   });
 
   testWidgets('audio I/O: the driver, where it was saved, buses and ports', (

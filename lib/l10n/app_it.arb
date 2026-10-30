@@ -4610,5 +4610,19 @@
   "inspectorMidiFilesMissing": "{count, plural, one{1 file .mid mancante} other{{count} file .mid mancanti}}",
   "inspectorKindBuses": "Gruppo e FX",
   "inspectorNotesTitle": "Note nel progetto",
-  "inspectorMissingMidiTitle": "File MIDI non trovati"
+  "inspectorMissingMidiTitle": "File MIDI non trovati",
+  "safeCopyButton": "Copia sicura…",
+  "safeCopyTitle": "Copia sicura",
+  "safeCopyIntro": "Una copia del progetto con i plug-in scelti disattivati, così si apre anche se uno di essi fa crashare la DAW o non è installato. Nella copia risultano disattivati: riattivali, o sostituiscili, dai loro slot. Il progetto stesso non viene modificato.",
+  "safeCopyFilter": "Filtra plug-in",
+  "safeCopyReading": "Lettura dei plug-in…",
+  "safeCopyReadFailed": "Impossibile leggere i plug-in del progetto: {reason}",
+  "safeCopyInstances": "{count, plural, one{1 istanza} other{{count} istanze}}",
+  "safeCopyAlreadyOff": "{count} già disattivate",
+  "safeCopyAllOff": "Già disattivato ovunque",
+  "safeCopyWillSwitchOff": "{count, plural, =0{Scegli i plug-in da disattivare} one{Verrà disattivata 1 istanza} other{Verranno disattivate {count} istanze}}",
+  "safeCopyWrite": "Scrivi copia sicura",
+  "safeCopySwitchedOff": "{count, plural, one{1 istanza disattivata} other{{count} istanze disattivate}}",
+  "safeCopyNextStep": "Apri la copia nella tua DAW: quei plug-in risultano disattivati nei loro slot, pronti per essere riattivati o sostituiti.",
+  "safeCopyNothingWritten": "Nessuno di quei plug-in era attivo, quindi non è stato scritto nulla."
 }

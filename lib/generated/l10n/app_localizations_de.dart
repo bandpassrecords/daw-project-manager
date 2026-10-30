@@ -9244,4 +9244,78 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get inspectorMissingMidiTitle => 'Nicht gefundene MIDI-Dateien';
+
+  @override
+  String get safeCopyButton => 'Sichere Kopie…';
+
+  @override
+  String get safeCopyTitle => 'Sichere Kopie';
+
+  @override
+  String get safeCopyIntro =>
+      'Eine Kopie des Projekts, in der die gewählten Plug-ins ausgeschaltet sind – so öffnet sie sich auch dann, wenn eines davon die DAW abstürzen lässt oder nicht installiert ist. In der Kopie erscheinen sie deaktiviert: Schalte sie in ihren Slots wieder ein oder ersetze sie. Das Projekt selbst wird nicht verändert.';
+
+  @override
+  String get safeCopyFilter => 'Plug-ins filtern';
+
+  @override
+  String get safeCopyReading => 'Plug-ins werden gelesen…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'Die Plug-ins des Projekts konnten nicht gelesen werden: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Instanzen',
+      one: '1 Instanz',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count bereits aus';
+  }
+
+  @override
+  String get safeCopyAllOff => 'Überall bereits aus';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Instanzen werden ausgeschaltet',
+      one: '1 Instanz wird ausgeschaltet',
+      zero: 'Wähle die Plug-ins, die ausgeschaltet werden sollen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'Sichere Kopie schreiben';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Instanzen ausgeschaltet',
+      one: '1 Instanz ausgeschaltet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'Öffne die Kopie in deiner DAW: Diese Plug-ins erscheinen in ihren Slots deaktiviert und können wieder eingeschaltet oder ersetzt werden.';
+
+  @override
+  String get safeCopyNothingWritten =>
+      'Keines dieser Plug-ins war eingeschaltet, daher wurde nichts geschrieben.';
 }

@@ -9254,4 +9254,84 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inspectorMissingMidiTitle => 'Не найденные MIDI-файлы';
+
+  @override
+  String get safeCopyButton => 'Безопасная копия…';
+
+  @override
+  String get safeCopyTitle => 'Безопасная копия';
+
+  @override
+  String get safeCopyIntro =>
+      'Копия проекта, в которой выбранные плагины выключены, чтобы она открылась, даже если один из них роняет DAW или не установлен. В копии они отображаются отключёнными: включите их снова или замените в их слотах. Сам проект не изменяется.';
+
+  @override
+  String get safeCopyFilter => 'Фильтр плагинов';
+
+  @override
+  String get safeCopyReading => 'Чтение плагинов…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'Не удалось прочитать плагины проекта: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count экземпляра',
+      many: '$count экземпляров',
+      few: '$count экземпляра',
+      one: '$count экземпляр',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count уже выключено';
+  }
+
+  @override
+  String get safeCopyAllOff => 'Уже везде выключен';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Будут выключены $count экземпляра',
+      many: 'Будут выключены $count экземпляров',
+      few: 'Будут выключены $count экземпляра',
+      one: 'Будет выключен $count экземпляр',
+      zero: 'Выберите плагины, которые нужно выключить',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'Записать безопасную копию';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Выключено $count экземпляра',
+      many: 'Выключено $count экземпляров',
+      few: 'Выключено $count экземпляра',
+      one: 'Выключен $count экземпляр',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'Откройте копию в DAW: эти плагины будут отключены в своих слотах — их можно снова включить или заменить.';
+
+  @override
+  String get safeCopyNothingWritten =>
+      'Ни один из этих плагинов не был включён, поэтому ничего не записано.';
 }

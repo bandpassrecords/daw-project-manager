@@ -9282,4 +9282,78 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inspectorMissingMidiTitle => 'Fichiers MIDI introuvables';
+
+  @override
+  String get safeCopyButton => 'Copie sûre…';
+
+  @override
+  String get safeCopyTitle => 'Copie sûre';
+
+  @override
+  String get safeCopyIntro =>
+      'Une copie du projet où les plug-ins choisis sont désactivés, pour qu\'elle s\'ouvre même si l\'un d\'eux fait planter la DAW ou n\'est pas installé. Dans la copie, ils apparaissent désactivés : réactivez-les ou remplacez-les depuis leurs emplacements. Le projet lui-même n\'est pas modifié.';
+
+  @override
+  String get safeCopyFilter => 'Filtrer les plug-ins';
+
+  @override
+  String get safeCopyReading => 'Lecture des plug-ins…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'Impossible de lire les plug-ins du projet : $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instances',
+      one: '1 instance',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count déjà désactivées';
+  }
+
+  @override
+  String get safeCopyAllOff => 'Déjà désactivé partout';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instances seront désactivées',
+      one: '1 instance sera désactivée',
+      zero: 'Choisissez les plug-ins à désactiver',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'Écrire la copie sûre';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instances désactivées',
+      one: '1 instance désactivée',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'Ouvrez la copie dans votre DAW : ces plug-ins apparaissent désactivés dans leurs emplacements, prêts à être réactivés ou remplacés.';
+
+  @override
+  String get safeCopyNothingWritten =>
+      'Aucun de ces plug-ins n\'était activé : rien n\'a été écrit.';
 }

@@ -9283,4 +9283,78 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get inspectorMissingMidiTitle => 'Archivos MIDI no encontrados';
+
+  @override
+  String get safeCopyButton => 'Copia segura…';
+
+  @override
+  String get safeCopyTitle => 'Copia segura';
+
+  @override
+  String get safeCopyIntro =>
+      'Una copia del proyecto con los plugins que elijas desactivados, para que se abra aunque alguno haga fallar el DAW o no esté instalado. En la copia aparecen desactivados: vuelve a activarlos, o reemplázalos, desde sus ranuras. El proyecto en sí no se modifica.';
+
+  @override
+  String get safeCopyFilter => 'Filtrar plugins';
+
+  @override
+  String get safeCopyReading => 'Leyendo los plugins…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'No se pudieron leer los plugins del proyecto: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instancias',
+      one: '1 instancia',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count ya desactivadas';
+  }
+
+  @override
+  String get safeCopyAllOff => 'Ya desactivado en todas partes';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se desactivarán $count instancias',
+      one: 'Se desactivará 1 instancia',
+      zero: 'Elige los plugins que quieres desactivar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'Escribir copia segura';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count instancias desactivadas',
+      one: '1 instancia desactivada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'Abre la copia en tu DAW: esos plugins aparecen desactivados en sus ranuras, listos para volver a activarlos o reemplazarlos.';
+
+  @override
+  String get safeCopyNothingWritten =>
+      'Ninguno de esos plugins estaba activado, así que no se escribió nada.';
 }

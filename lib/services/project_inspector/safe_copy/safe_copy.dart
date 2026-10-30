@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
@@ -50,6 +51,66 @@ ProjectSafeCopyWriter? safeCopyWriterFor(String projectPath) =>
       '.cpr' || '.npr' => const CubaseSafeCopyWriter(),
       _ => null,
     };
+
+/// Every plug-in instance in the project at [projectPath], read on an
+/// isolate of its own: a big project takes a moment to read.
+Future<List<PluginSwitch>> readPluginSwitches(String projectPath) {
+  final w = safeCopyWriterFor(projectPath);
+  if (w == null) {
+    throw UnsupportedError('No Safe Copy writer for $projectPath');
+  }
+  return Isolate.run(
+    () async => w.switches(await File(projectPath).readAsBytes()),
+  );
+}
+
+/// [writeSafeCopy] on an isolate of its own: it reads the project twice.
+Future<SafeCopy> writeSafeCopyInBackground(
+  String projectPath,
+  Set<String> plugins,
+) => Isolate.run(
+  () => writeSafeCopy(projectPath: projectPath, plugins: plugins),
+);
+
+/// One plug-in a Safe Copy can switch off, all its instances together:
+/// what the Safe Copy dialog lists.
+class SafeCopyChoice {
+  const SafeCopyChoice({
+    required this.plugin,
+    required this.on,
+    required this.off,
+    required this.channels,
+  });
+
+  final String plugin;
+
+  /// Instances still on: what switching it off changes.
+  final int on;
+
+  /// Instances already off in the project.
+  final int off;
+
+  /// Where it is used, in the project's order, each once.
+  final List<String> channels;
+}
+
+/// [switches] by plug-in, ignoring case as [writeSafeCopy] does, sorted by
+/// name: the spelling of the first instance names it.
+List<SafeCopyChoice> safeCopyChoices(List<PluginSwitch> switches) {
+  final byName = <String, List<PluginSwitch>>{};
+  for (final s in switches) {
+    (byName[s.plugin.toLowerCase()] ??= []).add(s);
+  }
+  return [
+    for (final group in byName.values)
+      SafeCopyChoice(
+        plugin: group.first.plugin,
+        on: group.where((s) => !s.off).length,
+        off: group.where((s) => s.off).length,
+        channels: {for (final s in group) s.channel}.toList(),
+      ),
+  ]..sort((a, b) => a.plugin.toLowerCase().compareTo(b.plugin.toLowerCase()));
+}
 
 /// A Safe Copy as written.
 class SafeCopy {

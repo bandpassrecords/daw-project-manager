@@ -109,6 +109,14 @@ void main() {
           isFalse);
     });
 
+    test('read and written on an isolate, as the dialog does', () async {
+      final switches = await readPluginSwitches(project);
+      expect(switches, hasLength(6));
+      final copy = await writeSafeCopyInBackground(project, {'Serum'});
+      expect(copy.switchedOff, {'Serum': 1});
+      expect(File(copy.path!).existsSync(), isTrue);
+    });
+
     test('nothing to switch off writes nothing', () async {
       final copy = await writeSafeCopy(
         projectPath: project,
@@ -124,6 +132,28 @@ void main() {
         throwsUnsupportedError,
       );
     });
+  });
+
+  test('choices: one per plug-in, whatever its case, by name', () {
+    PluginSwitch sw(String plugin, String channel, int at, {bool off = false}) =>
+        PluginSwitch(
+          plugin: plugin,
+          channel: channel,
+          kind: PluginSlotKind.insert,
+          at: at,
+          off: off,
+        );
+    final choices = safeCopyChoices([
+      sw('Pro-Q 3', 'Bass', 1),
+      sw('OTT', 'Bass', 2, off: true),
+      sw('pro-q 3', 'Drums', 3, off: true),
+      sw('Pro-Q 3', 'Bass', 4),
+      sw('ott', 'Lead', 5, off: true),
+    ]);
+    expect(
+      [for (final c in choices) (c.plugin, c.on, c.off, c.channels.join(','))],
+      [('OTT', 0, 2, 'Bass,Lead'), ('Pro-Q 3', 2, 1, 'Bass,Drums')],
+    );
   });
 
   test('copyPathBeside numbers past copies already there', () {
