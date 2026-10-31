@@ -219,8 +219,23 @@ Per-release maintenance of the Flathub manifest:
 
 - The app source carries `x-checker-data`, so Flathub's
   flatpak-external-data-checker bot watches this repo for new `v*` tags and
-  automatically opens a PR on the Flathub repo bumping `tag:`/`commit:` —
-  you just merge it.
+  automatically opens a PR on the Flathub repo bumping `tag:`/`commit:`.
+  **That PR changes nothing else**, so it builds only while the Flathub
+  repo's manifest and `generated/` still match what this release generates.
+  Any dependency upgrade (a new `pubspec.lock`), a new Flutter version, or a
+  manifest change breaks that, and Flathub's offline build then fails — for
+  3.0.0, `no versions of device_info_plus match 13.3.0`; for 2.9.1,
+  `could not find package ffmpeg_kit_flutter_platform_interface`.
+- So after every release, compare the tag run's `flatpak-generated-sources`
+  artifact with the Flathub repo (`build_flatpak`'s "Compare with the sources
+  Flathub builds from" step already does, and warns; by hand:
+  `python scripts/flathub_sources.py <artifact dir> <flathub checkout>`).
+  - **Same** (exit 0): merge the bot's PR.
+  - **Different** (exit 1): on a branch of the Flathub repo, replace
+    `com.bandpassrecords.dpm.yml` and `generated/` with the artifact's (step
+    3 above), open a PR ("Update to vX.Y.Z", as flathub#3 and #7 were), and
+    close the bot's PR as superseded once Flathub's test build passes. The
+    artifact is kept 14 days.
 - The one manual step, on this repo's side, before tagging a release: add a
   new `<release version="X.Y.Z" date="...">` entry to
   `com.bandpassrecords.dpm.metainfo.xml` (Flathub surfaces these as the

@@ -246,9 +246,27 @@ release is done.
 
 ## Afterwards
 
-- The Flathub side (`tag:`/`commit:` bump) is a PR the
-  flatpak-external-data-checker bot opens on the Flathub repo by itself. There
-  is nothing to do here.
+- **Flathub.** The flatpak-external-data-checker bot opens a PR on
+  `flathub/com.bandpassrecords.dpm` that bumps only `tag:`/`commit:`. That
+  builds only while Flathub's manifest and `generated/` still match this
+  release's. A dependency or Flutter upgrade breaks it: 3.0.0's bot PR
+  failed with `no versions of device_info_plus match 13.3.0`. Check every
+  release:
+  ```
+  gh run download <run-id> -R bandpassrecords/daw-project-manager -n flatpak-generated-sources -D <scratch>/fp
+  git clone --depth 1 https://github.com/flathub/com.bandpassrecords.dpm.git <scratch>/flathub
+  python scripts/flathub_sources.py <scratch>/fp <scratch>/flathub
+  ```
+  - Exit 0: the bot's PR is enough. Tell the user to merge it once it
+    appears.
+  - Exit 1: the Flathub repo needs this release's files. This publishes to
+    a public repo, so ask the user first. Then, in the clone:
+    `git checkout -b update-X.Y.Z`, replace `com.bandpassrecords.dpm.yml`
+    and `generated/` with the artifact's, commit "Update to vX.Y.Z", push,
+    and open a PR to `master` titled the same. Its body says it supersedes
+    the bot's PR and why, with the script's output. Watch the PR's
+    `flathub/build` check, then close the bot's PR (if there is one) with a
+    comment pointing to the new PR. Merging is the user's call.
 - If a tag had to be deleted after being public for a while, mention that the
   bot may have opened a PR for the dead tag. It should be closed on Flathub's
   side.

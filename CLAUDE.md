@@ -282,6 +282,7 @@ Instructions for AI assistants working on this codebase.
 - `assets/changelog/changelog.json` is the changelog the app ships — the "What's New" dialog shown once after an update, and Settings > Changelog. It is an asset, not fetched from GitHub, because the Flatpak build has no network.
 - The skill writes the version's entry; by hand it is `python scripts/new_changelog_entry.py 2.10.0 --highlight "..."` (repeat `--highlight`; add `--locale pt` etc. for translations — a missing locale falls back to English). `release.yml` fails the release if the newest entry doesn't match the tag.
 - Write user-facing highlights, not commit messages. Entries before 2.9.0 were backfilled from GitHub release notes and git history, and are English-only.
+- **Flathub's bot PR bumps only `tag:`/`commit:`**, so after a dependency or Flutter upgrade it can't build (3.0.0: `no versions of device_info_plus match 13.3.0`). `scripts/flathub_sources.py` compares a release's `flatpak-generated-sources` artifact with the Flathub repo; when they differ, the Flathub repo gets that artifact by hand (`flatpak/README.md`, Per-release maintenance). `build_flatpak` warns on any PR that causes it.
 
 ### Adding a new DAW
 1. Add the file extension (with comment) to `ScannerService.supportedExtensions` in `lib/services/scanner_service.dart`.

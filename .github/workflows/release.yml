@@ -1280,6 +1280,38 @@ jobs:
           echo "--- diff of the manifest itself ---"
           git -C .. diff -- flatpak/com.bandpassrecords.dpm.yml || true
 
+      # Flathub's bot PR for a new tag changes only tag:/commit:, so it builds
+      # only while Flathub's manifest and generated/ still match this build's.
+      # A dependency or Flutter upgrade breaks that (3.0.0's Flathub build
+      # couldn't find device_info_plus 13.3.0). This says so on every PR that
+      # causes it, and on the release run that has to fix it — it never fails
+      # the job; the release skill acts on the same script's answer.
+      - name: Compare with the sources Flathub builds from
+        continue-on-error: true
+        run: |
+          python3 -m unittest discover -s scripts -p "test_flathub_sources.py"
+          git clone --depth 1 https://github.com/flathub/com.bandpassrecords.dpm.git /tmp/flathub-dpm
+          if python3 scripts/flathub_sources.py flatpak /tmp/flathub-dpm > /tmp/flathub_sources.txt; then
+            cat /tmp/flathub_sources.txt
+            exit 0
+          fi
+          cat /tmp/flathub_sources.txt
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            what="Push this run's flatpak-generated-sources artifact to flathub/com.bandpassrecords.dpm (flatpak/README.md, Per-release maintenance) and close the bot's PR."
+          else
+            what="The next release must update the Flathub repo by hand with its flatpak-generated-sources artifact; the bot's PR alone won't build."
+          fi
+          echo "::warning title=Flathub sources out of date::$what"
+          {
+            echo "### Flathub sources out of date"
+            echo
+            echo "$what"
+            echo
+            echo '```'
+            head -40 /tmp/flathub_sources.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Build Flatpak (offline, from vendored sources)
         working-directory: flatpak
         run: |
