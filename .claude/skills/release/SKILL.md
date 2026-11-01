@@ -84,6 +84,22 @@ failures and retries, reporting as you go.
 - The working tree must be clean apart from `android/local.properties` and
   `flatpak/shared-modules`. Those are always dirty here and are never
   committed.
+- **Plugin pin.** The `plugin_integration` job builds the DAW plugin at the tag
+  in `test/plugin_integration/plugin_ref`, and every build waits for it, so a
+  release is tested against the plugin people can download today. Check that
+  tag is the plugin's newest release before going on:
+  ```
+  gh api repos/bandpassrecords/daw-project-manager-plugin/releases/latest --jq .tag_name
+  cat test/plugin_integration/plugin_ref
+  ```
+  - Same: nothing to do.
+  - The plugin's is newer: if `gh pr list -R bandpassrecords/daw-project-manager --state open --search "plugin-pin"`
+    shows a bump PR for it (`.github/workflows/plugin-pin.yml` opens one), that
+    is the same change: stop and say so, merging it is the user's call.
+    Otherwise write the new tag (one line, `vX.Y.Z`) into `plugin_ref`, commit
+    only that file as `Plugin integration tests: pin the plugin at vX.Y.Z`, and
+    `git push bp main` before step 2. The release run's `plugin_integration`
+    job is the check (step 6 if it fails).
 
 ## 2. Notes (checkpoint: user approval)
 
@@ -207,6 +223,16 @@ gh release create vX.Y.Z -R bandpassrecords/daw-project-manager \
    - Nothing to fix and nothing to delete. The release still exists, so run
      `gh run rerun <run-id> --failed` and go back to step 5.
    - Do this at most twice for the same job, then treat it as real.
+
+   **The plugin integration job fails after a new pin** (the pin was just
+   moved to a newer plugin release): the protocol probably moved, and the fix
+   is in both repos (the plugin's `docs/PROTOCOL.md` is the contract).
+   - **Stop.** Quote the failing scenario and say what the plugin release
+     changed (`gh api repos/bandpassrecords/daw-project-manager-plugin/compare/<old>...<new>`).
+   - Don't change the app's side to fit a guess. Pinning back to the previous
+     tag is the user's call; it ships the release against the older plugin.
+   - Delete the release and tag as for a real problem, since the builds did
+     not finish.
 
    **Needs something only the user can do** (a missing or expired secret —
    `docs/releasing.md` lists every one `release.yml` reads — a signing
