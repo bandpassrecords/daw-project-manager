@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:material_ui/material_ui.dart';
 
 import '../../models/music_project.dart';
+import '../../utils/capture_only_play.dart';
 import '../../utils/daw_logo.dart';
 import '../../utils/project_accent_color.dart';
 import '../../utils/project_visuals.dart';
@@ -212,7 +213,9 @@ class _ProjectCardGridState extends State<ProjectCardGrid> {
           onPrimaryAction: () => widget.onPrimaryAction(project),
           onOpenFolder: () => widget.onOpenFolder(project),
           onPlayPreview: () => widget.onPlayPreview(project),
-          hasCaptureMarker: widget.showCaptureMarkers && project.latestCapture != null,
+          hasCaptureMarker: widget.showCaptureMarkers &&
+              project.latestCapture != null &&
+              !playsCaptureOnly(project),
         );
       },
     );
@@ -484,6 +487,8 @@ class _ProjectCardState extends State<_ProjectCard> {
                 ? Colors.greenAccent.shade100
                 : project.previewSongAutoPath != null
                 ? Colors.amberAccent.shade100
+                : playsCaptureOnly(project)
+                ? kCaptureOnlyPlayColorOnCard
                 : Colors.white70,
           ),
         ],

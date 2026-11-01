@@ -39,7 +39,7 @@ void main() {
 
   group('offersLatestCapture', () {
     test('only for a project with a capture, where the plugin is detected', () {
-      final withCapture = TestFactories.makeProject(latestCapture: capture);
+      final withCapture = TestFactories.makeProject(latestCapture: capture, previewSongPath: '/music/Master.wav');
       expect(offersLatestCapture(withCapture, pluginDetected: true), isTrue);
       expect(offersLatestCapture(withCapture, pluginDetected: false), isFalse);
       expect(offersLatestCapture(TestFactories.makeProject(), pluginDetected: true), isFalse);

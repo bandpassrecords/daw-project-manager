@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:daw_project_manager/models/music_project.dart';
+import 'package:daw_project_manager/utils/capture_only_play.dart';
 import 'package:daw_project_manager/models/plugin_capture.dart';
 import 'package:daw_project_manager/ui/widgets/project_card_grid.dart';
 
@@ -412,13 +413,23 @@ void main() {
 
       // No capture button of its own: every card keeps the same icons, and
       // the capture plays from the card's right-click menu.
-      testWidgets('a card with a capture marks its play icon, where the plugin is detected', (tester) async {
+      testWidgets('a card with a capture beside a preview marks its play icon, where the plugin is detected', (tester) async {
         await tester.pumpWidget(wrap(
-          [project('a', 'Night Drive', latestCapture: capture)],
+          [project('a', 'Night Drive', latestCapture: capture, previewSongPath: '/music/Master.wav')],
           showCaptureMarkers: true,
         ));
         expect(find.byKey(const ValueKey('card-capture-dot')), findsOneWidget);
         expect(find.byIcon(Icons.graphic_eq), findsNothing);
+      });
+
+      testWidgets('a capture that is all there is plays from the icon itself: no dot, its own colour', (tester) async {
+        await tester.pumpWidget(wrap(
+          [project('a', 'Night Drive', latestCapture: capture)],
+          showCaptureMarkers: true,
+        ));
+        expect(find.byKey(const ValueKey('card-capture-dot')), findsNothing);
+        final play = tester.widget<Icon>(find.byIcon(Icons.play_arrow).first);
+        expect(play.color, kCaptureOnlyPlayColorOnCard);
       });
 
       testWidgets('no mark where the plugin is not detected', (tester) async {

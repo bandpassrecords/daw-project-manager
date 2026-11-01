@@ -8,6 +8,7 @@ import 'package:path/path.dart' as path;
 import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
 import '../providers/providers.dart';
+import '../utils/capture_only_play.dart';
 import '../utils/track_duration.dart';
 import 'app_snack_bar.dart';
 import 'widgets/anchored_menu.dart';
@@ -24,7 +25,7 @@ bool playButtonIsCurrent(DesktopPlayerRequest? request, MusicProject project) =>
 /// button, and a right-click menu): it has one, and this device has the
 /// DAW plugin ([dpmPluginDetectedProvider]).
 bool offersLatestCapture(MusicProject project, {required bool pluginDetected}) =>
-    pluginDetected && project.latestCapture != null;
+    pluginDetected && project.latestCapture != null && !playsCaptureOnly(project);
 
 /// Plays [project]'s latest capture (the DAW plugin's last pass) in the
 /// desktop player. A capture synced from another device whose file hasn't

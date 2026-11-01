@@ -80,6 +80,7 @@ import 'widgets/ctrl_wheel_volume.dart';
 import 'widgets/whats_new_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_card_grid.dart';
+import '../utils/capture_only_play.dart';
 import 'project_playback.dart';
 import 'widgets/drag_to_share_button.dart';
 import 'widgets/filter_dropdown.dart';
@@ -6006,6 +6007,13 @@ Future<void> playProjectPreview(
     }
   }
 
+  // Only the plugin's capture to play: play it, rather than asking for a file.
+  if (effectivePath == null && project.latestCapture != null) {
+    if (!context.mounted) return;
+    await playProjectCapture(context, ref, project);
+    return;
+  }
+
   if (effectivePath == null) {
     if (!context.mounted) return;
     final l10n = AppLocalizations.of(context)!;
@@ -8205,11 +8213,15 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                   );
                   final hasPreview =
                       project.previewSongPath?.isNotEmpty == true ||
-                      project.previewSongAutoPath != null;
+                      project.previewSongAutoPath != null ||
+                      playsCaptureOnly(project);
+                  final captureOnly = playsCaptureOnly(project);
                   final iconColor = project.previewSongPath?.isNotEmpty == true
                       ? Colors.green
                       : project.previewSongAutoPath != null
                       ? Colors.amber
+                      : captureOnly
+                      ? kCaptureOnlyPlayColor
                       : Colors.grey;
                   final l10n = AppLocalizations.of(context)!;
                   final captureHint = capture ? '\n◉ ${l10n.latestCaptureMenuHint}' : '';
@@ -8237,6 +8249,8 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
                         ? (isPlaying
                               ? AppLocalizations.of(context)!.pause
                               : AppLocalizations.of(context)!.playPreview)
+                        : captureOnly
+                        ? '${l10n.latestCapturePlay} (P)'
                         : project.previewSongAutoPath != null &&
                               project.previewSongPath?.isNotEmpty != true
                         ? '${AppLocalizations.of(context)!.playPreview} (P)\n⚡ ${AppLocalizations.of(context)!.autoDetected}: ${path.basename(project.previewSongAutoPath!)}$captureHint'
