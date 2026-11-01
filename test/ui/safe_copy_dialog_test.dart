@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:path/path.dart' as p;
 
 import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
 import 'package:daw_project_manager/services/project_inspector/project_copy.dart';
@@ -8,6 +9,10 @@ import 'package:daw_project_manager/ui/dialogs/safe_copy_dialog.dart';
 import 'package:daw_project_manager/utils/localization_delegates.dart';
 
 import '../helpers/semantics_orphans.dart';
+
+// Built with package:path: the dialog names the file with p.basename, which
+// reads only this platform's separator.
+final _copyPath = p.join('Song', 'Song (safe copy).cpr');
 
 PluginSwitch _sw(String plugin, String channel, int at, {bool off = false}) =>
     PluginSwitch(
@@ -24,8 +29,8 @@ class _World {
   String? inspected;
   Object? loadError;
   Object? writeError;
-  SafeCopy copy = const SafeCopy(
-    path: r'D:\Song\Song (safe copy).cpr',
+  SafeCopy copy = SafeCopy(
+    path: _copyPath,
     switchedOff: {'Serum': 4},
   );
 
@@ -119,7 +124,7 @@ void main() {
     expect(find.text('4 instances switched off'), findsOneWidget);
     expect(find.text('  Serum ×4'), findsOneWidget);
     await tester.tap(find.text('Inspect the copy'));
-    expect(world.inspected, r'D:\Song\Song (safe copy).cpr');
+    expect(world.inspected, _copyPath);
   });
 
   testWidgets('a copy that fails its check is reported, not kept', (

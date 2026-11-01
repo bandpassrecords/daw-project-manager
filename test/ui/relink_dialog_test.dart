@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:path/path.dart' as p;
 
 import 'package:daw_project_manager/generated/l10n/app_localizations.dart';
 import 'package:daw_project_manager/models/sample_reference.dart';
@@ -10,6 +11,11 @@ import 'package:daw_project_manager/ui/dialogs/relink_dialog.dart';
 import 'package:daw_project_manager/utils/localization_delegates.dart';
 
 import '../helpers/semantics_orphans.dart';
+
+// Built with package:path: the dialog names the file with p.basename, which
+// reads only this platform's separator (a Windows literal is one long name on
+// macOS and Linux).
+final _copyPath = p.join('Old', 'Song', 'Song (relinked).cpr');
 
 const _old = r'D:\Old\Song\Audio\';
 const _new = r'E:\Backup\Song\Audio\';
@@ -30,8 +36,8 @@ class _World {
   String? folder = r'E:\Elsewhere';
   String? file = '${_new}hat.wav';
   Object? writeError;
-  RelinkCopy copy = const RelinkCopy(
-    path: r'D:\Old\Song\Song (relinked).cpr',
+  RelinkCopy copy = RelinkCopy(
+    path: _copyPath,
     relinked: {'${_old}kick.wav', '${_old}hat.wav'},
     refused: {'${_old}snare.wav': RelinkRefusal.doesNotFit},
   );
@@ -143,7 +149,7 @@ void main() {
         findsOneWidget);
     expect(find.text('  ${_old}snare.wav'), findsOneWidget);
     await tester.tap(find.text('Inspect the copy'));
-    expect(world.inspected, r'D:\Old\Song\Song (relinked).cpr');
+    expect(world.inspected, _copyPath);
   });
 
   testWidgets('a copy that fails its check is reported, not kept',
