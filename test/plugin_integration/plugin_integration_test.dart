@@ -7,7 +7,7 @@
 //
 // Skips when no driver is built: the plugin repo, checked out next to this
 // one and built (`cmake --build build --target DAWProjectManagerBridgeDriver`),
-// or DPM_PLUGIN_DRIVER naming the binary. CI builds the plugin commit in
+// or DPM_PLUGIN_DRIVER naming the binary. CI builds the plugin release in
 // plugin_ref.
 
 import 'dart:io';

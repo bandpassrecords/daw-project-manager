@@ -1,0 +1,89 @@
+# Keeps test/plugin_integration/plugin_ref (the released plugin the integration
+# tests run against) on the plugin's newest release: when one appears, this
+# opens a PR that moves the pin. That PR's own CI is the check — green means
+# the app still talks to the new plugin, red means the protocol moved and both
+# repos have to change together.
+name: Plugin pin
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+  # For the plugin repo's release workflow to call, if it should not wait for
+  # the daily run: POST /repos/<this repo>/dispatches {"event_type":"plugin-release"}
+  repository_dispatch:
+    types: [ plugin-release ]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    name: Bump the plugin pin
+    runs-on: ubuntu-latest
+    env:
+      PLUGIN_REPO: bandpassrecords/daw-project-manager-plugin
+      PIN_FILE: test/plugin_integration/plugin_ref
+      # A PR opened with the default token does not start other workflows, so
+      # its CI would never run. A token of a person or app (repo scope) in this
+      # secret does; without it the PR is opened anyway and needs a
+      # close and reopen to start CI.
+      GH_TOKEN: ${{ secrets.PLUGIN_BUMP_TOKEN || github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          token: ${{ secrets.PLUGIN_BUMP_TOKEN || github.token }}
+
+      - name: Compare the pin with the plugin's latest release
+        id: pin
+        run: |
+          latest=$(gh api "repos/$PLUGIN_REPO/releases/latest" --jq .tag_name)
+          current=$(tr -d '[:space:]' < "$PIN_FILE")
+          # The tag goes into a branch name and a file: only a plain version.
+          if ! [[ "$latest" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Unexpected latest release tag: $latest"
+            exit 1
+          fi
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          echo "current=$current" >> "$GITHUB_OUTPUT"
+          if [ "$latest" = "$current" ]; then
+            echo "Pinned to $current, already the latest."
+            echo "bump=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "bump=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # A bump someone closed without merging is not opened again every day.
+      - name: Skip a bump that already has a PR
+        id: existing
+        if: steps.pin.outputs.bump == 'true'
+        env:
+          LATEST: ${{ steps.pin.outputs.latest }}
+        run: |
+          n=$(gh pr list --head "chore/plugin-pin-$LATEST" --state all --json number --jq length)
+          echo "found=$n" >> "$GITHUB_OUTPUT"
+
+      - name: Open the PR
+        if: steps.pin.outputs.bump == 'true' && steps.existing.outputs.found == '0'
+        env:
+          LATEST: ${{ steps.pin.outputs.latest }}
+          CURRENT: ${{ steps.pin.outputs.current }}
+        run: |
+          branch="chore/plugin-pin-$LATEST"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          echo "$LATEST" > "$PIN_FILE"
+          git add "$PIN_FILE"
+          git commit -m "Plugin integration tests: pin the plugin at $LATEST"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Plugin integration tests: pin the plugin at $LATEST" \
+            --body "The plugin released $LATEST (was \`$CURRENT\`): see https://github.com/$PLUGIN_REPO/releases/tag/$LATEST
+
+          This PR's **Plugin integration (Linux)** job runs the app against that release.
+          - Green: the app still talks to it; merge.
+          - Red: the protocol moved. Change both repos together (the plugin's \`docs/PROTOCOL.md\` is the contract), then pin.
+
+          If no checks started on this PR (the default token does not start workflows), close and reopen it. Adding a \`PLUGIN_BUMP_TOKEN\` secret avoids that."

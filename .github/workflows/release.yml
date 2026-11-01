@@ -176,9 +176,10 @@ jobs:
 
   # The app and the DAW plugin, each running its own bridge code on one
   # bridge folder (test/plugin_integration/). The plugin side is its headless
-  # driver, built from the plugin repo at the commit in plugin_ref: a protocol
+  # driver, built from the plugin repo at the tag in plugin_ref: a protocol
   # change updates both repos and that pin together. The pin is a released
-  # plugin (v0.1.0), and every build waits on this job as on the unit tests:
+  # plugin, kept on the newest one by plugin-pin.yml (it opens a PR for each
+  # release), and every build waits on this job as on the unit tests:
   # a release must not break the plugin people have installed.
   plugin_integration:
     name: Plugin integration (Linux)
@@ -194,11 +195,11 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Read the pinned plugin commit
+      - name: Read the pinned plugin release
         id: pin
         run: echo "ref=$(tr -d '[:space:]' < test/plugin_integration/plugin_ref)" >> "$GITHUB_OUTPUT"
 
-      - name: Check out the plugin at that commit
+      - name: Check out the plugin at that release
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: bandpassrecords/daw-project-manager-plugin
