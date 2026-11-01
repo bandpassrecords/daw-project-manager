@@ -46,7 +46,7 @@ class CubaseAttributeDecoder {
     try {
       r.string();
       r.skip(8);
-      return CubaseAttributes(r.attributes(r.count(), 0));
+      return r.tree(r.count(), 0);
     } on _Malformed {
       return null;
     }
@@ -82,9 +82,18 @@ class CubaseAttributeDecoder {
 
 /// A folder or object: its attributes in the order they were written.
 class CubaseAttributes {
-  const CubaseAttributes(this.entries, {this.className});
+  const CubaseAttributes(
+    this.entries, {
+    this.className,
+    this.valueOffsets = const [],
+  });
 
   final List<(String, Object?)> entries;
+
+  /// Where each entry's value starts in the file, after its type: a `u16`
+  /// type then, for an `i64`, the 8 bytes a writer may change in place.
+  /// Empty when the attributes weren't decoded from a file.
+  final List<int> valueOffsets;
 
   /// For an object, its class ("CmRational"); null for a folder.
   final String? className;
@@ -97,6 +106,15 @@ class CubaseAttributes {
   }
 
   int? integer(String key) => switch (this[key]) { final int v => v, _ => null };
+
+  /// Where [key]'s value sits in the file; null when it isn't here or the
+  /// offsets weren't kept.
+  int? offsetOf(String key) {
+    for (var i = 0; i < entries.length && i < valueOffsets.length; i++) {
+      if (entries[i].$1 == key) return valueOffsets[i];
+    }
+    return null;
+  }
 
   /// An `f64` or an `i64`, as a double.
   double? number(String key) => switch (this[key]) {
@@ -205,9 +223,23 @@ class _Reader {
     return utf8.decode(d.bytes.sublist(start, end), allowMalformed: true);
   }
 
-  List<(String, Object?)> attributes(int n, int depth) {
+  /// [n] attributes, and where each one's value starts (after its type).
+  (List<(String, Object?)>, List<int>) attributes(int n, int depth) {
     if (depth > CubaseAttributeDecoder._maxDepth) throw const _Malformed();
-    return [for (var i = 0; i < n; i++) (string(), value(depth))];
+    final entries = <(String, Object?)>[];
+    final offsets = <int>[];
+    for (var i = 0; i < n; i++) {
+      final key = string();
+      offsets.add(offset + 2);
+      entries.add((key, value(depth)));
+    }
+    return (entries, offsets);
+  }
+
+  CubaseAttributes tree(int n, int depth, {String? className}) {
+    final (entries, offsets) = attributes(n, depth);
+    return CubaseAttributes(entries,
+        className: className, valueOffsets: offsets);
   }
 
   Object? value(int depth) => switch (u16()) {
@@ -221,12 +253,11 @@ class _Reader {
   Object? container(int depth) {
     switch (u16()) {
       case 6:
-        return CubaseAttributes(attributes(count(), depth));
+        return tree(count(), depth);
       case 5:
         final n = count();
         return <CubaseAttributes>[
-          for (var i = 0; i < n; i++)
-            CubaseAttributes(attributes(count(), depth)),
+          for (var i = 0; i < n; i++) tree(count(), depth),
         ];
       case 4:
         final n = count();
@@ -237,7 +268,7 @@ class _Reader {
       case 0x14:
         final cls = string();
         skip(8);
-        return CubaseAttributes(attributes(count(), depth), className: cls);
+        return tree(count(), depth, className: cls);
       case 0x15:
         return CubaseReference(i64());
       case 0xc9:

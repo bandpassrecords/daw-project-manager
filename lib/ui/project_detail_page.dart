@@ -27,6 +27,7 @@ import '../repository/project_repository.dart';
 import '../utils/attachment_launcher.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/version_stacks.dart';
 import '../utils/player_shortcuts.dart';
 import '../services/app_audio_focus.dart';
 import '../services/player_volume_store.dart';
@@ -2173,6 +2174,26 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                         ? () =>
                                               _unstackSong(repo, updatedProject)
                                         : null,
+                                    previousOf: (member) =>
+                                        previousVersionOf(member, members),
+                                    compareTooltip: l10n.compareWithPrevious,
+                                    onCompare: MobileUtils.isMobile()
+                                        ? null
+                                        : (previous, member) async {
+                                            if (await compareInInspector(
+                                                  context,
+                                                  ref,
+                                                  previous.filePath,
+                                                  member.filePath,
+                                                ) &&
+                                                context.mounted) {
+                                              // The Inspector is a tab of
+                                              // the dashboard, under this page.
+                                              Navigator.of(context).popUntil(
+                                                (r) => r.isFirst,
+                                              );
+                                            }
+                                          },
                                   );
                                 },
                               ),

@@ -887,6 +887,14 @@ void main() {
 
   group('readSampleReferences', () {
     const projectAudio = r'C:\Music\Song\Audio\';
+
+    test('a folder padded with NULs, as a relink in place leaves it', () {
+      final a = CubaseArchive()..begin('PPool');
+      a.poolFile('kick.wav', r'E:\Kit\', folderRoom: 60);
+      a.end();
+      final refs = CubaseProjectParser(a.toCpr()).readSampleReferences();
+      expect(refs.single.candidates.first, r'E:\Kit\kick.wav');
+    });
     const library = r'D:\Samples\Re-Twin\RTW_PERCS\';
 
     CubaseProjectParser parserWithPool() {

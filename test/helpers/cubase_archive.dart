@@ -37,6 +37,13 @@ class CubaseArchive {
     raw(data);
   }
 
+  /// Strings before Cubase 6: the text and a NUL, in the system's code page.
+  void legacyString(String s) {
+    final data = [...latin1.encode(s), 0];
+    _u32(data.length);
+    raw(data);
+  }
+
   void begin(String cls, {int version = 0}) {
     final def = _defs[cls];
     if (def == null) {
@@ -263,6 +270,7 @@ class CubaseArchive {
             'Plugin Name': instrumentLabel ?? instrument,
             if (instrumentLabel != null) 'Original Plugin Name': instrument,
             'Bay Program': 'Init Saw',
+            'Active': 1,
           },
           'State': 1,
         },
@@ -305,9 +313,9 @@ class CubaseArchive {
 
   /// A slot of the VST Instruments rack: its plug-in, then its outputs —
   /// channels of type 3, which the arrangement shows as device tracks.
-  void rackSlot(String plugin, List<String> outputs) {
+  void rackSlot(String plugin, List<String> outputs, {bool off = false}) {
     attr('Plugin isA', 'VstCtrlInstrument');
-    attr('Plugin', {'Plugin Name': plugin});
+    attr('Plugin', {'Plugin Name': plugin, 'Active': off ? 0 : 1});
     attr('Output Channels', <Map<String, Object>>[
       for (final (i, name) in outputs.indexed)
         {
@@ -401,15 +409,32 @@ class CubaseArchive {
 
   /// A pool file as Cubase writes it: an `FNPath` holding the name, the
   /// type ("WAVE", the extension twice, a description) and the folder.
-  void poolFile(String name, String folder) {
+  /// With [folderRoom], the folder is written as a relink in place writes
+  /// it: in a string that held a longer one, NUL-padded to that many bytes.
+  /// Without [bom], strings are written as Cubase 5 wrote them.
+  void poolFile(
+    String name,
+    String folder, {
+    int? folderRoom,
+    bool bom = true,
+  }) {
     begin('FNPath');
-    string(name);
+    bom ? string(name) : legacyString(name);
     raw(ascii.encode('WAVE'));
     string('wav');
     string('wav');
     string('Wave File');
     raw([0, 0, 0, 1, 0, 0]);
-    string(folder);
+    if (!bom) {
+      legacyString(folder);
+    } else if (folderRoom == null) {
+      string(folder);
+    } else {
+      final text = utf8.encode(folder);
+      _u32(folderRoom + 4);
+      raw([...text, ...List.filled(folderRoom + 1 - text.length, 0)]);
+      raw([0xEF, 0xBB, 0xBF]);
+    }
     end();
   }
 

@@ -25,6 +25,8 @@ void main() {
     void Function(MusicProject)? onSetDefault,
     void Function(MusicProject)? onOpen,
     VoidCallback? onUnstack,
+    MusicProject? Function(MusicProject)? previousOf,
+    void Function(MusicProject, MusicProject)? onCompare,
     String? emptyTitle = 'Not stacked yet',
     String? emptyDescription = 'Add another project file.',
   }) => MaterialApp(
@@ -49,6 +51,9 @@ void main() {
           onSetDefault: onSetDefault,
           onOpen: onOpen,
           onUnstack: onUnstack,
+          previousOf: previousOf,
+          onCompare: onCompare,
+          compareTooltip: 'Compare with previous version',
         ),
       ),
     ),
@@ -244,5 +249,29 @@ void main() {
       // And that is the full width available, not just "the same as".
       expect(emptyWidth, greaterThan(700));
     });
+  });
+
+  testWidgets('a version with one before it can be compared with it (#223)', (
+    tester,
+  ) async {
+    (MusicProject, MusicProject)? compared;
+    await tester.pumpWidget(
+      wrap(
+        [v1, v2, v3],
+        previousOf: (m) => switch (m.id) {
+          'v2' => v1,
+          'v3' => v2,
+          _ => null,
+        },
+        onCompare: (previous, member) => compared = (previous, member),
+      ),
+    );
+    final buttons = find.byTooltip('Compare with previous version');
+    expect(buttons, findsNWidgets(2), reason: 'not the first version');
+    await tester.tap(buttons.last);
+    expect((compared?.$1.id, compared?.$2.id), ('v2', 'v3'));
+
+    await tester.pumpWidget(wrap([v1, v2, v3]));
+    expect(find.byTooltip('Compare with previous version'), findsNothing);
   });
 }

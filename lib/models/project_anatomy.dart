@@ -1,3 +1,5 @@
+import 'project_marker.dart';
+import 'project_stats.dart';
 import 'sample_reference.dart';
 
 /// What the Project Inspector shows about one project file: read from the
@@ -22,6 +24,10 @@ class ProjectAnatomy {
     this.pluginInstancesKnown = false,
     this.media,
     this.audioIo,
+    this.stats,
+    this.notes,
+    this.markers,
+    this.missingMidiFiles,
   });
 
   final String filePath;
@@ -54,6 +60,25 @@ class ProjectAnatomy {
 
   /// The studio it was saved in; null when not read.
   final AnatomyAudioIo? audioIo;
+
+  /// What the app's scan reads from the same file — tracks by kind, MIDI
+  /// clips: for a DAW whose [channels] aren't read yet, the track counts
+  /// come from here.
+  final ProjectStats? stats;
+
+  /// The notes kept in the project file itself (Cubase's notepad,
+  /// REAPER's project notes).
+  final String? notes;
+
+  /// The timeline's markers and regions; null when this DAW's aren't read.
+  final List<ProjectMarker>? markers;
+
+  /// `.mid` files the project references that aren't on this computer;
+  /// null when not read.
+  final List<String>? missingMidiFiles;
+
+  /// MIDI clips in the project, each counted once; null when not read.
+  int? get midiClipCount => stats?.midiClipCount;
 }
 
 /// The audio interface, buses and MIDI ports a project was saved with.

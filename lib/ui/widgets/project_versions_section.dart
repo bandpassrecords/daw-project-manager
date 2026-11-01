@@ -33,6 +33,9 @@ class ProjectVersionsSection extends StatelessWidget {
     this.onSetDefault,
     this.onOpen,
     this.onUnstack,
+    this.previousOf,
+    this.onCompare,
+    this.compareTooltip = '',
     this.padding = const EdgeInsets.symmetric(horizontal: 14),
   });
 
@@ -81,6 +84,13 @@ class ProjectVersionsSection extends StatelessWidget {
   final void Function(MusicProject member)? onSetDefault;
   final void Function(MusicProject member)? onOpen;
   final VoidCallback? onUnstack;
+
+  /// The version saved before a member, which "Compare with previous
+  /// version" compares it with (#223); a member it returns null for has
+  /// no compare button.
+  final MusicProject? Function(MusicProject member)? previousOf;
+  final void Function(MusicProject previous, MusicProject member)? onCompare;
+  final String compareTooltip;
 
   final EdgeInsets padding;
 
@@ -189,6 +199,12 @@ class ProjectVersionsSection extends StatelessWidget {
                       onRemove: onRemove,
                       onSetDefault: onSetDefault,
                       onOpen: onOpen,
+                      compareTooltip: compareTooltip,
+                      onCompare: switch ((onCompare, previousOf?.call(members[i]))) {
+                        (final compare?, final previous?) =>
+                          () => compare(previous, members[i]),
+                        _ => null,
+                      },
                     ),
                   ],
                 ],
@@ -226,6 +242,8 @@ class _VersionRow extends StatelessWidget {
     required this.onRemove,
     required this.onSetDefault,
     required this.onOpen,
+    required this.compareTooltip,
+    required this.onCompare,
   });
 
   final MusicProject member;
@@ -238,6 +256,8 @@ class _VersionRow extends StatelessWidget {
   final void Function(MusicProject member)? onRemove;
   final void Function(MusicProject member)? onSetDefault;
   final void Function(MusicProject member)? onOpen;
+  final String compareTooltip;
+  final VoidCallback? onCompare;
 
   @override
   Widget build(BuildContext context) {
@@ -285,6 +305,12 @@ class _VersionRow extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (onCompare != null)
+            IconButton(
+              icon: const Icon(Icons.compare_arrows, size: 18),
+              tooltip: compareTooltip,
+              onPressed: onCompare,
+            ),
           // Nominating the current default again is a no-op, so the star is
           // shown filled and inert rather than removed — a row that loses a
           // control when you pick it reads as the control breaking.

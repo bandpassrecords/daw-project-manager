@@ -9030,4 +9030,785 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get inspectorStripModule => 'Modul';
+
+  @override
+  String get relinkFixButton => 'Fehlende Dateien reparieren…';
+
+  @override
+  String get relinkTitle => 'Fehlende Dateien reparieren';
+
+  @override
+  String get relinkIntro =>
+      'Neben dem Projekt wird eine Kopie geschrieben, die auf den jetzigen Ort der Dateien zeigt. Das Projekt selbst wird nie verändert.';
+
+  @override
+  String get relinkSearchFolder => 'Ordner durchsuchen…';
+
+  @override
+  String get relinkSearchFolderTitle => 'Wo sind die fehlenden Dateien?';
+
+  @override
+  String get relinkSearching => 'Dateien werden gesucht…';
+
+  @override
+  String relinkSearchedIn(String folders) {
+    return 'Durchsucht: $folders';
+  }
+
+  @override
+  String relinkWillFix(int count, int total) {
+    return '$count von $total Dateien werden neu verknüpft';
+  }
+
+  @override
+  String relinkChooseOne(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count-mal gefunden – eine auswählen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNotFound => 'Nicht gefunden';
+
+  @override
+  String get relinkBrowse => 'Durchsuchen…';
+
+  @override
+  String relinkBrowseTitle(String name) {
+    return 'Wo ist $name?';
+  }
+
+  @override
+  String get relinkLeave => 'So lassen';
+
+  @override
+  String get relinkChange => 'Ziel wählen';
+
+  @override
+  String relinkRuleOffer(int count, String from, String to) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Dieselbe Verschiebung findet $count weitere Dateien: $from → $to',
+      one: 'Dieselbe Verschiebung findet 1 weitere Datei: $from → $to',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkApplyRule => 'Anwenden';
+
+  @override
+  String get relinkWrite => 'Neu verknüpfte Kopie schreiben';
+
+  @override
+  String get relinkWriting => 'Kopie wird geschrieben und geprüft…';
+
+  @override
+  String relinkWrote(String name) {
+    return '$name geschrieben';
+  }
+
+  @override
+  String relinkRelinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Dateien neu verknüpft',
+      one: '1 Datei neu verknüpft',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedTooLong(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count nicht verknüpft: Der neue Pfad ist länger, als das Projekt Platz hat. In einen kürzeren Pfad verschieben oder in Cubase suchen.',
+      one:
+          '1 nicht verknüpft: Der neue Pfad ist länger, als das Projekt Platz hat. In einen kürzeren Pfad verschieben oder in Cubase suchen.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedEncoding(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count nicht verknüpft: Dieses ältere Projekt kann die Sonderzeichen im neuen Pfad nicht speichern.',
+      one:
+          '1 nicht verknüpft: Dieses ältere Projekt kann die Sonderzeichen im neuen Pfad nicht speichern.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedNotFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count nicht verknüpft: Das Projekt nennt sie nur dort, wo eine Kopie sie nicht ändern kann.',
+      one:
+          '1 nicht verknüpft: Das Projekt nennt sie nur dort, wo eine Kopie sie nicht ändern kann.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNothingWritten =>
+      'Nichts konnte neu verknüpft werden, daher wurde keine Kopie geschrieben.';
+
+  @override
+  String relinkFailed(String reason) {
+    return 'Die Kopie hat die Prüfung nicht bestanden und wurde nicht behalten: $reason';
+  }
+
+  @override
+  String get relinkInspectCopy => 'Kopie untersuchen';
+
+  @override
+  String get inspectorTileKey => 'Tonart';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'MIDI-Clips',
+      one: 'MIDI-Clip',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Marker',
+      one: 'Marker',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Regionen',
+      one: '1 Region',
+      zero: 'Keine Regionen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Plug-ins',
+      one: 'Plug-in',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => 'Nur nach Namen';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count .mid-Dateien fehlen',
+      one: '1 .mid-Datei fehlt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => 'Gruppe & FX';
+
+  @override
+  String get inspectorNotesTitle => 'Notizen im Projekt';
+
+  @override
+  String get inspectorMissingMidiTitle => 'Nicht gefundene MIDI-Dateien';
+
+  @override
+  String get safeCopyButton => 'Sichere Kopie…';
+
+  @override
+  String get safeCopyTitle => 'Sichere Kopie';
+
+  @override
+  String get safeCopyIntro =>
+      'Eine Kopie des Projekts, in der die gewählten Plug-ins ausgeschaltet sind – so öffnet sie sich auch dann, wenn eines davon die DAW abstürzen lässt oder nicht installiert ist. In der Kopie erscheinen sie deaktiviert: Schalte sie in ihren Slots wieder ein oder ersetze sie. Das Projekt selbst wird nicht verändert.';
+
+  @override
+  String get safeCopyFilter => 'Plug-ins filtern';
+
+  @override
+  String get safeCopyReading => 'Plug-ins werden gelesen…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'Die Plug-ins des Projekts konnten nicht gelesen werden: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Instanzen',
+      one: '1 Instanz',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count bereits aus';
+  }
+
+  @override
+  String get safeCopyAllOff => 'Überall bereits aus';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Instanzen werden ausgeschaltet',
+      one: '1 Instanz wird ausgeschaltet',
+      zero: 'Wähle die Plug-ins, die ausgeschaltet werden sollen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'Sichere Kopie schreiben';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Instanzen ausgeschaltet',
+      one: '1 Instanz ausgeschaltet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'Öffne die Kopie in deiner DAW: Diese Plug-ins erscheinen in ihren Slots deaktiviert und können wieder eingeschaltet oder ersetzt werden.';
+
+  @override
+  String get safeCopyNothingWritten =>
+      'Keines dieser Plug-ins war eingeschaltet, daher wurde nichts geschrieben.';
+
+  @override
+  String get compareWith => 'Vergleichen mit…';
+
+  @override
+  String get compareWithTitle => 'Projekt zum Vergleichen wählen';
+
+  @override
+  String get compareWithPrevious => 'Mit vorheriger Version vergleichen';
+
+  @override
+  String get compareTitle => 'Vergleich';
+
+  @override
+  String get compareSwap => 'A und B tauschen';
+
+  @override
+  String get compareClose => 'Vergleich schließen';
+
+  @override
+  String get compareCopySummary => 'Zusammenfassung kopieren';
+
+  @override
+  String get compareSummaryCopied => 'Zusammenfassung kopiert';
+
+  @override
+  String get compareExportCsv => 'CSV exportieren';
+
+  @override
+  String get compareExportCsvTitle => 'Änderungen als CSV speichern';
+
+  @override
+  String compareSaved(String name) {
+    return '$name gespeichert';
+  }
+
+  @override
+  String compareChangesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Änderungen',
+      one: '1 Änderung',
+      zero: 'Keine Änderungen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareChannelsChanged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Kanäle geändert',
+      one: '1 Kanal geändert',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareUnchanged(int count) {
+    return '$count unverändert';
+  }
+
+  @override
+  String compareOnlyInA(int count) {
+    return '$count nur in A';
+  }
+
+  @override
+  String compareOnlyInB(int count) {
+    return '$count nur in B';
+  }
+
+  @override
+  String comparePluginChanges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Plug-in-Änderungen',
+      one: '1 Plug-in-Änderung',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get compareFilterLevels => 'Pegel';
+
+  @override
+  String get compareProject => 'Projekt';
+
+  @override
+  String get compareNoDifferences => 'Keine Unterschiede gefunden';
+
+  @override
+  String compareChannelsNotRead(String daw) {
+    return 'Die Kanäle von $daw-Projekten werden noch nicht gelesen: Verglichen werden das Projekt und die verwendeten Plug-ins.';
+  }
+
+  @override
+  String get compareBadgeOnlyInA => 'Nur in A';
+
+  @override
+  String get compareBadgeOnlyInB => 'Nur in B';
+
+  @override
+  String get compareNoneValue => 'keine';
+
+  @override
+  String changeTempo(String before, String after) {
+    return 'Tempo $before → $after BPM';
+  }
+
+  @override
+  String changeTimeSignature(String before, String after) {
+    return 'Taktart $before → $after';
+  }
+
+  @override
+  String changeSampleRate(String before, String after) {
+    return 'Samplerate $before → $after';
+  }
+
+  @override
+  String changeBitDepth(String before, String after) {
+    return 'Bittiefe $before → $after';
+  }
+
+  @override
+  String changeKey(String before, String after) {
+    return 'Tonart $before → $after';
+  }
+
+  @override
+  String changePluginAdded(String plugin) {
+    return 'Verwendet jetzt $plugin';
+  }
+
+  @override
+  String changePluginRemoved(String plugin) {
+    return 'Verwendet $plugin nicht mehr';
+  }
+
+  @override
+  String get changeChannelAdded => 'Hinzugefügt';
+
+  @override
+  String get changeChannelRemoved => 'Entfernt';
+
+  @override
+  String changeRenamed(String before) {
+    return 'Umbenannt von $before';
+  }
+
+  @override
+  String changeKind(String before, String after) {
+    return 'Art $before → $after';
+  }
+
+  @override
+  String changeFolder(String before, String after) {
+    return 'Ordner $before → $after';
+  }
+
+  @override
+  String changeOutput(String before, String after) {
+    return 'Ausgang $before → $after';
+  }
+
+  @override
+  String changeFader(String before, String after) {
+    return 'Fader $before → $after';
+  }
+
+  @override
+  String changePan(String before, String after) {
+    return 'Panorama $before → $after';
+  }
+
+  @override
+  String get changeMuted => 'Stummgeschaltet';
+
+  @override
+  String get changeUnmuted => 'Stummschaltung aufgehoben';
+
+  @override
+  String get changeSoloed => 'Solo';
+
+  @override
+  String get changeUnsoloed => 'Nicht mehr solo';
+
+  @override
+  String changeEqBands(String before, String after) {
+    return 'Aktive EQ-Bänder $before → $after';
+  }
+
+  @override
+  String changeInstrument(String before, String after) {
+    return 'Instrument $before → $after';
+  }
+
+  @override
+  String changePreset(String plugin, String before, String after) {
+    return '$plugin-Preset $before → $after';
+  }
+
+  @override
+  String changeInsertAdded(String plugin, int slot) {
+    return '$plugin in Slot $slot eingefügt';
+  }
+
+  @override
+  String changeInsertRemoved(String plugin, int slot) {
+    return '$plugin aus Slot $slot entfernt';
+  }
+
+  @override
+  String changeInsertReplaced(int slot, String before, String after) {
+    return 'Slot $slot: $before durch $after ersetzt';
+  }
+
+  @override
+  String changeInsertMoved(String plugin, int before, int after) {
+    return '$plugin von Slot $before nach $after verschoben';
+  }
+
+  @override
+  String changePluginOff(String plugin) {
+    return '$plugin ausgeschaltet';
+  }
+
+  @override
+  String changePluginOn(String plugin) {
+    return '$plugin eingeschaltet';
+  }
+
+  @override
+  String changeStripAdded(String plugin) {
+    return 'Channel Strip: $plugin hinzugefügt';
+  }
+
+  @override
+  String changeStripRemoved(String plugin) {
+    return 'Channel Strip: $plugin entfernt';
+  }
+
+  @override
+  String changeStripReplaced(String before, String after) {
+    return 'Channel Strip: $before durch $after ersetzt';
+  }
+
+  @override
+  String get changeStripBypassed => 'Channel Strip umgangen';
+
+  @override
+  String get changeStripBack => 'Channel Strip wieder aktiv';
+
+  @override
+  String changeSendAdded(String destination) {
+    return 'Send zu $destination hinzugefügt';
+  }
+
+  @override
+  String changeSendRemoved(String destination) {
+    return 'Send zu $destination entfernt';
+  }
+
+  @override
+  String changeSendLevel(String destination, String before, String after) {
+    return 'Send zu $destination $before → $after';
+  }
+
+  @override
+  String changeSendOff(String destination) {
+    return 'Send zu $destination ausgeschaltet';
+  }
+
+  @override
+  String changeSendOn(String destination) {
+    return 'Send zu $destination eingeschaltet';
+  }
+
+  @override
+  String changeSendPre(String destination) {
+    return 'Send zu $destination jetzt Pre-Fader';
+  }
+
+  @override
+  String changeSendPost(String destination) {
+    return 'Send zu $destination jetzt Post-Fader';
+  }
+
+  @override
+  String get inspectorReport => 'Bericht';
+
+  @override
+  String get reportSaveMarkdown => 'Bericht speichern (Markdown)…';
+
+  @override
+  String get reportSaveTracksCsv => 'Spurliste speichern (CSV)…';
+
+  @override
+  String get reportSavePluginsCsv => 'Plug-ins speichern (CSV)…';
+
+  @override
+  String get reportSaveTitle => 'Bericht speichern';
+
+  @override
+  String reportMadeBy(String date) {
+    return 'Erstellt mit DAW Project Manager am $date';
+  }
+
+  @override
+  String get reportOverview => 'Überblick';
+
+  @override
+  String get reportColumnChannel => 'Kanal';
+
+  @override
+  String get reportColumnKind => 'Art';
+
+  @override
+  String reportMissingFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Audiodateien fehlen',
+      one: '1 Audiodatei fehlt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reportCopied => 'Zusammenfassung kopiert';
+
+  @override
+  String get usageOpen => 'Plug-ins in deiner Bibliothek';
+
+  @override
+  String get usageIntro =>
+      'Aus dem, was der Tiefenscan in jedem Projekt gelesen hat: Hier wird keine Projektdatei geöffnet. Nur zur Information – nichts wird geändert oder gelöscht.';
+
+  @override
+  String usageProjectsRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte gelesen',
+      one: '1 Projekt gelesen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjectsUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count Projekte noch nicht gelesen – ein Tiefenscan zählt ihre Plug-ins',
+      one: '1 Projekt noch nicht gelesen – ein Tiefenscan zählt seine Plug-ins',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usagePluginsInUse(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Plug-ins in Verwendung',
+      one: '1 Plug-in in Verwendung',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageRareCount(int count) {
+    return '$count nur in einem Song verwendet';
+  }
+
+  @override
+  String get usageFilterMostUsed => 'Am häufigsten';
+
+  @override
+  String get usageFilterRare => 'Einmal verwendet';
+
+  @override
+  String get usageHideStock => 'Mitgelieferte Plug-ins ausblenden';
+
+  @override
+  String usageSongs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Songs',
+      one: '1 Song',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjects(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Projekte',
+      one: '1 Projekt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageLastUsed(String date) {
+    return 'zuletzt $date';
+  }
+
+  @override
+  String get usageShowProjects => 'Diese Projekte anzeigen';
+
+  @override
+  String get usageCountInstances => 'Instanzen in Cubase-Projekten zählen…';
+
+  @override
+  String usageInstancesFrom(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Instanzen und Ketten aus $count Cubase-Projekten',
+      one: 'Instanzen und Ketten aus 1 Cubase-Projekt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get usageNothing =>
+      'Noch keine Plug-ins gefunden. Ein Tiefenscan liest, welche Plug-ins jedes Projekt verwendet.';
+
+  @override
+  String get usageReadTitle => 'Cubase-Projekte lesen?';
+
+  @override
+  String usageReadBody(int count, String size) {
+    return '$count Cubase-Projekte ($size) wurden noch nicht nach Spuren gelesen oder haben sich seitdem geändert. Beim Lesen wird jede Datei geöffnet; Dateien auf einem Cloud-Laufwerk werden zuerst heruntergeladen.';
+  }
+
+  @override
+  String get usageReadAndCount => 'Lesen und zählen';
+
+  @override
+  String get usageReadStop => 'Anhalten und Gelesenes zählen';
+
+  @override
+  String filterUsesPlugin(String plugin) {
+    return 'Verwendet $plugin';
+  }
+
+  @override
+  String get launchCheckSetting => 'Projekt vor dem Öffnen prüfen';
+
+  @override
+  String get launchCheckSettingHint =>
+      'Bevor die DAW öffnet, Bescheid geben, wenn Audiodateien fehlen oder die Samplerate des Projekts nicht die deines Studios ist. Ein Projekt auf einem Cloud-Laufwerk oder ein sehr großes öffnet ohne Prüfung.';
+
+  @override
+  String get studioSampleRate => 'Mein Studio läuft mit';
+
+  @override
+  String get studioSampleRateNotSet => 'Nicht festgelegt';
+
+  @override
+  String launchCheckTitle(String name) {
+    return 'Vor dem Öffnen von $name';
+  }
+
+  @override
+  String launchCheckMissingAudio(int count, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count von $total Audiodateien fehlen',
+      one: '1 von $total Audiodateien fehlt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String launchCheckSampleRate(String project, String studio) {
+    return 'Gespeichert mit $project; dein Studio läuft mit $studio';
+  }
+
+  @override
+  String get launchCheckOpenAnyway => 'Trotzdem öffnen';
 }

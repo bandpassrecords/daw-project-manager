@@ -178,4 +178,36 @@ void main() {
     ).locate(ref('x.wav', ['x.wav']), projectDir: project);
     expect(found, isNull);
   });
+
+  group('for a relink', () {
+    test('candidatesFor: the project tree, then agreeing library files',
+        () async {
+      final own = await file(['Song Project', 'Audio', 'kick.wav']);
+      final lib = await file(['Library', 'Song', 'kick.wav'], size: 9);
+      await file(['Library', 'Elsewhere', 'kick.wav']); // 4 bytes: disagrees
+      final hits = await SampleLocator(libraryFolders: [library]).candidatesFor(
+        ref('kick.wav', [r'D:\Song\kick.wav'], size: 9),
+        projectDir: project,
+      );
+      expect(hits, [lib, own], reason: 'the recorded size ranks first');
+    });
+
+    test('namedIn finds a name at any depth', () async {
+      final deep = await file(['Library', 'a', 'b', 'c', 'd', 'e', 'f', 'k.wav']);
+      expect(await SampleLocator().namedIn(library, ref('K.WAV', ['K.WAV'])),
+          [deep]);
+    });
+
+    test('clearBest: one that agrees better, or none on a tie', () async {
+      final a = await file(['Library', 'A', 'Comped', 'k.wav']);
+      final b = await file(['Library', 'B', 'k.wav']);
+      final locator = SampleLocator();
+      expect(
+          await locator.clearBest([a, b], ref('k.wav', [r'D:\x\Comped\k.wav'])),
+          a);
+      expect(await locator.clearBest([a, b], ref('k.wav', [r'D:\x\k.wav'])),
+          isNull);
+      expect(await locator.clearBest([b], ref('k.wav', ['k.wav'])), b);
+    });
+  });
 }
