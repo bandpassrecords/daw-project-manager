@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import '../../models/music_project.dart';
+import '../../utils/app_paths.dart';
 import '../daw_parsers/cubase_project_parser.dart';
 import 'reference_page.dart';
 import 'template_export_service.dart';
@@ -25,8 +28,9 @@ class ReferenceCache {
 
   /// Bumped when what the reader finds changes, so tracks read before are
   /// read again. 2: inserts in slot 0 were dropped, and bypass flags came
-  /// from the slot before; FX channels told apart from groups.
-  static const version = 2;
+  /// from the slot before; FX channels told apart from groups. 3: an
+  /// instrument track's instrument, for the Inspector's plug-in usage.
+  static const version = 3;
 
   static Future<ReferenceCache> load(File file) async {
     try {
@@ -58,6 +62,11 @@ class ReferenceCache {
 
   /// The tracks read for [id], fresh or not; null when never read.
   List<CubaseTrack>? tracksOf(String id) => _entries[id]?.tracks;
+
+  /// The tracks read for [project] from its file as it is now; null when
+  /// never read, or read before the file last changed.
+  List<CubaseTrack>? freshTracksOf(MusicProject project) =>
+      isFresh(project) ? tracksOf(project.id) : null;
 
   void put(MusicProject project, List<CubaseTrack> tracks) {
     _entries[project.id] = _Entry(
@@ -104,6 +113,7 @@ class _Entry {
               'y': t.type.name,
               if (t.parent != null) 'p': t.parent,
               if (t.output != null) 'o': t.output,
+              if (t.instrument != null) 'a': t.instrument,
               if (t.inserts.isNotEmpty)
                 'x': [
                   for (final i in t.inserts)
@@ -134,6 +144,7 @@ class _Entry {
         type: type,
         parent: t['p'] as String?,
         output: t['o'] as String?,
+        instrument: t['a'] as String?,
         inserts: [
           for (final i in (t['x'] as List?) ?? const [])
             if (i is Map && i['s'] is int && i['p'] is String)
@@ -147,6 +158,16 @@ class _Entry {
     }
     return _Entry(size: size, modifiedMs: modified, tracks: parsed);
   }
+}
+
+/// The Cubase tracks read so far, shared by the insert reference page and
+/// the Inspector's plug-in usage: reading a project for one serves the
+/// other. Device-local, derived from the files.
+Future<ReferenceCache> loadReferenceCache() async {
+  final support = await getAppSupportRoot();
+  return ReferenceCache.load(
+    File(p.join(support.path, 'insert_reference_cache.json')),
+  );
 }
 
 /// The projects the page is built from: Cubase files that are real rows.

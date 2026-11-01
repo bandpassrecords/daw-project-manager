@@ -24,7 +24,7 @@ import '../providers/theme_provider.dart';
 import '../repository/project_repository.dart';
 import '../services/auto_start_service.dart';
 import '../services/backup_service.dart';
-import '../utils/app_paths.dart' show canPickAppDataDir, getAppSupportRoot;
+import '../utils/app_paths.dart' show canPickAppDataDir;
 import 'dev_library_picker.dart' show DevLibraryCard;
 import '../services/changelog_service.dart';
 import '../services/crash_logger.dart';
@@ -70,6 +70,8 @@ import 'theme_labels.dart';
 import 'widgets/parts_export_card.dart';
 import 'widgets/melodic_export_card.dart';
 import 'widgets/midi_read_dialogs.dart';
+import 'widgets/reference_cache_flow.dart';
+import 'dialogs/launch_warnings_dialog.dart';
 import 'widgets/reference_page_card.dart';
 import 'widgets/template_export_card.dart';
 import 'widgets/theme_preview_card.dart';
@@ -623,36 +625,22 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       if (dir == null) return; // user cancelled
       setState(() => _busy = true);
 
-      final support = await getAppSupportRoot();
-      final cache = await ReferenceCache.load(
-        File(p.join(support.path, 'insert_reference_cache.json')),
-      );
-      final stale = projectsToReadForReference(projects, cache);
-      if (stale.isNotEmpty && mounted) {
-        final choice = await askProjectRead(
-          context,
+      final cache = await loadReferenceCache();
+      if (!mounted) return;
+      final go = await updateReferenceCache(
+        context,
+        projects,
+        cache,
+        words: ReferenceReadWords(
           title: l10n.referenceReadTitle,
-          body: l10n.referenceReadBody(stale.length,
-              formatDataSize(stale.fold<int>(0, (sum, x) => sum + x.fileSizeBytes))),
+          body: l10n.referenceReadBody,
           readLabel: l10n.referenceReadAndGenerate,
           skipLabel: l10n.referenceUseRead,
-        );
-        if (choice == MidiReadChoice.cancel || !mounted) return;
-        if (choice == MidiReadChoice.readThenExport) {
-          await showDialog<MidiReadOutcome>(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => MidiReadDialog(
-              projects: stale,
-              title: l10n.referenceReadingTitle,
-              stopLabel: l10n.referenceReadStop,
-              read: (project) => readProjectIntoCache(project, cache),
-            ),
-          );
-          cache.retainOnly({for (final x in projects) x.id});
-          await cache.save();
-        }
-      }
+          readingTitle: l10n.referenceReadingTitle,
+          stopLabel: l10n.referenceReadStop,
+        ),
+      );
+      if (!go || !mounted) return;
 
       final template =
           await rootBundle.loadString('assets/reference/index.template.html');
@@ -2888,6 +2876,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ],
             ),
           ),
+        const SizedBox(height: 12),
+        // Before opening a project (#222).
+        LaunchCheckSettingsCard(
+          enabled: ref.watch(launchCheckEnabledProvider),
+          studioRate: ref.watch(studioSampleRateProvider),
+          onEnabled: (v) => ref.read(launchCheckEnabledProvider.notifier).set(v),
+          onStudioRate: (hz) =>
+              ref.read(studioSampleRateProvider.notifier).set(hz),
+        ),
       ],
     );
   }

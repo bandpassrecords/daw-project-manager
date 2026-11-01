@@ -10,6 +10,7 @@ import '../../models/music_project.dart';
 import '../../models/stored_midi_clips.dart';
 import '../../utils/time_signature.dart';
 import 'midi_file_writer.dart';
+import '../../utils/csv.dart';
 
 /// What counts as a melodic clip worth keeping, and what leaves out the rest.
 ///
@@ -280,13 +281,6 @@ void planMelodicFiles(List<CatalogEntry> entries) {
   }
 }
 
-String _csvCell(Object? value) {
-  final text = value?.toString() ?? '';
-  return RegExp(r'[",\n\r]').hasMatch(text)
-      ? '"${text.replaceAll('"', '""')}"'
-      : text;
-}
-
 const _columns = [
   'project',
   'daw',
@@ -345,7 +339,7 @@ List<Object?> _row(CatalogEntry e) => [
 String melodicCatalogCsv(List<CatalogEntry> entries) {
   final out = StringBuffer('${_columns.join(',')}\n');
   for (final e in entries) {
-    out.writeln(_row(e).map(_csvCell).join(','));
+    out.writeln(_row(e).map(csvCell).join(','));
   }
   return out.toString();
 }

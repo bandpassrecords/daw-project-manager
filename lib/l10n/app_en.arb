@@ -9080,5 +9080,774 @@
   "safeCopyNothingWritten": "None of those plug-ins was on, so nothing was written.",
   "@safeCopyNothingWritten": {
     "description": "After a safe copy: none of the chosen plug-ins was on, so no copy was written"
+  },
+  "compareWith": "Compare with…",
+  "@compareWith": {
+    "description": "Inspector header button: compare this project with another file"
+  },
+  "compareWithTitle": "Choose the project to compare with",
+  "@compareWithTitle": {
+    "description": "File dialog title: choose the project to compare with"
+  },
+  "compareWithPrevious": "Compare with previous version",
+  "@compareWithPrevious": {
+    "description": "Tooltip on a version in a stack: compare it with the version before it"
+  },
+  "compareTitle": "Compare",
+  "@compareTitle": {
+    "description": "Heading of the view comparing two projects"
+  },
+  "compareSwap": "Swap A and B",
+  "@compareSwap": {
+    "description": "Tooltip: swap which project is A and which is B"
+  },
+  "compareClose": "Close compare",
+  "@compareClose": {
+    "description": "Tooltip: leave the comparison, back to inspecting A"
+  },
+  "compareCopySummary": "Copy summary",
+  "@compareCopySummary": {
+    "description": "Button: copy a short summary of the changes to the clipboard"
+  },
+  "compareSummaryCopied": "Summary copied",
+  "@compareSummaryCopied": {
+    "description": "Snackbar after copying a summary"
+  },
+  "compareExportCsv": "Export CSV",
+  "@compareExportCsv": {
+    "description": "Button: save the list of changes as a CSV file"
+  },
+  "compareExportCsvTitle": "Save the changes as CSV",
+  "@compareExportCsvTitle": {
+    "description": "Save dialog title for the changes CSV"
+  },
+  "compareSaved": "Saved {name}",
+  "@compareSaved": {
+    "description": "Snackbar after a file was saved; its name follows",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "compareChangesCount": "{count, plural, =0{No changes} one{1 change} other{{count} changes}}",
+  "@compareChangesCount": {
+    "description": "Total: how many changes between the two projects",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compareChannelsChanged": "{count, plural, one{1 channel changed} other{{count} channels changed}}",
+  "@compareChannelsChanged": {
+    "description": "Total: channels in both projects that changed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compareUnchanged": "{count} unchanged",
+  "@compareUnchanged": {
+    "description": "Total: channels with no change",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compareOnlyInA": "{count} only in A",
+  "@compareOnlyInA": {
+    "description": "Total: channels only in project A",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compareOnlyInB": "{count} only in B",
+  "@compareOnlyInB": {
+    "description": "Total: channels only in project B",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "comparePluginChanges": "{count, plural, one{1 plug-in change} other{{count} plug-in changes}}",
+  "@comparePluginChanges": {
+    "description": "Total: changes to plug-ins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compareFilterLevels": "Levels",
+  "@compareFilterLevels": {
+    "description": "Filter chip: fader, pan, mute changes"
+  },
+  "compareProject": "Project",
+  "@compareProject": {
+    "description": "Heading of the changes to the project as a whole (tempo, sample rate…)"
+  },
+  "compareNoDifferences": "No differences found",
+  "@compareNoDifferences": {
+    "description": "When the two projects read the same"
+  },
+  "compareChannelsNotRead": "Channels of {daw} projects aren't read yet: the project and the plug-ins it uses are compared.",
+  "@compareChannelsNotRead": {
+    "description": "When a DAW's channels aren't read: what is compared instead",
+    "placeholders": {
+      "daw": {
+        "type": "String"
+      }
+    }
+  },
+  "compareBadgeOnlyInA": "Only in A",
+  "@compareBadgeOnlyInA": {
+    "description": "Badge on a channel only in project A"
+  },
+  "compareBadgeOnlyInB": "Only in B",
+  "@compareBadgeOnlyInB": {
+    "description": "Badge on a channel only in project B"
+  },
+  "compareNoneValue": "none",
+  "@compareNoneValue": {
+    "description": "A value that is not set (no output, top level of the track list)"
+  },
+  "changeTempo": "Tempo {before} → {after} BPM",
+  "@changeTempo": {
+    "description": "A change: the tempo",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeTimeSignature": "Time signature {before} → {after}",
+  "@changeTimeSignature": {
+    "description": "A change: the time signature",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSampleRate": "Sample rate {before} → {after}",
+  "@changeSampleRate": {
+    "description": "A change: the sample rate",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeBitDepth": "Bit depth {before} → {after}",
+  "@changeBitDepth": {
+    "description": "A change: the bit depth",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeKey": "Key {before} → {after}",
+  "@changeKey": {
+    "description": "A change: the musical key",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changePluginAdded": "Now uses {plugin}",
+  "@changePluginAdded": {
+    "description": "A change: a plug-in the project now uses",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      }
+    }
+  },
+  "changePluginRemoved": "No longer uses {plugin}",
+  "@changePluginRemoved": {
+    "description": "A change: a plug-in the project no longer uses",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      }
+    }
+  },
+  "changeChannelAdded": "Added",
+  "@changeChannelAdded": {
+    "description": "A change: a channel only in B"
+  },
+  "changeChannelRemoved": "Removed",
+  "@changeChannelRemoved": {
+    "description": "A change: a channel only in A"
+  },
+  "changeRenamed": "Renamed from {before}",
+  "@changeRenamed": {
+    "description": "A change: the channel's old name",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      }
+    }
+  },
+  "changeKind": "Kind {before} → {after}",
+  "@changeKind": {
+    "description": "A change: the channel's kind",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeFolder": "Folder {before} → {after}",
+  "@changeFolder": {
+    "description": "A change: the folder holding the channel",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeOutput": "Output {before} → {after}",
+  "@changeOutput": {
+    "description": "A change: where the channel's output goes",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeFader": "Fader {before} → {after}",
+  "@changeFader": {
+    "description": "A change: the fader",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changePan": "Pan {before} → {after}",
+  "@changePan": {
+    "description": "A change: the panner",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeMuted": "Muted",
+  "@changeMuted": {
+    "description": "A change: the channel is now muted"
+  },
+  "changeUnmuted": "Unmuted",
+  "@changeUnmuted": {
+    "description": "A change: the channel is no longer muted"
+  },
+  "changeSoloed": "Soloed",
+  "@changeSoloed": {
+    "description": "A change: the channel is now soloed"
+  },
+  "changeUnsoloed": "No longer soloed",
+  "@changeUnsoloed": {
+    "description": "A change: the channel is no longer soloed"
+  },
+  "changeEqBands": "EQ bands on {before} → {after}",
+  "@changeEqBands": {
+    "description": "A change: how many EQ bands are on",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeInstrument": "Instrument {before} → {after}",
+  "@changeInstrument": {
+    "description": "A change: an instrument track's instrument",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changePreset": "{plugin} preset {before} → {after}",
+  "@changePreset": {
+    "description": "A change: the preset a plug-in has loaded",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      },
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeInsertAdded": "{plugin} inserted in slot {slot}",
+  "@changeInsertAdded": {
+    "description": "A change: a plug-in inserted in an insert slot",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      },
+      "slot": {
+        "type": "int"
+      }
+    }
+  },
+  "changeInsertRemoved": "{plugin} removed from slot {slot}",
+  "@changeInsertRemoved": {
+    "description": "A change: a plug-in taken out of an insert slot",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      },
+      "slot": {
+        "type": "int"
+      }
+    }
+  },
+  "changeInsertReplaced": "Slot {slot}: {before} replaced by {after}",
+  "@changeInsertReplaced": {
+    "description": "A change: another plug-in in the same insert slot",
+    "placeholders": {
+      "slot": {
+        "type": "int"
+      },
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeInsertMoved": "{plugin} moved from slot {before} to {after}",
+  "@changeInsertMoved": {
+    "description": "A change: the same plug-in in another insert slot",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      },
+      "before": {
+        "type": "int"
+      },
+      "after": {
+        "type": "int"
+      }
+    }
+  },
+  "changePluginOff": "{plugin} switched off",
+  "@changePluginOff": {
+    "description": "A change: a plug-in switched off (deactivated) in its slot",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      }
+    }
+  },
+  "changePluginOn": "{plugin} switched on",
+  "@changePluginOn": {
+    "description": "A change: a plug-in switched back on in its slot",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      }
+    }
+  },
+  "changeStripAdded": "Strip: {plugin} added",
+  "@changeStripAdded": {
+    "description": "A change: a channel strip module loaded",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      }
+    }
+  },
+  "changeStripRemoved": "Strip: {plugin} removed",
+  "@changeStripRemoved": {
+    "description": "A change: a channel strip module taken out",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      }
+    }
+  },
+  "changeStripReplaced": "Strip: {before} replaced by {after}",
+  "@changeStripReplaced": {
+    "description": "A change: another module of the same kind in the channel strip",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeStripBypassed": "Channel strip bypassed",
+  "@changeStripBypassed": {
+    "description": "A change: the whole channel strip bypassed"
+  },
+  "changeStripBack": "Channel strip back on",
+  "@changeStripBack": {
+    "description": "A change: the channel strip no longer bypassed"
+  },
+  "changeSendAdded": "Send to {destination} added",
+  "@changeSendAdded": {
+    "description": "A change: a new send",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSendRemoved": "Send to {destination} removed",
+  "@changeSendRemoved": {
+    "description": "A change: a send taken out",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSendLevel": "Send to {destination} {before} → {after}",
+  "@changeSendLevel": {
+    "description": "A change: a send's level",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      },
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSendOff": "Send to {destination} switched off",
+  "@changeSendOff": {
+    "description": "A change: a send switched off",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSendOn": "Send to {destination} switched on",
+  "@changeSendOn": {
+    "description": "A change: a send switched on",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSendPre": "Send to {destination} now pre-fader",
+  "@changeSendPre": {
+    "description": "A change: a send now taken before the fader",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSendPost": "Send to {destination} now post-fader",
+  "@changeSendPost": {
+    "description": "A change: a send now taken after the fader",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "inspectorReport": "Report",
+  "@inspectorReport": {
+    "description": "Tooltip of the Inspector header menu that copies or saves a report of the project"
+  },
+  "reportSaveMarkdown": "Save report (Markdown)…",
+  "@reportSaveMarkdown": {
+    "description": "Report menu: save the whole report as a Markdown file"
+  },
+  "reportSaveTracksCsv": "Save track list (CSV)…",
+  "@reportSaveTracksCsv": {
+    "description": "Report menu: save the track list as CSV"
+  },
+  "reportSavePluginsCsv": "Save plug-ins (CSV)…",
+  "@reportSavePluginsCsv": {
+    "description": "Report menu: save the plug-ins list as CSV"
+  },
+  "reportSaveTitle": "Save the report",
+  "@reportSaveTitle": {
+    "description": "Save dialog title for a report file"
+  },
+  "reportMadeBy": "Made with DAW Project Manager on {date}",
+  "@reportMadeBy": {
+    "description": "Last line of a report: when it was made; the date follows",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reportOverview": "Overview",
+  "@reportOverview": {
+    "description": "Report heading: the project at a glance"
+  },
+  "reportColumnChannel": "Channel",
+  "@reportColumnChannel": {
+    "description": "Report table column: the channel name"
+  },
+  "reportColumnKind": "Kind",
+  "@reportColumnKind": {
+    "description": "Report table column: the channel kind"
+  },
+  "reportMissingFiles": "{count, plural, one{1 audio file missing} other{{count} audio files missing}}",
+  "@reportMissingFiles": {
+    "description": "Report: how many audio files are missing",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportCopied": "Summary copied",
+  "@reportCopied": {
+    "description": "Snackbar after copying the project summary"
+  },
+  "usageOpen": "Plug-ins across your library",
+  "@usageOpen": {
+    "description": "Button in the Inspector: plug-in usage across the whole library"
+  },
+  "usageIntro": "From what the deep scan read in each project: no project file is opened here. It's information only — nothing is changed or deleted.",
+  "@usageIntro": {
+    "description": "Under the title of the library plug-in usage view"
+  },
+  "usageProjectsRead": "{count, plural, one{1 project read} other{{count} projects read}}",
+  "@usageProjectsRead": {
+    "description": "Total: projects whose plug-ins the deep scan has read",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageProjectsUnread": "{count, plural, one{1 project not read yet — a deep scan counts its plug-ins} other{{count} projects not read yet — a deep scan counts their plug-ins}}",
+  "@usageProjectsUnread": {
+    "description": "Projects the deep scan has not read: their plug-ins are not counted",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usagePluginsInUse": "{count, plural, one{1 plug-in in use} other{{count} plug-ins in use}}",
+  "@usagePluginsInUse": {
+    "description": "Total: distinct plug-ins used across the library",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageRareCount": "{count} used in one song only",
+  "@usageRareCount": {
+    "description": "Total: plug-ins used in one song only",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageFilterMostUsed": "Most used",
+  "@usageFilterMostUsed": {
+    "description": "Filter chip: plug-ins by how many songs use them"
+  },
+  "usageFilterRare": "Used once",
+  "@usageFilterRare": {
+    "description": "Filter chip: plug-ins used in one song only"
+  },
+  "usageHideStock": "Hide stock plug-ins",
+  "@usageHideStock": {
+    "description": "Switch: leave out the DAW's own plug-ins"
+  },
+  "usageSongs": "{count, plural, one{1 song} other{{count} songs}}",
+  "@usageSongs": {
+    "description": "How many songs use a plug-in",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageProjects": "{count, plural, one{1 project} other{{count} projects}}",
+  "@usageProjects": {
+    "description": "How many project files use a plug-in",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageLastUsed": "last used {date}",
+  "@usageLastUsed": {
+    "description": "When a plug-in was last used: the date of the newest project using it",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "usageShowProjects": "Show these projects",
+  "@usageShowProjects": {
+    "description": "Button: show the projects using this plug-in in the projects list"
+  },
+  "usageCountInstances": "Count instances in Cubase projects…",
+  "@usageCountInstances": {
+    "description": "Button: read Cubase projects to count how many times each plug-in is loaded"
+  },
+  "usageInstancesFrom": "{count, plural, one{Instances and chains from 1 Cubase project} other{Instances and chains from {count} Cubase projects}}",
+  "@usageInstancesFrom": {
+    "description": "Where instance counts and chains come from",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usageNothing": "No plug-ins found yet. A deep scan reads which plug-ins each project uses.",
+  "@usageNothing": {
+    "description": "When no project has had its plug-ins read"
+  },
+  "usageReadTitle": "Read Cubase projects?",
+  "@usageReadTitle": {
+    "description": "Asking before reading Cubase projects to count plug-in instances"
+  },
+  "usageReadBody": "{count} Cubase projects ({size}) haven't had their tracks read, or changed since. Reading opens each file; files on a cloud drive are downloaded first.",
+  "@usageReadBody": {
+    "description": "How many Cubase projects would be read, and their size",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "usageReadAndCount": "Read and count",
+  "@usageReadAndCount": {
+    "description": "Button: read the Cubase projects, then count"
+  },
+  "usageReadStop": "Stop and count what's read",
+  "@usageReadStop": {
+    "description": "Button while reading: stop and count what's read so far"
+  },
+  "filterUsesPlugin": "Uses {plugin}",
+  "@filterUsesPlugin": {
+    "description": "Dashboard filter chip: only projects using this plug-in",
+    "placeholders": {
+      "plugin": {
+        "type": "String"
+      }
+    }
+  },
+  "launchCheckSetting": "Check a project before opening it",
+  "@launchCheckSetting": {
+    "description": "Settings switch: read a project before opening it in the DAW, and warn"
+  },
+  "launchCheckSettingHint": "Before the DAW opens, say when audio files are missing or the project's sample rate isn't your studio's. A project on a cloud drive, or a very big one, opens without it.",
+  "@launchCheckSettingHint": {
+    "description": "What the check before opening does"
+  },
+  "studioSampleRate": "My studio runs at",
+  "@studioSampleRate": {
+    "description": "Setting: the sample rate the person's studio runs at"
+  },
+  "studioSampleRateNotSet": "Not set",
+  "@studioSampleRateNotSet": {
+    "description": "The studio sample rate is not set"
+  },
+  "launchCheckTitle": "Before opening {name}",
+  "@launchCheckTitle": {
+    "description": "Title of the warnings shown before a project opens",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "launchCheckMissingAudio": "{count, plural, one{1 of its {total} audio files is missing} other{{count} of its {total} audio files are missing}}",
+  "@launchCheckMissingAudio": {
+    "description": "Warning before opening: audio files missing",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "launchCheckSampleRate": "Saved at {project}; your studio runs at {studio}",
+  "@launchCheckSampleRate": {
+    "description": "Warning before opening: the project's sample rate is not the studio's",
+    "placeholders": {
+      "project": {
+        "type": "String"
+      },
+      "studio": {
+        "type": "String"
+      }
+    }
+  },
+  "launchCheckOpenAnyway": "Open anyway",
+  "@launchCheckOpenAnyway": {
+    "description": "Button: open the project in its DAW despite the warnings"
   }
 }
