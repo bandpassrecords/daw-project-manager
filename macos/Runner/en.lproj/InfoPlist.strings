@@ -1,0 +1,4 @@
+/* The .app file name can't have spaces (see AppInfo.xcconfig), so the Dock and Finder
+   read the spaced name from here. */
+"CFBundleName" = "DAW Project Manager";
+"CFBundleDisplayName" = "DAW Project Manager";
