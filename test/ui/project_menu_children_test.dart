@@ -22,6 +22,7 @@ void main() {
     bool previewShareable = false,
     bool includeCardOptions = false,
     bool captureOffered = false,
+    bool inspectOffered = false,
   }) async {
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: appLocalizationsDelegates,
@@ -50,6 +51,7 @@ void main() {
         driveRestoreOffered: driveRestoreOffered,
         previewShareable: previewShareable,
         captureOffered: captureOffered,
+        inspectOffered: inspectOffered,
       ),
     );
     await tester.pumpAndSettle();
@@ -82,6 +84,21 @@ void main() {
     await tester.tap(entry('archive'));
     await tester.pumpAndSettle();
     expect(await chosen, 'archive');
+  });
+
+  testWidgets('Inspect is offered only where the caller says, and chosen',
+      (tester) async {
+    await openMenu(tester, TestFactories.makeProject());
+    expect(entry('inspect'), findsNothing,
+        reason: 'a phone, a stack, a missing file or a hidden tab');
+    await tester.tap(entry('view'));
+    await tester.pumpAndSettle();
+
+    await openMenu(tester, TestFactories.makeProject(), inspectOffered: true);
+    expect(entry('inspect'), findsOneWidget);
+    await tester.tap(entry('inspect'));
+    await tester.pumpAndSettle();
+    expect(await chosen, 'inspect');
   });
 
   testWidgets('Update details holds the re-reading actions', (tester) async {

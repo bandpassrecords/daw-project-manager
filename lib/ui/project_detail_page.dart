@@ -27,6 +27,7 @@ import '../repository/project_repository.dart';
 import '../utils/attachment_launcher.dart';
 import '../utils/daw_logo.dart';
 import '../utils/mobile_utils.dart';
+import '../utils/version_stacks.dart';
 import '../utils/player_shortcuts.dart';
 import '../services/app_audio_focus.dart';
 import '../services/player_volume_store.dart';
@@ -77,6 +78,7 @@ import 'widgets/resizable_text_field.dart';
 import 'widgets/parts_summary_card.dart';
 import 'widgets/todo_list_widget.dart';
 import 'widgets/waveform_widget.dart';
+import 'project_inspector_page.dart';
 import 'project_statistics_page.dart';
 import 'app_snack_bar.dart';
 import 'widgets/semantics_safe.dart';
@@ -1973,6 +1975,36 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                             icon: Icons.inventory_2_outlined,
                             label: l10n.projectContentsTitle,
                             children: [
+                              // Everything inside it, in the Inspector tab
+                              // (#196) — on the same terms as the menu's
+                              // Inspect: desktop, a real file, the tab shown.
+                              if (!updatedProject.isVirtual &&
+                                  ref
+                                      .watch(visibleTabsProvider)
+                                      .contains(AppTab.inspector) &&
+                                  File(updatedProject.filePath).existsSync())
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: OutlinedButton.icon(
+                                      icon: const Icon(Icons.manage_search),
+                                      label: Text(l10n.projectMenuInspect),
+                                      onPressed: () async {
+                                        final opened = await openInInspector(
+                                          context,
+                                          ref,
+                                          updatedProject.filePath,
+                                        );
+                                        if (opened && context.mounted) {
+                                          Navigator.of(context).popUntil(
+                                            (route) => route.isFirst,
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
                               if (updatedProject.stats != null) ...[
                                 const SizedBox(height: 12),
                                 ProjectStatsSection(
@@ -1988,6 +2020,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                     plugins: l10n.projectStatsPlugins,
                                     showAll: l10n.showAll,
                                     collapse: l10n.collapse,
+                                    sampleRate: l10n.sampleRateColumn,
+                                    bitDepth: l10n.inspectorBitDepth,
                                   ),
                                 ),
                               ],
@@ -2140,6 +2174,26 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                                         ? () =>
                                               _unstackSong(repo, updatedProject)
                                         : null,
+                                    previousOf: (member) =>
+                                        previousVersionOf(member, members),
+                                    compareTooltip: l10n.compareWithPrevious,
+                                    onCompare: MobileUtils.isMobile()
+                                        ? null
+                                        : (previous, member) async {
+                                            if (await compareInInspector(
+                                                  context,
+                                                  ref,
+                                                  previous.filePath,
+                                                  member.filePath,
+                                                ) &&
+                                                context.mounted) {
+                                              // The Inspector is a tab of
+                                              // the dashboard, under this page.
+                                              Navigator.of(context).popUntil(
+                                                (r) => r.isFirst,
+                                              );
+                                            }
+                                          },
                                   );
                                 },
                               ),

@@ -7,10 +7,18 @@ import '../generated/l10n/app_localizations.dart';
 import '../models/music_project.dart';
 import '../providers/providers.dart';
 import '../services/plugin_bridge/plugin_bridge_service.dart';
+import '../services/project_inspector/launch_check.dart';
+import '../services/project_inspector/relink/relink_writer.dart';
+import '../services/project_inspector/safe_copy/safe_copy.dart';
+import '../utils/cloud_file.dart';
 import '../utils/file_launcher.dart';
 import '../utils/mobile_utils.dart';
 import 'dialogs/daw_launch_command_dialog.dart';
 import 'dialogs/daw_launch_picker_dialog.dart';
+import 'dialogs/launch_warnings_dialog.dart';
+import 'dialogs/relink_dialog.dart';
+import 'dialogs/safe_copy_dialog.dart';
+import 'project_inspector_page.dart';
 import 'dialogs/stack_version_picker_dialog.dart';
 import 'app_snack_bar.dart';
 
@@ -160,6 +168,17 @@ Future<void> launchProjectInDaw(
     return;
   }
 
+  // What is worth knowing before the DAW opens (#222), when asked for.
+  if (!MobileUtils.isMobile() &&
+      shouldCheckBeforeLaunch(
+        enabled: ref.read(launchCheckEnabledProvider),
+        project: project,
+        cloudOnly: isCloudOnlyFile(project.filePath),
+      )) {
+    final go = await _warnBeforeLaunch(context, ref, project);
+    if (!go || !context.mounted) return;
+  }
+
   // Tells the DAW Project Manager plugin which project is about to open, so it
   // links without asking (#118). Before the launch: the DAW may load the
   // plugin within seconds.
@@ -248,6 +267,55 @@ Future<void> launchProjectInDaw(
   }
 
   _showLaunchResultSnackBar(context, l10n, project, success);
+}
+
+/// Checks [project] and, when something is worth saying, asks what to do.
+/// True to go on and launch it; false when the person chose another way —
+/// fixing the files, a Safe Copy, the Inspector — or not to open it.
+Future<bool> _warnBeforeLaunch(
+  BuildContext context,
+  WidgetRef ref,
+  MusicProject project,
+) async {
+  final warnings = await checkBeforeLaunch(
+    project,
+    studioRate: ref.read(studioSampleRateProvider),
+  );
+  if (warnings == null || !warnings.any || !context.mounted) return true;
+  final path = project.filePath;
+  final choice = await showDialog<LaunchChoice>(
+    context: context,
+    builder: (_) => LaunchWarningsDialog(
+      projectName: project.displayName,
+      warnings: warnings,
+      canRelink: relinkWriterFor(path) != null && warnings.media != null,
+      canSafeCopy: safeCopyWriterFor(path) != null,
+    ),
+  );
+  if (!context.mounted) return false;
+  switch (choice ?? LaunchChoice.cancel) {
+    case LaunchChoice.open:
+      return true;
+    case LaunchChoice.cancel:
+      return false;
+    case LaunchChoice.relink:
+      await showRelinkDialog(
+        context,
+        ref,
+        projectPath: path,
+        checks: warnings.media!,
+      );
+      return false;
+    case LaunchChoice.safeCopy:
+      await showSafeCopyDialog(context, ref, projectPath: path);
+      return false;
+    case LaunchChoice.inspect:
+      if (await openInInspector(context, ref, path) && context.mounted) {
+        // The Inspector is a tab of the dashboard, under any page.
+        Navigator.of(context).popUntil((r) => r.isFirst);
+      }
+      return false;
+  }
 }
 
 void _showLaunchResultSnackBar(

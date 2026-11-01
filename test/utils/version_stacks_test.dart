@@ -119,4 +119,34 @@ void main() {
     expect(collapseVersionStacksOrNull(null), isNull);
     expect(collapseVersionStacksOrNull([]), isEmpty);
   });
+
+  group('previousVersionOf (#223)', () {
+    MusicProject v(String id, DateTime at, {String? name, bool archived = false}) =>
+        TestFactories.makeProject(
+          id: id,
+          fileName: '${name ?? id}.cpr',
+          lastModifiedAt: at,
+          archivePath: archived ? '/archive/$id.zip' : null,
+        );
+
+    test('the version saved just before, whatever the stack order', () {
+      final v1 = v('v1', DateTime(2025, 1, 1));
+      final v2 = v('v2', DateTime(2025, 2, 1));
+      final v3 = v('v3', DateTime(2025, 3, 1));
+      final members = [v3, v1, v2];
+      expect(previousVersionOf(v3, members)?.id, 'v2');
+      expect(previousVersionOf(v2, members)?.id, 'v1');
+      expect(previousVersionOf(v1, members), isNull);
+    });
+
+    test('the same date goes by name; an archived version is skipped', () {
+      final at = DateTime(2025, 1, 1);
+      final a = v('a', at, name: 'Song 2');
+      final b = v('b', at, name: 'Song 3');
+      final old = v('old', DateTime(2024, 1, 1));
+      final zipped = v('z', DateTime(2024, 6, 1), archived: true);
+      expect(previousVersionOf(b, [a, b])?.id, 'a');
+      expect(previousVersionOf(a, [a, b, old, zipped])?.id, 'old');
+    });
+  });
 }

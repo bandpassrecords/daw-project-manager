@@ -611,10 +611,18 @@ void main() {
       expect((await ReferenceCache.load(file)).length, 0);
       file.writeAsStringSync('{"version":99,"projects":{}}');
       expect((await ReferenceCache.load(file)).length, 0);
-      file.writeAsStringSync(
-          '{"version":1,"projects":{"a":{"s":1,"m":1,"t":[{"i":0}]}}}');
+      file.writeAsStringSync('{"version":${ReferenceCache.version},'
+          '"projects":{"a":{"s":1,"m":1,"t":[{"i":0}]}}}');
       expect((await ReferenceCache.load(file)).length, 0,
           reason: 'an entry that does not parse is dropped, not guessed');
+    });
+
+    test('tracks read by an older reader are read again', () async {
+      // Version 1 dropped slot 0's plug-in and took bypass from the slot
+      // before: what it cached is wrong, not just old.
+      file.writeAsStringSync('{"version":1,"projects":{"a":{"s":1,"m":1,'
+          '"t":[{"i":0,"n":"Kick","y":"audio"}]}}}');
+      expect((await ReferenceCache.load(file)).length, 0);
     });
 
     test('projects that left the library are forgotten', () {

@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:daw_project_manager/models/project_stats.dart';
 import 'package:daw_project_manager/ui/widgets/project_stats_section.dart';
 
+String _bits(int bits) => '$bits-bit';
+
 const _labels = ProjectStatsLabels(
   tracks: 'Tracks',
   audio: 'Audio',
@@ -15,6 +17,8 @@ const _labels = ProjectStatsLabels(
   plugins: 'Plug-ins',
   showAll: 'Show all',
   collapse: 'Collapse',
+  sampleRate: 'Sample rate',
+  bitDepth: _bits,
 );
 
 Widget _wrap(ProjectStats stats, {int collapsed = 16}) => MaterialApp(
@@ -43,6 +47,21 @@ void main() {
     expect(find.text('Audio'), findsOneWidget);
     expect(find.text('Instrument'), findsOneWidget);
     expect(find.text('Groups & FX'), findsOneWidget);
+  });
+
+  testWidgets('shows the sample rate and bit depth where the project has them',
+      (tester) async {
+    await tester.pumpWidget(_wrap(const ProjectStats(
+      audioTracks: 2,
+      sampleRate: 44100,
+      bitDepth: 24,
+    )));
+    expect(find.text('Sample rate'), findsOneWidget);
+    expect(find.text('44.1 kHz · 24-bit'), findsOneWidget);
+
+    await tester.pumpWidget(_wrap(const ProjectStats(audioTracks: 2)));
+    expect(find.text('Sample rate'), findsNothing,
+        reason: 'a format that stores none says nothing');
   });
 
   testWidgets('leaves out kinds with no tracks', (tester) async {

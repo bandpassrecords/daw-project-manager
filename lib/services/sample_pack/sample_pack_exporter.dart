@@ -15,6 +15,7 @@ import 'project_sample_reader.dart';
 import 'sample_classifier.dart';
 import 'sample_locator.dart';
 import 'sample_naming.dart';
+import '../../utils/csv.dart';
 
 /// One project to collect samples from.
 class SamplePackProject {
@@ -775,13 +776,6 @@ class _Manifest {
   }
 }
 
-String _csvCell(Object? value) {
-  final text = value?.toString() ?? '';
-  return RegExp(r'[",\n\r]').hasMatch(text)
-      ? '"${text.replaceAll('"', '""')}"'
-      : text;
-}
-
 /// UTF-8's byte order mark, so Excel reads accented names correctly.
 const _bom = '\uFEFF';
 
@@ -819,7 +813,7 @@ String samplePackReportCsv(List<PackSample> samples) {
       s.key,
       s.paths.first,
       s.paths.skip(1).join('; '),
-    ].map(_csvCell).join(','));
+    ].map(csvCell).join(','));
   }
   return out.toString();
 }
@@ -831,7 +825,7 @@ String samplePackProblemsCsv(List<SamplePackProblem> problems) {
     ..writeln(['problem', 'project', 'profile', 'sample', 'where'].join(','));
   for (final x in problems) {
     out.writeln([x.problem.code, x.project, x.profile, x.sample, x.where]
-        .map(_csvCell)
+        .map(csvCell)
         .join(','));
   }
   return out.toString();

@@ -17,6 +17,7 @@ import 'dialogs/card_initials_dialog.dart';
 import 'dialogs/move_project_dialog.dart';
 import 'preview_share.dart';
 import 'project_detail_page.dart';
+import 'project_inspector_page.dart';
 import 'project_playback.dart';
 import 'profile_move_actions.dart';
 import 'recently_deleted_actions.dart';
@@ -149,6 +150,9 @@ Future<void> showProjectContextMenu({
         project,
         pluginDetected: ref.read(dpmPluginDetectedProvider),
       ),
+      inspectOffered: !project.isVirtual &&
+          ref.read(visibleTabsProvider).contains(AppTab.inspector) &&
+          File(project.filePath).existsSync(),
     ),
   );
 
@@ -171,6 +175,9 @@ Future<void> showProjectContextMenu({
         break;
       case 'openFolder':
         await openProjectFolder(context, project);
+        break;
+      case 'inspect':
+        await openInInspector(context, ref, project.filePath);
         break;
       case 'playCapture':
         await playProjectCapture(context, ref, project);
@@ -362,6 +369,7 @@ List<Widget> projectMenuChildren({
   required bool driveRestoreOffered,
   required bool previewShareable,
   bool captureOffered = false,
+  bool inspectOffered = false,
 }) {
   Widget item(
     String value,
@@ -433,6 +441,9 @@ List<Widget> projectMenuChildren({
         : item('launch', Icons.open_in_new, l10n.tooltipLaunchInDaw),
     item('view', Icons.assignment, l10n.tooltipViewDetails),
     item('openFolder', Icons.folder_open, l10n.openFolder),
+    // The Inspector tab (#196): desktop-only, and a stack has no file.
+    if (inspectOffered)
+      item('inspect', Icons.manage_search, l10n.projectMenuInspect),
     // The DAW plugin's latest capture (offersLatestCapture): the same rule as
     // the dot on the play button.
     if (captureOffered)

@@ -91,6 +91,7 @@ import '../utils/project_visuals.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'session_actions.dart';
 import 'midi_library_page.dart';
+import 'project_inspector_page.dart';
 import 'dialogs/bulk_tags_dialog.dart';
 import 'dialogs/create_project_dialog.dart';
 import 'dialogs/archive_project_dialog.dart';
@@ -287,6 +288,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       .where((t) => visible.contains(t))
       .where((t) => MobileUtils.isMobile() || t != AppTab.playlists)
       .where((t) => !MobileUtils.isMobile() || t != AppTab.player)
+      .where((t) => !MobileUtils.isMobile() || t != AppTab.inspector)
       .toList();
 
   // Generation counter — incremented each time we schedule a tab update so that
@@ -465,6 +467,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
           if (_searchController.text != midiSearch) {
             _searchController.text = midiSearch;
           }
+        case AppTab.inspector:
+          final inspectorSearch = ref.read(inspectorSearchProvider);
+          if (_searchController.text != inspectorSearch) {
+            _searchController.text = inspectorSearch;
+          }
         case AppTab.playlists:
         case AppTab.player:
           _searchController.clear();
@@ -487,6 +494,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         ref.read(queueSearchProvider.notifier).clear();
       case AppTab.midi:
         ref.read(midiLibrarySearchProvider.notifier).clear();
+      case AppTab.inspector:
+        ref.read(inspectorSearchProvider.notifier).clear();
       case AppTab.statistics:
       case AppTab.playlists:
       case AppTab.player:
@@ -519,6 +528,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         ref.read(queueSearchProvider.notifier).set(text);
       case AppTab.midi:
         ref.read(midiLibrarySearchProvider.notifier).set(text);
+      case AppTab.inspector:
+        ref.read(inspectorSearchProvider.notifier).set(text);
       case AppTab.statistics:
       case AppTab.playlists:
       case AppTab.player:
@@ -1782,6 +1793,21 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       if (i >= 0 && _tabController.index != i) _tabController.animateTo(i);
     });
 
+    // "Inspect" in a project's menu: show the Inspector tab, which reads
+    // the file inspectorFileProvider now names.
+    ref.listen<int>(inspectorShowRequestProvider, (_, _) {
+      final i = _currentVisibleTabs.indexOf(AppTab.inspector);
+      if (i >= 0 && _tabController.index != i) _tabController.animateTo(i);
+    });
+
+    // "Show these projects" in the Inspector's plug-in usage: the projects
+    // list, filtered to them.
+    ref.listen<String?>(pluginFilterProvider, (_, plugin) {
+      if (plugin == null) return;
+      final i = _currentVisibleTabs.indexOf(AppTab.projects);
+      if (i >= 0 && _tabController.index != i) _tabController.animateTo(i);
+    });
+
     // The background initial scan at app launch also drives the Rescan
     // button's icon (see isScanning below), so flash the same success
     // checkmark when it finishes as a manual rescan gets.
@@ -1797,6 +1823,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       AppTab.statistics => ref.watch(statisticsSearchProvider),
       AppTab.playlists => '',
       AppTab.midi => ref.watch(midiLibrarySearchProvider),
+      AppTab.inspector => ref.watch(inspectorSearchProvider),
       AppTab.player => '',
     };
     final projects = ref.watch(projectsProvider);
@@ -1820,6 +1847,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
     final deadlineFilter = ref.watch(deadlineFilterProvider);
     final hasMidiFilter = ref.watch(hasMidiFilterProvider);
+    final pluginFilter = ref.watch(pluginFilterProvider);
     final initialScanning = ref.watch(initialScanStateProvider);
     final isProfileSwitching = ref.watch(profileSwitchingProvider);
     final isScanning = _scanning || initialScanning;
@@ -1929,6 +1957,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                         AppTab.midi => AppLocalizations.of(
                                           context,
                                         )!.midiLibrarySearchHint,
+                                        AppTab.inspector => AppLocalizations.of(
+                                          context,
+                                        )!.inspectorSearchHint,
                                         _ => AppLocalizations.of(
                                           context,
                                         )!.statsSearchProjects,
@@ -2161,6 +2192,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                           context,
                                         )!.midiLibraryTab,
                                       ),
+                                      AppTab.inspector => NavigationDestination(
+                                        icon: const Icon(Icons.manage_search),
+                                        label: AppLocalizations.of(
+                                          context,
+                                        )!.inspectorTab,
+                                      ),
                                       AppTab.queue => NavigationDestination(
                                         icon: const Icon(
                                           Icons.checklist_outlined,
@@ -2259,6 +2296,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                   AppLocalizations.of(
                                                     context,
                                                   )!.midiLibrarySearchHint,
+                                                AppTab.inspector =>
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.inspectorSearchHint,
                                                 _ => AppLocalizations.of(
                                                   context,
                                                 )!.statsSearchProjects,
@@ -2909,6 +2950,28 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                       )
                                                       .toggle(),
                                                 ),
+                                              // Only projects using a
+                                              // plug-in (#225)
+                                              if (pluginFilter != null)
+                                                InputChip(
+                                                  avatar: const Icon(
+                                                    Icons.extension,
+                                                    size: 16,
+                                                  ),
+                                                  label: Text(
+                                                    AppLocalizations.of(
+                                                      context,
+                                                    )!.filterUsesPlugin(
+                                                      pluginFilter,
+                                                    ),
+                                                  ),
+                                                  onDeleted: () => ref
+                                                      .read(
+                                                        pluginFilterProvider
+                                                            .notifier,
+                                                      )
+                                                      .clear(),
+                                                ),
                                             ],
                                           ),
                                         ],
@@ -3498,6 +3561,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                                 AppLocalizations.of(
                                                                   context,
                                                                 )!.midiLibrarySearchHint,
+                                                              AppTab.inspector =>
+                                                                AppLocalizations.of(
+                                                                  context,
+                                                                )!.inspectorSearchHint,
                                                               _ =>
                                                                 AppLocalizations.of(
                                                                   context,
@@ -3739,6 +3806,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                             context,
                                           )!.midiLibraryTab,
                                         ),
+                                        AppTab.inspector => Tab(
+                                          icon: const Icon(Icons.manage_search),
+                                          text: AppLocalizations.of(
+                                            context,
+                                          )!.inspectorTab,
+                                        ),
                                         AppTab.queue => Tab(
                                           icon: const Icon(Icons.checklist),
                                           text: AppLocalizations.of(
@@ -3922,6 +3995,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                             const PlaylistsPage(),
                                           AppTab.midi =>
                                             const MidiLibraryPage(),
+                                          AppTab.inspector =>
+                                            const ProjectInspectorPage(),
                                           AppTab.queue => const QueuePage(),
                                           AppTab.statistics =>
                                             const StatisticsPage(),
@@ -4126,6 +4201,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                         )!.midiLibraryTab,
                                       ),
                                     ),
+                                    AppTab.inspector =>
+                                      NavigationRailDestination(
+                                        icon: const Icon(Icons.manage_search),
+                                        label: Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.inspectorTab,
+                                        ),
+                                      ),
                                     AppTab.queue => NavigationRailDestination(
                                       icon: const Icon(Icons.checklist),
                                       label: Text(
@@ -8354,6 +8438,10 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
         title: AppLocalizations.of(context)!.songLengthColumn,
       ),
       projectPartsColumn(title: AppLocalizations.of(context)!.partsColumn),
+      projectSampleRateColumn(
+        title: AppLocalizations.of(context)!.sampleRateColumn,
+        bitDepthText: AppLocalizations.of(context)!.inspectorBitDepth,
+      ),
       // Hidden backing column for passing the model instance
       TrinaColumn(
         title: 'data',

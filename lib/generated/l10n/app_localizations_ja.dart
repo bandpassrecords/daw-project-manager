@@ -8106,4 +8106,1141 @@ class AppLocalizationsJa extends AppLocalizations {
   String missingPreviewRemoveIncludesOtherComputer(int count) {
     return 'このうち$count件は、別のコンピューターではまだ再生できるかもしれません。';
   }
+
+  @override
+  String get inspectorTab => 'インスペクター';
+
+  @override
+  String get inspectorSearchHint => 'トラックとプラグインを検索';
+
+  @override
+  String get inspectorEmptyTitle => 'DAWを開かずにプロジェクトの中身を確認';
+
+  @override
+  String get inspectorEmptyBody =>
+      'プロジェクトファイルをここにドロップするか、開くか、プロジェクトのメニューで「調べる」を選びます。プロジェクトは読み取るだけで、変更されません。';
+
+  @override
+  String get inspectorOpenProject => 'プロジェクトを開く…';
+
+  @override
+  String get inspectorChooseProjectTitle => '調べるプロジェクトを選択';
+
+  @override
+  String get inspectorReading => 'プロジェクトを読み込み中…';
+
+  @override
+  String get inspectorReadFailed => 'このプロジェクトを読み込めませんでした。';
+
+  @override
+  String inspectorUnsupported(String extension) {
+    return 'インスペクターは$extensionファイルを読み込めません。';
+  }
+
+  @override
+  String get inspectorReload => '再読み込み';
+
+  @override
+  String get inspectorClose => '閉じる';
+
+  @override
+  String inspectorSavedWith(String daw, String version) {
+    return '$daw $version で保存';
+  }
+
+  @override
+  String get inspectorTileTempo => 'テンポ';
+
+  @override
+  String get inspectorTileTimeSignature => '拍子';
+
+  @override
+  String get inspectorTileSampleRate => 'サンプルレート';
+
+  @override
+  String inspectorBitDepth(int bits) {
+    return '$bitsビット';
+  }
+
+  @override
+  String get inspectorNotInFile => 'このプロジェクトにはありません';
+
+  @override
+  String inspectorTileTracks(int count) {
+    return 'トラック';
+  }
+
+  @override
+  String inspectorTileEffects(int count) {
+    return 'エフェクト';
+  }
+
+  @override
+  String inspectorTileInstruments(int count) {
+    return 'インストゥルメント';
+  }
+
+  @override
+  String inspectorEffectsBreakdown(int stock, int thirdParty) {
+    return '付属 $stock · サードパーティ $thirdParty';
+  }
+
+  @override
+  String get inspectorFilterAll => 'すべて';
+
+  @override
+  String get inspectorKindAudio => 'オーディオ';
+
+  @override
+  String get inspectorKindInstrument => 'インストゥルメント';
+
+  @override
+  String get inspectorKindMidi => 'MIDI';
+
+  @override
+  String get inspectorKindSampler => 'サンプラー';
+
+  @override
+  String get inspectorKindGroup => 'グループ';
+
+  @override
+  String get inspectorKindFx => 'FX';
+
+  @override
+  String get inspectorKindFolder => 'フォルダー';
+
+  @override
+  String get inspectorTabTracks => 'トラック';
+
+  @override
+  String get inspectorTabPlugins => 'プラグイン';
+
+  @override
+  String get inspectorTabRouting => 'ルーティング';
+
+  @override
+  String get inspectorTabMedia => 'オーディオファイル';
+
+  @override
+  String get inspectorTabStatistics => '統計';
+
+  @override
+  String inspectorNotAvailable(String daw) {
+    return '$daw のプロジェクトではまだ読み取れません。';
+  }
+
+  @override
+  String get inspectorOutput => '出力';
+
+  @override
+  String get inspectorInserts => 'インサート';
+
+  @override
+  String get inspectorSends => 'センド';
+
+  @override
+  String get inspectorInstrument => 'インストゥルメント';
+
+  @override
+  String get inspectorFader => 'フェーダー';
+
+  @override
+  String get inspectorNoInserts => 'インサートなし';
+
+  @override
+  String get inspectorNoSends => 'センドなし';
+
+  @override
+  String get inspectorNotConnected => '未接続';
+
+  @override
+  String get inspectorDeactivated => 'オフ';
+
+  @override
+  String get inspectorSoloed => 'ソロ';
+
+  @override
+  String get inspectorPreFader => 'プリフェーダー';
+
+  @override
+  String get inspectorSendSwitchedOff => 'オフ';
+
+  @override
+  String inspectorSideChainInto(String plugin) {
+    return '$plugin のサイドチェイン';
+  }
+
+  @override
+  String inspectorEqBandsOn(int count) {
+    return 'EQ: $count バンドがオン';
+  }
+
+  @override
+  String get inspectorFaderPositionOnly => 'フェーダーの位置（dB値はまだ読み取れません）';
+
+  @override
+  String get inspectorSelectChannel => 'チャンネルを選ぶと、ルーティングとプラグインが表示されます。';
+
+  @override
+  String get inspectorGroupStock => '付属エフェクト';
+
+  @override
+  String get inspectorGroupThirdParty => 'サードパーティのエフェクト';
+
+  @override
+  String get inspectorGroupInstruments => 'インストゥルメント';
+
+  @override
+  String inspectorPluginSummary(int unique, int instances) {
+    return '$unique 種類 · $instances インスタンス';
+  }
+
+  @override
+  String inspectorPluginsNamesOnly(String daw) {
+    return '$daw のプロジェクトでは、各プラグインを使うチャンネルはまだ読み取れません。';
+  }
+
+  @override
+  String get inspectorSignalFlow => '信号の流れ';
+
+  @override
+  String get inspectorByDestination => '送り先ごと';
+
+  @override
+  String get inspectorFeedsIn => '入力元';
+
+  @override
+  String get inspectorGoesTo => '送り先';
+
+  @override
+  String get inspectorSignalPath => '信号経路';
+
+  @override
+  String get inspectorViaSend => 'センド';
+
+  @override
+  String get inspectorViaSideChain => 'サイドチェイン';
+
+  @override
+  String get inspectorNothingFeeds => 'このチャンネルへの入力はありません。';
+
+  @override
+  String inspectorHintNowhere(int count) {
+    return '出力先のないチャンネル：$count';
+  }
+
+  @override
+  String inspectorHintSkipBuses(int count) {
+    return '出力へ直接送られるトラック：$count';
+  }
+
+  @override
+  String inspectorSourcesCount(int count) {
+    return '入力元 $count';
+  }
+
+  @override
+  String get inspectorMediaFound => '見つかりました';
+
+  @override
+  String get inspectorMediaElsewhere => 'プロジェクトフォルダーで見つかりました';
+
+  @override
+  String get inspectorMediaMissing => '見つかりません';
+
+  @override
+  String inspectorMediaSummary(int missing, int total) {
+    return '$total 件中 $missing 件が見つかりません';
+  }
+
+  @override
+  String inspectorMediaAllFound(int total) {
+    return '$total 件すべて見つかりました';
+  }
+
+  @override
+  String get inspectorMediaChecking => 'ファイルを探しています…';
+
+  @override
+  String get inspectorMediaNone => 'このプロジェクトはオーディオファイルを使っていません。';
+
+  @override
+  String inspectorMediaStoredAt(String path) {
+    return 'プロジェクト上の場所: $path';
+  }
+
+  @override
+  String inspectorMediaFoundAt(String path) {
+    return '見つかった場所: $path';
+  }
+
+  @override
+  String get inspectorStatTrackTypes => 'トラックの種類';
+
+  @override
+  String get inspectorStatPluginInstances => 'プラグインのインスタンス';
+
+  @override
+  String get inspectorStatUnknown => '不明';
+
+  @override
+  String get inspectorStatMostUsed => 'よく使われるプラグイン';
+
+  @override
+  String get inspectorStatUsualChains => 'よく使うチェーン';
+
+  @override
+  String get inspectorStatNoChains => '複数のチャンネルで繰り返されるプラグインチェーンはありません。';
+
+  @override
+  String get inspectorStatInsertsPerChannel => 'チャンネルごとのインサート数';
+
+  @override
+  String get inspectorStatBusiest => '入力の多い送り先';
+
+  @override
+  String inspectorInsertsCount(int count) {
+    return 'インサート $count';
+  }
+
+  @override
+  String inspectorChannelsCount(int count) {
+    return 'チャンネル $count';
+  }
+
+  @override
+  String get projectMenuInspect => '調べる';
+
+  @override
+  String get sampleRateColumn => 'サンプルレート';
+
+  @override
+  String get inspectorCloudTitle => 'このプロジェクトをダウンロードしますか？';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return 'このプロジェクトはクラウド上にあり、このコンピューターにはありません。読み込むとファイル全体（$size）がダウンロードされます。';
+  }
+
+  @override
+  String get inspectorCloudRead => 'ダウンロードして読み込む';
+
+  @override
+  String get inspectorTabAudioIo => 'オーディオI/O';
+
+  @override
+  String get inspectorAudioDriver => 'オーディオドライバー';
+
+  @override
+  String get inspectorUnnamedDriver => 'プロジェクトに名前がありません';
+
+  @override
+  String inspectorSavedOn(String platform) {
+    return '$platform で保存';
+  }
+
+  @override
+  String get inspectorInputBuses => '入力バス';
+
+  @override
+  String get inspectorOutputBuses => '出力バス';
+
+  @override
+  String get inspectorInterfaceInputs => 'インターフェースの入力';
+
+  @override
+  String get inspectorInterfaceOutputs => 'インターフェースの出力';
+
+  @override
+  String get inspectorMidiInputs => 'MIDI入力';
+
+  @override
+  String get inspectorMidiOutputs => 'MIDI出力';
+
+  @override
+  String get inspectorNone => 'なし';
+
+  @override
+  String get inspectorPan => 'パン';
+
+  @override
+  String get inspectorMuted => 'ミュート';
+
+  @override
+  String get inspectorChannelStrip => 'チャンネルストリップ';
+
+  @override
+  String get inspectorStripBypassed => 'ストリップをバイパス';
+
+  @override
+  String get inspectorStripBeforeInserts => 'インサートの前';
+
+  @override
+  String get inspectorStripGate => 'ゲート';
+
+  @override
+  String get inspectorStripCompressor => 'コンプレッサー';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => 'ツール';
+
+  @override
+  String get inspectorStripSaturation => 'サチュレーション';
+
+  @override
+  String get inspectorStripLimiter => 'リミッター';
+
+  @override
+  String get inspectorStripModule => 'モジュール';
+
+  @override
+  String get relinkFixButton => '見つからないファイルを修復…';
+
+  @override
+  String get relinkTitle => '見つからないファイルを修復';
+
+  @override
+  String get relinkIntro =>
+      'ファイルの現在の場所を指すプロジェクトのコピーを隣に書き出します。元のプロジェクトは変更されません。';
+
+  @override
+  String get relinkSearchFolder => 'フォルダーを検索…';
+
+  @override
+  String get relinkSearchFolderTitle => '見つからないファイルはどこにありますか？';
+
+  @override
+  String get relinkSearching => 'ファイルを探しています…';
+
+  @override
+  String relinkSearchedIn(String folders) {
+    return '検索済み: $folders';
+  }
+
+  @override
+  String relinkWillFix(int count, int total) {
+    return '$total 件中 $count 件のファイルを再リンクします';
+  }
+
+  @override
+  String relinkChooseOne(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件見つかりました — 1 つ選んでください',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNotFound => '見つかりません';
+
+  @override
+  String get relinkBrowse => '参照…';
+
+  @override
+  String relinkBrowseTitle(String name) {
+    return '$name はどこにありますか？';
+  }
+
+  @override
+  String get relinkLeave => 'そのままにする';
+
+  @override
+  String get relinkChange => 'リンク先を選択';
+
+  @override
+  String relinkRuleOffer(int count, String from, String to) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '同じ移動でさらに $count 件見つかります: $from → $to',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkApplyRule => '適用';
+
+  @override
+  String get relinkWrite => '再リンクしたコピーを書き出す';
+
+  @override
+  String get relinkWriting => 'コピーを書き出して確認しています…';
+
+  @override
+  String relinkWrote(String name) {
+    return '$name を書き出しました';
+  }
+
+  @override
+  String relinkRelinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のファイルを再リンクしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedTooLong(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count 件は再リンクされませんでした: 新しいパスがプロジェクトに収まる長さを超えています。短いパスに移すか、Cubase で探してください。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedEncoding(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件は再リンクされませんでした: この古いプロジェクトは新しいパスの特殊文字を保存できません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedNotFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件は再リンクされませんでした: コピーで変更できない場所にしか記録されていません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNothingWritten => '再リンクできるものがなかったため、コピーは書き出されませんでした。';
+
+  @override
+  String relinkFailed(String reason) {
+    return 'コピーが確認に失敗したため保存しませんでした: $reason';
+  }
+
+  @override
+  String get relinkInspectCopy => 'コピーを調べる';
+
+  @override
+  String get inspectorTileKey => 'キー';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'MIDI クリップ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'マーカー',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'リージョン $count 件',
+      zero: 'リージョンなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'プラグイン',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => '名前のみ';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '.mid ファイル $count 件が見つかりません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => 'グループ / FX';
+
+  @override
+  String get inspectorNotesTitle => 'プロジェクト内のメモ';
+
+  @override
+  String get inspectorMissingMidiTitle => '見つからない MIDI ファイル';
+
+  @override
+  String get safeCopyButton => 'セーフコピー…';
+
+  @override
+  String get safeCopyTitle => 'セーフコピー';
+
+  @override
+  String get safeCopyIntro =>
+      '選んだプラグインをオフにしたプロジェクトのコピーです。どれかが DAW をクラッシュさせたり、インストールされていなかったりしても開けます。コピーではそれらが無効として表示されるので、スロットから再び有効にするか、差し替えてください。元のプロジェクトは変更されません。';
+
+  @override
+  String get safeCopyFilter => 'プラグインを絞り込む';
+
+  @override
+  String get safeCopyReading => 'プラグインを読み込み中…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return 'プロジェクトのプラグインを読み込めませんでした: $reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count インスタンス',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count 個はすでにオフ';
+  }
+
+  @override
+  String get safeCopyAllOff => 'すべてオフ済み';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count インスタンスがオフになります',
+      zero: 'オフにするプラグインを選んでください',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => 'セーフコピーを書き出す';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count インスタンスをオフにしました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep =>
+      'コピーを DAW で開いてください。これらのプラグインはスロットで無効として表示され、再び有効にしたり差し替えたりできます。';
+
+  @override
+  String get safeCopyNothingWritten => '選んだプラグインはどれもオンではなかったため、何も書き出されませんでした。';
+
+  @override
+  String get compareWith => '比較…';
+
+  @override
+  String get compareWithTitle => '比較するプロジェクトを選択';
+
+  @override
+  String get compareWithPrevious => '前のバージョンと比較';
+
+  @override
+  String get compareTitle => '比較';
+
+  @override
+  String get compareSwap => 'A と B を入れ替え';
+
+  @override
+  String get compareClose => '比較を閉じる';
+
+  @override
+  String get compareCopySummary => '概要をコピー';
+
+  @override
+  String get compareSummaryCopied => '概要をコピーしました';
+
+  @override
+  String get compareExportCsv => 'CSV を書き出す';
+
+  @override
+  String get compareExportCsvTitle => '変更点を CSV で保存';
+
+  @override
+  String compareSaved(String name) {
+    return '$name を保存しました';
+  }
+
+  @override
+  String compareChangesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件の変更',
+      zero: '変更なし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareChannelsChanged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count チャンネルが変更',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareUnchanged(int count) {
+    return '$count 変更なし';
+  }
+
+  @override
+  String compareOnlyInA(int count) {
+    return 'A のみ $count';
+  }
+
+  @override
+  String compareOnlyInB(int count) {
+    return 'B のみ $count';
+  }
+
+  @override
+  String comparePluginChanges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'プラグインの変更 $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get compareFilterLevels => 'レベル';
+
+  @override
+  String get compareProject => 'プロジェクト';
+
+  @override
+  String get compareNoDifferences => '違いは見つかりませんでした';
+
+  @override
+  String compareChannelsNotRead(String daw) {
+    return '$daw プロジェクトのチャンネルはまだ読み込めません。プロジェクトと使用プラグインを比較します。';
+  }
+
+  @override
+  String get compareBadgeOnlyInA => 'A のみ';
+
+  @override
+  String get compareBadgeOnlyInB => 'B のみ';
+
+  @override
+  String get compareNoneValue => 'なし';
+
+  @override
+  String changeTempo(String before, String after) {
+    return 'テンポ $before → $after BPM';
+  }
+
+  @override
+  String changeTimeSignature(String before, String after) {
+    return '拍子 $before → $after';
+  }
+
+  @override
+  String changeSampleRate(String before, String after) {
+    return 'サンプルレート $before → $after';
+  }
+
+  @override
+  String changeBitDepth(String before, String after) {
+    return 'ビット深度 $before → $after';
+  }
+
+  @override
+  String changeKey(String before, String after) {
+    return 'キー $before → $after';
+  }
+
+  @override
+  String changePluginAdded(String plugin) {
+    return '$plugin を使用するように';
+  }
+
+  @override
+  String changePluginRemoved(String plugin) {
+    return '$plugin を使用しなくなった';
+  }
+
+  @override
+  String get changeChannelAdded => '追加';
+
+  @override
+  String get changeChannelRemoved => '削除';
+
+  @override
+  String changeRenamed(String before) {
+    return '$before から名前を変更';
+  }
+
+  @override
+  String changeKind(String before, String after) {
+    return '種類 $before → $after';
+  }
+
+  @override
+  String changeFolder(String before, String after) {
+    return 'フォルダー $before → $after';
+  }
+
+  @override
+  String changeOutput(String before, String after) {
+    return '出力 $before → $after';
+  }
+
+  @override
+  String changeFader(String before, String after) {
+    return 'フェーダー $before → $after';
+  }
+
+  @override
+  String changePan(String before, String after) {
+    return 'パン $before → $after';
+  }
+
+  @override
+  String get changeMuted => 'ミュート';
+
+  @override
+  String get changeUnmuted => 'ミュート解除';
+
+  @override
+  String get changeSoloed => 'ソロ';
+
+  @override
+  String get changeUnsoloed => 'ソロ解除';
+
+  @override
+  String changeEqBands(String before, String after) {
+    return 'オンの EQ バンド $before → $after';
+  }
+
+  @override
+  String changeInstrument(String before, String after) {
+    return 'インストゥルメント $before → $after';
+  }
+
+  @override
+  String changePreset(String plugin, String before, String after) {
+    return '$plugin のプリセット $before → $after';
+  }
+
+  @override
+  String changeInsertAdded(String plugin, int slot) {
+    return '$plugin をスロット $slot に挿入';
+  }
+
+  @override
+  String changeInsertRemoved(String plugin, int slot) {
+    return '$plugin をスロット $slot から削除';
+  }
+
+  @override
+  String changeInsertReplaced(int slot, String before, String after) {
+    return 'スロット $slot: $before を $after に置き換え';
+  }
+
+  @override
+  String changeInsertMoved(String plugin, int before, int after) {
+    return '$plugin をスロット $before から $after に移動';
+  }
+
+  @override
+  String changePluginOff(String plugin) {
+    return '$plugin をオフ';
+  }
+
+  @override
+  String changePluginOn(String plugin) {
+    return '$plugin をオン';
+  }
+
+  @override
+  String changeStripAdded(String plugin) {
+    return 'チャンネルストリップ: $plugin を追加';
+  }
+
+  @override
+  String changeStripRemoved(String plugin) {
+    return 'チャンネルストリップ: $plugin を削除';
+  }
+
+  @override
+  String changeStripReplaced(String before, String after) {
+    return 'チャンネルストリップ: $before を $after に置き換え';
+  }
+
+  @override
+  String get changeStripBypassed => 'チャンネルストリップをバイパス';
+
+  @override
+  String get changeStripBack => 'チャンネルストリップを再びオン';
+
+  @override
+  String changeSendAdded(String destination) {
+    return '$destination へのセンドを追加';
+  }
+
+  @override
+  String changeSendRemoved(String destination) {
+    return '$destination へのセンドを削除';
+  }
+
+  @override
+  String changeSendLevel(String destination, String before, String after) {
+    return '$destination へのセンド $before → $after';
+  }
+
+  @override
+  String changeSendOff(String destination) {
+    return '$destination へのセンドをオフ';
+  }
+
+  @override
+  String changeSendOn(String destination) {
+    return '$destination へのセンドをオン';
+  }
+
+  @override
+  String changeSendPre(String destination) {
+    return '$destination へのセンドをプリフェーダーに';
+  }
+
+  @override
+  String changeSendPost(String destination) {
+    return '$destination へのセンドをポストフェーダーに';
+  }
+
+  @override
+  String get inspectorReport => 'レポート';
+
+  @override
+  String get reportSaveMarkdown => 'レポートを保存 (Markdown)…';
+
+  @override
+  String get reportSaveTracksCsv => 'トラックリストを保存 (CSV)…';
+
+  @override
+  String get reportSavePluginsCsv => 'プラグインを保存 (CSV)…';
+
+  @override
+  String get reportSaveTitle => 'レポートを保存';
+
+  @override
+  String reportMadeBy(String date) {
+    return '$date に DAW Project Manager で作成';
+  }
+
+  @override
+  String get reportOverview => '概要';
+
+  @override
+  String get reportColumnChannel => 'チャンネル';
+
+  @override
+  String get reportColumnKind => '種類';
+
+  @override
+  String reportMissingFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'オーディオファイル $count 件が見つかりません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reportCopied => '概要をコピーしました';
+
+  @override
+  String get usageOpen => 'ライブラリ全体のプラグイン';
+
+  @override
+  String get usageIntro =>
+      'ディープスキャンが各プロジェクトから読み取った内容に基づきます。ここではプロジェクトファイルは開きません。情報の表示のみで、何も変更・削除されません。';
+
+  @override
+  String usageProjectsRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count プロジェクトを読み取り済み',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjectsUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未読み取りのプロジェクト $count 件 — ディープスキャンでプラグインを数えます',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usagePluginsInUse(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '使用中のプラグイン $count 個',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageRareCount(int count) {
+    return '1 曲のみで使用: $count';
+  }
+
+  @override
+  String get usageFilterMostUsed => 'よく使う';
+
+  @override
+  String get usageFilterRare => '1 回のみ';
+
+  @override
+  String get usageHideStock => '付属プラグインを隠す';
+
+  @override
+  String usageSongs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 曲',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjects(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count プロジェクト',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageLastUsed(String date) {
+    return '最終使用 $date';
+  }
+
+  @override
+  String get usageShowProjects => 'これらのプロジェクトを表示';
+
+  @override
+  String get usageCountInstances => 'Cubase プロジェクトのインスタンスを数える…';
+
+  @override
+  String usageInstancesFrom(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件の Cubase プロジェクトのインスタンスとチェーン',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get usageNothing => 'まだプラグインが見つかりません。ディープスキャンで各プロジェクトのプラグインを読み取ります。';
+
+  @override
+  String get usageReadTitle => 'Cubase プロジェクトを読み込みますか?';
+
+  @override
+  String usageReadBody(int count, String size) {
+    return '$count 件の Cubase プロジェクト ($size) はトラックが未読み取りか、その後変更されています。読み込むと各ファイルを開きます。クラウドドライブ上のファイルは先にダウンロードされます。';
+  }
+
+  @override
+  String get usageReadAndCount => '読み込んで数える';
+
+  @override
+  String get usageReadStop => '中止して読み取り済みを数える';
+
+  @override
+  String filterUsesPlugin(String plugin) {
+    return '$plugin を使用';
+  }
+
+  @override
+  String get launchCheckSetting => '開く前にプロジェクトを確認';
+
+  @override
+  String get launchCheckSettingHint =>
+      'DAW が開く前に、オーディオファイルが見つからない場合や、プロジェクトのサンプルレートがスタジオと異なる場合に知らせます。クラウドドライブ上の、または非常に大きなプロジェクトは確認せずに開きます。';
+
+  @override
+  String get studioSampleRate => 'スタジオのサンプルレート';
+
+  @override
+  String get studioSampleRateNotSet => '未設定';
+
+  @override
+  String launchCheckTitle(String name) {
+    return '$name を開く前に';
+  }
+
+  @override
+  String launchCheckMissingAudio(int count, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'オーディオファイル $total 件中 $count 件が見つかりません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String launchCheckSampleRate(String project, String studio) {
+    return '$project で保存されています。スタジオは $studio です';
+  }
+
+  @override
+  String get launchCheckOpenAnyway => 'このまま開く';
 }

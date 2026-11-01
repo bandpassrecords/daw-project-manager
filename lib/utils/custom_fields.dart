@@ -125,16 +125,27 @@ const List<String> kProjectsTableBuiltInColumns = [
   'notes',
   'length',
   'parts',
+  // Read from the project file by a deep scan (#213).
+  'sampleRate',
 ];
 
 /// Built-ins that start hidden: added after users had arranged their table,
 /// they shouldn't appear in it uninvited. Switched on in Settings > Columns
 /// & fields like any other.
-const Set<String> kProjectsTableHiddenByDefault = {'notes', 'length', 'parts'};
+const Set<String> kProjectsTableHiddenByDefault = {
+  'notes',
+  'length',
+  'parts',
+  'sampleRate',
+};
 
 /// Built-ins a release's tracklist starts without: the ones it never had
 /// before every field could be shown in either table.
-const Set<String> kReleaseTracksHiddenByDefault = {'tags', 'deadline'};
+const Set<String> kReleaseTracksHiddenByDefault = {
+  'tags',
+  'deadline',
+  'sampleRate',
+};
 
 /// One built-in column's place and where it shows. Device-local, in the
 /// `settings` box: which columns fit is a question about this screen.

@@ -8012,4 +8012,1137 @@ class AppLocalizationsZh extends AppLocalizations {
   String missingPreviewRemoveIncludesOtherComputer(int count) {
     return '其中 $count 首在另一台电脑上可能仍可播放。';
   }
+
+  @override
+  String get inspectorTab => '检查器';
+
+  @override
+  String get inspectorSearchHint => '搜索轨道和插件';
+
+  @override
+  String get inspectorEmptyTitle => '无需打开 DAW 即可查看项目内容';
+
+  @override
+  String get inspectorEmptyBody =>
+      '将项目文件拖到这里、打开一个，或在项目菜单中选择“检查”。项目只会被读取，不会被更改。';
+
+  @override
+  String get inspectorOpenProject => '打开项目…';
+
+  @override
+  String get inspectorChooseProjectTitle => '选择要检查的项目';
+
+  @override
+  String get inspectorReading => '正在读取项目…';
+
+  @override
+  String get inspectorReadFailed => '无法读取此项目。';
+
+  @override
+  String inspectorUnsupported(String extension) {
+    return '检查器无法读取 $extension 文件。';
+  }
+
+  @override
+  String get inspectorReload => '重新读取';
+
+  @override
+  String get inspectorClose => '关闭';
+
+  @override
+  String inspectorSavedWith(String daw, String version) {
+    return '使用 $daw $version 保存';
+  }
+
+  @override
+  String get inspectorTileTempo => '速度';
+
+  @override
+  String get inspectorTileTimeSignature => '拍号';
+
+  @override
+  String get inspectorTileSampleRate => '采样率';
+
+  @override
+  String inspectorBitDepth(int bits) {
+    return '$bits 位';
+  }
+
+  @override
+  String get inspectorNotInFile => '项目中没有';
+
+  @override
+  String inspectorTileTracks(int count) {
+    return '条轨道';
+  }
+
+  @override
+  String inspectorTileEffects(int count) {
+    return '个效果';
+  }
+
+  @override
+  String inspectorTileInstruments(int count) {
+    return '个乐器';
+  }
+
+  @override
+  String inspectorEffectsBreakdown(int stock, int thirdParty) {
+    return '$stock 个内置 · $thirdParty 个第三方';
+  }
+
+  @override
+  String get inspectorFilterAll => '全部';
+
+  @override
+  String get inspectorKindAudio => '音频';
+
+  @override
+  String get inspectorKindInstrument => '乐器';
+
+  @override
+  String get inspectorKindMidi => 'MIDI';
+
+  @override
+  String get inspectorKindSampler => '采样器';
+
+  @override
+  String get inspectorKindGroup => '编组';
+
+  @override
+  String get inspectorKindFx => '效果';
+
+  @override
+  String get inspectorKindFolder => '文件夹';
+
+  @override
+  String get inspectorTabTracks => '轨道';
+
+  @override
+  String get inspectorTabPlugins => '插件';
+
+  @override
+  String get inspectorTabRouting => '路由';
+
+  @override
+  String get inspectorTabMedia => '音频文件';
+
+  @override
+  String get inspectorTabStatistics => '统计';
+
+  @override
+  String inspectorNotAvailable(String daw) {
+    return '尚不支持读取 $daw 项目的此信息。';
+  }
+
+  @override
+  String get inspectorOutput => '输出';
+
+  @override
+  String get inspectorInserts => '插入';
+
+  @override
+  String get inspectorSends => '发送';
+
+  @override
+  String get inspectorInstrument => '乐器';
+
+  @override
+  String get inspectorFader => '推子';
+
+  @override
+  String get inspectorNoInserts => '无插入';
+
+  @override
+  String get inspectorNoSends => '无发送';
+
+  @override
+  String get inspectorNotConnected => '未连接';
+
+  @override
+  String get inspectorDeactivated => '关闭';
+
+  @override
+  String get inspectorSoloed => '独奏';
+
+  @override
+  String get inspectorPreFader => '推子前';
+
+  @override
+  String get inspectorSendSwitchedOff => '已关闭';
+
+  @override
+  String inspectorSideChainInto(String plugin) {
+    return '侧链至 $plugin';
+  }
+
+  @override
+  String inspectorEqBandsOn(int count) {
+    return 'EQ：$count 个频段开启';
+  }
+
+  @override
+  String get inspectorFaderPositionOnly => '推子位置；尚未读取其 dB 值';
+
+  @override
+  String get inspectorSelectChannel => '选择一个通道以查看其路由和插件。';
+
+  @override
+  String get inspectorGroupStock => '内置效果';
+
+  @override
+  String get inspectorGroupThirdParty => '第三方效果';
+
+  @override
+  String get inspectorGroupInstruments => '乐器';
+
+  @override
+  String inspectorPluginSummary(int unique, int instances) {
+    return '$unique 个不同插件 · $instances 个实例';
+  }
+
+  @override
+  String inspectorPluginsNamesOnly(String daw) {
+    return '尚不支持读取 $daw 项目中各插件所在的通道。';
+  }
+
+  @override
+  String get inspectorSignalFlow => '信号流';
+
+  @override
+  String get inspectorByDestination => '按目标';
+
+  @override
+  String get inspectorFeedsIn => '输入来源';
+
+  @override
+  String get inspectorGoesTo => '送往';
+
+  @override
+  String get inspectorSignalPath => '信号路径';
+
+  @override
+  String get inspectorViaSend => '发送';
+
+  @override
+  String get inspectorViaSideChain => '侧链';
+
+  @override
+  String get inspectorNothingFeeds => '没有任何信号进入此通道。';
+
+  @override
+  String inspectorHintNowhere(int count) {
+    return '$count 个通道没有输出';
+  }
+
+  @override
+  String inspectorHintSkipBuses(int count) {
+    return '$count 条轨道直接送往输出';
+  }
+
+  @override
+  String inspectorSourcesCount(int count) {
+    return '$count 个来源';
+  }
+
+  @override
+  String get inspectorMediaFound => '已找到';
+
+  @override
+  String get inspectorMediaElsewhere => '在项目文件夹中找到';
+
+  @override
+  String get inspectorMediaMissing => '缺失';
+
+  @override
+  String inspectorMediaSummary(int missing, int total) {
+    return '$total 个中缺失 $missing 个';
+  }
+
+  @override
+  String inspectorMediaAllFound(int total) {
+    return '全部 $total 个均已找到';
+  }
+
+  @override
+  String get inspectorMediaChecking => '正在查找文件…';
+
+  @override
+  String get inspectorMediaNone => '此项目未使用音频文件。';
+
+  @override
+  String inspectorMediaStoredAt(String path) {
+    return '项目记录的位置：$path';
+  }
+
+  @override
+  String inspectorMediaFoundAt(String path) {
+    return '找到位置：$path';
+  }
+
+  @override
+  String get inspectorStatTrackTypes => '轨道类型';
+
+  @override
+  String get inspectorStatPluginInstances => '插件实例';
+
+  @override
+  String get inspectorStatUnknown => '未知';
+
+  @override
+  String get inspectorStatMostUsed => '最常用的插件';
+
+  @override
+  String get inspectorStatUsualChains => '常用插件链';
+
+  @override
+  String get inspectorStatNoChains => '没有在多个通道中重复的插件链。';
+
+  @override
+  String get inspectorStatInsertsPerChannel => '每个通道的插入数';
+
+  @override
+  String get inspectorStatBusiest => '最繁忙的目标';
+
+  @override
+  String inspectorInsertsCount(int count) {
+    return '$count 个插入';
+  }
+
+  @override
+  String inspectorChannelsCount(int count) {
+    return '$count 个通道';
+  }
+
+  @override
+  String get projectMenuInspect => '检查';
+
+  @override
+  String get sampleRateColumn => '采样率';
+
+  @override
+  String get inspectorCloudTitle => '下载此项目？';
+
+  @override
+  String inspectorCloudBody(String size) {
+    return '此项目位于云端，不在这台电脑上。读取它会下载整个文件（$size）。';
+  }
+
+  @override
+  String get inspectorCloudRead => '下载并读取';
+
+  @override
+  String get inspectorTabAudioIo => '音频 I/O';
+
+  @override
+  String get inspectorAudioDriver => '音频驱动';
+
+  @override
+  String get inspectorUnnamedDriver => '项目中未命名';
+
+  @override
+  String inspectorSavedOn(String platform) {
+    return '在 $platform 上保存';
+  }
+
+  @override
+  String get inspectorInputBuses => '输入总线';
+
+  @override
+  String get inspectorOutputBuses => '输出总线';
+
+  @override
+  String get inspectorInterfaceInputs => '接口输入';
+
+  @override
+  String get inspectorInterfaceOutputs => '接口输出';
+
+  @override
+  String get inspectorMidiInputs => 'MIDI 输入';
+
+  @override
+  String get inspectorMidiOutputs => 'MIDI 输出';
+
+  @override
+  String get inspectorNone => '无';
+
+  @override
+  String get inspectorPan => '声像';
+
+  @override
+  String get inspectorMuted => '静音';
+
+  @override
+  String get inspectorChannelStrip => '通道条';
+
+  @override
+  String get inspectorStripBypassed => '通道条已旁通';
+
+  @override
+  String get inspectorStripBeforeInserts => '在插入之前';
+
+  @override
+  String get inspectorStripGate => '门限';
+
+  @override
+  String get inspectorStripCompressor => '压缩器';
+
+  @override
+  String get inspectorStripEq => 'EQ';
+
+  @override
+  String get inspectorStripTools => '工具';
+
+  @override
+  String get inspectorStripSaturation => '饱和';
+
+  @override
+  String get inspectorStripLimiter => '限制器';
+
+  @override
+  String get inspectorStripModule => '模块';
+
+  @override
+  String get relinkFixButton => '修复缺失的文件…';
+
+  @override
+  String get relinkTitle => '修复缺失的文件';
+
+  @override
+  String get relinkIntro => '在项目旁边写入一个副本，指向文件现在所在的位置。项目本身永远不会被修改。';
+
+  @override
+  String get relinkSearchFolder => '搜索文件夹…';
+
+  @override
+  String get relinkSearchFolderTitle => '缺失的文件在哪里？';
+
+  @override
+  String get relinkSearching => '正在查找文件…';
+
+  @override
+  String relinkSearchedIn(String folders) {
+    return '已搜索：$folders';
+  }
+
+  @override
+  String relinkWillFix(int count, int total) {
+    return '将重新链接 $total 个文件中的 $count 个';
+  }
+
+  @override
+  String relinkChooseOne(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '找到 $count 个 — 请选择一个',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNotFound => '未找到';
+
+  @override
+  String get relinkBrowse => '浏览…';
+
+  @override
+  String relinkBrowseTitle(String name) {
+    return '$name 在哪里？';
+  }
+
+  @override
+  String get relinkLeave => '保持不变';
+
+  @override
+  String get relinkChange => '选择指向位置';
+
+  @override
+  String relinkRuleOffer(int count, String from, String to) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '同样的移动还能找到 $count 个文件：$from → $to',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkApplyRule => '应用';
+
+  @override
+  String get relinkWrite => '写入重新链接的副本';
+
+  @override
+  String get relinkWriting => '正在写入并检查副本…';
+
+  @override
+  String relinkWrote(String name) {
+    return '已写入 $name';
+  }
+
+  @override
+  String relinkRelinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已重新链接 $count 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedTooLong(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个未重新链接：新路径超出项目可容纳的长度。请移到更短的路径，或在 Cubase 中查找。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedEncoding(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个未重新链接：这个旧项目无法保存新路径中的特殊字符。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relinkRefusedNotFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个未重新链接：项目只在副本无法修改的位置记录了它们。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relinkNothingWritten => '没有可重新链接的文件，因此没有写入副本。';
+
+  @override
+  String relinkFailed(String reason) {
+    return '副本未通过检查，未予保留：$reason';
+  }
+
+  @override
+  String get relinkInspectCopy => '检查副本';
+
+  @override
+  String get inspectorTileKey => '调性';
+
+  @override
+  String inspectorTileMidiClips(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '个 MIDI 片段',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTileMarkers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '个标记',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorMarkerRegions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个区域',
+      zero: '没有区域',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inspectorTilePlugins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '个插件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorPluginNamesOnly => '仅名称';
+
+  @override
+  String inspectorMidiFilesMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '缺少 $count 个 .mid 文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inspectorKindBuses => '编组和效果';
+
+  @override
+  String get inspectorNotesTitle => '项目中的备注';
+
+  @override
+  String get inspectorMissingMidiTitle => '未找到的 MIDI 文件';
+
+  @override
+  String get safeCopyButton => '安全副本…';
+
+  @override
+  String get safeCopyTitle => '安全副本';
+
+  @override
+  String get safeCopyIntro =>
+      '项目的一个副本，其中你选择的插件被关闭，这样即使其中某个插件会让 DAW 崩溃或未安装，副本也能打开。在副本中它们显示为已停用：可在其插槽中重新启用或替换。原项目不会被更改。';
+
+  @override
+  String get safeCopyFilter => '筛选插件';
+
+  @override
+  String get safeCopyReading => '正在读取插件…';
+
+  @override
+  String safeCopyReadFailed(String reason) {
+    return '无法读取项目的插件：$reason';
+  }
+
+  @override
+  String safeCopyInstances(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个实例',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String safeCopyAlreadyOff(int count) {
+    return '$count 个已关闭';
+  }
+
+  @override
+  String get safeCopyAllOff => '已全部关闭';
+
+  @override
+  String safeCopyWillSwitchOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '将关闭 $count 个实例',
+      zero: '选择要关闭的插件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyWrite => '写入安全副本';
+
+  @override
+  String safeCopySwitchedOff(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已关闭 $count 个实例',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get safeCopyNextStep => '在你的 DAW 中打开副本：这些插件在其插槽中显示为已停用，可以重新启用或替换。';
+
+  @override
+  String get safeCopyNothingWritten => '这些插件都未开启，因此没有写入任何内容。';
+
+  @override
+  String get compareWith => '比较…';
+
+  @override
+  String get compareWithTitle => '选择要比较的项目';
+
+  @override
+  String get compareWithPrevious => '与上一版本比较';
+
+  @override
+  String get compareTitle => '比较';
+
+  @override
+  String get compareSwap => '交换 A 和 B';
+
+  @override
+  String get compareClose => '关闭比较';
+
+  @override
+  String get compareCopySummary => '复制摘要';
+
+  @override
+  String get compareSummaryCopied => '摘要已复制';
+
+  @override
+  String get compareExportCsv => '导出 CSV';
+
+  @override
+  String get compareExportCsvTitle => '将更改保存为 CSV';
+
+  @override
+  String compareSaved(String name) {
+    return '已保存 $name';
+  }
+
+  @override
+  String compareChangesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 处更改',
+      zero: '没有更改',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareChannelsChanged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个通道有更改',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String compareUnchanged(int count) {
+    return '$count 个未更改';
+  }
+
+  @override
+  String compareOnlyInA(int count) {
+    return '$count 个仅在 A';
+  }
+
+  @override
+  String compareOnlyInB(int count) {
+    return '$count 个仅在 B';
+  }
+
+  @override
+  String comparePluginChanges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 处插件更改',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get compareFilterLevels => '电平';
+
+  @override
+  String get compareProject => '项目';
+
+  @override
+  String get compareNoDifferences => '未发现差异';
+
+  @override
+  String compareChannelsNotRead(String daw) {
+    return '尚未读取 $daw 项目的通道：比较项目本身及其使用的插件。';
+  }
+
+  @override
+  String get compareBadgeOnlyInA => '仅在 A';
+
+  @override
+  String get compareBadgeOnlyInB => '仅在 B';
+
+  @override
+  String get compareNoneValue => '无';
+
+  @override
+  String changeTempo(String before, String after) {
+    return '速度 $before → $after BPM';
+  }
+
+  @override
+  String changeTimeSignature(String before, String after) {
+    return '拍号 $before → $after';
+  }
+
+  @override
+  String changeSampleRate(String before, String after) {
+    return '采样率 $before → $after';
+  }
+
+  @override
+  String changeBitDepth(String before, String after) {
+    return '位深度 $before → $after';
+  }
+
+  @override
+  String changeKey(String before, String after) {
+    return '调性 $before → $after';
+  }
+
+  @override
+  String changePluginAdded(String plugin) {
+    return '现在使用 $plugin';
+  }
+
+  @override
+  String changePluginRemoved(String plugin) {
+    return '不再使用 $plugin';
+  }
+
+  @override
+  String get changeChannelAdded => '已添加';
+
+  @override
+  String get changeChannelRemoved => '已删除';
+
+  @override
+  String changeRenamed(String before) {
+    return '由 $before 重命名';
+  }
+
+  @override
+  String changeKind(String before, String after) {
+    return '类型 $before → $after';
+  }
+
+  @override
+  String changeFolder(String before, String after) {
+    return '文件夹 $before → $after';
+  }
+
+  @override
+  String changeOutput(String before, String after) {
+    return '输出 $before → $after';
+  }
+
+  @override
+  String changeFader(String before, String after) {
+    return '推子 $before → $after';
+  }
+
+  @override
+  String changePan(String before, String after) {
+    return '声像 $before → $after';
+  }
+
+  @override
+  String get changeMuted => '已静音';
+
+  @override
+  String get changeUnmuted => '已取消静音';
+
+  @override
+  String get changeSoloed => '已独奏';
+
+  @override
+  String get changeUnsoloed => '已取消独奏';
+
+  @override
+  String changeEqBands(String before, String after) {
+    return '开启的 EQ 频段 $before → $after';
+  }
+
+  @override
+  String changeInstrument(String before, String after) {
+    return '乐器 $before → $after';
+  }
+
+  @override
+  String changePreset(String plugin, String before, String after) {
+    return '$plugin 预设 $before → $after';
+  }
+
+  @override
+  String changeInsertAdded(String plugin, int slot) {
+    return '$plugin 插入到插槽 $slot';
+  }
+
+  @override
+  String changeInsertRemoved(String plugin, int slot) {
+    return '$plugin 已从插槽 $slot 移除';
+  }
+
+  @override
+  String changeInsertReplaced(int slot, String before, String after) {
+    return '插槽 $slot：$before 替换为 $after';
+  }
+
+  @override
+  String changeInsertMoved(String plugin, int before, int after) {
+    return '$plugin 从插槽 $before 移到 $after';
+  }
+
+  @override
+  String changePluginOff(String plugin) {
+    return '$plugin 已关闭';
+  }
+
+  @override
+  String changePluginOn(String plugin) {
+    return '$plugin 已开启';
+  }
+
+  @override
+  String changeStripAdded(String plugin) {
+    return '通道条：已添加 $plugin';
+  }
+
+  @override
+  String changeStripRemoved(String plugin) {
+    return '通道条：已移除 $plugin';
+  }
+
+  @override
+  String changeStripReplaced(String before, String after) {
+    return '通道条：$before 替换为 $after';
+  }
+
+  @override
+  String get changeStripBypassed => '通道条已旁通';
+
+  @override
+  String get changeStripBack => '通道条已恢复';
+
+  @override
+  String changeSendAdded(String destination) {
+    return '已添加到 $destination 的发送';
+  }
+
+  @override
+  String changeSendRemoved(String destination) {
+    return '已移除到 $destination 的发送';
+  }
+
+  @override
+  String changeSendLevel(String destination, String before, String after) {
+    return '到 $destination 的发送 $before → $after';
+  }
+
+  @override
+  String changeSendOff(String destination) {
+    return '到 $destination 的发送已关闭';
+  }
+
+  @override
+  String changeSendOn(String destination) {
+    return '到 $destination 的发送已开启';
+  }
+
+  @override
+  String changeSendPre(String destination) {
+    return '到 $destination 的发送改为推子前';
+  }
+
+  @override
+  String changeSendPost(String destination) {
+    return '到 $destination 的发送改为推子后';
+  }
+
+  @override
+  String get inspectorReport => '报告';
+
+  @override
+  String get reportSaveMarkdown => '保存报告 (Markdown)…';
+
+  @override
+  String get reportSaveTracksCsv => '保存轨道列表 (CSV)…';
+
+  @override
+  String get reportSavePluginsCsv => '保存插件 (CSV)…';
+
+  @override
+  String get reportSaveTitle => '保存报告';
+
+  @override
+  String reportMadeBy(String date) {
+    return '由 DAW Project Manager 于 $date 生成';
+  }
+
+  @override
+  String get reportOverview => '概览';
+
+  @override
+  String get reportColumnChannel => '通道';
+
+  @override
+  String get reportColumnKind => '类型';
+
+  @override
+  String reportMissingFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '缺少 $count 个音频文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reportCopied => '摘要已复制';
+
+  @override
+  String get usageOpen => '整个库中的插件';
+
+  @override
+  String get usageIntro => '基于深度扫描在每个项目中读取的内容：此处不会打开任何项目文件。仅供参考——不会更改或删除任何内容。';
+
+  @override
+  String usageProjectsRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已读取 $count 个项目',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjectsUnread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个项目尚未读取——深度扫描会统计其插件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usagePluginsInUse(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '使用中的插件 $count 个',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageRareCount(int count) {
+    return '$count 个仅用于一首歌';
+  }
+
+  @override
+  String get usageFilterMostUsed => '最常用';
+
+  @override
+  String get usageFilterRare => '仅用过一次';
+
+  @override
+  String get usageHideStock => '隐藏自带插件';
+
+  @override
+  String usageSongs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 首歌',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageProjects(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个项目',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usageLastUsed(String date) {
+    return '最近使用 $date';
+  }
+
+  @override
+  String get usageShowProjects => '显示这些项目';
+
+  @override
+  String get usageCountInstances => '统计 Cubase 项目中的实例…';
+
+  @override
+  String usageInstancesFrom(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '来自 $count 个 Cubase 项目的实例和链',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get usageNothing => '尚未找到插件。深度扫描会读取每个项目使用的插件。';
+
+  @override
+  String get usageReadTitle => '读取 Cubase 项目？';
+
+  @override
+  String usageReadBody(int count, String size) {
+    return '$count 个 Cubase 项目（$size）的轨道尚未读取或之后有更改。读取会打开每个文件；云盘上的文件会先下载。';
+  }
+
+  @override
+  String get usageReadAndCount => '读取并统计';
+
+  @override
+  String get usageReadStop => '停止并统计已读取的内容';
+
+  @override
+  String filterUsesPlugin(String plugin) {
+    return '使用 $plugin';
+  }
+
+  @override
+  String get launchCheckSetting => '打开前检查项目';
+
+  @override
+  String get launchCheckSettingHint =>
+      '在 DAW 打开前，若缺少音频文件或项目采样率与工作室不同则提示。云盘上的项目或非常大的项目会直接打开，不做检查。';
+
+  @override
+  String get studioSampleRate => '我的工作室采样率';
+
+  @override
+  String get studioSampleRateNotSet => '未设置';
+
+  @override
+  String launchCheckTitle(String name) {
+    return '打开 $name 之前';
+  }
+
+  @override
+  String launchCheckMissingAudio(int count, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$total 个音频文件中缺少 $count 个',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String launchCheckSampleRate(String project, String studio) {
+    return '保存为 $project；你的工作室为 $studio';
+  }
+
+  @override
+  String get launchCheckOpenAnyway => '仍然打开';
 }
