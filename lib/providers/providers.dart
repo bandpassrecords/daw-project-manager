@@ -18,6 +18,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart'
     if (dart.library.html) 'package:window_manager/window_manager_stub.dart';
 import '../utils/app_paths.dart';
+import '../utils/screenshot_mode.dart';
 import '../utils/project_file_status.dart';
 import '../utils/mobile_utils.dart';
 import '../utils/version_stacks.dart';
@@ -5267,6 +5268,7 @@ final dpmPluginDetectedProvider = Provider<bool>((ref) {
     isDesktop: true,
     anyInstalled: installs?.isNotEmpty ?? false,
     seen: ref.watch(dpmPluginSightingProvider) != null,
+    developerTools: showDeveloperTools,
   );
 });
 

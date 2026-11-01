@@ -390,8 +390,11 @@ class DemoDataService {
       );
 
       if (hasPreview) {
-        final safeName = name.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_');
-        final previewFileName = 'demo_main_${i}_${safeName}_preview.wav';
+        // Named as the app names its own copies ("<project id>_preview.wav"):
+        // the "newer export in this folder?" check skips those, as it must —
+        // every preview here shares one folder, and each would otherwise look
+        // like a newer export of the next project's.
+        final previewFileName = '${projectId}_preview.wav';
         final previewFile = File(path.join(previewSongsPath, previewFileName));
         await previewFile.writeAsBytes(_generatePreviewWavBytes(
           frequencyHz: _previewFrequencies[i % _previewFrequencies.length],

@@ -407,6 +407,8 @@ void main() {
 
     test('never on a phone, whatever a synced sighting says', () {
       expect(dpmPluginDetected(isDesktop: false, anyInstalled: true, seen: true), isFalse);
+      expect(dpmPluginDetected(isDesktop: false, anyInstalled: false, seen: false, developerTools: true), isFalse);
+      expect(dpmPluginDetected(isDesktop: true, anyInstalled: false, seen: false, developerTools: true), isTrue);
     });
   });
 

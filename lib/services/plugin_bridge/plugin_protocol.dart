@@ -572,8 +572,16 @@ bool dpmPluginKeepsCapture(MusicProject owner, DateTime capturedAt) {
 /// seen running (where the plug-in folders can't be searched, the Flatpak,
 /// a sighting is the only sign). Never on a phone. The dashboard shows its
 /// capture buttons only then: on every project otherwise, they'd be noise.
-bool dpmPluginDetected({required bool isDesktop, required bool anyInstalled, required bool seen}) =>
-    isDesktop && (anyInstalled || seen);
+///
+/// [developerTools] (a debug build, never a release or a screenshot) counts
+/// as having it, so the testing database's captures show their buttons.
+bool dpmPluginDetected({
+  required bool isDesktop,
+  required bool anyInstalled,
+  required bool seen,
+  bool developerTools = false,
+}) =>
+    isDesktop && (anyInstalled || seen || developerTools);
 
 /// Whether any project in [projects] still plays the file at [path], as its
 /// latest capture or its preview song (a capture adopted as the preview

@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:path/path.dart' as p;
 import 'package:daw_project_manager/models/music_project.dart';
+import 'package:daw_project_manager/services/mixdown_detector_service.dart';
 import 'package:daw_project_manager/models/project_event.dart';
 import 'package:daw_project_manager/models/project_template.dart';
 import 'package:daw_project_manager/models/release.dart';
@@ -42,6 +43,28 @@ void main() {
   });
 
   group('DemoDataService.generate', () {
+    test('no preview song looks like an older export of another project', () async {
+      // Regression: every demo preview shares one folder, and the player asks
+      // that folder for a newer audio file — so each one offered another's
+      // as a "newer export" on every play.
+      final profile = await DemoDataService().generate(
+        profileRepo,
+        previewSongsPathProvider: fakePreviewSongsPath,
+        demoFilesPathProvider: fakeDemoFilesPath,
+      );
+      final projects = await Hive.openBox<MusicProject>('${profile.id}_projects');
+      final withPreview = projects.values.where((x) => x.previewSongPath != null).toList();
+      expect(withPreview.length, greaterThan(1));
+
+      for (final project in withPreview) {
+        expect(
+          MixdownDetectorService.findNewerFileInSameFolder(project.previewSongPath!),
+          isNull,
+          reason: project.customDisplayName,
+        );
+      }
+    });
+
     test('gives some projects a plugin capture, some of them beside a preview song', () async {
       final profile = await DemoDataService().generate(
         profileRepo,
