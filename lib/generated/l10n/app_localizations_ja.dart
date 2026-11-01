@@ -2609,6 +2609,16 @@ class AppLocalizationsJa extends AppLocalizations {
       'DAW Project Manager はシステムトレイに最小化されました。トレイアイコンから再表示または終了できます。';
 
   @override
+  String get trayHideIcon => 'メニューバーのアイコンを隠す';
+
+  @override
+  String get showMenuBarIcon => 'メニューバーにアイコンを表示';
+
+  @override
+  String get showMenuBarIconDescription =>
+      '画面上部のメニューバーにアプリのアイコンを表示します。オフにすると隠れます。アプリは Dock に残り、ここからアイコンを元に戻せます。';
+
+  @override
   String get trayShowWindow => 'DAW Project Manager を表示';
 
   @override

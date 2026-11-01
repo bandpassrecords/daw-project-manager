@@ -50,6 +50,7 @@ dependencies:
   intl: ^0.20.2
   trina_grid: ^2.2.1
   window_manager: ^0.5.1
+  screen_retriever: ^0.2.1
   tray_manager: ^0.5.3
   url_launcher: ^6.0.0
   xml: ^6.6.1

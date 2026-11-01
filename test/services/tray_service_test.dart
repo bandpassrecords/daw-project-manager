@@ -20,6 +20,24 @@ void main() {
     });
   });
 
+  group('menu bar icon on macOS', () {
+    test('a left click opens the menu on macOS only', () {
+      expect(TrayService.leftClickOpensMenu(isMacOS: true), isTrue);
+      expect(TrayService.leftClickOpensMenu(isMacOS: false), isFalse);
+    });
+
+    test('the icon can be hidden on macOS only', () {
+      expect(TrayService.iconCanBeHidden(isMacOS: true), isTrue);
+      expect(TrayService.iconCanBeHidden(isMacOS: false), isFalse);
+    });
+
+    test('the setting hides the icon on macOS, never elsewhere', () {
+      expect(TrayService.iconVisible(isMacOS: true, setting: false), isFalse);
+      expect(TrayService.iconVisible(isMacOS: true, setting: true), isTrue);
+      expect(TrayService.iconVisible(isMacOS: false, setting: false), isTrue);
+    });
+  });
+
   group('TrayService.init', () {
     const channel = MethodChannel('tray_manager');
 

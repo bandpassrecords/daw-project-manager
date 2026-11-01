@@ -2880,6 +2880,16 @@ class AppLocalizationsEs extends AppLocalizations {
       'DAW Project Manager se minimizó a la bandeja del sistema. Usa el icono de la bandeja para reabrirlo o salir.';
 
   @override
+  String get trayHideIcon => 'Ocultar icono de la barra de menús';
+
+  @override
+  String get showMenuBarIcon => 'Mostrar icono en la barra de menús';
+
+  @override
+  String get showMenuBarIconDescription =>
+      'Muestra el icono de la app en la barra de menús, en la parte superior de la pantalla. Desactívalo para ocultarlo: la app sigue en el Dock y puedes recuperar el icono aquí.';
+
+  @override
   String get trayShowWindow => 'Mostrar DAW Project Manager';
 
   @override

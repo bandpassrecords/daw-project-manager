@@ -1662,6 +1662,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.appearance, Icons.view_sidebar_outlined, l10n.projectDetailLayout, l10n.projectDetailLayoutSettingDescription),
         _SearchEntry(SettingsSection.appearance, Icons.graphic_eq, l10n.waveformStyle, l10n.waveformStyleSettingDescription),
         _SearchEntry(SettingsSection.appearance, Icons.equalizer, l10n.waveformChannels, l10n.waveformChannelsSettingDescription),
+        if (Platform.isMacOS)
+          _SearchEntry(SettingsSection.appearance, Icons.menu_open_outlined, l10n.showMenuBarIcon, l10n.showMenuBarIconDescription),
         _SearchEntry(SettingsSection.appearance, Icons.tab_outlined, l10n.customizeTabs, l10n.customizeTabsDescription),
         _SearchEntry(SettingsSection.appearance, Icons.view_sidebar_outlined, l10n.tabPosition, null),
         _SearchEntry(SettingsSection.appearance, Icons.event_busy_outlined, l10n.hideDatesInNames, l10n.hideDatesInNamesDescription),
@@ -4173,6 +4175,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
         ),
+        // The menu bar icon: macOS only, where the Dock still leads back in.
+        if (Platform.isMacOS) ...[
+          const SizedBox(height: 12),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SwitchListTile(
+                value: ref.watch(showMenuBarIconProvider),
+                onChanged: (v) =>
+                    ref.read(showMenuBarIconProvider.notifier).set(v),
+                secondary: const Icon(Icons.menu_open_outlined),
+                title: Text(l10n.showMenuBarIcon),
+                subtitle: Text(l10n.showMenuBarIconDescription,
+                    style: Theme.of(context).textTheme.bodySmall),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: 12),
         // Project tags (#109) — off by default; see TagsEnabledNotifier.
         Card(

@@ -1816,6 +1816,9 @@
   "quit": "Выйти",
   "trayNoticeTitle": "Продолжает работать в фоне",
   "trayNoticeBody": "DAW Project Manager свёрнут в системный трей. Используйте значок в трее, чтобы открыть приложение снова или выйти.",
+  "trayHideIcon": "Скрыть значок в строке меню",
+  "showMenuBarIcon": "Показывать значок в строке меню",
+  "showMenuBarIconDescription": "Показывает значок приложения в строке меню вверху экрана. Отключите, чтобы скрыть: приложение останется в Dock, а вернуть значок можно здесь.",
   "trayShowWindow": "Показать DAW Project Manager",
   "trayLastBackup": "Последнее резервное копирование: {when}",
   "@trayLastBackup": {

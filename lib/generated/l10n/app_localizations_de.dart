@@ -2854,6 +2854,16 @@ class AppLocalizationsDe extends AppLocalizations {
       'DAW Project Manager wurde in die Taskleiste minimiert. Über das Taskleistensymbol kannst du die App wieder öffnen oder beenden.';
 
   @override
+  String get trayHideIcon => 'Menüleistensymbol ausblenden';
+
+  @override
+  String get showMenuBarIcon => 'Symbol in der Menüleiste anzeigen';
+
+  @override
+  String get showMenuBarIconDescription =>
+      'Zeigt das Symbol der App in der Menüleiste oben am Bildschirm. Zum Ausblenden deaktivieren — die App bleibt im Dock, und hier lässt sich das Symbol wieder einblenden.';
+
+  @override
   String get trayShowWindow => 'DAW Project Manager anzeigen';
 
   @override

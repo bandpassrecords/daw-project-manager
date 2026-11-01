@@ -4486,6 +4486,24 @@ abstract class AppLocalizations {
   /// **'DAW Project Manager was minimized to the system tray. Use the tray icon to reopen or quit it.'**
   String get trayNoticeBody;
 
+  /// macOS menu bar icon menu item that hides the icon
+  ///
+  /// In en, this message translates to:
+  /// **'Hide menu bar icon'**
+  String get trayHideIcon;
+
+  /// Settings > Appearance switch for the macOS menu bar icon
+  ///
+  /// In en, this message translates to:
+  /// **'Show menu bar icon'**
+  String get showMenuBarIcon;
+
+  /// Explains the menu bar icon switch
+  ///
+  /// In en, this message translates to:
+  /// **'Show the app\'s icon in the menu bar at the top of the screen. Turn it off to hide it — the app stays in the Dock, and you can bring the icon back here.'**
+  String get showMenuBarIconDescription;
+
   /// No description provided for @trayShowWindow.
   ///
   /// In en, this message translates to:

@@ -15,6 +15,8 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:window_manager/window_manager.dart'
+    if (dart.library.html) 'package:window_manager/window_manager_stub.dart';
 import '../utils/app_paths.dart';
 import '../utils/project_file_status.dart';
 import '../utils/mobile_utils.dart';
@@ -2093,6 +2095,63 @@ class CloseToTrayNotifier extends Notifier<bool> {
 final closeToTrayProvider = NotifierProvider<CloseToTrayNotifier, bool>(() {
   return CloseToTrayNotifier();
 });
+
+/// Whether the window is in full screen (the green button on macOS). Its
+/// traffic lights are gone then, so what was kept clear of them moves back to
+/// the window's edge.
+class WindowFullScreenNotifier extends Notifier<bool> with WindowListener {
+  @override
+  bool build() {
+    if (kIsWeb || MobileUtils.isMobile()) return false;
+    windowManager.addListener(this);
+    ref.onDispose(() => windowManager.removeListener(this));
+    windowManager.isFullScreen().then((full) {
+      if (ref.mounted) state = full;
+    }).catchError((Object _) {});
+    return false;
+  }
+
+  @override
+  void onWindowEnterFullScreen() => state = true;
+
+  @override
+  void onWindowLeaveFullScreen() => state = false;
+}
+
+final windowFullScreenProvider =
+    NotifierProvider<WindowFullScreenNotifier, bool>(
+        WindowFullScreenNotifier.new);
+
+/// Whether the macOS menu bar icon is shown. Device-local, on by default. Only
+/// macOS honours it: there the Dock still leads back into the app, whereas
+/// on Windows and Linux the tray icon can be the only way back in.
+class ShowMenuBarIconNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    try {
+      final saved = Hive.box<String>('settings').get('showMenuBarIcon');
+      if (saved != null) return saved == 'true';
+    } catch (e) {
+      if (kDebugMode) print('Failed to load showMenuBarIcon: $e');
+    }
+    return true;
+  }
+
+  Future<void> set(bool value) async {
+    state = value;
+    try {
+      final box = Hive.isBoxOpen('settings')
+          ? Hive.box<String>('settings')
+          : await Hive.openBox<String>('settings');
+      await box.put('showMenuBarIcon', value.toString());
+    } catch (e) {
+      if (kDebugMode) print('Failed to save showMenuBarIcon: $e');
+    }
+  }
+}
+
+final showMenuBarIconProvider =
+    NotifierProvider<ShowMenuBarIconNotifier, bool>(ShowMenuBarIconNotifier.new);
 
 // ---------------------------------------------------------------------------
 // Launch at startup (desktop-only device-local preference)

@@ -1816,6 +1816,9 @@
   "quit": "終了",
   "trayNoticeTitle": "バックグラウンドで実行中です",
   "trayNoticeBody": "DAW Project Manager はシステムトレイに最小化されました。トレイアイコンから再表示または終了できます。",
+  "trayHideIcon": "メニューバーのアイコンを隠す",
+  "showMenuBarIcon": "メニューバーにアイコンを表示",
+  "showMenuBarIconDescription": "画面上部のメニューバーにアプリのアイコンを表示します。オフにすると隠れます。アプリは Dock に残り、ここからアイコンを元に戻せます。",
   "trayShowWindow": "DAW Project Manager を表示",
   "trayLastBackup": "最終バックアップ: {when}",
   "@trayLastBackup": {

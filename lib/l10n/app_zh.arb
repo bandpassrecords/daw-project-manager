@@ -1816,6 +1816,9 @@
   "quit": "退出",
   "trayNoticeTitle": "仍在后台运行",
   "trayNoticeBody": "DAW Project Manager 已最小化到系统托盘。使用托盘图标可重新打开或退出。",
+  "trayHideIcon": "隐藏菜单栏图标",
+  "showMenuBarIcon": "在菜单栏显示图标",
+  "showMenuBarIconDescription": "在屏幕顶部的菜单栏中显示应用图标。关闭后将隐藏图标——应用仍在 Dock 中，你可以在此处重新显示图标。",
   "trayShowWindow": "显示 DAW Project Manager",
   "trayLastBackup": "上次备份：{when}",
   "@trayLastBackup": {

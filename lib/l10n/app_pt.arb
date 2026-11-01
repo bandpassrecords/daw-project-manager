@@ -1840,6 +1840,9 @@
   "quit": "Sair",
   "trayNoticeTitle": "Ainda rodando em segundo plano",
   "trayNoticeBody": "O DAW Project Manager foi minimizado para a bandeja do sistema. Use o ícone da bandeja para reabrir ou sair.",
+  "trayHideIcon": "Esconder ícone da barra de menus",
+  "showMenuBarIcon": "Mostrar ícone na barra de menus",
+  "showMenuBarIconDescription": "Mostra o ícone do app na barra de menus, no topo da tela. Desative para escondê-lo — o app continua no Dock e você pode trazer o ícone de volta aqui.",
   "trayShowWindow": "Mostrar DAW Project Manager",
   "trayLastBackup": "Último backup: {when}",
   "@trayLastBackup": {

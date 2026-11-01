@@ -20,6 +20,7 @@ import 'dart:io'
         FileSystemEntity,
         FileSystemException,
         exit;
+import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -43,6 +44,7 @@ import 'services/player_volume_store.dart';
 import 'services/midi_editor_prefs_store.dart';
 import 'services/midi_tree_state_store.dart';
 import 'services/tray_service.dart';
+import 'utils/initial_window_size.dart';
 import 'services/folder_watcher_service.dart';
 import 'services/auto_start_service.dart';
 import 'services/thumbnail_toolbar_service.dart';
@@ -852,11 +854,22 @@ Future<void> _main(List<String> args) async {
     await windowManager.ensureInitialized();
 
     // Configurações da Janela
-    const initialSize = Size(1800, 1040); // Fits comfortably on 1080p screens
+    const desiredSize = Size(1800, 1040); // Fits comfortably on 1080p screens
     const minimumSize = Size(
       800,
       600,
     ); // Allow resizing to a smaller minimum size
+    // Never opens larger than the screen it opens on (a 16" MacBook Pro's
+    // default 1728x1117 is narrower than the size above).
+    Size? visibleScreen;
+    try {
+      visibleScreen = (await screenRetriever.getPrimaryDisplay()).visibleSize;
+    } catch (_) {}
+    final initialSize = fitInitialWindowSize(
+      desired: desiredSize,
+      minimum: minimumSize,
+      visible: visibleScreen,
+    );
     WindowOptions windowOptions = WindowOptions(
       size: initialSize,
       minimumSize: minimumSize,

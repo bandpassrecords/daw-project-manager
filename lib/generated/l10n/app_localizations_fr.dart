@@ -2873,6 +2873,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'DAW Project Manager a été réduit dans la barre système. Utilisez l\'icône de la barre système pour le rouvrir ou le quitter.';
 
   @override
+  String get trayHideIcon => 'Masquer l\'icône de la barre des menus';
+
+  @override
+  String get showMenuBarIcon => 'Afficher l\'icône dans la barre des menus';
+
+  @override
+  String get showMenuBarIconDescription =>
+      'Affiche l\'icône de l\'app dans la barre des menus, en haut de l\'écran. Désactivez pour la masquer — l\'app reste dans le Dock et vous pouvez la réafficher ici.';
+
+  @override
   String get trayShowWindow => 'Afficher DAW Project Manager';
 
   @override

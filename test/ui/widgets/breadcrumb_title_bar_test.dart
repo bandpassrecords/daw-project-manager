@@ -9,6 +9,13 @@ import 'package:daw_project_manager/utils/localization_delegates.dart';
 
 /// A page whose only content is a title bar, so pushing and popping routes
 /// exercises exactly the registration the real pages get for free.
+class _FullScreen extends WindowFullScreenNotifier {
+  _FullScreen(this.value);
+  final bool value;
+  @override
+  bool build() => value;
+}
+
 class _Page extends StatelessWidget {
   const _Page({required this.title, required this.showBack});
 
@@ -222,6 +229,35 @@ void main() {
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
       expect(find.text('Summer EP'), findsOneWidget);
       expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+    });
+  });
+
+  group('macOS full screen', () {
+    setUp(() => DesktopTitleBar.debugMacOSOverride = true);
+
+    test('the traffic lights\' room is given back', () {
+      expect(macTrafficLightInset(fullScreen: false), 75);
+      expect(macTrafficLightInset(fullScreen: true), 0);
+      expect(macTrafficLightStrip(fullScreen: false), 28);
+      expect(macTrafficLightStrip(fullScreen: true), 0);
+    });
+
+    Future<double> backButtonLeft(WidgetTester tester, bool fullScreen) async {
+      container.dispose();
+      container = ProviderContainer(overrides: [
+        windowFullScreenProvider.overrideWith(() => _FullScreen(fullScreen)),
+      ]);
+      await pumpApp(tester, const _Page(title: 'Summer EP', showBack: true));
+      return tester.getTopLeft(find.byIcon(Icons.arrow_back)).dx;
+    }
+
+    testWidgets('the back button moves to the edge in full screen', (
+      tester,
+    ) async {
+      final windowed = await backButtonLeft(tester, false);
+      final full = await backButtonLeft(tester, true);
+
+      expect(windowed - full, 75);
     });
   });
 

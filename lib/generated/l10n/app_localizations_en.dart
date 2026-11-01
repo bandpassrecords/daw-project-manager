@@ -2840,6 +2840,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'DAW Project Manager was minimized to the system tray. Use the tray icon to reopen or quit it.';
 
   @override
+  String get trayHideIcon => 'Hide menu bar icon';
+
+  @override
+  String get showMenuBarIcon => 'Show menu bar icon';
+
+  @override
+  String get showMenuBarIconDescription =>
+      'Show the app\'s icon in the menu bar at the top of the screen. Turn it off to hide it — the app stays in the Dock, and you can bring the icon back here.';
+
+  @override
   String get trayShowWindow => 'Show DAW Project Manager';
 
   @override

@@ -4028,7 +4028,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                 children: [
                                   // Clear macOS traffic-light buttons (float over top-left).
                                   if (Platform.isMacOS)
-                                    const SizedBox(height: 28),
+                                    SizedBox(
+                                      height: macTrafficLightStrip(
+                                        fullScreen: ref.watch(
+                                          windowFullScreenProvider,
+                                        ),
+                                      ),
+                                    ),
                                   // Collapse/expand toggle
                                   Tooltip(
                                     message: railCollapsed

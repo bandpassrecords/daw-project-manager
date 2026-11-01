@@ -2583,6 +2583,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get trayNoticeBody => 'DAW Project Manager 已最小化到系统托盘。使用托盘图标可重新打开或退出。';
 
   @override
+  String get trayHideIcon => '隐藏菜单栏图标';
+
+  @override
+  String get showMenuBarIcon => '在菜单栏显示图标';
+
+  @override
+  String get showMenuBarIconDescription =>
+      '在屏幕顶部的菜单栏中显示应用图标。关闭后将隐藏图标——应用仍在 Dock 中，你可以在此处重新显示图标。';
+
+  @override
   String get trayShowWindow => '显示 DAW Project Manager';
 
   @override

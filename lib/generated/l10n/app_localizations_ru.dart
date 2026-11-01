@@ -2796,6 +2796,16 @@ class AppLocalizationsRu extends AppLocalizations {
       'DAW Project Manager свёрнут в системный трей. Используйте значок в трее, чтобы открыть приложение снова или выйти.';
 
   @override
+  String get trayHideIcon => 'Скрыть значок в строке меню';
+
+  @override
+  String get showMenuBarIcon => 'Показывать значок в строке меню';
+
+  @override
+  String get showMenuBarIconDescription =>
+      'Показывает значок приложения в строке меню вверху экрана. Отключите, чтобы скрыть: приложение останется в Dock, а вернуть значок можно здесь.';
+
+  @override
   String get trayShowWindow => 'Показать DAW Project Manager';
 
   @override

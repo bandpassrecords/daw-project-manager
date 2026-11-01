@@ -18,6 +18,16 @@ import 'semantics_safe.dart';
 IconData windowMaximizeToggleIcon(bool isMaximized) =>
     isMaximized ? Icons.filter_none : Icons.crop_square_sharp;
 
+/// How far macOS content is kept from the window's left edge, clear of the
+/// traffic lights. In full screen they are gone, so it is none.
+double macTrafficLightInset({required bool fullScreen}) =>
+    fullScreen ? 0 : 75;
+
+/// The strip kept above macOS content for the traffic lights, none in full
+/// screen.
+double macTrafficLightStrip({required bool fullScreen}) =>
+    fullScreen ? 0 : 28;
+
 /// A cross-platform desktop title bar widget.
 ///
 /// **Windows / Linux (release mode):** Renders a full custom title bar with a
@@ -187,11 +197,15 @@ class _DesktopTitleBarState extends ConsumerState<DesktopTitleBar>
     // starts at y=0, with the traffic lights floating over the top-left area.
     // Reserve 28pt at the top so content doesn't slide under the buttons.
     if (DesktopTitleBar._isMacOS) {
+      final fullScreen = ref.watch(windowFullScreenProvider);
       if (!widget.showBack) {
         // Drag and double-click-to-maximize are handled natively in
         // MainFlutterWindow.swift via NSEvent monitors — no Flutter
         // gesture detection needed here.
-        return const SizedBox(height: 28, width: double.infinity);
+        return SizedBox(
+          height: macTrafficLightStrip(fullScreen: fullScreen),
+          width: double.infinity,
+        );
       }
       return Container(
         decoration: BoxDecoration(
@@ -203,8 +217,9 @@ class _DesktopTitleBarState extends ConsumerState<DesktopTitleBar>
         height: 40,
         child: Row(
           children: [
-            // Reserve space for macOS traffic lights (~75pt from left edge).
-            const SizedBox(width: 75),
+            // Reserve space for macOS traffic lights (~75pt from left edge);
+            // in full screen they are gone and the bar starts at the edge.
+            SizedBox(width: macTrafficLightInset(fullScreen: fullScreen)),
             IconButton(
               icon: Icon(
                 Icons.arrow_back,

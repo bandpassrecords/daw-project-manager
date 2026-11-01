@@ -23,22 +23,36 @@ class TrayService with TrayListener {
   final GoogleDriveSyncService _syncService;
 
   bool _initialized = false;
+  bool _iconShown = false;
   StreamSubscription<bool>? _authStateSubscription;
+  ProviderSubscription<bool>? _iconVisibilitySubscription;
+
+  /// Left click opens the menu on macOS, as a menu bar item does everywhere
+  /// else there; Windows and Linux keep it for bringing the window back.
+  static bool leftClickOpensMenu({required bool isMacOS}) => isMacOS;
+
+  /// Only macOS can hide the icon (the Dock still leads back into the app).
+  static bool iconCanBeHidden({required bool isMacOS}) => isMacOS;
+
+  /// Whether the icon should be on screen for this setting.
+  static bool iconVisible({required bool isMacOS, required bool setting}) =>
+      !iconCanBeHidden(isMacOS: isMacOS) || setting;
 
   Future<void> init() async {
     if (_initialized) return;
     _initialized = true;
     trayManager.addListener(this);
-    await trayManager.setIcon(Platform.isWindows ? 'app_icon.ico' : 'app_icon.png');
+    if (iconVisible(
+        isMacOS: Platform.isMacOS,
+        setting: _container.read(showMenuBarIconProvider))) {
+      await _showIcon();
+    }
     // tray_manager's Linux plugin only implements destroy/setIcon/setTitle/
     // setContextMenu — setToolTip isn't handled there and throws
     // MissingPluginException. Left unguarded, that used to abort init()
     // before the postFrameCallback below was ever registered, so the tray
     // icon appeared (setIcon had already succeeded) but never got a context
     // menu attached — every click, left or right, did nothing.
-    try {
-      await trayManager.setToolTip('DAW Project Manager');
-    } catch (_) {}
     // Localized labels need a BuildContext, which isn't ready until the
     // first frame — build the real menu right after that.
     WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_rebuildMenu()));
@@ -46,6 +60,33 @@ class TrayService with TrayListener {
     // the sign-in UI uses, so it doesn't see sign-in/out unless notified.
     _authStateSubscription =
         GoogleDriveSyncService.authStateStream.listen(_handleAuthStateChanged);
+    _iconVisibilitySubscription = _container.listen<bool>(
+      showMenuBarIconProvider,
+      (_, _) => unawaited(_applyIconVisibility()),
+    );
+  }
+
+  Future<void> _showIcon() async {
+    await trayManager.setIcon(Platform.isWindows ? 'app_icon.ico' : 'app_icon.png');
+    try {
+      await trayManager.setToolTip('DAW Project Manager');
+    } catch (_) {}
+    _iconShown = true;
+  }
+
+  Future<void> _applyIconVisibility() async {
+    final visible = iconVisible(
+      isMacOS: Platform.isMacOS,
+      setting: _container.read(showMenuBarIconProvider),
+    );
+    if (visible == _iconShown) return;
+    if (visible) {
+      await _showIcon();
+      await _rebuildMenu();
+    } else {
+      await trayManager.destroy();
+      _iconShown = false;
+    }
   }
 
   Future<void> _handleAuthStateChanged(bool signedIn) async {
@@ -118,6 +159,11 @@ class TrayService with TrayListener {
       ));
     }
 
+    if (iconCanBeHidden(isMacOS: Platform.isMacOS)) {
+      items.add(MenuItem.separator());
+      items.add(MenuItem(key: 'hide_icon', label: l10n.trayHideIcon));
+    }
+
     items.add(MenuItem.separator());
     items.add(MenuItem(key: 'quit', label: l10n.menuQuit));
 
@@ -145,11 +191,17 @@ class TrayService with TrayListener {
 
   @override
   void onTrayIconMouseDown() {
-    unawaited(_showWindow());
+    if (leftClickOpensMenu(isMacOS: Platform.isMacOS)) {
+      _popUpMenu();
+    } else {
+      unawaited(_showWindow());
+    }
   }
 
   @override
-  void onTrayIconRightMouseDown() {
+  void onTrayIconRightMouseDown() => _popUpMenu();
+
+  void _popUpMenu() {
     unawaited(_rebuildMenu().then((_) => trayManager.popUpContextMenu()));
   }
 
@@ -170,6 +222,9 @@ class TrayService with TrayListener {
           notifier.pause();
         }
         break;
+      case 'hide_icon':
+        unawaited(_container.read(showMenuBarIconProvider.notifier).set(false));
+        break;
       case 'quit':
         unawaited(quitApp());
         break;
@@ -179,6 +234,8 @@ class TrayService with TrayListener {
   Future<void> dispose() async {
     await _authStateSubscription?.cancel();
     _authStateSubscription = null;
+    _iconVisibilitySubscription?.close();
+    _iconVisibilitySubscription = null;
     trayManager.removeListener(this);
   }
 }

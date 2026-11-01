@@ -1816,6 +1816,9 @@
   "quit": "Quitter",
   "trayNoticeTitle": "Toujours en cours d'exécution en arrière-plan",
   "trayNoticeBody": "DAW Project Manager a été réduit dans la barre système. Utilisez l'icône de la barre système pour le rouvrir ou le quitter.",
+  "trayHideIcon": "Masquer l'icône de la barre des menus",
+  "showMenuBarIcon": "Afficher l'icône dans la barre des menus",
+  "showMenuBarIconDescription": "Affiche l'icône de l'app dans la barre des menus, en haut de l'écran. Désactivez pour la masquer — l'app reste dans le Dock et vous pouvez la réafficher ici.",
   "trayShowWindow": "Afficher DAW Project Manager",
   "trayLastBackup": "Dernière sauvegarde : {when}",
   "@trayLastBackup": {
