@@ -42,6 +42,32 @@ void main() {
   });
 
   group('DemoDataService.generate', () {
+    test('gives some projects a plugin capture, some of them beside a preview song', () async {
+      final profile = await DemoDataService().generate(
+        profileRepo,
+        previewSongsPathProvider: fakePreviewSongsPath,
+        demoFilesPathProvider: fakeDemoFilesPath,
+      );
+      final projects = await Hive.openBox<MusicProject>('${profile.id}_projects');
+
+      final captured = projects.values.where((x) => x.latestCapture != null).toList();
+      expect(captured, isNotEmpty);
+      for (final project in captured) {
+        final capture = project.latestCapture!;
+        expect(File(capture.path).existsSync(), isTrue);
+        expect(
+          p.isWithin(p.join(tempDir.path, 'previews', 'plugin', project.id), capture.path),
+          isTrue,
+        );
+        expect(capture.path, isNot(project.previewSongPath));
+      }
+      expect(
+        captured.where((x) => x.previewSongPath != null),
+        isNotEmpty,
+        reason: 'a project needs both, or there is nothing to choose between',
+      );
+    });
+
     test('creates a profile named "Demo — Screenshots"', () async {
       final profile = await DemoDataService().generate(
         profileRepo,
@@ -407,6 +433,24 @@ void main() {
       expect(profileRepo.getAllProfiles().length, 1);
       final projects = await Hive.openBox<MusicProject>('${demoProfile.id}_projects');
       expect(projects, isEmpty);
+    });
+
+    test('removes the plugin captures it generated, folder and all', () async {
+      await profileRepo.createProfile('Real Profile');
+      await DemoDataService().generate(
+        profileRepo,
+        previewSongsPathProvider: fakePreviewSongsPath,
+        demoFilesPathProvider: fakeDemoFilesPath,
+      );
+      final captureDir = Directory(p.join(tempDir.path, 'previews', 'plugin'));
+      expect(captureDir.existsSync(), isTrue);
+
+      await DemoDataService().remove(profileRepo, demoFilesPathProvider: fakeDemoFilesPath);
+
+      expect(
+        captureDir.existsSync() ? captureDir.listSync(recursive: true).whereType<File>() : <File>[],
+        isEmpty,
+      );
     });
 
     test('deletes generated preview audio files from disk', () async {

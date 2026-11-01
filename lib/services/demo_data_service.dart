@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 import '../models/ignored_path.dart';
 import '../models/music_project.dart';
 import '../models/playlist.dart';
+import '../models/plugin_capture.dart';
 import '../models/profile.dart';
 import '../models/part_template.dart';
 import '../models/project_event.dart';
@@ -22,6 +23,7 @@ import '../models/todo_item.dart';
 import '../models/todo_template.dart';
 import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
+import '../services/plugin_bridge/plugin_protocol.dart' show dpmPluginPreviewFolderName;
 import '../utils/app_paths.dart';
 
 class _DawSpec {
@@ -400,6 +402,31 @@ class DemoDataService {
         );
       }
 
+      // Every third project also has a take captured by the DAW plugin, in its
+      // own slot — so projects 0, 6, 12… have both a preview song and a
+      // capture to choose between, and the others in this third only a capture.
+      if (i % 3 == 0) {
+        final captureFile = File(path.join(
+          previewSongsPath,
+          dpmPluginPreviewFolderName,
+          projectId,
+          'demo_capture_$i.wav',
+        ));
+        await captureFile.parent.create(recursive: true);
+        const captureSeconds = 4;
+        await captureFile.writeAsBytes(_generatePreviewWavBytes(
+          frequencyHz: _previewFrequencies[(i + 3) % _previewFrequencies.length],
+          durationSeconds: captureSeconds,
+        ));
+        project = project.copyWith(
+          latestCapture: PluginCapture(
+            path: captureFile.path,
+            capturedAt: updatedAt,
+            durationSeconds: captureSeconds.toDouble(),
+          ),
+        );
+      }
+
       await repo.projectsBox.put(projectId, project);
       projects.add(project);
 
@@ -688,6 +715,21 @@ class DemoDataService {
               // Non-critical — leftover preview files are harmless.
             }
           }
+        }
+      }
+
+      // Plugin captures live in a folder per project under the preview songs.
+      for (final project in repo.projectsBox.values) {
+        final capture = project.latestCapture?.path;
+        if (capture == null || capture.isEmpty) continue;
+        try {
+          final folder = File(capture).parent;
+          if (path.basename(path.dirname(folder.path)) == dpmPluginPreviewFolderName &&
+              await folder.exists()) {
+            await folder.delete(recursive: true);
+          }
+        } catch (_) {
+          // Non-critical — leftover capture files are harmless.
         }
       }
 
