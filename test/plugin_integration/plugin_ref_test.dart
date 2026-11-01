@@ -12,7 +12,8 @@ void main() {
     final ref = text.trim();
 
     expect(ref, matches(RegExp(r'^(v\d+\.\d+\.\d+|[0-9a-f]{40})$')));
-    expect(text, ref + '\n', reason: 'one line, nothing around it');
+    // A Windows checkout may turn the line ending into CRLF.
+    expect(text.replaceAll('\r\n', '\n'), '$ref\n', reason: 'one line, nothing around it');
   });
 
   test('the workflow that moves the pin is there, and release.yml reads the file', () {
