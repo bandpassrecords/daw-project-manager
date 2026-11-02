@@ -146,6 +146,11 @@ dev_dependencies:
   share_plus_platform_interface: any
 dependency_overrides:
   yaml: ^3.0.0
+  # image 4.11 says it needs archive ^4.0.9 but calls ZLibDecoder.decodeLazy,
+  # which archive 4.0.9 lacks (png_decoder.dart fails to compile). pdf 3.12
+  # holds archive below 4.1.0, so image stays below 4.11 until pdf allows
+  # a newer archive.
+  image: ">=4.8.0 <4.11.0"
   # super_native_extensions 0.9.1 (via super_drag_and_drop) caps
   # device_info_plus below 12, but share_plus 13 needs win32 6, and so does
   # every device_info_plus that builds with Android's built-in Kotlin (13.2+).
