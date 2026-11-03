@@ -101,6 +101,18 @@ failures and retries, reporting as you go.
     `git push bp main` before step 2. The release run's `plugin_integration`
     job is the check (step 6 if it fails).
 
+- **Flathub heads-up.** Tell the user up front whether this release will need
+  a hand-made Flathub PR (see "Afterwards"): it will if `pubspec.lock`,
+  `pubspec.yaml` dependencies or the pinned Flutter version changed since the
+  last tag.
+  ```
+  git diff <last-tag>...main --stat -- pubspec.lock pubspec.yaml flatpak/
+  ```
+  - Any output: expect `flathub_sources.py` to exit 1 after the run, and say
+    so now, so it isn't a surprise. The dependency upgrade of 2026-11 (PR #237)
+    changed 100+ packages, for example.
+  - No output: the bot's PR will most likely be enough.
+
 ## 2. Notes (checkpoint: user approval)
 
 Collect what changed since the last tag:
@@ -272,7 +284,10 @@ release is done.
 
 ## Afterwards
 
-- **Flathub.** The flatpak-external-data-checker bot opens a PR on
+- **Flathub (required: the release isn't done until this is checked).** Use
+  the `flatpak-generated-sources` artifact of the **tag's** run, never a PR's
+  or `main`'s: only the tag's run has the files Flathub will build. The
+  flatpak-external-data-checker bot opens a PR on
   `flathub/com.bandpassrecords.dpm` that bumps only `tag:`/`commit:`. That
   builds only while Flathub's manifest and `generated/` still match this
   release's. A dependency or Flutter upgrade breaks it: 3.0.0's bot PR
