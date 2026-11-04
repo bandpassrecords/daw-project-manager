@@ -415,6 +415,7 @@ class _TitleOrTrail extends ConsumerWidget {
             else
               _CrumbLink(
                 label: _crumbLabel(context, trail[i]),
+                icon: trail[i].isRoot ? Icons.home_outlined : null,
                 fontSize: fontSize,
                 restingColor: muted,
                 hoverColor: color,
@@ -448,9 +449,14 @@ class _CrumbLink extends StatefulWidget {
     required this.restingColor,
     required this.hoverColor,
     required this.onTap,
+    this.icon,
   });
 
   final String label;
+
+  /// Drawn before the label — the house on the trail's first crumb, so the
+  /// way back to the start reads as one without hovering over it.
+  final IconData? icon;
   final double fontSize;
   final Color? restingColor;
   final Color? hoverColor;
@@ -488,9 +494,18 @@ class _CrumbLinkState extends State<_CrumbLink> {
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Text(
-              widget.label,
-              style: TextStyle(color: color, fontSize: widget.fontSize),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.icon != null) ...[
+                  Icon(widget.icon, size: widget.fontSize + 2, color: color),
+                  const SizedBox(width: 4),
+                ],
+                Text(
+                  widget.label,
+                  style: TextStyle(color: color, fontSize: widget.fontSize),
+                ),
+              ],
             ),
           ),
         ),

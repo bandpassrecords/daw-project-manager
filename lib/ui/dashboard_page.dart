@@ -4028,14 +4028,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                               leading: Column(
                                 children: [
                                   // Clear macOS traffic-light buttons (float over top-left).
-                                  if (Platform.isMacOS)
-                                    SizedBox(
-                                      height: macTrafficLightStrip(
-                                        fullScreen: ref.watch(
-                                          windowFullScreenProvider,
-                                        ),
-                                      ),
-                                    ),
+                                  // This is the dashboard's title bar, drawn as just that
+                                  // strip on macOS: it is also what registers the root of
+                                  // the breadcrumb trail. Without one mounted, pages opened
+                                  // from here had no "Home" to go back to.
+                                  if (Platform.isMacOS) titleBar,
                                   // Collapse/expand toggle
                                   Tooltip(
                                     message: railCollapsed

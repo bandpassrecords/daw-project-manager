@@ -185,6 +185,38 @@ void main() {
     expect(labels(), ['Home']);
   });
 
+  testWidgets('the way back to the start carries a house, no other crumb does', (
+    tester,
+  ) async {
+    late BuildContext ctx;
+    await pumpApp(
+      tester,
+      Builder(
+        builder: (context) {
+          ctx = context;
+          return const _Page(title: 'Home', showBack: false);
+        },
+      ),
+    );
+    // A trail of one is the plain title: nothing to go back to, no house.
+    expect(find.byIcon(Icons.home_outlined), findsNothing);
+
+    for (final title in ['Summer EP', 'Parts']) {
+      Navigator.of(ctx).push(
+        MaterialPageRoute(
+          builder: (_) => _Page(title: title, showBack: true),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.home_outlined));
+    await tester.pumpAndSettle();
+    expect(labels(), ['Home'], reason: 'the house unwinds every page at once');
+  });
+
   testWidgets('a page renamed while open updates its crumb in place', (
     tester,
   ) async {
