@@ -45,7 +45,6 @@ dependencies:
   # (lib/utils/save_file_dialog.dart, desktop only).
   file_selector: ^1.1.0
   path: ^1.9.0
-  data_table_2: ^2.5.15
   uuid: ^4.5.1
   intl: ^0.20.2
   trina_grid: ^2.2.1
