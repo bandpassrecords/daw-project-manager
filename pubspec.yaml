@@ -70,7 +70,7 @@ dependencies:
   xdg_desktop_portal: ^0.1.14
   google_sign_in: ^7.2.0
   google_sign_in_platform_interface: ^3.1.0
-  googleapis: ^16.0.0
+  googleapis: ^17.0.0
   googleapis_auth: ^2.0.0
   http: ^1.2.2
   oauth2: ^2.0.3
