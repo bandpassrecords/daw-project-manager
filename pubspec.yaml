@@ -56,7 +56,7 @@ dependencies:
   path_provider: ^2.1.1
   archive: ^4.0.7
   audioplayers: ^6.8.1
-  just_audio: ^0.9.42
+  just_audio: ^0.10.6
   just_audio_background: ^0.0.1-beta.12
   audio_service: ^0.18.15
   desktop_drop: ^0.8.4
