@@ -202,10 +202,10 @@ class _DesktopTitleBarState extends ConsumerState<DesktopTitleBar>
         // Drag and double-click-to-maximize are handled natively in
         // MainFlutterWindow.swift via NSEvent monitors — no Flutter
         // gesture detection needed here.
-        return SizedBox(
-          height: macTrafficLightStrip(fullScreen: fullScreen),
-          width: double.infinity,
-        );
+        // No width: it draws nothing, and an infinite one breaks any parent
+        // that offers unbounded width (the dashboard's navigation rail
+        // leading). In a column it is as wide as it needs to be — nothing.
+        return SizedBox(height: macTrafficLightStrip(fullScreen: fullScreen));
       }
       return Container(
         decoration: BoxDecoration(

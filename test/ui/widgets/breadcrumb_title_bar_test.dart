@@ -238,6 +238,40 @@ void main() {
       expect(labels(), ['Home'], reason: "it is still the trail's root");
     });
 
+    testWidgets('the root bar fits where the width is unbounded', (
+      tester,
+    ) async {
+      // The dashboard puts it in a NavigationRail's leading, which a Row
+      // hands unbounded width. An infinitely wide strip threw there.
+      await pumpApp(
+        tester,
+        Scaffold(
+          body: Row(
+            children: [
+              NavigationRail(
+                selectedIndex: 0,
+                leading: const DesktopTitleBar(title: 'Home'),
+                destinations: const [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home),
+                    label: Text('A'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.star),
+                    label: Text('B'),
+                  ),
+                ],
+              ),
+              const Expanded(child: SizedBox()),
+            ],
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(labels(), ['Home'], reason: 'and it still registers the root');
+    });
+
     testWidgets('a pushed page shows its back button and the trail', (
       tester,
     ) async {
