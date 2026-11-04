@@ -44,6 +44,7 @@ import '../services/dock_menu_service.dart';
 import '../utils/daw_logo.dart';
 import '../utils/deep_scan.dart';
 import '../utils/grid_current_cell_parking.dart';
+import '../utils/rail_resize.dart';
 import '../utils/library_projects.dart';
 import '../utils/empty_projects_view.dart';
 import '../utils/mobile_utils.dart';
@@ -4565,7 +4566,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                             ),
                             // Drag handle to resize the rail
                             MouseRegion(
-                              cursor: SystemMouseCursors.resizeColumn,
+                              cursor: railResizeCursor(collapsed: railCollapsed),
                               child: GestureDetector(
                                 onHorizontalDragUpdate: railCollapsed
                                     ? null
