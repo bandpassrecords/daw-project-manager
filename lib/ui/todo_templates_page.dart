@@ -1,56 +1,12 @@
-import 'dart:io';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
-import 'package:window_manager/window_manager.dart' if (dart.library.html) 'package:window_manager/window_manager_stub.dart';
 import '../models/todo_template.dart';
 import '../providers/providers.dart';
 import '../generated/l10n/app_localizations.dart';
+import '../utils/mobile_utils.dart';
+import 'widgets/desktop_title_bar.dart';
 import 'app_snack_bar.dart';
-
-// Window control buttons for desktop platforms
-class _WindowButtons extends StatelessWidget {
-  const _WindowButtons();
-
-  void _toggleMaximize() async {
-    if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
-      if (await windowManager.isMaximized()) {
-        windowManager.restore();
-      } else {
-        windowManager.maximize();
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Only show on Windows/Linux (macOS has native traffic lights)
-    if (kIsWeb || (!Platform.isWindows && !Platform.isLinux)) {
-      return const SizedBox.shrink();
-    }
-
-    return Row(
-      children: [
-        // Minimize
-        IconButton(
-          icon: Icon(Icons.minimize, size: 18, color: Theme.of(context).textTheme.bodyMedium?.color),
-          onPressed: () => windowManager.minimize(),
-        ),
-        // Maximize/Restore
-        IconButton(
-          icon: Icon(Icons.crop_square_sharp, size: 18, color: Theme.of(context).textTheme.bodyMedium?.color),
-          onPressed: _toggleMaximize,
-        ),
-        // Close
-        IconButton(
-          icon: Icon(Icons.close, size: 18, color: Theme.of(context).textTheme.bodyMedium?.color),
-          onPressed: () => windowManager.close(),
-        ),
-      ],
-    );
-  }
-}
 
 class TodoTemplatesPage extends ConsumerStatefulWidget {
   const TodoTemplatesPage({super.key});
@@ -102,11 +58,15 @@ class _TodoTemplatesPageState extends ConsumerState<TodoTemplatesPage> {
             onPressed: () {
               final name = nameController.text.trim();
               final itemsText = itemsController.text.trim();
-              
+
               if (name.isEmpty || itemsText.isEmpty) {
                 ScaffoldMessenger.of(context).showAppSnackBar(
                   SnackBar(
-                    content: Text(AppLocalizations.of(context)!.templateNameAndItemsRequired),
+                    content: Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.templateNameAndItemsRequired,
+                    ),
                   ),
                 );
                 return;
@@ -121,7 +81,9 @@ class _TodoTemplatesPageState extends ConsumerState<TodoTemplatesPage> {
               if (items.isEmpty) {
                 ScaffoldMessenger.of(context).showAppSnackBar(
                   SnackBar(
-                    content: Text(AppLocalizations.of(context)!.templateItemsRequired),
+                    content: Text(
+                      AppLocalizations.of(context)!.templateItemsRequired,
+                    ),
                   ),
                 );
                 return;
@@ -135,7 +97,9 @@ class _TodoTemplatesPageState extends ConsumerState<TodoTemplatesPage> {
                 updatedAt: DateTime.now(),
               );
 
-              ref.read(todoTemplatesNotifierProvider.notifier).addTemplate(template);
+              ref
+                  .read(todoTemplatesNotifierProvider.notifier)
+                  .addTemplate(template);
               Navigator.pop(dialogContext);
 
               ScaffoldMessenger.of(context).showAppSnackBar(
@@ -153,7 +117,9 @@ class _TodoTemplatesPageState extends ConsumerState<TodoTemplatesPage> {
 
   Future<void> _editTemplate(TodoTemplate template) async {
     final nameController = TextEditingController(text: template.name);
-    final itemsController = TextEditingController(text: template.items.join('\n'));
+    final itemsController = TextEditingController(
+      text: template.items.join('\n'),
+    );
 
     await showDialog(
       context: context,
@@ -190,11 +156,15 @@ class _TodoTemplatesPageState extends ConsumerState<TodoTemplatesPage> {
             onPressed: () {
               final name = nameController.text.trim();
               final itemsText = itemsController.text.trim();
-              
+
               if (name.isEmpty || itemsText.isEmpty) {
                 ScaffoldMessenger.of(context).showAppSnackBar(
                   SnackBar(
-                    content: Text(AppLocalizations.of(context)!.templateNameAndItemsRequired),
+                    content: Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.templateNameAndItemsRequired,
+                    ),
                   ),
                 );
                 return;
@@ -209,7 +179,9 @@ class _TodoTemplatesPageState extends ConsumerState<TodoTemplatesPage> {
               if (items.isEmpty) {
                 ScaffoldMessenger.of(context).showAppSnackBar(
                   SnackBar(
-                    content: Text(AppLocalizations.of(context)!.templateItemsRequired),
+                    content: Text(
+                      AppLocalizations.of(context)!.templateItemsRequired,
+                    ),
                   ),
                 );
                 return;
@@ -221,7 +193,9 @@ class _TodoTemplatesPageState extends ConsumerState<TodoTemplatesPage> {
                 updatedAt: DateTime.now(),
               );
 
-              ref.read(todoTemplatesNotifierProvider.notifier).updateTemplate(updated);
+              ref
+                  .read(todoTemplatesNotifierProvider.notifier)
+                  .updateTemplate(updated);
               Navigator.pop(dialogContext);
 
               ScaffoldMessenger.of(context).showAppSnackBar(
@@ -264,7 +238,9 @@ class _TodoTemplatesPageState extends ConsumerState<TodoTemplatesPage> {
     );
 
     if (confirmed == true) {
-      ref.read(todoTemplatesNotifierProvider.notifier).deleteTemplate(template.id);
+      ref
+          .read(todoTemplatesNotifierProvider.notifier)
+          .deleteTemplate(template.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showAppSnackBar(
           SnackBar(
@@ -279,128 +255,153 @@ class _TodoTemplatesPageState extends ConsumerState<TodoTemplatesPage> {
   Widget build(BuildContext context) {
     final templatesAsync = ref.watch(todoTemplatesProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.todoTemplates),
-        actions: const [
-          _WindowButtons(),
-        ],
-      ),
-      body: templatesAsync.when(
-        data: (templates) {
-          if (templates.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.note_add,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppLocalizations.of(context)!.noTemplatesYet,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).textTheme.bodySmall?.color,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppLocalizations.of(context)!.createFirstTemplate,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            );
-          }
+    final isMobile = MobileUtils.isMobile();
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: templates.length,
-            itemBuilder: (context, index) {
-              final template = templates[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ExpansionTile(
-                  leading: const Icon(Icons.note),
-                  title: Text(template.name),
-                  subtitle: Text(
-                    AppLocalizations.of(context)!.templateItemCount(template.items.length),
-                  ),
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        _editTemplate(template);
-                      } else if (value == 'delete') {
-                        _deleteTemplate(template);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            const Icon(Icons.edit),
-                            const SizedBox(width: 8),
-                            Text(AppLocalizations.of(context)!.edit),
-                          ],
+    return Scaffold(
+      appBar: isMobile
+          ? AppBar(
+              title: Text(AppLocalizations.of(context)!.todoTemplates),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            )
+          : null,
+      body: Column(
+        children: [
+          DesktopTitleBar(
+            title: AppLocalizations.of(context)!.todoTemplates,
+            showBack: true,
+          ),
+          Expanded(
+            child: templatesAsync.when(
+              data: (templates) {
+                if (templates.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.note_add,
+                          size: 64,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.5),
                         ),
-                      ),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            const Icon(Icons.delete, color: Colors.red),
-                            const SizedBox(width: 8),
-                            Text(
-                              AppLocalizations.of(context)!.delete,
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          ],
+                        const SizedBox(height: 16),
+                        Text(
+                          AppLocalizations.of(context)!.noTemplatesYet,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall?.color,
+                              ),
                         ),
-                      ),
-                    ],
-                  ),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...template.items.asMap().entries.map((entry) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
+                        const SizedBox(height: 8),
+                        Text(
+                          AppLocalizations.of(context)!.createFirstTemplate,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: templates.length,
+                  itemBuilder: (context, index) {
+                    final template = templates[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ExpansionTile(
+                        leading: const Icon(Icons.note),
+                        title: Text(template.name),
+                        subtitle: Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.templateItemCount(template.items.length),
+                        ),
+                        trailing: PopupMenuButton<String>(
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              _editTemplate(template);
+                            } else if (value == 'delete') {
+                              _deleteTemplate(template);
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 'edit',
                               child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  const Icon(Icons.edit),
+                                  const SizedBox(width: 8),
+                                  Text(AppLocalizations.of(context)!.edit),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.delete, color: Colors.red),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    '${entry.key + 1}. ',
-                                    style: TextStyle(
-                                      color: Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Text(entry.value),
+                                    AppLocalizations.of(context)!.delete,
+                                    style: const TextStyle(color: Colors.red),
                                   ),
                                 ],
                               ),
-                            );
-                          }),
+                            ),
+                          ],
+                        ),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ...template.items.asMap().entries.map((entry) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${entry.key + 1}. ',
+                                          style: TextStyle(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Expanded(child: Text(entry.value)),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                  ],
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(
+                child: Text(
+                  AppLocalizations.of(context)!.errorLoadingTemplates,
                 ),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text(AppLocalizations.of(context)!.errorLoadingTemplates),
-        ),
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _createTemplate,

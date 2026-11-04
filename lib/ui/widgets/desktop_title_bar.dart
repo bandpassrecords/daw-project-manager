@@ -20,13 +20,11 @@ IconData windowMaximizeToggleIcon(bool isMaximized) =>
 
 /// How far macOS content is kept from the window's left edge, clear of the
 /// traffic lights. In full screen they are gone, so it is none.
-double macTrafficLightInset({required bool fullScreen}) =>
-    fullScreen ? 0 : 75;
+double macTrafficLightInset({required bool fullScreen}) => fullScreen ? 0 : 75;
 
 /// The strip kept above macOS content for the traffic lights, none in full
 /// screen.
-double macTrafficLightStrip({required bool fullScreen}) =>
-    fullScreen ? 0 : 28;
+double macTrafficLightStrip({required bool fullScreen}) => fullScreen ? 0 : 28;
 
 /// A cross-platform desktop title bar widget.
 ///
@@ -454,8 +452,7 @@ class _CrumbLink extends StatefulWidget {
 
   final String label;
 
-  /// Drawn before the label — the house on the trail's first crumb, so the
-  /// way back to the start reads as one without hovering over it.
+  /// Drawn instead of the label — the house on the trail's first crumb.
   final IconData? icon;
   final double fontSize;
   final Color? restingColor;
@@ -494,19 +491,23 @@ class _CrumbLinkState extends State<_CrumbLink> {
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (widget.icon != null) ...[
-                  Icon(widget.icon, size: widget.fontSize + 2, color: color),
-                  const SizedBox(width: 4),
-                ],
-                Text(
-                  widget.label,
-                  style: TextStyle(color: color, fontSize: widget.fontSize),
-                ),
-              ],
-            ),
+            // With an icon, the icon is the whole link (the house): the label
+            // is its tooltip and what a screen reader says.
+            child: widget.icon != null
+                ? Semantics(
+                    label: widget.label,
+                    button: true,
+                    excludeSemantics: true,
+                    child: Icon(
+                      widget.icon,
+                      size: widget.fontSize + 4,
+                      color: color,
+                    ),
+                  )
+                : Text(
+                    widget.label,
+                    style: TextStyle(color: color, fontSize: widget.fontSize),
+                  ),
           ),
         ),
       ),

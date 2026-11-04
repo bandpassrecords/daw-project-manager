@@ -179,7 +179,8 @@ void main() {
 
     // The root crumb renders as "Home" whatever the root page's own title is;
     // tapping it should unwind both pushes in one go.
-    await tester.tap(find.text('Home').last);
+    expect(find.text('Home'), findsNothing, reason: 'the house stands alone');
+    await tester.tap(find.byIcon(Icons.home_outlined));
     await tester.pumpAndSettle();
 
     expect(labels(), ['Home']);
