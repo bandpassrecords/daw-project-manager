@@ -4731,5 +4731,17 @@
   "launchCheckTitle": "{name} を開く前に",
   "launchCheckMissingAudio": "{count, plural, other{オーディオファイル {total} 件中 {count} 件が見つかりません}}",
   "launchCheckSampleRate": "{project} で保存されています。スタジオは {studio} です",
-  "launchCheckOpenAnyway": "このまま開く"
+  "launchCheckOpenAnyway": "このまま開く",
+  "pluginPresetsTitle": "Cubaseプロジェクトからプラグインのプリセットを保存",
+  "pluginPresetsSubtitle": "各VST2プラグインが使っていたプリセットを、プラグインに読み込み直せる.fxbまたは.fxpファイルとして、プラグインごとに保存します。Sylenth1のプリセットは選択されていたプログラム名、それ以外はトラック名が付きます。独自形式で状態を保持するプラグイン(VST3、Wavesなど)はまだ保存できません。",
+  "pluginPresetsDestinationTitle": "プリセットの保存先",
+  "pluginPresetsProgressTitle": "プラグインのプリセットを保存中",
+  "pluginPresetsReading": "プロジェクト {current}/{total} を読み込み中: {name}",
+  "pluginPresetsDoneTitle": "プリセットを保存しました",
+  "pluginPresetsStoppedTitle": "停止しました — 完了した分は保持されます",
+  "pluginPresetsSaved": "{count, plural, =0{新しいプリセットはありません} =1{新しいプリセットを1件保存しました} other{新しいプリセットを{count}件保存しました}}",
+  "pluginPresetsAlreadyThere": "{count, plural, =1{1件はフォルダに既にあるか、他のプロジェクトと重複していました} other{{count}件はフォルダに既にあるか、他のプロジェクトと重複していました}}",
+  "pluginPresetsUnsavable": "{count, plural, =1{1個のプラグイン} other{{count}個のプラグイン}}は、プリセットとして保存できない形式で状態を保持しています: {names}",
+  "pluginPresetsNotRead": "{count, plural, =1{1件のプロジェクトを読み込めませんでした} other{{count}件のプロジェクトを読み込めませんでした}}",
+  "pluginPresetsNoProjects": "このプロファイルにCubaseプロジェクトはありません。"
 }

@@ -9862,4 +9862,70 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get launchCheckOpenAnyway => 'Всё равно открыть';
+
+  @override
+  String get pluginPresetsTitle => 'Пресеты плагинов из ваших проектов Cubase';
+
+  @override
+  String get pluginPresetsSubtitle =>
+      'Сохраняет пресет, который использовал каждый плагин VST2, в виде файла .fxb или .fxp, который можно снова загрузить в плагин; файлы раскладываются по плагинам. Пресеты Sylenth1 называются по выбранной программе, остальные — по имени трека. Плагины, хранящие состояние в собственном формате (VST3, Waves…), пока сохранить нельзя.';
+
+  @override
+  String get pluginPresetsDestinationTitle => 'Куда сохранить пресеты';
+
+  @override
+  String get pluginPresetsProgressTitle => 'Сохранение пресетов плагинов';
+
+  @override
+  String pluginPresetsReading(int current, int total, String name) {
+    return 'Чтение проекта $current из $total: $name';
+  }
+
+  @override
+  String get pluginPresetsDoneTitle => 'Пресеты сохранены';
+
+  @override
+  String get pluginPresetsStoppedTitle => 'Остановлено — сделанное сохранено';
+
+  @override
+  String pluginPresetsSaved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Сохранено новых пресетов: $count',
+      one: 'Сохранён 1 новый пресет',
+      zero: 'Новых пресетов не сохранено',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pluginPresetsAlreadyThere(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Уже были в папке или повторялись в других проектах: $count',
+      one: '1 уже был в папке или повторялся в другом проекте',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pluginPresetsUnsavable(int count, String names) {
+    return 'Экземпляров плагинов, хранящих состояние в формате, который нельзя сохранить как пресет: $count ($names)';
+  }
+
+  @override
+  String pluginPresetsNotRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Не удалось прочитать проектов: $count',
+      one: 'Не удалось прочитать 1 проект',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pluginPresetsNoProjects => 'В этом профиле нет проектов Cubase.';
 }

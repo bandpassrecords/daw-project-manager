@@ -86,12 +86,15 @@ import 'widgets/label_credit.dart';
 import 'app_snack_bar.dart';
 import '../repository/midi_collection_store.dart';
 import '../services/midi/midi_collection_export.dart';
+import '../services/plugin_presets/preset_export.dart';
 import '../services/sample_pack/sample_locator.dart';
 import '../services/sample_pack/sample_pack_exporter.dart';
 import '../services/sample_pack/sample_pack_prefs_store.dart';
 import '../services/sample_pack/sample_pack_projects.dart';
+import 'dialogs/plugin_presets_dialogs.dart';
 import 'dialogs/sample_pack_export_dialog.dart';
 import 'midi_collection_naming.dart' show midiNamingLabelsOf;
+import 'widgets/plugin_presets_card.dart';
 import 'widgets/sample_pack_card.dart';
 import 'dialogs/root_overlap_dialog.dart';
 import 'dialogs/relocate_folder_dialog.dart';
@@ -873,6 +876,71 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         await showDialog<void>(
           context: context,
           builder: (_) => SamplePackResultDialog(
+            result: outcome,
+            onOpenFolder: () => FileLauncher.openFolder(dir),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showAppSnackBar(SnackBar(
+          content: Text(l10n.failedToExportProjectInfo(outcome.toString())),
+        ));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showAppSnackBar(
+          SnackBar(content: Text(l10n.failedToExportProjectInfo(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Saves the presets the active profile's Cubase projects used, as `.fxb`
+  /// and `.fxp` files filed by plug-in (see [exportPresets]).
+  Future<void> _exportPluginPresets() async {
+    if (_busy) return;
+    final l10n = AppLocalizations.of(context)!;
+    setState(() => _busy = true);
+    try {
+      final repo = await ref.read(repositoryProvider.future);
+      final projects = [
+        for (final project in repo.getAllProjects())
+          if (!project.isVirtual &&
+              !project.isArchived &&
+              project.fileExtension.toLowerCase() == '.cpr')
+            PresetProject(name: project.displayName, path: project.filePath),
+      ];
+      if (projects.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showAppSnackBar(
+            SnackBar(content: Text(l10n.pluginPresetsNoProjects)),
+          );
+        }
+        return;
+      }
+      final dir = await FilePicker.getDirectoryPath(
+        dialogTitle: l10n.pluginPresetsDestinationTitle,
+      );
+      if (dir == null || !mounted) return;
+
+      final outcome = await showDialog<Object?>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => PluginPresetsProgressDialog(
+          run: (onProgress, shouldStop) => exportPresets(
+            destination: dir,
+            projects: projects,
+            onProgress: onProgress,
+            shouldStop: shouldStop,
+          ),
+        ),
+      );
+      if (!mounted) return;
+      if (outcome is PresetExportResult) {
+        await showDialog<void>(
+          context: context,
+          builder: (_) => PluginPresetsResultDialog(
             result: outcome,
             onOpenFolder: () => FileLauncher.openFolder(dir),
           ),
@@ -1684,6 +1752,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         _SearchEntry(SettingsSection.experimental, Icons.piano_outlined, l10n.melodicExportTitle, l10n.melodicExportSubtitle),
         _SearchEntry(SettingsSection.experimental, Icons.insights_outlined, l10n.referenceTitle, l10n.referenceSubtitle),
         _SearchEntry(SettingsSection.experimental, Icons.graphic_eq, l10n.samplePackTitle, l10n.samplePackSubtitle),
+        _SearchEntry(SettingsSection.experimental, Icons.tune, l10n.pluginPresetsTitle, l10n.pluginPresetsSubtitle),
         if (MobileUtils.isDesktop()) ...[
           _SearchEntry(SettingsSection.dawLaunchCommands, Icons.terminal_outlined, l10n.dawLaunchCommandsTabLabel, l10n.dawLaunchCommandsSectionDescription),
           _SearchEntry(SettingsSection.dawPlugin, Icons.extension_outlined, l10n.dpmPluginTitle, l10n.dpmPluginDescription),
@@ -2663,6 +2732,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         const SizedBox(height: 12),
 
         SamplePackCard(busy: _busy, onExport: _exportSamplePack),
+
+        const SizedBox(height: 12),
+
+        PluginPresetsCard(busy: _busy, onExport: _exportPluginPresets),
       ],
     );
   }

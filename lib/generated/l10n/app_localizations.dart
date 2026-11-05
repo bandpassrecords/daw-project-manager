@@ -15241,6 +15241,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open anyway'**
   String get launchCheckOpenAnyway;
+
+  /// Settings > Experimental card title
+  ///
+  /// In en, this message translates to:
+  /// **'Plug-in presets from your Cubase projects'**
+  String get pluginPresetsTitle;
+
+  /// Settings > Experimental card description
+  ///
+  /// In en, this message translates to:
+  /// **'Saves the preset each VST2 plug-in was using as a .fxb or .fxp file you can load back into the plug-in, filed by plug-in. Sylenth1 presets are named by the program that was selected; the rest by their track. Plug-ins that keep their state in their own format (VST3, Waves…) can\'t be saved yet.'**
+  String get pluginPresetsSubtitle;
+
+  /// Folder picker title
+  ///
+  /// In en, this message translates to:
+  /// **'Where to save the presets'**
+  String get pluginPresetsDestinationTitle;
+
+  /// Progress dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Saving plug-in presets'**
+  String get pluginPresetsProgressTitle;
+
+  /// Progress line while reading project files
+  ///
+  /// In en, this message translates to:
+  /// **'Reading project {current} of {total}: {name}'**
+  String pluginPresetsReading(int current, int total, String name);
+
+  /// Result dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Presets saved'**
+  String get pluginPresetsDoneTitle;
+
+  /// Result dialog title when the user stopped it
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped — what was done is kept'**
+  String get pluginPresetsStoppedTitle;
+
+  /// Result line: presets written
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No new presets saved} =1{1 new preset saved} other{{count} new presets saved}}'**
+  String pluginPresetsSaved(int count);
+
+  /// Result line: presets not written because they were already there
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 was already in the folder or repeated in another project} other{{count} were already in the folder or repeated in other projects}}'**
+  String pluginPresetsAlreadyThere(int count);
+
+  /// Result line: plug-ins whose state cannot be saved, with their names
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 plug-in keeps its state} other{{count} plug-ins keep their state}} in a format that can\'t be saved as a preset: {names}'**
+  String pluginPresetsUnsavable(int count, String names);
+
+  /// Result line: projects that could not be read
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 project could not be read} other{{count} projects could not be read}}'**
+  String pluginPresetsNotRead(int count);
+
+  /// Snackbar when the profile has no Cubase projects
+  ///
+  /// In en, this message translates to:
+  /// **'There are no Cubase projects in this profile.'**
+  String get pluginPresetsNoProjects;
 }
 
 class _AppLocalizationsDelegate

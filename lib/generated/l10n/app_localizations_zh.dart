@@ -9155,4 +9155,76 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get launchCheckOpenAnyway => '仍然打开';
+
+  @override
+  String get pluginPresetsTitle => '从 Cubase 项目中保存插件预设';
+
+  @override
+  String get pluginPresetsSubtitle =>
+      '将每个 VST2 插件使用的预设保存为可重新载入插件的 .fxb 或 .fxp 文件,并按插件分类。Sylenth1 的预设以所选程序命名,其余以轨道名命名。以自有格式保存状态的插件(VST3、Waves 等)暂时无法保存。';
+
+  @override
+  String get pluginPresetsDestinationTitle => '预设保存位置';
+
+  @override
+  String get pluginPresetsProgressTitle => '正在保存插件预设';
+
+  @override
+  String pluginPresetsReading(int current, int total, String name) {
+    return '正在读取第 $current/$total 个项目:$name';
+  }
+
+  @override
+  String get pluginPresetsDoneTitle => '预设已保存';
+
+  @override
+  String get pluginPresetsStoppedTitle => '已停止 — 已完成的部分会保留';
+
+  @override
+  String pluginPresetsSaved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已保存 $count 个新预设',
+      one: '已保存 1 个新预设',
+      zero: '没有保存新的预设',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pluginPresetsAlreadyThere(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个已在文件夹中,或在其他项目中重复',
+      one: '1 个已在文件夹中,或在其他项目中重复',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pluginPresetsUnsavable(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个插件',
+      one: '1 个插件',
+    );
+    return '$_temp0以无法保存为预设的格式保存状态:$names';
+  }
+
+  @override
+  String pluginPresetsNotRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 个项目无法读取',
+      one: '有 1 个项目无法读取',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pluginPresetsNoProjects => '此配置文件中没有 Cubase 项目。';
 }

@@ -103,7 +103,18 @@ class Vst2State {
     if (wrapper.getUint32(4) != 8) return null;
     final bypassed = wrapper.getUint32(12) != 0;
 
-    final inner = Uint8List.sublistView(blob, _wrapperHeader);
+    return _fromFile(
+      Uint8List.sublistView(blob, _wrapperHeader),
+      bypassed: bypassed,
+    );
+  }
+
+  /// Reads a `.fxb`/`.fxp` file as it is on disk, with no Cubase wrapper.
+  /// Bytes past the file's own end are ignored.
+  static Vst2State? parseFile(Uint8List inner) =>
+      inner.length < _commonHeader ? null : _fromFile(inner, bypassed: false);
+
+  static Vst2State? _fromFile(Uint8List inner, {required bool bypassed}) {
     final data = ByteData.sublistView(inner);
     if (_tag(inner, 0) != 'CcnK') return null;
     // `byteSize` counts everything after itself.

@@ -9253,4 +9253,76 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get launchCheckOpenAnyway => 'このまま開く';
+
+  @override
+  String get pluginPresetsTitle => 'Cubaseプロジェクトからプラグインのプリセットを保存';
+
+  @override
+  String get pluginPresetsSubtitle =>
+      '各VST2プラグインが使っていたプリセットを、プラグインに読み込み直せる.fxbまたは.fxpファイルとして、プラグインごとに保存します。Sylenth1のプリセットは選択されていたプログラム名、それ以外はトラック名が付きます。独自形式で状態を保持するプラグイン(VST3、Wavesなど)はまだ保存できません。';
+
+  @override
+  String get pluginPresetsDestinationTitle => 'プリセットの保存先';
+
+  @override
+  String get pluginPresetsProgressTitle => 'プラグインのプリセットを保存中';
+
+  @override
+  String pluginPresetsReading(int current, int total, String name) {
+    return 'プロジェクト $current/$total を読み込み中: $name';
+  }
+
+  @override
+  String get pluginPresetsDoneTitle => 'プリセットを保存しました';
+
+  @override
+  String get pluginPresetsStoppedTitle => '停止しました — 完了した分は保持されます';
+
+  @override
+  String pluginPresetsSaved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '新しいプリセットを$count件保存しました',
+      one: '新しいプリセットを1件保存しました',
+      zero: '新しいプリセットはありません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pluginPresetsAlreadyThere(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count件はフォルダに既にあるか、他のプロジェクトと重複していました',
+      one: '1件はフォルダに既にあるか、他のプロジェクトと重複していました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pluginPresetsUnsavable(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count個のプラグイン',
+      one: '1個のプラグイン',
+    );
+    return '$_temp0は、プリセットとして保存できない形式で状態を保持しています: $names';
+  }
+
+  @override
+  String pluginPresetsNotRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count件のプロジェクトを読み込めませんでした',
+      one: '1件のプロジェクトを読み込めませんでした',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pluginPresetsNoProjects => 'このプロファイルにCubaseプロジェクトはありません。';
 }

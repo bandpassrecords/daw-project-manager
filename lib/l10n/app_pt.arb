@@ -4755,5 +4755,17 @@
   "launchCheckTitle": "Antes de abrir {name}",
   "launchCheckMissingAudio": "{count, plural, one{Falta 1 dos seus {total} arquivos de áudio} other{Faltam {count} dos seus {total} arquivos de áudio}}",
   "launchCheckSampleRate": "Salvo a {project}; seu estúdio trabalha a {studio}",
-  "launchCheckOpenAnyway": "Abrir mesmo assim"
+  "launchCheckOpenAnyway": "Abrir mesmo assim",
+  "pluginPresetsTitle": "Presets de plug-ins dos seus projetos do Cubase",
+  "pluginPresetsSubtitle": "Salva o preset que cada plug-in VST2 estava usando como um arquivo .fxb ou .fxp que você pode carregar de volta no plug-in, organizado por plug-in. Os presets do Sylenth1 levam o nome do programa que estava selecionado; os demais, o nome da faixa. Plug-ins que guardam o estado em formato próprio (VST3, Waves…) ainda não podem ser salvos.",
+  "pluginPresetsDestinationTitle": "Onde salvar os presets",
+  "pluginPresetsProgressTitle": "Salvando presets de plug-ins",
+  "pluginPresetsReading": "Lendo o projeto {current} de {total}: {name}",
+  "pluginPresetsDoneTitle": "Presets salvos",
+  "pluginPresetsStoppedTitle": "Interrompido — o que foi feito foi mantido",
+  "pluginPresetsSaved": "{count, plural, =0{Nenhum preset novo salvo} =1{1 preset novo salvo} other{{count} presets novos salvos}}",
+  "pluginPresetsAlreadyThere": "{count, plural, =1{1 já estava na pasta ou se repetia em outro projeto} other{{count} já estavam na pasta ou se repetiam em outros projetos}}",
+  "pluginPresetsUnsavable": "{count, plural, =1{1 plug-in guarda o estado} other{{count} plug-ins guardam o estado}} em um formato que não pode ser salvo como preset: {names}",
+  "pluginPresetsNotRead": "{count, plural, =1{1 projeto não pôde ser lido} other{{count} projetos não puderam ser lidos}}",
+  "pluginPresetsNoProjects": "Não há projetos do Cubase neste perfil."
 }

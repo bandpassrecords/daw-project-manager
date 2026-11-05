@@ -4731,5 +4731,17 @@
   "launchCheckTitle": "Перед открытием {name}",
   "launchCheckMissingAudio": "{count, plural, one{Отсутствует {count} из {total} аудиофайлов} few{Отсутствуют {count} из {total} аудиофайлов} many{Отсутствуют {count} из {total} аудиофайлов} other{Отсутствуют {count} из {total} аудиофайлов}}",
   "launchCheckSampleRate": "Сохранён на {project}; ваша студия работает на {studio}",
-  "launchCheckOpenAnyway": "Всё равно открыть"
+  "launchCheckOpenAnyway": "Всё равно открыть",
+  "pluginPresetsTitle": "Пресеты плагинов из ваших проектов Cubase",
+  "pluginPresetsSubtitle": "Сохраняет пресет, который использовал каждый плагин VST2, в виде файла .fxb или .fxp, который можно снова загрузить в плагин; файлы раскладываются по плагинам. Пресеты Sylenth1 называются по выбранной программе, остальные — по имени трека. Плагины, хранящие состояние в собственном формате (VST3, Waves…), пока сохранить нельзя.",
+  "pluginPresetsDestinationTitle": "Куда сохранить пресеты",
+  "pluginPresetsProgressTitle": "Сохранение пресетов плагинов",
+  "pluginPresetsReading": "Чтение проекта {current} из {total}: {name}",
+  "pluginPresetsDoneTitle": "Пресеты сохранены",
+  "pluginPresetsStoppedTitle": "Остановлено — сделанное сохранено",
+  "pluginPresetsSaved": "{count, plural, =0{Новых пресетов не сохранено} =1{Сохранён 1 новый пресет} other{Сохранено новых пресетов: {count}}}",
+  "pluginPresetsAlreadyThere": "{count, plural, =1{1 уже был в папке или повторялся в другом проекте} other{Уже были в папке или повторялись в других проектах: {count}}}",
+  "pluginPresetsUnsavable": "Экземпляров плагинов, хранящих состояние в формате, который нельзя сохранить как пресет: {count} ({names})",
+  "pluginPresetsNotRead": "{count, plural, =1{Не удалось прочитать 1 проект} other{Не удалось прочитать проектов: {count}}}",
+  "pluginPresetsNoProjects": "В этом профиле нет проектов Cubase."
 }

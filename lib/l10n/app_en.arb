@@ -9861,5 +9861,87 @@
   "launchCheckOpenAnyway": "Open anyway",
   "@launchCheckOpenAnyway": {
     "description": "Button: open the project in its DAW despite the warnings"
+  },
+  "pluginPresetsTitle": "Plug-in presets from your Cubase projects",
+  "@pluginPresetsTitle": {
+    "description": "Settings > Experimental card title"
+  },
+  "pluginPresetsSubtitle": "Saves the preset each VST2 plug-in was using as a .fxb or .fxp file you can load back into the plug-in, filed by plug-in. Sylenth1 presets are named by the program that was selected; the rest by their track. Plug-ins that keep their state in their own format (VST3, Waves…) can't be saved yet.",
+  "@pluginPresetsSubtitle": {
+    "description": "Settings > Experimental card description"
+  },
+  "pluginPresetsDestinationTitle": "Where to save the presets",
+  "@pluginPresetsDestinationTitle": {
+    "description": "Folder picker title"
+  },
+  "pluginPresetsProgressTitle": "Saving plug-in presets",
+  "@pluginPresetsProgressTitle": {
+    "description": "Progress dialog title"
+  },
+  "pluginPresetsReading": "Reading project {current} of {total}: {name}",
+  "@pluginPresetsReading": {
+    "description": "Progress line while reading project files",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginPresetsDoneTitle": "Presets saved",
+  "@pluginPresetsDoneTitle": {
+    "description": "Result dialog title"
+  },
+  "pluginPresetsStoppedTitle": "Stopped — what was done is kept",
+  "@pluginPresetsStoppedTitle": {
+    "description": "Result dialog title when the user stopped it"
+  },
+  "pluginPresetsSaved": "{count, plural, =0{No new presets saved} =1{1 new preset saved} other{{count} new presets saved}}",
+  "@pluginPresetsSaved": {
+    "description": "Result line: presets written",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pluginPresetsAlreadyThere": "{count, plural, =1{1 was already in the folder or repeated in another project} other{{count} were already in the folder or repeated in other projects}}",
+  "@pluginPresetsAlreadyThere": {
+    "description": "Result line: presets not written because they were already there",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pluginPresetsUnsavable": "{count, plural, =1{1 plug-in keeps its state} other{{count} plug-ins keep their state}} in a format that can't be saved as a preset: {names}",
+  "@pluginPresetsUnsavable": {
+    "description": "Result line: plug-ins whose state cannot be saved, with their names",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginPresetsNotRead": "{count, plural, =1{1 project could not be read} other{{count} projects could not be read}}",
+  "@pluginPresetsNotRead": {
+    "description": "Result line: projects that could not be read",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pluginPresetsNoProjects": "There are no Cubase projects in this profile.",
+  "@pluginPresetsNoProjects": {
+    "description": "Snackbar when the profile has no Cubase projects"
   }
 }

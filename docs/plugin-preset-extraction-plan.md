@@ -2,7 +2,9 @@
 
 Goal: on a Cubase project's page, show which preset each VST2 plug-in instance was using (for example "Sylenth1 — *LD Axe Lead Solo PROTO*, program 35 of 512"). Let the user save it as a standard `.fxp` or `.fxb`, one instance at a time or for the whole project, ready to load straight back into the plug-in.
 
-Status: format verified against 156 real Cubase projects on one machine (Cubase SX 3 to 13). Nothing is implemented yet.
+Status: format verified against 156 real Cubase projects on one machine (Cubase SX 3 to 13).
+
+Done: steps 2 to 5 and a first version of step 6 as an Experimental card in Settings (all projects of the active profile, not a per-project section yet). Sylenth1's decoder is written from the spec below and tested on synthetic chunks only — it still needs a real Sylenth1 project in the corpus (step 1). Not done: the per-project "Presets" section on the project page, exporting one program of a bank as `.fxp`, the sample-pack option (step 7), and Waves/VST3 states (they are listed as unsavable). Correction to "What a `.cpr` holds": a blob without `VstW` is not always VST3 — Waves' VST2 plug-ins keep their own chunk.
 
 ## What a `.cpr` holds (verified)
 
