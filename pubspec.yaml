@@ -45,7 +45,6 @@ dependencies:
   # (lib/utils/save_file_dialog.dart, desktop only).
   file_selector: ^1.1.0
   path: ^1.9.0
-  data_table_2: ^2.5.15
   uuid: ^4.5.1
   intl: ^0.20.2
   trina_grid: ^2.2.1
@@ -53,11 +52,11 @@ dependencies:
   screen_retriever: ^0.2.1
   tray_manager: ^0.5.3
   url_launcher: ^6.0.0
-  xml: ^6.6.1
+  xml: ^7.0.1
   path_provider: ^2.1.1
   archive: ^4.0.7
   audioplayers: ^6.8.1
-  just_audio: ^0.9.42
+  just_audio: ^0.10.6
   just_audio_background: ^0.0.1-beta.12
   audio_service: ^0.18.15
   desktop_drop: ^0.8.4
@@ -71,7 +70,7 @@ dependencies:
   xdg_desktop_portal: ^0.1.14
   google_sign_in: ^7.2.0
   google_sign_in_platform_interface: ^3.1.0
-  googleapis: ^16.0.0
+  googleapis: ^17.0.0
   googleapis_auth: ^2.0.0
   http: ^1.2.2
   oauth2: ^2.0.3
