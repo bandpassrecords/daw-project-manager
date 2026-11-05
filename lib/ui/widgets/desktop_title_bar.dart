@@ -20,13 +20,11 @@ IconData windowMaximizeToggleIcon(bool isMaximized) =>
 
 /// How far macOS content is kept from the window's left edge, clear of the
 /// traffic lights. In full screen they are gone, so it is none.
-double macTrafficLightInset({required bool fullScreen}) =>
-    fullScreen ? 0 : 75;
+double macTrafficLightInset({required bool fullScreen}) => fullScreen ? 0 : 75;
 
 /// The strip kept above macOS content for the traffic lights, none in full
 /// screen.
-double macTrafficLightStrip({required bool fullScreen}) =>
-    fullScreen ? 0 : 28;
+double macTrafficLightStrip({required bool fullScreen}) => fullScreen ? 0 : 28;
 
 /// A cross-platform desktop title bar widget.
 ///
@@ -202,10 +200,10 @@ class _DesktopTitleBarState extends ConsumerState<DesktopTitleBar>
         // Drag and double-click-to-maximize are handled natively in
         // MainFlutterWindow.swift via NSEvent monitors — no Flutter
         // gesture detection needed here.
-        return SizedBox(
-          height: macTrafficLightStrip(fullScreen: fullScreen),
-          width: double.infinity,
-        );
+        // No width: it draws nothing, and an infinite one breaks any parent
+        // that offers unbounded width (the dashboard's navigation rail
+        // leading). In a column it is as wide as it needs to be — nothing.
+        return SizedBox(height: macTrafficLightStrip(fullScreen: fullScreen));
       }
       return Container(
         decoration: BoxDecoration(
@@ -451,6 +449,7 @@ class _CrumbLink extends StatefulWidget {
   });
 
   final String label;
+
   final double fontSize;
   final Color? restingColor;
   final Color? hoverColor;

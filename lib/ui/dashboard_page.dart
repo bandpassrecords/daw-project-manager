@@ -44,6 +44,7 @@ import '../services/dock_menu_service.dart';
 import '../utils/daw_logo.dart';
 import '../utils/deep_scan.dart';
 import '../utils/grid_current_cell_parking.dart';
+import '../utils/rail_resize.dart';
 import '../utils/library_projects.dart';
 import '../utils/empty_projects_view.dart';
 import '../utils/mobile_utils.dart';
@@ -4028,14 +4029,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                               leading: Column(
                                 children: [
                                   // Clear macOS traffic-light buttons (float over top-left).
-                                  if (Platform.isMacOS)
-                                    SizedBox(
-                                      height: macTrafficLightStrip(
-                                        fullScreen: ref.watch(
-                                          windowFullScreenProvider,
-                                        ),
-                                      ),
-                                    ),
+                                  // This is the dashboard's title bar, drawn as just that
+                                  // strip on macOS: it is also what registers the root of
+                                  // the breadcrumb trail. Without one mounted, pages opened
+                                  // from here had no "Home" to go back to.
+                                  if (Platform.isMacOS) titleBar,
                                   // Collapse/expand toggle
                                   Tooltip(
                                     message: railCollapsed
@@ -4568,7 +4566,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                             ),
                             // Drag handle to resize the rail
                             MouseRegion(
-                              cursor: SystemMouseCursors.resizeColumn,
+                              cursor: railResizeCursor(collapsed: railCollapsed),
                               child: GestureDetector(
                                 onHorizontalDragUpdate: railCollapsed
                                     ? null
