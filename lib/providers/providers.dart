@@ -1548,6 +1548,18 @@ class SyncOnStartupNotifier extends Notifier<bool> {
   /// The stored value read as a setting: anything but "false" is on.
   static bool fromStored(String? value) => value != 'false';
 
+  /// Whether the user (or a first connection) has ever settled this: with
+  /// nothing stored it is on only because that is the fallback.
+  static Future<bool> hasStoredChoice() async {
+    try {
+      await ensureHiveInitialized();
+      final box = await Hive.openBox<String>('app_settings');
+      return box.get(storageKey) != null;
+    } catch (_) {
+      return true;
+    }
+  }
+
   @override
   bool build() {
     SchedulerBinding.instance.addPostFrameCallback((_) => _load());

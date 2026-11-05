@@ -95,7 +95,47 @@ void main() {
       await tester.tap(find.text('Sync now'));
       await tester.pumpAndSettle();
       expect(choice!.syncNow, isTrue);
+      expect(choice!.keepInSync, isFalse,
+          reason: 'automatic sync is offered, not assumed');
+    });
+
+    testWidgets('automatic sync starts unchecked and is a choice to make',
+        (tester) async {
+      FirstSyncChoice? choice;
+      await pumpOpener(tester, (context) async {
+        choice = await showFirstSyncDialog(
+          context,
+          hasBackup: false,
+          offerKeepInSync: true,
+        );
+      });
+      expect(
+        tester.widget<Checkbox>(find.byType(Checkbox)).value,
+        isFalse,
+      );
+
+      await tester.tap(find.byType(Checkbox));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Sync now'));
+      await tester.pumpAndSettle();
+      expect(choice!.syncNow, isTrue);
       expect(choice!.keepInSync, isTrue);
+    });
+
+    testWidgets('"Later" with the box left alone changes nothing',
+        (tester) async {
+      FirstSyncChoice? choice;
+      await pumpOpener(tester, (context) async {
+        choice = await showFirstSyncDialog(
+          context,
+          hasBackup: false,
+          offerKeepInSync: true,
+        );
+      });
+      await tester.tap(find.text('Later'));
+      await tester.pumpAndSettle();
+      expect(choice!.syncNow, isFalse);
+      expect(choice!.keepInSync, isFalse);
     });
 
     testWidgets('says so when this device and Drive already match',

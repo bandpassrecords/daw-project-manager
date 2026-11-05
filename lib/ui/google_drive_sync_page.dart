@@ -14,6 +14,7 @@ import '../services/drive_sync_errors.dart';
 import '../models/auto_backup_interval.dart';
 import '../models/drive_sync_status.dart';
 import '../providers/providers.dart';
+import '../utils/first_connection.dart';
 import '../utils/drive_sync_format.dart';
 import '../utils/mobile_utils.dart';
 import '../generated/l10n/app_localizations.dart';
@@ -181,6 +182,16 @@ class _GoogleDriveSyncSectionState extends ConsumerState<GoogleDriveSyncSection>
       if (!mounted || !ok) return;
       await _status.refresh();
       await _loadAccount();
+      if (!mounted) return;
+      // A device that has never synced starts manual: the app opening must
+      // not upload a library nobody has looked at. Choosing to keep in sync
+      // in the dialog below turns the automatic modes on.
+      if (firstConnectionStaysManual(
+        syncedBefore: await _service.getLastBackupUploadTimestamp() != null,
+        startupChoiceStored: await SyncOnStartupNotifier.hasStoredChoice(),
+      )) {
+        await ref.read(syncOnStartupProvider.notifier).set(false);
+      }
       if (mounted) await _offerFirstSync();
     } on DesktopSignInException catch (e) {
       if (mounted) setState(() => _error = _ShownError(signInFailureSentence(_l10n, e.failure)));
@@ -269,6 +280,7 @@ class _GoogleDriveSyncSectionState extends ConsumerState<GoogleDriveSyncSection>
     if (choice == null || !mounted) return;
     if (choice.keepInSync) {
       await ref.read(autoBackupIntervalProvider.notifier).setInterval(AutoBackupInterval.hourly);
+      await ref.read(syncOnStartupProvider.notifier).set(true);
     }
     if (choice.syncNow) await _syncNow();
   }

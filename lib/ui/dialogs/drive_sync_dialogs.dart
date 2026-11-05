@@ -166,7 +166,9 @@ class _FirstSyncDialog extends StatefulWidget {
 }
 
 class _FirstSyncDialogState extends State<_FirstSyncDialog> {
-  bool _keepInSync = true;
+  // Off: connecting is manual. Automatic sync is something to ask for, not a
+  // default that starts uploading before the first sync has been looked at.
+  bool _keepInSync = false;
 
   bool get _inSync =>
       widget.hasBackup &&
