@@ -4731,5 +4731,17 @@
   "launchCheckTitle": "打开 {name} 之前",
   "launchCheckMissingAudio": "{count, plural, other{{total} 个音频文件中缺少 {count} 个}}",
   "launchCheckSampleRate": "保存为 {project}；你的工作室为 {studio}",
-  "launchCheckOpenAnyway": "仍然打开"
+  "launchCheckOpenAnyway": "仍然打开",
+  "pluginPresetsTitle": "从 Cubase 项目中保存插件预设",
+  "pluginPresetsSubtitle": "将每个 VST2 插件使用的预设保存为可重新载入插件的 .fxb 或 .fxp 文件,并按插件分类。对于 Sylenth1,保存的是只包含所选程序的音色库,并以该程序命名;其余以轨道名命名。以自有格式保存状态的插件(VST3、Waves 等)暂时无法保存。",
+  "pluginPresetsDestinationTitle": "预设保存位置",
+  "pluginPresetsProgressTitle": "正在保存插件预设",
+  "pluginPresetsReading": "正在读取第 {current}/{total} 个项目:{name}",
+  "pluginPresetsDoneTitle": "预设已保存",
+  "pluginPresetsStoppedTitle": "已停止 — 已完成的部分会保留",
+  "pluginPresetsSaved": "{count, plural, =0{没有保存新的预设} =1{已保存 1 个新预设} other{已保存 {count} 个新预设}}",
+  "pluginPresetsAlreadyThere": "{count, plural, =1{1 个已在文件夹中,或在其他项目中重复} other{{count} 个已在文件夹中,或在其他项目中重复}}",
+  "pluginPresetsUnsavable": "{count, plural, =1{1 个插件} other{{count} 个插件}}以无法保存为预设的格式保存状态:{names}",
+  "pluginPresetsNotRead": "{count, plural, =1{有 1 个项目无法读取} other{有 {count} 个项目无法读取}}",
+  "pluginPresetsNoProjects": "此配置文件中没有 Cubase 项目。"
 }

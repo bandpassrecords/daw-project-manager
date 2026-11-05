@@ -9860,4 +9860,78 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get launchCheckOpenAnyway => 'Abrir de todos modos';
+
+  @override
+  String get pluginPresetsTitle =>
+      'Presets de plug-ins de tus proyectos de Cubase';
+
+  @override
+  String get pluginPresetsSubtitle =>
+      'Guarda el preset que usaba cada plug-in VST2 como un archivo .fxb o .fxp que puedes volver a cargar en el plug-in, organizado por plug-in. En Sylenth1 es un banco con solo el programa seleccionado, con su nombre; el resto lleva el nombre de la pista. Los plug-ins que guardan su estado en un formato propio (VST3, Waves…) aún no se pueden guardar.';
+
+  @override
+  String get pluginPresetsDestinationTitle => 'Dónde guardar los presets';
+
+  @override
+  String get pluginPresetsProgressTitle => 'Guardando presets de plug-ins';
+
+  @override
+  String pluginPresetsReading(int current, int total, String name) {
+    return 'Leyendo el proyecto $current de $total: $name';
+  }
+
+  @override
+  String get pluginPresetsDoneTitle => 'Presets guardados';
+
+  @override
+  String get pluginPresetsStoppedTitle => 'Detenido — se conserva lo hecho';
+
+  @override
+  String pluginPresetsSaved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count presets nuevos guardados',
+      one: '1 preset nuevo guardado',
+      zero: 'No se guardó ningún preset nuevo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pluginPresetsAlreadyThere(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ya estaban en la carpeta o se repetían en otros proyectos',
+      one: '1 ya estaba en la carpeta o se repetía en otro proyecto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pluginPresetsUnsavable(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plug-ins guardan su estado',
+      one: '1 plug-in guarda su estado',
+    );
+    return '$_temp0 en un formato que no se puede guardar como preset: $names';
+  }
+
+  @override
+  String pluginPresetsNotRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'No se pudieron leer $count proyectos',
+      one: 'No se pudo leer 1 proyecto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pluginPresetsNoProjects =>
+      'No hay proyectos de Cubase en este perfil.';
 }

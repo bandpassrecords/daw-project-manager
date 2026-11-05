@@ -4731,5 +4731,17 @@
   "launchCheckTitle": "Avant d'ouvrir {name}",
   "launchCheckMissingAudio": "{count, plural, one{1 de ses {total} fichiers audio est manquant} other{{count} de ses {total} fichiers audio sont manquants}}",
   "launchCheckSampleRate": "Enregistré à {project} ; votre studio tourne à {studio}",
-  "launchCheckOpenAnyway": "Ouvrir quand même"
+  "launchCheckOpenAnyway": "Ouvrir quand même",
+  "pluginPresetsTitle": "Presets de plug-ins de vos projets Cubase",
+  "pluginPresetsSubtitle": "Enregistre le preset utilisé par chaque plug-in VST2 sous forme de fichier .fxb ou .fxp que vous pouvez recharger dans le plug-in, classé par plug-in. Pour Sylenth1, c'est une banque ne contenant que le programme sélectionné, qui lui donne son nom ; les autres portent le nom de leur piste. Les plug-ins qui gardent leur état dans un format propre (VST3, Waves…) ne peuvent pas encore être enregistrés.",
+  "pluginPresetsDestinationTitle": "Où enregistrer les presets",
+  "pluginPresetsProgressTitle": "Enregistrement des presets de plug-ins",
+  "pluginPresetsReading": "Lecture du projet {current} sur {total} : {name}",
+  "pluginPresetsDoneTitle": "Presets enregistrés",
+  "pluginPresetsStoppedTitle": "Arrêté — ce qui a été fait est conservé",
+  "pluginPresetsSaved": "{count, plural, =0{Aucun nouveau preset enregistré} =1{1 nouveau preset enregistré} other{{count} nouveaux presets enregistrés}}",
+  "pluginPresetsAlreadyThere": "{count, plural, =1{1 était déjà dans le dossier ou répété dans un autre projet} other{{count} étaient déjà dans le dossier ou répétés dans d'autres projets}}",
+  "pluginPresetsUnsavable": "{count, plural, =1{1 plug-in garde son état} other{{count} plug-ins gardent leur état}} dans un format qui ne peut pas être enregistré comme preset : {names}",
+  "pluginPresetsNotRead": "{count, plural, =1{1 projet n'a pas pu être lu} other{{count} projets n'ont pas pu être lus}}",
+  "pluginPresetsNoProjects": "Il n'y a aucun projet Cubase dans ce profil."
 }

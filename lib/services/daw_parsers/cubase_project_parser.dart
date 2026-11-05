@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import '../../models/midi_clip.dart';
 import '../../models/project_stats.dart';
 import '../../models/sample_reference.dart';
+import '../plugin_presets/vst2_state.dart';
 import 'cubase_attributes.dart';
 import 'embedded_audio_paths.dart';
 
@@ -182,6 +183,7 @@ class CubaseProjectParser {
           instrumentId: channel?.instrumentId,
           instrumentPreset: channel?.instrumentPreset,
           instrumentActiveAt: channel?.instrumentActiveAt,
+          instrumentState: channel?.instrumentState,
           sends: [
             for (final s in channel?.sends ?? const <_Send>[]) send(s),
           ],
@@ -195,6 +197,136 @@ class CubaseProjectParser {
   /// plug-in and the output channels it adds to the mixer. Instrument tracks
   /// host their own instrument and are not listed here.
   List<CubaseRackInstrument> readRackInstruments() => _rack;
+
+  /// Every plug-in instance's saved state, in project order: inserts and the
+  /// instruments of instrument tracks, then the VST Instruments rack. A VST2
+  /// plug-in's state is a complete `.fxb`/`.fxp` ([Vst2State]); a VST3
+  /// plug-in's is its own format and comes back with a null `state`, listed
+  /// all the same.
+  ///
+  /// Reads the file's bytes only here, where the state is asked for.
+  List<CubasePluginState> readPluginStates() {
+    final states = <CubasePluginState>[];
+    final claimed = <int>{};
+
+    void add({
+      required String track,
+      required CubasePluginPlace place,
+      required int? slot,
+      required String plugin,
+      required String? pluginId,
+      required String? format,
+      required CubaseBlob? blob,
+    }) {
+      if (blob == null) return;
+      claimed.add(blob.offset);
+      states.add(CubasePluginState(
+        track: track,
+        place: place,
+        slot: slot,
+        plugin: plugin,
+        pluginId: pluginId,
+        format: format,
+        state: _vst2StateAt(blob),
+      ));
+    }
+
+    for (final track in readTracks()) {
+      if (track.instrument != null) {
+        add(
+          track: track.name,
+          place: CubasePluginPlace.instrument,
+          slot: null,
+          plugin: track.instrument!,
+          pluginId: track.instrumentId,
+          format: null,
+          blob: track.instrumentState,
+        );
+      }
+      for (final insert in track.inserts) {
+        add(
+          track: track.name,
+          place: CubasePluginPlace.insert,
+          slot: insert.slot,
+          plugin: insert.plugin,
+          pluginId: insert.pluginId,
+          format: insert.format,
+          blob: insert.state,
+        );
+      }
+    }
+
+    // One rack slot has an entry per output channel: its state once.
+    final rackSlots = <int>{};
+    for (final rack in readRackInstruments()) {
+      if (!rackSlots.add(rack.slot)) continue;
+      add(
+        track: rack.channel,
+        place: CubasePluginPlace.rack,
+        slot: rack.slot,
+        plugin: rack.plugin ?? '',
+        pluginId: null,
+        format: null,
+        blob: rack.state,
+      );
+    }
+
+    // What nothing above claims: VST2 states elsewhere in the file. Several
+    // copies of one state exist (the same instance is also kept elsewhere),
+    // so each distinct state is listed once.
+    final seen = <String>{
+      for (final s in states)
+        if (s.state != null) _fingerprint(s.state!.file),
+    };
+    for (final blob in _stateBlobs()) {
+      if (claimed.contains(blob.offset)) continue;
+      final state = _vst2StateAt(blob);
+      if (state == null || !seen.add(_fingerprint(state.file))) continue;
+      states.add(CubasePluginState(
+        track: '',
+        place: CubasePluginPlace.unplaced,
+        plugin: state.pluginId,
+        pluginId: state.pluginId,
+        format: 'VST2',
+        state: state,
+      ));
+    }
+    return states;
+  }
+
+  static final _stateKey = _keyBytes('audioComponent');
+
+  /// Every `audioComponent` attribute in the file: the key, a four-byte kind,
+  /// a u32 length, then the state.
+  Iterable<CubaseBlob> _stateBlobs() sync* {
+    var from = 0;
+    while (true) {
+      final at = _indexOf(_stateKey, from);
+      if (at < 0) return;
+      final lengthAt = at + _stateKey.length + 4;
+      from = at + _stateKey.length;
+      if (!_has(lengthAt, 4)) continue;
+      yield CubaseBlob(lengthAt + 4, _data.getUint32(lengthAt));
+    }
+  }
+
+  /// Equal states have equal fingerprints: the length and a hash of every
+  /// 31st byte stand in for the content, which is enough to tell a state from
+  /// a copy of itself without keeping megabytes of keys.
+  static String _fingerprint(Uint8List file) {
+    var h = file.length;
+    for (var i = 0; i < file.length; i += 31) {
+      h = (h * 31 + file[i]) & 0x3FFFFFFF;
+    }
+    return '${file.length}:$h';
+  }
+
+  Vst2State? _vst2StateAt(CubaseBlob blob) {
+    if (blob.length < 0 || !_has(blob.offset, blob.length)) return null;
+    return Vst2State.parse(
+      Uint8List.sublistView(bytes, blob.offset, blob.offset + blob.length),
+    );
+  }
 
   /// Sample rate, record bit depth and time signature, from the media
   /// attributes Cubase writes into every project it saves (Cubase 5 on; the
@@ -971,8 +1103,16 @@ class CubaseProjectParser {
       instrumentId: instrument?.id,
       instrumentPreset: instrument?.preset,
       instrumentActiveAt: instrument?.activeAt,
+      instrumentState: instrument?.state,
     );
   }
+
+  /// The plug-in's saved state, where it sits in the file.
+  static CubaseBlob? _stateOf(CubaseAttributes? plugin) =>
+      switch (plugin?['audioComponent']) {
+        final CubaseBlob blob => blob,
+        _ => null,
+      };
 
   /// The plug-in in an insert or strip slot, with the side-chain buses it
   /// offers; null for an empty slot.
@@ -995,6 +1135,7 @@ class CubaseProjectParser {
         activeAt: plugin.integer('Active') == null
             ? null
             : plugin.offsetOf('Active'),
+        state: _stateOf(plugin),
       ),
       [
         for (final (key, value) in plugin.entries)
@@ -1037,7 +1178,13 @@ class CubaseProjectParser {
   /// An instrument track's instrument, from its "Synth Slot": the plug-in's
   /// own name where the track renamed it ("Bassline" is a Serum), and
   /// nothing for the sampler track's built-in engine.
-  static ({String name, String? id, String? preset, int? activeAt})?
+  static ({
+    String name,
+    String? id,
+    String? preset,
+    int? activeAt,
+    CubaseBlob? state,
+  })?
       _instrumentOf(CubaseAttributes? slot) {
     final plugin = slot?.folder('Plugin');
     final name = plugin == null
@@ -1055,6 +1202,7 @@ class CubaseProjectParser {
       activeAt: plugin?.integer('Active') == null
           ? null
           : plugin!.offsetOf('Active'),
+      state: _stateOf(plugin),
     );
   }
 
@@ -1136,6 +1284,7 @@ class CubaseProjectParser {
       String? preset;
       int? activeAt;
       bool? deactivated;
+      CubaseBlob? state;
       final isA = _lastIndexOf(_pluginIsAKey, at);
       if (isA >= 0) {
         final kind = _decoder.attributeAt(isA, limit: at);
@@ -1146,6 +1295,7 @@ class CubaseProjectParser {
           final attrs = folder!.value as CubaseAttributes;
           plugin = attrs.string('Plugin Name');
           preset = pluginIdentity(attrs).preset;
+          state = _stateOf(attrs);
           if (attrs.integer('Active') case final a?) {
             activeAt = attrs.offsetOf('Active');
             deactivated = a == 0;
@@ -1166,6 +1316,7 @@ class CubaseProjectParser {
           volume: channel.valueOf('Volume'),
           activeAt: activeAt,
           deactivated: deactivated,
+          state: state,
         ));
       }
     }
@@ -1401,6 +1552,7 @@ class CubaseTrack {
     this.instrumentId,
     this.instrumentPreset,
     this.instrumentActiveAt,
+    this.instrumentState,
     this.sends = const [],
   });
 
@@ -1472,6 +1624,9 @@ class CubaseTrack {
   /// Where its instrument's "Active" flag sits ([CubaseInsert.activeAt]).
   final int? instrumentActiveAt;
 
+  /// Where its instrument's saved state sits in the file.
+  final CubaseBlob? instrumentState;
+
   /// Routed send slots; empty slots are left out.
   final List<CubaseSend> sends;
 }
@@ -1488,9 +1643,14 @@ class CubaseInsert {
     this.vendor,
     this.preset,
     this.activeAt,
+    this.state,
   });
   final int slot;
   final String plugin;
+
+  /// Where the plug-in's saved state (its `audioComponent`) sits in the file;
+  /// read on demand with [CubaseProjectParser.readPluginStates].
+  final CubaseBlob? state;
 
   /// "VST2" or "VST3", from the class id.
   final String? format;
@@ -1599,7 +1759,11 @@ class CubaseRackInstrument {
     this.volume,
     this.activeAt,
     this.deactivated,
+    this.state,
   });
+
+  /// Where the instrument's saved state sits in the file.
+  final CubaseBlob? state;
 
   /// Which rack slot, counted from 0 in the order the project stores them.
   final int slot;
@@ -1720,6 +1884,7 @@ class _Channel {
     this.instrumentId,
     this.instrumentPreset,
     this.instrumentActiveAt,
+    this.instrumentState,
   });
   final double? pan;
   final bool? muted;
@@ -1740,6 +1905,44 @@ class _Channel {
   final String? instrumentId;
   final String? instrumentPreset;
   final int? instrumentActiveAt;
+  final CubaseBlob? instrumentState;
+}
+
+/// Where a plug-in sits in the project.
+enum CubasePluginPlace {
+  insert,
+  instrument,
+  rack,
+
+  /// A state no track, insert or rack slot claims: a plug-in on a channel
+  /// the reader doesn't walk (the master, a disabled track), known by its ID.
+  unplaced,
+}
+
+/// One plug-in instance's saved state, and where it came from.
+class CubasePluginState {
+  const CubasePluginState({
+    required this.track,
+    required this.place,
+    required this.plugin,
+    this.slot,
+    this.pluginId,
+    this.format,
+    this.state,
+  });
+
+  /// The track, or for a rack instrument the name of its first output channel.
+  final String track;
+  final CubasePluginPlace place;
+
+  /// The insert slot, or the rack slot; null for an instrument track's own.
+  final int? slot;
+  final String plugin;
+  final String? pluginId;
+  final String? format;
+
+  /// The VST2 state; null for a VST3 plug-in, whose state is its own format.
+  final Vst2State? state;
 }
 
 /// An insert and the side-chain buses its plug-in offers.
