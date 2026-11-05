@@ -413,7 +413,6 @@ class _TitleOrTrail extends ConsumerWidget {
             else
               _CrumbLink(
                 label: _crumbLabel(context, trail[i]),
-                icon: trail[i].isRoot ? Icons.home_outlined : null,
                 fontSize: fontSize,
                 restingColor: muted,
                 hoverColor: color,
@@ -447,13 +446,10 @@ class _CrumbLink extends StatefulWidget {
     required this.restingColor,
     required this.hoverColor,
     required this.onTap,
-    this.icon,
   });
 
   final String label;
 
-  /// Drawn instead of the label — the house on the trail's first crumb.
-  final IconData? icon;
   final double fontSize;
   final Color? restingColor;
   final Color? hoverColor;
@@ -491,23 +487,10 @@ class _CrumbLinkState extends State<_CrumbLink> {
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(4),
             ),
-            // With an icon, the icon is the whole link (the house): the label
-            // is its tooltip and what a screen reader says.
-            child: widget.icon != null
-                ? Semantics(
-                    label: widget.label,
-                    button: true,
-                    excludeSemantics: true,
-                    child: Icon(
-                      widget.icon,
-                      size: widget.fontSize + 4,
-                      color: color,
-                    ),
-                  )
-                : Text(
-                    widget.label,
-                    style: TextStyle(color: color, fontSize: widget.fontSize),
-                  ),
+            child: Text(
+              widget.label,
+              style: TextStyle(color: color, fontSize: widget.fontSize),
+            ),
           ),
         ),
       ),

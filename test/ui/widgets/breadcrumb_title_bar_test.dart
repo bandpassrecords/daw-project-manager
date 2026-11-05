@@ -179,43 +179,10 @@ void main() {
 
     // The root crumb renders as "Home" whatever the root page's own title is;
     // tapping it should unwind both pushes in one go.
-    expect(find.text('Home'), findsNothing, reason: 'the house stands alone');
-    await tester.tap(find.byIcon(Icons.home_outlined));
+    await tester.tap(find.text('Home').last);
     await tester.pumpAndSettle();
 
     expect(labels(), ['Home']);
-  });
-
-  testWidgets('the way back to the start carries a house, no other crumb does', (
-    tester,
-  ) async {
-    late BuildContext ctx;
-    await pumpApp(
-      tester,
-      Builder(
-        builder: (context) {
-          ctx = context;
-          return const _Page(title: 'Home', showBack: false);
-        },
-      ),
-    );
-    // A trail of one is the plain title: nothing to go back to, no house.
-    expect(find.byIcon(Icons.home_outlined), findsNothing);
-
-    for (final title in ['Summer EP', 'Parts']) {
-      Navigator.of(ctx).push(
-        MaterialPageRoute(
-          builder: (_) => _Page(title: title, showBack: true),
-        ),
-      );
-      await tester.pumpAndSettle();
-    }
-
-    expect(find.byIcon(Icons.home_outlined), findsOneWidget);
-
-    await tester.tap(find.byIcon(Icons.home_outlined));
-    await tester.pumpAndSettle();
-    expect(labels(), ['Home'], reason: 'the house unwinds every page at once');
   });
 
   testWidgets('a page renamed while open updates its crumb in place', (
@@ -311,9 +278,11 @@ void main() {
 
     Future<double> backButtonLeft(WidgetTester tester, bool fullScreen) async {
       container.dispose();
-      container = ProviderContainer(overrides: [
-        windowFullScreenProvider.overrideWith(() => _FullScreen(fullScreen)),
-      ]);
+      container = ProviderContainer(
+        overrides: [
+          windowFullScreenProvider.overrideWith(() => _FullScreen(fullScreen)),
+        ],
+      );
       await pumpApp(tester, const _Page(title: 'Summer EP', showBack: true));
       return tester.getTopLeft(find.byIcon(Icons.arrow_back)).dx;
     }

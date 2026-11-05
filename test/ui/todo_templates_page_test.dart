@@ -33,9 +33,7 @@ void main() {
           home: Builder(
             builder: (context) {
               ctx = context;
-              return const Scaffold(
-                body: DesktopTitleBar(title: 'Root'),
-              );
+              return const Scaffold(body: DesktopTitleBar(title: 'Root'));
             },
           ),
         ),
@@ -43,9 +41,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    Navigator.of(ctx).push(
-      MaterialPageRoute(builder: (_) => const TodoTemplatesPage()),
-    );
+    Navigator.of(
+      ctx,
+    ).push(MaterialPageRoute(builder: (_) => const TodoTemplatesPage()));
     await tester.pumpAndSettle();
 
     // The page underneath is offstage and not counted.
@@ -57,6 +55,10 @@ void main() {
         .toList();
     expect(labels.length, 2);
     expect(labels.first, 'Root');
-    expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+    expect(
+      find.text('Home'),
+      findsOneWidget,
+      reason: 'the way back to the start',
+    );
   });
 }
