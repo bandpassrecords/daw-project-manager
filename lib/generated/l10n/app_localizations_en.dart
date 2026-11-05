@@ -9766,7 +9766,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pluginPresetsSubtitle =>
-      'Saves the preset each VST2 plug-in was using as a .fxb or .fxp file you can load back into the plug-in, filed by plug-in. Sylenth1 presets are named by the program that was selected; the rest by their track. Plug-ins that keep their state in their own format (VST3, Waves…) can\'t be saved yet.';
+      'Saves the preset each VST2 plug-in was using as a .fxb or .fxp file you can load back into the plug-in, filed by plug-in. For Sylenth1 that is a bank holding only the program that was selected, named after it; the rest are named by their track. Plug-ins that keep their state in their own format (VST3, Waves…) can\'t be saved yet.';
 
   @override
   String get pluginPresetsDestinationTitle => 'Where to save the presets';

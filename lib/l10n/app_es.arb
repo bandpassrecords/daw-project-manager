@@ -4733,7 +4733,7 @@
   "launchCheckSampleRate": "Guardado a {project}; tu estudio trabaja a {studio}",
   "launchCheckOpenAnyway": "Abrir de todos modos",
   "pluginPresetsTitle": "Presets de plug-ins de tus proyectos de Cubase",
-  "pluginPresetsSubtitle": "Guarda el preset que usaba cada plug-in VST2 como un archivo .fxb o .fxp que puedes volver a cargar en el plug-in, organizado por plug-in. Los presets de Sylenth1 llevan el nombre del programa seleccionado; el resto, el de su pista. Los plug-ins que guardan su estado en un formato propio (VST3, Waves…) aún no se pueden guardar.",
+  "pluginPresetsSubtitle": "Guarda el preset que usaba cada plug-in VST2 como un archivo .fxb o .fxp que puedes volver a cargar en el plug-in, organizado por plug-in. En Sylenth1 es un banco con solo el programa seleccionado, con su nombre; el resto lleva el nombre de la pista. Los plug-ins que guardan su estado en un formato propio (VST3, Waves…) aún no se pueden guardar.",
   "pluginPresetsDestinationTitle": "Dónde guardar los presets",
   "pluginPresetsProgressTitle": "Guardando presets de plug-ins",
   "pluginPresetsReading": "Leyendo el proyecto {current} de {total}: {name}",

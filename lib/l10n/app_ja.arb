@@ -4733,7 +4733,7 @@
   "launchCheckSampleRate": "{project} で保存されています。スタジオは {studio} です",
   "launchCheckOpenAnyway": "このまま開く",
   "pluginPresetsTitle": "Cubaseプロジェクトからプラグインのプリセットを保存",
-  "pluginPresetsSubtitle": "各VST2プラグインが使っていたプリセットを、プラグインに読み込み直せる.fxbまたは.fxpファイルとして、プラグインごとに保存します。Sylenth1のプリセットは選択されていたプログラム名、それ以外はトラック名が付きます。独自形式で状態を保持するプラグイン(VST3、Wavesなど)はまだ保存できません。",
+  "pluginPresetsSubtitle": "各VST2プラグインが使っていたプリセットを、プラグインに読み込み直せる.fxbまたは.fxpファイルとして、プラグインごとに保存します。Sylenth1では、選択されていたプログラムだけを入れたバンクになり、そのプログラム名が付きます。それ以外はトラック名が付きます。独自形式で状態を保持するプラグイン(VST3、Wavesなど)はまだ保存できません。",
   "pluginPresetsDestinationTitle": "プリセットの保存先",
   "pluginPresetsProgressTitle": "プラグインのプリセットを保存中",
   "pluginPresetsReading": "プロジェクト {current}/{total} を読み込み中: {name}",

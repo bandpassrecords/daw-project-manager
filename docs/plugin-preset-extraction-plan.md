@@ -4,7 +4,7 @@ Goal: on a Cubase project's page, show which preset each VST2 plug-in instance w
 
 Status: format verified against 156 real Cubase projects on one machine (Cubase SX 3 to 13).
 
-Done: steps 2 to 5 and a first version of step 6 as an Experimental card in Settings (all projects of the active profile, not a per-project section yet). Sylenth1's decoder is written from the spec below and tested on synthetic chunks only — it still needs a real Sylenth1 project in the corpus (step 1). Not done: the per-project "Presets" section on the project page, exporting one program of a bank as `.fxp`, the sample-pack option (step 7), and Waves/VST3 states (they are listed as unsavable). Correction to "What a `.cpr` holds": a blob without `VstW` is not always VST3 — Waves' VST2 plug-ins keep their own chunk.
+Done: steps 2 to 5 and a first version of step 6 as an Experimental card in Settings (all projects of the active profile, not a per-project section yet). Sylenth1's decoder is written from the spec below and tested on synthetic chunks only — it still needs a real Sylenth1 project in the corpus (step 1). Sylenth1 is saved as a bank holding only the selected program (the rest `Init`), because the layout of Sylenth1's own `.fxp` is unknown; an `.fxp` needs a real one to compare against. Not done: the per-project "Presets" section on the project page, exporting one program of a bank as `.fxp`, the sample-pack option (step 7), and Waves/VST3 states (they are listed as unsavable). Correction to "What a `.cpr` holds": a blob without `VstW` is not always VST3 — Waves' VST2 plug-ins keep their own chunk.
 
 ## What a `.cpr` holds (verified)
 

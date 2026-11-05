@@ -9161,7 +9161,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pluginPresetsSubtitle =>
-      '将每个 VST2 插件使用的预设保存为可重新载入插件的 .fxb 或 .fxp 文件,并按插件分类。Sylenth1 的预设以所选程序命名,其余以轨道名命名。以自有格式保存状态的插件(VST3、Waves 等)暂时无法保存。';
+      '将每个 VST2 插件使用的预设保存为可重新载入插件的 .fxb 或 .fxp 文件,并按插件分类。对于 Sylenth1,保存的是只包含所选程序的音色库,并以该程序命名;其余以轨道名命名。以自有格式保存状态的插件(VST3、Waves 等)暂时无法保存。';
 
   @override
   String get pluginPresetsDestinationTitle => '预设保存位置';

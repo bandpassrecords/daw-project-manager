@@ -50,47 +50,98 @@ void main() {
   group('presetProgramName', () {
     test('Sylenth1 is named by the program selected inside its bank', () {
       final bank = stateOf(
-        fxOpaqueBank(sylenth1PluginId, _sylenthChunk(['Init', 'LD Axe', 'Pad'], 1)),
+        fxOpaqueBank(
+          sylenth1PluginId,
+          _sylenthChunk(['Init', 'LD Axe', 'Pad'], 1),
+        ),
       );
       expect(presetProgramName(bank), 'LD Axe');
     });
 
     test('a program says its own name', () {
-      expect(presetProgramName(stateOf(fxProgram('abcd', 'Warm Pad'))), 'Warm Pad');
+      expect(
+        presetProgramName(stateOf(fxProgram('abcd', 'Warm Pad'))),
+        'Warm Pad',
+      );
     });
 
     test('a bank no decoder knows has no name', () {
-      expect(presetProgramName(stateOf(fxOpaqueBank('abcd', [1, 2, 3]))), isNull);
+      expect(
+        presetProgramName(stateOf(fxOpaqueBank('abcd', [1, 2, 3]))),
+        isNull,
+      );
     });
   });
 
   group('planPresetFiles', () {
-    test('names a file by project, track and program, in the plug-in\'s folder', () {
-      final plan = planPresetFiles('My Song', [
-        _state(
-          'Sylenth1',
-          fxOpaqueBank(sylenth1PluginId, _sylenthChunk(['Init', 'LD Axe'], 1)),
-          track: 'Lead',
-        ),
-      ]);
+    test(
+      'names a file by project, track and program, in the plug-in\'s folder',
+      () {
+        final plan = planPresetFiles('My Song', [
+          _state(
+            'Sylenth1',
+            fxOpaqueBank(
+              sylenth1PluginId,
+              _sylenthChunk(['Init', 'LD Axe'], 1),
+            ),
+            track: 'Lead',
+          ),
+        ]);
 
-      expect(plan.files.single.folder, 'Sylenth1');
-      expect(plan.files.single.fileName, 'My Song - Lead - LD Axe.fxb');
+        expect(plan.files.single.folder, 'Sylenth1');
+        expect(plan.files.single.fileName, 'My Song - Lead - LD Axe.fxb');
+      },
+    );
+
+    test('Sylenth1 saves a bank of only the program that was selected', () {
+      final full = fxOpaqueBank(
+        sylenth1PluginId,
+        _sylenthChunk(['Init', 'Bass', 'LD Axe', 'Init'], 2),
+        programs: 4,
+        current: 2,
+      );
+      final plan = planPresetFiles('S', [_state('Sylenth1', full)]);
+
+      final saved = SylenthBank.read(stateOf(plan.files.single.bytes).chunk!)!;
+      expect(saved.names, ['LD Axe', 'Init', 'Init', 'Init']);
+      expect(saved.selectedName, 'LD Axe');
+      expect(plan.files.single.bytes.length, lessThan(full.length + 1));
     });
 
-    test('a program is an .fxp, and a state with no name uses the plug-in ID', () {
-      final plan = planPresetFiles('S', [
-        _state('Thing', fxProgram('abcd', 'Warm'), track: 'T'),
-        _state('Other', fxOpaqueBank('wxyz', [9]), track: 'T'),
-      ]);
+    test('a Sylenth1 bank with no empty slot to copy is saved whole', () {
+      final full = fxOpaqueBank(
+        sylenth1PluginId,
+        _sylenthChunk(['A', 'B', 'C'], 1),
+        programs: 3,
+        current: 1,
+      );
+      final plan = planPresetFiles('S', [_state('Sylenth1', full)]);
 
-      expect(plan.files[0].fileName, 'S - T - Warm.fxp');
-      expect(plan.files[1].fileName, 'S - T - wxyz.fxb');
+      expect(plan.files.single.bytes, full);
+      expect(plan.files.single.fileName, 'S - Lead - B.fxb');
     });
+
+    test(
+      'a program is an .fxp, and a state with no name uses the plug-in ID',
+      () {
+        final plan = planPresetFiles('S', [
+          _state('Thing', fxProgram('abcd', 'Warm'), track: 'T'),
+          _state('Other', fxOpaqueBank('wxyz', [9]), track: 'T'),
+        ]);
+
+        expect(plan.files[0].fileName, 'S - T - Warm.fxp');
+        expect(plan.files[1].fileName, 'S - T - wxyz.fxb');
+      },
+    );
 
     test('a rack instrument with no track name is named without one', () {
       final plan = planPresetFiles('S', [
-        _state('Syn', fxProgram('abcd', 'A'), track: '', place: CubasePluginPlace.rack),
+        _state(
+          'Syn',
+          fxProgram('abcd', 'A'),
+          track: '',
+          place: CubasePluginPlace.rack,
+        ),
       ]);
 
       expect(plan.files.single.fileName, 'S - A.fxp');
@@ -147,10 +198,10 @@ void main() {
     test('running again adds nothing and changes nothing', () async {
       final states = [_state('Thing', fxProgram('abcd', 'Warm'))];
       Future<PresetExportResult> run() => exportPresets(
-            destination: out.path,
-            projects: [project('Song')],
-            readStates: (_) async => states,
-          );
+        destination: out.path,
+        projects: [project('Song')],
+        readStates: (_) async => states,
+      );
 
       await run();
       final again = await run();
@@ -163,55 +214,64 @@ void main() {
       await exportPresets(
         destination: out.path,
         projects: [project('S')],
-        readStates: (_) async => [_state('P', fxProgram('abcd', 'x', value: 1))],
+        readStates: (_) async => [
+          _state('P', fxProgram('abcd', 'x', value: 1)),
+        ],
       );
       final second = await exportPresets(
         destination: out.path,
         projects: [project('S')],
-        readStates: (_) async => [_state('P', fxProgram('abcd', 'x', value: 2))],
+        readStates: (_) async => [
+          _state('P', fxProgram('abcd', 'x', value: 2)),
+        ],
       );
 
       expect(second.written, 1);
-      final names = Directory(p.join(out.path, 'P'))
-          .listSync()
-          .map((e) => p.basename(e.path))
-          .toList()
-        ..sort();
+      final names = Directory(
+        p.join(out.path, 'P'),
+      ).listSync().map((e) => p.basename(e.path)).toList()..sort();
       expect(names, ['S - Lead - x (2).fxp', 'S - Lead - x.fxp']);
     });
 
-    test('what is written is the state byte for byte, and no .part is left', () async {
-      final file = fxProgram('abcd', 'Warm');
-      await exportPresets(
-        destination: out.path,
-        projects: [project('S')],
-        readStates: (_) async => [_state('P', file)],
-      );
+    test(
+      'what is written is the state byte for byte, and no .part is left',
+      () async {
+        final file = fxProgram('abcd', 'Warm');
+        await exportPresets(
+          destination: out.path,
+          projects: [project('S')],
+          readStates: (_) async => [_state('P', file)],
+        );
 
-      final written = Directory(p.join(out.path, 'P')).listSync().single as File;
-      expect(written.readAsBytesSync(), file);
-      expect(
-        Directory(out.path)
-            .listSync(recursive: true)
-            .where((e) => e.path.endsWith('.part')),
-        isEmpty,
-      );
-    });
+        final written =
+            Directory(p.join(out.path, 'P')).listSync().single as File;
+        expect(written.readAsBytesSync(), file);
+        expect(
+          Directory(
+            out.path,
+          ).listSync(recursive: true).where((e) => e.path.endsWith('.part')),
+          isEmpty,
+        );
+      },
+    );
 
-    test('a project that cannot be read is counted and the rest go on', () async {
-      final result = await exportPresets(
-        destination: out.path,
-        projects: [project('Broken'), project('Good')],
-        readStates: (path) async {
-          if (path == 'Broken') throw const FormatException('bad');
-          return [_state('P', fxProgram('abcd', 'x'))];
-        },
-      );
+    test(
+      'a project that cannot be read is counted and the rest go on',
+      () async {
+        final result = await exportPresets(
+          destination: out.path,
+          projects: [project('Broken'), project('Good')],
+          readStates: (path) async {
+            if (path == 'Broken') throw const FormatException('bad');
+            return [_state('P', fxProgram('abcd', 'x'))];
+          },
+        );
 
-      expect(result.projectsFailed, 1);
-      expect(result.projectsRead, 1);
-      expect(result.written, 1);
-    });
+        expect(result.projectsFailed, 1);
+        expect(result.projectsRead, 1);
+        expect(result.written, 1);
+      },
+    );
 
     test('unsavable plug-ins are summed over every project', () async {
       final result = await exportPresets(

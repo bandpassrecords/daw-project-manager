@@ -9828,7 +9828,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pluginPresetsSubtitle =>
-      'Speichert das Preset, das jedes VST2-Plug-in verwendet hat, als .fxb- oder .fxp-Datei, die du wieder in das Plug-in laden kannst, nach Plug-in sortiert. Sylenth1-Presets tragen den Namen des gewählten Programms, alle anderen den der Spur. Plug-ins, die ihren Zustand in einem eigenen Format speichern (VST3, Waves …), lassen sich noch nicht sichern.';
+      'Speichert das Preset, das jedes VST2-Plug-in verwendet hat, als .fxb- oder .fxp-Datei, die du wieder in das Plug-in laden kannst, nach Plug-in sortiert. Bei Sylenth1 ist es eine Bank mit nur dem gewählten Programm, nach diesem benannt; die übrigen tragen den Namen der Spur. Plug-ins, die ihren Zustand in einem eigenen Format speichern (VST3, Waves …), lassen sich noch nicht sichern.';
 
   @override
   String get pluginPresetsDestinationTitle =>

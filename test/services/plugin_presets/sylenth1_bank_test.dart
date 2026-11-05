@@ -5,10 +5,8 @@ import 'package:daw_project_manager/services/plugin_presets/sylenth1_bank.dart';
 import 'package:daw_project_manager/services/plugin_presets/vst2_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-List<int> _le(int v) => (ByteData(4)..setUint32(0, v, Endian.little))
-    .buffer
-    .asUint8List()
-    .toList();
+List<int> _le(int v) =>
+    (ByteData(4)..setUint32(0, v, Endian.little)).buffer.asUint8List().toList();
 
 List<int> _name(String s, {int fill = 0}) {
   final bytes = List<int>.filled(36, fill);
@@ -78,8 +76,9 @@ void main() {
       ]);
       expect(SylenthBank.read(compressedOld)!.names, ['A', 'B']);
       expect(
-        SylenthBank.read(_records(['A', 'B'], current: 0, version: 3045))!
-            .names,
+        SylenthBank.read(
+          _records(['A', 'B'], current: 0, version: 3045),
+        )!.names,
         ['A', 'B'],
       );
     });
@@ -147,5 +146,169 @@ void main() {
     final state = Vst2State.parseFile(file)!;
     expect(state.pluginId, sylenth1PluginId);
     expect(SylenthBank.read(state.chunk!)!.selectedName, 'Sub');
+  });
+
+  group('a bank with only the selected program', () {
+    /// A 6-slot bank (real ones have 512) with distinct floats per program.
+    Uint8List bank({
+      required int current,
+      bool compressed = false,
+      List<String>? names,
+    }) {
+      final programNames =
+          names ?? ['Init', 'Bass', 'LD Axe', 'Init', 'Pad', 'Init'];
+      final records = [
+        for (var i = 0; i < programNames.length; i++) ...[
+          for (var f = 0; f < 3; f++) ..._le(0x3f000000 + i * 256 + f),
+          ..._name(programNames[i]),
+        ],
+      ];
+      final inner = Uint8List.fromList([
+        ...'1lys'.codeUnits,
+        ..._le(compressed ? 3045 : 3031),
+        ..._le(programNames.length),
+        ..._le(3),
+        ..._le(current),
+        ...records,
+      ]);
+      final chunk = compressed
+          ? Uint8List.fromList([
+              ...inner.sublist(0, 8),
+              ...ZLibEncoder().convert(inner),
+            ])
+          : inner;
+      final file = Uint8List.fromList([
+        ...'CcnK'.codeUnits,
+        0,
+        0,
+        0,
+        0,
+        ...'FBCh'.codeUnits,
+        0,
+        0,
+        0,
+        1,
+        ...sylenth1PluginId.codeUnits,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        programNames.length,
+        0,
+        0,
+        0,
+        current,
+        ...List.filled(124, 0),
+        0,
+        0,
+        (chunk.length >> 8) & 0xFF,
+        chunk.length & 0xFF,
+        ...chunk,
+      ]);
+      ByteData.sublistView(file).setUint32(4, file.length - 8);
+      return file;
+    }
+
+    Vst2State stateOf(Uint8List file) => Vst2State.parseFile(file)!;
+
+    for (final compressed in [false, true]) {
+      group(compressed ? 'zlib (3045)' : 'plain', () {
+        test('keeps that program in the first slot and the rest empty', () {
+          final original = stateOf(bank(current: 2, compressed: compressed));
+          final out = sylenthBankWithOnlySelected(original)!;
+
+          final state = Vst2State.parseFile(out)!;
+          final result = SylenthBank.read(state.chunk!)!;
+          final source = SylenthBank.read(original.chunk!)!;
+
+          expect(result.names, [
+            'LD Axe',
+            'Init',
+            'Init',
+            'Init',
+            'Init',
+            'Init',
+          ]);
+          expect(result.currentProgram, 0);
+          expect(result.selectedName, 'LD Axe');
+          expect(
+            result.records.first,
+            source.records[2],
+            reason: 'the program itself, byte for byte',
+          );
+          for (final empty in result.records.skip(1)) {
+            expect(
+              empty,
+              source.records[0],
+              reason: 'an Init as the bank had it',
+            );
+          }
+          expect(result.compressed, compressed);
+          expect(result.version, source.version);
+          expect(result.fields, source.fields);
+        });
+
+        test(
+          'the file around it is the original\'s, with sizes and selection updated',
+          () {
+            final original = stateOf(bank(current: 4, compressed: compressed));
+            final out = sylenthBankWithOnlySelected(original)!;
+            final state = Vst2State.parseFile(out)!;
+
+            expect(state.kind, Vst2StateKind.opaqueBank);
+            expect(state.pluginId, sylenth1PluginId);
+            expect(state.count, original.count, reason: 'same number of slots');
+            expect(state.currentProgram, 0);
+            expect(out.length, state.file.length, reason: 'byteSize matches');
+            // The header between the sizes is untouched.
+            expect(out.sublist(8, 28), original.file.sublist(8, 28));
+          },
+        );
+      });
+    }
+
+    test(
+      'different banks with the same selected program give the same file',
+      () {
+        final a = stateOf(bank(current: 2));
+        final b = stateOf(
+          bank(
+            current: 2,
+            names: ['Init', 'Other', 'LD Axe', 'Init', 'X', 'Init'],
+          ),
+        );
+        // The programs differ in floats only by index, so compare the first
+        // slot's name and that every other slot is empty.
+        expect(
+          SylenthBank.read(
+            Vst2State.parseFile(sylenthBankWithOnlySelected(a)!)!.chunk!,
+          )!.names,
+          SylenthBank.read(
+            Vst2State.parseFile(sylenthBankWithOnlySelected(b)!)!.chunk!,
+          )!.names,
+        );
+      },
+    );
+
+    test('null where nothing says what an empty slot is', () {
+      final noInit = stateOf(
+        bank(current: 1, names: ['A', 'B', 'C', 'D', 'E', 'F']),
+      );
+      expect(sylenthBankWithOnlySelected(noInit), isNull);
+    });
+
+    test(
+      'null for a selection past the end, another plug-in, or a program',
+      () {
+        expect(sylenthBankWithOnlySelected(stateOf(bank(current: 9))), isNull);
+
+        final other = Uint8List.fromList(bank(current: 1))
+          ..setRange(16, 20, 'abcd'.codeUnits);
+        expect(sylenthBankWithOnlySelected(stateOf(other)), isNull);
+      },
+    );
   });
 }

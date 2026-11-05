@@ -9259,7 +9259,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pluginPresetsSubtitle =>
-      '各VST2プラグインが使っていたプリセットを、プラグインに読み込み直せる.fxbまたは.fxpファイルとして、プラグインごとに保存します。Sylenth1のプリセットは選択されていたプログラム名、それ以外はトラック名が付きます。独自形式で状態を保持するプラグイン(VST3、Wavesなど)はまだ保存できません。';
+      '各VST2プラグインが使っていたプリセットを、プラグインに読み込み直せる.fxbまたは.fxpファイルとして、プラグインごとに保存します。Sylenth1では、選択されていたプログラムだけを入れたバンクになり、そのプログラム名が付きます。それ以外はトラック名が付きます。独自形式で状態を保持するプラグイン(VST3、Wavesなど)はまだ保存できません。';
 
   @override
   String get pluginPresetsDestinationTitle => 'プリセットの保存先';

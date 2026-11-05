@@ -66,7 +66,8 @@ class PresetExportResult {
 /// a plain bank or a program says it in its own header; anything else is
 /// named by the track alone.
 String? presetProgramName(Vst2State state) {
-  if (state.pluginId == sylenth1PluginId && state.kind == Vst2StateKind.opaqueBank) {
+  if (state.pluginId == sylenth1PluginId &&
+      state.kind == Vst2StateKind.opaqueBank) {
     final chunk = state.chunk;
     final name = chunk == null ? null : SylenthBank.read(chunk)?.selectedName;
     if (name != null && name.isNotEmpty) return name;
@@ -96,16 +97,22 @@ String? presetProgramName(Vst2State state) {
       continue;
     }
     final program = presetProgramName(state);
+    // Sylenth1: the bank holds all 512 programs; what was in use is the one
+    // selected, so that is the bank saved — only it, the rest left empty.
+    final bytes = sylenthBankWithOnlySelected(state) ?? state.file;
     final parts = [
       projectName,
       if (s.track.isNotEmpty) s.track,
       program ?? state.pluginId,
     ];
-    files.add(PresetFile(
-      folder: _part(plugin),
-      fileName: '${_clip(parts.map(_part).join(' - '))}${state.fileExtension}',
-      bytes: state.file,
-    ));
+    files.add(
+      PresetFile(
+        folder: _part(plugin),
+        fileName:
+            '${_clip(parts.map(_part).join(' - '))}${state.fileExtension}',
+        bytes: bytes,
+      ),
+    );
   }
   return (files: files, unsavable: unsavable);
 }
@@ -200,7 +207,7 @@ Future<_Saved> _save(String destination, PresetFile file) async {
   final extension = p.extension(file.fileName);
   final stem = p.basenameWithoutExtension(file.fileName);
   final digest = presetDigest(file.bytes);
-  for (var n = 1;; n++) {
+  for (var n = 1; ; n++) {
     final name = n == 1 ? file.fileName : '$stem ($n)$extension';
     final target = File(p.join(folder.path, name));
     if (!await target.exists()) {
