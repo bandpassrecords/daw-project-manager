@@ -13,6 +13,7 @@ import '../providers/providers.dart';
 import '../services/project_inspector/compare/anatomy_diff.dart';
 import '../services/project_inspector/compare/anatomy_diff_csv.dart';
 import '../services/project_inspector/library/plugin_usage.dart';
+import '../services/project_inspector/library/project_choices.dart';
 import '../services/project_inspector/media_check.dart';
 import '../services/project_inspector/report/anatomy_report_csv.dart';
 import '../services/project_inspector/relink/relink_writer.dart';
@@ -23,6 +24,7 @@ import '../utils/cloud_file.dart';
 import '../utils/save_file_dialog.dart';
 import 'app_snack_bar.dart';
 import 'dialogs/archive_project_dialog.dart' show formatByteSize;
+import 'dialogs/inspector_project_picker_dialog.dart';
 import 'dialogs/relink_dialog.dart';
 import 'dialogs/safe_copy_dialog.dart';
 import 'widgets/anatomy_compare_text.dart';
@@ -136,24 +138,41 @@ class _ProjectInspectorPageState extends ConsumerState<ProjectInspectorPage> {
   void _open(String path) => openInInspector(context, ref, path);
 
   Future<void> _pick() async {
-    final l10n = AppLocalizations.of(context)!;
-    final picked = await FilePicker.pickFiles(
-      dialogTitle: l10n.inspectorChooseProjectTitle,
+    final path = await _choose(
+      AppLocalizations.of(context)!.inspectorChooseProjectTitle,
     );
-    final path = picked.map((f) => f.path).whereType<String>().firstOrNull;
     if (path == null || !mounted) return;
     _open(path);
   }
 
   /// Picks B for the open project, A.
   Future<void> _pickCompare(String aPath) async {
-    final l10n = AppLocalizations.of(context)!;
-    final picked = await FilePicker.pickFiles(
-      dialogTitle: l10n.compareWithTitle,
+    final path = await _choose(
+      AppLocalizations.of(context)!.compareWithTitle,
+      comparingWith: aPath,
     );
-    final path = picked.map((f) => f.path).whereType<String>().firstOrNull;
     if (path == null || !mounted) return;
     await compareInInspector(context, ref, aPath, path);
+  }
+
+  /// A project from the library's list, or — chosen there, or with nothing
+  /// in the library to list — a file from a file dialog.
+  Future<String?> _choose(String title, {String? comparingWith}) async {
+    final choices = inspectorProjectChoices(
+      ref.read(allProjectsStreamProvider).value ?? const [],
+      comparingWith: comparingWith,
+    );
+    if (choices.versions.isNotEmpty || choices.others.isNotEmpty) {
+      final pick = await showDialog<InspectorPick>(
+        context: context,
+        builder: (_) =>
+            InspectorProjectPickerDialog(title: title, choices: choices),
+      );
+      if (pick == null || !mounted) return null;
+      if (pick.path case final path?) return path;
+    }
+    final picked = await FilePicker.pickFiles(dialogTitle: title);
+    return picked.map((f) => f.path).whereType<String>().firstOrNull;
   }
 
   void _swap(InspectedFile a, InspectedFile b) {

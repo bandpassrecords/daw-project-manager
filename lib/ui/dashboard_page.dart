@@ -85,6 +85,7 @@ import '../utils/capture_only_play.dart';
 import 'project_playback.dart';
 import 'widgets/drag_to_share_button.dart';
 import 'widgets/filter_dropdown.dart';
+import 'widgets/plugin_filter_chip.dart';
 import 'widgets/language_switcher.dart';
 import 'widgets/theme_switcher.dart';
 import 'widgets/mobile_mini_player.dart';
@@ -1848,8 +1849,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       availableTags,
     );
     final deadlineFilter = ref.watch(deadlineFilterProvider);
-    final hasMidiFilter = ref.watch(hasMidiFilterProvider);
-    final pluginFilter = ref.watch(pluginFilterProvider);
     final initialScanning = ref.watch(initialScanStateProvider);
     final isProfileSwitching = ref.watch(profileSwitchingProvider);
     final isScanning = _scanning || initialScanning;
@@ -2930,49 +2929,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                               .setFilter(value);
                                                         }
                                                       },
-                                                ),
-                                              // Only projects with MIDI (#143)
-                                              if (!MobileUtils.isMobile())
-                                                IconButton(
-                                                  tooltip: AppLocalizations.of(
-                                                    context,
-                                                  )!.filterHasMidi,
-                                                  isSelected: hasMidiFilter,
-                                                  iconSize: 18,
-                                                  icon: const Icon(
-                                                    Icons.piano_outlined,
-                                                  ),
-                                                  selectedIcon: const Icon(
-                                                    Icons.piano,
-                                                  ),
-                                                  onPressed: () => ref
-                                                      .read(
-                                                        hasMidiFilterProvider
-                                                            .notifier,
-                                                      )
-                                                      .toggle(),
-                                                ),
-                                              // Only projects using a
-                                              // plug-in (#225)
-                                              if (pluginFilter != null)
-                                                InputChip(
-                                                  avatar: const Icon(
-                                                    Icons.extension,
-                                                    size: 16,
-                                                  ),
-                                                  label: Text(
-                                                    AppLocalizations.of(
-                                                      context,
-                                                    )!.filterUsesPlugin(
-                                                      pluginFilter,
-                                                    ),
-                                                  ),
-                                                  onDeleted: () => ref
-                                                      .read(
-                                                        pluginFilterProvider
-                                                            .notifier,
-                                                      )
-                                                      .clear(),
                                                 ),
                                             ],
                                           ),
@@ -5361,6 +5317,31 @@ class _PlutoProjectsTableWithSelectionState
                     onChanged: (String? value) {
                       ref.read(tagFilterProvider.notifier).setTag(value);
                     },
+                  ),
+                ],
+                // Only projects with MIDI (#143)
+                const SizedBox(width: 4),
+                IconButton(
+                  tooltip: l10n.filterHasMidi,
+                  isSelected: ref.watch(hasMidiFilterProvider),
+                  iconSize: 18,
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.piano_outlined),
+                  selectedIcon: const Icon(Icons.piano),
+                  onPressed: () =>
+                      ref.read(hasMidiFilterProvider.notifier).toggle(),
+                ),
+                // Only projects using a plug-in (#225), set from the
+                // Inspector's plug-in usage.
+                if (ref.watch(pluginFilterProvider) case final plugin?) ...[
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: PluginFilterChip(
+                      label: l10n.filterUsesPlugin(plugin),
+                      clearTooltip: l10n.filterShowAllProjects,
+                      onClear: () =>
+                          ref.read(pluginFilterProvider.notifier).clear(),
+                    ),
                   ),
                 ],
                 const Spacer(),

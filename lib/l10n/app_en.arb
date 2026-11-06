@@ -9809,6 +9809,30 @@
       }
     }
   },
+  "inspectorPickSearch": "Search your projects",
+  "@inspectorPickSearch": {
+    "description": "Hint in the search box of the Inspector's project picker"
+  },
+  "inspectorPickVersions": "Versions of this song",
+  "@inspectorPickVersions": {
+    "description": "Heading in the Inspector's compare picker: the open project's other versions"
+  },
+  "inspectorPickLibrary": "Other projects",
+  "@inspectorPickLibrary": {
+    "description": "Heading in the Inspector's compare picker: every other project in the library"
+  },
+  "inspectorPickBrowse": "Browse files…",
+  "@inspectorPickBrowse": {
+    "description": "Button in the Inspector's project picker: choose a file outside the library"
+  },
+  "inspectorPickNone": "No project matches",
+  "@inspectorPickNone": {
+    "description": "Shown in the Inspector's project picker when the search matches nothing"
+  },
+  "filterShowAllProjects": "Show all projects",
+  "@filterShowAllProjects": {
+    "description": "Tooltip on the dashboard's plug-in filter chip: clears the filter"
+  },
   "launchCheckSetting": "Check a project before opening it",
   "@launchCheckSetting": {
     "description": "Settings switch: read a project before opening it in the DAW, and warn"

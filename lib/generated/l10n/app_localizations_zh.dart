@@ -9121,6 +9121,24 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get inspectorPickSearch => '搜索你的项目';
+
+  @override
+  String get inspectorPickVersions => '这首歌的版本';
+
+  @override
+  String get inspectorPickLibrary => '其他项目';
+
+  @override
+  String get inspectorPickBrowse => '浏览文件…';
+
+  @override
+  String get inspectorPickNone => '没有匹配的项目';
+
+  @override
+  String get filterShowAllProjects => '显示所有项目';
+
+  @override
   String get launchCheckSetting => '打开前检查项目';
 
   @override

@@ -15194,6 +15194,42 @@ abstract class AppLocalizations {
   /// **'Uses {plugin}'**
   String filterUsesPlugin(String plugin);
 
+  /// Hint in the search box of the Inspector's project picker
+  ///
+  /// In en, this message translates to:
+  /// **'Search your projects'**
+  String get inspectorPickSearch;
+
+  /// Heading in the Inspector's compare picker: the open project's other versions
+  ///
+  /// In en, this message translates to:
+  /// **'Versions of this song'**
+  String get inspectorPickVersions;
+
+  /// Heading in the Inspector's compare picker: every other project in the library
+  ///
+  /// In en, this message translates to:
+  /// **'Other projects'**
+  String get inspectorPickLibrary;
+
+  /// Button in the Inspector's project picker: choose a file outside the library
+  ///
+  /// In en, this message translates to:
+  /// **'Browse files…'**
+  String get inspectorPickBrowse;
+
+  /// Shown in the Inspector's project picker when the search matches nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No project matches'**
+  String get inspectorPickNone;
+
+  /// Tooltip on the dashboard's plug-in filter chip: clears the filter
+  ///
+  /// In en, this message translates to:
+  /// **'Show all projects'**
+  String get filterShowAllProjects;
+
   /// Settings switch: read a project before opening it in the DAW, and warn
   ///
   /// In en, this message translates to:
