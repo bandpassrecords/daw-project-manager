@@ -8220,6 +8220,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get inspectorKindFolder => 'フォルダー';
 
   @override
+  String get inspectorKindMaster => 'マスター';
+
+  @override
   String get inspectorTabTracks => 'トラック';
 
   @override

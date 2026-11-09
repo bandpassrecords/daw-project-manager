@@ -8,6 +8,11 @@ import '../models/project_anatomy.dart';
 Iterable<AnatomyChannel> mixerChannels(List<AnatomyChannel> channels) =>
     channels.where((c) => c.kind != AnatomyChannelKind.folder);
 
+/// The tracks of a project: mixer channels other than the master, which
+/// every project has and nobody counts as a track.
+Iterable<AnatomyChannel> trackChannels(List<AnatomyChannel> channels) =>
+    mixerChannels(channels).where((c) => c.kind != AnatomyChannelKind.master);
+
 /// How many channels there are of each kind; folders included.
 Map<AnatomyChannelKind, int> channelCounts(List<AnatomyChannel> channels) {
   final counts = <AnatomyChannelKind, int>{};

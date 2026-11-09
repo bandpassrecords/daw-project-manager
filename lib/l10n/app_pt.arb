@@ -4517,6 +4517,7 @@
   "inspectorKindGroup": "Grupo",
   "inspectorKindFx": "FX",
   "inspectorKindFolder": "Pasta",
+  "inspectorKindMaster": "Master",
   "inspectorTabTracks": "Faixas",
   "inspectorTabPlugins": "Plug-ins",
   "inspectorTabRouting": "Roteamento",

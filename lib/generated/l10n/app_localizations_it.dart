@@ -8735,6 +8735,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get inspectorKindFolder => 'Cartella';
 
   @override
+  String get inspectorKindMaster => 'Master';
+
+  @override
   String get inspectorTabTracks => 'Tracce';
 
   @override

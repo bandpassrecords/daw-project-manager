@@ -8720,6 +8720,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get inspectorKindFolder => 'Pasta';
 
   @override
+  String get inspectorKindMaster => 'Master';
+
+  @override
   String get inspectorTabTracks => 'Faixas';
 
   @override

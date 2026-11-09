@@ -8754,6 +8754,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get inspectorKindFolder => 'Carpeta';
 
   @override
+  String get inspectorKindMaster => 'Master';
+
+  @override
   String get inspectorTabTracks => 'Pistas';
 
   @override

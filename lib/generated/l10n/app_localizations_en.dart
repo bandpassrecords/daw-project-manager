@@ -8655,6 +8655,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inspectorKindFolder => 'Folder';
 
   @override
+  String get inspectorKindMaster => 'Master';
+
+  @override
   String get inspectorTabTracks => 'Tracks';
 
   @override

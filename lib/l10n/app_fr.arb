@@ -4493,6 +4493,7 @@
   "inspectorKindGroup": "Groupe",
   "inspectorKindFx": "FX",
   "inspectorKindFolder": "Dossier",
+  "inspectorKindMaster": "Master",
   "inspectorTabTracks": "Pistes",
   "inspectorTabPlugins": "Plug-ins",
   "inspectorTabRouting": "Routage",

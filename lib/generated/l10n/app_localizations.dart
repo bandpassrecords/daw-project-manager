@@ -13808,6 +13808,12 @@ abstract class AppLocalizations {
   /// **'Folder'**
   String get inspectorKindFolder;
 
+  /// Channel kind: the master channel, where a DAW keeps it as a channel of its own
+  ///
+  /// In en, this message translates to:
+  /// **'Master'**
+  String get inspectorKindMaster;
+
   /// Inspector section with every channel
   ///
   /// In en, this message translates to:

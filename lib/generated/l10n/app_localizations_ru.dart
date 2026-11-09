@@ -8687,6 +8687,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get inspectorKindFolder => 'Папка';
 
   @override
+  String get inspectorKindMaster => 'Мастер';
+
+  @override
   String get inspectorTabTracks => 'Дорожки';
 
   @override

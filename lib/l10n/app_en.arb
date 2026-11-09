@@ -8353,6 +8353,10 @@
   "@inspectorKindFolder": {
     "description": "Channel kind: folder track"
   },
+  "inspectorKindMaster": "Master",
+  "@inspectorKindMaster": {
+    "description": "Channel kind: the master channel, where a DAW keeps it as a channel of its own"
+  },
   "inspectorTabTracks": "Tracks",
   "@inspectorTabTracks": {
     "description": "Inspector section with every channel"

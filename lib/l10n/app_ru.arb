@@ -4493,6 +4493,7 @@
   "inspectorKindGroup": "Группа",
   "inspectorKindFx": "FX",
   "inspectorKindFolder": "Папка",
+  "inspectorKindMaster": "Мастер",
   "inspectorTabTracks": "Дорожки",
   "inspectorTabPlugins": "Плагины",
   "inspectorTabRouting": "Маршрутизация",

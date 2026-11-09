@@ -8753,6 +8753,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inspectorKindFolder => 'Dossier';
 
   @override
+  String get inspectorKindMaster => 'Master';
+
+  @override
   String get inspectorTabTracks => 'Pistes';
 
   @override

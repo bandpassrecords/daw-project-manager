@@ -4493,6 +4493,7 @@
   "inspectorKindGroup": "编组",
   "inspectorKindFx": "效果",
   "inspectorKindFolder": "文件夹",
+  "inspectorKindMaster": "主控",
   "inspectorTabTracks": "轨道",
   "inspectorTabPlugins": "插件",
   "inspectorTabRouting": "路由",

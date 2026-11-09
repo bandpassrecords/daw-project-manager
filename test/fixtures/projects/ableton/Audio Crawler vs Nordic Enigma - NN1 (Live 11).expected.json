@@ -123,6 +123,40 @@
         "file": "House 17.aiff",
         "use": "plugin"
       }
-    ]
+    ],
+    "inspector": {
+      "savedWith": "11.2",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": "4/4",
+      "channels": [
+        "1-Zebra2 [instrument] | -> Master | 0.0 dB C | instrument Zebra2 | inserts 1:FabFilter Pro-C 2, 2:FabFilter Pro-Q 3, 3:RBass Stereo, 4:TransX Multi Stereo, 5:FabFilter Saturn 2, 6:LFOTool",
+        "2-Kick 2 x64 [instrument] | -> Master | -2.0 dB C | instrument Kick 2 | inserts 1:RBass Stereo",
+        "3-Audio [audio] | -> Master | 0.0 dB C",
+        "4-Audio [audio] | -> Master | 0.0 dB C",
+        "5-Scaler 2 [instrument] | -> Master | 0.0 dB C | instrument Scaler 2",
+        "6-Spire [instrument] | -> Master | -31.0 dB C | instrument Spire | inserts 1:LFOTool, 2:FabFilter Pro-Q 3",
+        "7-A.N.A.64 [instrument] | -> Master | -17.0 dB C | instrument A.N.A.64 | inserts 1:EQ Eight",
+        "A-Reverb [fx] | -> Master | 0.0 dB C | inserts 0:Reverb",
+        "B-Delay [fx] | -> Master | 0.0 dB C | inserts 0:Delay",
+        "Master [master] | -> Ext. Out 1/2 | 0.0 dB C"
+      ],
+      "plugins": [
+        "A.N.A.64 | instrument | third-party | x1 | VST2",
+        "Delay | effect | stock | x1",
+        "EQ Eight | effect | stock | x1",
+        "FabFilter Pro-C 2 | effect | third-party | x1 | VST2",
+        "FabFilter Pro-Q 3 | effect | third-party | x2 | VST2",
+        "FabFilter Saturn 2 | effect | third-party | x1 | VST2",
+        "Kick 2 | instrument | third-party | x1 | VST2",
+        "LFOTool | effect | third-party | x2 | VST2",
+        "RBass Stereo | effect | third-party | x2 | VST3",
+        "Reverb | effect | stock | x1",
+        "Scaler 2 | instrument | third-party | x1 | VST3",
+        "Spire | instrument | third-party | x1 | VST3",
+        "TransX Multi Stereo | effect | third-party | x1 | VST3",
+        "Zebra2 | instrument | third-party | x1 | VST3"
+      ]
+    }
   }
 }

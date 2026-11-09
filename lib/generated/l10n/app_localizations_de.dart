@@ -8715,6 +8715,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get inspectorKindFolder => 'Ordner';
 
   @override
+  String get inspectorKindMaster => 'Master';
+
+  @override
   String get inspectorTabTracks => 'Spuren';
 
   @override

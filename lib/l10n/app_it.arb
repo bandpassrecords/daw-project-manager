@@ -4493,6 +4493,7 @@
   "inspectorKindGroup": "Gruppo",
   "inspectorKindFx": "FX",
   "inspectorKindFolder": "Cartella",
+  "inspectorKindMaster": "Master",
   "inspectorTabTracks": "Tracce",
   "inspectorTabPlugins": "Plug-in",
   "inspectorTabRouting": "Instradamento",

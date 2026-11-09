@@ -8126,6 +8126,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get inspectorKindFolder => '文件夹';
 
   @override
+  String get inspectorKindMaster => '主控';
+
+  @override
   String get inspectorTabTracks => '轨道';
 
   @override

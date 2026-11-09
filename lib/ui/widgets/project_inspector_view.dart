@@ -339,7 +339,7 @@ class _Tiles extends StatelessWidget {
     final a = anatomy;
     final channels = a.channels;
     final counts = channels == null ? null : channelCounts(channels);
-    final tracks = channels == null ? null : mixerChannels(channels).length;
+    final tracks = channels == null ? null : trackChannels(channels).length;
     // A DAW whose mixer isn't read yet still has the scan's track counts.
     final statRows = channels == null && a.stats != null
         ? statsTrackRows(l10n, a.stats!)
@@ -2090,6 +2090,7 @@ List<(AnatomyChannelKind, String)> channelKindLabels(AppLocalizations l10n) => [
   (AnatomyChannelKind.group, l10n.inspectorKindGroup),
   (AnatomyChannelKind.fx, l10n.inspectorKindFx),
   (AnatomyChannelKind.folder, l10n.inspectorKindFolder),
+  (AnatomyChannelKind.master, l10n.inspectorKindMaster),
 ];
 
 IconData channelKindIcon(AnatomyChannelKind kind) => switch (kind) {
@@ -2100,6 +2101,7 @@ IconData channelKindIcon(AnatomyChannelKind kind) => switch (kind) {
   AnatomyChannelKind.group => Icons.layers,
   AnatomyChannelKind.fx => Icons.blur_on,
   AnatomyChannelKind.folder => Icons.folder,
+  AnatomyChannelKind.master => Icons.speaker,
 };
 
 /// "C", "L30", "R100" — a pan from -1 to 1, as DAWs print it.
