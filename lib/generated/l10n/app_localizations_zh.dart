@@ -3294,6 +3294,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shortcutOpenInDaw => '在DAW中打开项目';
 
   @override
+  String get openProjectConfirmTitle => '打开此项目?';
+
+  @override
+  String openProjectConfirmBody(String name) {
+    return '将在 DAW 中打开“$name”。';
+  }
+
+  @override
   String get shortcutViewDetails => '查看项目详情';
 
   @override
@@ -8124,6 +8132,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get inspectorKindFolder => '文件夹';
+
+  @override
+  String get inspectorKindMaster => '主控';
 
   @override
   String get inspectorTabTracks => '轨道';

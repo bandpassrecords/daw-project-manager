@@ -114,7 +114,19 @@ class AnatomyBus {
   final List<String> ports;
 }
 
-enum AnatomyChannelKind { audio, instrument, midi, sampler, group, fx, folder }
+enum AnatomyChannelKind {
+  audio,
+  instrument,
+  midi,
+  sampler,
+  group,
+  fx,
+  folder,
+
+  /// The master channel, where a DAW keeps it as a channel of its own with
+  /// its own inserts (Ableton Live).
+  master,
+}
 
 /// One track or mixer channel.
 class AnatomyChannel {

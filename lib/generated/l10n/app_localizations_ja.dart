@@ -3326,6 +3326,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shortcutOpenInDaw => 'DAWでプロジェクトを開く';
 
   @override
+  String get openProjectConfirmTitle => 'このプロジェクトを開きますか?';
+
+  @override
+  String openProjectConfirmBody(String name) {
+    return '「$name」をDAWで開きます。';
+  }
+
+  @override
   String get shortcutViewDetails => 'プロジェクトの詳細を表示';
 
   @override
@@ -8218,6 +8226,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get inspectorKindFolder => 'フォルダー';
+
+  @override
+  String get inspectorKindMaster => 'マスター';
 
   @override
   String get inspectorTabTracks => 'トラック';

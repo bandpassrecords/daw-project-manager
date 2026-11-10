@@ -3536,6 +3536,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get shortcutOpenInDaw => 'Открыть проект в DAW';
 
   @override
+  String get openProjectConfirmTitle => 'Открыть этот проект?';
+
+  @override
+  String openProjectConfirmBody(String name) {
+    return '«$name» откроется в DAW.';
+  }
+
+  @override
   String get shortcutViewDetails => 'Просмотр деталей проекта';
 
   @override
@@ -8685,6 +8693,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inspectorKindFolder => 'Папка';
+
+  @override
+  String get inspectorKindMaster => 'Мастер';
 
   @override
   String get inspectorTabTracks => 'Дорожки';

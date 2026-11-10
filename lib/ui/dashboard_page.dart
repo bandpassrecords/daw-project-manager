@@ -51,6 +51,7 @@ import '../utils/mobile_utils.dart';
 import '../services/player_volume_store.dart';
 import '../utils/text_input_focus.dart';
 import '../utils/player_shortcuts.dart';
+import 'player_seek_keys.dart';
 import '../utils/track_duration.dart';
 import '../utils/phase_colors.dart';
 import '../utils/project_file_status.dart';
@@ -7202,6 +7203,9 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
   Future<void> _launchProject(MusicProject project) =>
       launchProjectFromMenu(context, ref, project);
 
+  Future<void> _launchProjectFromKey(MusicProject project) =>
+      launchProjectAfterConfirming(context, ref, project);
+
   Future<void> _viewProjectDetails(MusicProject project) =>
       openProjectDetail(context, project);
 
@@ -8750,7 +8754,7 @@ class _PlutoProjectsTableState extends ConsumerState<_PlutoProjectsTable>
               _playPreviewSong,
             ),
             LogicalKeySet(LogicalKeyboardKey.keyO): _TrinaProjectAction(
-              _launchProject,
+              _launchProjectFromKey,
             ),
             LogicalKeySet(LogicalKeyboardKey.keyD): _TrinaProjectAction(
               _viewProjectDetails,
@@ -10232,10 +10236,6 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     // Never steal keys from text inputs.
     if (_isTextInputFocused()) return false;
 
-    final modified =
-        HardwareKeyboard.instance.isControlPressed ||
-        HardwareKeyboard.instance.isMetaPressed;
-
     if (event.logicalKey == LogicalKeyboardKey.space) {
       _togglePlayPause();
       return true;
@@ -10247,23 +10247,20 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
       if (!_isGeneratingMono) _toggleMono();
       return true;
     }
-    // Arrow keys only when the player bar has focus — avoids conflicting with
-    // table row navigation when the user has clicked into the projects table.
-    if (!_focusNode.hasFocus) return false;
-    if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      _seek(modified ? -30 : -5);
-      return true;
-    }
-    if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-      _seek(modified ? 30 : 5);
-      return true;
-    }
     return false;
   }
+
+  /// Left/Right, also while the projects table has the keyboard.
+  late final OnKeyEventCallback _handleSeekKeys = playerSeekKeyHandler(
+    barHasFocus: () => _focusNode.hasFocus,
+    pageInFront: () => ModalRoute.isCurrentOf(context) ?? true,
+    onSeek: _seek,
+  );
 
   @override
   void initState() {
     super.initState();
+    FocusManager.instance.addEarlyKeyEventHandler(_handleSeekKeys);
     // Pause when another player in the app starts making sound.
     AppAudioFocus.register(this, () {
       if (_player.state == PlayerState.playing) _player.pause();
@@ -10350,6 +10347,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
   @override
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_handleKeyboard);
+    FocusManager.instance.removeEarlyKeyEventHandler(_handleSeekKeys);
     _focusNode.dispose();
     _player.stop();
     _player.dispose();

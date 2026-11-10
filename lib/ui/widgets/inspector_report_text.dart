@@ -4,6 +4,7 @@ import 'package:path/path.dart' as p;
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/project_anatomy.dart';
 import '../../services/project_inspector/media_check.dart';
+import '../../utils/project_anatomy_stats.dart';
 import '../dialogs/archive_project_dialog.dart' show formatByteSize;
 import 'project_inspector_view.dart';
 
@@ -249,9 +250,8 @@ String inspectorSummaryText(
   ];
   if (facts.isNotEmpty) lines.add(facts.join(' · '));
   final instances = a.plugins.fold<int>(0, (s, pl) => s + (pl.instances ?? 1));
-  final trackCount = a.channels
-      ?.where((c) => c.kind != AnatomyChannelKind.folder)
-      .length;
+  final trackCount =
+      a.channels == null ? null : trackChannels(a.channels!).length;
   lines.add(
     [
       if (trackCount != null)

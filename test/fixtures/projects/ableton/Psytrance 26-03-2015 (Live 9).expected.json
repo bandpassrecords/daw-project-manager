@@ -162,6 +162,32 @@
         "file": "EHU_808_OpenHat1.wav",
         "use": "audio"
       }
-    ]
+    ],
+    "inspector": {
+      "savedWith": "9.1",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": "4/4",
+      "channels": [
+        "1-BazzISM2 [instrument] | -> Master | -1.4 dB C | instrument BazzISM2",
+        "2-Sylenth1 [instrument] | -> Master | 0.0 dB C | instrument Sylenth1 | inserts 1:Glue Compressor",
+        "3-Audio [audio] | -> Master | -7.6 dB C",
+        "4-Audio [audio] | -> Master | -10.0 dB C | inserts 0:EQ Eight",
+        "5-Audio [audio] | -> Master | -16.1 dB C",
+        "6-Sylenth1 [instrument] | -> Master | -10.0 dB C | instrument Sylenth1",
+        "A-Reverb [fx] | -> Master | 0.0 dB C | inserts 0:Reverb",
+        "B-Delay [fx] | -> Master | 0.0 dB C | inserts 0:Simple Delay",
+        "Master [master] | -> Ext. Out 1/2 | 0.0 dB C | inserts 0:Limiter, 1:Glue Compressor"
+      ],
+      "plugins": [
+        "BazzISM2 | instrument | third-party | x1 | VST2",
+        "EQ Eight | effect | stock | x1",
+        "Glue Compressor | effect | stock | x2",
+        "Limiter | effect | stock | x1",
+        "Reverb | effect | stock | x1",
+        "Simple Delay | effect | stock | x1",
+        "Sylenth1 | instrument | third-party | x2 | VST2"
+      ]
+    }
   }
 }

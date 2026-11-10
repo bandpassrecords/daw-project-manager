@@ -3188,6 +3188,16 @@
   "shortcutFocusTable": "Focus projects table",
   "shortcutPlayPause": "Play / pause preview song",
   "shortcutOpenInDaw": "Open project in DAW",
+  "openProjectConfirmTitle": "Open this project?",
+  "openProjectConfirmBody": "\"{name}\" will open in its DAW.",
+  "@openProjectConfirmBody": {
+    "description": "Asked before the O shortcut opens a project in its DAW",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "shortcutViewDetails": "View project details",
   "shortcutOpenFolder": "Open project folder",
   "shortcutNavigateRows": "Navigate rows",
@@ -8352,6 +8362,10 @@
   "inspectorKindFolder": "Folder",
   "@inspectorKindFolder": {
     "description": "Channel kind: folder track"
+  },
+  "inspectorKindMaster": "Master",
+  "@inspectorKindMaster": {
+    "description": "Channel kind: the master channel, where a DAW keeps it as a channel of its own"
   },
   "inspectorTabTracks": "Tracks",
   "@inspectorTabTracks": {

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,12 +21,24 @@ class _FakeWorkTimerNotifier extends WorkTimerNotifier {
   int build() => 0;
 }
 
-Future<void> _pumpHost(WidgetTester tester) async {
+// The real one reads the mode from Hive.
+class _FakeSessionModeNotifier extends SessionModeNotifier {
+  _FakeSessionModeNotifier(this.initial);
+  final bool initial;
+
+  @override
+  bool build() => initial;
+}
+
+Future<void> _pumpHost(WidgetTester tester, {bool sessionMode = false}) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         allProjectsStreamProvider.overrideWith((ref) => Stream.value(const <MusicProject>[])),
         workTimerProvider.overrideWith(_FakeWorkTimerNotifier.new),
+        sessionModeProvider.overrideWith(
+          () => _FakeSessionModeNotifier(sessionMode),
+        ),
       ],
       child: MaterialApp(
         localizationsDelegates: appLocalizationsDelegates,
@@ -58,6 +71,17 @@ Future<void> _pumpHost(WidgetTester tester) async {
                       TestFactories.makeProject(id: 'missing'),
                     ),
                     child: const Text('launch missing'),
+                  ),
+                  TextButton(
+                    onPressed: () => launchProjectAfterConfirming(
+                      context,
+                      ref,
+                      TestFactories.makeProject(
+                        id: 'missing',
+                        customDisplayName: 'My Song',
+                      ),
+                    ),
+                    child: const Text('press O'),
                   ),
                 ],
               );
@@ -149,6 +173,77 @@ void main() {
         expect(find.text('File missing.'), findsOneWidget);
       },
     );
+  });
+
+  group('launchProjectAfterConfirming', () {
+    testWidgets('nothing launches until the dialog is answered', (tester) async {
+      await _pumpHost(tester);
+
+      await tester.tap(find.text('press O'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Open this project?'), findsOneWidget);
+      expect(find.text('"My Song" will open in its DAW.'), findsOneWidget);
+      expect(find.text('File missing.'), findsNothing);
+    });
+
+    testWidgets('confirming launches', (tester) async {
+      await _pumpHost(tester);
+      await tester.tap(find.text('press O'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Launch in DAW'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('File missing.'), findsOneWidget);
+    });
+
+    testWidgets('Enter confirms, the launch button having the keyboard', (
+      tester,
+    ) async {
+      await _pumpHost(tester);
+      await tester.tap(find.text('press O'));
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.text('File missing.'), findsOneWidget);
+    });
+
+    testWidgets('cancelling does not launch', (tester) async {
+      await _pumpHost(tester);
+      await tester.tap(find.text('press O'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Open this project?'), findsNothing);
+      expect(find.text('File missing.'), findsNothing);
+    });
+
+    testWidgets('Esc does not launch', (tester) async {
+      await _pumpHost(tester);
+      await tester.tap(find.text('press O'));
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Open this project?'), findsNothing);
+      expect(find.text('File missing.'), findsNothing);
+    });
+
+    testWidgets('in session mode there is nothing to ask', (tester) async {
+      await _pumpHost(tester, sessionMode: true);
+
+      await tester.tap(find.text('press O'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Open this project?'), findsNothing);
+      expect(find.text('File missing.'), findsNothing);
+    });
   });
 
   group('resolveDawLaunchAction', () {
