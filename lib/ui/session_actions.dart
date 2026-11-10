@@ -143,6 +143,40 @@ Future<MusicProject?> _resolveStackSessionTarget(
 /// project/release detail pages) so the override — and its missing-binary
 /// remediation / configure prompt — behaves identically everywhere instead
 /// of only from wherever it was implemented first.
+/// [launchProjectInDaw] for a single key press (O in the projects table),
+/// which is easy to hit by accident and starts a whole DAW: asks first. Enter
+/// confirms and Esc cancels, so it stays a keyboard action.
+///
+/// In session mode a row doesn't launch at all, so there is nothing to ask.
+Future<void> launchProjectAfterConfirming(
+  BuildContext context,
+  WidgetRef ref,
+  MusicProject project,
+) async {
+  if (ref.read(sessionModeProvider)) return;
+  final l10n = AppLocalizations.of(context)!;
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l10n.openProjectConfirmTitle),
+      content: Text(l10n.openProjectConfirmBody(project.displayName)),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: Text(l10n.cancel),
+        ),
+        ElevatedButton(
+          autofocus: true,
+          onPressed: () => Navigator.pop(ctx, true),
+          child: Text(l10n.openInDaw),
+        ),
+      ],
+    ),
+  );
+  if (confirmed != true || !context.mounted) return;
+  await launchProjectInDaw(context, ref, project);
+}
+
 Future<void> launchProjectInDaw(
   BuildContext context,
   WidgetRef ref,

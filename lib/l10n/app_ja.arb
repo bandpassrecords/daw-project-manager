@@ -2258,6 +2258,8 @@
   "shortcutFocusTable": "プロジェクトテーブルにフォーカス",
   "shortcutPlayPause": "プレビュー曲を再生／一時停止",
   "shortcutOpenInDaw": "DAWでプロジェクトを開く",
+  "openProjectConfirmTitle": "このプロジェクトを開きますか?",
+  "openProjectConfirmBody": "「{name}」をDAWで開きます。",
   "shortcutViewDetails": "プロジェクトの詳細を表示",
   "shortcutOpenFolder": "プロジェクトフォルダを開く",
   "shortcutNavigateRows": "行を移動",

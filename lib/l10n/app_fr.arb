@@ -2258,6 +2258,8 @@
   "shortcutFocusTable": "Focaliser le tableau des projets",
   "shortcutPlayPause": "Lire / mettre en pause la chanson d'aperçu",
   "shortcutOpenInDaw": "Ouvrir le projet dans le DAW",
+  "openProjectConfirmTitle": "Ouvrir ce projet ?",
+  "openProjectConfirmBody": "« {name} » sera ouvert dans le DAW.",
   "shortcutViewDetails": "Voir les détails du projet",
   "shortcutOpenFolder": "Ouvrir le dossier du projet",
   "shortcutNavigateRows": "Naviguer dans les lignes",

@@ -3615,6 +3615,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get shortcutOpenInDaw => 'Abrir projeto no DAW';
 
   @override
+  String get openProjectConfirmTitle => 'Abrir este projeto?';
+
+  @override
+  String openProjectConfirmBody(String name) {
+    return '\"$name\" será aberto no DAW.';
+  }
+
+  @override
   String get shortcutViewDetails => 'Ver detalhes do projeto';
 
   @override

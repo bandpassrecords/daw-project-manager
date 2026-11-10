@@ -2258,6 +2258,8 @@
   "shortcutFocusTable": "Перейти к таблице проектов",
   "shortcutPlayPause": "Воспроизвести / пауза превью",
   "shortcutOpenInDaw": "Открыть проект в DAW",
+  "openProjectConfirmTitle": "Открыть этот проект?",
+  "openProjectConfirmBody": "«{name}» откроется в DAW.",
   "shortcutViewDetails": "Просмотр деталей проекта",
   "shortcutOpenFolder": "Открыть папку проекта",
   "shortcutNavigateRows": "Навигация по строкам",
