@@ -130,19 +130,6 @@ Future<MusicProject?> _resolveStackSessionTarget(
   );
 }
 
-/// Launches [project] in its DAW.
-///
-/// Preference order: a user-registered executable override for the DAW type
-/// (Settings > DAW Locations) → the OS default file-type handler. The
-/// override is always used on Linux (no dependable association there); on
-/// Windows/macOS it's a fallback offered via a dialog when the standard
-/// launch fails.
-///
-/// Shared by every "launch in DAW" entry point in the app (the main
-/// projects grid, the active-session chip, the idle-session suggestions,
-/// project/release detail pages) so the override — and its missing-binary
-/// remediation / configure prompt — behaves identically everywhere instead
-/// of only from wherever it was implemented first.
 /// [launchProjectInDaw] for a single key press (O in the projects table),
 /// which is easy to hit by accident and starts a whole DAW: asks first. Enter
 /// confirms and Esc cancels, so it stays a keyboard action.
@@ -177,6 +164,19 @@ Future<void> launchProjectAfterConfirming(
   await launchProjectInDaw(context, ref, project);
 }
 
+/// Launches [project] in its DAW.
+///
+/// Preference order: a user-registered executable override for the DAW type
+/// (Settings > DAW Locations) → the OS default file-type handler. The
+/// override is always used on Linux (no dependable association there); on
+/// Windows/macOS it's a fallback offered via a dialog when the standard
+/// launch fails.
+///
+/// Shared by every "launch in DAW" entry point in the app (the main
+/// projects grid, the active-session chip, the idle-session suggestions,
+/// project/release detail pages) so the override — and its missing-binary
+/// remediation / configure prompt — behaves identically everywhere instead
+/// of only from wherever it was implemented first.
 Future<void> launchProjectInDaw(
   BuildContext context,
   WidgetRef ref,
