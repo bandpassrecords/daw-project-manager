@@ -4261,12 +4261,18 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                 const DriveSyncStatusRailIcon(),
                                             // "Syncing…" while it runs, as
                                             // Rescan says "Scanning…".
+                                            // Only `syncing`: every other change
+                                            // (a refresh after each sync, the
+                                            // automatic sync at launch) would
+                                            // rebuild the whole dashboard and
+                                            // lay out the projects table again.
                                             label:
-                                                ref
-                                                    .watch(
-                                                      driveSyncStatusProvider,
-                                                    )
-                                                    .syncing
+                                                ref.watch(
+                                                  driveSyncStatusProvider
+                                                      .select(
+                                                        (s) => s.syncing,
+                                                      ),
+                                                )
                                                 ? AppLocalizations.of(
                                                     context,
                                                   )!.driveSyncing

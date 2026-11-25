@@ -14,14 +14,23 @@
 // repainted the whole page, and the playing row's animated icon repainted
 // the whole projects table on every frame — 27,000 render objects a second
 // in it, behind an open dialog too. Now it draws ~100 frames a second at ~2
-// ms, and the table doesn't repaint. Not part of CI: a debug build on a
-// real window, run when the player changes.
+// ms, and the table doesn't repaint.
+//
+// Then it visits every tab in the rail and a project's page with the song
+// still playing, and holds each to the same rule: nothing outside the player
+// repaints. A one-off is a failure too — the automatic sync's status refresh
+// rebuilt the whole dashboard (and laid the table out again) once, for the
+// sake of one rail label, and showed up here as 753 objects a second.
+//
+// Not part of CI: a debug build on a real window, run when the player
+// changes.
 
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,7 +82,8 @@ Future<void> _seed() async {
 }
 
 /// A stereo 16-bit WAV of [seconds] of shifting tones, long enough to
-/// measure over (the demo library's previews last three seconds).
+/// measure every screen over (the demo library's previews last three
+/// seconds).
 Uint8List _songWav(int seconds) {
   const rate = 44100;
   final frames = rate * seconds;
@@ -116,6 +126,24 @@ Future<Map<String, Object>> _measure(String label) async {
   final icons = {
     for (final e in find.byType(NowPlayingIcon).evaluate()) e.renderObject,
   };
+  // What the player itself draws: the bar (its waveform and slider move
+  // with the song) and the playing row's icon. Everything else is the cost
+  // playing puts on the rest of the app.
+  final player = {
+    ...icons,
+    for (final e
+        in find
+            .byKey(const Key('desktop_player_bar'), skipOffstage: false)
+            .evaluate())
+      e.renderObject,
+  };
+  bool outsidePlayer(RenderObject r) {
+    for (RenderObject? o = r; o != null; o = o.parent) {
+      if (player.contains(o)) return false;
+    }
+    return true;
+  }
+
   bool inGrid(RenderObject r) {
     for (RenderObject? o = r; o != null; o = o.parent) {
       if (icons.contains(o)) return false;
@@ -124,12 +152,27 @@ Future<Map<String, Object>> _measure(String label) async {
     return false;
   }
 
-  var painted = 0, gridPainted = 0;
+  var painted = 0, gridPainted = 0, outside = 0;
   final gridTypes = <String, int>{};
+  final outsideTypes = <String, int>{};
   final timings = <FrameTiming>[];
   void onTimings(List<FrameTiming> t) => timings.addAll(t);
   debugOnProfilePaint = (r) {
     painted++;
+    if (outsidePlayer(r)) {
+      outside++;
+      final creator = r.debugCreator;
+      final chain = <String>[];
+      if (creator is DebugCreator) {
+        creator.element.visitAncestorElements((e) {
+          final name = '${e.widget.runtimeType}';
+          if (!name.startsWith('_')) chain.add(name);
+          return chain.length < 8;
+        });
+      }
+      final type = '${r.runtimeType} <- ${chain.join(' < ')}';
+      outsideTypes[type] = (outsideTypes[type] ?? 0) + 1;
+    }
     if (grid != null && inGrid(r)) {
       gridPainted++;
       final creator = r.debugCreator;
@@ -182,8 +225,14 @@ Future<Map<String, Object>> _measure(String label) async {
     'framesPerSecond': (timings.length / secs).toStringAsFixed(1),
     'paintedPerSecond': (painted / secs).round(),
     'tablePaintedPerSecond': (gridPainted / secs).round(),
+    'outsidePlayerPaintedPerSecond': (outside / secs).round(),
     'avgBuildMs': ms(timings.map((t) => t.buildDuration)).toStringAsFixed(2),
     'avgRasterMs': ms(timings.map((t) => t.rasterDuration)).toStringAsFixed(2),
+    'outsideTop': (outsideTypes.entries.toList()
+          ..sort((a, b) => b.value - a.value))
+        .take(3)
+        .map((e) => '${e.value} ${e.key}')
+        .toList(),
     'tableTop': (gridTypes.entries.toList()..sort((a, b) => b.value - a.value))
         .take(1)
         .map(
@@ -227,7 +276,7 @@ void main() {
     final idle = await _measure('idle, nothing playing');
 
     final song = File(p.join(Directory.systemTemp.path, 'dpm_perf_song.wav'));
-    await song.writeAsBytes(_songWav(40));
+    await song.writeAsBytes(_songWav(150));
     final container = ProviderScope.containerOf(
       tester.element(find.byType(TrinaGrid)),
     );
@@ -261,25 +310,81 @@ void main() {
 
     await tester.tap(find.text('Cancel'));
     await Future<void>.delayed(const Duration(milliseconds: 500));
+
+    // The song plays on under every other screen: each should cost what the
+    // player draws and nothing else.
+    final screens = <Map<String, Object>>[];
+    Future<void> measureScreen(String name) async {
+      final before = container.read(desktopPlayerPositionProvider);
+      final result = await _measure('song playing, $name');
+      expect(
+        container.read(desktopPlayerPositionProvider),
+        greaterThan(before),
+        reason: 'the song had stopped by $name',
+      );
+      screens.add(result);
+    }
+
+    Future<void> tab(IconData icon, String name) async {
+      final button = find.descendant(
+        of: find.byType(NavigationRail),
+        matching: find.byIcon(icon),
+      );
+      // Not every tab is in the rail by default.
+      if (button.evaluate().isEmpty) return;
+      await tester.tap(button.first);
+      await Future<void>.delayed(const Duration(seconds: 3));
+      await measureScreen(name);
+    }
+
+    await tab(Icons.album, 'releases');
+    await tab(Icons.playlist_play, 'playlists');
+    await tab(Icons.piano, 'MIDI');
+    await tab(Icons.checklist, 'tasks');
+    await tab(Icons.bar_chart_rounded, 'statistics');
+    await tab(Icons.library_music, 'projects again');
+
+    // A project's own page, pushed over the dashboard.
+    final row = find.text('Fever Dream').first;
+    final mouse = await tester.createGesture(
+      kind: PointerDeviceKind.mouse,
+      buttons: kSecondaryMouseButton,
+    );
+    await mouse.addPointer(location: tester.getCenter(row));
+    await mouse.down(tester.getCenter(row));
+    await mouse.up();
+    await mouse.removePointer();
+    await Future<void>.delayed(const Duration(milliseconds: 800));
+    await tester.tap(find.text('View Details').first);
+    await Future<void>.delayed(const Duration(seconds: 3));
+    await measureScreen('project page');
+    await tester.tap(find.byIcon(Icons.arrow_back).hitTestable().first);
+    await Future<void>.delayed(const Duration(seconds: 1));
+
     container.read(desktopPlayerProvider.notifier).close();
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
     ErrorWidget.builder = errorWidgetBuilder;
-    debugPrint('PERF_SUMMARY ${jsonEncode([idle, dashboard, dialog])}');
+    debugPrint(
+      'PERF_SUMMARY ${jsonEncode([idle, dashboard, dialog, ...screens])}',
+    );
     expect(
       dashboard['tablePaintedPerSecond'],
       0,
       reason: 'the table repainted while a song played',
     );
-    // Not yet zero: with the dialog open the table's own scroll viewport (a
-    // repaint boundary of its own) is repainted with every position update,
-    // about 40 render objects each time — 750 a second, where it was 27,663
-    // before. What marks it is still to be found.
     expect(
       dialog['tablePaintedPerSecond'],
-      lessThan(2000),
+      0,
       reason: 'the table repainted behind the dialog',
     );
+    for (final screen in [dashboard, dialog, ...screens]) {
+      expect(
+        screen['outsidePlayerPaintedPerSecond'],
+        0,
+        reason: '${screen['label']}: something besides the player repainted',
+      );
+    }
     expect(dashboard['framesPerSecond'], isNot('0.0'));
   });
 }
