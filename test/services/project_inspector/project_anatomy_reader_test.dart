@@ -241,10 +241,10 @@ void main() {
   });
 
   test(
-    'another DAW: header and plug-in names, channels not read yet',
+    'nothing to read channels from: header and plug-in names, channels null',
     () async {
-      // Studio One, whose reader is still to come (#228): a .song is a zip
-      // of XML documents.
+      // A Studio One song with no console (Devices/audiomixer.xml): what a
+      // DAW reader can't read falls back to the scan's header and names.
       final dir = await Directory.systemTemp.createTemp('anatomy_song');
       addTearDown(() => dir.delete(recursive: true));
       List<int> xml(String s) => utf8.encode(s);

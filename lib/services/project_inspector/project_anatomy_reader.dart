@@ -16,6 +16,7 @@ import '../daw_parsers/ableton_project_parser.dart';
 import '../daw_parsers/cubase_project_parser.dart';
 import '../daw_parsers/flp_project_parser.dart';
 import '../daw_parsers/reaper_project_parser.dart';
+import '../daw_parsers/studio_one_project_parser.dart';
 import '../metadata_extractor.dart';
 import '../sample_pack/project_sample_reader.dart';
 import 'cubase_stock_plugins.dart';
@@ -78,6 +79,38 @@ Future<ProjectAnatomy> readProjectAnatomy(String filePath) async {
       );
     } catch (_) {
       // A set the reader can't make sense of still shows what the scan
+      // read, as the other DAWs do.
+    }
+  }
+
+  if (ext == '.song') {
+    final bytes = await file.readAsBytes();
+    final dawType = meta.dawType;
+    final savedWith = meta.dawVersion;
+    final tempo = meta.bpm;
+    final key = meta.key;
+    final stats = meta.stats;
+    final notes = meta.projectNotes;
+    final markers = meta.markers;
+    final missingMidi = meta.missingMidiFiles;
+    try {
+      final read = await Isolate.run(
+        () => studioOneAnatomy(
+          filePath: filePath,
+          bytes: bytes,
+          dawType: dawType,
+          savedWith: savedWith,
+          tempo: tempo,
+          key: key,
+          stats: stats,
+          notes: notes,
+          markers: markers,
+          missingMidiFiles: missingMidi,
+        ),
+      );
+      if (read != null) return read;
+    } catch (_) {
+      // A song the reader can't make sense of still shows what the scan
       // read, as the other DAWs do.
     }
   }
@@ -1009,6 +1042,165 @@ List<AnatomyPlugin> _flPlugins(List<FlpChannel> rack, List<FlpInsert> mixer) {
 }
 
 class _FlTally {
+  int instances = 0;
+  final List<String> channels = [];
+
+  void add(String channel) {
+    instances++;
+    if (!channels.contains(channel)) channels.add(channel);
+  }
+}
+
+/// A Studio One song's anatomy from its bytes (#228); null when it has no
+/// console to read. [tempo], [key], [stats] and the rest are what
+/// [MetadataExtractor] read from the same file; the console, the
+/// instruments, the sample rate, bit depth and time signature are read
+/// here.
+///
+/// Every console channel but the inputs, the output last as the master. An
+/// instrument channel carries the instrument playing into it. A VCA moves
+/// faders and mixes nothing; it is listed with the groups.
+ProjectAnatomy? studioOneAnatomy({
+  required String filePath,
+  required Uint8List bytes,
+  String? dawType,
+  String? savedWith,
+  double? tempo,
+  String? key,
+  ProjectStats? stats,
+  String? notes,
+  List<ProjectMarker>? markers,
+  List<String>? missingMidiFiles,
+}) {
+  final parser = StudioOneProjectParser(bytes);
+  final console = parser.readConsole();
+  if (console == null) return null;
+  final ordered = [
+    for (final c in console.channels)
+      if (c.kind != StudioOneChannelKind.output) c,
+    for (final c in console.channels)
+      if (c.kind == StudioOneChannelKind.output) c,
+  ];
+
+  AnatomyChannel channel(StudioOneChannel c) {
+    final db = c.gain == null ? null : studioOneGainDb(c.gain!);
+    return AnatomyChannel(
+      name: c.name,
+      kind: switch (c.kind) {
+        StudioOneChannelKind.audio => AnatomyChannelKind.audio,
+        StudioOneChannelKind.instrument => AnatomyChannelKind.instrument,
+        StudioOneChannelKind.group ||
+        StudioOneChannelKind.vca => AnatomyChannelKind.group,
+        StudioOneChannelKind.fx => AnatomyChannelKind.fx,
+        StudioOneChannelKind.output => AnatomyChannelKind.master,
+      },
+      output: c.destination,
+      volumeDb: db,
+      faderPosition: db == null ? null : studioOneFaderPosition(db),
+      pan: c.pan == null ? null : ((c.pan! - 0.5) * 2).clamp(-1.0, 1.0),
+      muted: c.muted,
+      soloed: c.soloed,
+      instrument: c.instrument?.name,
+      instrumentId: c.instrument?.classId,
+      instrumentPreset: c.instrument?.preset,
+      inserts: [
+        for (final (i, p) in c.inserts.indexed)
+          AnatomyInsert(
+            slot: i,
+            plugin: p.name,
+            pluginId: p.classId,
+            format: p.format,
+            preset: p.preset,
+            deactivated: p.bypassed,
+          ),
+      ],
+      sends: [
+        for (final s in c.sends)
+          AnatomySend(
+            destination: s.destination,
+            levelDb: s.level == null ? null : studioOneGainDb(s.level!),
+            levelPosition: s.level == null
+                ? null
+                : studioOneFaderPosition(studioOneGainDb(s.level!)),
+            on: !s.bypassed,
+            preFader: s.preFader,
+          ),
+      ],
+    );
+  }
+
+  return ProjectAnatomy(
+    filePath: filePath,
+    fileSize: bytes.length,
+    dawType: dawType ?? 'Studio One',
+    savedWith: savedWith,
+    tempo: tempo,
+    key: key,
+    timeSignature: console.timeSignature,
+    sampleRate: console.sampleRate,
+    bitDepth: console.bitDepth,
+    channels: [for (final c in ordered) channel(c)],
+    plugins: _studioOnePlugins(ordered),
+    pluginInstancesKnown: true,
+    media: parser.readSampleReferences(),
+    stats: stats,
+    notes: _notes(notes),
+    markers: markers,
+    missingMidiFiles: missingMidiFiles,
+  );
+}
+
+/// A Studio One fader's or send's gain in dB; minus infinity at silence.
+double studioOneGainDb(double gain) => gain <= 1e-8
+    ? double.negativeInfinity
+    : (20 * math.log(gain) / math.ln10).clamp(-150.0, 24.0);
+
+/// Where a fader at [db] sits from 0 (bottom) to 1 (top), for drawing it:
+/// Studio One's tops out at +10 dB. The shape, not its exact scale.
+double studioOneFaderPosition(double db) => db.isInfinite && db < 0
+    ? 0
+    : db >= 0
+    ? (0.8 + 0.2 * (db / 10)).clamp(0.0, 1.0)
+    : 0.8 * (1 - math.sqrt((-db / 90).clamp(0.0, 1.0)));
+
+/// Every plug-in by name and format: instruments and effects, PreSonus's
+/// own as stock.
+List<AnatomyPlugin> _studioOnePlugins(List<StudioOneChannel> channels) {
+  final found = <String, ({StudioOnePlugin plugin, _S1Tally tally})>{};
+  void add(StudioOnePlugin p, String channel) {
+    found
+        .putIfAbsent(
+          '${p.name.toLowerCase()}|${p.format ?? ''}|${p.isInstrument}',
+          () => (plugin: p, tally: _S1Tally()),
+        )
+        .tally
+        .add(channel);
+  }
+
+  for (final c in channels) {
+    if (c.instrument case final i?) add(i, c.name);
+    for (final p in c.inserts) {
+      add(p, c.name);
+    }
+  }
+  return [
+    for (final f in found.values)
+      AnatomyPlugin(
+        name: f.plugin.name,
+        role: f.plugin.isInstrument
+            ? AnatomyPluginRole.instrument
+            : AnatomyPluginRole.effect,
+        stock: f.plugin.native,
+        instances: f.tally.instances,
+        channels: List.unmodifiable(f.tally.channels),
+        pluginId: f.plugin.classId,
+        vendor: f.plugin.native == true ? 'PreSonus' : null,
+        format: f.plugin.format,
+      ),
+  ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+}
+
+class _S1Tally {
   int instances = 0;
   final List<String> channels = [];
 
