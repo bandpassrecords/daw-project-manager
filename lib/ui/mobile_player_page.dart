@@ -24,6 +24,7 @@ import 'widgets/project_cover_avatar.dart';
 import 'widgets/project_notes_section.dart';
 import 'widgets/waveform_widget.dart';
 import 'app_snack_bar.dart';
+import 'widgets/owned_text_controller.dart';
 
 /// Route for the full mobile player. On Android it slides up from the bottom
 /// on push and back down on pop (the "now playing" sheet gesture) instead of
@@ -128,13 +129,11 @@ class _MobilePlayerPageState extends ConsumerState<MobilePlayerPage> {
     if (project == null) return;
     final position = playerState.position;
     final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController();
-
     final text = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (ctx) {
+      builder: (ctx) => OwnedTextController(builder: (_, controller) {
         final theme = Theme.of(ctx);
         return Padding(
           padding: EdgeInsets.only(
@@ -196,10 +195,8 @@ class _MobilePlayerPageState extends ConsumerState<MobilePlayerPage> {
             ],
           ),
         );
-      },
+      }),
     );
-    controller.dispose();
-
     if (text == null || text.trim().isEmpty) return;
     await _addTodoAtTimestamp(project, position, text.trim());
     if (!mounted) return;

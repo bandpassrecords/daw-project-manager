@@ -15,6 +15,7 @@ import '../../services/player_volume_store.dart';
 import '../../utils/track_duration.dart';
 import '../app_snack_bar.dart';
 import 'semantics_safe.dart';
+import '../../services/song_player.dart';
 
 /// The project page's "Latest capture": the last pass the DAW plugin
 /// recorded, beside the preview song and never in its place. Plays on its
@@ -30,7 +31,7 @@ class LatestCaptureSection extends ConsumerStatefulWidget {
 }
 
 class _LatestCaptureSectionState extends ConsumerState<LatestCaptureSection> {
-  final AudioPlayer _player = AudioPlayer();
+  final AudioPlayer _player = newSongPlayer();
   bool _playing = false;
   bool _available = false;
   Duration _position = Duration.zero;

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' show PointerDeviceKind;
 
 import 'package:flutter/gestures.dart' show kSecondaryMouseButton;
+import 'package:flutter/rendering.dart' show RenderClipRect;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -653,5 +654,90 @@ void main() {
 
       expect(seeked, closeTo(0.5, 0.02));
     });
+
+    // While a song played the whole page repainted with every position
+    // update — the waveform recomputed and drew itself twice, and the
+    // projects table above it was drawn again too: the main page felt
+    // sluggish. A new position now only moves the played part's clip.
+    for (final style in WaveformStyle.values) {
+      testWidgets(
+          'a new position paints neither the waveform nor what is around '
+          'it (${style.name})', (tester) async {
+        var around = 0;
+        // Only the waveform is rebuilt, as in the player bar.
+        final progress = ValueNotifier(0.1);
+        addTearDown(progress.dispose);
+        await tester.pumpWidget(host(Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CustomPaint(
+              size: const Size(400, 10),
+              painter: _CountingPainter(() => around++),
+            ),
+            ValueListenableBuilder<double>(
+              valueListenable: progress,
+              builder: (_, value, _) => WaveformWidget(
+                peaks: stereoPeaks,
+                progress: value,
+                height: 80,
+                style: style,
+              ),
+            ),
+          ],
+        )));
+        final waveformPaints = debugWaveformPaintCount;
+        final aroundPaints = around;
+
+        for (final value in [0.2, 0.5, 0.9, 1.0]) {
+          progress.value = value;
+          await tester.pump();
+        }
+
+        expect(debugWaveformPaintCount, waveformPaints);
+        expect(around, aroundPaints);
+      });
+    }
+
+    testWidgets('the played part reaches exactly as far as the position',
+        (tester) async {
+      Future<double> playedWidth(double progress) async {
+        await tester.pumpWidget(host(
+          WaveformWidget(peaks: monoPeaks, progress: progress, height: 64),
+        ));
+        final clip = tester.renderObject<RenderClipRect>(find.descendant(
+          of: find.byType(WaveformWidget),
+          matching: find.byType(ClipRect),
+        ));
+        return clip.clipper!.getClip(clip.size).width;
+      }
+
+      expect(await playedWidth(0), 0);
+      expect(await playedWidth(0.25), closeTo(100, 1e-9));
+      expect(await playedWidth(1), closeTo(400, 1e-9));
+      // A position reported a hair past the end draws no further.
+      expect(await playedWidth(1.02), closeTo(400, 1e-9));
+    });
+
+    testWidgets('a new colour paints the waveform again', (tester) async {
+      await tester.pumpWidget(host(WaveformWidget(
+          peaks: monoPeaks, progress: 0.5, height: 64, playedColor: Colors.red)));
+      final before = debugWaveformPaintCount;
+      await tester.pumpWidget(host(WaveformWidget(
+          peaks: monoPeaks, progress: 0.5, height: 64, playedColor: Colors.blue)));
+      expect(debugWaveformPaintCount, greaterThan(before));
+    });
   });
+}
+
+/// Counts its paints; never asks to repaint itself, so any paint is one the
+/// widgets around it caused.
+class _CountingPainter extends CustomPainter {
+  _CountingPainter(this.onPaint);
+  final VoidCallback onPaint;
+
+  @override
+  void paint(Canvas canvas, Size size) => onPaint();
+
+  @override
+  bool shouldRepaint(_CountingPainter old) => false;
 }

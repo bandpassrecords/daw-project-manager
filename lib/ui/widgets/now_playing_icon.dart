@@ -75,13 +75,19 @@ class _NowPlayingIconState extends State<NowPlayingIcon>
       onExit: (_) => setState(() => _hovering = false),
       child: _hovering
           ? Icon(widget.pauseIcon)
-          : SizedBox.square(
-              dimension: size,
-              child: CustomPaint(
-                key: const ValueKey('now-playing-bars'),
-                painter: NowPlayingBarsPainter(
-                  progress: _ctrl,
-                  color: color,
+          // Its own repaint boundary: the bars move on every frame, and
+          // without one each frame repainted everything up to the nearest
+          // boundary — the whole projects table, about 2,000 render objects,
+          // a hundred times a second while a song played.
+          : RepaintBoundary(
+              child: SizedBox.square(
+                dimension: size,
+                child: CustomPaint(
+                  key: const ValueKey('now-playing-bars'),
+                  painter: NowPlayingBarsPainter(
+                    progress: _ctrl,
+                    color: color,
+                  ),
                 ),
               ),
             ),
