@@ -2292,7 +2292,48 @@
         "use": "audio",
         "kind": "imported"
       }
-    ]
+    ],
+    "inspector": {
+      "savedWith": "9.1",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": "4/4",
+      "channels": [
+        "1-5th Stab Lead [instrument] | -> Master | -1.7 dB R30 | instrument 5th Stab Lead | inserts 0:Arpeggiator",
+        "2-Audio [audio] | -> Master | -7.7 dB L20 | inserts 0:EQ Eight, 1:Reverb",
+        "3-Audio [audio] | -> Master | -6.0 dB L20 | inserts 0:EQ Eight",
+        "4-MIDI [midi] | -> Master | 0.0 dB C",
+        "5-Group [group] | -> Master | 0.0 dB C | inserts 0:Sonalksis Creative Filter Stereo (64 bit)",
+        "6-Audio [audio] | in 5-Group | -> 5-Group | -3.8 dB C mute",
+        "7-Audio [audio] | in 5-Group | -> 5-Group | -9.4 dB C",
+        "8-Sylenth1 [instrument] | in 5-Group | -> 5-Group | -3.0 dB C | instrument Sylenth1 | inserts 1:Glue Compressor, 2:EQ Eight, 3:Simple Delay",
+        "9-Serum_x64 [instrument] | in 5-Group | -> 5-Group | -1.6 dB C | instrument Serum | inserts 1:Glue Compressor (off)",
+        "10-Audio [audio] | -> Master | -6.2 dB R20 | inserts 0:Reverb, 1:Ping Pong Delay, 2:EQ Eight",
+        "11-Audio [audio] | -> Master | -11.8 dB R19",
+        "12-Audio [audio] | -> Master | -14.1 dB C | inserts 0:Reverb",
+        "13-Audio [audio] | -> Master | -8.4 dB C | inserts 0:Reverb",
+        "14-Audio [audio] | -> Master | -6.8 dB C | inserts 0:EQ Eight",
+        "15-Audio [audio] | -> Master | -10.6 dB C",
+        "16-Audio [audio] | -> Master | -7.5 dB C | inserts 0:Reverb",
+        "17-Audio [audio] | -> Master | -13.8 dB L20",
+        "18-Audio [audio] | -> Master | -12.3 dB L11 | inserts 0:EQ Eight",
+        "A-Reverb [fx] | -> Master | 0.0 dB C | inserts 0:Reverb",
+        "B-Delay [fx] | -> Master | 0.0 dB C | inserts 0:Simple Delay",
+        "Master [master] | -> Ext. Out 1/2 | 0.0 dB C"
+      ],
+      "plugins": [
+        "Arpeggiator | effect | stock | x1",
+        "EQ Eight | effect | stock | x7",
+        "Glue Compressor | effect | stock | x2",
+        "Operator | instrument | stock | x1",
+        "Ping Pong Delay | effect | stock | x2",
+        "Reverb | effect | stock | x6",
+        "Serum | instrument | third-party | x1 | VST2",
+        "Simple Delay | effect | stock | x2",
+        "Sonalksis Creative Filter Stereo (64 bit) | effect | third-party | x1 | VST2",
+        "Sylenth1 | instrument | third-party | x1 | VST2"
+      ]
+    }
   },
   "22_06_2015_B_138_9.6.2.als": {
     "dawType": "Ableton Live",
@@ -4587,7 +4628,48 @@
         "use": "audio",
         "kind": "imported"
       }
-    ]
+    ],
+    "inspector": {
+      "savedWith": "9.6",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": "4/4",
+      "channels": [
+        "1-5th Stab Lead [instrument] | -> Master | -1.7 dB R30 | instrument 5th Stab Lead | inserts 0:Arpeggiator",
+        "2-Audio [audio] | -> Master | -7.7 dB L20 | inserts 0:EQ Eight, 1:Reverb",
+        "3-Audio [audio] | -> Master | -6.0 dB L20 | inserts 0:EQ Eight",
+        "4-MIDI [midi] | -> Master | 0.0 dB C",
+        "5-Group [group] | -> Master | 0.0 dB C | inserts 0:Sonalksis Creative Filter Stereo (64 bit)",
+        "6-Audio [audio] | in 5-Group | -> 5-Group | -3.8 dB C mute",
+        "7-Audio [audio] | in 5-Group | -> 5-Group | -9.4 dB C",
+        "8-Sylenth1 [instrument] | in 5-Group | -> 5-Group | -3.0 dB C | instrument Sylenth1 | inserts 1:Glue Compressor, 2:EQ Eight, 3:Simple Delay",
+        "9-Serum_x64 [instrument] | in 5-Group | -> 5-Group | -1.6 dB C | instrument Serum | inserts 1:Glue Compressor (off)",
+        "10-Audio [audio] | -> Master | -6.2 dB R20 | inserts 0:Reverb, 1:Ping Pong Delay, 2:EQ Eight",
+        "11-Audio [audio] | -> Master | -11.8 dB R19",
+        "12-Audio [audio] | -> Master | -14.1 dB C | inserts 0:Reverb",
+        "13-Audio [audio] | -> Master | -8.4 dB C | inserts 0:Reverb",
+        "14-Audio [audio] | -> Master | -6.8 dB C | inserts 0:EQ Eight",
+        "15-Audio [audio] | -> Master | -10.6 dB C",
+        "16-Audio [audio] | -> Master | -7.5 dB C | inserts 0:Reverb",
+        "17-Audio [audio] | -> Master | -13.8 dB L20",
+        "18-Audio [audio] | -> Master | -12.3 dB L11 | inserts 0:EQ Eight",
+        "A-Reverb [fx] | -> Master | 0.0 dB C | inserts 0:Reverb",
+        "B-Delay [fx] | -> Master | 0.0 dB C | inserts 0:Simple Delay",
+        "Master [master] | -> Ext. Out 1/2 | 0.0 dB C"
+      ],
+      "plugins": [
+        "Arpeggiator | effect | stock | x1",
+        "EQ Eight | effect | stock | x7",
+        "Glue Compressor | effect | stock | x2",
+        "Operator | instrument | stock | x1",
+        "Ping Pong Delay | effect | stock | x2",
+        "Reverb | effect | stock | x6",
+        "Serum | instrument | third-party | x1 | VST2",
+        "Simple Delay | effect | stock | x2",
+        "Sonalksis Creative Filter Stereo (64 bit) | effect | third-party | x1 | VST2",
+        "Sylenth1 | instrument | third-party | x1 | VST2"
+      ]
+    }
   },
   "22_06_2015_B_138_Master.als": {
     "dawType": "Ableton Live",
@@ -6893,6 +6975,58 @@
         "use": "audio",
         "kind": "imported"
       }
-    ]
+    ],
+    "inspector": {
+      "savedWith": "9.1",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": "4/4",
+      "channels": [
+        "1-5th Stab Lead [instrument] | -> Master | -1.7 dB R30 | instrument 5th Stab Lead | inserts 0:Arpeggiator",
+        "2-Audio [audio] | -> Master | -7.7 dB L20 | inserts 0:EQ Eight, 1:Reverb",
+        "3-Audio [audio] | -> Master | -6.0 dB L20 | inserts 0:EQ Eight",
+        "4-MIDI [midi] | -> Master | 0.0 dB C",
+        "5-Group [group] | -> Master | 0.0 dB C | inserts 0:Sonalksis Creative Filter Stereo (64 bit)",
+        "6-Audio [audio] | in 5-Group | -> 5-Group | -3.8 dB C mute",
+        "7-Audio [audio] | in 5-Group | -> 5-Group | -9.4 dB C",
+        "8-Sylenth1 [instrument] | in 5-Group | -> 5-Group | -3.0 dB C | instrument Sylenth1 | inserts 1:Glue Compressor, 2:EQ Eight, 3:Simple Delay",
+        "9-Serum_x64 [instrument] | in 5-Group | -> 5-Group | -1.6 dB C | instrument Serum | inserts 1:RBass Stereo, 2:EQ Eight, 3:Glue Compressor",
+        "10-Audio [audio] | -> Master | -6.2 dB R20 | inserts 0:Reverb, 1:Ping Pong Delay, 2:EQ Eight",
+        "11-Audio [audio] | -> Master | -11.8 dB R19",
+        "12-Audio [audio] | -> Master | -16.8 dB C | inserts 0:Reverb",
+        "13-Audio [audio] | -> Master | -15.3 dB C | inserts 0:Reverb",
+        "14-Audio [audio] | -> Master | -6.8 dB C | inserts 0:EQ Eight",
+        "15-Audio [audio] | -> Master | -10.6 dB C",
+        "16-Audio [audio] | -> Master | -9.0 dB C | inserts 0:Reverb",
+        "17-Audio [audio] | -> Master | -13.8 dB L20",
+        "18-Audio [audio] | -> Master | -12.3 dB L11 | inserts 0:EQ Eight",
+        "A-Reverb [fx] | -> Master | 0.0 dB C | inserts 0:Reverb",
+        "B-Delay [fx] | -> Master | 0.0 dB C | inserts 0:Simple Delay",
+        "Master [master] | -> Ext. Out 1/2 | 0.0 dB C | inserts 0:REQ 6 Stereo, 1:C1 comp Stereo, 2:L3 UltraMaximizer Stereo, 3:LinMB Stereo, 4:Center Stereo, 5:PuigChild 670 Stereo, 6:SSLGChannel Stereo, 7:SSLComp Stereo, 8:L2 Stereo, 9:PAZ- Analyzer Stereo"
+      ],
+      "plugins": [
+        "Arpeggiator | effect | stock | x1",
+        "C1 comp Stereo | effect | third-party | x1 | VST2",
+        "Center Stereo | effect | third-party | x1 | VST2",
+        "EQ Eight | effect | stock | x8",
+        "Glue Compressor | effect | stock | x2",
+        "L2 Stereo | effect | third-party | x1 | VST2",
+        "L3 UltraMaximizer Stereo | effect | third-party | x1 | VST2",
+        "LinMB Stereo | effect | third-party | x1 | VST2",
+        "Operator | instrument | stock | x1",
+        "PAZ- Analyzer Stereo | effect | third-party | x1 | VST2",
+        "Ping Pong Delay | effect | stock | x2",
+        "PuigChild 670 Stereo | effect | third-party | x1 | VST2",
+        "RBass Stereo | effect | third-party | x1 | VST2",
+        "REQ 6 Stereo | effect | third-party | x1 | VST2",
+        "Reverb | effect | stock | x6",
+        "Serum | instrument | third-party | x1 | VST2",
+        "Simple Delay | effect | stock | x2",
+        "Sonalksis Creative Filter Stereo (64 bit) | effect | third-party | x1 | VST2",
+        "SSLComp Stereo | effect | third-party | x1 | VST2",
+        "SSLGChannel Stereo | effect | third-party | x1 | VST2",
+        "Sylenth1 | instrument | third-party | x1 | VST2"
+      ]
+    }
   }
 }

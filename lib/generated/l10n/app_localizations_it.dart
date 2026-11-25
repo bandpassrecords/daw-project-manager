@@ -3608,6 +3608,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get shortcutOpenInDaw => 'Apri il progetto nel DAW';
 
   @override
+  String get openProjectConfirmTitle => 'Aprire questo progetto?';
+
+  @override
+  String openProjectConfirmBody(String name) {
+    return '\"$name\" verrà aperto nel DAW.';
+  }
+
+  @override
   String get shortcutViewDetails => 'Visualizza dettagli del progetto';
 
   @override
@@ -8733,6 +8741,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get inspectorKindFolder => 'Cartella';
+
+  @override
+  String get inspectorKindMaster => 'Master';
 
   @override
   String get inspectorTabTracks => 'Tracce';

@@ -586,6 +586,36 @@
         "use": "audio",
         "kind": "imported"
       }
-    ]
+    ],
+    "inspector": {
+      "savedWith": "9.1",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": "4/4",
+      "channels": [
+        "KickBass [group] | -> Master | 0.0 dB C",
+        "Kick [audio] | in KickBass | -> KickBass | -1.0 dB C | inserts 0:EQ Eight",
+        "Bass [instrument] | in KickBass | -> KickBass | 0.0 dB C | instrument Operator | inserts 1:Glue Compressor",
+        "Snare [group] | -> Master | 0.0 dB C",
+        "Snare 01 [audio] | in Snare | -> Snare | -19.0 dB C",
+        "Snare 02 [audio] | in Snare | -> Snare | -12.4 dB C",
+        "HiHat [group] | -> Master | -10.8 dB C | inserts 0:EQ Eight",
+        "Open Hat 01 [audio] | in HiHat | -> HiHat | -8.9 dB C",
+        "Open Hat 02 [audio] | in HiHat | -> HiHat | -8.4 dB C",
+        "Closed Hat 01 [audio] | in HiHat | -> HiHat | -33.0 dB C",
+        "Closed Hat 02 [audio] | in HiHat | -> HiHat | -14.1 dB C",
+        "12-Audio [audio] | in HiHat | -> HiHat | -22.3 dB C",
+        "A-Reverb [fx] | -> Master | 0.0 dB C | inserts 0:Reverb",
+        "B-Delay [fx] | -> Master | 0.0 dB C | inserts 0:Simple Delay",
+        "Master [master] | -> Ext. Out 1/2 | 0.0 dB C"
+      ],
+      "plugins": [
+        "EQ Eight | effect | stock | x2",
+        "Glue Compressor | effect | stock | x1",
+        "Operator | instrument | stock | x1",
+        "Reverb | effect | stock | x1",
+        "Simple Delay | effect | stock | x1"
+      ]
+    }
   }
 }

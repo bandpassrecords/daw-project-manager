@@ -5734,6 +5734,18 @@ abstract class AppLocalizations {
   /// **'Open project in DAW'**
   String get shortcutOpenInDaw;
 
+  /// No description provided for @openProjectConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this project?'**
+  String get openProjectConfirmTitle;
+
+  /// Asked before the O shortcut opens a project in its DAW
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will open in its DAW.'**
+  String openProjectConfirmBody(String name);
+
   /// No description provided for @shortcutViewDetails.
   ///
   /// In en, this message translates to:
@@ -13807,6 +13819,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Folder'**
   String get inspectorKindFolder;
+
+  /// Channel kind: the master channel, where a DAW keeps it as a channel of its own
+  ///
+  /// In en, this message translates to:
+  /// **'Master'**
+  String get inspectorKindMaster;
 
   /// Inspector section with every channel
   ///
