@@ -1,0 +1,164 @@
+{
+  "Trance loop.rpp": {
+    "dawType": "Reaper",
+    "dawVersion": "5.70",
+    "bpm": 130.0,
+    "key": null,
+    "markers": [],
+    "stats": {
+      "audio": 1,
+      "midi": 0,
+      "instrument": 8,
+      "sampler": 0,
+      "bus": 1,
+      "folder": 0,
+      "plugins": [
+        "amp-model",
+        "amplitudeModulator",
+        "avocado_glitch",
+        "bassmanager",
+        "eventhorizon2",
+        "gaussian_noise_generator",
+        "gfxanalyzer",
+        "gfxGoniometer",
+        "gfxscope",
+        "gfxspectrograph",
+        "lorenzattractor",
+        "moog24db",
+        "nonlinear",
+        "phase_adjust",
+        "ReaComp",
+        "ReaEQ",
+        "ReaSynDr",
+        "ReaSynth",
+        "ReaVerb",
+        "ReaVerbate",
+        "ReaVoice",
+        "Saturation",
+        "stereoEnhancer",
+        "vumetergfx"
+      ],
+      "midiClips": 8
+    },
+    "midiClips": [
+      {
+        "name": "untitled MIDI item",
+        "track": "kick 1",
+        "ppq": 960,
+        "lengthTicks": 3840,
+        "notes": 4,
+        "events": 0,
+        "content": "569dc1280d0e"
+      },
+      {
+        "name": "untitled MIDI item",
+        "track": "kick 2",
+        "ppq": 960,
+        "lengthTicks": 3840,
+        "notes": 4,
+        "events": 0,
+        "content": "7c7943292306"
+      },
+      {
+        "name": "untitled MIDI item",
+        "track": "Snare",
+        "ppq": 960,
+        "lengthTicks": 3840,
+        "notes": 2,
+        "events": 0,
+        "content": "b2da23813c6b"
+      },
+      {
+        "name": "untitled MIDI item",
+        "track": "hihat close",
+        "ppq": 960,
+        "lengthTicks": 3840,
+        "notes": 11,
+        "events": 0,
+        "content": "c7fe2756c017"
+      },
+      {
+        "name": "untitled MIDI item",
+        "track": "hihat Open",
+        "ppq": 960,
+        "lengthTicks": 3840,
+        "notes": 1,
+        "events": 0,
+        "content": "9df0ee9034f0"
+      },
+      {
+        "name": "Bass untitled MIDI item",
+        "track": "Bass",
+        "ppq": 960,
+        "lengthTicks": 3840,
+        "notes": 16,
+        "events": 0,
+        "content": "d76e3d1d8ae7"
+      },
+      {
+        "name": "untitled MIDI item",
+        "track": "Pad",
+        "ppq": 960,
+        "lengthTicks": 15360,
+        "notes": 12,
+        "events": 0,
+        "content": "96ce863a722b"
+      },
+      {
+        "name": "untitled MIDI item",
+        "track": "Pad",
+        "ppq": 960,
+        "lengthTicks": 15360,
+        "notes": 12,
+        "events": 0,
+        "content": "0b8722e2fd8a"
+      }
+    ],
+    "sampleReferences": [],
+    "inspector": {
+      "savedWith": "5.70",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": "4/4",
+      "channels": [
+        "kick 1 [instrument] | -> Master | -2.7 dB C | instrument ReaSynth | inserts 1:ReaEQ, 2:ReaComp | sends Pad (3/4) 0.0 dB",
+        "kick 2 [instrument] | -> Master | 0.2 dB C | instrument ReaSynth | inserts 1:ReaEQ",
+        "Snare [instrument] | -> Master | -9.0 dB C | instrument ReaSynDr | inserts 1:ReaEQ",
+        "hihat close [instrument] | -> Master | -8.2 dB C | instrument ReaSynDr | inserts 1:ReaVoice, 2:ReaEQ",
+        "hihat Open [instrument] | -> Master | -1.7 dB L6 | instrument ReaSynDr | inserts 1:ReaEQ, 2:ReaComp",
+        "Bass [instrument] | -> Master | -8.6 dB C | instrument ReaSynth | inserts 1:ReaEQ, 2:Saturation | sends Reverb -25.1 dB",
+        "Pad [instrument] | -> Master | -0.8 dB C | instrument ReaSynth | inserts 1:ReaVerbate, 2:ReaComp, 3:ReaEQ | sends Reverb -6.2 dB pre",
+        "Noise [audio] | -> Master | 0.0 dB C | inserts 0:gaussian_noise_generator, 1:ReaEQ",
+        "Reverb [fx] | -> Master | 0.0 dB C | inserts 0:ReaVerb (sweetverbo)",
+        "Good Effect [instrument] | -> Master | 0.0 dB C | instrument ReaSynth | inserts 0:avocado_glitch (off), 1:bassmanager (off), 2:amplitudeModulator (off), 3:amp-model (off), 4:moog24db (off), 5:nonlinear (off), 6:stereoEnhancer (off), 7:phase_adjust (off), 9:lorenzattractor (off)",
+        "Master [master] | -> Out 1/2 | 0.0 dB C | inserts 0:ReaEQ, 1:eventhorizon2, 2:gfxspectrograph, 3:vumetergfx, 4:gfxanalyzer, 5:gfxGoniometer, 6:gfxscope"
+      ],
+      "plugins": [
+        "amp-model | effect | stock | x1 | JS",
+        "amplitudeModulator | effect | stock | x1 | JS",
+        "avocado_glitch | effect | stock | x1 | JS",
+        "bassmanager | effect | stock | x1 | JS",
+        "eventhorizon2 | effect | stock | x1 | JS",
+        "gaussian_noise_generator | effect | stock | x1 | JS",
+        "gfxanalyzer | effect | stock | x1 | JS",
+        "gfxGoniometer | effect | stock | x1 | JS",
+        "gfxscope | effect | stock | x1 | JS",
+        "gfxspectrograph | effect | stock | x1 | JS",
+        "lorenzattractor | effect | stock | x1 | JS",
+        "moog24db | effect | stock | x1 | JS",
+        "nonlinear | effect | stock | x1 | JS",
+        "phase_adjust | effect | stock | x1 | JS",
+        "ReaComp | effect | stock | x3 | Cockos | VST2",
+        "ReaEQ | effect | stock | x9 | Cockos | VST2",
+        "ReaSynDr | instrument | stock | x3 | Cockos | VST2",
+        "ReaSynth | instrument | stock | x5 | Cockos | VST2",
+        "ReaVerb | effect | stock | x1 | Cockos | VST2",
+        "ReaVerbate | effect | stock | x1 | Cockos | VST2",
+        "ReaVoice | effect | stock | x1 | Cockos | VST2",
+        "Saturation | effect | stock | x1 | JS",
+        "stereoEnhancer | effect | stock | x1 | JS",
+        "vumetergfx | effect | stock | x1 | JS"
+      ]
+    }
+  }
+}

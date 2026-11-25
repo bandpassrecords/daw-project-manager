@@ -1,0 +1,283 @@
+{
+  "Big BrotherTruncated.rpp": {
+    "dawType": "Reaper",
+    "dawVersion": "7.18",
+    "bpm": 220.0,
+    "key": null,
+    "markers": [
+      "Sart",
+      ""
+    ],
+    "stats": {
+      "audio": 14,
+      "midi": 0,
+      "instrument": 0,
+      "sampler": 0,
+      "bus": 2,
+      "folder": 6,
+      "plugins": [
+        "Butch Vig Vocals Stereo",
+        "C1 gate Stereo",
+        "CLA Drums Stereo",
+        "dbx-160 Stereo",
+        "EKramer DR Stereo",
+        "L1 limiter Mono",
+        "Silencer",
+        "TrueVerb Stereo",
+        "UADx Empirical Labs Distressor",
+        "UADx Sound City Studios"
+      ],
+      "midiClips": 0
+    },
+    "midiClips": [],
+    "sampleReferences": [
+      {
+        "file": "02-Lewit front -210505_2145.wav",
+        "use": "audio"
+      },
+      {
+        "file": "03-Lewit Back-210505_2145.wav",
+        "use": "audio"
+      },
+      {
+        "file": "04-Rode-210505_2145.wav",
+        "use": "audio"
+      },
+      {
+        "file": "05-210808_1410.wav",
+        "use": "audio"
+      },
+      {
+        "file": "08-Kick in-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "08-Kick in-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "08-Kick in-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "08-Kick in-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "08-Kick in-220601_2122.wav",
+        "use": "audio"
+      },
+      {
+        "file": "09-Kick out-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "09-Kick out-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "09-Kick out-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "09-Kick out-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "09-Kick out-220601_2122.wav",
+        "use": "audio"
+      },
+      {
+        "file": "10-Snair 57-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "10-Snair 57-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "10-Snair 57-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "10-Snair 57-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "10-Snair 57-220601_2122.wav",
+        "use": "audio"
+      },
+      {
+        "file": "11-Snar Bottom-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "11-Snar Bottom-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "11-Snar Bottom-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "11-Snar Bottom-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "11-Snar Bottom-220601_2122.wav",
+        "use": "audio"
+      },
+      {
+        "file": "12-Snr Ber-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "12-Snr Ber-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "12-Snr Ber-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "12-Snr Ber-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "12-Snr Ber-220601_2122.wav",
+        "use": "audio"
+      },
+      {
+        "file": "13-Tom1-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "13-Tom1-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "13-Tom1-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "13-Tom1-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "13-Tom1-220601_2122.wav",
+        "use": "audio"
+      },
+      {
+        "file": "14-Tom2-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "14-Tom2-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "14-Tom2-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "14-Tom2-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "14-Tom2-220601_2122.wav",
+        "use": "audio"
+      },
+      {
+        "file": "15-OH L -220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "15-OH L -220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "15-OH L -220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "15-OH L -220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "15-OH L -220601_2122.wav",
+        "use": "audio"
+      },
+      {
+        "file": "16-OH R-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "16-OH R-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "16-OH R-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "16-OH R-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "16-OH R-220601_2122.wav",
+        "use": "audio"
+      },
+      {
+        "file": "17-Talk-220601_2115.wav",
+        "use": "audio"
+      },
+      {
+        "file": "17-Talk-220601_2122.wav",
+        "use": "audio"
+      }
+    ],
+    "inspector": {
+      "savedWith": "7.18",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": "4/4",
+      "channels": [
+        "Git 1 [group] | -> Master | -7.1 dB C mute | inserts 0:L1 limiter Mono",
+        "Lewit front [audio] | in Git 1 | -> Git 1 | -8.4 dB C",
+        "Lewit Back [audio] | in Git 1 | -> Git 1 | -8.4 dB C",
+        "Rode [audio] | in Git 1 | -> Git 1 | 1.1 dB C",
+        "Track 5 [audio] | -> Master | 1.8 dB C mute",
+        "Drums [group] | -> Master | -4.9 dB C | inserts 0:UADx Sound City Studios",
+        "Sqush [fx] | in Drums | -> Drums | 0.0 dB C | inserts 0:UADx Empirical Labs Distressor",
+        "Drum Room [fx] | in Drums | -> Drums | -10.3 dB C mute | inserts 0:TrueVerb Stereo (TrueVerb Full reset), 1:dbx-160 Stereo (Full Reset)",
+        "Kick [group] | in Drums | -> Drums | 2.4 dB C | inserts 0:Silencer, 1:CLA Drums Stereo (Full Reset) | sends Sqush 0.0 dB",
+        "Kick in [audio] | in Kick | -> Kick | 0.0 dB C",
+        "Kick out [audio] | in Kick | -> Kick | 0.0 dB C",
+        "Snr [group] | in Drums | -> Drums | 0.0 dB C | inserts 0:Silencer, 1:CLA Drums Stereo (Full Reset) | sends Sqush 0.0 dB, Drum Room 0.0 dB",
+        "Snair 57 [audio] | in Snr | -> Snr | 0.0 dB C",
+        "Snar Bottom [audio] | in Snr | -> Snr | 0.0 dB C",
+        "Snr Ber [audio] | in Snr | -> Snr | 0.0 dB C",
+        "Tomm [group] | in Drums | -> Drums | -16.3 dB C | inserts 0:C1 gate Stereo (Full C1gate reset), 1:CLA Drums Stereo (Full Reset), 2:EKramer DR Stereo (Full Reset) | sends Sqush 0.0 dB, Drum Room 0.0 dB",
+        "Tom1 [audio] | in Tomm | -> Tomm | 0.0 dB L42",
+        "Tom2 [audio] | in Tomm | -> Tomm | 0.0 dB R61",
+        "OH [group] | in Drums | -> Drums | 0.0 dB C | inserts 0:Butch Vig Vocals Stereo (Full Reset) | sends Sqush 0.0 dB, Drum Room 0.0 dB",
+        "OH L [audio] | in OH | -> OH | 0.0 dB L100",
+        "OH R [audio] | in OH | -> OH | 0.0 dB R100",
+        "Talk [audio] | in OH | -> OH | 12.0 dB C mute",
+        "Master [master] | -> Out 1/2 | -2.2 dB C"
+      ],
+      "plugins": [
+        "Butch Vig Vocals Stereo | effect | third-party | x1 | Waves | VST3",
+        "C1 gate Stereo | effect | third-party | x1 | Waves | VST3",
+        "CLA Drums Stereo | effect | third-party | x3 | Waves | VST3",
+        "dbx-160 Stereo | effect | third-party | x1 | Waves | VST3",
+        "EKramer DR Stereo | effect | third-party | x1 | Waves | VST3",
+        "L1 limiter Mono | effect | third-party | x1 | Waves | VST2",
+        "Silencer | effect | third-party | x2 | Black Salt Audio | VST3",
+        "TrueVerb Stereo | effect | third-party | x1 | Waves | VST3",
+        "UADx Empirical Labs Distressor | effect | third-party | x1 | Universal Audio (UADx) | VST3",
+        "UADx Sound City Studios | effect | third-party | x1 | Universal Audio (UADx) | VST3"
+      ]
+    }
+  }
+}

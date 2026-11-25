@@ -1,0 +1,271 @@
+{
+  "Hjertebank_routing_bug.RPP": {
+    "dawType": "Reaper",
+    "dawVersion": "5.50rc18",
+    "bpm": 83.0,
+    "key": "F Major",
+    "markers": [
+      "Colab",
+      "Mix",
+      "Start",
+      "Intro",
+      "vers 1",
+      "Pre1",
+      "Perc solo",
+      "Ref1",
+      "Rytme",
+      "Ref hale",
+      "Blåss section",
+      "vers 2",
+      "Pre2",
+      "Ref 2",
+      "Rytme",
+      "Brekk",
+      "Ref 3",
+      "Comp + blås",
+      "Outro",
+      "Cut"
+    ],
+    "stats": {
+      "audio": 0,
+      "midi": 3,
+      "instrument": 1,
+      "sampler": 0,
+      "bus": 3,
+      "folder": 2,
+      "plugins": [
+        "Addictive Drums 2",
+        "dpMeter2",
+        "H-Comp Stereo",
+        "HoRNetMulticompPlusMK2",
+        "MGA_JSLimiter",
+        "midi_logger",
+        "ReaEQ",
+        "TB_Barricade_v3",
+        "Track_Inspector"
+      ],
+      "midiClips": 21
+    },
+    "midiClips": [
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 53367,
+        "notes": 17,
+        "events": 0,
+        "content": "b2ce0b6f5203"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 6042,
+        "notes": 6,
+        "events": 0,
+        "content": "eff49d0a77e3"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 43386,
+        "notes": 14,
+        "events": 0,
+        "content": "5b1826e979dd"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 74605,
+        "notes": 30,
+        "events": 0,
+        "content": "bf9185c28819"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 1902,
+        "notes": 2,
+        "events": 0,
+        "content": "5e680bc29c4b"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 12923,
+        "notes": 4,
+        "events": 0,
+        "content": "cec36e27e6ba"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 3098,
+        "notes": 2,
+        "events": 0,
+        "content": "63e3da0bbc85"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 4303,
+        "notes": 2,
+        "events": 0,
+        "content": "1f61d577c364"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 5336,
+        "notes": 4,
+        "events": 0,
+        "content": "f038f0205b1d"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 3672,
+        "notes": 3,
+        "events": 0,
+        "content": "653fbcf936d1"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 3098,
+        "notes": 2,
+        "events": 0,
+        "content": "42c41b71f142"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 91907,
+        "notes": 12,
+        "events": 0,
+        "content": "9f47541831e4"
+      },
+      {
+        "name": "49-Sn midi-Recorded MIDI",
+        "track": "Sn midi",
+        "ppq": 960,
+        "lengthTicks": 15360,
+        "notes": 5,
+        "events": 0,
+        "content": "1d4d11e13268"
+      },
+      {
+        "name": "27-Bd midi-Recorded MIDI",
+        "track": "Bd midi",
+        "ppq": 960,
+        "lengthTicks": 61174,
+        "notes": 12,
+        "events": 0,
+        "content": "4fe5a29d251b"
+      },
+      {
+        "name": "27-Bd midi-Recorded MIDI",
+        "track": "Bd midi",
+        "ppq": 960,
+        "lengthTicks": 42240,
+        "notes": 11,
+        "events": 0,
+        "content": "f529b4bb8590"
+      },
+      {
+        "name": "27-Bd midi-Recorded MIDI",
+        "track": "Bd midi",
+        "ppq": 960,
+        "lengthTicks": 72960,
+        "notes": 22,
+        "events": 0,
+        "content": "93e28f88de6a"
+      },
+      {
+        "name": "27-Bd midi-Recorded MIDI",
+        "track": "Bd midi",
+        "ppq": 960,
+        "lengthTicks": 126720,
+        "notes": 26,
+        "events": 0,
+        "content": "adddcc7ca5ca"
+      },
+      {
+        "name": "27-Bd midi-Recorded MIDI",
+        "track": "Bd midi",
+        "ppq": 960,
+        "lengthTicks": 15360,
+        "notes": 4,
+        "events": 0,
+        "content": "fdad03e5e84a"
+      },
+      {
+        "name": "05-Addictive Drums 2-Recorded MIDI",
+        "track": "Snare solo",
+        "ppq": 960,
+        "lengthTicks": 6020,
+        "notes": 5,
+        "events": 0,
+        "content": "4b0bfe4b339a"
+      },
+      {
+        "name": "05-Addictive Drums 2-Recorded MIDI",
+        "track": "Addictive Drums 2",
+        "ppq": 960,
+        "lengthTicks": 11318,
+        "notes": 12,
+        "events": 0,
+        "content": "f74ff0114883"
+      },
+      {
+        "name": "Addictive Drums 2 untitled MIDI item-glued",
+        "track": "Addictive Drums 2",
+        "ppq": 960,
+        "lengthTicks": 3786,
+        "notes": 3,
+        "events": 0,
+        "content": "e99fdf471a1f"
+      }
+    ],
+    "sampleReferences": [],
+    "inspector": {
+      "savedWith": "5.50rc18",
+      "sampleRate": 44100,
+      "bitDepth": 24,
+      "timeSignature": "4/4",
+      "channels": [
+        "Drums [group] | -> Master | -2.5 dB C | inserts 0:H-Comp Stereo (off), 1:HoRNetMulticompPlusMK2 (-)",
+        "AD Kick out [fx] | in Drums | -> Drums | -12.2 dB C",
+        "SNARE [group] | in Drums | -> Drums | -0.7 dB C",
+        "AD SnareOut [fx] | in SNARE | -> SNARE | -2.4 dB C | inserts 0:ReaEQ (Default)",
+        "Sn midi [midi] | in Drums | -> - | 0.0 dB C | sends Addictive Drums 2 (MIDI) 0.0 dB",
+        "Bd midi [midi] | in Drums | -> - | 0.0 dB C | sends Addictive Drums 2 (MIDI) 0.0 dB off, xTra (MIDI) 0.0 dB",
+        "Snare solo [midi] | in Drums | -> - | 0.0 dB C | sends Addictive Drums 2 (MIDI) 0.0 dB",
+        "Addictive Drums 2 [group] | -> - | 0.0 dB C | instrument Addictive Drums 2 | inserts 0:midi_logger | sends AD Kick out 0.0 dB pre, AD SnareOut 0.0 dB pre",
+        "xTra [fx] | in Addictive Drums 2 | -> Addictive Drums 2 | 0.0 dB C",
+        "Master [master] | -> Out 1/2 | 0.0 dB C | inserts 0:MGA_JSLimiter (off), 1:TB_Barricade_v3 (default), 2:dpMeter2 (off) (LUFS EBU R128 Sync Autom), 3:Track_Inspector (off)"
+      ],
+      "plugins": [
+        "Addictive Drums 2 | instrument | third-party | x1 | XLN Audio | VST2",
+        "dpMeter2 | effect | third-party | x1 | TBProAudio | VST2",
+        "H-Comp Stereo | effect | third-party | x1 | Waves | VST2",
+        "HoRNetMulticompPlusMK2 | effect | third-party | x1 | HoRNet | VST2",
+        "MGA_JSLimiter | effect | stock | x1 | JS",
+        "midi_logger | effect | stock | x1 | JS",
+        "ReaEQ | effect | stock | x1 | Cockos | VST2",
+        "TB_Barricade_v3 | effect | third-party | x1 | ToneBoosters | VST2",
+        "Track_Inspector | effect | stock | x1 | JS"
+      ]
+    }
+  }
+}

@@ -14,6 +14,7 @@ import '../../models/sample_reference.dart';
 import '../daw_parsers/ableton_devices.dart';
 import '../daw_parsers/ableton_project_parser.dart';
 import '../daw_parsers/cubase_project_parser.dart';
+import '../daw_parsers/reaper_project_parser.dart';
 import '../metadata_extractor.dart';
 import '../sample_pack/project_sample_reader.dart';
 import 'cubase_stock_plugins.dart';
@@ -76,6 +77,38 @@ Future<ProjectAnatomy> readProjectAnatomy(String filePath) async {
       );
     } catch (_) {
       // A set the reader can't make sense of still shows what the scan
+      // read, as the other DAWs do.
+    }
+  }
+
+  if (ext == '.rpp') {
+    final bytes = await file.readAsBytes();
+    final dawType = meta.dawType;
+    final savedWith = meta.dawVersion;
+    final tempo = meta.bpm;
+    final key = meta.key;
+    final stats = meta.stats;
+    final notes = meta.projectNotes;
+    final markers = meta.markers;
+    final missingMidi = meta.missingMidiFiles;
+    try {
+      return await Isolate.run(
+        () => reaperAnatomy(
+          filePath: filePath,
+          content: utf8.decode(bytes, allowMalformed: true),
+          fileSize: bytes.length,
+          dawType: dawType,
+          savedWith: savedWith,
+          tempo: tempo,
+          key: key,
+          stats: stats,
+          notes: notes,
+          markers: markers,
+          missingMidiFiles: missingMidi,
+        ),
+      );
+    } catch (_) {
+      // A project the reader can't make sense of still shows what the scan
       // read, as the other DAWs do.
     }
   }
@@ -542,6 +575,198 @@ List<AnatomyPlugin> _abletonPlugins(List<AbletonTrack> tracks) {
 class _AbletonTally {
   _AbletonTally(this.device);
   final AbletonDevice device;
+  int instances = 0;
+  final List<String> channels = [];
+
+  void add(String channel) {
+    instances++;
+    if (!channels.contains(channel)) channels.add(channel);
+  }
+}
+
+/// A REAPER project's anatomy from its text (#226). [tempo], [key],
+/// [stats] and the rest are what [MetadataExtractor] read from the same
+/// file; tracks, sends, FX chains, the sample rate, the recording format
+/// and the time signature are read here.
+///
+/// REAPER keeps a send on the track that receives it; here it is listed on
+/// the track that sends, as every other DAW's are. A send into channels
+/// 3/4 or above — where a side-chain input listens — names the channels it
+/// lands on, since which plug-in listens there isn't in the project.
+ProjectAnatomy reaperAnatomy({
+  required String filePath,
+  required String content,
+  required int fileSize,
+  String? dawType,
+  String? savedWith,
+  double? tempo,
+  String? key,
+  ProjectStats? stats,
+  String? notes,
+  List<ProjectMarker>? markers,
+  List<String>? missingMidiFiles,
+}) {
+  final parser = ReaperProjectParser(content, projectDir: p.dirname(filePath));
+  final tracks = parser.readTracks();
+  final regular = [
+    for (final t in tracks)
+      if (t.kind != ReaperTrackKind.master) t,
+  ];
+
+  final sendsFrom = <int, List<AnatomySend>>{};
+  for (final destination in regular) {
+    for (final r in destination.receives) {
+      if (r.sourceIndex < 0 || r.sourceIndex >= regular.length) continue;
+      final d = r.destinationChannel;
+      final db = reaperGainDb(r.volume);
+      sendsFrom
+          .putIfAbsent(r.sourceIndex, () => [])
+          .add(
+            AnatomySend(
+              destination: r.midiOnly
+                  ? '${destination.name} (MIDI)'
+                  : d >= 2
+                  ? '${destination.name} (${d + 1}/${d + 2})'
+                  : destination.name,
+              levelDb: db,
+              levelPosition: reaperFaderPosition(db),
+              on: !r.muted,
+              preFader: r.preFader,
+            ),
+          );
+    }
+  }
+
+  final channels = [
+    for (final (i, t) in tracks.indexed)
+      _reaperChannel(
+        t,
+        sends: t.kind == ReaperTrackKind.master
+            ? const []
+            : sendsFrom[i] ?? const [],
+      ),
+  ];
+
+  return ProjectAnatomy(
+    filePath: filePath,
+    fileSize: fileSize,
+    dawType: dawType ?? 'Reaper',
+    savedWith: savedWith,
+    tempo: tempo,
+    key: key,
+    timeSignature: parser.readTimeSignature(),
+    sampleRate: parser.readSampleRate(),
+    bitDepth: parser.readRecordBitDepth(),
+    channels: channels,
+    plugins: _reaperPlugins(tracks),
+    pluginInstancesKnown: true,
+    media: parser.readSampleReferences(),
+    stats: stats,
+    notes: _notes(notes),
+    markers: markers,
+    missingMidiFiles: missingMidiFiles,
+  );
+}
+
+AnatomyChannel _reaperChannel(
+  ReaperTrack t, {
+  required List<AnatomySend> sends,
+}) {
+  final instrument = t.instrument;
+  final db = t.volume == null ? null : reaperGainDb(t.volume!);
+  String? hardware() => t.hardwareOutputs.isEmpty
+      ? null
+      : 'Out ${t.hardwareOutputs.first + 1}/${t.hardwareOutputs.first + 2}';
+  return AnatomyChannel(
+    name: t.name,
+    kind: switch (t.kind) {
+      ReaperTrackKind.audio => AnatomyChannelKind.audio,
+      ReaperTrackKind.midi => AnatomyChannelKind.midi,
+      ReaperTrackKind.instrument => AnatomyChannelKind.instrument,
+      // A folder track mixes the tracks in it: a group, not an empty folder.
+      ReaperTrackKind.folder => AnatomyChannelKind.group,
+      ReaperTrackKind.bus => AnatomyChannelKind.fx,
+      ReaperTrackKind.master => AnatomyChannelKind.master,
+    },
+    folder: t.folder,
+    output: t.kind == ReaperTrackKind.master
+        ? hardware()
+        : t.sendsToParent
+        ? (t.folder ?? 'Master')
+        : hardware(),
+    volumeDb: db,
+    faderPosition: db == null ? null : reaperFaderPosition(db),
+    pan: t.pan,
+    muted: t.muted,
+    soloed: t.soloed,
+    instrument: instrument?.name,
+    instrumentId: instrument?.pluginId,
+    instrumentPreset: instrument?.preset,
+    inserts: [
+      for (final (i, f) in t.fx.indexed)
+        if (!identical(f, instrument))
+          AnatomyInsert(
+            slot: i,
+            plugin: f.name,
+            pluginId: f.pluginId,
+            format: f.format,
+            preset: f.preset,
+            deactivated: f.bypassed || f.offline,
+          ),
+    ],
+    sends: sends,
+  );
+}
+
+/// A REAPER fader's or send's gain in dB; minus infinity below what REAPER
+/// shows as a number.
+double reaperGainDb(double gain) => gain <= 1e-8
+    ? double.negativeInfinity
+    : (20 * math.log(gain) / math.ln10).clamp(-150.0, 24.0);
+
+/// Where a fader at [db] sits from 0 (bottom) to 1 (top), for drawing it:
+/// REAPER's fader tops out at +12 dB, with 0 dB high on its travel. The
+/// shape, not REAPER's exact scale — the dB is the reading.
+double reaperFaderPosition(double db) => db.isInfinite && db < 0
+    ? 0
+    : db >= 0
+    ? (0.8 + 0.2 * (db / 12)).clamp(0.0, 1.0)
+    : 0.8 * (1 - math.sqrt((-db / 90).clamp(0.0, 1.0)));
+
+/// Every plug-in by name and format, with its instances and the tracks it
+/// is on — item FX and input FX included, as they are loaded too.
+List<AnatomyPlugin> _reaperPlugins(List<ReaperTrack> tracks) {
+  final found = <String, _ReaperTally>{};
+  for (final t in tracks) {
+    for (final f in [...t.fx, ...t.itemFx, ...t.inputFx]) {
+      found
+          .putIfAbsent(
+            '${f.name.toLowerCase()}|${f.format}',
+            () => _ReaperTally(f),
+          )
+          .add(t.name);
+    }
+  }
+  return [
+    for (final t in found.values)
+      AnatomyPlugin(
+        name: t.fx.name,
+        role: t.fx.isInstrument
+            ? AnatomyPluginRole.instrument
+            : AnatomyPluginRole.effect,
+        stock: t.fx.stock,
+        instances: t.instances,
+        channels: List.unmodifiable(t.channels),
+        pluginId: t.fx.pluginId,
+        vendor: t.fx.vendor,
+        format: t.fx.format,
+      ),
+  ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+}
+
+class _ReaperTally {
+  _ReaperTally(this.fx);
+  final ReaperFx fx;
   int instances = 0;
   final List<String> channels = [];
 

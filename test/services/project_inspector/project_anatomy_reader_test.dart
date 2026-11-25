@@ -242,24 +242,88 @@ void main() {
   test(
     'another DAW: header and plug-in names, channels not read yet',
     () async {
-      final rpp = Directory(p.join('test', 'fixtures', 'projects', 'reaper'))
+      final flp = Directory(p.join('test', 'fixtures', 'projects', 'flstudio'))
           .listSync(recursive: true)
           .whereType<File>()
-          .firstWhere((f) => f.path.endsWith('.rpp'));
-      final anatomy = await readProjectAnatomy(rpp.path);
+          .firstWhere((f) => f.path.endsWith('.flp'));
+      final anatomy = await readProjectAnatomy(flp.path);
       expect(anatomy.dawType, isNotNull);
       expect(anatomy.channels, isNull, reason: 'null is "not available"');
       expect(anatomy.pluginInstancesKnown, isFalse);
       expect(anatomy.media, isNotNull);
       expect(anatomy.plugins.every((pl) => pl.instances == null), isTrue);
-      // What the scan reads is carried along: tracks by kind, MIDI clips,
-      // markers (REAPER keeps them), the `.mid` files it looked for.
+      // What the scan reads is carried along: tracks by kind, MIDI clips.
       expect(anatomy.stats, isNotNull);
       expect(anatomy.midiClipCount, isNotNull);
-      expect(anatomy.markers, isNotNull);
-      expect(anatomy.missingMidiFiles, isNotNull);
     },
   );
+
+  group('reaperAnatomy, on a real REAPER 5.70 project', () {
+    final path = p.join(
+      'test', 'fixtures', 'projects', 'reaper', 'Trance loop (REAPER 5.70)',
+      'Trance loop.rpp',
+    );
+    late ProjectAnatomy a;
+    setUpAll(() async => a = await readProjectAnatomy(path));
+    AnatomyChannel channel(String name) =>
+        a.channels!.firstWhere((c) => c.name == name);
+
+    test('every track, then the master', () {
+      expect(a.dawType, 'Reaper');
+      expect(a.channels, hasLength(11));
+      expect(a.channels!.last.kind, AnatomyChannelKind.master);
+      expect(trackChannels(a.channels!), hasLength(10));
+      expect(channel('Reverb').kind, AnatomyChannelKind.fx,
+          reason: 'no items, and it receives sends');
+      expect(channel('Noise').kind, AnatomyChannelKind.audio);
+      expect(a.timeSignature, (4, 4));
+      expect(a.pluginInstancesKnown, isTrue);
+      expect(a.media, isNotNull);
+    });
+
+    test('an instrument, its inserts after it, a chain switched off', () {
+      final kick = channel('kick 1');
+      expect(kick.kind, AnatomyChannelKind.instrument);
+      expect(kick.instrument, 'ReaSynth');
+      expect([for (final i in kick.inserts) i.plugin], ['ReaEQ', 'ReaComp']);
+      final off = channel('Good Effect').inserts;
+      expect(off, isNotEmpty);
+      expect(off.every((i) => i.deactivated == true), isTrue);
+    });
+
+    test('sends listed on the track that sends, a side-chain by its channels',
+        () {
+      final kick = channel('kick 1').sends.single;
+      expect(kick.destination, 'Pad (3/4)');
+      final pad = channel('Pad').sends.single;
+      expect(pad.destination, 'Reverb');
+      expect(pad.preFader, isTrue);
+      expect(channel('Reverb').sends, isEmpty,
+          reason: 'REAPER keeps the send on the receiving track');
+    });
+
+    test('the master: its FX and the output it plays to', () {
+      final master = a.channels!.last;
+      expect(master.output, 'Out 1/2');
+      expect(master.inserts.first.plugin, 'ReaEQ');
+      expect(master.volumeDb, closeTo(0, 1e-9));
+    });
+
+    test('plug-ins: Cockos and JS effects are stock, by instances', () {
+      final eq = a.plugins.firstWhere((pl) => pl.name == 'ReaEQ');
+      expect(eq.stock, isTrue);
+      expect(eq.format, 'VST2');
+      expect(eq.vendor, 'Cockos');
+      expect(eq.instances, 9);
+      final js = a.plugins.firstWhere((pl) => pl.name == 'gfxanalyzer');
+      expect(js.format, 'JS');
+      expect(js.stock, isTrue);
+      expect(
+        a.plugins.firstWhere((pl) => pl.name == 'ReaSynth').role,
+        AnatomyPluginRole.instrument,
+      );
+    });
+  });
 
   test('readProjectAnatomy reads a Cubase project in full', () async {
     final anatomy = await readProjectAnatomy(_cubase13);

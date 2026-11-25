@@ -1,0 +1,66 @@
+{
+  "Wurli Test Note Stem Issue.rpp": {
+    "dawType": "Reaper",
+    "dawVersion": "5.30pre5",
+    "bpm": 80.0,
+    "key": "D Minor",
+    "markers": [],
+    "stats": {
+      "audio": 1,
+      "midi": 0,
+      "instrument": 1,
+      "sampler": 0,
+      "bus": 1,
+      "folder": 0,
+      "plugins": [
+        "BigRock",
+        "Electric200 Stereo",
+        "Kontakt 5",
+        "midiTranspose",
+        "ReaEQ 4chan",
+        "TOA Decoder - Cube",
+        "TOA Gain",
+        "TOA Upmixer - Stereo",
+        "ValhallaRoom",
+        "volume"
+      ],
+      "midiClips": 1
+    },
+    "midiClips": [
+      {
+        "name": "Wurli-glued",
+        "track": "Wurli",
+        "ppq": 960,
+        "lengthTicks": 13946,
+        "notes": 33,
+        "events": 8,
+        "content": "3cdf99497b4d"
+      }
+    ],
+    "sampleReferences": [],
+    "inspector": {
+      "savedWith": "5.30pre5",
+      "sampleRate": 44100,
+      "bitDepth": null,
+      "timeSignature": "6/8",
+      "channels": [
+        "Wurli [instrument] | -> Master | 0.0 dB C | instrument midiTranspose (Program 1) | inserts 1:Electric200 Stereo, 2:Kontakt 5 (off) (Breakfast in NY), 3:volume, 4:BigRock (off) (Init Program) | sends Verb 0.0 dB",
+        "Click [audio] | -> Master | -12.5 dB C mute",
+        "Verb [fx] | -> Master | -6.0 dB C | inserts 0:ValhallaRoom, 1:BigRock (Init Program)",
+        "Master [master] | -> Out 1/2 | 0.0 dB C | inserts 0:TOA Gain (Default), 1:TOA Upmixer - Stereo (Default), 2:TOA Decoder - Cube, 3:ReaEQ 4chan, 4:ReaEQ 4chan"
+      ],
+      "plugins": [
+        "BigRock | effect | third-party | x2 | ArtsAcoustic | VST2",
+        "Electric200 Stereo | effect | third-party | x1 | Waves | VST2",
+        "Kontakt 5 | instrument | third-party | x1 | Native Instruments GmbH | VST2",
+        "midiTranspose | instrument | third-party | x1 | Insert Piz Here | VST2",
+        "ReaEQ 4chan | effect | stock | x2 | Cockos | VST2",
+        "TOA Decoder - Cube | effect | third-party | x1 | Blue Ripple Sound Limited | VST2",
+        "TOA Gain | effect | third-party | x1 | Blue Ripple Sound Limited | VST2",
+        "TOA Upmixer - Stereo | effect | third-party | x1 | Blue Ripple Sound Limited | VST2",
+        "ValhallaRoom | effect | third-party | x1 | Valhalla DSP, LLC | VST2",
+        "volume | effect | stock | x1 | JS"
+      ]
+    }
+  }
+}
