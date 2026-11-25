@@ -14,6 +14,7 @@ import '../../models/sample_reference.dart';
 import '../daw_parsers/ableton_devices.dart';
 import '../daw_parsers/ableton_project_parser.dart';
 import '../daw_parsers/cubase_project_parser.dart';
+import '../daw_parsers/flp_project_parser.dart';
 import '../daw_parsers/reaper_project_parser.dart';
 import '../metadata_extractor.dart';
 import '../sample_pack/project_sample_reader.dart';
@@ -77,6 +78,37 @@ Future<ProjectAnatomy> readProjectAnatomy(String filePath) async {
       );
     } catch (_) {
       // A set the reader can't make sense of still shows what the scan
+      // read, as the other DAWs do.
+    }
+  }
+
+  if (ext == '.flp') {
+    final bytes = await file.readAsBytes();
+    final dawType = meta.dawType;
+    final savedWith = meta.dawVersion;
+    final tempo = meta.bpm;
+    final key = meta.key;
+    final stats = meta.stats;
+    final notes = meta.projectNotes;
+    final markers = meta.markers;
+    final missingMidi = meta.missingMidiFiles;
+    try {
+      return await Isolate.run(
+        () => flAnatomy(
+          filePath: filePath,
+          bytes: bytes,
+          dawType: dawType,
+          savedWith: savedWith,
+          tempo: tempo,
+          key: key,
+          stats: stats,
+          notes: notes,
+          markers: markers,
+          missingMidiFiles: missingMidi,
+        ),
+      );
+    } catch (_) {
+      // A project the reader can't make sense of still shows what the scan
       // read, as the other DAWs do.
     }
   }
@@ -767,6 +799,216 @@ List<AnatomyPlugin> _reaperPlugins(List<ReaperTrack> tracks) {
 class _ReaperTally {
   _ReaperTally(this.fx);
   final ReaperFx fx;
+  int instances = 0;
+  final List<String> channels = [];
+
+  void add(String channel) {
+    instances++;
+    if (!channels.contains(channel)) channels.add(channel);
+  }
+}
+
+/// FL Studio's fader at its default, 100%, as the project stores it.
+const int kFlDefaultVolume = 12800;
+
+/// An FL Studio project's anatomy from its bytes (#229). [tempo], [key],
+/// [stats] and the rest are what [MetadataExtractor] read from the same
+/// file; the channel rack, the mixer, its routing and the time signature
+/// are read here.
+///
+/// FL's model differs from the others: the channel rack's generators and
+/// samplers play into mixer tracks, which route to each other and to the
+/// master. Both are listed — the rack's channels with the mixer track they
+/// play into as their output, then the mixer tracks in use (the master, a
+/// named one, one with effects, one something plays or routes into, one
+/// whose fader, pan or mute was touched), as groups. FL keeps no sample
+/// rate in the project, and its fader law isn't known here, so a fader is
+/// its position (12800 of 16000) and never a dB figure.
+ProjectAnatomy flAnatomy({
+  required String filePath,
+  required Uint8List bytes,
+  String? dawType,
+  String? savedWith,
+  double? tempo,
+  String? key,
+  ProjectStats? stats,
+  String? notes,
+  List<ProjectMarker>? markers,
+  List<String>? missingMidiFiles,
+}) {
+  final parser = FlpProjectParser(bytes);
+  final rack = parser.readChannels();
+  final mixer = parser.readMixer();
+  final byIndex = {for (final i in mixer) i.index: i};
+  String trackName(int? index) => switch (index) {
+    final i? when i > 0 && byIndex[i] != null => byIndex[i]!.name,
+    _ => 'Master',
+  };
+
+  final playedInto = {for (final c in rack) c.target ?? 0};
+
+  // FL 11 and before had four send tracks every mixer track routes to by
+  // design (65–68, or 100–103 from FL 9), each with a level knob this file
+  // doesn't say the setting of — as Ableton has a send to every return. A
+  // route into an empty track (default name, no effects, nothing playing
+  // into it) that every other track takes is that layout, not a choice.
+  bool empty(FlpInsert i) =>
+      i.index != 0 &&
+      i.name == 'Insert ${i.index}' &&
+      i.slots.isEmpty &&
+      !playedInto.contains(i.index) &&
+      i.routesTo.every((k) => k == 0);
+  final candidates = {
+    for (final i in mixer)
+      if (empty(i)) i.index,
+  };
+  final implicit = {
+    for (final k in candidates)
+      if ([
+        for (final i in mixer)
+          if (i.index != 0 && !candidates.contains(i.index)) i,
+      ].every((i) => i.routesTo.contains(k)))
+        k,
+  };
+  final routedInto = {
+    for (final i in mixer)
+      for (final k in i.routesTo)
+        if (!implicit.contains(k)) k,
+  };
+  bool inUse(FlpInsert i) =>
+      i.index == 0 ||
+      i.slots.isNotEmpty ||
+      playedInto.contains(i.index) ||
+      routedInto.contains(i.index) ||
+      i.name != 'Insert ${i.index}' ||
+      (i.volume != null && i.volume != kFlDefaultVolume) ||
+      (i.pan ?? 0) != 0 ||
+      i.muted == true;
+
+  final channels = <AnatomyChannel>[
+    for (final c in rack)
+      AnatomyChannel(
+        name: c.name,
+        kind: switch (c.type) {
+          0 => AnatomyChannelKind.sampler,
+          4 => AnatomyChannelKind.audio,
+          _ => AnatomyChannelKind.instrument,
+        },
+        output: trackName(c.target),
+        instrument: c.plugin?.name,
+        instrumentId: c.plugin?.pluginId,
+      ),
+    for (final i in mixer)
+      if (i.index != 0 && inUse(i)) _flInsertChannel(i, trackName, implicit),
+    if (byIndex[0] case final master?)
+      _flInsertChannel(master, trackName, implicit),
+  ];
+
+  return ProjectAnatomy(
+    filePath: filePath,
+    fileSize: bytes.length,
+    dawType: dawType ?? 'FL Studio',
+    savedWith: savedWith,
+    tempo: tempo,
+    key: key,
+    timeSignature: parser.readTimeSignature(),
+    channels: channels,
+    plugins: _flPlugins(rack, [
+      for (final i in mixer)
+        if (inUse(i)) i,
+    ]),
+    pluginInstancesKnown: true,
+    media: parser.readSampleReferences(),
+    stats: stats,
+    notes: _notes(notes),
+    markers: markers,
+    missingMidiFiles: missingMidiFiles,
+  );
+}
+
+/// A mixer track: its output is the master when it routes there, else the
+/// first track it routes to; every other route is a send.
+AnatomyChannel _flInsertChannel(
+  FlpInsert i,
+  String Function(int?) trackName,
+  Set<int> implicit,
+) {
+  final isMaster = i.index == 0;
+  final output = isMaster || i.routesTo.isEmpty
+      ? null
+      : i.routesTo.contains(0)
+      ? 0
+      : i.routesTo.first;
+  return AnatomyChannel(
+    name: i.name,
+    kind: isMaster ? AnatomyChannelKind.master : AnatomyChannelKind.group,
+    output: output == null ? null : trackName(output),
+    faderPosition: i.volume == null ? null : (i.volume! / 16000).clamp(0.0, 1.0),
+    pan: i.pan == null ? null : (i.pan! / 6400).clamp(-1.0, 1.0),
+    muted: i.muted,
+    soloed: i.soloed,
+    inserts: [
+      for (final s in i.slots)
+        AnatomyInsert(
+          slot: s.slot,
+          plugin: s.plugin.name,
+          pluginId: s.plugin.pluginId,
+          format: s.plugin.format,
+          deactivated: s.enabled == false || i.effectsOn == false
+              ? true
+              : s.enabled == null && i.effectsOn == null
+              ? null
+              : false,
+        ),
+    ],
+    sends: [
+      for (final k in i.routesTo)
+        if (k != output && !implicit.contains(k))
+          AnatomySend(destination: trackName(k)),
+    ],
+  );
+}
+
+/// Every plug-in by name and format: generators as instruments, mixer
+/// slots as effects; Image-Line's own are stock.
+List<AnatomyPlugin> _flPlugins(List<FlpChannel> rack, List<FlpInsert> mixer) {
+  final found = <String, ({FlpPlugin plugin, bool instrument, _FlTally tally})>{};
+  void add(FlpPlugin p, bool instrument, String channel) {
+    found
+        .putIfAbsent(
+          '${p.name.toLowerCase()}|${p.format ?? ''}|$instrument',
+          () => (plugin: p, instrument: instrument, tally: _FlTally()),
+        )
+        .tally
+        .add(channel);
+  }
+
+  for (final c in rack) {
+    if (c.plugin case final p?) add(p, true, c.name);
+  }
+  for (final i in mixer) {
+    for (final s in i.slots) {
+      add(s.plugin, false, i.name);
+    }
+  }
+  return [
+    for (final f in found.values)
+      AnatomyPlugin(
+        name: f.plugin.name,
+        role: f.instrument
+            ? AnatomyPluginRole.instrument
+            : AnatomyPluginRole.effect,
+        stock: f.plugin.native,
+        instances: f.tally.instances,
+        channels: List.unmodifiable(f.tally.channels),
+        pluginId: f.plugin.pluginId,
+        vendor: f.plugin.native ? 'Image-Line' : f.plugin.vendor,
+        format: f.plugin.format,
+      ),
+  ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+}
+
+class _FlTally {
   int instances = 0;
   final List<String> channels = [];
 

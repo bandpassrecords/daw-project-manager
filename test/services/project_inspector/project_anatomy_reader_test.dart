@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
@@ -242,21 +243,78 @@ void main() {
   test(
     'another DAW: header and plug-in names, channels not read yet',
     () async {
-      final flp = Directory(p.join('test', 'fixtures', 'projects', 'flstudio'))
-          .listSync(recursive: true)
-          .whereType<File>()
-          .firstWhere((f) => f.path.endsWith('.flp'));
-      final anatomy = await readProjectAnatomy(flp.path);
+      // Studio One, whose reader is still to come (#228): a .song is a zip
+      // of XML documents.
+      final dir = await Directory.systemTemp.createTemp('anatomy_song');
+      addTearDown(() => dir.delete(recursive: true));
+      List<int> xml(String s) => utf8.encode(s);
+      final archive = Archive()
+        ..addFile(ArchiveFile.bytes(
+          'metainfo.xml',
+          xml('<MetaInformation><Attribute id="Media:Tempo" value="128"/>'
+              '<Attribute id="Document:Generator" value="Studio One/6.5.1.96553"/>'
+              '</MetaInformation>'),
+        ))
+        ..addFile(ArchiveFile.bytes(
+          'Song/song.xml',
+          xml('<Song><MediaTrack mediaType="Audio" name="Vox"/>'
+              '<MediaTrack mediaType="Music" name="Keys"/></Song>'),
+        ));
+      final song = File(p.join(dir.path, 'Demo.song'))
+        ..writeAsBytesSync(ZipEncoder().encodeBytes(archive));
+
+      final anatomy = await readProjectAnatomy(song.path);
       expect(anatomy.dawType, isNotNull);
       expect(anatomy.channels, isNull, reason: 'null is "not available"');
       expect(anatomy.pluginInstancesKnown, isFalse);
-      expect(anatomy.media, isNotNull);
       expect(anatomy.plugins.every((pl) => pl.instances == null), isTrue);
-      // What the scan reads is carried along: tracks by kind, MIDI clips.
+      // What the scan reads is carried along: tracks by kind.
       expect(anatomy.stats, isNotNull);
-      expect(anatomy.midiClipCount, isNotNull);
+      expect(anatomy.tempo, 128);
     },
   );
+
+  group('flAnatomy, on a real FL 20 project', () {
+    final path = p.join(
+      'test', 'fixtures', 'projects', 'flstudio', 'TetraSound - Bassline (FL 20)',
+      'motherfucker bassline.flp',
+    );
+    late ProjectAnatomy a;
+    setUpAll(() async => a = await readProjectAnatomy(path));
+    AnatomyChannel channel(String name) =>
+        a.channels!.firstWhere((c) => c.name == name);
+
+    test('the rack, then the mixer tracks in use, the master last', () {
+      expect(a.dawType, 'FL Studio');
+      expect(a.channels!.last.kind, AnatomyChannelKind.master);
+      expect(a.sampleRate, isNull, reason: 'not a project setting in FL');
+      expect(a.timeSignature, (4, 4));
+      expect(a.pluginInstancesKnown, isTrue);
+    });
+
+    test('a named mixer track, its effects switched off with it', () {
+      final kb = channel('KICK+BASS');
+      expect(kb.kind, AnatomyChannelKind.group);
+      expect(kb.output, 'Master');
+      expect([for (final i in kb.inserts) i.plugin],
+          ['Distructor', 'Fruity Parametric EQ 2', 'Fruity Reeverb 2',
+           'Fruity Compressor']);
+      expect(kb.inserts.every((i) => i.deactivated == true), isTrue);
+    });
+
+    test('the master limiter in its last slot', () {
+      expect(a.channels!.last.inserts.single.plugin, 'Fruity Limiter');
+      expect(a.channels!.last.inserts.single.slot, 9);
+    });
+
+    test("a wrapped VST by its maker; Image-Line's own as stock", () {
+      final crono = a.plugins.firstWhere((pl) => pl.name == 'CronoX');
+      expect(crono.vendor, 'LinPlug');
+      expect(crono.stock, isFalse);
+      expect(crono.role, AnatomyPluginRole.instrument);
+      expect(a.plugins.firstWhere((pl) => pl.name == 'Sytrus').stock, isTrue);
+    });
+  });
 
   group('reaperAnatomy, on a real REAPER 5.70 project', () {
     final path = p.join(

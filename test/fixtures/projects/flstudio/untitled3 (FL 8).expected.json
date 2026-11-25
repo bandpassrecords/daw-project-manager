@@ -145,6 +145,55 @@
         "file": "EH_Effects 7.wav",
         "use": "audio"
       }
-    ]
+    ],
+    "inspector": {
+      "savedWith": "8.0",
+      "sampleRate": null,
+      "bitDepth": null,
+      "timeSignature": "4/4",
+      "channels": [
+        "phanatic [sampler] | -> PoiZone 2 (DEMO) | - -",
+        "CronoX [instrument] | -> Insert 2 | - - | instrument CronoX",
+        "reFX Vanguard [instrument] | -> Insert 3 | - - | instrument reFX Vanguard",
+        "VEE Snare 002 [sampler] | -> Insert 4 | - -",
+        "VEE Open Hihat 20 [sampler] | -> VEE Open Hihat 20 | - -",
+        "VEE Open Hihat 021 [sampler] | -> VEE Open Hihat 058 | - -",
+        "VEE Open Hihat 09 [sampler] | -> VEE Open Hihat 09 | - -",
+        "Crash 01 [sampler] | -> Master | - -",
+        "EH_Snare 14 [sampler] | -> EH_Snare 14 | - -",
+        "EH_Effects 12 [audio] | -> EH_Effects 12 | - -",
+        "VEE Synth Sound 036 [audio] | -> VEE Synth Sound 036 | - -",
+        "VEE Synth Sound 036 [audio] | -> Master | - -",
+        "VEE Synth Sound 044 [audio] | -> VEE Synth Sound 044 | - -",
+        "VEE Synth Sound 045 [audio] | -> Master | - -",
+        "VEE Synth Sound 094 [audio] | -> VEE Synth Sound 044 | - -",
+        "EH_Effects 21 [audio] | -> Master | - -",
+        "EH_Effects 26 [audio] | -> Master | - -",
+        "EH_Effects 7 [audio] | -> Master | - -",
+        "Insert 1 [group] | -> Master | - C",
+        "Insert 2 [group] | -> Master | - C | inserts 0:Fruity Parametric EQ 2, 1:Fruity Love Philter",
+        "Insert 3 [group] | -> Master | - C | inserts 0:Fruity Parametric EQ 2",
+        "Insert 4 [group] | -> Master | - C | inserts 0:Fruity Parametric EQ 2",
+        "VEE Open Hihat 058 [group] | -> Master | - C | inserts 0:Fruity Parametric EQ 2",
+        "VEE Open Hihat 09 [group] | -> Master | - C | inserts 0:Fruity Parametric EQ 2",
+        "VEE Open Hihat 20 [group] | -> Master | - C",
+        "PoiZone 2 (DEMO) [group] | -> Master | - C | inserts 0:Fruity Love Philter",
+        "VEE Synth Sound 036 [group] | -> Master | - C | inserts 0:Fruity Delay 2",
+        "VEE Synth Sound 044 [group] | -> Master | - C | inserts 0:Fruity Reeverb 2",
+        "EH_Effects 12 [group] | -> Master | - C",
+        "EH_Snare 14 [group] | -> Master | - C",
+        "Master [master] | -> - | - C | inserts 0:Fruity Multiband Compressor, 7:Fruity Limiter"
+      ],
+      "plugins": [
+        "CronoX | instrument | third-party | x1",
+        "Fruity Delay 2 | effect | stock | x1 | Image-Line",
+        "Fruity Limiter | effect | stock | x1 | Image-Line",
+        "Fruity Love Philter | effect | stock | x2 | Image-Line",
+        "Fruity Multiband Compressor | effect | stock | x1 | Image-Line",
+        "Fruity Parametric EQ 2 | effect | stock | x5 | Image-Line",
+        "Fruity Reeverb 2 | effect | stock | x1 | Image-Line",
+        "reFX Vanguard | instrument | third-party | x1"
+      ]
+    }
   }
 }
