@@ -92,6 +92,32 @@ void main() {
     expect(painter.progress.value, isNot(before));
   });
 
+  // The bars move on every frame. Without a repaint boundary of their own
+  // each frame repainted the whole projects table around them — about 2,000
+  // render objects a hundred times a second while a song played, measured in
+  // the real app (integration_test/perf/player_repaint_test.dart).
+  testWidgets('the moving bars repaint nothing around them', (tester) async {
+    var around = 0;
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: Column(
+          children: [
+            CustomPaint(
+              size: const Size(200, 20),
+              painter: _CountingPainter(() => around++),
+            ),
+            const NowPlayingIcon(isPlaying: true, idleIcon: Icons.play_circle),
+          ],
+        ),
+      ),
+    ));
+    final before = around;
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    expect(around, before);
+  });
+
   testWidgets('stopping playback stops the animation', (tester) async {
     await tester.pumpWidget(host(isPlaying: true));
     await tester.pump(const Duration(milliseconds: 100));
@@ -128,4 +154,17 @@ void main() {
       expect(heights.toSet(), hasLength(3));
     });
   });
+}
+
+/// Counts its paints; never asks to repaint itself, so any paint is one the
+/// widgets around it caused.
+class _CountingPainter extends CustomPainter {
+  _CountingPainter(this.onPaint);
+  final VoidCallback onPaint;
+
+  @override
+  void paint(Canvas canvas, Size size) => onPaint();
+
+  @override
+  bool shouldRepaint(_CountingPainter old) => false;
 }

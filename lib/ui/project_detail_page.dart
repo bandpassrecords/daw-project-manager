@@ -82,6 +82,7 @@ import 'project_inspector_page.dart';
 import 'project_statistics_page.dart';
 import 'app_snack_bar.dart';
 import 'widgets/semantics_safe.dart';
+import '../services/song_player.dart';
 
 /// The project with [projectId], or null when it is not in [projects].
 ///
@@ -2472,7 +2473,7 @@ class _PreviewSongPlayer extends ConsumerStatefulWidget {
 
 class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     with RouteAwareDropTargetState<_PreviewSongPlayer> {
-  AudioPlayer _audioPlayer = AudioPlayer();
+  AudioPlayer _audioPlayer = newSongPlayer();
   AudioPlayer? _warmPlayer; // pre-loaded with the alternate source (mono↔stereo)
   int _playerGen = 0;       // incremented on each swap; stale listeners self-cancel
   final FocusNode _focusNode = FocusNode();
@@ -2730,7 +2731,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
   /// Pre-loads [source] into [_warmPlayer] so the next toggle is source-load-free.
   void _preWarmAlt(Source source) {
     _warmPlayer?.dispose();
-    _warmPlayer = AudioPlayer();
+    _warmPlayer = newSongPlayer();
     _loadInBackground(_warmPlayer!, source);
   }
 
@@ -2843,7 +2844,7 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     }
 
     // Grab (or create) the new active player.
-    final newActive = _warmPlayer ?? AudioPlayer();
+    final newActive = _warmPlayer ?? newSongPlayer();
     _warmPlayer = null;
 
     // Advance generation: listeners on the old player will now self-cancel.

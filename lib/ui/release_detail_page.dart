@@ -51,6 +51,7 @@ import 'widgets/player_readout.dart';
 import 'widgets/waveform_widget.dart';
 import 'app_snack_bar.dart';
 import 'widgets/semantics_safe.dart';
+import '../services/song_player.dart';
 
 class ReleaseDetailPage extends ConsumerStatefulWidget {
   final String releaseId;
@@ -2076,7 +2077,7 @@ class _AudioFileItem extends ConsumerStatefulWidget {
 }
 
 class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
-  AudioPlayer _audioPlayer = AudioPlayer();
+  AudioPlayer _audioPlayer = newSongPlayer();
   AudioPlayer? _warmPlayer;
   int _playerGen = 0;
   bool _isPlaying = false;
@@ -2118,7 +2119,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
 
   void _preWarmAlt(Source source) {
     _warmPlayer?.dispose();
-    _warmPlayer = AudioPlayer();
+    _warmPlayer = newSongPlayer();
     _warmPlayer!.setVolume(_volume);
     _warmPlayer!.setSource(source);
   }
@@ -2320,7 +2321,7 @@ class _AudioFileItemState extends ConsumerState<_AudioFileItem> {
     final savedPosition = _position;
     setState(() => _isMono = newMono);
 
-    final newActive = _warmPlayer ?? AudioPlayer();
+    final newActive = _warmPlayer ?? newSongPlayer();
     _warmPlayer = null;
     final gen = ++_playerGen;
     final oldActive = _audioPlayer;

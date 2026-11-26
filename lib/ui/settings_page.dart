@@ -99,6 +99,7 @@ import 'widgets/sample_pack_card.dart';
 import 'dialogs/root_overlap_dialog.dart';
 import 'dialogs/relocate_folder_dialog.dart';
 import 'widgets/semantics_safe.dart';
+import 'widgets/owned_text_controller.dart';
 
 /// A Flatpak document-portal path, e.g.
 /// `/run/user/1000/doc/98127/projects` — the portal never exposes the real
@@ -1163,11 +1164,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Future<void> _renameProjectFolder(String folderId, String currentName) async {
     if (_busy) return;
     final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController(text: currentName);
-
     final newName = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => OwnedTextController(
+        text: currentName,
+        builder: (_, controller) => AlertDialog(
         backgroundColor: Theme.of(ctx).cardColor,
         title: Text(l10n.renameProjectFolderTitle),
         content: TextField(
@@ -1189,9 +1190,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             child: Text(l10n.renameButton),
           ),
         ],
+        ),
       ),
     );
-    controller.dispose();
     if (newName == null || !mounted) return;
 
     final repo = await _foldersRepo();

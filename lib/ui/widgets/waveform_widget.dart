@@ -215,41 +215,88 @@ class WaveformWidget extends ConsumerWidget {
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final w = constraints.maxWidth;
-        final h = height ?? constraints.maxHeight;
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTapDown: (d) => _handleSeek(d.localPosition.dx, w),
-          onHorizontalDragUpdate: (d) => _handleSeek(d.localPosition.dx, w),
-          onSecondaryTapDown: (d) => _showMenu(context, ref, d.globalPosition),
-          onLongPressStart: (d) => _showMenu(context, ref, d.globalPosition),
+    final background =
+        backgroundColor ?? Theme.of(context).colorScheme.surface;
+    final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+    _WaveformPainter layer(Color color) => _WaveformPainter(
+      peaks: peaks!,
+      color: color,
+      backgroundColor: background,
+      pixelRatio: pixelRatio,
+      stereo: effectiveStereo,
+      barWidth: barWidth,
+      barGap: barGap,
+      antiAlias: antiAlias,
+      bodyBands: bodyBands,
+      style: effectiveStyle,
+    );
+
+    // No LayoutBuilder here: one is rebuilt, so laid out again, with every
+    // new position, and a layout marks everything up to the page for
+    // repaint. The width a seek needs is read from the box when it happens.
+    void seek(BuildContext context, Offset local) {
+      final box = context.findRenderObject();
+      if (box is RenderBox && box.hasSize && box.size.width > 0) {
+        _handleSeek(local.dx, box.size.width);
+      }
+    }
+
+    return Builder(
+      builder: (context) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (d) => seek(context, d.localPosition),
+        onHorizontalDragUpdate: (d) => seek(context, d.localPosition),
+        onSecondaryTapDown: (d) => _showMenu(context, ref, d.globalPosition),
+        onLongPressStart: (d) => _showMenu(context, ref, d.globalPosition),
+        // Its own repaint boundary, and the played part only a clip over a
+        // second copy: as a song plays, the clip moves and nothing is
+        // painted — neither the waveform nor the page around it, which used
+        // to repaint with every position update.
+        child: RepaintBoundary(
           child: SizedBox(
-            height: h,
-            width: w,
-            child: CustomPaint(
-              painter: _WaveformPainter(
-                peaks: peaks!,
-                progress: progress,
-                playedColor: played,
-                unplayedColor: unplayed,
-                backgroundColor:
-                    backgroundColor ?? Theme.of(context).colorScheme.surface,
-                pixelRatio: MediaQuery.devicePixelRatioOf(context),
-                stereo: effectiveStereo,
-                barWidth: barWidth,
-                barGap: barGap,
-                antiAlias: antiAlias,
-                bodyBands: bodyBands,
-                style: effectiveStyle,
-              ),
+            // Null fills the height the parent gives, as the width always
+            // does.
+            height: height ?? double.infinity,
+            width: double.infinity,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                RepaintBoundary(child: CustomPaint(painter: layer(unplayed))),
+                ClipRect(
+                  clipper: _ProgressClipper(progress),
+                  child: RepaintBoundary(
+                    child: CustomPaint(painter: layer(played)),
+                  ),
+                ),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
+}
+
+/// How many times a waveform layer has been painted, for tests: playing
+/// must not paint it again.
+@visibleForTesting
+int debugWaveformPaintCount = 0;
+
+/// The played part of the waveform: everything left of [progress].
+class _ProgressClipper extends CustomClipper<Rect> {
+  const _ProgressClipper(this.progress);
+  final double progress;
+
+  @override
+  Rect getClip(Size size) => Rect.fromLTWH(
+    0,
+    0,
+    size.width * progress.clamp(0.0, 1.0),
+    size.height,
+  );
+
+  @override
+  bool shouldReclip(_ProgressClipper old) => old.progress != progress;
 }
 
 /// What the waveform's context menu can change.
@@ -393,9 +440,11 @@ Float32List lerpExtents(Float32List outer, Float32List inner, double t) {
 
 class _WaveformPainter extends CustomPainter {
   final WaveformPeaks peaks;
-  final double progress;
-  final Color playedColor;
-  final Color unplayedColor;
+
+  /// The one colour this layer is drawn in: the widget stacks an unplayed
+  /// layer and a played one, and the playback position only moves the clip
+  /// between them — neither is painted again as a song plays.
+  final Color color;
   final Color backgroundColor;
   final double pixelRatio;
   final bool stereo;
@@ -420,9 +469,7 @@ class _WaveformPainter extends CustomPainter {
 
   const _WaveformPainter({
     required this.peaks,
-    required this.progress,
-    required this.playedColor,
-    required this.unplayedColor,
+    required this.color,
     required this.backgroundColor,
     required this.pixelRatio,
     required this.stereo,
@@ -557,25 +604,16 @@ class _WaveformPainter extends CustomPainter {
     final paint = Paint()
       ..style = PaintingStyle.fill
       ..isAntiAlias = true
-      ..color = unplayedColor;
+      ..color = color;
     for (final path in paths) {
       canvas.drawPath(path, paint);
-    }
-
-    if (progress > 0) {
-      canvas.save();
-      canvas.clipRect(Rect.fromLTWH(0, 0, size.width * progress, size.height));
-      paint.color = playedColor;
-      for (final path in paths) {
-        canvas.drawPath(path, paint);
-      }
-      canvas.restore();
     }
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width <= 0 || size.height <= 0) return;
+    debugWaveformPaintCount++;
 
     if (style == WaveformStyle.classic) {
       _paintClassic(canvas, size);
@@ -641,22 +679,13 @@ class _WaveformPainter extends CustomPainter {
       }
     }
 
-    drawAll(unplayedColor);
-
-    if (progress > 0) {
-      canvas.save();
-      canvas.clipRect(Rect.fromLTWH(0, 0, size.width * progress, size.height));
-      drawAll(playedColor);
-      canvas.restore();
-    }
+    drawAll(color);
   }
 
   @override
   bool shouldRepaint(_WaveformPainter old) =>
       old.peaks != peaks ||
-      old.progress != progress ||
-      old.playedColor != playedColor ||
-      old.unplayedColor != unplayedColor ||
+      old.color != color ||
       old.backgroundColor != backgroundColor ||
       old.pixelRatio != pixelRatio ||
       old.stereo != stereo ||

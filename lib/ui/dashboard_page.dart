@@ -126,6 +126,8 @@ import 'package:uuid/uuid.dart';
 import 'app_snack_bar.dart';
 import 'dialogs/root_overlap_dialog.dart';
 import 'widgets/semantics_safe.dart';
+import '../services/song_player.dart';
+import 'widgets/owned_text_controller.dart';
 
 /// App version embedded at build-time (CI passes `--dart-define=APP_VERSION=x.y.z`).
 /// For PR/local builds, we fall back to a dummy version.
@@ -4259,12 +4261,18 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                                                 const DriveSyncStatusRailIcon(),
                                             // "Syncing…" while it runs, as
                                             // Rescan says "Scanning…".
+                                            // Only `syncing`: every other change
+                                            // (a refresh after each sync, the
+                                            // automatic sync at launch) would
+                                            // rebuild the whole dashboard and
+                                            // lay out the projects table again.
                                             label:
-                                                ref
-                                                    .watch(
-                                                      driveSyncStatusProvider,
-                                                    )
-                                                    .syncing
+                                                ref.watch(
+                                                  driveSyncStatusProvider
+                                                      .select(
+                                                        (s) => s.syncing,
+                                                      ),
+                                                )
                                                 ? AppLocalizations.of(
                                                     context,
                                                   )!.driveSyncing
@@ -8959,7 +8967,7 @@ class _PreviewSongDialog extends ConsumerStatefulWidget {
 }
 
 class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
-  AudioPlayer _audioPlayer = AudioPlayer();
+  AudioPlayer _audioPlayer = newSongPlayer();
   AudioPlayer? _warmPlayer;
   int _playerGen = 0;
   bool _isPlaying = false;
@@ -9118,7 +9126,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
 
   void _preWarmAlt(Source source) {
     _warmPlayer?.dispose();
-    _warmPlayer = AudioPlayer();
+    _warmPlayer = newSongPlayer();
     _warmPlayer!.setVolume(_volume);
     _warmPlayer!.setSource(source);
   }
@@ -9191,7 +9199,7 @@ class _PreviewSongDialogState extends ConsumerState<_PreviewSongDialog> {
     final savedPosition = _position;
     setState(() => _isMono = newMono);
 
-    final newActive = _warmPlayer ?? AudioPlayer();
+    final newActive = _warmPlayer ?? newSongPlayer();
     _warmPlayer = null;
     final gen = ++_playerGen;
     final oldActive = _audioPlayer;
@@ -10269,7 +10277,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     _positionNotifier = ref.read(desktopPlayerPositionProvider.notifier);
     _durationNotifier = ref.read(desktopPlayerDurationProvider.notifier);
     HardwareKeyboard.instance.addHandler(_handleKeyboard);
-    _player = AudioPlayer();
+    _player = newSongPlayer();
     _player.onPlayerStateChanged.listen((s) {
       if (!mounted) return;
       final playing = s == PlayerState.playing;
@@ -10513,11 +10521,10 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
     final l10n = AppLocalizations.of(context)!;
     final position = _position;
     final timestamp = formatPlaybackTimestamp(position);
-    final controller = TextEditingController();
-
     final note = await showDialog<String>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (dialogContext) => OwnedTextController(
+        builder: (_, controller) => AlertDialog(
         backgroundColor: Theme.of(context).cardColor,
         title: Text(l10n.addTodoAtTimestamp(timestamp)),
         content: TextField(
@@ -10539,10 +10546,9 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
             child: Text(l10n.save),
           ),
         ],
+        ),
       ),
     );
-    controller.dispose();
-
     final noteText = note?.trim();
     if (noteText == null || noteText.isEmpty) return;
     if (!mounted) return;
@@ -10646,7 +10652,11 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
 
     final modKey = Platform.isMacOS ? '⌘' : 'Ctrl';
 
-    return Focus(
+    // Its own repaint boundary: the bar changes as a song plays (the time,
+    // the waveform's clip), and without one every change repainted the whole
+    // page above it — the projects table included.
+    return RepaintBoundary(
+      child: Focus(
       focusNode: _focusNode,
       // Ctrl+wheel anywhere over the bar rides the volume — this player has
       // no window of its own, so reaching the slider means crossing the whole
@@ -11025,6 +11035,7 @@ class _DesktopPlayerBarState extends ConsumerState<_DesktopPlayerBar> {
           ),
         ),
         ),
+      ),
       ),
     );
   }

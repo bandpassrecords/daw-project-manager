@@ -77,6 +77,7 @@ import '../services/auto_start_service.dart';
 import '../services/plugin_bridge/plugin_install_scan.dart';
 import '../services/plugin_bridge/plugin_protocol.dart';
 import '../services/crash_logger.dart';
+import '../services/song_player.dart';
 
 // Profile Repository Provider
 final profileRepositoryProvider = FutureProvider<ProfileRepository>((
@@ -4808,7 +4809,7 @@ class MobilePlayerNotifier extends Notifier<MobilePlayerState> {
     } else {
       _usingJaPlayer = false;
       _cancelFallbackSubs();
-      _fallbackPlayer ??= AudioPlayer();
+      _fallbackPlayer ??= newSongPlayer();
       _attachFallbackListeners();
       await _fallbackPlayer!.stop();
       await _fallbackPlayer!.play(DeviceFileSource(path));

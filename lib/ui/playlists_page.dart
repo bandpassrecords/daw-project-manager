@@ -13,6 +13,7 @@ import '../providers/providers.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'app_snack_bar.dart';
 import 'widgets/semantics_safe.dart';
+import '../services/song_player.dart';
 
 /// Playlists page - Android only
 /// Allows creating playlists with preview songs and playing them in sequence
@@ -650,7 +651,7 @@ class _PlaylistItem {
 }
 
 class _PlaylistPlayerPageState extends ConsumerState<PlaylistPlayerPage> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = newSongPlayer();
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;

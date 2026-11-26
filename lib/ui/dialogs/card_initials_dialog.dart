@@ -20,16 +20,10 @@ Future<void> showCardInitialsDialog(
   MusicProject project,
 ) async {
   final l10n = AppLocalizations.of(context)!;
-  final controller = TextEditingController(text: project.cardInitials ?? '');
   final result = await showDialog<String?>(
     context: context,
-    builder: (ctx) => _CardInitialsDialog(
-      project: project,
-      controller: controller,
-      l10n: l10n,
-    ),
+    builder: (ctx) => _CardInitialsDialog(project: project, l10n: l10n),
   );
-  controller.dispose();
   if (result == null) return;
 
   final trimmed = result.trim();
@@ -48,12 +42,10 @@ Future<void> showCardInitialsDialog(
 class _CardInitialsDialog extends StatefulWidget {
   const _CardInitialsDialog({
     required this.project,
-    required this.controller,
     required this.l10n,
   });
 
   final MusicProject project;
-  final TextEditingController controller;
   final AppLocalizations l10n;
 
   @override
@@ -61,12 +53,23 @@ class _CardInitialsDialog extends StatefulWidget {
 }
 
 class _CardInitialsDialogState extends State<_CardInitialsDialog> {
+  // Owned here, so it lives until the dialog's closing animation is done.
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.project.cardInitials ?? '',
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = widget.l10n;
     final accent = resolvedAccentColor(widget.project);
     final preview = projectCardInitials(
-      widget.controller.text,
+      _controller.text,
       widget.project.displayName,
     );
 
@@ -116,7 +119,7 @@ class _CardInitialsDialogState extends State<_CardInitialsDialog> {
               const SizedBox(width: 12),
               Expanded(
                 child: TextField(
-                  controller: widget.controller,
+                  controller: _controller,
                   autofocus: true,
                   textCapitalization: TextCapitalization.characters,
                   maxLength: 3,
@@ -143,13 +146,13 @@ class _CardInitialsDialogState extends State<_CardInitialsDialog> {
         ),
         TextButton(
           onPressed: () {
-            widget.controller.clear();
+            _controller.clear();
             setState(() {});
           },
           child: Text(l10n.clear),
         ),
         FilledButton(
-          onPressed: () => Navigator.pop(context, widget.controller.text),
+          onPressed: () => Navigator.pop(context, _controller.text),
           child: Text(l10n.save),
         ),
       ],
