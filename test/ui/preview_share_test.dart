@@ -15,7 +15,7 @@ import 'package:daw_project_manager/utils/localization_delegates.dart';
 import '../helpers/test_factories.dart';
 
 /// Redirects `getTemporaryDirectory()` at a real temp folder so
-/// [stageFileForMobileShare] can be exercised without a device.
+/// [stageFileForShare] can be exercised without a device.
 class _FakePathProvider extends PathProviderPlatform
     with MockPlatformInterfaceMixin {
   _FakePathProvider(this.tempPath);
@@ -116,7 +116,7 @@ void main() {
     });
   });
 
-  group('stageFileForMobileShare', () {
+  group('stageFileForShare', () {
     late Directory cacheDir;
     late Directory sourceDir;
 
@@ -135,7 +135,7 @@ void main() {
       final source = File(p.join(sourceDir.path, 'Bounce.mp3'));
       await source.writeAsString('audio bytes');
 
-      final staged = await stageFileForMobileShare(source, 'Bounce.mp3');
+      final staged = await stageFileForShare(source, 'Bounce.mp3');
 
       expect(staged, isNotNull);
       expect(p.dirname(staged!.path), cacheDir.path);
@@ -146,7 +146,7 @@ void main() {
       final source = File(p.join(sourceDir.path, 'uuid_preview.mp3'));
       await source.writeAsString('audio bytes');
 
-      final staged = await stageFileForMobileShare(source, 'My Track.mp3');
+      final staged = await stageFileForShare(source, 'My Track.mp3');
 
       expect(p.basename(staged!.path), 'My Track.mp3');
     });
@@ -160,7 +160,7 @@ void main() {
       final alreadyStaged = File(p.join(cacheDir.path, 'Converted.mp3'));
       await alreadyStaged.writeAsString('converted audio');
 
-      final staged = await stageFileForMobileShare(
+      final staged = await stageFileForShare(
         alreadyStaged,
         'Converted.mp3',
       );
@@ -175,7 +175,7 @@ void main() {
       final empty = File(p.join(sourceDir.path, 'Empty.mp3'));
       await empty.create();
 
-      expect(await stageFileForMobileShare(empty, 'Empty.mp3'), isNull);
+      expect(await stageFileForShare(empty, 'Empty.mp3'), isNull);
     });
 
     test('overwrites a stale copy left by an earlier share', () async {
@@ -185,7 +185,7 @@ void main() {
       final source = File(p.join(sourceDir.path, 'Bounce.mp3'));
       await source.writeAsString('new take');
 
-      final staged = await stageFileForMobileShare(source, 'Bounce.mp3');
+      final staged = await stageFileForShare(source, 'Bounce.mp3');
 
       expect(await staged!.readAsString(), 'new take');
     });
@@ -216,6 +216,8 @@ void main() {
 
     setUp(() async {
       dir = await Directory.systemTemp.createTemp('share_desktop_');
+      final cache = await Directory(p.join(dir.path, 'cache')).create();
+      PathProviderPlatform.instance = _FakePathProvider(cache.path);
       fake.reset();
     });
 
@@ -257,8 +259,58 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(fake.shared, hasLength(1));
-      expect(fake.shared.single.files!.single.path, endsWith('Bounce.mp3'));
+      // Under the project's name (no song name stored), as on a phone.
+      expect(fake.shared.single.files!.single.path, endsWith('MyProject.mp3'));
       expect(find.byType(SnackBar), findsNothing);
+    });
+
+    // The bug: a preview song the app keeps is `<project id>_preview.<ext>`,
+    // and on a desktop the receiving app names the attachment after the
+    // file itself — every song arrived named by its uuid.
+    testWidgets('the song goes out under its own name, not the uuid file name',
+        (tester) async {
+      final context = await pumpHost(tester);
+      final project = await tester.runAsync(() async {
+        final kept = File(p.join(
+          dir.path,
+          '2fa08b9a-7deb-4b8c-951d-b721fd2e2c4f_preview.mp3',
+        ));
+        await kept.writeAsString('audio bytes');
+        return TestFactories.makeProject(
+          previewSongPath: kept.path,
+          previewSongFileName: 'Leave the lights on.mp3',
+        );
+      });
+
+      await tester.runAsync(() => shareProjectPreview(context, project!));
+      await tester.pump();
+
+      final shared = fake.shared.single.files!.single;
+      expect(p.basename(shared.path), 'Leave the lights on.mp3');
+      expect(shared.name, 'Leave the lights on.mp3');
+      expect(File(shared.path).readAsStringSync(), 'audio bytes');
+    });
+
+    testWidgets('a song the caller names is shared instead of the stored one',
+        (tester) async {
+      final context = await pumpHost(tester);
+      final paths = await tester.runAsync(() async {
+        final stored = File(p.join(dir.path, 'Old.mp3'))..writeAsStringSync('old');
+        final detected = File(p.join(dir.path, 'Detected mixdown.mp3'))
+          ..writeAsStringSync('new');
+        return (stored.path, detected.path);
+      });
+      final project = TestFactories.makeProject(previewSongPath: paths!.$1);
+
+      await tester.runAsync(
+        () => shareProjectPreview(context, project, previewPath: paths.$2),
+      );
+      await tester.pump();
+
+      expect(
+        File(fake.shared.single.files!.single.path).readAsStringSync(),
+        'new',
+      );
     });
 
     testWidgets('a share that really fails is still reported', (tester) async {
@@ -274,5 +326,43 @@ void main() {
       expect(find.byType(SnackBar), findsOneWidget);
       expect(find.textContaining('no share target'), findsOneWidget);
     });
+  });
+
+  group('sharedPreviewName', () {
+    test('a converted song keeps its name and takes the new extension', () {
+      expect(
+        sharedPreviewName(
+          'Leave the lights on.wav',
+          p.join('cache', '2fa08b9a-7deb-4b8c-951d-b721fd2e2c4f_preview.mp3'),
+        ),
+        'Leave the lights on.mp3',
+      );
+    });
+
+    test('a song shared as it is keeps its name', () {
+      expect(
+        sharedPreviewName('Teardrop.wav', p.join('x', 'abc_preview.wav')),
+        'Teardrop.wav',
+      );
+    });
+
+    test('a dot inside the name is not an extension', () {
+      expect(sharedPreviewName('Mr. Brightside', 'x.mp3'), 'Mr. Brightside.mp3');
+      expect(sharedPreviewName('Song.WAV', 'x.mp3'), 'Song.mp3');
+    });
+  });
+
+  // Four copies of the share once drifted apart and all named a converted
+  // song after its uuid; the one way to share a preview converts it.
+  test('only shareProjectPreview converts a preview song for sharing', () {
+    final offenders = [
+      for (final f in Directory('lib').listSync(recursive: true).whereType<File>())
+        if (f.path.endsWith('.dart') &&
+            !f.path.endsWith('preview_share.dart') &&
+            !f.path.endsWith('conversion_progress_dialog.dart') &&
+            f.readAsStringSync().contains('convertForSharingWithProgress('))
+          f.path,
+    ];
+    expect(offenders, isEmpty);
   });
 }

@@ -19,7 +19,6 @@ import '../utils/project_freshness.dart';
 import '../utils/playback_todo_utils.dart';
 import 'preview_share.dart';
 import 'project_detail_page.dart';
-import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/project_cover_avatar.dart';
 import 'widgets/project_notes_section.dart';
 import 'widgets/waveform_widget.dart';
@@ -262,81 +261,14 @@ class _MobilePlayerPageState extends ConsumerState<MobilePlayerPage> {
     );
   }
 
+  /// The one share of a preview song ([shareProjectPreview]), with the song
+  /// the player has loaded.
   Future<void> _sharePreviewSong() async {
-    final project = ref.read(mobilePlayerProvider).currentProject;
-    final songPath = ref.read(mobilePlayerProvider).effectivePath;
+    final player = ref.read(mobilePlayerProvider);
+    final project = player.currentProject;
+    final songPath = player.effectivePath;
     if (project == null || songPath == null) return;
-    if (songPath.startsWith('drive://')) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.previewSongNotAvailableDownloadFirst)),
-        );
-      }
-      return;
-    }
-    try {
-      final sourceFile = File(songPath);
-      if (!await sourceFile.exists()) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showAppSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.previewSongFileNotFound)),
-          );
-        }
-        return;
-      }
-      String originalFileName = project.previewShareFileName ?? p.basename(songPath);
-      if (!originalFileName.contains('.')) {
-        originalFileName = '$originalFileName${p.extension(songPath)}';
-      }
-
-      // WhatsApp (confirmed via manual testing) rejects WAV/AIFF/FLAC as a
-      // direct audio attachment with no error shown to us — convert to a
-      // compatible format first so the shared file is actually accepted.
-      var fileToShare = sourceFile;
-      var shareFileName = originalFileName;
-      if (AudioAnalysisService.needsConversionForSharing(songPath) && mounted) {
-        final converted = await convertForSharingWithProgress(context, songPath);
-        if (converted != null) {
-          fileToShare = converted;
-          shareFileName = p.basename(converted.path);
-        } else if (mounted) {
-          ScaffoldMessenger.of(context).showAppSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.mp3ConversionFailed)),
-          );
-        }
-      }
-
-      final shareFile = await stageFileForMobileShare(fileToShare, shareFileName);
-      if (shareFile == null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showAppSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)!.failedToSharePreviewSong(shareFileName),
-              ),
-            ),
-          );
-        }
-        return;
-      }
-      if (!mounted) return;
-      await SharePlus.instance.share(ShareParams(
-        files: [
-          XFile(
-            shareFile.path,
-            name: shareFileName,
-            mimeType: shareMimeTypeForFileName(shareFileName),
-          ),
-        ],
-        text: AppLocalizations.of(context)!.sharePreviewSongText(project.displayName),
-      ));
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedToSharePreviewSong(e.toString()))),
-        );
-      }
-    }
+    await shareProjectPreview(context, project, previewPath: songPath);
   }
 
   Future<void> _sharePreviewSongAsZip() async {
@@ -366,7 +298,7 @@ class _MobilePlayerPageState extends ConsumerState<MobilePlayerPage> {
         originalFileName = '$originalFileName${p.extension(songPath)}';
       }
       final cacheDir = await getTemporaryDirectory();
-      final shareFile = await stageFileForMobileShare(sourceFile, originalFileName);
+      final shareFile = await stageFileForShare(sourceFile, originalFileName);
       if (shareFile == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showAppSnackBar(
