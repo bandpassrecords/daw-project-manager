@@ -64,7 +64,6 @@ import 'dialogs/stack_version_picker_dialog.dart';
 import 'widgets/custom_fields_editor.dart';
 import 'widgets/project_detail_action_bar.dart';
 import 'widgets/ctrl_wheel_volume.dart';
-import 'widgets/conversion_progress_dialog.dart';
 import 'widgets/desktop_title_bar.dart';
 import 'widgets/project_attachments_section.dart';
 import 'widgets/project_tags_editor.dart';
@@ -3126,158 +3125,13 @@ class _PreviewSongPlayerState extends ConsumerState<_PreviewSongPlayer>
     }
   }
 
-  Future<void> _sharePreviewSong() async {
-    // Covers a manually-selected preview song AND an auto-detected mixdown —
-    // both are equally shareable, only the source of the path differs.
-    final effectivePath = _effectivePreviewPath;
-    if (effectivePath == null || effectivePath.isEmpty) {
-      if (kDebugMode) {
-        debugPrint('[preview_share] No effective preview path for project=${widget.project.id}');
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.previewSongFileNotFound)),
-        );
-      }
-      return;
-    }
-
-    // Skip if it's a Drive file reference (not downloaded)
-    if (effectivePath.startsWith('drive://')) {
-      if (kDebugMode) {
-        debugPrint('[preview_share] Path is Drive reference (not downloaded): $effectivePath');
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.previewSongNotAvailableDownloadFirst)),
-        );
-      }
-      return;
-    }
-
-    try {
-      final sourceFile = File(effectivePath);
-      if (kDebugMode) {
-        debugPrint('[preview_share] sourceFile=${sourceFile.path}');
-      }
-      if (!await sourceFile.exists()) {
-        if (kDebugMode) {
-          debugPrint('[preview_share] sourceFile does not exist');
-        }
-        if (mounted) {
-          ScaffoldMessenger.of(context).showAppSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.previewSongFileNotFound)),
-          );
-        }
-        return;
-      }
-
-      // WhatsApp enforces a ~64MB limit for audio messages, but typically allows larger files as "documents".
-      // Keep default share here (audio). A separate "Share ZIP" button is also available.
-      final fileSizeBytes = await sourceFile.length();
-      if (kDebugMode) {
-        debugPrint('[preview_share] sizeBytes=$fileSizeBytes');
-      }
-
-      // Get the original filename — prefer stored name, fall back to project name
-      String originalFileName = widget.project.previewShareFileName ??
-          p.basename(effectivePath);
-
-      // Ensure the filename has an extension
-      if (!originalFileName.contains('.')) {
-        final ext = p.extension(effectivePath);
-        originalFileName = '$originalFileName$ext';
-      }
-
-      // WhatsApp (confirmed via manual testing, including plain OS
-      // drag-and-drop of the raw file) rejects WAV/AIFF/FLAC as a direct
-      // audio attachment with no error shown to us — convert to a
-      // compatible format first so the shared file is actually accepted.
-      var fileToShare = sourceFile;
-      var shareFileName = originalFileName;
-      if (AudioAnalysisService.needsConversionForSharing(effectivePath) && mounted) {
-        if (kDebugMode) {
-          debugPrint('[preview_share] converting for messaging-app compatibility...');
-        }
-        final converted = await convertForSharingWithProgress(context, effectivePath);
-        if (converted != null) {
-          fileToShare = converted;
-          shareFileName = p.basename(converted.path);
-        } else if (mounted) {
-          ScaffoldMessenger.of(context).showAppSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.mp3ConversionFailed)),
-          );
-        }
-      }
-
-      if (!mounted) return;
-      final shareText = AppLocalizations.of(
-        context,
-      )!.sharePreviewSongText(widget.project.displayName);
-
-      // On mobile, copy to cache directory with original name for sharing
-      if (MobileUtils.isMobile()) {
-        final shareFile = await stageFileForMobileShare(fileToShare, shareFileName);
-        if (shareFile == null) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showAppSnackBar(
-              SnackBar(
-                content: Text(
-                  AppLocalizations.of(context)!.failedToSharePreviewSong(shareFileName),
-                ),
-              ),
-            );
-          }
-          return;
-        }
-        if (kDebugMode) {
-          debugPrint('[preview_share] staged at ${shareFile.path}, invoking share sheet...');
-        }
-
-        // Share the file (default behavior)
-        final result = await SharePlus.instance.share(ShareParams(
-          files: [
-            XFile(
-              shareFile.path,
-              name: shareFileName,
-              mimeType: shareMimeTypeForFileName(shareFileName),
-            ),
-          ],
-          text: shareText,
-        ));
-        if (kDebugMode) {
-          debugPrint('[preview_share] Share.shareXFiles returned (user completed/dismissed share sheet)');
-          debugPrint('[preview_share] ShareResult: status=${result.status} raw=${result.raw}');
-        }
-      } else {
-        // On other platforms, share the file directly
-        if (kDebugMode) {
-          debugPrint('[preview_share] non-Android direct share, invoking share sheet...');
-        }
-        final result = await SharePlus.instance.share(ShareParams(
-          files: [XFile(fileToShare.path)],
-          text: shareText,
-        ));
-        if (kDebugMode) {
-          debugPrint('[preview_share] ShareResult: status=${result.status} raw=${result.raw}');
-        }
-        // No "share menu unavailable" warning on `unavailable`: share_plus
-        // returns that status on Windows every time, right after the share
-        // menu has opened — Windows does not report what the user picked. A
-        // share that really fails throws, and the catch below reports it.
-      }
-    } catch (e, st) {
-      if (kDebugMode) {
-        debugPrint('[preview_share] ERROR: $e');
-        debugPrint('$st');
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showAppSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedToSharePreviewSong(e.toString()))),
-        );
-      }
-    }
-  }
+  /// The one share of a preview song ([shareProjectPreview]), with the song
+  /// this page plays — it may have been detected or replaced since it opened.
+  Future<void> _sharePreviewSong() => shareProjectPreview(
+    context,
+    widget.project,
+    previewPath: _effectivePreviewPath,
+  );
 
   Future<void> _sharePreviewSongAsZip() async {
     if (!MobileUtils.isMobile()) return;
