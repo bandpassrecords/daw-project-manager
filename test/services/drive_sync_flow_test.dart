@@ -87,7 +87,11 @@ void main() {
       final service = await signedIn();
       seedBackupFromAnotherDevice(service, projects: [
         service.serializeProjectForTest(
-          TestFactories.makeProject(id: 'from-phone', notes: 'phone notes'),
+          TestFactories.makeProject(
+            id: 'from-phone',
+            filePath: '/Users/test/Projects/PhoneSong.als',
+            notes: 'phone notes',
+          ),
         ),
       ]);
       await projectRepo.projectsBox

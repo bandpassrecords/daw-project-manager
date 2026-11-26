@@ -35,6 +35,9 @@ import 'midi_collection_store.dart';
 import 'profile_repository.dart';
 import 'project_trash.dart';
 import 'sync_tombstones.dart';
+import 'root_relocations.dart';
+import 'same_file_merge.dart';
+import '../services/same_file_rows.dart';
 import '../models/profile.dart';
 
 /// Replaces every pending deadline notification with the set planned from
@@ -764,6 +767,9 @@ class ProjectRepository {
     bool inside(String path) => rebasePath(path, from: from, to: to) != null;
 
     await rootsBox.put(rootId, root.copyWith(path: to));
+    // Remembered so a row arriving later still naming the old place (a
+    // Drive merge, a backup import) lands at the new one.
+    await RootRelocationStore.record(profileId, from: from, to: to);
 
     final now = DateTime.now();
     final moved = <String, MusicProject>{
@@ -1609,6 +1615,58 @@ class ProjectRepository {
   Future<void> restoreProject(MusicProject project) async {
     await projectsBox.put(project.id, project);
   }
+
+  /// Rows arriving from a local backup import, one file, one row (see
+  /// `planIncomingRow`): a row whose id is here replaces it, as
+  /// [restoreProject] does; one for a file this profile already has under
+  /// another id is folded into that row instead of being added beside it;
+  /// one naming a relocated folder's old place lands at the new one.
+  ///
+  /// Returns each arriving id that was folded away and the id kept for it,
+  /// for [repointFoldedRows] once releases are in too.
+  Future<Map<String, String>> absorbIncomingProjects(
+    Iterable<MusicProject> rows,
+  ) async {
+    final relocations = await RootRelocationStore.of(profileId);
+    final localByFile = <String, MusicProject>{
+      for (final row in projectsBox.values)
+        if (matchesByFile(row)) sameFileKey(row.filePath): row,
+    };
+    final aliases = <String, String>{};
+    Future<void> keep(MusicProject row) async {
+      await projectsBox.put(row.id, row);
+      if (matchesByFile(row)) localByFile[sameFileKey(row.filePath)] = row;
+    }
+
+    for (final incoming in rows) {
+      if (projectsBox.containsKey(incoming.id)) {
+        await keep(incoming);
+        continue;
+      }
+      switch (planIncomingRow(
+        incoming,
+        localByFile: localByFile,
+        relocations: relocations,
+      )) {
+        case AddIncomingRow(:final row):
+          await keep(row);
+        case FoldIncomingRow(:final keptId, :final updated):
+          aliases[incoming.id] = keptId;
+          if (updated != null) await keep(updated);
+      }
+    }
+    return aliases;
+  }
+
+  /// Points releases, playlists and stacks naming a folded-away row at the
+  /// row kept for it (see [absorbIncomingProjects]).
+  Future<void> repointFoldedRows(Map<String, String> aliases) =>
+      repointProjectIds(
+        projects: projectsBox,
+        releases: releasesBox,
+        playlists: playlistsBox,
+        aliases: aliases,
+      );
 
   /// Extracts full metadata for a single project and updates it
   Future<void> extractFullMetadataForProject(String projectId) async {
