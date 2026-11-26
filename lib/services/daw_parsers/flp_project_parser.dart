@@ -317,12 +317,29 @@ class FlpProjectParser {
     }
   }
 
+  /// Whether text is UTF-16LE, from the version FL wrote in 199 (ASCII in
+  /// every version): since FL 11.5. Null when the file names none.
+  late final bool? _utf16 = () {
+    for (final e in _events()) {
+      if (e.id != 199) continue;
+      final version = String.fromCharCodes(
+        bytes.sublist(e.offset, e.offset + e.length).takeWhile((b) => b != 0),
+      );
+      final m = RegExp(r'^(\d+)\.(\d+)').firstMatch(version);
+      if (m == null) return null;
+      final major = int.parse(m.group(1)!), minor = int.parse(m.group(2)!);
+      return major > 11 || (major == 11 && minor >= 5);
+    }
+    return null;
+  }();
+
   String _text(_FlpEvent e) {
     final raw = bytes.sublist(e.offset, e.offset + e.length);
-    // UTF-16LE when every odd byte of the (even-length) payload is zero —
-    // true of every name FL writes in Latin script, which is all ASCII-era
-    // files could hold anyway.
-    final looksUtf16 = raw.length >= 2 &&
+    // The version says which, where the file has one. Guessing from the
+    // bytes read FL 7's "Prato" — five letters and a NUL — as UTF-16.
+    // Without one: UTF-16LE when enough odd bytes of the (even-length)
+    // payload are zero — true of every name FL writes in Latin script.
+    final looksUtf16 = _utf16 ?? raw.length >= 2 &&
         raw.length.isEven &&
         Iterable.generate(raw.length ~/ 2, (i) => raw[i * 2 + 1])
                 .where((b) => b == 0)
@@ -344,6 +361,375 @@ class FlpProjectParser {
 
   String _ascii(int offset, int length) =>
       String.fromCharCodes(bytes.sublist(offset, offset + length));
+}
+
+/// A plug-in in a mixer slot or on a generator channel.
+class FlpPlugin {
+  const FlpPlugin({
+    required this.name,
+    this.vendor,
+    this.pluginId,
+    this.format,
+    this.native = true,
+  });
+
+  /// FL's own plug-ins by their name; a wrapped VST by the name its wrapper
+  /// keeps.
+  final String name;
+  final String? vendor;
+
+  /// A wrapped VST2's four-character unique id.
+  final String? pluginId;
+
+  /// `VST2` or `VST3` for a wrapped plug-in; null for FL's own.
+  final String? format;
+
+  /// One of Image-Line's: not in a Fruity Wrapper, and not hosted directly
+  /// as FL 7 hosted VSTs (its slot header's third word 1, not 2).
+  final bool native;
+}
+
+class FlpSlot {
+  const FlpSlot({required this.slot, required this.plugin, this.enabled});
+  final int slot;
+  final FlpPlugin plugin;
+
+  /// Switched on in its slot; null when the project doesn't say.
+  final bool? enabled;
+}
+
+/// One mixer track ("insert"); index 0 is the master.
+class FlpInsert {
+  const FlpInsert({
+    required this.index,
+    required this.name,
+    this.volume,
+    this.pan,
+    this.muted,
+    this.soloed,
+    this.effectsOn,
+    this.slots = const [],
+    this.routesTo = const [],
+  });
+
+  final int index;
+
+  /// As the user named it, else "Master" or "Insert N" as FL shows it.
+  final String name;
+
+  /// The fader, 0 to 16000: 12800 is FL's 100% (its default).
+  final int? volume;
+
+  /// -6400 (left) to 6400 (right).
+  final int? pan;
+  final bool? muted;
+  final bool? soloed;
+
+  /// The track's effects switch; off bypasses every slot.
+  final bool? effectsOn;
+  final List<FlpSlot> slots;
+
+  /// The mixer tracks it routes to, by index — the master among them.
+  final List<int> routesTo;
+}
+
+/// A channel in the channel rack.
+class FlpChannel {
+  const FlpChannel({
+    required this.index,
+    required this.name,
+    required this.type,
+    this.plugin,
+    this.target,
+  });
+
+  final int index;
+  final String name;
+
+  /// 0 Sampler, 1 or 2 a generator (FL's own or a plug-in), 4 an audio
+  /// clip; 3 (layer) and 5 (automation) aren't sound sources.
+  final int type;
+  final FlpPlugin? plugin;
+
+  /// The mixer track it plays into; 0 (or none) is the master.
+  final int? target;
+}
+
+/// The channel rack and the mixer: what the Project Inspector shows (#229).
+///
+/// From the PyFLP event catalogue, checked against every project in the
+/// collection (FL 7, 8, 10 and 20):
+///
+/// * A mixer track's events end with 147 (its output, a word of -1 when it
+///   only routes). Before it: 149 colour and 204 name (when it has one),
+///   236 flags (since FL 12 a u32 at 4: bit 3 on, 2 effects on, 12 solo),
+///   its slots, and 235, a byte per mixer track it routes to.
+/// * A slot is 201 (the plug-in's internal name), 212 (a header: u32 mixer
+///   track, u32 slot) and 213 (its state, which for a Fruity Wrapper names
+///   the plug-in — record 54 — its maker — 56 — its VST2 id — 51 — and its
+///   path — 55); FL 12 adds 98 after each slot.
+/// * 225 holds the mixer's parameters, 12 bytes each: u32, u8 id, u8, u16
+///   (track << 6 | slot), i32 value — id 0 a slot's switch, 192 a track's
+///   fader, 193 its pan.
+/// * A channel starts at 64, 21 is its type, 192 (or 203 since FL 12) its
+///   name, 201/213 its generator, 22 (a byte) the mixer track it plays into.
+extension FlpProjectAnatomy on FlpProjectParser {
+  /// The channel rack's sound sources, in order.
+  List<FlpChannel> readChannels() {
+    final out = <FlpChannel>[];
+    int? index, type, target, hostKind;
+    String? name, internal;
+    _FlpEvent? state;
+
+    void end() {
+      if (index != null && type != null && const {0, 1, 2, 4}.contains(type)) {
+        out.add(
+          FlpChannel(
+            index: index!,
+            name: (name == null || name!.isEmpty)
+                ? 'Channel ${index! + 1}'
+                : name!,
+            type: type!,
+            plugin: type == 1 || type == 2
+                ? _plugin(internal, state, fallback: name, hostKind: hostKind)
+                : null,
+            target: target,
+          ),
+        );
+      }
+      index = type = target = hostKind = null;
+      name = internal = null;
+      state = null;
+    }
+
+    for (final e in _events()) {
+      if (_insertEvents.contains(e.id)) break; // The mixer follows.
+      switch (e.id) {
+        case 64:
+          end();
+          index = e.value;
+        case 21:
+          type ??= e.value;
+        case 22:
+          target ??= e.value;
+        case 192 || 203:
+          if (index != null) {
+            name ??= _text(
+              e,
+            ).replaceFirst(FlpProjectParser._instanceNumber, '');
+          }
+        case 201:
+          if (index != null) internal ??= _text(e);
+        case 212:
+          if (index != null && internal != null && e.length >= 12) {
+            hostKind ??= _data.getUint32(e.offset + 8, Endian.little);
+          }
+        case 213:
+          if (index != null) state ??= e;
+      }
+    }
+    end();
+    return out;
+  }
+
+  /// Every mixer track, the master first.
+  List<FlpInsert> readMixer() {
+    final params = _mixerParams();
+    final out = <FlpInsert>[];
+    var mixer = false;
+    var index = 0;
+    String? name;
+    Uint8List? flags, routing;
+    final slots = <FlpSlot>[];
+    String? slotInternal;
+    _FlpEvent? slotState;
+    int? slotIndex, slotHostKind;
+
+    void endSlot() {
+      if (slotInternal != null && slotInternal!.isNotEmpty) {
+        final plugin = _plugin(
+          slotInternal,
+          slotState,
+          hostKind: slotHostKind,
+        );
+        final s = slotIndex ?? slots.length;
+        if (plugin != null) {
+          slots.add(
+            FlpSlot(
+              slot: s,
+              plugin: plugin,
+              enabled: switch (params[(index, s, 0)]) {
+                final v? => v != 0,
+                null => null,
+              },
+            ),
+          );
+        }
+      }
+      slotInternal = null;
+      slotState = null;
+      slotIndex = slotHostKind = null;
+    }
+
+    for (final e in _events()) {
+      if (!mixer && !_insertEvents.contains(e.id)) continue;
+      mixer = true;
+      switch (e.id) {
+        case 204:
+          name = _text(e);
+        case 236:
+          flags = Uint8List.sublistView(bytes, e.offset, e.offset + e.length);
+        case 201:
+          endSlot();
+          slotInternal = _text(e);
+        case 212:
+          if (e.length >= 12) {
+            slotIndex = _data.getUint32(e.offset + 4, Endian.little);
+            slotHostKind = _data.getUint32(e.offset + 8, Endian.little);
+          }
+        case 213:
+          if (slotInternal != null) slotState ??= e;
+        case 98:
+          endSlot();
+        case 235:
+          endSlot();
+          routing = Uint8List.sublistView(bytes, e.offset, e.offset + e.length);
+        case 147:
+          endSlot();
+          final f = flags;
+          final bits = f != null && f.length >= 8
+              ? ByteData.sublistView(f).getUint32(4, Endian.little)
+              : null;
+          final named = name;
+          out.add(
+            FlpInsert(
+              index: index,
+              name: named != null && named.isNotEmpty
+                  ? named
+                  : index == 0
+                  ? 'Master'
+                  : 'Insert $index',
+              volume: params[(index, -1, 192)],
+              pan: params[(index, -1, 193)],
+              muted: bits == null ? null : bits & 0x8 == 0,
+              soloed: bits == null ? null : bits & 0x1000 != 0,
+              effectsOn: bits == null ? null : bits & 0x4 != 0,
+              slots: List.of(slots),
+              routesTo: [
+                for (final (k, r) in (routing ?? Uint8List(0)).indexed)
+                  if (r != 0 && k != index) k,
+              ],
+            ),
+          );
+          index++;
+          name = null;
+          flags = routing = null;
+          slots.clear();
+      }
+    }
+    return out;
+  }
+
+  /// 17 and 18 (bytes): the project's time signature.
+  (int, int)? readTimeSignature() {
+    int? n, d;
+    for (final e in _events()) {
+      if (e.id == 17) n ??= e.value;
+      if (e.id == 18) d ??= e.value;
+      if (n != null && d != null) break;
+    }
+    if (n == null || d == null || n <= 0 || d <= 0) return null;
+    return (n, d);
+  }
+
+  /// The events only a mixer track has; the first one ends the channels.
+  static const _insertEvents = {149, 204, 236, 235, 154, 147};
+
+  /// 225: (track, slot, id) → value; a track's own parameters have slot -1.
+  Map<(int, int, int), int> _mixerParams() {
+    final out = <(int, int, int), int>{};
+    for (final e in _events()) {
+      if (e.id != 225) continue;
+      for (var o = e.offset; o + 12 <= e.offset + e.length; o += 12) {
+        final id = bytes[o + 4];
+        final channel = _data.getUint16(o + 6, Endian.little);
+        final value = _data.getInt32(o + 8, Endian.little);
+        final track = (channel >> 6) & 0x7F;
+        final slot = id == 0 || id == 1 ? channel & 0x3F : -1;
+        out[(track, slot, id)] = value;
+      }
+    }
+    return out;
+  }
+
+  /// A plug-in from its internal name and state: a Fruity Wrapper by what
+  /// its state says it hosts, falling back to [fallback] (a channel's own
+  /// name); FL's own by its name.
+  FlpPlugin? _plugin(
+    String? internal,
+    _FlpEvent? state, {
+    String? fallback,
+    int? hostKind,
+  }) {
+    if (internal == null || internal.isEmpty) return null;
+    final isWrapper =
+        internal.toLowerCase() == FlpProjectParser._wrapper.toLowerCase();
+    if (!isWrapper) return FlpPlugin(name: internal, native: hostKind != 1);
+    final records = state == null
+        ? const <int, Uint8List>{}
+        : _wrapperRecords(state);
+    String? text(int id) {
+      final raw = records[id];
+      if (raw == null) return null;
+      final s = utf8
+          .decode(raw, allowMalformed: true)
+          .replaceAll('\u0000', '')
+          .trim();
+      return s.isEmpty ? null : s;
+    }
+
+    final name =
+        text(54) ??
+        fallback?.replaceFirst(FlpProjectParser._instanceNumber, '');
+    if (name == null || name.isEmpty) return null;
+    final path = text(55);
+    final idBytes = records[51];
+    String? id;
+    if (idBytes != null && idBytes.length == 4) {
+      final code = String.fromCharCodes(idBytes.reversed);
+      id = RegExp(r'^[\x20-\x7E]{4}$').hasMatch(code)
+          ? code
+          : '${ByteData.sublistView(idBytes).getUint32(0, Endian.little)}';
+    }
+    return FlpPlugin(
+      name: name,
+      vendor: text(56),
+      pluginId: id,
+      format: path == null
+          ? null
+          : path.toLowerCase().endsWith('.vst3')
+          ? 'VST3'
+          : 'VST2',
+      native: false,
+    );
+  }
+
+  /// A Fruity Wrapper's state: a u32, then records of id u32, size u64 and
+  /// data. Empty when it is laid out otherwise (FL 7).
+  Map<int, Uint8List> _wrapperRecords(_FlpEvent state) {
+    final out = <int, Uint8List>{};
+    var pos = state.offset + 4;
+    final end = state.offset + state.length;
+    while (pos + 12 <= end) {
+      final id = _data.getUint32(pos, Endian.little);
+      final size = _data.getUint64(pos + 4, Endian.little);
+      pos += 12;
+      if (size < 0 || size > end - pos) return out;
+      out[id] = Uint8List.sublistView(bytes, pos, pos + size);
+      pos += size;
+    }
+    return out;
+  }
 }
 
 class _FlpEvent {

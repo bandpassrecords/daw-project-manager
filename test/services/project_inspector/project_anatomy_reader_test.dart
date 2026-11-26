@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
@@ -240,26 +241,147 @@ void main() {
   });
 
   test(
-    'another DAW: header and plug-in names, channels not read yet',
+    'nothing to read channels from: header and plug-in names, channels null',
     () async {
-      final rpp = Directory(p.join('test', 'fixtures', 'projects', 'reaper'))
-          .listSync(recursive: true)
-          .whereType<File>()
-          .firstWhere((f) => f.path.endsWith('.rpp'));
-      final anatomy = await readProjectAnatomy(rpp.path);
+      // A Studio One song with no console (Devices/audiomixer.xml): what a
+      // DAW reader can't read falls back to the scan's header and names.
+      final dir = await Directory.systemTemp.createTemp('anatomy_song');
+      addTearDown(() => dir.delete(recursive: true));
+      List<int> xml(String s) => utf8.encode(s);
+      final archive = Archive()
+        ..addFile(ArchiveFile.bytes(
+          'metainfo.xml',
+          xml('<MetaInformation><Attribute id="Media:Tempo" value="128"/>'
+              '<Attribute id="Document:Generator" value="Studio One/6.5.1.96553"/>'
+              '</MetaInformation>'),
+        ))
+        ..addFile(ArchiveFile.bytes(
+          'Song/song.xml',
+          xml('<Song><MediaTrack mediaType="Audio" name="Vox"/>'
+              '<MediaTrack mediaType="Music" name="Keys"/></Song>'),
+        ));
+      final song = File(p.join(dir.path, 'Demo.song'))
+        ..writeAsBytesSync(ZipEncoder().encodeBytes(archive));
+
+      final anatomy = await readProjectAnatomy(song.path);
       expect(anatomy.dawType, isNotNull);
       expect(anatomy.channels, isNull, reason: 'null is "not available"');
       expect(anatomy.pluginInstancesKnown, isFalse);
-      expect(anatomy.media, isNotNull);
       expect(anatomy.plugins.every((pl) => pl.instances == null), isTrue);
-      // What the scan reads is carried along: tracks by kind, MIDI clips,
-      // markers (REAPER keeps them), the `.mid` files it looked for.
+      // What the scan reads is carried along: tracks by kind.
       expect(anatomy.stats, isNotNull);
-      expect(anatomy.midiClipCount, isNotNull);
-      expect(anatomy.markers, isNotNull);
-      expect(anatomy.missingMidiFiles, isNotNull);
+      expect(anatomy.tempo, 128);
     },
   );
+
+  group('flAnatomy, on a real FL 20 project', () {
+    final path = p.join(
+      'test', 'fixtures', 'projects', 'flstudio', 'TetraSound - Bassline (FL 20)',
+      'motherfucker bassline.flp',
+    );
+    late ProjectAnatomy a;
+    setUpAll(() async => a = await readProjectAnatomy(path));
+    AnatomyChannel channel(String name) =>
+        a.channels!.firstWhere((c) => c.name == name);
+
+    test('the rack, then the mixer tracks in use, the master last', () {
+      expect(a.dawType, 'FL Studio');
+      expect(a.channels!.last.kind, AnatomyChannelKind.master);
+      expect(a.sampleRate, isNull, reason: 'not a project setting in FL');
+      expect(a.timeSignature, (4, 4));
+      expect(a.pluginInstancesKnown, isTrue);
+    });
+
+    test('a named mixer track, its effects switched off with it', () {
+      final kb = channel('KICK+BASS');
+      expect(kb.kind, AnatomyChannelKind.group);
+      expect(kb.output, 'Master');
+      expect([for (final i in kb.inserts) i.plugin],
+          ['Distructor', 'Fruity Parametric EQ 2', 'Fruity Reeverb 2',
+           'Fruity Compressor']);
+      expect(kb.inserts.every((i) => i.deactivated == true), isTrue);
+    });
+
+    test('the master limiter in its last slot', () {
+      expect(a.channels!.last.inserts.single.plugin, 'Fruity Limiter');
+      expect(a.channels!.last.inserts.single.slot, 9);
+    });
+
+    test("a wrapped VST by its maker; Image-Line's own as stock", () {
+      final crono = a.plugins.firstWhere((pl) => pl.name == 'CronoX');
+      expect(crono.vendor, 'LinPlug');
+      expect(crono.stock, isFalse);
+      expect(crono.role, AnatomyPluginRole.instrument);
+      expect(a.plugins.firstWhere((pl) => pl.name == 'Sytrus').stock, isTrue);
+    });
+  });
+
+  group('reaperAnatomy, on a real REAPER 5.70 project', () {
+    final path = p.join(
+      'test', 'fixtures', 'projects', 'reaper', 'Trance loop (REAPER 5.70)',
+      'Trance loop.rpp',
+    );
+    late ProjectAnatomy a;
+    setUpAll(() async => a = await readProjectAnatomy(path));
+    AnatomyChannel channel(String name) =>
+        a.channels!.firstWhere((c) => c.name == name);
+
+    test('every track, then the master', () {
+      expect(a.dawType, 'Reaper');
+      expect(a.channels, hasLength(11));
+      expect(a.channels!.last.kind, AnatomyChannelKind.master);
+      expect(trackChannels(a.channels!), hasLength(10));
+      expect(channel('Reverb').kind, AnatomyChannelKind.fx,
+          reason: 'no items, and it receives sends');
+      expect(channel('Noise').kind, AnatomyChannelKind.audio);
+      expect(a.timeSignature, (4, 4));
+      expect(a.pluginInstancesKnown, isTrue);
+      expect(a.media, isNotNull);
+    });
+
+    test('an instrument, its inserts after it, a chain switched off', () {
+      final kick = channel('kick 1');
+      expect(kick.kind, AnatomyChannelKind.instrument);
+      expect(kick.instrument, 'ReaSynth');
+      expect([for (final i in kick.inserts) i.plugin], ['ReaEQ', 'ReaComp']);
+      final off = channel('Good Effect').inserts;
+      expect(off, isNotEmpty);
+      expect(off.every((i) => i.deactivated == true), isTrue);
+    });
+
+    test('sends listed on the track that sends, a side-chain by its channels',
+        () {
+      final kick = channel('kick 1').sends.single;
+      expect(kick.destination, 'Pad (3/4)');
+      final pad = channel('Pad').sends.single;
+      expect(pad.destination, 'Reverb');
+      expect(pad.preFader, isTrue);
+      expect(channel('Reverb').sends, isEmpty,
+          reason: 'REAPER keeps the send on the receiving track');
+    });
+
+    test('the master: its FX and the output it plays to', () {
+      final master = a.channels!.last;
+      expect(master.output, 'Out 1/2');
+      expect(master.inserts.first.plugin, 'ReaEQ');
+      expect(master.volumeDb, closeTo(0, 1e-9));
+    });
+
+    test('plug-ins: Cockos and JS effects are stock, by instances', () {
+      final eq = a.plugins.firstWhere((pl) => pl.name == 'ReaEQ');
+      expect(eq.stock, isTrue);
+      expect(eq.format, 'VST2');
+      expect(eq.vendor, 'Cockos');
+      expect(eq.instances, 9);
+      final js = a.plugins.firstWhere((pl) => pl.name == 'gfxanalyzer');
+      expect(js.format, 'JS');
+      expect(js.stock, isTrue);
+      expect(
+        a.plugins.firstWhere((pl) => pl.name == 'ReaSynth').role,
+        AnatomyPluginRole.instrument,
+      );
+    });
+  });
 
   test('readProjectAnatomy reads a Cubase project in full', () async {
     final anatomy = await readProjectAnatomy(_cubase13);

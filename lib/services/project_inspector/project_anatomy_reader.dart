@@ -14,6 +14,9 @@ import '../../models/sample_reference.dart';
 import '../daw_parsers/ableton_devices.dart';
 import '../daw_parsers/ableton_project_parser.dart';
 import '../daw_parsers/cubase_project_parser.dart';
+import '../daw_parsers/flp_project_parser.dart';
+import '../daw_parsers/reaper_project_parser.dart';
+import '../daw_parsers/studio_one_project_parser.dart';
 import '../metadata_extractor.dart';
 import '../sample_pack/project_sample_reader.dart';
 import 'cubase_stock_plugins.dart';
@@ -76,6 +79,101 @@ Future<ProjectAnatomy> readProjectAnatomy(String filePath) async {
       );
     } catch (_) {
       // A set the reader can't make sense of still shows what the scan
+      // read, as the other DAWs do.
+    }
+  }
+
+  if (ext == '.song') {
+    final bytes = await file.readAsBytes();
+    final dawType = meta.dawType;
+    final savedWith = meta.dawVersion;
+    final tempo = meta.bpm;
+    final key = meta.key;
+    final stats = meta.stats;
+    final notes = meta.projectNotes;
+    final markers = meta.markers;
+    final missingMidi = meta.missingMidiFiles;
+    try {
+      final read = await Isolate.run(
+        () => studioOneAnatomy(
+          filePath: filePath,
+          bytes: bytes,
+          dawType: dawType,
+          savedWith: savedWith,
+          tempo: tempo,
+          key: key,
+          stats: stats,
+          notes: notes,
+          markers: markers,
+          missingMidiFiles: missingMidi,
+        ),
+      );
+      if (read != null) return read;
+    } catch (_) {
+      // A song the reader can't make sense of still shows what the scan
+      // read, as the other DAWs do.
+    }
+  }
+
+  if (ext == '.flp') {
+    final bytes = await file.readAsBytes();
+    final dawType = meta.dawType;
+    final savedWith = meta.dawVersion;
+    final tempo = meta.bpm;
+    final key = meta.key;
+    final stats = meta.stats;
+    final notes = meta.projectNotes;
+    final markers = meta.markers;
+    final missingMidi = meta.missingMidiFiles;
+    try {
+      return await Isolate.run(
+        () => flAnatomy(
+          filePath: filePath,
+          bytes: bytes,
+          dawType: dawType,
+          savedWith: savedWith,
+          tempo: tempo,
+          key: key,
+          stats: stats,
+          notes: notes,
+          markers: markers,
+          missingMidiFiles: missingMidi,
+        ),
+      );
+    } catch (_) {
+      // A project the reader can't make sense of still shows what the scan
+      // read, as the other DAWs do.
+    }
+  }
+
+  if (ext == '.rpp') {
+    final bytes = await file.readAsBytes();
+    final dawType = meta.dawType;
+    final savedWith = meta.dawVersion;
+    final tempo = meta.bpm;
+    final key = meta.key;
+    final stats = meta.stats;
+    final notes = meta.projectNotes;
+    final markers = meta.markers;
+    final missingMidi = meta.missingMidiFiles;
+    try {
+      return await Isolate.run(
+        () => reaperAnatomy(
+          filePath: filePath,
+          content: utf8.decode(bytes, allowMalformed: true),
+          fileSize: bytes.length,
+          dawType: dawType,
+          savedWith: savedWith,
+          tempo: tempo,
+          key: key,
+          stats: stats,
+          notes: notes,
+          markers: markers,
+          missingMidiFiles: missingMidi,
+        ),
+      );
+    } catch (_) {
+      // A project the reader can't make sense of still shows what the scan
       // read, as the other DAWs do.
     }
   }
@@ -542,6 +640,567 @@ List<AnatomyPlugin> _abletonPlugins(List<AbletonTrack> tracks) {
 class _AbletonTally {
   _AbletonTally(this.device);
   final AbletonDevice device;
+  int instances = 0;
+  final List<String> channels = [];
+
+  void add(String channel) {
+    instances++;
+    if (!channels.contains(channel)) channels.add(channel);
+  }
+}
+
+/// A REAPER project's anatomy from its text (#226). [tempo], [key],
+/// [stats] and the rest are what [MetadataExtractor] read from the same
+/// file; tracks, sends, FX chains, the sample rate, the recording format
+/// and the time signature are read here.
+///
+/// REAPER keeps a send on the track that receives it; here it is listed on
+/// the track that sends, as every other DAW's are. A send into channels
+/// 3/4 or above — where a side-chain input listens — names the channels it
+/// lands on, since which plug-in listens there isn't in the project.
+ProjectAnatomy reaperAnatomy({
+  required String filePath,
+  required String content,
+  required int fileSize,
+  String? dawType,
+  String? savedWith,
+  double? tempo,
+  String? key,
+  ProjectStats? stats,
+  String? notes,
+  List<ProjectMarker>? markers,
+  List<String>? missingMidiFiles,
+}) {
+  final parser = ReaperProjectParser(content, projectDir: p.dirname(filePath));
+  final tracks = parser.readTracks();
+  final regular = [
+    for (final t in tracks)
+      if (t.kind != ReaperTrackKind.master) t,
+  ];
+
+  final sendsFrom = <int, List<AnatomySend>>{};
+  for (final destination in regular) {
+    for (final r in destination.receives) {
+      if (r.sourceIndex < 0 || r.sourceIndex >= regular.length) continue;
+      final d = r.destinationChannel;
+      final db = reaperGainDb(r.volume);
+      sendsFrom
+          .putIfAbsent(r.sourceIndex, () => [])
+          .add(
+            AnatomySend(
+              destination: r.midiOnly
+                  ? '${destination.name} (MIDI)'
+                  : d >= 2
+                  ? '${destination.name} (${d + 1}/${d + 2})'
+                  : destination.name,
+              levelDb: db,
+              levelPosition: reaperFaderPosition(db),
+              on: !r.muted,
+              preFader: r.preFader,
+            ),
+          );
+    }
+  }
+
+  final channels = [
+    for (final (i, t) in tracks.indexed)
+      _reaperChannel(
+        t,
+        sends: t.kind == ReaperTrackKind.master
+            ? const []
+            : sendsFrom[i] ?? const [],
+      ),
+  ];
+
+  return ProjectAnatomy(
+    filePath: filePath,
+    fileSize: fileSize,
+    dawType: dawType ?? 'Reaper',
+    savedWith: savedWith,
+    tempo: tempo,
+    key: key,
+    timeSignature: parser.readTimeSignature(),
+    sampleRate: parser.readSampleRate(),
+    bitDepth: parser.readRecordBitDepth(),
+    channels: channels,
+    plugins: _reaperPlugins(tracks),
+    pluginInstancesKnown: true,
+    media: parser.readSampleReferences(),
+    stats: stats,
+    notes: _notes(notes),
+    markers: markers,
+    missingMidiFiles: missingMidiFiles,
+  );
+}
+
+AnatomyChannel _reaperChannel(
+  ReaperTrack t, {
+  required List<AnatomySend> sends,
+}) {
+  final instrument = t.instrument;
+  final db = t.volume == null ? null : reaperGainDb(t.volume!);
+  String? hardware() => t.hardwareOutputs.isEmpty
+      ? null
+      : 'Out ${t.hardwareOutputs.first + 1}/${t.hardwareOutputs.first + 2}';
+  return AnatomyChannel(
+    name: t.name,
+    kind: switch (t.kind) {
+      ReaperTrackKind.audio => AnatomyChannelKind.audio,
+      ReaperTrackKind.midi => AnatomyChannelKind.midi,
+      ReaperTrackKind.instrument => AnatomyChannelKind.instrument,
+      // A folder track mixes the tracks in it: a group, not an empty folder.
+      ReaperTrackKind.folder => AnatomyChannelKind.group,
+      ReaperTrackKind.bus => AnatomyChannelKind.fx,
+      ReaperTrackKind.master => AnatomyChannelKind.master,
+    },
+    folder: t.folder,
+    output: t.kind == ReaperTrackKind.master
+        ? hardware()
+        : t.sendsToParent
+        ? (t.folder ?? 'Master')
+        : hardware(),
+    volumeDb: db,
+    faderPosition: db == null ? null : reaperFaderPosition(db),
+    pan: t.pan,
+    muted: t.muted,
+    soloed: t.soloed,
+    instrument: instrument?.name,
+    instrumentId: instrument?.pluginId,
+    instrumentPreset: instrument?.preset,
+    inserts: [
+      for (final (i, f) in t.fx.indexed)
+        if (!identical(f, instrument))
+          AnatomyInsert(
+            slot: i,
+            plugin: f.name,
+            pluginId: f.pluginId,
+            format: f.format,
+            preset: f.preset,
+            deactivated: f.bypassed || f.offline,
+          ),
+    ],
+    sends: sends,
+  );
+}
+
+/// A REAPER fader's or send's gain in dB; minus infinity below what REAPER
+/// shows as a number.
+double reaperGainDb(double gain) => gain <= 1e-8
+    ? double.negativeInfinity
+    : (20 * math.log(gain) / math.ln10).clamp(-150.0, 24.0);
+
+/// Where a fader at [db] sits from 0 (bottom) to 1 (top), for drawing it:
+/// REAPER's fader tops out at +12 dB, with 0 dB high on its travel. The
+/// shape, not REAPER's exact scale — the dB is the reading.
+double reaperFaderPosition(double db) => db.isInfinite && db < 0
+    ? 0
+    : db >= 0
+    ? (0.8 + 0.2 * (db / 12)).clamp(0.0, 1.0)
+    : 0.8 * (1 - math.sqrt((-db / 90).clamp(0.0, 1.0)));
+
+/// Every plug-in by name and format, with its instances and the tracks it
+/// is on — item FX and input FX included, as they are loaded too.
+List<AnatomyPlugin> _reaperPlugins(List<ReaperTrack> tracks) {
+  final found = <String, _ReaperTally>{};
+  for (final t in tracks) {
+    for (final f in [...t.fx, ...t.itemFx, ...t.inputFx]) {
+      found
+          .putIfAbsent(
+            '${f.name.toLowerCase()}|${f.format}',
+            () => _ReaperTally(f),
+          )
+          .add(t.name);
+    }
+  }
+  return [
+    for (final t in found.values)
+      AnatomyPlugin(
+        name: t.fx.name,
+        role: t.fx.isInstrument
+            ? AnatomyPluginRole.instrument
+            : AnatomyPluginRole.effect,
+        stock: t.fx.stock,
+        instances: t.instances,
+        channels: List.unmodifiable(t.channels),
+        pluginId: t.fx.pluginId,
+        vendor: t.fx.vendor,
+        format: t.fx.format,
+      ),
+  ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+}
+
+class _ReaperTally {
+  _ReaperTally(this.fx);
+  final ReaperFx fx;
+  int instances = 0;
+  final List<String> channels = [];
+
+  void add(String channel) {
+    instances++;
+    if (!channels.contains(channel)) channels.add(channel);
+  }
+}
+
+/// FL Studio's fader at its default, 100%, as the project stores it.
+const int kFlDefaultVolume = 12800;
+
+/// An FL Studio project's anatomy from its bytes (#229). [tempo], [key],
+/// [stats] and the rest are what [MetadataExtractor] read from the same
+/// file; the channel rack, the mixer, its routing and the time signature
+/// are read here.
+///
+/// FL's model differs from the others: the channel rack's generators and
+/// samplers play into mixer tracks, which route to each other and to the
+/// master. Both are listed — the rack's channels with the mixer track they
+/// play into as their output, then the mixer tracks in use (the master, a
+/// named one, one with effects, one something plays or routes into, one
+/// whose fader, pan or mute was touched), as groups. FL keeps no sample
+/// rate in the project, and its fader law isn't known here, so a fader is
+/// its position (12800 of 16000) and never a dB figure.
+ProjectAnatomy flAnatomy({
+  required String filePath,
+  required Uint8List bytes,
+  String? dawType,
+  String? savedWith,
+  double? tempo,
+  String? key,
+  ProjectStats? stats,
+  String? notes,
+  List<ProjectMarker>? markers,
+  List<String>? missingMidiFiles,
+}) {
+  final parser = FlpProjectParser(bytes);
+  final rack = parser.readChannels();
+  final mixer = parser.readMixer();
+  final byIndex = {for (final i in mixer) i.index: i};
+  String trackName(int? index) => switch (index) {
+    final i? when i > 0 && byIndex[i] != null => byIndex[i]!.name,
+    _ => 'Master',
+  };
+
+  final playedInto = {for (final c in rack) c.target ?? 0};
+
+  // FL 11 and before had four send tracks every mixer track routes to by
+  // design (65–68, or 100–103 from FL 9), each with a level knob this file
+  // doesn't say the setting of — as Ableton has a send to every return. A
+  // route into an empty track (default name, no effects, nothing playing
+  // into it) that every other track takes is that layout, not a choice.
+  bool empty(FlpInsert i) =>
+      i.index != 0 &&
+      i.name == 'Insert ${i.index}' &&
+      i.slots.isEmpty &&
+      !playedInto.contains(i.index) &&
+      i.routesTo.every((k) => k == 0);
+  final candidates = {
+    for (final i in mixer)
+      if (empty(i)) i.index,
+  };
+  final implicit = {
+    for (final k in candidates)
+      if ([
+        for (final i in mixer)
+          if (i.index != 0 && !candidates.contains(i.index)) i,
+      ].every((i) => i.routesTo.contains(k)))
+        k,
+  };
+  final routedInto = {
+    for (final i in mixer)
+      for (final k in i.routesTo)
+        if (!implicit.contains(k)) k,
+  };
+  bool inUse(FlpInsert i) =>
+      i.index == 0 ||
+      i.slots.isNotEmpty ||
+      playedInto.contains(i.index) ||
+      routedInto.contains(i.index) ||
+      i.name != 'Insert ${i.index}' ||
+      (i.volume != null && i.volume != kFlDefaultVolume) ||
+      (i.pan ?? 0) != 0 ||
+      i.muted == true;
+
+  final channels = <AnatomyChannel>[
+    for (final c in rack)
+      AnatomyChannel(
+        name: c.name,
+        kind: switch (c.type) {
+          0 => AnatomyChannelKind.sampler,
+          4 => AnatomyChannelKind.audio,
+          _ => AnatomyChannelKind.instrument,
+        },
+        output: trackName(c.target),
+        instrument: c.plugin?.name,
+        instrumentId: c.plugin?.pluginId,
+      ),
+    for (final i in mixer)
+      if (i.index != 0 && inUse(i)) _flInsertChannel(i, trackName, implicit),
+    if (byIndex[0] case final master?)
+      _flInsertChannel(master, trackName, implicit),
+  ];
+
+  return ProjectAnatomy(
+    filePath: filePath,
+    fileSize: bytes.length,
+    dawType: dawType ?? 'FL Studio',
+    savedWith: savedWith,
+    tempo: tempo,
+    key: key,
+    timeSignature: parser.readTimeSignature(),
+    channels: channels,
+    plugins: _flPlugins(rack, [
+      for (final i in mixer)
+        if (inUse(i)) i,
+    ]),
+    pluginInstancesKnown: true,
+    media: parser.readSampleReferences(),
+    stats: stats,
+    notes: _notes(notes),
+    markers: markers,
+    missingMidiFiles: missingMidiFiles,
+  );
+}
+
+/// A mixer track: its output is the master when it routes there, else the
+/// first track it routes to; every other route is a send.
+AnatomyChannel _flInsertChannel(
+  FlpInsert i,
+  String Function(int?) trackName,
+  Set<int> implicit,
+) {
+  final isMaster = i.index == 0;
+  final output = isMaster || i.routesTo.isEmpty
+      ? null
+      : i.routesTo.contains(0)
+      ? 0
+      : i.routesTo.first;
+  return AnatomyChannel(
+    name: i.name,
+    kind: isMaster ? AnatomyChannelKind.master : AnatomyChannelKind.group,
+    output: output == null ? null : trackName(output),
+    faderPosition: i.volume == null ? null : (i.volume! / 16000).clamp(0.0, 1.0),
+    pan: i.pan == null ? null : (i.pan! / 6400).clamp(-1.0, 1.0),
+    muted: i.muted,
+    soloed: i.soloed,
+    inserts: [
+      for (final s in i.slots)
+        AnatomyInsert(
+          slot: s.slot,
+          plugin: s.plugin.name,
+          pluginId: s.plugin.pluginId,
+          format: s.plugin.format,
+          deactivated: s.enabled == false || i.effectsOn == false
+              ? true
+              : s.enabled == null && i.effectsOn == null
+              ? null
+              : false,
+        ),
+    ],
+    sends: [
+      for (final k in i.routesTo)
+        if (k != output && !implicit.contains(k))
+          AnatomySend(destination: trackName(k)),
+    ],
+  );
+}
+
+/// Every plug-in by name and format: generators as instruments, mixer
+/// slots as effects; Image-Line's own are stock.
+List<AnatomyPlugin> _flPlugins(List<FlpChannel> rack, List<FlpInsert> mixer) {
+  final found = <String, ({FlpPlugin plugin, bool instrument, _FlTally tally})>{};
+  void add(FlpPlugin p, bool instrument, String channel) {
+    found
+        .putIfAbsent(
+          '${p.name.toLowerCase()}|${p.format ?? ''}|$instrument',
+          () => (plugin: p, instrument: instrument, tally: _FlTally()),
+        )
+        .tally
+        .add(channel);
+  }
+
+  for (final c in rack) {
+    if (c.plugin case final p?) add(p, true, c.name);
+  }
+  for (final i in mixer) {
+    for (final s in i.slots) {
+      add(s.plugin, false, i.name);
+    }
+  }
+  return [
+    for (final f in found.values)
+      AnatomyPlugin(
+        name: f.plugin.name,
+        role: f.instrument
+            ? AnatomyPluginRole.instrument
+            : AnatomyPluginRole.effect,
+        stock: f.plugin.native,
+        instances: f.tally.instances,
+        channels: List.unmodifiable(f.tally.channels),
+        pluginId: f.plugin.pluginId,
+        vendor: f.plugin.native ? 'Image-Line' : f.plugin.vendor,
+        format: f.plugin.format,
+      ),
+  ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+}
+
+class _FlTally {
+  int instances = 0;
+  final List<String> channels = [];
+
+  void add(String channel) {
+    instances++;
+    if (!channels.contains(channel)) channels.add(channel);
+  }
+}
+
+/// A Studio One song's anatomy from its bytes (#228); null when it has no
+/// console to read. [tempo], [key], [stats] and the rest are what
+/// [MetadataExtractor] read from the same file; the console, the
+/// instruments, the sample rate, bit depth and time signature are read
+/// here.
+///
+/// Every console channel but the inputs, the output last as the master. An
+/// instrument channel carries the instrument playing into it. A VCA moves
+/// faders and mixes nothing; it is listed with the groups.
+ProjectAnatomy? studioOneAnatomy({
+  required String filePath,
+  required Uint8List bytes,
+  String? dawType,
+  String? savedWith,
+  double? tempo,
+  String? key,
+  ProjectStats? stats,
+  String? notes,
+  List<ProjectMarker>? markers,
+  List<String>? missingMidiFiles,
+}) {
+  final parser = StudioOneProjectParser(bytes);
+  final console = parser.readConsole();
+  if (console == null) return null;
+  final ordered = [
+    for (final c in console.channels)
+      if (c.kind != StudioOneChannelKind.output) c,
+    for (final c in console.channels)
+      if (c.kind == StudioOneChannelKind.output) c,
+  ];
+
+  AnatomyChannel channel(StudioOneChannel c) {
+    final db = c.gain == null ? null : studioOneGainDb(c.gain!);
+    return AnatomyChannel(
+      name: c.name,
+      kind: switch (c.kind) {
+        StudioOneChannelKind.audio => AnatomyChannelKind.audio,
+        StudioOneChannelKind.instrument => AnatomyChannelKind.instrument,
+        StudioOneChannelKind.group ||
+        StudioOneChannelKind.vca => AnatomyChannelKind.group,
+        StudioOneChannelKind.fx => AnatomyChannelKind.fx,
+        StudioOneChannelKind.output => AnatomyChannelKind.master,
+      },
+      output: c.destination,
+      volumeDb: db,
+      faderPosition: db == null ? null : studioOneFaderPosition(db),
+      pan: c.pan == null ? null : ((c.pan! - 0.5) * 2).clamp(-1.0, 1.0),
+      muted: c.muted,
+      soloed: c.soloed,
+      instrument: c.instrument?.name,
+      instrumentId: c.instrument?.classId,
+      instrumentPreset: c.instrument?.preset,
+      inserts: [
+        for (final (i, p) in c.inserts.indexed)
+          AnatomyInsert(
+            slot: i,
+            plugin: p.name,
+            pluginId: p.classId,
+            format: p.format,
+            preset: p.preset,
+            deactivated: p.bypassed,
+          ),
+      ],
+      sends: [
+        for (final s in c.sends)
+          AnatomySend(
+            destination: s.destination,
+            levelDb: s.level == null ? null : studioOneGainDb(s.level!),
+            levelPosition: s.level == null
+                ? null
+                : studioOneFaderPosition(studioOneGainDb(s.level!)),
+            on: !s.bypassed,
+            preFader: s.preFader,
+          ),
+      ],
+    );
+  }
+
+  return ProjectAnatomy(
+    filePath: filePath,
+    fileSize: bytes.length,
+    dawType: dawType ?? 'Studio One',
+    savedWith: savedWith,
+    tempo: tempo,
+    key: key,
+    timeSignature: console.timeSignature,
+    sampleRate: console.sampleRate,
+    bitDepth: console.bitDepth,
+    channels: [for (final c in ordered) channel(c)],
+    plugins: _studioOnePlugins(ordered),
+    pluginInstancesKnown: true,
+    media: parser.readSampleReferences(),
+    stats: stats,
+    notes: _notes(notes),
+    markers: markers,
+    missingMidiFiles: missingMidiFiles,
+  );
+}
+
+/// A Studio One fader's or send's gain in dB; minus infinity at silence.
+double studioOneGainDb(double gain) => gain <= 1e-8
+    ? double.negativeInfinity
+    : (20 * math.log(gain) / math.ln10).clamp(-150.0, 24.0);
+
+/// Where a fader at [db] sits from 0 (bottom) to 1 (top), for drawing it:
+/// Studio One's tops out at +10 dB. The shape, not its exact scale.
+double studioOneFaderPosition(double db) => db.isInfinite && db < 0
+    ? 0
+    : db >= 0
+    ? (0.8 + 0.2 * (db / 10)).clamp(0.0, 1.0)
+    : 0.8 * (1 - math.sqrt((-db / 90).clamp(0.0, 1.0)));
+
+/// Every plug-in by name and format: instruments and effects, PreSonus's
+/// own as stock.
+List<AnatomyPlugin> _studioOnePlugins(List<StudioOneChannel> channels) {
+  final found = <String, ({StudioOnePlugin plugin, _S1Tally tally})>{};
+  void add(StudioOnePlugin p, String channel) {
+    found
+        .putIfAbsent(
+          '${p.name.toLowerCase()}|${p.format ?? ''}|${p.isInstrument}',
+          () => (plugin: p, tally: _S1Tally()),
+        )
+        .tally
+        .add(channel);
+  }
+
+  for (final c in channels) {
+    if (c.instrument case final i?) add(i, c.name);
+    for (final p in c.inserts) {
+      add(p, c.name);
+    }
+  }
+  return [
+    for (final f in found.values)
+      AnatomyPlugin(
+        name: f.plugin.name,
+        role: f.plugin.isInstrument
+            ? AnatomyPluginRole.instrument
+            : AnatomyPluginRole.effect,
+        stock: f.plugin.native,
+        instances: f.tally.instances,
+        channels: List.unmodifiable(f.tally.channels),
+        pluginId: f.plugin.classId,
+        vendor: f.plugin.native == true ? 'PreSonus' : null,
+        format: f.plugin.format,
+      ),
+  ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+}
+
+class _S1Tally {
   int instances = 0;
   final List<String> channels = [];
 

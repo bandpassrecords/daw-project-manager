@@ -21,6 +21,16 @@
       "midiClips": 0
     },
     "midiClips": [],
-    "sampleReferences": []
+    "sampleReferences": [],
+    "inspector": {
+      "savedWith": "7.78",
+      "sampleRate": null,
+      "bitDepth": 24,
+      "timeSignature": "4/4",
+      "channels": [
+        "Master [master] | -> Out 1/2 | 0.0 dB C"
+      ],
+      "plugins": []
+    }
   }
 }
