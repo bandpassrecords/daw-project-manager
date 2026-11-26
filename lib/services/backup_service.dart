@@ -397,11 +397,10 @@ class BackupService {
         // For merge mode, we just add/update without clearing
       }
       
-      // Import data into target repository
-      // Use restoreProject to preserve the original lastModifiedAt from the backup
-      for (final project in importedProjects) {
-        await targetRepo.restoreProject(project);
-      }
+      // Import data into target repository, keeping each project's original
+      // lastModifiedAt. One file, one row: a project this profile already
+      // has under another id is folded into that row (absorbIncomingProjects).
+      final foldedRows = await targetRepo.absorbIncomingProjects(importedProjects);
       // Absent before backup 1.4. Merged, never replacing a newer read.
       await targetRepo.midiClips
           .mergeNewer(storedMidiClipsFromJson(backupData['midiClips']));
@@ -436,6 +435,7 @@ class BackupService {
       for (final release in importedReleases) {
         await targetRepo.updateRelease(release);
       }
+      await targetRepo.repointFoldedRows(foldedRows);
 
       // Restore global (non-per-profile) data. These boxes are shared across
       // every profile, so — unlike the per-profile data above — writing them

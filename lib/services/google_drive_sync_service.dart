@@ -35,7 +35,11 @@ import '../repository/profile_repository.dart';
 import '../repository/project_repository.dart';
 import '../repository/midi_clip_store.dart';
 import '../repository/midi_collection_store.dart';
+import '../models/playlist.dart';
 import '../repository/sync_tombstones.dart';
+import '../repository/root_relocations.dart';
+import '../repository/same_file_merge.dart';
+import 'same_file_rows.dart';
 import '../models/midi_collection.dart';
 import 'custom_theme_merge.dart';
 import 'custom_field_merge.dart';
@@ -4560,6 +4564,10 @@ class GoogleDriveSyncService {
       TombstoneKind.release,
     );
 
+    // Arriving ids folded into a row already here, per profile (see
+    // planIncomingRow); what names them is repointed once everything merged.
+    final sameFileAliases = <String, Map<String, String>>{};
+
     // Merge projects - distribute to CORRECT profiles (or ALL if no mappings)
     if (remoteData['projects'] != null) {
       final rawProjects = remoteData['projects'] as List;
@@ -4584,6 +4592,12 @@ class GoogleDriveSyncService {
         try {
           final profileProjectsBox = await Hive.openBox<MusicProject>('${profile.id}_projects');
           int profileProjectsAdded = 0;
+          final relocations = await RootRelocationStore.of(profile.id);
+          final localByFile = <String, MusicProject>{
+            for (final row in profileProjectsBox.values)
+              if (matchesByFile(row)) sameFileKey(row.filePath): row,
+          };
+          final aliases = sameFileAliases.putIfAbsent(profile.id, () => {});
           int profileProjectsUpdated = 0;
           
           // Get projects that belong to this profile
@@ -4605,8 +4619,39 @@ class GoogleDriveSyncService {
               final localProject = profileProjectsBox.get(remoteProject.id);
               
               if (localProject == null) {
+                // One file, one row: a row for a file this profile already
+                // has under another id is folded into that row, never added
+                // beside it; one naming a relocated folder's old place lands
+                // at the new one.
+                final plan = planIncomingRow(
+                  remoteProject,
+                  localByFile: localByFile,
+                  relocations: relocations,
+                );
+                if (plan case FoldIncomingRow(:final keptId, :final updated)) {
+                  aliases[remoteProject.id] = keptId;
+                  if (updated != null) {
+                    var folded = updated;
+                    // A preview taken over from the arriving row is its file
+                    // on Drive, not a path on the computer that uploaded it.
+                    final previewFileId = previewSongFiles?[remoteProject.id];
+                    if (previewFileId is String &&
+                        folded.previewSongPath == remoteProject.previewSongPath &&
+                        folded.previewSongPath != null &&
+                        !File(folded.previewSongPath!).existsSync()) {
+                      folded = folded.copyWith(
+                        previewSongPath: _createDriveFileReference(previewFileId),
+                      );
+                    }
+                    await profileProjectsBox.put(folded.id, folded);
+                    localByFile[sameFileKey(folded.filePath)] = folded;
+                    projectsUpdated++;
+                    profileProjectsUpdated++;
+                  }
+                  continue;
+                }
                 // New project from remote
-                MusicProject projectToSave = remoteProject;
+                MusicProject projectToSave = (plan as AddIncomingRow).row;
                 if (previewSongFiles != null && previewSongFiles.containsKey(remoteProject.id)) {
                   try {
                     downloadedPreviewSongs++;
@@ -4683,6 +4728,9 @@ class GoogleDriveSyncService {
                 }
                 
                 await profileProjectsBox.put(projectToSave.id, projectToSave);
+                if (matchesByFile(projectToSave)) {
+                  localByFile[sameFileKey(projectToSave.filePath)] = projectToSave;
+                }
                 projectsAdded++;
                 profileProjectsAdded++;
                 if (kDebugMode) {
@@ -5759,6 +5807,22 @@ class GoogleDriveSyncService {
         }
       } catch (e) {
         if (kDebugMode) print('Error merging phase settings: $e');
+      }
+    }
+
+    // Whatever named a folded-away row — a release, a playlist, a stack — now
+    // names the row kept for it.
+    for (final entry in sameFileAliases.entries) {
+      if (entry.value.isEmpty) continue;
+      try {
+        await repointProjectIds(
+          projects: await Hive.openBox<MusicProject>('${entry.key}_projects'),
+          releases: await Hive.openBox<Release>('${entry.key}_releases'),
+          playlists: await Hive.openBox<Playlist>('${entry.key}_playlists'),
+          aliases: entry.value,
+        );
+      } catch (e) {
+        if (kDebugMode) print('Error repointing folded projects in ${entry.key}: $e');
       }
     }
 
